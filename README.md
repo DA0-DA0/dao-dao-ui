@@ -52,7 +52,7 @@ Note, this only needs to be done once
 
 1. Initialize the Juno directories and create the local genesis file with the correct chain-id (these can be run from any directory):
 
-   ```sh
+   ```bash
    wasmd init validator --chain-id=localnet-1
    ```
 
@@ -60,15 +60,35 @@ Note, this only needs to be done once
 
 2. Create a local key pair:
 
-   ```sh
+   ```bash
    > wasmd keys add validator
    ```
 
-3. Add your account to your local genesis file with a given amount and the key you just created. Use only `10000000000ujunox`, other amounts will be ignored.
+3. Add your account to your local genesis file with a given amount and the key you just created. Use only `10000000000stake`, other amounts will be ignored.
 
    ```bash
-   wasmd add-genesis-account $(wasmd keys show validator -a) 10000000000ujunox
+   wasmd add-genesis-account $(wasmd keys show validator -a) 10000000000stake
    ```
+
+4. Create the gentx, use only 9000000000stake:
+
+```bash
+wasmd gentx validator 9000000000stake --chain-id=localnet-1
+```
+
+If all goes well, you will see a message similar to the following:
+
+```
+Genesis transaction written to "(your home directory)/.wasmd/config/gentx/gentx-d7d6a409612abdb54e1e674beb1fcf648b85c06d.json"
+```
+
+5. Prepare genesis file:
+```bash
+wasmd collect-gentxs
+wasmd validate-genesis
+```
+
+
 
 #### Start node and deploy contracts
 Start the node with:
