@@ -1,3 +1,9 @@
+## Preview
+
+<p align="center" width="100%">
+    <img alt="cw-dao UI preview" src="https://i.imgur.com/Dtk9eyO.gif">
+</p>
+
 ## Summary
 
 This project creates a web UI around the [cw-dao](https://github.com/DA0-DA0/cw-dao) smart contract. Enabling users to:
