@@ -99,12 +99,13 @@ wasmd start --grpc.address 0.0.0.0:9091 --rpc.unsafe
 
 Leave this running in a dedicated terminal.
 
+Make sure you install the `jq` package locally (`brew install jq` on Mac, `apt install jq` on Ubuntu linuxes)
 In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
 
 ``` bash
 git clone https://github.com/DA0-DA0/cw-dao
 cd cw-dao/scripts
-bash deploy.sh $(wasmd keys show -a <your-key-name)
+bash deploy.sh $(wasmd keys show -a validator)
 ```
 
 Make note of the addresses from the output.
