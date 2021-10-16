@@ -12,6 +12,92 @@ This project creates a web UI around the [cw-dao](https://github.com/DA0-DA0/cw-
 - Create proposals for sending funds from the cw-dao instance
 - Vote on proposals created by other users of the cw-dao instance
 
+## Local Development
+You need to deploy the contracts to a chain running locally in order to interact with the DAO frontend.
+
+To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd).
+
+### Setup
+
+**Prerequisites:** Make sure to have [Golang >=1.17](https://golang.org/).
+
+#### Build from source
+
+You need to ensure your gopath configuration is correct. If the following **'make'** step does not work then you might have to add these lines to your .profile or .zshrc in the users home folder:
+
+```
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export GO111MODULE=on
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+```
+
+```sh
+git clone https://github.com/CosmWasm/wasmd
+make build && make install
+```
+
+This will build and install `wasmd` binary into `$GOBIN`.
+
+Note: When building from source, it is important to have your `$GOPATH` set correctly. When in doubt, the following should do:
+
+```sh
+mkdir ~/go
+export GOPATH=~/go
+
+#### Initialize local node
+Note, this only needs to be done once
+
+1. Initialize the Juno directories and create the local genesis file with the correct chain-id:
+
+   ```bash
+   wasmd init <moniker-name> --chain-id=localnet-1
+   ```
+
+2. Create a local key pair:
+
+   ```sh
+   > wasmd keys add <key-name>
+   ```
+
+3. Add your account to your local genesis file with a given amount and the key you just created. Use only `10000000000ujunox`, other amounts will be ignored.
+
+   ```bash
+   wasmd add-genesis-account $(wasmd keys show <key-name> -a) 10000000000ujunox
+   ```
+
+#### Start node and deploy contracts
+Start the node with:
+
+``` bash
+wasmd start --grpc.address 0.0.0.0:9091 --rpc.unsafe
+```
+
+Leave this running in a dedicated terminal.
+
+In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
+
+``` bash
+git clone https://github.com/DA0-DA0/cw-dao
+cd cw-dao/scripts
+bash deploy.sh $(wasmd keys show -a <your-key-name)
+```
+
+Make note of the addresses from the output.
+
+#### Setup .env.local file
+
+In the frontend repo, setup up your local environment
+``` bash
+cp .env.example .env.local
+```
+
+Add the addresses from earlier.
+
+``` bash
+NEXT_PUBLIC_DAO_CONTRACT_ADDRESS=
+NEXT_PUBLIC_DAO_TOKEN_ADDRESS=
+```
 
 ## Proposal List UI
 
