@@ -34,36 +34,40 @@ export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
 ```sh
 git clone https://github.com/CosmWasm/wasmd
+cd wasmd
 make build && make install
 ```
 
-This will build and install `wasmd` binary into `$GOBIN`.
+This will build and install the `wasmd` binary into `$GOPATH`.
 
 Note: When building from source, it is important to have your `$GOPATH` set correctly. When in doubt, the following should do:
 
 ```sh
 mkdir ~/go
 export GOPATH=~/go
+```
 
 #### Initialize local node
 Note, this only needs to be done once
 
-1. Initialize the Juno directories and create the local genesis file with the correct chain-id:
+1. Initialize the Juno directories and create the local genesis file with the correct chain-id (these can be run from any directory):
 
-   ```bash
-   wasmd init <moniker-name> --chain-id=localnet-1
+   ```sh
+   wasmd init validator --chain-id=localnet-1
    ```
+
+   This initializes the chain with the name of `validator` for your local node, and `localnet-1` as the chain ID.
 
 2. Create a local key pair:
 
    ```sh
-   > wasmd keys add <key-name>
+   > wasmd keys add validator
    ```
 
 3. Add your account to your local genesis file with a given amount and the key you just created. Use only `10000000000ujunox`, other amounts will be ignored.
 
    ```bash
-   wasmd add-genesis-account $(wasmd keys show <key-name> -a) 10000000000ujunox
+   wasmd add-genesis-account $(wasmd keys show validator -a) 10000000000ujunox
    ```
 
 #### Start node and deploy contracts
