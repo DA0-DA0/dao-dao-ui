@@ -61,8 +61,7 @@ const ProposalCreate: NextPage = () => {
 
     if (
       title.length === 0 ||
-      description.length === 0 ||
-      jsonStr.length === 0
+      description.length === 0
     ) {
       setLoading(false)
       setError('All fields are required.')
@@ -71,14 +70,20 @@ const ProposalCreate: NextPage = () => {
     // clone json string to avoid prototype poisoning
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
     const jsonClone = cloneDeep(jsonStr)
-    const json = JSON.parse(jsonClone)
+    let send = '';
+    if (jsonClone) {
+      const json = JSON.parse(jsonClone);
 
-    if (!validateJsonMsg(json)) {
-      setLoading(false)
-      setError('Error in JSON message.')
-      return
+      if (!validateJsonMsg(json)) {
+        setLoading(false)
+        setError('Error in JSON message.')
+        return
+      }
+
+      send = json?.body?.messages[0];
     }
-    const msgs = [{ bank: { send: json?.body?.messages[0] } }]
+
+    const msgs = [{ bank: { send } }]
 
     const msg = {
       title,
