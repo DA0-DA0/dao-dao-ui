@@ -1,28 +1,28 @@
-import type { NextPage } from 'next'
-import WalletLoader from 'components/WalletLoader'
-import { useSigningClient } from 'contexts/cosmwasm'
-import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/router'
-import LineAlert from 'components/LineAlert'
-import cloneDeep from 'lodash.clonedeep'
+import type { NextPage } from 'next';
+import WalletLoader from 'components/WalletLoader';
+import { useSigningClient } from 'contexts/cosmwasm';
+import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/router';
+import LineAlert from 'components/LineAlert';
+import cloneDeep from 'lodash.clonedeep';
 
-import { coins, StdFee } from '@cosmjs/stargate'
-import { buildOutgoingMessage, makeSpender } from './messagehelpers'
+import { coins, StdFee } from '@cosmjs/stargate';
+import { buildOutgoingMessage, makeSpender } from './messagehelpers';
 
 interface FormElements extends HTMLFormControlsCollection {
-  label: HTMLInputElement
-  description: HTMLInputElement
-  json: HTMLInputElement
+  label: HTMLInputElement;
+  description: HTMLInputElement;
+  json: HTMLInputElement;
 }
 
 interface ProposalFormElement extends HTMLFormElement {
-  readonly elements: FormElements
+  readonly elements: FormElements;
 }
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
+const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
 
 function validateJsonMsg(json: any) {
-  return true
+  return true;
   // if (typeof json !== 'object') {
   //   return false
   // }
@@ -44,97 +44,97 @@ function validateJsonMsg(json: any) {
 }
 
 const ProposalCreate: NextPage = () => {
-  const router = useRouter()
+  const router = useRouter();
 
-  const { walletAddress, signingClient } = useSigningClient()
-  const [transactionHash, setTransactionHash] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [proposalMessage, setProposalMessage] = useState<any>() // message type?
-  const [messageJson, setMessageJson] = useState('')
-  const [proposalID, setProposalID] = useState('')
-  let spendMsg
+  const { walletAddress, signingClient } = useSigningClient();
+  const [transactionHash, setTransactionHash] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [proposalMessage, setProposalMessage] = useState<any>(); // message type?
+  const [messageJson, setMessageJson] = useState('');
+  const [proposalID, setProposalID] = useState('');
+  let spendMsg;
 
-  const spend = makeSpender(walletAddress)
+  const spend = makeSpender(walletAddress);
 
   const handleSpend = () => {
-    const amount = prompt('Amount?')
+    const amount = prompt('Amount?');
     if (amount) {
-      spendMsg = spend(amount)
-      setProposalMessage(spendMsg)
-      setMessageJson(JSON.stringify([spendMsg]))
-      console.dir(spendMsg)
+      spendMsg = spend(amount);
+      setProposalMessage(spendMsg);
+      setMessageJson(JSON.stringify([spendMsg]));
+      console.dir(spendMsg);
     }
-  }
+  };
 
   const defaultExecuteFee: StdFee = {
     amount: coins(3000, process.env.NEXT_PUBLIC_STAKING_DENOM!),
     gas: '333333',
-  }
+  };
 
   const handleSubmit = async (event: FormEvent<ProposalFormElement>) => {
-    event.preventDefault()
-    setLoading(true)
-    setError('')
+    event.preventDefault();
+    setLoading(true);
+    setError('');
 
-    const currentTarget = event.currentTarget as ProposalFormElement
+    const currentTarget = event.currentTarget as ProposalFormElement;
 
-    const title = currentTarget.label.value.trim()
-    const description = currentTarget.description.value.trim()
-    const jsonStr = currentTarget.json.value.trim()
+    const title = currentTarget.label.value.trim();
+    const description = currentTarget.description.value.trim();
+    const jsonStr = currentTarget.json.value.trim();
 
     if (title.length === 0 || description.length === 0) {
-      setLoading(false)
-      setError('Title and Description are required.')
+      setLoading(false);
+      setError('Title and Description are required.');
     }
 
     // clone json string to avoid prototype poisoning
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
-    let json
-    const jsonClone = cloneDeep(jsonStr)
+    let json;
+    const jsonClone = cloneDeep(jsonStr);
     if (jsonClone) {
-      json = JSON.parse(jsonClone)
+      json = JSON.parse(jsonClone);
       if (!validateJsonMsg(json)) {
-        setLoading(false)
-        setError('Error in JSON message.')
-        return
+        setLoading(false);
+        setError('Error in JSON message.');
+        return;
       }
     }
 
-    console.log(`JSON MESSAGE BEING SENT:`)
-    console.dir(json)
+    console.log(`JSON MESSAGE BEING SENT:`);
+    console.dir(json);
 
     const msg = {
       title,
       description,
       msgs: json || [],
-    }
+    };
 
     try {
       const response = await signingClient?.execute(
         walletAddress,
         contractAddress,
         { propose: msg },
-        defaultExecuteFee,
-      )
-      setLoading(false)
+        defaultExecuteFee
+      );
+      setLoading(false);
       if (response) {
-        setTransactionHash(response.transactionHash)
-        const [{ events }] = response.logs
-        const [wasm] = events.filter((e) => e.type === 'wasm')
+        setTransactionHash(response.transactionHash);
+        const [{ events }] = response.logs;
+        const [wasm] = events.filter((e) => e.type === 'wasm');
         const [{ value }] = wasm.attributes.filter(
-          (w) => w.key === 'proposal_id',
-        )
-        setProposalID(value)
+          (w) => w.key === 'proposal_id'
+        );
+        setProposalID(value);
       }
     } catch (e: any) {
-      setLoading(false)
-      setError(e.message)
+      setLoading(false);
+      setError(e.message);
     }
-  }
+  };
 
-  const complete = transactionHash.length > 0
-  const jsonValue = spendMsg ? JSON.stringify(spendMsg) : ''
+  const complete = transactionHash.length > 0;
+  const jsonValue = spendMsg ? JSON.stringify(spendMsg) : '';
 
   return (
     <WalletLoader>
@@ -193,8 +193,8 @@ const ProposalCreate: NextPage = () => {
                 <button
                   className="mt-4 box-border px-4 py-2 btn btn-primary"
                   onClick={(e) => {
-                    e.preventDefault()
-                    router.push(`/proposals/${proposalID}`)
+                    e.preventDefault();
+                    router.push(`/proposals/${proposalID}`);
                   }}
                 >
                   View Proposal &#8599;
@@ -205,7 +205,7 @@ const ProposalCreate: NextPage = () => {
         </div>
       </div>
     </WalletLoader>
-  )
-}
+  );
+};
 
-export default ProposalCreate
+export default ProposalCreate;

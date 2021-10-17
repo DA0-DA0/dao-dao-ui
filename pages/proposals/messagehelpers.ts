@@ -1,5 +1,5 @@
-const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
+const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
+const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || '';
 
 export function makeSpender(from_address: string) {
   const spendBase = {
@@ -7,10 +7,10 @@ export function makeSpender(from_address: string) {
     bank: 'send',
     from_address,
     to_address: DAO_ADDRESS,
-  }
+  };
   const amountBase = {
     denom: DENOM,
-  }
+  };
   return (amount: string) => {
     return {
       ...spendBase,
@@ -20,8 +20,8 @@ export function makeSpender(from_address: string) {
           amount,
         },
       ],
-    }
-  }
+    };
+  };
 }
 
 export function buildOutgoingMessage(msg: any) {
@@ -38,5 +38,5 @@ export function buildOutgoingMessage(msg: any) {
       fee: { amount: [], gas_limit: '200000', payer: '', granter: '' },
     },
     signatures: [],
-  }
+  };
 }
