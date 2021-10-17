@@ -26,15 +26,7 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 ### Setup Chain
 
-Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
-
-```bash
-git clone https://github.com/DA0-DA0/cw-dao
-cd cw-dao
-bash scripts/deploy_local.sh
-```
-
-Make note of the addresses and private key from the output; these are the contracts deployed on a chain running in a docker container on your machine as well as the private key to an account with a balance you can import into [Kelpr](https://www.keplr.app/).
+Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and folow the instructions on running the chain in a development environment.
 
 ### Setup Frontend
 
@@ -72,6 +64,8 @@ yarn dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+
+Note: If you change  `.env.local`, you'll need to re-add the chain to Keplr. If you select a different chain in Keplr (like Cosmos), you can scroll down and remove the "Wasmd Test" chain, then you can re-add it by connecting your wallet.
 
 ## Requirements
 
