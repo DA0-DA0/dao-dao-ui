@@ -26,15 +26,9 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 ### Setup Chain
 
-Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
+Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the following https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment
 
-```bash
-git clone https://github.com/DA0-DA0/cw-dao
-cd cw-dao
-bash scripts/deploy_local.sh
-```
-
-Make note of the addresses and private key from the output; these are the contracts deployed on a chain running in a docker container on your machine as well as the private key to an account with a balance you can import into [Kelpr](https://www.keplr.app/).
+You can then import the test account to Keplr https://github.com/DA0-DA0/cw-dao/blob/main/default-account.txt. Do not store any real funds with this Account!
 
 ### Setup Frontend
 
