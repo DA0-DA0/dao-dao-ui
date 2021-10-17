@@ -6,6 +6,8 @@ import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import cloneDeep from 'lodash.clonedeep'
 
+import { coins, StdFee } from '@cosmjs/stargate';
+
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement
   description: HTMLInputElement
@@ -48,6 +50,11 @@ const ProposalCreate: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [proposalID, setProposalID] = useState('')
 
+  const defaultExecuteFee: StdFee = {
+    amount: coins(3000, process.env.NEXT_PUBLIC_STAKING_DENOM!),
+    gas: '333333',
+  };
+
   const handleSubmit = (event: FormEvent<ProposalFormElement>) => {
     event.preventDefault()
     setLoading(true)
@@ -87,7 +94,7 @@ const ProposalCreate: NextPage = () => {
     }
 
     signingClient
-      ?.execute(walletAddress, contractAddress, { propose: msg })
+      ?.execute(walletAddress, contractAddress, { propose: msg }, defaultExecuteFee)
       .then((response) => {
         setLoading(false)
         setTransactionHash(response.transactionHash)
