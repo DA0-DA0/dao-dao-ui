@@ -115,7 +115,7 @@ const ProposalCreate: NextPage = () => {
         walletAddress,
         contractAddress,
         { propose: msg },
-        defaultExecuteFee
+        defaultExecuteFee,
       )
       setLoading(false)
       if (response) {
@@ -123,7 +123,7 @@ const ProposalCreate: NextPage = () => {
         const [{ events }] = response.logs
         const [wasm] = events.filter((e) => e.type === 'wasm')
         const [{ value }] = wasm.attributes.filter(
-          (w) => w.key === 'proposal_id'
+          (w) => w.key === 'proposal_id',
         )
         setProposalID(value)
       }

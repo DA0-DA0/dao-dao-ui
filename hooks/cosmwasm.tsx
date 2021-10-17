@@ -32,13 +32,13 @@ export const useSigningCosmWasmClient = (): ISigningCosmWasmClientContext => {
 
       // get offline signer for signing txs
       const offlineSigner = await (window as any).getOfflineSigner(
-        PUBLIC_CHAIN_ID
+        PUBLIC_CHAIN_ID,
       )
 
       // make client
       const client = await SigningCosmWasmClient.connectWithSigner(
         PUBLIC_RPC_ENDPOINT,
-        offlineSigner
+        offlineSigner,
       )
       setSigningClient(client)
 

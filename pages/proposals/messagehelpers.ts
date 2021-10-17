@@ -37,6 +37,6 @@ export function buildOutgoingMessage(msg: any) {
       signer_infos: [],
       fee: { amount: [], gas_limit: '200000', payer: '', granter: '' },
     },
-    signatures: []
+    signatures: [],
   }
 }
