@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint && prettier --check .",
-    "prettier:write": "prettier --write ."
+    "prettier:write": "prettier --write .",
+    "dev-debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.25.6",
+    "@cosmjs/cosmwasm-stargate": "^0.26.0",
     "daisyui": "^1.14.0",
     "lodash.clonedeep": "^4.5.0",
     "next": "11.1.1",
