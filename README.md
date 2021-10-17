@@ -12,13 +12,19 @@ This project creates a web UI around the [cw-dao](https://github.com/DA0-DA0/cw-
 - Create proposals for sending funds from the cw-dao instance
 - Vote on proposals created by other users of the cw-dao instance
 
-## Local Development
+## Proposal List UI
+
+The proposal list UI provides icons indicating proposal status:
+
+<img alt="proposal status UI table" src="https://i.imgur.com/P5FDDJ8.png">
+
+## Development
 
 You need to deploy the contracts to a chain running locally in order to interact with the DAO frontend.
 
 To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a docker container.
 
-### Setup
+### Setup Chain
 
 Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
 
@@ -28,7 +34,17 @@ cd cw-dao
 bash scripts/deploy_local.sh
 ```
 
-Make note of the addresses from the output, these are the contracts deployed on a chain running in a docker container on your machine.
+Make note of the addresses and private key from the output; these are the contracts deployed on a chain running in a docker container on your machine as well as the private key to an account with a balance you can import into [Kelpr](https://www.keplr.app/).
+
+### Setup Frontend
+
+#### Clone this repo and install dependencies
+
+```bash
+git clone https://github.com/DA0-DA0/cw-dao-dapp
+cd cw-dao-dapp
+yarn
+```
 
 #### Setup .env.local file
 
@@ -43,27 +59,6 @@ Add the addresses from earlier.
 ```bash
 NEXT_PUBLIC_DAO_CONTRACT_ADDRESS=wasm1nc5tatafv6eyq7llkr2gv50ff9e22mnfhap4vz
 NEXT_PUBLIC_DAO_TOKEN_ADDRESS=wasm14hj2tavq8fpesdwxxcu44rty3hh90vhujgqwg3
-```
-
-## Proposal List UI
-
-The proposal list UI provides icons indicating proposal status:
-
-<img alt="proposal status UI table" src="https://i.imgur.com/P5FDDJ8.png">
-
-## Development
-
-This project was bootstrapped with [`next-cosmwasm-keplr-starter`](https://github.com/ebaker/next-cosmwasm-keplr-starter)
-
-```bash
-git clone https://github.com/DA0-DA0/cw-dao-dapp
-```
-
-First, setup your `.env` file by copying the example:
-
-```bash
-cd cw-dao-dapp
-cp .env.example .env.local
 ```
 
 Then, run the development server:
@@ -83,6 +78,8 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 Please ensure you have the [Keplr wallet extension](https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap) installed in your Chrome based browser (Chrome, Brave, etc).
 
 ## Learn More
+
+This project was bootstrapped with [`next-cosmwasm-keplr-starter`](https://github.com/ebaker/next-cosmwasm-keplr-starter).
 
 To learn more about Next.js, CosmJS, Keplr, and Tailwind CSS - take a look at the following resources:
 
