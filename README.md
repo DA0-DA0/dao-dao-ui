@@ -12,118 +12,6 @@ This project creates a web UI around the [cw-dao](https://github.com/DA0-DA0/cw-
 - Create proposals for sending funds from the cw-dao instance
 - Vote on proposals created by other users of the cw-dao instance
 
-## Local Development
-You need to deploy the contracts to a chain running locally in order to interact with the DAO frontend.
-
-To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd).
-
-### Setup
-
-**Prerequisites:** Make sure to have [Golang >=1.17](https://golang.org/).
-
-#### Build from source
-
-You need to ensure your gopath configuration is correct. If the following **'make'** step does not work then you might have to add these lines to your .profile or .zshrc in the users home folder:
-
-```
-export GOROOT=/usr/local/go
-export GOPATH=$HOME/go
-export GO111MODULE=on
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-```
-
-```sh
-git clone https://github.com/CosmWasm/wasmd
-cd wasmd
-make build && make install
-```
-
-This will build and install the `wasmd` binary into `$GOPATH`.
-
-Note: When building from source, it is important to have your `$GOPATH` set correctly. When in doubt, the following should do:
-
-```sh
-mkdir ~/go
-export GOPATH=~/go
-```
-
-#### Initialize local node
-Note, this only needs to be done once
-
-1. Initialize the Juno directories and create the local genesis file with the correct chain-id (these can be run from any directory):
-
-   ```bash
-   wasmd init validator --chain-id=localnet-1
-   ```
-
-   This initializes the chain with the name of `validator` for your local node, and `localnet-1` as the chain ID.
-
-2. Create a local key pair:
-
-   ```bash
-   > wasmd keys add validator
-   ```
-
-3. Add your account to your local genesis file with a given amount and the key you just created. Use only `10000000000stake`, other amounts will be ignored.
-
-   ```bash
-   wasmd add-genesis-account $(wasmd keys show validator -a) 10000000000stake
-   ```
-
-4. Create the gentx, use only 9000000000stake:
-
-```bash
-wasmd gentx validator 9000000000stake --chain-id=localnet-1
-```
-
-If all goes well, you will see a message similar to the following:
-
-```
-Genesis transaction written to "(your home directory)/.wasmd/config/gentx/gentx-d7d6a409612abdb54e1e674beb1fcf648b85c06d.json"
-```
-
-5. Prepare genesis file:
-```bash
-wasmd collect-gentxs
-wasmd validate-genesis
-```
-
-
-
-#### Start node and deploy contracts
-Start the node with:
-
-``` bash
-wasmd start --grpc.address 0.0.0.0:9091 --rpc.unsafe
-```
-
-Leave this running in a dedicated terminal.
-
-Make sure you install the `jq` package locally (`brew install jq` on Mac, `apt install jq` on Ubuntu linuxes)
-In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
-
-``` bash
-git clone https://github.com/DA0-DA0/cw-dao
-cd cw-dao/scripts
-bash deploy.sh $(wasmd keys show -a validator)
-```
-
-Make note of the addresses from the output.
-
-#### Setup .env.local file
-
-In the frontend repo, setup up your local environment
-``` bash
-cp .env.example .env.local
-```
-
-Add the addresses from earlier.
-
-``` bash
-NEXT_PUBLIC_DAO_CONTRACT_ADDRESS=
-NEXT_PUBLIC_DAO_TOKEN_ADDRESS=
-```
-
 ## Proposal List UI
 
 The proposal list UI provides icons indicating proposal status:
@@ -132,17 +20,45 @@ The proposal list UI provides icons indicating proposal status:
 
 ## Development
 
-This project was bootstrapped with [`next-cosmwasm-keplr-starter`](https://github.com/ebaker/next-cosmwasm-keplr-starter)
+You need to deploy the contracts to a chain running locally in order to interact with the DAO frontend.
+
+To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a docker container.
+
+### Setup Chain
+
+Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the deploy contracts script.
+
+```bash
+git clone https://github.com/DA0-DA0/cw-dao
+cd cw-dao
+bash scripts/deploy_local.sh
+```
+
+Make note of the addresses and private key from the output; these are the contracts deployed on a chain running in a docker container on your machine as well as the private key to an account with a balance you can import into [Kelpr](https://www.keplr.app/).
+
+### Setup Frontend
+
+#### Clone this repo and install dependencies
 
 ```bash
 git clone https://github.com/DA0-DA0/cw-dao-dapp
+cd cw-dao-dapp
+yarn
 ```
 
-First, setup your `.env` file by copying the example:
+#### Setup .env.local file
+
+In the frontend repo, setup up your local environment
 
 ```bash
-cd cw-dao-dapp
 cp .env.example .env.local
+```
+
+Add the addresses from earlier.
+
+```bash
+NEXT_PUBLIC_DAO_CONTRACT_ADDRESS=wasm1nc5tatafv6eyq7llkr2gv50ff9e22mnfhap4vz
+NEXT_PUBLIC_DAO_TOKEN_ADDRESS=wasm14hj2tavq8fpesdwxxcu44rty3hh90vhujgqwg3
 ```
 
 Then, run the development server:
@@ -162,6 +78,8 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 Please ensure you have the [Keplr wallet extension](https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap) installed in your Chrome based browser (Chrome, Brave, etc).
 
 ## Learn More
+
+This project was bootstrapped with [`next-cosmwasm-keplr-starter`](https://github.com/ebaker/next-cosmwasm-keplr-starter).
 
 To learn more about Next.js, CosmJS, Keplr, and Tailwind CSS - take a look at the following resources:
 
