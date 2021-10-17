@@ -28,7 +28,7 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and run the following https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment
 
-You can then import the test account to Keplr https://github.com/DA0-DA0/cw-dao/blob/main/default-account.txt. Do not store any real funds with this Account!
+You can then import the test account to Keplr https://github.com/DA0-DA0/cw-dao/blob/main/default-account.txt. Do not store any real funds with this account!
 
 ### Setup Frontend
 
