@@ -28,7 +28,7 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and folow [the instructions for running the chain in a development environment](https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment).
 
-Assuming you follow those directions to configure it with the default wasm account, you'll also want to import that account's mnemonic into Keplr (Add account -> Import existing account -> copy mnemonic from [default account](https://github.com/DA0-DA0/cw-dao/blob/main/default-account.txt)).
+> Note: Assuming you follow those directions to configure it with the default wasm account, you'll also want to import that account's mnemonic into Keplr (Add account -> Import existing account -> copy mnemonic from [default account](https://github.com/DA0-DA0/cw-dao/blob/main/default-account.txt)).
 
 ### Setup Frontend
 
