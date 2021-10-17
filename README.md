@@ -26,7 +26,7 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 ### Setup Chain
 
-Make sure you install the `docker` locally. In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and folow the instructions on running the chain in a development environment.
+In a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and folow the instructions in that repo on running the chain in a development environment.
 
 ### Setup Frontend
 
