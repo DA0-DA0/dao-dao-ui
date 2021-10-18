@@ -42,7 +42,9 @@ const Home: NextPage = () => {
         if (response.proposals.length < 10) {
           setHideLoadMore(true)
         }
-        setProposals(proposals.concat(response.proposals))
+        setProposals(response.proposals)
+        // BUG: this makes an infinite list of proposals:
+        // setProposals(proposals.concat(response.proposals))
       })
       .then(() => setLoading(false))
       .catch((err) => {
@@ -76,7 +78,7 @@ const Home: NextPage = () => {
 
           return (
             <ProposalCard
-              key={id}
+              key={`${id}_${idx}`}
               title={title}
               id={`${id}`}
               status={status}
