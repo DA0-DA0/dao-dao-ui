@@ -7,7 +7,7 @@ import LineAlert from 'components/LineAlert';
 import cloneDeep from 'lodash.clonedeep';
 
 import { coins, StdFee } from '@cosmjs/stargate';
-import { makeSpendMessage } from './messagehelpers';
+import { makeSpendMessage } from '../../util/messagehelpers';
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement;
