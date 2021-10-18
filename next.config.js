@@ -3,8 +3,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-module.exports = {
-  withBundleAnalyzer,
+module.exports = withBundleAnalyzer({
+  distDir: 'dist',
   reactStrictMode: true,
   async rewrites() {
     return [
@@ -14,4 +14,4 @@ module.exports = {
       },
     ]
   },
-}
+});
