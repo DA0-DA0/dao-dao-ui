@@ -63,17 +63,15 @@ const ProposalCreate: NextPage = () => {
     // check that proposal is valid json
     try {
       json = JSON.parse(jsonClone);
-    } catch {
-      setLoading(false)
-      setError('Proposal is not valid JSON.')
-      return
-    }
-    if (jsonClone) {
       if (!isValidJson(json)) {
         setLoading(false)
         setError('Proposal JSON is not a list of valid RPC messages.')
         return
       }
+    } catch {
+      setLoading(false)
+      setError('Proposal is not valid JSON.')
+      return
     }
 
     const msg = {

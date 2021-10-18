@@ -18,6 +18,7 @@
  *
  */
 
+const COSMOS_TYPE_KEY = '@type'
 
 // Takes the first object nested inside an object.
 // This method assumes objects have only one object inside them!
@@ -35,9 +36,9 @@ function isValidMsg (json: any): boolean {
     // we'll go two levels deep to take the inner object
     let inner = innerValue(innerValue(json))
     // if it has a valid, string-y @type,
-    let typeDef: string = inner['@type']
+    let typeDef: string = inner[COSMOS_TYPE_KEY]
     // it's fine for now
-    return typeDef.length > 0
+    return (typeof(typeDef) == 'string') && (typeDef.length > 0);
   } catch {
     // otherwise , reject it
     return false
