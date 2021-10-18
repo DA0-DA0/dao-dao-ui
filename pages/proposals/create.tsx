@@ -8,6 +8,8 @@ import cloneDeep from 'lodash.clonedeep'
 
 import { coins, StdFee } from '@cosmjs/stargate';
 
+import isValidJson from 'util/isValidJson'
+
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement
   description: HTMLInputElement
@@ -19,27 +21,6 @@ interface ProposalFormElement extends HTMLFormElement {
 }
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
-function validateJsonMsg(json: any) {
-  if (typeof json !== 'object') {
-    return false
-  }
-  if (Array.isArray(json)) {
-    return false
-  }
-  const messages = json?.body?.messages || []
-  if (messages.length !== 1) {
-    return false
-  }
-  // const [message] = messages
-  // if (message['@type'] !== '/cosmos.bank.v1beta1.MsgSend') {
-  //   return false
-  // }
-  // if (message.from_address !== contractAddress) {
-  //   return false
-  // }
-  return true
-}
 
 const ProposalCreate: NextPage = () => {
   const router = useRouter()
@@ -78,13 +59,19 @@ const ProposalCreate: NextPage = () => {
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
     let json;
     const jsonClone = cloneDeep(jsonStr)
-    if (jsonClone) {
+
+    // check that proposal is valid json
+    try {
       json = JSON.parse(jsonClone);
-      if (!validateJsonMsg(json)) {
+      if (!isValidJson(json)) {
         setLoading(false)
-        setError('Error in JSON message.')
+        setError('Proposal JSON is not a list of valid RPC messages.')
         return
       }
+    } catch {
+      setLoading(false)
+      setError('Proposal is not valid JSON.')
+      return
     }
 
     const msg = {
