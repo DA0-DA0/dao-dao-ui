@@ -7,7 +7,7 @@ import LineAlert from 'components/LineAlert';
 import cloneDeep from 'lodash.clonedeep';
 
 import { coins, StdFee } from '@cosmjs/stargate';
-import { buildOutgoingMessage, makeSpender } from './messagehelpers';
+import { makeSpender } from './messagehelpers';
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement;
@@ -62,8 +62,7 @@ const ProposalCreate: NextPage = () => {
     if (amount) {
       spendMsg = spend(amount);
       setProposalMessage(spendMsg);
-      setMessageJson(JSON.stringify([spendMsg]));
-      console.dir(spendMsg);
+      setMessageJson(JSON.stringify(spendMsg));
     }
   };
 
@@ -101,14 +100,13 @@ const ProposalCreate: NextPage = () => {
       }
     }
 
-    console.log(`JSON MESSAGE BEING SENT:`);
-    console.dir(json);
-
     const msg = {
       title,
       description,
       msgs: json || [],
     };
+
+    console.log(msg);
 
     try {
       const response = await signingClient?.execute(
