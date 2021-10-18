@@ -7,7 +7,7 @@ import LineAlert from 'components/LineAlert';
 import cloneDeep from 'lodash.clonedeep';
 
 import { coins, StdFee } from '@cosmjs/stargate';
-import { makeSpender } from './messagehelpers';
+import { makeSpendMessage } from './messagehelpers';
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement;
@@ -47,20 +47,18 @@ const ProposalCreate: NextPage = () => {
   const router = useRouter();
 
   const { walletAddress, signingClient } = useSigningClient();
+  const [sendWalletAddress, setSendWalletAddress] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [proposalMessage, setProposalMessage] = useState<any>(); // message type?
   const [messageJson, setMessageJson] = useState('');
   const [proposalID, setProposalID] = useState('');
-  let spendMsg;
-
-  const spend = makeSpender(walletAddress);
 
   const handleSpend = () => {
     const amount = prompt('Amount?');
     if (amount) {
-      spendMsg = spend(amount);
+      const spendMsg = makeSpendMessage(amount, sendWalletAddress || walletAddress);
       setProposalMessage(spendMsg);
       setMessageJson(JSON.stringify(spendMsg));
     }
@@ -132,7 +130,6 @@ const ProposalCreate: NextPage = () => {
   };
 
   const complete = transactionHash.length > 0;
-  const jsonValue = spendMsg ? JSON.stringify(spendMsg) : '';
 
   return (
     <WalletLoader>
