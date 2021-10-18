@@ -22,6 +22,8 @@ interface ProposalFormElement extends HTMLFormElement {
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
 
 function validateJsonMsg(json: any) {
+  console.log(`validateJsonMessage: `);
+  console.dir(json);
   return true;
   // if (typeof json !== 'object') {
   //   return false

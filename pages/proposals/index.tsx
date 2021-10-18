@@ -1,10 +1,13 @@
 import type { NextPage } from 'next'
+import dynamic from 'next/dynamic';
 import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import ProposalCard from 'components/ProposalCard'
+// import ProposalCard from 'components/ProposalCard'
 import { ProposalListResponse, ProposalResponse, Timestamp } from 'types/cw3'
+
+const ProposalCard = dynamic(() => import('../../components/ProposalCard'), { loading: () => <div>LOADING...</div> });
 
 // TODO: review union Expiration from types/cw3
 type Expiration = {
@@ -46,7 +49,7 @@ const Home: NextPage = () => {
         setLoading(false)
         console.log('err', err)
       })
-  }, [walletAddress, signingClient, contractAddress, startBefore])
+  }, [walletAddress, signingClient, proposals, startBefore])
 
   return (
     <WalletLoader loading={proposals.length === 0 && loading}>
