@@ -1,12 +1,12 @@
 const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || '';
 
-export function makeSpender(from_address: string) {
+export function makeSpender(to_address: string) {
   const spendBase = {
     // '@type': '/cosmos.bank.v1beta1.MsgSend',
     bank: 'send',
-    from_address,
-    to_address: DAO_ADDRESS,
+    from_address: DAO_ADDRESS,
+    to_address
   };
   const amountBase = {
     denom: DENOM,
