@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { VoteInfo, ProposalResponse } from 'types/cw3'
+import { defaultExecuteFee } from 'util/fee'
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
@@ -103,13 +104,18 @@ const Proposal: NextPage = () => {
         setLoading(false)
         setError(err.message)
       })
-  }, [walletAddress, signingClient, contractAddress, proposalId, timestamp])
+  }, [walletAddress, signingClient, proposalId, timestamp])
 
   const handleVote = async (vote: string) => {
     signingClient
-      ?.execute(walletAddress, contractAddress, {
-        vote: { proposal_id: parseInt(proposalId), vote },
-      })
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          vote: { proposal_id: parseInt(proposalId), vote },
+        },
+        defaultExecuteFee
+      )
       .then((response) => {
         setTimestamp(new Date())
         setTransactionHash(response.transactionHash)
@@ -123,9 +129,14 @@ const Proposal: NextPage = () => {
   const handleExecute = async () => {
     setError('')
     signingClient
-      ?.execute(walletAddress, contractAddress, {
-        execute: { proposal_id: parseInt(proposalId) },
-      })
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          execute: { proposal_id: parseInt(proposalId) },
+        },
+        defaultExecuteFee
+      )
       .then((response) => {
         setTimestamp(new Date())
         setTransactionHash(response.transactionHash)
@@ -139,9 +150,14 @@ const Proposal: NextPage = () => {
   const handleClose = async () => {
     setError('')
     signingClient
-      ?.execute(walletAddress, contractAddress, {
-        close: { proposal_id: parseInt(proposalId) },
-      })
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          close: { proposal_id: parseInt(proposalId) },
+        },
+        defaultExecuteFee
+      )
       .then((response) => {
         setTimestamp(new Date())
         setTransactionHash(response.transactionHash)
@@ -201,7 +217,7 @@ const Proposal: NextPage = () => {
                     className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white"
                     onClick={(e) => {
                       e.preventDefault()
-                      router.push(`/${contractAddress}`)
+                      router.push(`/proposals`)
                     }}
                   >
                     {'< Proposals'}

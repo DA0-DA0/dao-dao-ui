@@ -22,12 +22,11 @@ const COSMOS_TYPE_KEY = '@type'
 
 // Takes the first object nested inside an object.
 // This method assumes objects have only one object inside them!
-function innerValue (obj: object) {
+function innerValue(obj: object) {
   return Object.values(obj)[0]
 }
 
-
-function isValidMsg (json: any): boolean {
+function isValidMsg(json: any): boolean {
   // input must be parseable as json!
   // if it's parseable, check that it's valid
   try {
@@ -38,7 +37,7 @@ function isValidMsg (json: any): boolean {
     // if it has a valid, string-y @type,
     let typeDef: string = inner[COSMOS_TYPE_KEY]
     // it's fine for now
-    return (typeof(typeDef) == 'string') && (typeDef.length > 0);
+    return typeof typeDef == 'string' && typeDef.length > 0
   } catch {
     // otherwise , reject it
     return false
@@ -46,13 +45,11 @@ function isValidMsg (json: any): boolean {
   return false
 }
 
-
 function isValidJson(json: any): boolean {
   if (Array.isArray(json)) {
-    return json.map(isValidMsg).every(x => x==true)
+    return json.map(isValidMsg).every((x) => x == true)
   }
   return false
 }
 
-
-export default isValidJson;
+export default isValidJson

@@ -5,10 +5,8 @@ import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import cloneDeep from 'lodash.clonedeep'
-
-import { coins, StdFee } from '@cosmjs/stargate';
-
 import isValidJson from 'util/isValidJson'
+import { defaultExecuteFee } from 'util/fee'
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement
@@ -31,11 +29,6 @@ const ProposalCreate: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [proposalID, setProposalID] = useState('')
 
-  const defaultExecuteFee: StdFee = {
-    amount: coins(3000, process.env.NEXT_PUBLIC_STAKING_DENOM!),
-    gas: '333333',
-  };
-
   const handleSubmit = (event: FormEvent<ProposalFormElement>) => {
     event.preventDefault()
     setLoading(true)
@@ -47,22 +40,19 @@ const ProposalCreate: NextPage = () => {
     const description = currentTarget.description.value.trim()
     const jsonStr = currentTarget.json.value.trim()
 
-    if (
-      title.length === 0 ||
-      description.length === 0
-    ) {
+    if (title.length === 0 || description.length === 0) {
       setLoading(false)
       setError('Title and Description are required.')
     }
 
     // clone json string to avoid prototype poisoning
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
-    let json;
+    let json
     const jsonClone = cloneDeep(jsonStr)
 
     // check that proposal is valid json
     try {
-      json = JSON.parse(jsonClone);
+      json = JSON.parse(jsonClone)
       if (!isValidJson(json)) {
         setLoading(false)
         setError('Proposal JSON is not a list of valid RPC messages.')
@@ -77,11 +67,16 @@ const ProposalCreate: NextPage = () => {
     const msg = {
       title,
       description,
-      msgs: json || []
+      msgs: json || [],
     }
 
     signingClient
-      ?.execute(walletAddress, contractAddress, { propose: msg }, defaultExecuteFee)
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        { propose: msg },
+        defaultExecuteFee
+      )
       .then((response) => {
         setLoading(false)
         setTransactionHash(response.transactionHash)
