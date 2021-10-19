@@ -40,22 +40,19 @@ const ProposalCreate: NextPage = () => {
     const description = currentTarget.description.value.trim()
     const jsonStr = currentTarget.json.value.trim()
 
-    if (
-      title.length === 0 ||
-      description.length === 0
-    ) {
+    if (title.length === 0 || description.length === 0) {
       setLoading(false)
       setError('Title and Description are required.')
     }
 
     // clone json string to avoid prototype poisoning
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
-    let json;
+    let json
     const jsonClone = cloneDeep(jsonStr)
 
     // check that proposal is valid json
     try {
-      json = JSON.parse(jsonClone);
+      json = JSON.parse(jsonClone)
       if (!isValidJson(json)) {
         setLoading(false)
         setError('Proposal JSON is not a list of valid RPC messages.')
@@ -70,7 +67,7 @@ const ProposalCreate: NextPage = () => {
     const msg = {
       title,
       description,
-      msgs: json || []
+      msgs: json || [],
     }
 
     signingClient

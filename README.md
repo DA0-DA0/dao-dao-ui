@@ -26,7 +26,7 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 ### Setup Chain
 
-First, make sure you have `docker` installed. 
+First, make sure you have `docker` installed.
 
 Then, in a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and folow [the instructions for running the chain in a development environment](https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment).
 
@@ -69,7 +69,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-Note: If you change  `.env.local`, you'll need to re-add the chain to Keplr. If you select a different chain in Keplr (like Cosmos), you can scroll down and remove the "Wasmd Test" chain, then you can re-add it by connecting your wallet.
+Note: If you change `.env.local`, you'll need to re-add the chain to Keplr. If you select a different chain in Keplr (like Cosmos), you can scroll down and remove the "Wasmd Test" chain, then you can re-add it by connecting your wallet.
 
 ## Requirements
 

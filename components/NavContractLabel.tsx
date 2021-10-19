@@ -17,7 +17,7 @@ function ContractLabel() {
     signingClient.getContract(contractAddress).then((response) => {
       setLabel(response.label)
     })
-  }, [contractAddress, signingClient])
+  }, [signingClient])
 
   if (label.length === 0) {
     return null

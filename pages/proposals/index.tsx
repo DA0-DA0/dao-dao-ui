@@ -39,14 +39,13 @@ const Home: NextPage = () => {
         if (response.proposals.length < 10) {
           setHideLoadMore(true)
         }
-        setProposals(proposals.concat(response.proposals))
+        setProposals((p) => p.concat(response.proposals))
       })
       .then(() => setLoading(false))
       .catch((err) => {
         setLoading(false)
-        console.log('err', err)
       })
-  }, [walletAddress, signingClient, contractAddress, startBefore])
+  }, [walletAddress, signingClient, startBefore])
 
   return (
     <WalletLoader loading={proposals.length === 0 && loading}>
