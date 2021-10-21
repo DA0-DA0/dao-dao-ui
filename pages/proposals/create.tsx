@@ -1,13 +1,13 @@
-import type { NextPage } from 'next';
+import { coins, StdFee } from '@cosmjs/stargate';
+import LineAlert from 'components/LineAlert';
 import WalletLoader from 'components/WalletLoader';
 import { useSigningClient } from 'contexts/cosmwasm';
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/router';
-import LineAlert from 'components/LineAlert';
 import cloneDeep from 'lodash.clonedeep';
-
-import { coins, StdFee } from '@cosmjs/stargate';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { FormEvent, useState } from 'react';
 import { makeSpendMessage } from '../../util/messagehelpers';
+
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement;
@@ -60,7 +60,10 @@ const ProposalCreate: NextPage = () => {
   const handleSpend = () => {
     const amount = prompt('Amount?');
     if (amount) {
-      const spendMsg = makeSpendMessage(amount, sendWalletAddress || walletAddress);
+      const spendMsg = makeSpendMessage(
+        amount,
+        sendWalletAddress || walletAddress
+      );
       setProposalMessage(spendMsg);
       setMessageJson(JSON.stringify(spendMsg));
     }
@@ -92,16 +95,18 @@ const ProposalCreate: NextPage = () => {
     let json;
     const jsonClone = cloneDeep(jsonStr);
     if (jsonClone) {
-      json = JSON.parse(jsonClone);
-      if (!validateJsonMsg(json)) {
+      try {
+        json = JSON.parse(jsonClone);
+        if (!validateJsonMsg(json)) {
+          setLoading(false);
+          setError('Error in JSON message.');
+          return;
+        }
+      } catch {
         setLoading(false);
-        setError('Error in JSON message.');
+        setError('Proposal is not valid JSON.');
         return;
       }
-    } catch {
-      setLoading(false)
-      setError('Proposal is not valid JSON.')
-      return
     }
 
     const msg = {

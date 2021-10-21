@@ -1,19 +1,12 @@
-import type { NextPage } from 'next'
+import { coins, StdFee } from '@cosmjs/stargate'
+import LineAlert from 'components/LineAlert'
 import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
-import { useState, useEffect } from 'react'
+import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import LineAlert from 'components/LineAlert'
-import { VoteInfo, ProposalResponse } from 'types/cw3'
+import { useEffect, useState } from 'react'
+import { ProposalResponse, VoteInfo } from 'types/cw3'
 import { defaultExecuteFee } from 'util/fee'
-import { coins, StdFee } from '@cosmjs/stargate';
-import LineAlert from 'components/LineAlert';
-import WalletLoader from 'components/WalletLoader';
-import { useSigningClient } from 'contexts/cosmwasm';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { ProposalResponse, VoteInfo } from 'types/cw3';
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
 
@@ -74,11 +67,6 @@ function VoteButtons({
     </div>
   );
 }
-
-const defaultExecuteFee: StdFee = {
-  amount: coins(3000, process.env.NEXT_PUBLIC_STAKING_DENOM!),
-  gas: '333333',
-};
 
 const Proposal: NextPage = () => {
   const router = useRouter();
