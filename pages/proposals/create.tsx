@@ -1,4 +1,3 @@
-import { coins, StdFee } from '@cosmjs/stargate';
 import LineAlert from 'components/LineAlert';
 import WalletLoader from 'components/WalletLoader';
 import { useSigningClient } from 'contexts/cosmwasm';
@@ -6,8 +5,9 @@ import cloneDeep from 'lodash.clonedeep';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
+import { defaultExecuteFee } from '../../util/fee';
+import { isValidJson } from '../../util/isValidJson';
 import { makeSpendMessage } from '../../util/messagehelpers';
-
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement;
@@ -20,30 +20,6 @@ interface ProposalFormElement extends HTMLFormElement {
 }
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
-
-function validateJsonMsg(json: any) {
-  console.log(`validateJsonMessage: `);
-  console.dir(json);
-  return true;
-  // if (typeof json !== 'object') {
-  //   return false
-  // }
-  // if (Array.isArray(json)) {
-  //   return false
-  // }
-  // const messages = json?.body?.messages || []
-  // if (messages.length !== 1) {
-  //   return false
-  // }
-  // // const [message] = messages
-  // // if (message['@type'] !== '/cosmos.bank.v1beta1.MsgSend') {
-  // //   return false
-  // // }
-  // // if (message.from_address !== contractAddress) {
-  // //   return false
-  // // }
-  // return true
-}
 
 const ProposalCreate: NextPage = () => {
   const router = useRouter();
@@ -69,11 +45,6 @@ const ProposalCreate: NextPage = () => {
     }
   };
 
-  const defaultExecuteFee: StdFee = {
-    amount: coins(3000, process.env.NEXT_PUBLIC_STAKING_DENOM!),
-    gas: '333333',
-  };
-
   const handleSubmit = async (event: FormEvent<ProposalFormElement>) => {
     event.preventDefault();
     setLoading(true);
@@ -97,7 +68,7 @@ const ProposalCreate: NextPage = () => {
     if (jsonClone) {
       try {
         json = JSON.parse(jsonClone);
-        if (!validateJsonMsg(json)) {
+        if (!isValidJson(json)) {
           setLoading(false);
           setError('Error in JSON message.');
           return;
@@ -114,8 +85,6 @@ const ProposalCreate: NextPage = () => {
       description,
       msgs: json || [],
     };
-
-    console.log(msg);
 
     try {
       const response = await signingClient?.execute(
@@ -163,7 +132,7 @@ const ProposalCreate: NextPage = () => {
               className="input input-bordered rounded box-border p-3 h-24 w-full focus:input-primary text-xl"
               name="description"
               readOnly={complete}
-            ></textarea>
+            />
             <label className="block mt-4">JSON</label>
             <textarea
               className="input input-bordered rounded box-border p-3 w-full font-mono h-80 focus:input-primary text-x"

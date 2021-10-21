@@ -1,12 +1,11 @@
-import { coins, StdFee } from '@cosmjs/stargate'
-import LineAlert from 'components/LineAlert'
-import WalletLoader from 'components/WalletLoader'
-import { useSigningClient } from 'contexts/cosmwasm'
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { ProposalResponse, VoteInfo } from 'types/cw3'
-import { defaultExecuteFee } from 'util/fee'
+import LineAlert from 'components/LineAlert';
+import WalletLoader from 'components/WalletLoader';
+import { useSigningClient } from 'contexts/cosmwasm';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { ProposalResponse, VoteInfo } from 'types/cw3';
+import { defaultExecuteFee } from 'util/fee';
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
 
@@ -109,9 +108,14 @@ const Proposal: NextPage = () => {
 
   const handleVote = async (vote: string) => {
     signingClient
-      ?.execute(walletAddress, contractAddress, {
-        vote: { proposal_id: parseInt(proposalId), vote },
-      }, defaultExecuteFee)
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          vote: { proposal_id: parseInt(proposalId), vote },
+        },
+        defaultExecuteFee
+      )
       .then((response) => {
         setTimestamp(new Date());
         setTransactionHash(response.transactionHash);
@@ -125,9 +129,14 @@ const Proposal: NextPage = () => {
   const handleExecute = async () => {
     setError('');
     signingClient
-      ?.execute(walletAddress, contractAddress, {
-        execute: { proposal_id: parseInt(proposalId) },
-      }, defaultExecuteFee)
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          execute: { proposal_id: parseInt(proposalId) },
+        },
+        defaultExecuteFee
+      )
       .then((response) => {
         setTimestamp(new Date());
         setTransactionHash(response.transactionHash);
@@ -141,9 +150,14 @@ const Proposal: NextPage = () => {
   const handleClose = async () => {
     setError('');
     signingClient
-      ?.execute(walletAddress, contractAddress, {
-        close: { proposal_id: parseInt(proposalId) },
-      }, defaultExecuteFee)
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          close: { proposal_id: parseInt(proposalId) },
+        },
+        defaultExecuteFee
+      )
       .then((response) => {
         setTimestamp(new Date());
         setTransactionHash(response.transactionHash);
