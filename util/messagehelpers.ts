@@ -26,8 +26,18 @@ export function makeBankMessage(
   };
 }
 
-export function makeSpendMessage(amount: string, to_address: string) {
-  const bank: BankMsg = makeBankMessage(amount, to_address);
+export function makeSpendMessage(
+  amount: string,
+  to_address: string,
+  from_address = DAO_ADDRESS,
+  denom = DENOM
+) {
+  const bank: BankMsg = makeBankMessage(
+    amount,
+    to_address,
+    from_address,
+    denom
+  );
   return [
     {
       bank,
