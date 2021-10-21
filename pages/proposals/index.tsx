@@ -1,10 +1,13 @@
 import type { NextPage } from 'next'
+import dynamic from 'next/dynamic';
 import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import ProposalCard from 'components/ProposalCard'
+// import ProposalCard from 'components/ProposalCard'
 import { ProposalListResponse, ProposalResponse, Timestamp } from 'types/cw3'
+
+const ProposalCard = dynamic(() => import('../../components/ProposalCard'), { loading: () => <div>LOADING...</div> });
 
 // TODO: review union Expiration from types/cw3
 type Expiration = {
@@ -39,13 +42,15 @@ const Home: NextPage = () => {
         if (response.proposals.length < 10) {
           setHideLoadMore(true)
         }
-        setProposals((p) => p.concat(response.proposals))
+        setProposals(response.proposals)
+        // BUG: this makes an infinite list of proposals:
+        // setProposals(proposals.concat(response.proposals))
       })
       .then(() => setLoading(false))
       .catch((err) => {
         setLoading(false)
       })
-  }, [walletAddress, signingClient, startBefore])
+  }, [walletAddress, signingClient, proposals, startBefore])
 
   return (
     <WalletLoader loading={proposals.length === 0 && loading}>
@@ -72,7 +77,7 @@ const Home: NextPage = () => {
 
           return (
             <ProposalCard
-              key={id}
+              key={`${id}_${idx}`}
               title={title}
               id={`${id}`}
               status={status}
