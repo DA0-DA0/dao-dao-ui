@@ -45,7 +45,7 @@ function isValidMsg(json: any): boolean {
   return false
 }
 
-function isValidJson(json: any): boolean {
+export function isValidJson(json: any): boolean {
   if (Array.isArray(json)) {
     return json.map(isValidMsg).every((x) => x == true)
   }

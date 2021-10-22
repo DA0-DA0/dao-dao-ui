@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer({
+  distDir: 'dist',
   reactStrictMode: true,
+  productionBrowserSourceMaps: true,
   async rewrites() {
     return [
       {
@@ -9,4 +15,4 @@ module.exports = {
       },
     ]
   },
-}
+})

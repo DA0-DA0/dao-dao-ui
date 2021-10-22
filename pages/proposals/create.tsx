@@ -1,12 +1,13 @@
-import type { NextPage } from 'next'
+import LineAlert from 'components/LineAlert'
 import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
-import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/router'
-import LineAlert from 'components/LineAlert'
 import cloneDeep from 'lodash.clonedeep'
-import isValidJson from 'util/isValidJson'
-import { defaultExecuteFee } from 'util/fee'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { FormEvent, useState } from 'react'
+import { defaultExecuteFee } from '../../util/fee'
+import { isValidJson } from '../../util/isValidJson'
+import { makeSpendMessage } from '../../util/messagehelpers'
 
 interface FormElements extends HTMLFormControlsCollection {
   label: HTMLInputElement
@@ -24,12 +25,27 @@ const ProposalCreate: NextPage = () => {
   const router = useRouter()
 
   const { walletAddress, signingClient } = useSigningClient()
+  const [sendWalletAddress, setSendWalletAddress] = useState('')
   const [transactionHash, setTransactionHash] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [proposalMessage, setProposalMessage] = useState<any>() // message type?
+  const [messageJson, setMessageJson] = useState('')
   const [proposalID, setProposalID] = useState('')
 
-  const handleSubmit = (event: FormEvent<ProposalFormElement>) => {
+  const handleSpend = () => {
+    const amount = prompt('Amount?')
+    if (amount) {
+      const spendMsg = makeSpendMessage(
+        amount,
+        sendWalletAddress || walletAddress
+      )
+      setProposalMessage(spendMsg)
+      setMessageJson(JSON.stringify(spendMsg))
+    }
+  }
+
+  const handleSubmit = async (event: FormEvent<ProposalFormElement>) => {
     event.preventDefault()
     setLoading(true)
     setError('')
@@ -49,19 +65,19 @@ const ProposalCreate: NextPage = () => {
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
     let json
     const jsonClone = cloneDeep(jsonStr)
-
-    // check that proposal is valid json
-    try {
-      json = JSON.parse(jsonClone)
-      if (!isValidJson(json)) {
+    if (jsonClone) {
+      try {
+        json = JSON.parse(jsonClone)
+        if (!isValidJson(json)) {
+          setLoading(false)
+          setError('Error in JSON message.')
+          return
+        }
+      } catch {
         setLoading(false)
-        setError('Proposal JSON is not a list of valid RPC messages.')
+        setError('Proposal is not valid JSON.')
         return
       }
-    } catch {
-      setLoading(false)
-      setError('Proposal is not valid JSON.')
-      return
     }
 
     const msg = {
@@ -70,15 +86,15 @@ const ProposalCreate: NextPage = () => {
       msgs: json || [],
     }
 
-    signingClient
-      ?.execute(
+    try {
+      const response = await signingClient?.execute(
         walletAddress,
         contractAddress,
         { propose: msg },
         defaultExecuteFee
       )
-      .then((response) => {
-        setLoading(false)
+      setLoading(false)
+      if (response) {
         setTransactionHash(response.transactionHash)
         const [{ events }] = response.logs
         const [wasm] = events.filter((e) => e.type === 'wasm')
@@ -86,11 +102,11 @@ const ProposalCreate: NextPage = () => {
           (w) => w.key === 'proposal_id'
         )
         setProposalID(value)
-      })
-      .catch((e) => {
-        setLoading(false)
-        setError(e.message)
-      })
+      }
+    } catch (e: any) {
+      setLoading(false)
+      setError(e.message)
+    }
   }
 
   const complete = transactionHash.length > 0
@@ -99,6 +115,7 @@ const ProposalCreate: NextPage = () => {
     <WalletLoader>
       <div className="flex flex-col w-full">
         <div className="grid bg-base-100 place-items-center">
+          <button onClick={() => handleSpend()}>Spend</button>
           <form
             className="text-left container mx-auto max-w-lg"
             onSubmit={handleSubmit}
@@ -121,6 +138,7 @@ const ProposalCreate: NextPage = () => {
               className="input input-bordered rounded box-border p-3 w-full font-mono h-80 focus:input-primary text-x"
               cols={7}
               name="json"
+              defaultValue={messageJson}
               readOnly={complete}
             />
             {!complete && (
