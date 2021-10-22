@@ -14,6 +14,7 @@ export function makeBankMessage(
 ): BankMsg {
   return {
     send: {
+      [TYPE_KEY]: BANK_SEND_TYPE,
       from_address,
       to_address,
       amount: [
