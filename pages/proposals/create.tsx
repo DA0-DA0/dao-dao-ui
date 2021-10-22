@@ -1,82 +1,82 @@
-import LineAlert from 'components/LineAlert';
-import WalletLoader from 'components/WalletLoader';
-import { useSigningClient } from 'contexts/cosmwasm';
-import cloneDeep from 'lodash.clonedeep';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { FormEvent, useState } from 'react';
-import { defaultExecuteFee } from '../../util/fee';
-import { isValidJson } from '../../util/isValidJson';
-import { makeSpendMessage } from '../../util/messagehelpers';
+import LineAlert from 'components/LineAlert'
+import WalletLoader from 'components/WalletLoader'
+import { useSigningClient } from 'contexts/cosmwasm'
+import cloneDeep from 'lodash.clonedeep'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { FormEvent, useState } from 'react'
+import { defaultExecuteFee } from '../../util/fee'
+import { isValidJson } from '../../util/isValidJson'
+import { makeSpendMessage } from '../../util/messagehelpers'
 
 interface FormElements extends HTMLFormControlsCollection {
-  label: HTMLInputElement;
-  description: HTMLInputElement;
-  json: HTMLInputElement;
+  label: HTMLInputElement
+  description: HTMLInputElement
+  json: HTMLInputElement
 }
 
 interface ProposalFormElement extends HTMLFormElement {
-  readonly elements: FormElements;
+  readonly elements: FormElements
 }
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
+const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
 const ProposalCreate: NextPage = () => {
-  const router = useRouter();
+  const router = useRouter()
 
-  const { walletAddress, signingClient } = useSigningClient();
-  const [sendWalletAddress, setSendWalletAddress] = useState('');
-  const [transactionHash, setTransactionHash] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [proposalMessage, setProposalMessage] = useState<any>(); // message type?
-  const [messageJson, setMessageJson] = useState('');
-  const [proposalID, setProposalID] = useState('');
+  const { walletAddress, signingClient } = useSigningClient()
+  const [sendWalletAddress, setSendWalletAddress] = useState('')
+  const [transactionHash, setTransactionHash] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [proposalMessage, setProposalMessage] = useState<any>() // message type?
+  const [messageJson, setMessageJson] = useState('')
+  const [proposalID, setProposalID] = useState('')
 
   const handleSpend = () => {
-    const amount = prompt('Amount?');
+    const amount = prompt('Amount?')
     if (amount) {
       const spendMsg = makeSpendMessage(
         amount,
         sendWalletAddress || walletAddress
-      );
-      setProposalMessage(spendMsg);
-      setMessageJson(JSON.stringify(spendMsg));
+      )
+      setProposalMessage(spendMsg)
+      setMessageJson(JSON.stringify(spendMsg))
     }
-  };
+  }
 
   const handleSubmit = async (event: FormEvent<ProposalFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-    setError('');
+    event.preventDefault()
+    setLoading(true)
+    setError('')
 
-    const currentTarget = event.currentTarget as ProposalFormElement;
+    const currentTarget = event.currentTarget as ProposalFormElement
 
-    const title = currentTarget.label.value.trim();
-    const description = currentTarget.description.value.trim();
-    const jsonStr = currentTarget.json.value.trim();
+    const title = currentTarget.label.value.trim()
+    const description = currentTarget.description.value.trim()
+    const jsonStr = currentTarget.json.value.trim()
 
     if (title.length === 0 || description.length === 0) {
-      setLoading(false);
-      setError('Title and Description are required.');
+      setLoading(false)
+      setError('Title and Description are required.')
     }
 
     // clone json string to avoid prototype poisoning
     // https://medium.com/intrinsic-blog/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96
-    let json;
-    const jsonClone = cloneDeep(jsonStr);
+    let json
+    const jsonClone = cloneDeep(jsonStr)
     if (jsonClone) {
       try {
-        json = JSON.parse(jsonClone);
+        json = JSON.parse(jsonClone)
         if (!isValidJson(json)) {
-          setLoading(false);
-          setError('Error in JSON message.');
-          return;
+          setLoading(false)
+          setError('Error in JSON message.')
+          return
         }
       } catch {
-        setLoading(false);
-        setError('Proposal is not valid JSON.');
-        return;
+        setLoading(false)
+        setError('Proposal is not valid JSON.')
+        return
       }
     }
 
@@ -84,7 +84,7 @@ const ProposalCreate: NextPage = () => {
       title,
       description,
       msgs: json || [],
-    };
+    }
 
     try {
       const response = await signingClient?.execute(
@@ -92,24 +92,24 @@ const ProposalCreate: NextPage = () => {
         contractAddress,
         { propose: msg },
         defaultExecuteFee
-      );
-      setLoading(false);
+      )
+      setLoading(false)
       if (response) {
-        setTransactionHash(response.transactionHash);
-        const [{ events }] = response.logs;
-        const [wasm] = events.filter((e) => e.type === 'wasm');
+        setTransactionHash(response.transactionHash)
+        const [{ events }] = response.logs
+        const [wasm] = events.filter((e) => e.type === 'wasm')
         const [{ value }] = wasm.attributes.filter(
           (w) => w.key === 'proposal_id'
-        );
-        setProposalID(value);
+        )
+        setProposalID(value)
       }
     } catch (e: any) {
-      setLoading(false);
-      setError(e.message);
+      setLoading(false)
+      setError(e.message)
     }
-  };
+  }
 
-  const complete = transactionHash.length > 0;
+  const complete = transactionHash.length > 0
 
   return (
     <WalletLoader>
@@ -168,8 +168,8 @@ const ProposalCreate: NextPage = () => {
                 <button
                   className="mt-4 box-border px-4 py-2 btn btn-primary"
                   onClick={(e) => {
-                    e.preventDefault();
-                    router.push(`/proposals/${proposalID}`);
+                    e.preventDefault()
+                    router.push(`/proposals/${proposalID}`)
                   }}
                 >
                   View Proposal &#8599;
@@ -180,7 +180,7 @@ const ProposalCreate: NextPage = () => {
         </div>
       </div>
     </WalletLoader>
-  );
-};
+  )
+}
 
-export default ProposalCreate;
+export default ProposalCreate

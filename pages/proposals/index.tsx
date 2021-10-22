@@ -1,33 +1,33 @@
-import ProposalCard from 'components/ProposalCard';
-import WalletLoader from 'components/WalletLoader';
-import { useSigningClient } from 'contexts/cosmwasm';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { ProposalListResponse, ProposalResponse, Timestamp } from 'types/cw3';
+import ProposalCard from 'components/ProposalCard'
+import WalletLoader from 'components/WalletLoader'
+import { useSigningClient } from 'contexts/cosmwasm'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { ProposalListResponse, ProposalResponse, Timestamp } from 'types/cw3'
 
 // TODO: review union Expiration from types/cw3
 type Expiration = {
-  at_time: Timestamp;
-};
+  at_time: Timestamp
+}
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
+const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
 const Home: NextPage = () => {
-  const router = useRouter();
-  const { walletAddress, signingClient } = useSigningClient();
-  const [proposals, setProposals] = useState<ProposalResponse[]>([]);
-  const [hideLoadMore, setHideLoadMore] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [startBefore, setStartBefore] = useState<number | null>(null);
+  const router = useRouter()
+  const { walletAddress, signingClient } = useSigningClient()
+  const [proposals, setProposals] = useState<ProposalResponse[]>([])
+  const [hideLoadMore, setHideLoadMore] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [startBefore, setStartBefore] = useState<number | null>(null)
 
   useEffect(() => {
     if (walletAddress.length === 0 || !signingClient) {
-      setProposals([]);
-      setHideLoadMore(false);
-      return;
+      setProposals([])
+      setHideLoadMore(false)
+      return
     }
-    setLoading(true);
+    setLoading(true)
     signingClient
       .queryContractSmart(contractAddress, {
         reverse_proposals: {
@@ -37,17 +37,17 @@ const Home: NextPage = () => {
       })
       .then((response: ProposalListResponse) => {
         if (response.proposals.length < 10) {
-          setHideLoadMore(true);
+          setHideLoadMore(true)
         }
-        setProposals(response.proposals);
+        setProposals(response.proposals)
         // BUG: this makes an infinite list of proposals:
         // setProposals(proposals.concat(response.proposals))
       })
       .then(() => setLoading(false))
       .catch((err) => {
-        setLoading(false);
-      });
-  }, [walletAddress, signingClient, proposals, startBefore]);
+        setLoading(false)
+      })
+  }, [walletAddress, signingClient, proposals, startBefore])
 
   return (
     <WalletLoader loading={proposals.length === 0 && loading}>
@@ -69,8 +69,8 @@ const Home: NextPage = () => {
           </div>
         )}
         {proposals.map((proposal, idx) => {
-          const { title, id, status } = proposal;
-          const expires = proposal.expires as Expiration;
+          const { title, id, status } = proposal
+          const expires = proposal.expires as Expiration
 
           return (
             <ProposalCard
@@ -81,14 +81,14 @@ const Home: NextPage = () => {
               expires_at={parseInt(expires.at_time)}
               contractAddress={contractAddress}
             />
-          );
+          )
         })}
         {!hideLoadMore && (
           <button
             className="btn btn-primary btn-outline text-lg w-full mt-2"
             onClick={() => {
-              const proposal = proposals[proposals.length - 1];
-              setStartBefore(proposal.id);
+              const proposal = proposals[proposals.length - 1]
+              setStartBefore(proposal.id)
             }}
           >
             Load More
@@ -97,7 +97,7 @@ const Home: NextPage = () => {
       </div>
       <div></div>
     </WalletLoader>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

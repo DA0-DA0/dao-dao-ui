@@ -1,13 +1,13 @@
-import LineAlert from 'components/LineAlert';
-import WalletLoader from 'components/WalletLoader';
-import { useSigningClient } from 'contexts/cosmwasm';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { ProposalResponse, VoteInfo } from 'types/cw3';
-import { defaultExecuteFee } from 'util/fee';
+import LineAlert from 'components/LineAlert'
+import WalletLoader from 'components/WalletLoader'
+import { useSigningClient } from 'contexts/cosmwasm'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { ProposalResponse, VoteInfo } from 'types/cw3'
+import { defaultExecuteFee } from 'util/fee'
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || '';
+const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
 function VoteButtons({
   onVoteYes = () => {},
@@ -19,12 +19,12 @@ function VoteButtons({
 }) {
   const [vote]: VoteInfo[] = votes.filter(
     (v: VoteInfo) => v.voter === walletAddress
-  );
+  )
 
   if (vote) {
     const variant =
-      vote.vote === 'yes' ? 'success' : vote.vote === 'no' ? 'error' : 'error';
-    const msg = `You voted ${vote.vote}`;
+      vote.vote === 'yes' ? 'success' : vote.vote === 'no' ? 'error' : 'error'
+    const msg = `You voted ${vote.vote}`
     return (
       <>
         <LineAlert className="mt-2" variant={variant} msg={msg} />
@@ -37,10 +37,10 @@ function VoteButtons({
           </button>
         )}
       </>
-    );
+    )
   }
   if (status !== 'open') {
-    return null;
+    return null
   }
   return (
     <div className="flex justify-between content-center mt-2">
@@ -64,28 +64,28 @@ function VoteButtons({
         Reject
       </button>
     </div>
-  );
+  )
 }
 
 const Proposal: NextPage = () => {
-  const router = useRouter();
+  const router = useRouter()
 
-  const proposalId = router.query.proposalId as string;
+  const proposalId = router.query.proposalId as string
 
-  const { walletAddress, signingClient } = useSigningClient();
+  const { walletAddress, signingClient } = useSigningClient()
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [proposal, setProposal] = useState<ProposalResponse | null>(null);
-  const [votes, setVotes] = useState([]);
-  const [timestamp, setTimestamp] = useState(new Date());
-  const [transactionHash, setTransactionHash] = useState('');
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [proposal, setProposal] = useState<ProposalResponse | null>(null)
+  const [votes, setVotes] = useState([])
+  const [timestamp, setTimestamp] = useState(new Date())
+  const [transactionHash, setTransactionHash] = useState('')
 
   useEffect(() => {
     if (walletAddress.length === 0 || !signingClient) {
-      return;
+      return
     }
-    setLoading(true);
+    setLoading(true)
     Promise.all([
       signingClient.queryContractSmart(contractAddress, {
         proposal: { proposal_id: parseInt(proposalId) },
@@ -95,16 +95,16 @@ const Proposal: NextPage = () => {
       }),
     ])
       .then((values) => {
-        const [proposal, { votes }] = values;
-        setProposal(proposal);
-        setVotes(votes);
-        setLoading(false);
+        const [proposal, { votes }] = values
+        setProposal(proposal)
+        setVotes(votes)
+        setLoading(false)
       })
       .catch((err) => {
-        setLoading(false);
-        setError(err.message);
-      });
-  }, [walletAddress, signingClient, proposalId, timestamp]);
+        setLoading(false)
+        setError(err.message)
+      })
+  }, [walletAddress, signingClient, proposalId, timestamp])
 
   const handleVote = async (vote: string) => {
     signingClient
@@ -117,17 +117,17 @@ const Proposal: NextPage = () => {
         defaultExecuteFee
       )
       .then((response) => {
-        setTimestamp(new Date());
-        setTransactionHash(response.transactionHash);
+        setTimestamp(new Date())
+        setTransactionHash(response.transactionHash)
       })
       .catch((err) => {
-        setLoading(false);
-        setError(err.message);
-      });
-  };
+        setLoading(false)
+        setError(err.message)
+      })
+  }
 
   const handleExecute = async () => {
-    setError('');
+    setError('')
     signingClient
       ?.execute(
         walletAddress,
@@ -138,17 +138,17 @@ const Proposal: NextPage = () => {
         defaultExecuteFee
       )
       .then((response) => {
-        setTimestamp(new Date());
-        setTransactionHash(response.transactionHash);
+        setTimestamp(new Date())
+        setTransactionHash(response.transactionHash)
       })
       .catch((err) => {
-        setLoading(false);
-        setError(err.message);
-      });
-  };
+        setLoading(false)
+        setError(err.message)
+      })
+  }
 
   const handleClose = async () => {
-    setError('');
+    setError('')
     signingClient
       ?.execute(
         walletAddress,
@@ -159,14 +159,14 @@ const Proposal: NextPage = () => {
         defaultExecuteFee
       )
       .then((response) => {
-        setTimestamp(new Date());
-        setTransactionHash(response.transactionHash);
+        setTimestamp(new Date())
+        setTransactionHash(response.transactionHash)
       })
       .catch((err) => {
-        setLoading(false);
-        setError(err.message);
-      });
-  };
+        setLoading(false)
+        setError(err.message)
+      })
+  }
 
   return (
     <WalletLoader loading={loading}>
@@ -190,8 +190,8 @@ const Proposal: NextPage = () => {
                 onVoteYes={handleVote.bind(null, 'yes')}
                 onVoteNo={handleVote.bind(null, 'no')}
                 onBack={(e) => {
-                  e.preventDefault();
-                  router.push(`/proposals`);
+                  e.preventDefault()
+                  router.push(`/proposals`)
                 }}
                 votes={votes}
                 walletAddress={walletAddress}
@@ -216,8 +216,8 @@ const Proposal: NextPage = () => {
                   <button
                     className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white"
                     onClick={(e) => {
-                      e.preventDefault();
-                      router.push(`/${contractAddress}`);
+                      e.preventDefault()
+                      router.push(`/${contractAddress}`)
                     }}
                   >
                     {'< Proposals'}
@@ -245,7 +245,7 @@ const Proposal: NextPage = () => {
         </div>
       </div>
     </WalletLoader>
-  );
-};
+  )
+}
 
-export default Proposal;
+export default Proposal
