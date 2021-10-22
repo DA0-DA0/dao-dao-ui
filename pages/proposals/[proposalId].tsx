@@ -217,7 +217,7 @@ const Proposal: NextPage = () => {
                     className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white"
                     onClick={(e) => {
                       e.preventDefault()
-                      router.push(`/${contractAddress}`)
+                      router.push(`/proposals`)
                     }}
                   >
                     {'< Proposals'}

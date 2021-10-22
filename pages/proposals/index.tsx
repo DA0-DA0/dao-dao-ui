@@ -47,7 +47,9 @@ const Home: NextPage = () => {
         if (response.proposals.length < 10) {
           setHideLoadMore(true)
         }
-        setProposals(response.proposals)
+        if (!proposals) {
+          setProposals(response.proposals)
+        }
         // BUG: this makes an infinite list of proposals:
         // setProposals(proposals.concat(response.proposals))
       } catch (err) {

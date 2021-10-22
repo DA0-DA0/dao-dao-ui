@@ -6,6 +6,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer({
   distDir: 'dist',
   reactStrictMode: true,
+  productionBrowserSourceMaps: true,
   async rewrites() {
     return [
       {
