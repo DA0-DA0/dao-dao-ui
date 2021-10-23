@@ -17,9 +17,7 @@ const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 const Home: NextPage = () => {
   const router = useRouter()
   const { walletAddress, signingClient } = useSigningClient()
-  const [proposals, setProposals] = useState<ProposalResponse[] | undefined>(
-    undefined
-  )
+  const [proposals, setProposals] = useState<ProposalResponse[]>([])
   const [hideLoadMore, setHideLoadMore] = useState(false)
   const [loading, setLoading] = useState(false)
   const [startBefore, setStartBefore] = useState<number | null>(null)
@@ -30,9 +28,7 @@ const Home: NextPage = () => {
       setHideLoadMore(false)
       return
     }
-    if (proposals) {
-      return
-    }
+
     setLoading(true)
     async function sign(signingClient: SigningCosmWasmClient) {
       try {
@@ -47,17 +43,13 @@ const Home: NextPage = () => {
         if (response.proposals.length < 10) {
           setHideLoadMore(true)
         }
-        if (!proposals) {
-          setProposals(response.proposals)
-        }
-        // BUG: this makes an infinite list of proposals:
-        // setProposals(proposals.concat(response.proposals))
+        setProposals((p) => p.concat(response.proposals))
       } catch (err) {
         setLoading(false)
       }
     }
     sign(signingClient)
-  }, [walletAddress, signingClient, proposals, startBefore])
+  }, [walletAddress, signingClient, startBefore])
 
   return (
     <WalletLoader loading={!proposals || (proposals.length === 0 && loading)}>
