@@ -21,11 +21,13 @@ import { ProposalMessageType } from './messageMap'
 
 describe('ProposalReducer', () => {
   let proposal: Proposal
+
   beforeEach(() => {
     proposal = {
       ...EmptyProposal,
     }
   })
+
   it('should add a spend message', () => {
     const message: any = makeBankMessage(
       '9',
@@ -47,6 +49,7 @@ describe('ProposalReducer', () => {
     expect(messages[0].message).toEqual(addMessageAction.message)
     expect(reduced.nextId).toEqual(1)
   })
+
   it('should add a custom message', () => {
     const message: any = {
       custom: 'I am a custom message',
@@ -64,6 +67,7 @@ describe('ProposalReducer', () => {
     expect(messages.length).toBe(1)
     expect(messages[0].message).toEqual(addMessageAction.message)
   })
+
   it('should update an existing message', () => {
     const message: any = makeBankMessage(
       '9',
@@ -100,6 +104,7 @@ describe('ProposalReducer', () => {
     const updatedMapEntry = getMessage(reduced, activeMessage.id)
     expect(updatedMapEntry?.message).toEqual(updatedMessage)
   })
+
   it('should update the active message ID after adding a message', () => {
     const message: any = {
       custom: 'I am a custom message',
@@ -124,6 +129,7 @@ describe('ProposalReducer', () => {
     expect(proposalActiveMessageId).toEqual(addedMessage.id)
     expect(messages[0].message).toEqual(addMessageAction.message)
   })
+
   it('should update the active message when set explicitly', () => {
     // add several messages:
     let reduced
@@ -169,6 +175,7 @@ describe('ProposalReducer', () => {
     )
     expect(currentActiveMessageId).toEqual(secondMessage.id)
   })
+
   it('should update the active message ID after removing a message', () => {
     const message: any = {
       custom: 'I am a custom message',
@@ -224,6 +231,7 @@ describe('ProposalReducer', () => {
     )
     expect(remainingActiveMessageId).toEqual(initialMessageId)
   })
+
   it('should update the title', () => {
     const setTitleAction: ProposalSetTitle = {
       type: 'setTitle',
@@ -232,6 +240,7 @@ describe('ProposalReducer', () => {
     const reduced = ProposalReducer(proposal, setTitleAction)
     expect(reduced.title).toEqual(setTitleAction.title)
   })
+
   it('should update the description', () => {
     const setDescriptionAction: ProposalSetDescription = {
       type: 'setDescription',
