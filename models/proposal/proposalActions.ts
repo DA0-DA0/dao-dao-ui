@@ -23,7 +23,13 @@ export type ProposalUpdateMessage = {
   type: 'updateMessage'
   id: string
   message?: CosmosMsgFor_Empty_1
-  label?: string
+  valid: boolean
+}
+
+export type ProposalUpdatePendingMessage = {
+  type: 'updatePendingMessage'
+  id: string
+  message?: CosmosMsgFor_Empty_1
   valid: boolean
 }
 
@@ -35,7 +41,6 @@ export type ProposalRemoveMessage = {
 export type ProposalSetActiveMessage = {
   type: 'setActiveMessage'
   id: string
-  messageType: ProposalMessageType
 }
 
 export type ProposalAction =
@@ -45,3 +50,4 @@ export type ProposalAction =
   | ProposalRemoveMessage
   | ProposalUpdateMessage
   | ProposalSetActiveMessage
+  | ProposalUpdatePendingMessage

@@ -1,5 +1,10 @@
 import { Coin } from '../../types/cw3'
-import { MessageMap, MessageMapEntry, ProposalMessageType } from './messageMap'
+import {
+  MessageMap,
+  MessageMapEntry,
+  ProposalMessageType,
+  messageSort,
+} from './messageMap'
 import { Proposal } from './proposal'
 
 /// Returns the outgoing message for COSMOS
@@ -18,13 +23,12 @@ export function messageForProposal(proposal: Proposal) {
 /// If there's no active ID, this is the first one
 /// for a given message type.
 export function topmostId(
-  messageMap: MessageMap,
-  messageType: ProposalMessageType
+  proposal: Proposal,
+  messageType?: ProposalMessageType
 ): string | undefined {
-  for (const entry of Object.values(messageMap)) {
-    if (entry.messageType === messageType) {
-      return entry?.id
-    }
+  const messages = proposalMessages(proposal, messageType)
+  if (messages?.length) {
+    return messages[0].id
   }
   return undefined
 }
@@ -36,11 +40,8 @@ export function getMessage(
   return proposal.messageMap[messageId]
 }
 
-export function activeMessageId(
-  proposal: Proposal,
-  messageType: ProposalMessageType
-) {
-  return proposal.activeMessages[messageType]
+export function getActiveMessageId(proposal: Proposal): string {
+  return proposal.activeMessageId
 }
 
 export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
@@ -67,12 +68,21 @@ export function getSpendRecipient(
 
 export function proposalMessages(
   proposal: Proposal,
-  messageType?: ProposalMessageType
+  messageType?: ProposalMessageType // Optional filter
 ) {
-  return Object.values(proposal.messageMap).map((mapEntry) => {
+  return sortedMessages(proposal.messageMap, messageType)
+}
+
+export function sortedMessages(
+  messageMap: MessageMap,
+  messageType?: ProposalMessageType
+): MessageMapEntry[] {
+  const messages = Object.values(messageMap).map((mapEntry) => {
     if (messageType && mapEntry.messageType == messageType) {
       return mapEntry
     }
     return mapEntry
   })
+  messages.sort(messageSort)
+  return messages
 }

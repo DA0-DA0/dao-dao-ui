@@ -1,46 +1,66 @@
 import { MessageMapEntry, ProposalMessageType } from './messageMap'
 import { Proposal } from './proposal'
 import { ProposalAction } from './proposalActions'
-import { topmostId } from './proposalSelectors'
+import { getActiveMessageId, sortedMessages } from './proposalSelectors'
 
+function checkUpdated(updated: Proposal) {
+  if (
+    updated?.activeMessageId &&
+    !updated.messageMap[updated.activeMessageId]
+  ) {
+    console.error(
+      `bad active message in ${JSON.stringify(updated, undefined, 2)}`
+    )
+  }
+  return updated
+}
 export function ProposalReducer(
   state: Proposal,
   action: ProposalAction
 ): Proposal {
   switch (action.type) {
     case 'setTitle':
-      return { ...state, title: action.title }
+      const updated = { ...state, title: action.title }
+      return checkUpdated(updated)
     case 'setDescription':
-      return { ...state, description: action.description }
+      return checkUpdated({ ...state, description: action.description })
     case 'setActiveMessage': {
-      return {
-        ...state,
-        activeMessages: {
-          ...state.activeMessages,
-          [action.messageType]: action.id,
-        },
+      if (state.messageMap[action.id]) {
+        return checkUpdated({
+          ...state,
+          activeMessageId: action.id,
+        })
+      } else {
+        return checkUpdated(state)
       }
     }
     case 'removeMessage': {
+      const currentActiveMessageId = getActiveMessageId(state)
+      let updatedActiveMessageId
       const messageMap = { ...state.messageMap }
-      const existingMessage = state.messageMap[action.id]
-      const messageType = existingMessage.messageType
-      let activeMessageId: string | undefined =
-        state?.activeMessages[messageType]
       delete messageMap[action.id]
-      let activeMessages = state.activeMessages
-      if (action.id === activeMessageId) {
-        activeMessageId = topmostId(messageMap, messageType)
-        activeMessages = {
-          ...activeMessages,
-          [messageType]: activeMessageId,
+      if (action.id === currentActiveMessageId) {
+        const newMessages = sortedMessages(messageMap)
+        if (newMessages?.length) {
+          updatedActiveMessageId = newMessages[0].id
         }
       }
-      return { ...state, messageMap, activeMessages }
+      const updatedProposal: Proposal = {
+        ...state,
+        messageMap,
+        activeMessageId: updatedActiveMessageId ?? currentActiveMessageId,
+      }
+      if (
+        updatedProposal?.activeMessageId &&
+        !updatedProposal.messageMap[updatedProposal.activeMessageId]
+      ) {
+        console.error(`stale active message id`)
+        debugger
+      }
+      return checkUpdated(updatedProposal)
     }
     case 'addMessage': {
       const message = action.message
-      let label = action.label
       let messageType = action.messageType
       const len = Object.keys(state.messageMap).length
       let msgType = 'custom'
@@ -57,28 +77,40 @@ export function ProposalReducer(
           messageType = ProposalMessageType.Spend
         }
       }
-      const activeMessages = {
-        ...state.activeMessages,
-        [messageType]: id,
-      }
       const msg: MessageMapEntry = {
         id,
         messageType,
         order: len + 1,
-        label: label || msgType,
         message,
       }
 
       const updated = {
         ...state,
-        activeMessages,
+        activeMessageId: msg.id,
         nextId,
         messageMap: {
           ...state.messageMap,
           [id]: msg,
         },
       }
-      return updated
+      return checkUpdated(updated)
+    }
+    case 'updatePendingMessage': {
+      if (!action.message) {
+        const pendingMessages = { ...state.pendingMessages }
+        delete pendingMessages[action.id]
+        return {
+          ...state,
+          pendingMessages,
+        }
+      }
+      return {
+        ...state,
+        pendingMessages: {
+          ...state.pendingMessages,
+          [action.id]: action.message,
+        },
+      }
     }
     case 'updateMessage': {
       const oldEntry = state.messageMap[action.id]
@@ -87,16 +119,14 @@ export function ProposalReducer(
           `Invalid update. No existing message found for ${action.id}`
         )
       }
-      if (!(action.label || action.message)) {
+      if (!action.message) {
         console.warn(`Nothing to update`)
         return state
       }
       const message = action.message ?? oldEntry?.message
-      const label = action.label ?? oldEntry?.label
       const updatedEntry: MessageMapEntry = {
         ...oldEntry,
         message,
-        label,
       }
       const proposal: Proposal = {
         ...state,
@@ -105,7 +135,7 @@ export function ProposalReducer(
           [action.id]: updatedEntry,
         },
       }
-      return proposal
+      return checkUpdated(proposal)
     }
   }
 }

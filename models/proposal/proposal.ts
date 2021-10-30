@@ -1,16 +1,18 @@
 // Client-side proposal representation
-import { MessageMap, ProposalMessageType } from './messageMap'
+import { CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { labelForMessage } from '../../util/messagehelpers'
+import { MessageMap } from './messageMap'
 
-type ActiveMessageMap = Record<ProposalMessageType, string>
+export const MEMO_MAX_LEN = 255
 
 export type Proposal = {
   title: string
   description: string
   messageMap: MessageMap
   nextId: number
-  // Which message is currently active for
-  // each proposal message type.
-  activeMessages: ActiveMessageMap
+  // Which message is currently selected
+  activeMessageId: string
+  pendingMessages: { [key: string]: CosmosMsgFor_Empty_1 }
 }
 
 export const EmptyProposal: Proposal = {
@@ -18,5 +20,16 @@ export const EmptyProposal: Proposal = {
   description: '',
   nextId: 0,
   messageMap: {},
-  activeMessages: {} as ActiveMessageMap,
+  activeMessageId: '',
+  pendingMessages: {},
+}
+
+export function memoForProposal(proposal: Proposal): string {
+  const messagesMemo = Object.values(proposal.messageMap)
+    .map((msg) => labelForMessage(msg.message))
+    .join(', ')
+  return `${proposal.title}\n${proposal.description}\n\n${messagesMemo}`.slice(
+    0,
+    MEMO_MAX_LEN
+  )
 }
