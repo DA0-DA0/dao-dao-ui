@@ -28,8 +28,9 @@ const ProposalCreate: NextPage = () => {
       const response = await signingClient?.execute(
         walletAddress,
         contractAddress,
-        { propose, memo },
-        defaultExecuteFee
+        { propose },
+        defaultExecuteFee,
+        memo
       )
       setLoading(false)
       if (response) {

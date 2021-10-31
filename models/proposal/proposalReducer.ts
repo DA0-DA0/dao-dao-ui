@@ -55,7 +55,6 @@ export function ProposalReducer(
         !updatedProposal.messageMap[updatedProposal.activeMessageId]
       ) {
         console.error(`stale active message id`)
-        debugger
       }
       return checkUpdated(updatedProposal)
     }
