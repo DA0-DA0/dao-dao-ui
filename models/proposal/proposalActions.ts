@@ -43,6 +43,11 @@ export type ProposalSetActiveMessage = {
   id: string
 }
 
+export type ProposalUpdateFromMessage = {
+  type: 'updateFromMessage',
+  message: any
+}
+
 export type ProposalAction =
   | ProposalSetTitle
   | ProposalSetDescription
@@ -51,3 +56,4 @@ export type ProposalAction =
   | ProposalUpdateMessage
   | ProposalSetActiveMessage
   | ProposalUpdatePendingMessage
+  | ProposalUpdateFromMessage

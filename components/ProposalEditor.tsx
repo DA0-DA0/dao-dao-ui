@@ -1,4 +1,4 @@
-import { FormEvent, FormEventHandler, useReducer } from 'react'
+import { FormEvent, FormEventHandler, useReducer, useState } from 'react'
 import { CosmosMsgFor_Empty_1 } from 'types/cw3'
 import { isValidAddress } from 'util/isValidAddress'
 import { ProposalMessageType } from '../models/proposal/messageMap'
@@ -6,12 +6,14 @@ import { EmptyProposal, Proposal } from '../models/proposal/proposal'
 import {
   ProposalAction,
   ProposalRemoveMessage,
+  ProposalUpdateFromMessage,
 } from '../models/proposal/proposalActions'
 import { ProposalReducer } from '../models/proposal/proposalReducer'
 import {
   getActiveMessageId,
   getMessage,
   proposalMessages,
+  messageForProposal,
 } from '../models/proposal/proposalSelectors'
 import { labelForMessage, makeSpendMessage } from '../util/messagehelpers'
 import LineAlert from './LineAlert'
@@ -37,6 +39,8 @@ export function ProposalEditor({
   const [proposal, dispatch] = useReducer(ProposalReducer, {
     ...(initialProposal || EmptyProposal),
   })
+  const [editProposalJson, setEditProposalJson] = useState(false)
+
   let activeId = getActiveMessageId(proposal)
   const activeMessage = activeId ? getMessage(proposal, activeId) : undefined
 
@@ -236,6 +240,64 @@ export function ProposalEditor({
     dispatch(removeMessageAction)
   }
 
+  function handleJsonChanged(json: any) {
+    const updateFromJsonAction: ProposalUpdateFromMessage = {
+      type: 'updateFromMessage',
+      message: json
+    }
+    setEditProposalJson(false)
+    dispatch(updateFromJsonAction)
+  }
+
+  let mainEditor
+  if (editProposalJson) {
+    mainEditor = (
+      <RawEditor
+        json={messageForProposal(proposal)}
+        onChange={handleJsonChanged}
+      ></RawEditor>
+    )
+  } else {
+    mainEditor = (
+      <form className="text-left container mx-auto" onSubmit={handleSubmit}>
+        <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
+        <label className="block">Title</label>
+        <input
+          className="input input-bordered rounded box-border p-3 w-full focus:input-primary text-xl"
+          name="label"
+          onChange={(e) => setProposalTitle(e?.target?.value)}
+          readOnly={complete}
+        />
+        <label className="block mt-4">Description</label>
+        <textarea
+          className="input input-bordered rounded box-border p-3 h-24 w-full focus:input-primary text-xl"
+          name="description"
+          onChange={(e) => setProposalDescription(e?.target?.value)}
+          readOnly={complete}
+        />
+        <h2>{labelForMessage(activeMessage?.message, 'Current Message')}</h2>
+        {modeEditor}
+        {!complete && (
+          <button
+            className={`btn btn-primary text-lg mt-8 ml-auto ${
+              loading ? 'loading' : ''
+            }`}
+            style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+            type="submit"
+            disabled={loading}
+          >
+            Create Proposal
+          </button>
+        )}
+        {error && (
+          <div className="mt-8">
+            <LineAlert variant="error" msg={error} />
+          </div>
+        )}
+      </form>
+    )
+  }
+
   return (
     <div className="flex flex-col w-full flex-row">
       <div className="grid bg-base-100">
@@ -245,44 +307,12 @@ export function ProposalEditor({
             <MessageSelector actions={messageActions}></MessageSelector>
             <ul id="message-list">{messages}</ul>
           </aside>
-          <form className="text-left container mx-auto" onSubmit={handleSubmit}>
-            <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
-            <label className="block">Title</label>
-            <input
-              className="input input-bordered rounded box-border p-3 w-full focus:input-primary text-xl"
-              name="label"
-              onChange={(e) => setProposalTitle(e?.target?.value)}
-              readOnly={complete}
-            />
-            <label className="block mt-4">Description</label>
-            <textarea
-              className="input input-bordered rounded box-border p-3 h-24 w-full focus:input-primary text-xl"
-              name="description"
-              onChange={(e) => setProposalDescription(e?.target?.value)}
-              readOnly={complete}
-            />
-            <h2>
-              {labelForMessage(activeMessage?.message, 'Current Message')}
-            </h2>
-            {modeEditor}
-            {!complete && (
-              <button
-                className={`btn btn-primary text-lg mt-8 ml-auto ${
-                  loading ? 'loading' : ''
-                }`}
-                style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                type="submit"
-                disabled={loading}
-              >
-                Create Proposal
-              </button>
-            )}
-            {error && (
-              <div className="mt-8">
-                <LineAlert variant="error" msg={error} />
-              </div>
-            )}
-          </form>
+          <div className="text-left container mx-auto">
+            <button onClick={() => setEditProposalJson(!editProposalJson)}>
+              JSON
+            </button>
+            {mainEditor}
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { MessageMapEntry, ProposalMessageType } from './messageMap'
 import { Proposal } from './proposal'
 import { ProposalAction } from './proposalActions'
+import { proposalForMessage } from './proposalForMessage'
 import { getActiveMessageId, sortedMessages } from './proposalSelectors'
 
 function checkUpdated(updated: Proposal) {
@@ -135,6 +136,9 @@ export function ProposalReducer(
         },
       }
       return checkUpdated(proposal)
+    }
+    case 'updateFromMessage': {
+      return proposalForMessage(action.message)
     }
   }
 }
