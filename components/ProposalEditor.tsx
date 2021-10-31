@@ -267,6 +267,7 @@ export function ProposalEditor({
           name="label"
           onChange={(e) => setProposalTitle(e?.target?.value)}
           readOnly={complete}
+          value={proposal.title}
         />
         <label className="block mt-4">Description</label>
         <textarea
@@ -274,6 +275,7 @@ export function ProposalEditor({
           name="description"
           onChange={(e) => setProposalDescription(e?.target?.value)}
           readOnly={complete}
+          value={proposal.description}
         />
         <h2>{labelForMessage(activeMessage?.message, 'Current Message')}</h2>
         {modeEditor}

@@ -32,5 +32,6 @@ export function updateProposalForMessage(proposal: Proposal, json: any): Proposa
   proposal.activeMessageId = updatedProposal.activeMessageId
   proposal.title = json['title']
   proposal.description = json['description']
+  proposal.messageMap = updatedProposal.messageMap
   return proposal
 }
