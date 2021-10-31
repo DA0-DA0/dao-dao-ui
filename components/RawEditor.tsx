@@ -4,20 +4,20 @@ import { useState } from 'react'
 // ugly little work-around for the non-react json editor
 let _editedJSON: any = undefined
 
-const RawEditor = ({
+export default function RawEditor({
   json,
   onChange,
 }: {
   json: any
   onChange: (json: any) => void
-}) => {
+}) {
   const [editingJson, setEditingJson] = useState<boolean>(false)
 
   if (editingJson) {
     const JsonEditor = dynamic(
       async () => {
-        const mod = await import('./JsonEditor')
-        return mod.JsonEditor
+        const JsonEditor = await import('./JsonEditor')
+        return JsonEditor
       },
       { ssr: false }
     )
@@ -58,5 +58,3 @@ const RawEditor = ({
     )
   }
 }
-
-export default RawEditor

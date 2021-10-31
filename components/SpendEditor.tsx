@@ -12,7 +12,7 @@ import { isValidAddress } from 'util/isValidAddress'
 import { makeSpendMessage } from '../util/messagehelpers'
 import JsonDisplayCollapse from './JsonDisplayCollapse'
 
-export function SpendEditor({
+export default function SpendEditor({
   dispatch,
   contractAddress,
   initialRecipientAddress,
@@ -122,5 +122,3 @@ export function SpendEditor({
     </div>
   )
 }
-
-export default SpendEditor

@@ -2,14 +2,14 @@ import React, { useEffect, useRef, MutableRefObject } from 'react'
 import BaseJsonEditor from 'jsoneditor'
 import 'jsoneditor/dist/jsoneditor.css'
 
-export const JsonEditor = ({
+export default function JsonEditor({
   json,
   onJsonChange,
   ...props
 }: {
   json: any
   onJsonChange: (arg0: any) => void
-}) => {
+}) {
   const containerRef: MutableRefObject<any | null> = useRef(null)
   const editorRef: MutableRefObject<any | null> = useRef(null)
 
@@ -45,5 +45,3 @@ export const JsonEditor = ({
 
   return <div style={{ minHeight: '200px' }} ref={containerRef} />
 }
-
-export default JsonEditor

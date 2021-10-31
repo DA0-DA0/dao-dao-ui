@@ -15,11 +15,11 @@ import {
 } from '../models/proposal/proposalSelectors'
 import { labelForMessage, makeSpendMessage } from '../util/messagehelpers'
 import LineAlert from './LineAlert'
-import { MessageSelector } from './MessageSelector'
+import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 
-export function ProposalEditor({
+export default function ProposalEditor({
   initialProposal,
   loading,
   error,
@@ -288,5 +288,3 @@ export function ProposalEditor({
     </div>
   )
 }
-
-export default ProposalEditor
