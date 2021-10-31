@@ -43,9 +43,9 @@ export function makeSpendMessage(
 export interface MessageAction {
   label: string
   id: string
-  action: () => void
+  execute: () => void
   href: string
-  enabled: () => boolean
+  isEnabled: () => boolean
 }
 
 export function labelForAmount(amount: Coin[]): string {

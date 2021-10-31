@@ -4,7 +4,7 @@ import { ChangeEvent } from 'react'
 export function MessageSelector({ actions }: { actions: MessageAction[] }) {
   const items = actions.map((action, i: number) => {
     return (
-      <option disabled={!action.enabled()} value={i} key={i}>
+      <option disabled={!action.isEnabled()} value={i} key={i}>
         {action.label}
       </option>
     )
@@ -17,7 +17,7 @@ export function MessageSelector({ actions }: { actions: MessageAction[] }) {
     const i = e.target.selectedIndex - 1
     const action = i >= 0 && actions?.length > i ? actions[i] : undefined
     if (action) {
-      action.action()
+      action.execute()
     }
   }
 
