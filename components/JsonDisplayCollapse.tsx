@@ -1,4 +1,4 @@
-export function JsonDisplayCollapse({
+function JsonDisplayCollapse({
   title,
   content,
 }: {

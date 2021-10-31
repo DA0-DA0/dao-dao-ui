@@ -83,9 +83,11 @@ export function SpendEditor({
 
   let inputBaseClass =
     'input input-bordered rounded box-border p-3 w-full text-xl'
-  let addressClass = validAddress
-    ? inputBaseClass
-    : inputBaseClass + ' bg-error'
+  let inputErrorClass =
+    'input input-bordered rounded box-border p-3 w-full text-xl bg-error'
+
+  let addressClass = validAddress ? inputBaseClass : inputErrorClass
+
   const updateTitle = spendMsg?.id ? 'Update Spend' : 'Add Spend'
   return (
     <div>

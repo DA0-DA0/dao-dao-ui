@@ -3,16 +3,6 @@ import { ChangeEvent } from 'react'
 
 export function MessageSelector({ actions }: { actions: MessageAction[] }) {
   const items = actions.map((action, i: number) => {
-    let item
-    if (action.enabled()) {
-      item = (
-        <a href={action.href} onClick={action.action}>
-          {action.label}
-        </a>
-      )
-    } else {
-      item = <a href="#">{action.label}</a>
-    }
     return (
       <option disabled={!action.enabled()} value={i} key={i}>
         {action.label}

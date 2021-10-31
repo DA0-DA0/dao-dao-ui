@@ -1,11 +1,4 @@
-import dynamic from 'next/dynamic'
-import {
-  FormEvent,
-  FormEventHandler,
-  useReducer,
-  ChangeEvent,
-  useState,
-} from 'react'
+import { FormEvent, FormEventHandler, useReducer } from 'react'
 import { CosmosMsgFor_Empty_1 } from 'types/cw3'
 import { isValidAddress } from 'util/isValidAddress'
 import { ProposalMessageType } from '../models/proposal/messageMap'
@@ -19,14 +12,12 @@ import {
   getActiveMessageId,
   getMessage,
   proposalMessages,
-  topmostId,
 } from '../models/proposal/proposalSelectors'
 import { labelForMessage, makeSpendMessage } from '../util/messagehelpers'
 import LineAlert from './LineAlert'
 import { MessageSelector } from './MessageSelector'
+import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-
-let _editedJSON: any = undefined
 
 export function ProposalEditor({
   initialProposal,
@@ -46,9 +37,30 @@ export function ProposalEditor({
   const [proposal, dispatch] = useReducer(ProposalReducer, {
     ...(initialProposal || EmptyProposal),
   })
-  const [editingJson, setEditingJson] = useState<boolean>(false)
   let activeId = getActiveMessageId(proposal)
   const activeMessage = activeId ? getMessage(proposal, activeId) : undefined
+
+  const handleCustomMessageChange = (json: any) => {
+    let action: ProposalAction | undefined
+    if (activeId) {
+      action = {
+        type: 'updateMessage',
+        id: activeId,
+        message: json,
+        valid: true,
+      }
+    } else if (json) {
+      action = {
+        type: 'addMessage',
+        messageType: ProposalMessageType.Custom,
+        message: json,
+        valid: true,
+      }
+    }
+    if (action) {
+      dispatch(action)
+    }
+  }
 
   const messageActions = [
     {
@@ -90,28 +102,6 @@ export function ProposalEditor({
 
   let modeEditor = null
 
-  const handleCustomMessageChange = (json: any) => {
-    let action: ProposalAction | undefined
-    if (activeId) {
-      action = {
-        type: 'updateMessage',
-        id: activeId,
-        message: json,
-        valid: true,
-      }
-    } else if (activeMessage) {
-      action = {
-        type: 'addMessage',
-        messageType: ProposalMessageType.Custom,
-        message: json,
-        valid: true,
-      }
-    }
-    if (action) {
-      dispatch(action)
-    }
-  }
-
   switch (activeMessage?.messageType) {
     case ProposalMessageType.Spend:
       let amount = ''
@@ -128,55 +118,12 @@ export function ProposalEditor({
       )
       break
     case ProposalMessageType.Custom:
-      {
-        if (editingJson) {
-          const JSONMessageEditor = dynamic(
-            async () => {
-              const mod = await import('./JsonMessageEditor')
-              return mod.JSONMessageEditor
-            },
-            { ssr: false }
-          )
-
-          function handleJsonChange(json: any) {
-            _editedJSON = json
-          }
-
-          modeEditor = (
-            <div>
-              <button
-                className="btn"
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleCustomMessageChange(_editedJSON)
-                  setEditingJson(false)
-                }}
-              >
-                Done
-              </button>
-              <JSONMessageEditor
-                json={activeMessage?.message}
-                onJsonChange={handleJsonChange}
-              ></JSONMessageEditor>
-            </div>
-          )
-        } else {
-          modeEditor = (
-            <div>
-              <button
-                className="btn"
-                onClick={(e) => {
-                  e.preventDefault()
-                  setEditingJson(true)
-                }}
-              >
-                Edit
-              </button>
-              <div>{JSON.stringify(activeMessage?.message, null, 2)}</div>
-            </div>
-          )
-        }
-      }
+      modeEditor = (
+        <RawEditor
+          json={activeMessage.message}
+          onChange={handleCustomMessageChange}
+        ></RawEditor>
+      )
       break
   }
 
@@ -198,14 +145,9 @@ export function ProposalEditor({
   let messages = proposalMessages(proposal).map((mapEntry) => {
     const label = labelForMessage(mapEntry.message)
 
-    let brightness = ' opacity-50'
-    if (mapEntry.id === activeId) {
-      brightness = ''
-    }
-    let className = `flex flex-row m-2`
     return (
       <li
-        className={className}
+        className="flex flex-row m-2"
         key={mapEntry.id}
         onClick={() =>
           dispatch({
@@ -216,7 +158,11 @@ export function ProposalEditor({
       >
         <div
           title={label}
-          className={`w-48 whitespace-nowrap text-left truncate${brightness}`}
+          className={
+            mapEntry.id === activeId
+              ? 'w-48 whitespace-nowrap text-left truncate'
+              : 'w-48 whitespace-nowrap text-left truncate opacity-50'
+          }
         >
           {label}
         </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, MutableRefObject } from 'react'
-import JSONEditor from 'jsoneditor'
+import BaseJsonEditor from 'jsoneditor'
 import 'jsoneditor/dist/jsoneditor.css'
 
-export const JSONMessageEditor = ({
+export const JsonEditor = ({
   json,
   onJsonChange,
   ...props
@@ -17,6 +17,8 @@ export const JSONMessageEditor = ({
     if (containerRef.current && !editorRef.current) {
       const options = {
         ...props,
+        modes: ['view', 'tree', 'form', 'text'],
+        mode: 'text',
         onChange: () => {
           try {
             const json = editorRef.current.get()
@@ -26,9 +28,9 @@ export const JSONMessageEditor = ({
           }
         },
       } as any
-      options['modes'] = ['view', 'tree', 'form', 'text']
-      options['mode'] = 'text'
-      const editor = new JSONEditor(containerRef.current, options)
+      // options['modes'] = ['view', 'tree', 'form', 'text']
+      // options['mode'] = 'text'
+      const editor = new BaseJsonEditor(containerRef.current, options)
       editor.setMode('code')
       editor.set(json)
       editorRef.current = editor
@@ -44,4 +46,4 @@ export const JSONMessageEditor = ({
   return <div style={{ minHeight: '200px' }} ref={containerRef} />
 }
 
-export default JSONMessageEditor
+export default JsonEditor
