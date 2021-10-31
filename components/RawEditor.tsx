@@ -53,7 +53,7 @@ const RawEditor = ({
         >
           Edit
         </button>
-        <div>{JSON.stringify(json, null, 2)}</div>
+        <pre>{JSON.stringify(json, null, 2)}</pre>
       </div>
     )
   }
