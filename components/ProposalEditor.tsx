@@ -258,8 +258,7 @@ export function ProposalEditor({
       ></RawEditor>
     )
   } else {
-    mainEditor = (
-      <form className="text-left container mx-auto" onSubmit={handleSubmit}>
+    mainEditor = (<form className="text-left container mx-auto" onSubmit={handleSubmit}>
         <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
         <label className="block">Title</label>
         <input
@@ -296,8 +295,7 @@ export function ProposalEditor({
             <LineAlert variant="error" msg={error} />
           </div>
         )}
-      </form>
-    )
+      </form>)
   }
 
   return (
