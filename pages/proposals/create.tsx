@@ -1,3 +1,4 @@
+import LineAlert from '../../components/LineAlert'
 import ProposalEditor from '../../components/ProposalEditor'
 import WalletLoader from '../../components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
@@ -41,6 +42,10 @@ const ProposalCreate: NextPage = () => {
           (w) => w.key === 'proposal_id'
         )
         setProposalID(value)
+        const initialMessage = `Saved Proposal "${proposal.title}"`
+        const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
+
+        router.push(`/proposals/${value}?${paramStr}`)
       }
     } catch (e: any) {
       console.error(
@@ -55,17 +60,24 @@ const ProposalCreate: NextPage = () => {
 
   const complete = transactionHash.length > 0
 
+  const content = proposalID ? (
+    <div>
+      <a href={`/proposals/${proposalID}`}>{`${proposalID} saved`}</a>
+      <LineAlert className="mt-2" variant="success" msg="Proposal Saved" />
+    </div>
+  ) : (
+    <ProposalEditor
+      onProposal={handleProposal}
+      error={error}
+      loading={loading}
+      contractAddress={contractAddress}
+      recipientAddress={walletAddress}
+    />
+  )
+
   return (
     <WalletLoader>
-      <div className="flex flex-col w-full">
-        <ProposalEditor
-          onProposal={handleProposal}
-          error={error}
-          loading={loading}
-          contractAddress={contractAddress}
-          recipientAddress={walletAddress}
-        />
-      </div>
+      <div className="flex flex-col w-full">{content}</div>)
     </WalletLoader>
   )
 }

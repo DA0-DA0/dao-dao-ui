@@ -69,7 +69,6 @@ function VoteButtons({
 
 const Proposal: NextPage = () => {
   const router = useRouter()
-
   const proposalId = router.query.proposalId as string
 
   const { walletAddress, signingClient } = useSigningClient()
@@ -80,6 +79,10 @@ const Proposal: NextPage = () => {
   const [votes, setVotes] = useState([])
   const [timestamp, setTimestamp] = useState(new Date())
   const [transactionHash, setTransactionHash] = useState('')
+
+  const initialMessage: string | undefined = router.query.initialMessage as any
+  const initialMessageStatus: 'success' | 'error' | undefined = router.query
+    .initialMessageStatus as any
 
   useEffect(() => {
     if (walletAddress.length === 0 || !signingClient) {
@@ -168,10 +171,16 @@ const Proposal: NextPage = () => {
       })
   }
 
+  const initialMessageComponent =
+    initialMessage && initialMessageStatus ? (
+      <LineAlert msg={initialMessage} variant={initialMessageStatus} />
+    ) : null
+
   return (
     <WalletLoader loading={loading}>
       <div className="flex flex-col w-full">
         <div className="grid bg-base-100 place-items-center">
+          {initialMessageComponent}
           {!proposal ? (
             <div className="text-center m-8">
               No proposal with that ID found.
