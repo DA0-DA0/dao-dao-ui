@@ -36,7 +36,17 @@ export default function RawEditor({
             setEditingJson(false)
           }}
         >
-          Done
+          Update
+        </button>
+        <button
+          className="btn"
+          onClick={(e) => {
+            e.preventDefault()
+            _editedJSON = undefined
+            setEditingJson(false)
+          }}
+        >
+          Cancel
         </button>
         <JsonEditor json={json} onJsonChange={handleJsonChange}></JsonEditor>
       </div>
