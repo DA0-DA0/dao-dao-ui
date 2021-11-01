@@ -45,7 +45,7 @@ export default function RawEditor({
     return (
       <div>
         <button
-          className="btn"
+          className="btn block"
           onClick={(e) => {
             e.preventDefault()
             setEditingJson(true)
@@ -53,7 +53,9 @@ export default function RawEditor({
         >
           Edit
         </button>
-        <pre>{JSON.stringify(json, null, 2)}</pre>
+        <code className="break-all whitespace-pre">
+          {JSON.stringify(json, null, 2)}
+        </code>
       </div>
     )
   }
