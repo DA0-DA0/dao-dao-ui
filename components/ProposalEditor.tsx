@@ -317,7 +317,9 @@ export default function ProposalEditor({
                     : 'tab tab-lifted tab-active'
                 }
               >
-                <button onClick={() => setEditProposalJson(false)}>Preview</button>
+                <button onClick={() => setEditProposalJson(false)}>
+                  Preview
+                </button>
               </div>
               <div
                 className={
@@ -326,9 +328,7 @@ export default function ProposalEditor({
                     : 'tab tab-lifted'
                 }
               >
-                <button onClick={() => setEditProposalJson(true)}>
-                  JSON
-                </button>
+                <button onClick={() => setEditProposalJson(true)}>JSON</button>
               </div>
             </div>
             <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>

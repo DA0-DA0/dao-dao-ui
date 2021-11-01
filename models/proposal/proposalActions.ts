@@ -44,7 +44,7 @@ export type ProposalSetActiveMessage = {
 }
 
 export type ProposalUpdateFromMessage = {
-  type: 'updateFromMessage',
+  type: 'updateFromMessage'
   message: any
 }
 

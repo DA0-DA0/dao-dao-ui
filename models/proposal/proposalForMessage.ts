@@ -6,17 +6,20 @@ export function proposalForMessage(json: any): Proposal {
   return updateProposalForMessage(proposal, json)
 }
 
-export function updateProposalForMessage(proposal: Proposal, json: any): Proposal {
+export function updateProposalForMessage(
+  proposal: Proposal,
+  json: any
+): Proposal {
   let valid = true
 
   const msgs: any[] | undefined = json['msgs']
-  let updatedProposal = {...EmptyProposal}
+  let updatedProposal = { ...EmptyProposal }
   if (msgs && msgs?.length) {
     for (const message of msgs) {
       updatedProposal = ProposalReducer(updatedProposal, {
         type: 'addMessage',
         message,
-        valid: true
+        valid: true,
       })
     }
   }

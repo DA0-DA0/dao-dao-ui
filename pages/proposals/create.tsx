@@ -60,16 +60,20 @@ const ProposalCreate: NextPage = () => {
 
   const complete = transactionHash.length > 0
 
-  const content = proposalID ? (<div>
+  const content = proposalID ? (
+    <div>
       <a href={`/proposals/${proposalID}`}>{`${proposalID} saved`}</a>
       <LineAlert className="mt-2" variant="success" msg="Proposal Saved" />
-    </div>) : <ProposalEditor
+    </div>
+  ) : (
+    <ProposalEditor
       onProposal={handleProposal}
       error={error}
       loading={loading}
       contractAddress={contractAddress}
       recipientAddress={walletAddress}
     />
+  )
 
   return (
     <WalletLoader>
