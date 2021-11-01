@@ -1,7 +1,11 @@
 import { MessageAction } from '../util/messagehelpers'
 import { ChangeEvent } from 'react'
 
-export function MessageSelector({ actions }: { actions: MessageAction[] }) {
+export default function MessageSelector({
+  actions,
+}: {
+  actions: MessageAction[]
+}) {
   const items = actions.map((action, i: number) => {
     return (
       <option disabled={!action.isEnabled()} value={i} key={i}>

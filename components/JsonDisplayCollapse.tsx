@@ -1,4 +1,4 @@
-function JsonDisplayCollapse({
+export default function JsonDisplayCollapse({
   title,
   content,
 }: {
@@ -15,4 +15,3 @@ function JsonDisplayCollapse({
     </div>
   )
 }
-export default JsonDisplayCollapse
