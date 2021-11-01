@@ -5,10 +5,12 @@ import 'jsoneditor/dist/jsoneditor.css'
 export default function JsonEditor({
   json,
   onJsonChange,
+  onJsonError = (e: any) => {},
   ...props
 }: {
   json: any
   onJsonChange: (arg0: any) => void
+  onJsonError: (e: any) => void
 }) {
   const containerRef: MutableRefObject<any | null> = useRef(null)
   const editorRef: MutableRefObject<any | null> = useRef(null)
@@ -23,13 +25,11 @@ export default function JsonEditor({
           try {
             const json = editorRef.current.get()
             onJsonChange(json)
-          } catch (e) {
-            console.error(e)
+          } catch (e: any) {
+            onJsonError(e)
           }
         },
       } as any
-      // options['modes'] = ['view', 'tree', 'form', 'text']
-      // options['mode'] = 'text'
       const editor = new BaseJsonEditor(containerRef.current, options)
       editor.setMode('code')
       editor.set(json)
@@ -43,5 +43,10 @@ export default function JsonEditor({
     }
   }, [containerRef, json, props, onJsonChange])
 
-  return <div style={{ minHeight: '200px' }} ref={containerRef} />
+  return (
+    <div
+      className="min-h-full"
+      ref={containerRef}
+    />
+  )
 }

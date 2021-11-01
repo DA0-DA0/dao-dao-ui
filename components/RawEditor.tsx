@@ -12,6 +12,7 @@ export default function RawEditor({
   onChange: (json: any) => void
 }) {
   const [editingJson, setEditingJson] = useState<boolean>(false)
+  const [hasError, setHasError] = useState<boolean>(false)
 
   if (editingJson) {
     const JsonEditor = dynamic(
@@ -24,8 +25,15 @@ export default function RawEditor({
 
     function handleJsonChange(json: any) {
       _editedJSON = json
+      setHasError(false)
     }
 
+    function handleJsonError(e: any) {
+      setHasError(true)
+    }
+
+    // TODO(gavindoughtie): Should disable the update button
+    // but that makes the JSON editor lose state.
     return (
       <div>
         <button
@@ -48,7 +56,7 @@ export default function RawEditor({
         >
           Cancel
         </button>
-        <JsonEditor json={json} onJsonChange={handleJsonChange}></JsonEditor>
+        <JsonEditor json={json} onJsonChange={handleJsonChange} onJsonError={handleJsonError}></JsonEditor>
       </div>
     )
   } else {
