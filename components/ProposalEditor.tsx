@@ -243,7 +243,7 @@ export default function ProposalEditor({
   function handleJsonChanged(json: any) {
     const updateFromJsonAction: ProposalUpdateFromMessage = {
       type: 'updateFromMessage',
-      message: json
+      message: json,
     }
     setEditProposalJson(false)
     dispatch(updateFromJsonAction)
@@ -258,8 +258,8 @@ export default function ProposalEditor({
       ></RawEditor>
     )
   } else {
-    mainEditor = (<form className="text-left container mx-auto" onSubmit={handleSubmit}>
-        <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
+    mainEditor = (
+      <form className="text-left container mx-auto" onSubmit={handleSubmit}>
         <label className="block">Title</label>
         <input
           className="input input-bordered rounded box-border p-3 w-full focus:input-primary text-xl"
@@ -295,7 +295,8 @@ export default function ProposalEditor({
             <LineAlert variant="error" msg={error} />
           </div>
         )}
-      </form>)
+      </form>
+    )
   }
 
   return (
@@ -308,9 +309,29 @@ export default function ProposalEditor({
             <ul id="message-list">{messages}</ul>
           </aside>
           <div className="text-left container mx-auto">
-            <button onClick={() => setEditProposalJson(!editProposalJson)}>
-              JSON
-            </button>
+            <div className="tabs">
+              <div
+                className={
+                  editProposalJson
+                    ? 'tab tab-lifted'
+                    : 'tab tab-lifted tab-active'
+                }
+              >
+                <button onClick={() => setEditProposalJson(false)}>Preview</button>
+              </div>
+              <div
+                className={
+                  editProposalJson
+                    ? 'tab tab-lifted tab-active'
+                    : 'tab tab-lifted'
+                }
+              >
+                <button onClick={() => setEditProposalJson(true)}>
+                  JSON
+                </button>
+              </div>
+            </div>
+            <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
             {mainEditor}
           </div>
         </div>
