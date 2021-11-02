@@ -12,6 +12,7 @@ export default function RawEditor({
   onChange: (json: any) => void
 }) {
   const [editingJson, setEditingJson] = useState<boolean>(false)
+  const [hasError, setHasError] = useState<boolean>(false)
 
   if (editingJson) {
     const JsonEditor = dynamic(
@@ -24,8 +25,15 @@ export default function RawEditor({
 
     function handleJsonChange(json: any) {
       _editedJSON = json
+      setHasError(false)
     }
 
+    function handleJsonError(e: any) {
+      setHasError(true)
+    }
+
+    // TODO(gavindoughtie): Should disable the update button
+    // but that makes the JSON editor lose state.
     return (
       <div>
         <button
@@ -36,16 +44,30 @@ export default function RawEditor({
             setEditingJson(false)
           }}
         >
-          Done
+          Update
         </button>
-        <JsonEditor json={json} onJsonChange={handleJsonChange}></JsonEditor>
+        <button
+          className="btn"
+          onClick={(e) => {
+            e.preventDefault()
+            _editedJSON = undefined
+            setEditingJson(false)
+          }}
+        >
+          Cancel
+        </button>
+        <JsonEditor
+          json={json}
+          onJsonChange={handleJsonChange}
+          onJsonError={handleJsonError}
+        ></JsonEditor>
       </div>
     )
   } else {
     return (
       <div>
         <button
-          className="btn"
+          className="btn block"
           onClick={(e) => {
             e.preventDefault()
             setEditingJson(true)
@@ -53,7 +75,9 @@ export default function RawEditor({
         >
           Edit
         </button>
-        <div>{JSON.stringify(json, null, 2)}</div>
+        <code className="break-all whitespace-pre">
+          {JSON.stringify(json, null, 2)}
+        </code>
       </div>
     )
   }

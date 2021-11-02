@@ -42,7 +42,6 @@ export default function SpendEditor({
       e.stopPropagation()
     }
     const recipient = options?.recipientAddress ?? recipientAddress
-    const valid = !!(recipientAddress && isValidAddress(recipient))
 
     try {
       const id = spendMsg?.id ?? ''
@@ -55,14 +54,12 @@ export default function SpendEditor({
           type: 'updateMessage',
           id,
           message,
-          valid,
         }
       } else {
         action = {
           type: 'addMessage',
           message,
           messageType,
-          valid,
         }
       }
       dispatch(action)

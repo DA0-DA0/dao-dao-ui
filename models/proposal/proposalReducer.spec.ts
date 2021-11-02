@@ -39,7 +39,6 @@ describe('ProposalReducer', () => {
       type: 'addMessage',
       messageType: ProposalMessageType.Spend,
       message,
-      valid: true,
     }
 
     // Test that the message is added to the proposal
@@ -60,7 +59,6 @@ describe('ProposalReducer', () => {
       type: 'addMessage',
       messageType: ProposalMessageType.Custom,
       message,
-      valid: true,
     }
 
     // Test that the message is added to the proposal
@@ -81,7 +79,6 @@ describe('ProposalReducer', () => {
       type: 'addMessage',
       messageType: ProposalMessageType.Spend,
       message,
-      valid: true,
     }
 
     // Test that the message is added to the proposal
@@ -100,7 +97,6 @@ describe('ProposalReducer', () => {
       type: 'updateMessage',
       id: activeMessage.id,
       message: updatedMessage,
-      valid: true,
     }
     reduced = ProposalReducer(reduced, updateMessageAction)
     const updatedMapEntry = getMessage(reduced, activeMessage.id)
@@ -115,7 +111,6 @@ describe('ProposalReducer', () => {
       type: 'addMessage',
       messageType: ProposalMessageType.Custom,
       message,
-      valid: true,
     }
 
     // Test that the message is added to the proposal
@@ -141,7 +136,6 @@ describe('ProposalReducer', () => {
         type: 'addMessage',
         messageType: ProposalMessageType.Custom,
         message,
-        valid: true,
       }
 
       // Test that messages are added to the proposal
@@ -176,7 +170,6 @@ describe('ProposalReducer', () => {
       type: 'addMessage',
       messageType: ProposalMessageType.Custom,
       message,
-      valid: true,
     }
 
     // Test that messages are added to the proposal

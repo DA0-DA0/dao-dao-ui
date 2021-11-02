@@ -176,6 +176,12 @@ const Proposal: NextPage = () => {
       <LineAlert msg={initialMessage} variant={initialMessageStatus} />
     ) : null
 
+  let proposalMessageContent = proposal?.msgs?.length ? (
+    <code className="break-all whitespace-pre">
+      {JSON.stringify(proposal.msgs, undefined, 2)}
+    </code>
+  ) : null
+
   return (
     <WalletLoader loading={loading}>
       <div className="flex flex-col w-full">
@@ -189,11 +195,7 @@ const Proposal: NextPage = () => {
             <div className="container mx-auto max-w-lg text-left">
               <h1 className="text-3xl font-bold mb-8">{proposal.title}</h1>
               <p className="mb-8">{proposal.description}</p>
-              <div className="p-2 border border-black rounded mb-8">
-                <code className="break-all">
-                  {JSON.stringify(proposal.msgs)}
-                </code>
-              </div>
+              {proposalMessageContent}
 
               <VoteButtons
                 onVoteYes={handleVote.bind(null, 'yes')}
