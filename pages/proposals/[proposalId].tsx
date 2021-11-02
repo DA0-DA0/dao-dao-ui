@@ -176,14 +176,11 @@ const Proposal: NextPage = () => {
       <LineAlert msg={initialMessage} variant={initialMessageStatus} />
     ) : null
 
-  let proposalMessageContent = null
-  if (proposal?.msgs?.length) {
-    proposalMessageContent = (
-      <code className="break-all whitespace-pre">
-        {JSON.stringify(proposal.msgs, undefined, 2)}
-      </code>
-    )
-  }
+  let proposalMessageContent = proposal?.msgs?.length ? (
+    <code className="break-all whitespace-pre">
+      {JSON.stringify(proposal.msgs, undefined, 2)}
+    </code>
+  ) : null
 
   return (
     <WalletLoader loading={loading}>

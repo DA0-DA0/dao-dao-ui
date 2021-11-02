@@ -56,7 +56,11 @@ export default function RawEditor({
         >
           Cancel
         </button>
-        <JsonEditor json={json} onJsonChange={handleJsonChange} onJsonError={handleJsonError}></JsonEditor>
+        <JsonEditor
+          json={json}
+          onJsonChange={handleJsonChange}
+          onJsonError={handleJsonError}
+        ></JsonEditor>
       </div>
     )
   } else {

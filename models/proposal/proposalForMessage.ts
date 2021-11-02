@@ -2,8 +2,7 @@ import { EmptyProposal, Proposal } from './proposal'
 import { ProposalReducer } from './proposalReducer'
 
 export function proposalForMessage(json: any): Proposal {
-  let proposal: Proposal = { ...EmptyProposal }
-  return updateProposalForMessage(proposal, json)
+  return updateProposalForMessage({ ...EmptyProposal }, json)
 }
 
 export function updateProposalForMessage(

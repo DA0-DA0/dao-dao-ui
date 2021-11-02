@@ -43,10 +43,5 @@ export default function JsonEditor({
     }
   }, [containerRef, json, props, onJsonChange])
 
-  return (
-    <div
-      className="min-h-full"
-      ref={containerRef}
-    />
-  )
+  return <div className="min-h-full" ref={containerRef} />
 }
