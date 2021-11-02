@@ -41,7 +41,7 @@ function Nav() {
             </a>
           </Link>
         </div>
-        <NavContractLabel />
+        {/* <NavContractLabel /> */}
         <ThemeToggle />
         <div className="flex flex-grow md:flex-grow-0 max-w-full">
           <button
