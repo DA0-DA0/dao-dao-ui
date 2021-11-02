@@ -41,7 +41,7 @@ export default function JsonEditor({
         editorRef.current.destroy()
       }
     }
-  }, [containerRef, json, props, onJsonChange])
+  }, [containerRef, json, props, onJsonChange, onJsonError])
 
   return <div className="min-h-full" ref={containerRef} />
 }

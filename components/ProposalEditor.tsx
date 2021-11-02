@@ -51,14 +51,12 @@ export default function ProposalEditor({
         type: 'updateMessage',
         id: activeId,
         message: json,
-        valid: true,
       }
     } else if (json) {
       action = {
         type: 'addMessage',
         messageType: ProposalMessageType.Custom,
         message: json,
-        valid: true,
       }
     }
     if (action) {
@@ -205,8 +203,6 @@ export default function ProposalEditor({
       type: 'addMessage',
       message: { custom: {} } as CosmosMsgFor_Empty_1,
       messageType: ProposalMessageType.Custom,
-      label: `Custom ${messages?.length || 0}`,
-      valid: true,
     }
     dispatch(action)
   }
@@ -223,7 +219,6 @@ export default function ProposalEditor({
           type: 'addMessage',
           message,
           messageType,
-          valid: true,
         }
         dispatch(action)
       } catch (e) {

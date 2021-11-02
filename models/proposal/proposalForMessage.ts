@@ -18,7 +18,6 @@ export function updateProposalForMessage(
       updatedProposal = ProposalReducer(updatedProposal, {
         type: 'addMessage',
         message,
-        valid: true,
       })
     }
   }
