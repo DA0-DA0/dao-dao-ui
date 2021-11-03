@@ -56,13 +56,13 @@ function VoteButtons({
         className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
         onClick={onVoteYes}
       >
-        Sign
+        Vote Yes
       </button>
       <button
         className="box-border px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white"
         onClick={onVoteNo}
       >
-        Reject
+        Vote No
       </button>
     </div>
   )
@@ -178,7 +178,7 @@ const Proposal: NextPage = () => {
     ) : null
 
   let proposalMessageContent = proposal?.msgs?.length ? (
-    <code className="break-all whitespace-pre">
+    <code className="mb-12 break-all whitespace-pre">
       {JSON.stringify(proposal.msgs, undefined, 2)}
     </code>
   ) : null
@@ -200,6 +200,7 @@ const Proposal: NextPage = () => {
                 readOnly={true}
                 value={proposal.description}
               />
+
               {proposalMessageContent}
 
               <VoteButtons
@@ -238,7 +239,7 @@ const Proposal: NextPage = () => {
                   >
                     {'< Proposals'}
                   </button>
-                  {proposal.status === 'passed' && (
+                  {proposal.status === 'passed' && proposal?.msgs?.length > 0 && (
                     <button
                       className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
                       onClick={handleExecute}

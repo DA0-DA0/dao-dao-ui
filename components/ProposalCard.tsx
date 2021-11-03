@@ -87,15 +87,13 @@ export default function ProposalCard({
   status,
   expires_at,
 }: ProposalCardProps) {
-  const expiresAtDateTime = new Date(expires_at / 1000000).toLocaleString()
+  //// TODO fix, expires_at time
+  // const expiresAtDateTime = new Date(expires_at / 1000000).toLocaleString()
 
   return (
     <Link href={`/proposals/${id}`}>
       <a>
-        <div
-          className={`card shadow-lg mb-4`}
-          title={`Expires at ${expiresAtDateTime}`}
-        >
+        <div className={`card shadow-lg mb-4`}>
           <div className="card-body py-4 px-8">
             <div className="card-title flex flex-row justify-between m-0">
               <div>{title}</div>
