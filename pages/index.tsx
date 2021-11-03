@@ -9,10 +9,16 @@ const Home: NextPage = () => {
   return (
     <WalletLoader>
       <h1 className="text-6xl font-bold">
-        Welcome to {process.env.NEXT_PUBLIC_CHAIN_NAME} !
+        Welcome to {process.env.NEXT_PUBLIC_SITE_TITLE} !
       </h1>
 
-      <div className="mt-3 text-2xl">
+      {process.env.NEXT_PUBLIC_SITE_DESCRIPTION && (
+        <h3 className="mt-3 text-3xl">
+          {process.env.NEXT_PUBLIC_SITE_DESCRIPTION}
+        </h3>
+      )}
+
+      <div className="mt-3 text-xl">
         Your wallet address is:{' '}
         <pre className="font-mono break-all whitespace-pre-wrap">
           {walletAddress}
