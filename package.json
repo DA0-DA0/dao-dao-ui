@@ -10,7 +10,9 @@
     "lint": "next lint && prettier --check .",
     "prettier:write": "prettier --write .",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "ts": "tsc --noEmit --incremental",
+    "ts:watch": "yarn ts --watch"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.26.2",
@@ -22,6 +24,8 @@
     "next": "11.1.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "rich-markdown-editor": "^11.18.15",
+    "styled-components": "^5.3.3",
     "theme-change": "^2.0.2"
   },
   "devDependencies": {

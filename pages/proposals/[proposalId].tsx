@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { ProposalResponse, VoteInfo } from 'types/cw3'
 import { defaultExecuteFee } from 'util/fee'
+import Markdown from 'rich-markdown-editor'
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
@@ -192,9 +193,13 @@ const Proposal: NextPage = () => {
               No proposal with that ID found.
             </div>
           ) : (
-            <div className="container mx-auto max-w-lg text-left">
+            <div className="container mx-auto w-96 lg:w-6/12 max-w-full text-left">
               <h1 className="text-3xl font-bold mb-8">{proposal.title}</h1>
-              <p className="mb-8">{proposal.description}</p>
+              <Markdown
+                className="mb-8"
+                readOnly={true}
+                value={proposal.description}
+              />
               {proposalMessageContent}
 
               <VoteButtons

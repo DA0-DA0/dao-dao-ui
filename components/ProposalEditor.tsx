@@ -21,6 +21,7 @@ import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
+import Editor from 'rich-markdown-editor'
 
 export default function ProposalEditor({
   initialProposal,
@@ -41,6 +42,7 @@ export default function ProposalEditor({
     ...(initialProposal || EmptyProposal),
   })
   const [editProposalJson, setEditProposalJson] = useState(false)
+  const [value, setValue] = useState(() => {})
 
   const messageActions = [
     {
@@ -199,6 +201,14 @@ export default function ProposalEditor({
     dispatch(updateFromJsonAction)
   }
 
+  function handleDescriptionChange(newValue) {
+    setValue(newValue)
+  }
+
+  function handleDescriptionBlur() {
+    setProposalDescription(value)
+  }
+
   // TODO preview mode for the whole proposal
   if (editProposalJson) {
     return (
@@ -221,17 +231,20 @@ export default function ProposalEditor({
             >
               <label className="block text-xl">Title</label>
               <input
-                className="input input-bordered rounded box-border p-3 w-full focus:input-primary text-xl"
+                className="input input-bordered rounded box-border px-8 w-full focus:input-primary text-xl"
                 name="label"
                 onChange={(e) => setProposalTitle(e?.target?.value)}
                 readOnly={complete}
                 value={proposal.title}
               />
-              <label className="block mt-4 text-xl">Description</label>
-              <textarea
-                className="input input-bordered rounded box-border p-3 h-24 w-full focus:input-primary text-xl"
-                name="description"
-                onChange={(e) => setProposalDescription(e?.target?.value)}
+              <label className="block mt-4 text-xl">
+                Description{' '}
+                <span className="text-sm opacity-60">(Markdown Supported)</span>
+              </label>
+              <Editor
+                className="input input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl"
+                onBlur={handleDescriptionBlur}
+                onChange={handleDescriptionChange}
                 readOnly={complete}
                 value={proposal.description}
               />
