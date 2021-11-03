@@ -4,6 +4,8 @@ import {
 } from 'models/proposal/messageMap'
 import { ProposalAction } from 'models/proposal/proposalActions'
 import React, { useState } from 'react'
+import JSONInput from 'react-json-editor-ajrm'
+import locale from 'react-json-editor-ajrm/locale/en'
 
 export default function CustomEditor({
   dispatch,
@@ -13,6 +15,7 @@ export default function CustomEditor({
   customMsg: MessageMapEntry
 }) {
   const [message, setMessage] = useState(JSON.stringify(customMsg.message))
+  const [error, setError] = useState(undefined)
 
   function updateCustom() {
     try {
@@ -20,7 +23,6 @@ export default function CustomEditor({
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
       let action: ProposalAction
 
-      /* const message = makeCustomMessage(message, recipient, contractAddress) */
       if (id) {
         action = {
           type: 'updateMessage',
@@ -40,30 +42,29 @@ export default function CustomEditor({
     }
   }
 
-  function handleMessage(e) {
-    e.preventDefault()
-    e.stopPropagation()
-    setMessage(e.target.value)
-    updateCustom()
+  // Handles values from react-json-editor-ajrm
+  function handleMessage(msg) {
+    if (!msg.error) {
+      setError(undefined)
+      setMessage(msg.json)
+      updateCustom()
+    } else {
+      setError(msg.error)
+    }
   }
 
-  let inputBaseClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl'
-  let inputErrorClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl bg-error'
-
   return (
-    <div>
-      <label htmlFor="custom-message-json" className="block mt-4">
-        Custom JSON Message
-      </label>
-      <textarea
-        id="custom-message-json"
-        className="input input-bordered rounded box-border p-3 h-24 w-full focus:input-primary text-xl"
-        name="custom-message-json"
-        onChange={handleMessage}
-        readOnly={false}
-        value={message}
+    <div className="mt-4 border box-border rounded focus:input-primary">
+      <JSONInput
+        id={customMsg.id}
+        locale={locale}
+        height="100%"
+        width="100%"
+        onBlur={handleMessage}
+        onKeyPressUpdate={false}
+        placeholder={JSON.parse(message)}
+        theme="light_mitsuketa_tribute"
+        error={error}
       />
     </div>
   )

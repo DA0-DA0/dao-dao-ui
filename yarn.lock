@@ -301,7 +301,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2":
+"@babel/runtime@^7.0.0-rc.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2":
   version "7.16.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.0.tgz#e27b977f2e2088ba24748bf99b5e1dece64e4f0b"
   integrity sha512-Nht8L0O8YCktmsDV6FqFue7vQLRx3Hb0B37lS5y0jDRqRxlBG4wIJHnf9/bgSE2UyipKFA01YtS+npRdTWBUyw==
@@ -5341,6 +5341,13 @@ react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-json-editor-ajrm@^2.5.13:
+  version "2.5.13"
+  resolved "https://registry.yarnpkg.com/react-json-editor-ajrm/-/react-json-editor-ajrm-2.5.13.tgz#d2496b6b0166ff9e6bb5dbb85ba3615d8f398151"
+  integrity sha512-uYRJFzY34w7coLxeWPFZGyQpWdBKK5e8R9jBZTJ5gAFp3WuGVG2DdGZ8oJKOVJy0hqkxS9DzJIzGmmxHHQ9afA==
+  dependencies:
+    "@babel/runtime" "^7.0.0-rc.0"
 
 react-medium-image-zoom@^3.1.3:
   version "3.1.3"
