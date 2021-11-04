@@ -87,7 +87,7 @@ export default function ProposalCard({
   status,
   expires_at,
 }: ProposalCardProps) {
-  //// TODO fix, expires_at time
+  //// TODO https://github.com/DA0-DA0/cw-dao-dapp/issues/37
   // const expiresAtDateTime = new Date(expires_at / 1000000).toLocaleString()
 
   return (

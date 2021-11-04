@@ -42,7 +42,7 @@ export default function ProposalEditor({
     ...(initialProposal || EmptyProposal),
   })
   const [editProposalJson, setEditProposalJson] = useState(false)
-  const [value, setValue] = useState(() => {})
+  const [value, setValue] = useState('')
 
   const messageActions = [
     {
@@ -201,7 +201,7 @@ export default function ProposalEditor({
     dispatch(updateFromJsonAction)
   }
 
-  function handleDescriptionChange(newValue) {
+  function handleDescriptionChange(newValue: () => string) {
     setValue(newValue)
   }
 

@@ -5,6 +5,7 @@ import {
 import { ProposalAction } from 'models/proposal/proposalActions'
 import React, { useState } from 'react'
 import JSONInput from 'react-json-editor-ajrm'
+// @ts-ignore
 import locale from 'react-json-editor-ajrm/locale/en'
 
 export default function CustomEditor({
@@ -43,11 +44,11 @@ export default function CustomEditor({
   }
 
   // Handles values from react-json-editor-ajrm
-  function handleMessage(msg) {
+  function handleMessage(msg: any) {
     if (!msg.error) {
-      setError(undefined)
       setMessage(msg.json)
       updateCustom()
+      setError(undefined)
     } else {
       setError(msg.error)
     }
@@ -61,7 +62,7 @@ export default function CustomEditor({
         height="100%"
         width="100%"
         onBlur={handleMessage}
-        onKeyPressUpdate={false}
+        onKeyPressUpdate="false"
         placeholder={JSON.parse(message)}
         theme="light_mitsuketa_tribute"
         error={error}
