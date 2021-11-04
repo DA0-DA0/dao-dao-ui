@@ -40,6 +40,16 @@ function Nav() {
               {PUBLIC_SITE_TITLE}
             </a>
           </Link>
+          <div className="flex-1 px-2 mx-2">
+            <div className="items-stretch hidden lg:flex">
+              <Link href="/proposals">
+                <a className="btn btn-ghost btn-sm rounded-btn">Proposals</a>
+              </Link>
+              <Link href="/treasury">
+                <a className="btn btn-ghost btn-sm rounded-btn">Treasury</a>
+              </Link>
+            </div>
+          </div>
         </div>
         {/* <NavContractLabel /> */}
         <ThemeToggle />
