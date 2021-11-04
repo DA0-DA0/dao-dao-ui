@@ -31,6 +31,12 @@ function WalletLoader({
           Welcome to {process.env.NEXT_PUBLIC_SITE_TITLE}!
         </h1>
 
+        {process.env.NEXT_PUBLIC_SITE_DESCRIPTION && (
+          <h3 className="mt-3 text-3xl">
+            {process.env.NEXT_PUBLIC_SITE_DESCRIPTION}
+          </h3>
+        )}
+
         <p className="mt-3 text-2xl">
           Get started by installing{' '}
           <a
