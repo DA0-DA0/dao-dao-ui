@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { ProposalResponse, VoteInfo } from 'types/cw3'
 import { defaultExecuteFee } from 'util/fee'
+import Markdown from 'rich-markdown-editor'
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
@@ -55,13 +56,13 @@ function VoteButtons({
         className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
         onClick={onVoteYes}
       >
-        Sign
+        Vote Yes
       </button>
       <button
         className="box-border px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white"
         onClick={onVoteNo}
       >
-        Reject
+        Vote No
       </button>
     </div>
   )
@@ -177,7 +178,7 @@ const Proposal: NextPage = () => {
     ) : null
 
   let proposalMessageContent = proposal?.msgs?.length ? (
-    <code className="break-all whitespace-pre">
+    <code className="mb-12 break-all whitespace-pre">
       {JSON.stringify(proposal.msgs, undefined, 2)}
     </code>
   ) : null
@@ -192,9 +193,14 @@ const Proposal: NextPage = () => {
               No proposal with that ID found.
             </div>
           ) : (
-            <div className="container mx-auto max-w-lg text-left">
+            <div className="container mx-auto w-96 lg:w-6/12 max-w-full text-left">
               <h1 className="text-3xl font-bold mb-8">{proposal.title}</h1>
-              <p className="mb-8">{proposal.description}</p>
+              <Markdown
+                className="mb-8"
+                readOnly={true}
+                value={proposal.description}
+              />
+
               {proposalMessageContent}
 
               <VoteButtons
@@ -233,7 +239,7 @@ const Proposal: NextPage = () => {
                   >
                     {'< Proposals'}
                   </button>
-                  {proposal.status === 'passed' && (
+                  {proposal.status === 'passed' && proposal?.msgs?.length > 0 && (
                     <button
                       className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
                       onClick={handleExecute}

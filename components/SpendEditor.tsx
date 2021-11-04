@@ -10,7 +10,6 @@ import {
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeSpendMessage } from '../util/messagehelpers'
-import JsonDisplayCollapse from './JsonDisplayCollapse'
 
 export default function SpendEditor({
   dispatch,
@@ -85,7 +84,6 @@ export default function SpendEditor({
 
   let addressClass = validAddress ? inputBaseClass : inputErrorClass
 
-  const updateTitle = spendMsg?.id ? 'Update Spend' : 'Add Spend'
   return (
     <div>
       <label htmlFor="amount" className="block mt-4">
@@ -111,10 +109,6 @@ export default function SpendEditor({
         readOnly={false}
         onChange={handleRecipientAddress}
         value={recipientAddress}
-      />
-      <JsonDisplayCollapse
-        title="Show JSON"
-        content={JSON.stringify(spendMsg, undefined, 2)}
       />
     </div>
   )

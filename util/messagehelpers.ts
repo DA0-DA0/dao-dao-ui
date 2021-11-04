@@ -52,7 +52,9 @@ export function labelForAmount(amount: Coin[]): string {
   if (!amount?.length) {
     return ''
   }
-  return amount.map((coin) => `${coin.amount} ${coin.denom}`).join(', ')
+  return amount
+    .map((coin) => `${coin.amount !== '' ? coin.amount : '0'} ${coin.denom}`)
+    .join(', ')
 }
 
 export function labelForMessage(
@@ -78,7 +80,7 @@ export function labelForMessage(
     messageString = Object.entries(customMap)
       .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
       .join(', ')
-    messageString = messageString.slice(0, MAX_LABEL_LEN) || '(Custom)'
+    messageString = messageString.slice(0, MAX_LABEL_LEN) || ''
   }
   return messageString
 }
