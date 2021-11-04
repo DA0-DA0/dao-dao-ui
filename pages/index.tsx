@@ -1,10 +1,30 @@
 import type { NextPage } from 'next'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
+import { StargateClient, IndexedTx } from '@cosmjs/stargate'
+import Transfers from 'components/Transfers'
+
+const DAO_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
+const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 
 const Home: NextPage = () => {
-  const { walletAddress } = useSigningClient()
+  const { walletAddress, signingClient } = useSigningClient()
+  const [txs, setTxs] = useState<IndexedTx[]>([])
+
+  useEffect(() => {
+    if (!signingClient) {
+      return
+    }
+
+    signingClient
+      ?.searchTx({ sentFromOrTo: DAO_CONTRACT_ADDRESS })
+      .then((response) => {
+        setTxs(response as IndexedTx[])
+      })
+      .catch((error) => console.log(error))
+  }, [signingClient])
 
   return (
     <WalletLoader>
@@ -18,22 +38,14 @@ const Home: NextPage = () => {
         </h3>
       )}
 
-      <div className="mt-3 text-xl">
+      <div className="my-3 text-xl">
         Your wallet address is:{' '}
         <pre className="font-mono break-all whitespace-pre-wrap">
           {walletAddress}
         </pre>
       </div>
-
-      <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 max-w-full sm:w-full">
-        <Link href="/proposals" passHref>
-          <a className="p-6 mt-6 text-left border border-secondary hover:border-primary w-96 rounded-xl hover:text-primary focus:text-primary-focus">
-            <h3 className="text-2xl font-bold">DAO Proposals &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Create and vote on proposals for the DAO to execute.
-            </p>
-          </a>
-        </Link>
+      <div className="text-left w-full">
+        <Transfers txs={txs} />
       </div>
     </WalletLoader>
   )
