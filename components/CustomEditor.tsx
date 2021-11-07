@@ -8,6 +8,11 @@ import JSONInput from 'react-json-editor-ajrm'
 // @ts-ignore
 import locale from 'react-json-editor-ajrm/locale/en'
 
+type JSONError = {
+  line?: number,
+  reason?: string
+}
+
 export default function CustomEditor({
   dispatch,
   customMsg,
@@ -15,10 +20,9 @@ export default function CustomEditor({
   dispatch: (action: ProposalAction) => void
   customMsg: MessageMapEntry
 }) {
-  const [message, setMessage] = useState(JSON.stringify(customMsg.message))
-  const [error, setError] = useState(undefined)
+  const [error, setError] = useState<JSONError | undefined>(undefined)
 
-  function updateCustom() {
+  function updateCustom(message: any) {
     try {
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
@@ -28,12 +32,12 @@ export default function CustomEditor({
         action = {
           type: 'updateMessage',
           id,
-          message: JSON.parse(message),
+          message
         }
       } else {
         action = {
           type: 'addMessage',
-          message: JSON.parse(message),
+          message,
           messageType,
         }
       }
@@ -45,27 +49,39 @@ export default function CustomEditor({
 
   // Handles values from react-json-editor-ajrm
   function handleMessage(msg: any) {
+    console.dir(msg);
     if (!msg.error) {
-      setMessage(msg.json)
-      updateCustom()
+      updateCustom({custom: msg.jsObject})
       setError(undefined)
     } else {
       setError(msg.error)
     }
   }
 
+  let status = <div>JSON Syntax is good!</div>
+  if (error) {
+    status = <div>{`${error.reason}`}</div>
+  }
+  const style = {
+    warningBox: {
+      display: 'none'
+    }
+  }
   return (
     <div className="mt-4 border box-border rounded focus:input-primary">
+      {status}
       <JSONInput
         id={customMsg.id}
         locale={locale}
         height="100%"
         width="100%"
+        onChange={handleMessage}
         onBlur={handleMessage}
         onKeyPressUpdate="false"
-        placeholder={JSON.parse(message)}
+        confirmGood={false}
+        placeholder={customMsg.message}
         theme="light_mitsuketa_tribute"
-        error={error}
+        style={style}
       />
     </div>
   )
