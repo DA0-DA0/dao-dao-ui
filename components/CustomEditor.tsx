@@ -54,14 +54,10 @@ export default function CustomEditor({
     if (!msg.error) {
       setLastInputJson(msg.jsObject)
       setError(undefined)
+      updateCustom(msg.jsObject)
     } else {
       setError(msg.error)
     }
-  }
-
-  const handleSave = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault()
-    updateCustom(lastInputJson)
   }
 
   let errorMessage = ''
@@ -73,15 +69,6 @@ export default function CustomEditor({
   if (!lastInputJson || isEqual(lastInputJson, customMsg.message)) {
     saveDisabled = true
   }
-  let saveButton = (
-    <button
-      className={error ? 'btn btn-disabled' : 'btn'}
-      disabled={saveDisabled}
-      onClick={error ? () => {} : handleSave}
-    >
-      Save
-    </button>
-  )
   // Hide the default JSON editor warning UI
   const style = {
     warningBox: {
@@ -89,13 +76,14 @@ export default function CustomEditor({
     },
   }
   let status = (
-    <div className="flex content-center p-2">
-      <div>
-        {saveButton}
-      </div>
-      <div className={error ? 'flex-1 text-red-500 p-2' : 'flex-1'}>{errorMessage}</div>
+    <div
+      className={
+        error ? 'h-10 text-red-500 p-2' : 'flex h-10 text-green-500 p-2'
+      }
+    >
+      {errorMessage || 'JSON is valid'}
     </div>
-  )  
+  )
   return (
     <div className="mt-4 border box-border rounded focus:input-primary">
       {status}
@@ -104,7 +92,7 @@ export default function CustomEditor({
         locale={locale}
         height="100%"
         width="100%"
-        waitAfterKeyPress={2000}
+        waitAfterKeyPress={200}
         onChange={handleMessage}
         onBlur={handleMessage}
         reset={false}
