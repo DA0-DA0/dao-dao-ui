@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal'
 import {
   MessageMapEntry,
   ProposalMessageType,
@@ -9,7 +10,7 @@ import JSONInput from 'react-json-editor-ajrm'
 import locale from 'react-json-editor-ajrm/locale/en'
 
 type JSONError = {
-  line?: number,
+  line?: number
   reason?: string
 }
 
@@ -21,8 +22,9 @@ export default function CustomEditor({
   customMsg: MessageMapEntry
 }) {
   const [error, setError] = useState<JSONError | undefined>(undefined)
+  const [lastInputJson, setLastInputJson] = useState<any>(undefined)
 
-  function updateCustom(message: any) {
+  function updateCustom(message: { custom: any }) {
     try {
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
@@ -32,7 +34,7 @@ export default function CustomEditor({
         action = {
           type: 'updateMessage',
           id,
-          message
+          message,
         }
       } else {
         action = {
@@ -49,39 +51,67 @@ export default function CustomEditor({
 
   // Handles values from react-json-editor-ajrm
   function handleMessage(msg: any) {
-    console.dir(msg);
     if (!msg.error) {
-      updateCustom({custom: msg.jsObject})
+      setLastInputJson(msg.jsObject)
       setError(undefined)
     } else {
       setError(msg.error)
     }
   }
 
-  let status = <div>JSON Syntax is good!</div>
-  if (error) {
-    status = <div>{`${error.reason}`}</div>
+  const handleSave = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    updateCustom(lastInputJson)
   }
+
+  let errorMessage = ''
+  let saveDisabled = false
+  if (error) {
+    saveDisabled = true
+    errorMessage = `${error.reason} at line ${error.line}`
+  }
+  if (!lastInputJson || isEqual(lastInputJson, customMsg.message)) {
+    saveDisabled = true
+  }
+  let saveButton = (
+    <button
+      className={error ? 'btn btn-disabled' : 'btn'}
+      disabled={saveDisabled}
+      onClick={error ? () => {} : handleSave}
+    >
+      Save
+    </button>
+  )
+  // Hide the default JSON editor warning UI
   const style = {
     warningBox: {
-      display: 'none'
-    }
+      display: 'none',
+    },
   }
+  let status = (
+    <div className="flex content-center p-2">
+      <div>
+        {saveButton}
+      </div>
+      <div className={error ? 'flex-1 text-red-500 p-2' : 'flex-1'}>{errorMessage}</div>
+    </div>
+  )  
   return (
     <div className="mt-4 border box-border rounded focus:input-primary">
       {status}
       <JSONInput
-        id={customMsg.id}
+        id="json_editor"
         locale={locale}
         height="100%"
         width="100%"
+        waitAfterKeyPress={2000}
         onChange={handleMessage}
         onBlur={handleMessage}
-        onKeyPressUpdate="false"
+        reset={false}
         confirmGood={false}
-        placeholder={customMsg.message}
-        theme="light_mitsuketa_tribute"
         style={style}
+        placeholder={lastInputJson ? undefined : customMsg.message}
+        theme="light_mitsuketa_tribute"
       />
     </div>
   )
