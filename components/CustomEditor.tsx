@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal'
 import {
   MessageMapEntry,
   ProposalMessageType,
@@ -8,6 +9,11 @@ import JSONInput from 'react-json-editor-ajrm'
 // @ts-ignore
 import locale from 'react-json-editor-ajrm/locale/en'
 
+type JSONError = {
+  line?: number
+  reason?: string
+}
+
 export default function CustomEditor({
   dispatch,
   customMsg,
@@ -15,10 +21,10 @@ export default function CustomEditor({
   dispatch: (action: ProposalAction) => void
   customMsg: MessageMapEntry
 }) {
-  const [message, setMessage] = useState(JSON.stringify(customMsg.message))
-  const [error, setError] = useState(undefined)
+  const [error, setError] = useState<JSONError | undefined>(undefined)
+  const [lastInputJson, setLastInputJson] = useState<any>(undefined)
 
-  function updateCustom() {
+  function updateCustom(message: { custom: any }) {
     try {
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
@@ -28,12 +34,12 @@ export default function CustomEditor({
         action = {
           type: 'updateMessage',
           id,
-          message: JSON.parse(message),
+          message,
         }
       } else {
         action = {
           type: 'addMessage',
-          message: JSON.parse(message),
+          message,
           messageType,
         }
       }
@@ -46,26 +52,54 @@ export default function CustomEditor({
   // Handles values from react-json-editor-ajrm
   function handleMessage(msg: any) {
     if (!msg.error) {
-      setMessage(msg.json)
-      updateCustom()
+      setLastInputJson(msg.jsObject)
       setError(undefined)
+      updateCustom(msg.jsObject)
     } else {
       setError(msg.error)
     }
   }
 
+  let errorMessage = ''
+  let saveDisabled = false
+  if (error) {
+    saveDisabled = true
+    errorMessage = `${error.reason} at line ${error.line}`
+  }
+  if (!lastInputJson || isEqual(lastInputJson, customMsg.message)) {
+    saveDisabled = true
+  }
+  // Hide the default JSON editor warning UI
+  const style = {
+    warningBox: {
+      display: 'none',
+    },
+  }
+  let status = (
+    <div
+      className={
+        error ? 'h-10 text-red-500 p-2' : 'flex h-10 text-green-500 p-2'
+      }
+    >
+      {errorMessage || 'JSON is valid'}
+    </div>
+  )
   return (
     <div className="mt-4 border box-border rounded focus:input-primary">
+      {status}
       <JSONInput
-        id={customMsg.id}
+        id="json_editor"
         locale={locale}
         height="100%"
         width="100%"
+        waitAfterKeyPress={200}
+        onChange={handleMessage}
         onBlur={handleMessage}
-        onKeyPressUpdate="false"
-        placeholder={JSON.parse(message)}
+        reset={false}
+        confirmGood={false}
+        style={style}
+        placeholder={lastInputJson ? undefined : customMsg.message}
         theme="light_mitsuketa_tribute"
-        error={error}
       />
     </div>
   )
