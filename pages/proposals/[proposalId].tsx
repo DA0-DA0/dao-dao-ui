@@ -1,187 +1,37 @@
-import LineAlert from 'components/LineAlert'
 import WalletLoader from 'components/WalletLoader'
-import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { ProposalResponse, VoteInfo } from 'types/cw3'
-import { defaultExecuteFee } from 'util/fee'
-import Markdown from 'rich-markdown-editor'
+
+import LineAlert from 'components/LineAlert'
+import { useProposal } from 'hooks/proposals'
+import ProposalDetails from 'components/ProposalDetails'
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
-function VoteButtons({
-  onVoteYes = () => {},
-  onVoteNo = () => {},
-  onBack = (e: any) => {},
-  votes = [],
-  walletAddress = '',
-  status = '',
-}) {
-  const [vote]: VoteInfo[] = votes.filter(
-    (v: VoteInfo) => v.voter === walletAddress
-  )
-
-  if (vote) {
-    const variant =
-      vote.vote === 'yes' ? 'success' : vote.vote === 'no' ? 'error' : 'error'
-    const msg = `You voted ${vote.vote}`
-    return (
-      <>
-        <LineAlert className="mt-2" variant={variant} msg={msg} />
-        {status === 'open' && (
-          <button
-            className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white my-4"
-            onClick={onBack}
-          >
-            {'< Proposals'}
-          </button>
-        )}
-      </>
-    )
-  }
-  if (status !== 'open') {
-    return null
-  }
-  return (
-    <div className="flex justify-between content-center mt-2">
-      <button
-        className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white"
-        onClick={onBack}
-      >
-        {'< Proposals'}
-      </button>
-
-      <button
-        className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
-        onClick={onVoteYes}
-      >
-        Vote Yes
-      </button>
-      <button
-        className="box-border px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white"
-        onClick={onVoteNo}
-      >
-        Vote No
-      </button>
-    </div>
-  )
-}
 
 const Proposal: NextPage = () => {
   const router = useRouter()
   const proposalId = router.query.proposalId as string
 
-  const { walletAddress, signingClient } = useSigningClient()
-
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [proposal, setProposal] = useState<ProposalResponse | null>(null)
-  const [votes, setVotes] = useState([])
-  const [timestamp, setTimestamp] = useState(new Date())
-  const [transactionHash, setTransactionHash] = useState('')
+  const {
+    walletAddress,
+    loading,
+    error,
+    proposal,
+    votes,
+    transactionHash,
+    vote,
+    execute,
+    close,
+  } = useProposal(contractAddress, proposalId)
 
   const initialMessage: string | undefined = router.query.initialMessage as any
   const initialMessageStatus: 'success' | 'error' | undefined = router.query
     .initialMessageStatus as any
 
-  useEffect(() => {
-    if (walletAddress.length === 0 || !signingClient) {
-      return
-    }
-    setLoading(true)
-    Promise.all([
-      signingClient.queryContractSmart(contractAddress, {
-        proposal: { proposal_id: parseInt(proposalId) },
-      }),
-      signingClient.queryContractSmart(contractAddress, {
-        list_votes: { proposal_id: parseInt(proposalId) },
-      }),
-    ])
-      .then((values) => {
-        const [proposal, { votes }] = values
-        setProposal(proposal)
-        setVotes(votes)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setLoading(false)
-        setError(err.message)
-      })
-  }, [walletAddress, signingClient, proposalId, timestamp])
-
-  const handleVote = async (vote: string) => {
-    signingClient
-      ?.execute(
-        walletAddress,
-        contractAddress,
-        {
-          vote: { proposal_id: parseInt(proposalId), vote },
-        },
-        defaultExecuteFee
-      )
-      .then((response) => {
-        setTimestamp(new Date())
-        setTransactionHash(response.transactionHash)
-      })
-      .catch((err) => {
-        setLoading(false)
-        setError(err.message)
-      })
-  }
-
-  const handleExecute = async () => {
-    setError('')
-    signingClient
-      ?.execute(
-        walletAddress,
-        contractAddress,
-        {
-          execute: { proposal_id: parseInt(proposalId) },
-        },
-        defaultExecuteFee
-      )
-      .then((response) => {
-        setTimestamp(new Date())
-        setTransactionHash(response.transactionHash)
-      })
-      .catch((err) => {
-        setLoading(false)
-        setError(err.message)
-      })
-  }
-
-  const handleClose = async () => {
-    setError('')
-    signingClient
-      ?.execute(
-        walletAddress,
-        contractAddress,
-        {
-          close: { proposal_id: parseInt(proposalId) },
-        },
-        defaultExecuteFee
-      )
-      .then((response) => {
-        setTimestamp(new Date())
-        setTransactionHash(response.transactionHash)
-      })
-      .catch((err) => {
-        setLoading(false)
-        setError(err.message)
-      })
-  }
-
   const initialMessageComponent =
     initialMessage && initialMessageStatus ? (
       <LineAlert msg={initialMessage} variant={initialMessageStatus} />
     ) : null
-
-  let proposalMessageContent = proposal?.msgs?.length ? (
-    <code className="mb-12 break-all whitespace-pre">
-      {JSON.stringify(proposal.msgs, undefined, 2)}
-    </code>
-  ) : null
 
   return (
     <WalletLoader loading={loading}>
@@ -194,25 +44,13 @@ const Proposal: NextPage = () => {
             </div>
           ) : (
             <div className="container mx-auto w-96 lg:w-6/12 max-w-full text-left">
-              <h1 className="text-3xl font-bold mb-8">{proposal.title}</h1>
-              <Markdown
-                className="mb-8"
-                readOnly={true}
-                value={proposal.description}
-              />
-
-              {proposalMessageContent}
-
-              <VoteButtons
-                onVoteYes={handleVote.bind(null, 'yes')}
-                onVoteNo={handleVote.bind(null, 'no')}
-                onBack={(e) => {
-                  e.preventDefault()
-                  router.push(`/proposals`)
-                }}
-                votes={votes}
+              <ProposalDetails
+                proposal={proposal}
                 walletAddress={walletAddress}
-                status={proposal.status}
+                votes={votes}
+                vote={vote}
+                execute={execute}
+                close={close}
               />
 
               {error && (
@@ -225,36 +63,6 @@ const Proposal: NextPage = () => {
                     variant="success"
                     msg={`Success! Transaction Hash: ${transactionHash}`}
                   />
-                </div>
-              )}
-
-              {proposal.status !== 'open' && (
-                <div className="flex justify-between content-center my-8">
-                  <button
-                    className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      router.push(`/proposals`)
-                    }}
-                  >
-                    {'< Proposals'}
-                  </button>
-                  {proposal.status === 'passed' && proposal?.msgs?.length > 0 && (
-                    <button
-                      className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
-                      onClick={handleExecute}
-                    >
-                      Execute
-                    </button>
-                  )}
-                  {proposal.status === 'rejected' && (
-                    <button
-                      className="box-border px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white"
-                      onClick={handleClose}
-                    >
-                      Close
-                    </button>
-                  )}
                 </div>
               )}
             </div>

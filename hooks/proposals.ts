@@ -5,6 +5,7 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
+import { VoteInfo } from 'types/cw3'
 
 export function useProposals(contractAddress: string) {
   const { walletAddress, signingClient } = useSigningClient()
@@ -42,6 +43,115 @@ export function useProposals(contractAddress: string) {
     sign(signingClient)
   }, [walletAddress, signingClient, startBefore])
   return { proposals, hideLoadMore, loading, setStartBefore }
+}
+
+export function useProposal(contractAddress: string, proposalId: string) {
+  const { walletAddress, signingClient } = useSigningClient()
+  const [loading, setLoading] = useState(false)
+  const [votes, setVotes] = useState<VoteInfo[]>([])
+  const [proposal, setProposal] = useState<ProposalResponse | null>(null)
+  const [error, setError] = useState('')
+  const [timestamp, setTimestamp] = useState(new Date())
+  const [transactionHash, setTransactionHash] = useState('')
+
+  useEffect(() => {
+    if (walletAddress.length === 0 || !signingClient) {
+      return
+    }
+    setLoading(true)
+    Promise.all([
+      signingClient.queryContractSmart(contractAddress, {
+        proposal: { proposal_id: parseInt(proposalId) },
+      }),
+      signingClient.queryContractSmart(contractAddress, {
+        list_votes: { proposal_id: parseInt(proposalId) },
+      }),
+    ])
+      .then((values) => {
+        const [proposal, { votes }] = values
+        setProposal(proposal)
+        setVotes(votes)
+        setLoading(false)
+      })
+      .catch((err) => {
+        setLoading(false)
+        setError(err.message)
+      })
+  }, [walletAddress, signingClient, proposalId, timestamp])
+
+  const vote = async (vote: string) => {
+    signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          vote: { proposal_id: parseInt(proposalId), vote },
+        },
+        defaultExecuteFee
+      )
+      .then((response) => {
+        setTimestamp(new Date())
+        setTransactionHash(response.transactionHash)
+      })
+      .catch((err) => {
+        setLoading(false)
+        setError(err.message)
+      })
+  }
+
+  const execute = async () => {
+    setError('')
+    signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          execute: { proposal_id: parseInt(proposalId) },
+        },
+        defaultExecuteFee
+      )
+      .then((response) => {
+        setTimestamp(new Date())
+        setTransactionHash(response.transactionHash)
+      })
+      .catch((err) => {
+        setLoading(false)
+        setError(err.message)
+      })
+  }
+
+  const close = async () => {
+    setError('')
+    signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          close: { proposal_id: parseInt(proposalId) },
+        },
+        defaultExecuteFee
+      )
+      .then((response) => {
+        setTimestamp(new Date())
+        setTransactionHash(response.transactionHash)
+      })
+      .catch((err) => {
+        setLoading(false)
+        setError(err.message)
+      })
+  }
+
+  return {
+    walletAddress,
+    loading,
+    error,
+    proposal,
+    votes,
+    transactionHash,
+    vote,
+    execute,
+    close,
+  }
 }
 
 export function useCreateProposal(contractAddress: string) {
