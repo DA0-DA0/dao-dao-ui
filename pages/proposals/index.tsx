@@ -1,50 +1,15 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import WalletLoader from 'components/WalletLoader'
-import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { ProposalListResponse, ProposalResponse, Timestamp } from 'types/cw3'
+import { useProposals } from 'hooks/proposals'
 import ProposalList from 'components/ProposalList'
 
 const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 
 const Home: NextPage = () => {
   const router = useRouter()
-  const { walletAddress, signingClient } = useSigningClient()
-  const [proposals, setProposals] = useState<ProposalResponse[]>([])
-  const [hideLoadMore, setHideLoadMore] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [startBefore, setStartBefore] = useState<number | null>(null)
-
-  useEffect(() => {
-    if (walletAddress.length === 0 || !signingClient) {
-      setProposals([])
-      setHideLoadMore(false)
-      return
-    }
-
-    setLoading(true)
-    async function sign(signingClient: SigningCosmWasmClient) {
-      try {
-        const response: ProposalListResponse =
-          await signingClient.queryContractSmart(contractAddress, {
-            reverse_proposals: {
-              ...(startBefore && { start_before: startBefore }),
-              limit: 10,
-            },
-          })
-        setLoading(false)
-        if (response.proposals.length < 10) {
-          setHideLoadMore(true)
-        }
-        setProposals((p) => p.concat(response.proposals))
-      } catch (err) {
-        setLoading(false)
-      }
-    }
-    sign(signingClient)
-  }, [walletAddress, signingClient, startBefore])
+  const { proposals, hideLoadMore, loading, setStartBefore } =
+    useProposals(contractAddress)
 
   return (
     <WalletLoader loading={!proposals || (proposals.length === 0 && loading)}>
