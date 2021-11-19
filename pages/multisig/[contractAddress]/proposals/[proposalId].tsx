@@ -6,11 +6,10 @@ import LineAlert from 'components/LineAlert'
 import { useProposal } from 'hooks/proposals'
 import ProposalDetails from 'components/ProposalDetails'
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
 const Proposal: NextPage = () => {
   const router = useRouter()
   const proposalId = router.query.proposalId as string
+  const contractAddress = router.query.contractAddress as string
 
   const {
     walletAddress,
@@ -24,22 +23,12 @@ const Proposal: NextPage = () => {
     close,
   } = useProposal(contractAddress, proposalId)
 
-  const initialMessage: string | undefined = router.query.initialMessage as any
-  const initialMessageStatus: 'success' | 'error' | undefined = router.query
-    .initialMessageStatus as any
-
-  const initialMessageComponent =
-    initialMessage && initialMessageStatus ? (
-      <LineAlert msg={initialMessage} variant={initialMessageStatus} />
-    ) : null
-
   return (
     <WalletLoader loading={loading}>
       <div className="flex flex-col w-full">
-        <div className="grid bg-base-100 place-items-center">
-          {initialMessageComponent}
+        <div className="grid bg-base-100 place-items-center mt-8">
           {!proposal ? (
-            <div className="text-center m-8">
+            <div className="text-center mb-8">
               No proposal with that ID found.
             </div>
           ) : (
@@ -54,7 +43,6 @@ const Proposal: NextPage = () => {
               >
                 {'< Back'}
               </button>
-
               <ProposalDetails
                 proposal={proposal}
                 walletAddress={walletAddress}

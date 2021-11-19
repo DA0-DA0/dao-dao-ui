@@ -34,25 +34,12 @@ function ProposalDetails({
       <VoteButtons
         onVoteYes={vote.bind(null, 'yes')}
         onVoteNo={vote.bind(null, 'no')}
-        onBack={(e) => {
-          e.preventDefault()
-          router.push(`/proposals`)
-        }}
         votes={votes}
         walletAddress={walletAddress}
         status={proposal.status}
       />
       {proposal.status !== 'open' && (
-        <div className="flex justify-between content-center my-8">
-          <button
-            className="box-border px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white"
-            onClick={(e) => {
-              e.preventDefault()
-              router.push(`/proposals`)
-            }}
-          >
-            {'< Proposals'}
-          </button>
+        <div className="flex justify-between items-center content-center my-8">
           {proposal.status === 'passed' && proposal?.msgs?.length > 0 && (
             <button
               className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"

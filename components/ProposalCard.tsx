@@ -91,7 +91,7 @@ export default function ProposalCard({
   // const expiresAtDateTime = new Date(expires_at / 1000000).toLocaleString()
 
   return (
-    <Link href={`/proposals/${id}`}>
+    <Link href={`${window.location.pathname}/${id}`}>
       <a>
         <div className={`card shadow-lg mb-4`}>
           <div className="card-body py-4 px-8">
