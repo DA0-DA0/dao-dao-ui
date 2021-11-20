@@ -18,6 +18,7 @@ function ProposalList({
 }) {
   return (
     <div className="w-96 lg:w-6/12 max-w-full">
+      <div>I am in the system ui font maybe</div>
       {proposals?.length === 0 && (
         <div className="text-center">
           No proposals found, please create a proposal.
