@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import WalletLoader from 'components/WalletLoader'
 import Transfers from 'components/Transfers'
 import TokenBalances from 'components/TokenBalances'
@@ -8,12 +9,13 @@ import {
   useTransactions,
 } from 'hooks/treasury'
 
-const DAO_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
 const Home: NextPage = () => {
-  const { nativeBalances } = useNativeBalances(DAO_CONTRACT_ADDRESS)
-  const cw20 = useCw20Balances(DAO_CONTRACT_ADDRESS)
-  const { txs } = useTransactions(DAO_CONTRACT_ADDRESS)
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
+
+  const { nativeBalances } = useNativeBalances(contractAddress)
+  const cw20 = useCw20Balances(contractAddress)
+  const { txs } = useTransactions(contractAddress)
 
   return (
     <WalletLoader>

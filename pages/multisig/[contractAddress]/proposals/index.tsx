@@ -1,24 +1,29 @@
-import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
+import WalletLoader from 'components/WalletLoader'
 import { useRouter } from 'next/router'
 import { useProposals } from 'hooks/proposals'
 import ProposalList from 'components/ProposalList'
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
 const Home: NextPage = () => {
   const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
   const { proposals, hideLoadMore, loading, setStartBefore } =
     useProposals(contractAddress)
 
   return (
-    <WalletLoader loading={!proposals || (proposals.length === 0 && loading)}>
+    <WalletLoader loading={proposals.length === 0 && loading}>
       <div className="flex flex-col w-96 lg:w-6/12 max-w-full px-2 py-4">
         <div className="flex flex-row justify-between items-center mb-4">
           <h1 className="text-lg font-bold sm:text-3xl">Proposals</h1>
           <button
             className="btn btn-primary btn-sm text-lg"
-            onClick={() => router.push(`/proposals/create`)}
+            onClick={() =>
+              router.push(
+                `/multisig/${encodeURIComponent(
+                  contractAddress
+                )}/proposals/create`
+              )
+            }
           >
             + Create
           </button>
@@ -35,6 +40,7 @@ const Home: NextPage = () => {
           }
         }}
       />
+
       <div></div>
     </WalletLoader>
   )
