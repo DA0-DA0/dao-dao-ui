@@ -1,7 +1,7 @@
-import { themeChange } from 'theme-change'
+import { MoonIcon, SunIcon } from '@heroicons/react/outline'
 import { useEffect } from 'react'
 import daisyuiThemes from 'styles/daisyui-themes.json'
-import { MoonIcon, SunIcon } from '@heroicons/react/outline'
+import { themeChange } from 'theme-change'
 import { useThemeContext } from '../contexts/theme'
 
 const themes = Object.keys(daisyuiThemes) || ['']
@@ -12,9 +12,6 @@ function ThemeToggle() {
 
   useEffect(() => {
     themeChange(false)
-    // themeContext.updateTheme(
-    //   document.documentElement.getAttribute('data-theme') || defaultTheme
-    // )
   })
 
   const updatedTheme =
@@ -29,7 +26,6 @@ function ThemeToggle() {
         <input
           type="checkbox"
           className="toggle toggle-secondary mx-1"
-          // data-toggle-theme={themes.join(',')}
           data-act-class="active"
           data-set-theme={updatedTheme}
           checked={themeContext.theme !== themes[0]}
