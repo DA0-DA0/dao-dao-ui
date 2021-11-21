@@ -1,4 +1,5 @@
 import { FormEvent, FormEventHandler, useReducer, useState } from 'react'
+import Editor from 'rich-markdown-editor'
 import { CosmosMsgFor_Empty_1 } from 'types/cw3'
 import { isValidAddress } from 'util/isValidAddress'
 import { ProposalMessageType } from '../models/proposal/messageMap'
@@ -10,10 +11,8 @@ import {
 } from '../models/proposal/proposalActions'
 import { ProposalReducer } from '../models/proposal/proposalReducer'
 import {
-  getActiveMessageId,
-  getMessage,
-  proposalMessages,
   messageForProposal,
+  proposalMessages,
 } from '../models/proposal/proposalSelectors'
 import { labelForMessage, makeSpendMessage } from '../util/messagehelpers'
 import CustomEditor from './CustomEditor'
@@ -21,7 +20,7 @@ import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import Editor from 'rich-markdown-editor'
+import { useThemeContext } from '../contexts/theme'
 
 export default function ProposalEditor({
   initialProposal,
@@ -43,6 +42,7 @@ export default function ProposalEditor({
   })
   const [editProposalJson, setEditProposalJson] = useState(false)
   const [value, setValue] = useState('')
+  const themeContext = useThemeContext()
 
   const messageActions = [
     {
@@ -247,6 +247,7 @@ export default function ProposalEditor({
                 onChange={handleDescriptionChange}
                 readOnly={complete}
                 value={proposal.description}
+                dark={themeContext.theme === 'junoDark'}
               />
               <label htmlFor="message-list" className="block mt-4 text-xl">
                 Messages

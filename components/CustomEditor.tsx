@@ -8,10 +8,17 @@ import React, { useState } from 'react'
 import JSONInput from 'react-json-editor-ajrm'
 // @ts-ignore
 import locale from 'react-json-editor-ajrm/locale/en'
+import { useThemeContext } from '../contexts/theme'
 
 type JSONError = {
   line?: number
   reason?: string
+}
+
+function getEditorTheme(appTheme: string): string {
+  return appTheme === 'junoDark'
+    ? 'dark_vscode_tribute'
+    : 'light_mitsuketa_tribute'
 }
 
 export default function CustomEditor({
@@ -23,6 +30,7 @@ export default function CustomEditor({
 }) {
   const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
+  const themeContext = useThemeContext()
 
   function updateCustom(message: { custom: any }) {
     try {
@@ -74,6 +82,10 @@ export default function CustomEditor({
     warningBox: {
       display: 'none',
     },
+    body: {
+      fontFamily: 'JetBrainsMono',
+      fontSize: '14px',
+    },
   }
   let status = (
     <div
@@ -84,6 +96,7 @@ export default function CustomEditor({
       {errorMessage || 'JSON is valid'}
     </div>
   )
+
   return (
     <div className="mt-4 border box-border rounded focus:input-primary">
       {status}
@@ -99,7 +112,7 @@ export default function CustomEditor({
         confirmGood={false}
         style={style}
         placeholder={lastInputJson ? undefined : customMsg.message}
-        theme="light_mitsuketa_tribute"
+        theme={getEditorTheme(themeContext.theme)}
       />
     </div>
   )

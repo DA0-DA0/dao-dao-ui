@@ -1,19 +1,21 @@
-import { themeChange } from 'theme-change'
-import { useEffect, useState } from 'react'
-import daisyuiThemes from 'styles/daisyui-themes.json'
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
+import { useEffect } from 'react'
+import daisyuiThemes from 'styles/daisyui-themes.json'
+import { themeChange } from 'theme-change'
+import { useThemeContext } from '../contexts/theme'
 
 const themes = Object.keys(daisyuiThemes) || ['']
 export const defaultTheme = themes[0]
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState(defaultTheme)
+  const themeContext = useThemeContext()
+
   useEffect(() => {
     themeChange(false)
-    setTheme(
-      document.documentElement.getAttribute('data-theme') || defaultTheme
-    )
-  }, [])
+  })
+
+  const updatedTheme =
+    themeContext.theme !== defaultTheme ? defaultTheme : themes[1]
 
   return (
     <div className="form-control lg:mr-4 md:ml-auto">
@@ -24,12 +26,12 @@ function ThemeToggle() {
         <input
           type="checkbox"
           className="toggle toggle-secondary mx-1"
-          data-toggle-theme={themes.join(',')}
           data-act-class="active"
-          checked={theme !== themes[0]}
-          onClick={() =>
-            setTheme(theme !== defaultTheme ? defaultTheme : themes[1])
-          }
+          data-set-theme={updatedTheme}
+          checked={themeContext.theme !== themes[0]}
+          onClick={() => {
+            themeContext.updateTheme(updatedTheme)
+          }}
           readOnly
         />
         <span className="label-text">
