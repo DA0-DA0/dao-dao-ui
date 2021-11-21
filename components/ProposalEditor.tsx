@@ -1,27 +1,26 @@
 import { FormEvent, FormEventHandler, useReducer, useState } from 'react'
-import Editor from 'rich-markdown-editor'
-import { CosmosMsgFor_Empty_1 } from 'types/cw3'
-import { isValidAddress } from 'util/isValidAddress'
-import { ProposalMessageType } from '../models/proposal/messageMap'
-import { EmptyProposal, Proposal } from '../models/proposal/proposal'
+import { useThemeContext } from 'contexts/theme'
+import { ProposalMessageType } from 'models/proposal/messageMap'
+import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
   ProposalAction,
   ProposalRemoveMessage,
   ProposalUpdateFromMessage,
-} from '../models/proposal/proposalActions'
-import { ProposalReducer } from '../models/proposal/proposalReducer'
+} from 'models/proposal/proposalActions'
+import { ProposalReducer } from 'models/proposal/proposalReducer'
 import {
   messageForProposal,
   proposalMessages,
-} from '../models/proposal/proposalSelectors'
-import { labelForMessage, makeSpendMessage } from '../util/messagehelpers'
+} from 'models/proposal/proposalSelectors'
+import Editor from 'rich-markdown-editor'
+import { CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { isValidAddress } from 'util/isValidAddress'
+import { labelForMessage, makeSpendMessage } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import { useThemeContext } from 'contexts/theme'
-import { dark, light } from 'rich-markdown-editor/dist/styles/theme'
 
 export default function ProposalEditor({
   initialProposal,
@@ -247,7 +246,6 @@ export default function ProposalEditor({
                 onBlur={handleDescriptionBlur}
                 onChange={handleDescriptionChange}
                 readOnly={complete}
-                theme={themeContext.theme === 'junoLight' ? light : dark}
                 value={proposal.description}
                 dark={themeContext.theme === 'junoDark'}
               />
