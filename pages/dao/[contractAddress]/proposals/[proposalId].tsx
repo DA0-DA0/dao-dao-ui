@@ -22,7 +22,7 @@ const Proposal: NextPage = () => {
     vote,
     execute,
     close,
-  } = useProposal(contractAddress, proposalId)
+  } = useProposal(contractAddress as string, proposalId)
 
   const initialMessage: string | undefined = router.query.initialMessage as any
   const initialMessageStatus: 'success' | 'error' | undefined = router.query

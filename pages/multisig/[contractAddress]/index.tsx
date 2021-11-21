@@ -14,10 +14,10 @@ const Home: NextPage = () => {
   const [label, setLabel] = useState('')
 
   useEffect(() => {
-    signingClient?.getContract(contractAddress).then((response) => {
+    signingClient?.getContract(contractAddress as string).then((response) => {
       setLabel(response.label)
     })
-  }, [signingClient])
+  }, [signingClient, contractAddress])
 
   return (
     <WalletLoader>

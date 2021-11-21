@@ -27,7 +27,7 @@ const ProposalCreate: NextPage = () => {
     try {
       const response = await signingClient?.execute(
         walletAddress,
-        contractAddress,
+        contractAddress as string,
         { propose },
         defaultExecuteFee,
         memo
@@ -71,7 +71,7 @@ const ProposalCreate: NextPage = () => {
       onProposal={handleProposal}
       error={error}
       loading={loading}
-      contractAddress={contractAddress}
+      contractAddress={contractAddress as string}
       recipientAddress={walletAddress}
     />
   )

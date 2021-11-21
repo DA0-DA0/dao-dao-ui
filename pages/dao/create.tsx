@@ -278,7 +278,12 @@ const CreateDao: NextPage = () => {
             <div className="form-control">
               <label className="cursor-pointer label">
                 <span className="label-text">Refund Proposal Deposits</span>
-                <input type="checkbox" checked="checked" className="toggle" />
+                <input
+                  type="checkbox"
+                  checked={refund}
+                  className="toggle"
+                  onChange={(e) => setRefund(e.target.value === 'true')}
+                />
               </label>
             </div>
           </div>

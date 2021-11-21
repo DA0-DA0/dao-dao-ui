@@ -7,8 +7,9 @@ import ProposalList from 'components/ProposalList'
 const Home: NextPage = () => {
   const router = useRouter()
   let { contractAddress } = router.query
-  const { proposals, hideLoadMore, loading, setStartBefore } =
-    useProposals(contractAddress)
+  const { proposals, hideLoadMore, loading, setStartBefore } = useProposals(
+    contractAddress as string
+  )
 
   return (
     <WalletLoader loading={!proposals || (proposals.length === 0 && loading)}>
@@ -27,7 +28,7 @@ const Home: NextPage = () => {
       </div>
       <ProposalList
         proposals={proposals}
-        contractAddress={contractAddress}
+        contractAddress={contractAddress as string}
         hideLoadMore={hideLoadMore}
         onLoadMore={() => {
           const proposal = proposals && proposals[proposals.length - 1]

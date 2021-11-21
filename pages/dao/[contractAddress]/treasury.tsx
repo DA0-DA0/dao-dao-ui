@@ -13,9 +13,9 @@ const Treasury: NextPage = () => {
   let router = useRouter()
   let { contractAddress } = router.query
 
-  const { nativeBalances } = useNativeBalances(contractAddress)
-  const cw20 = useCw20Balances(contractAddress)
-  const { txs } = useTransactions(contractAddress)
+  const { nativeBalances } = useNativeBalances(contractAddress as string)
+  const cw20 = useCw20Balances(contractAddress as string)
+  const { txs } = useTransactions(contractAddress as string)
 
   return (
     <WalletLoader>

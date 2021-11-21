@@ -6,7 +6,17 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-const DaoListComponent: FunctionComponent = ({
+const DAO_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_DAO_CONTRACT_CODE_ID as string
+)
+
+interface DaoListType {
+  address: string
+  name: string
+  description: string
+}
+
+const DaoListComponent: FunctionComponent<DaoListType> = ({
   address,
   name,
   description,
@@ -27,28 +37,31 @@ const DaoListComponent: FunctionComponent = ({
 }
 
 const DaoList: NextPage = () => {
-  let [daos, setDaos] = useState([])
+  let [daos, setDaos] = useState<Array<DaoListType>>([])
   let { signingClient } = useSigningClient()
 
   // Get list of DAO info
   useEffect(() => {
     let getDaos = async () => {
-      let daoList = []
-      for (let address of process.env.NEXT_PUBLIC_DAO_LIST?.split(',')) {
-        let daoInfo = await signingClient?.queryContractSmart(address, {
-          get_config: {},
-        })
-        if (daoInfo?.config) {
-          let config = {
-            ...daoInfo.config,
-            address,
-          }
-          daoList.push(config)
-        }
-      }
+      let contracts = await signingClient?.getContracts(DAO_CODE_ID)
 
-      console.log(daoList)
-      setDaos(daoList)
+      let daoList = []
+      if (contracts) {
+        for (let address of contracts) {
+          let daoInfo = await signingClient?.queryContractSmart(address, {
+            get_config: {},
+          })
+          if (daoInfo?.config) {
+            let config = {
+              ...daoInfo.config,
+              address,
+            }
+            daoList.push(config)
+          }
+        }
+
+        setDaos(daoList)
+      }
     }
     getDaos()
   }, [])
