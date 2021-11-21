@@ -48,7 +48,7 @@ export const useSigningCosmWasmClient = (): ISigningCosmWasmClientContext => {
       setWalletAddress(address)
 
       setLoading(false)
-      successNotify('Successfully connected your wallet!')
+      successNotify('Successfully connected')
     } catch (error) {
       setError(error as any)
     }

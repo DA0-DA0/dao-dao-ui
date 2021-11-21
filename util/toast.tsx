@@ -1,11 +1,11 @@
 import toast from 'react-hot-toast'
 
-export const successNotify = (message) => {
+export const successNotify = (message: string) => {
   const toastMessage = message || 'Success!'
   toast.success(toastMessage)
 }
 
-export const errorNotify = (message) => {
+export const errorNotify = (message: string) => {
   const toastMessage = message || 'An error occurred'
   toast.error(toastMessage)
 }
@@ -15,12 +15,12 @@ export const successOptions = {
     border: 'none',
     padding: '16px',
     color: '#06090B',
-    background: '#CFF1EE'
+    background: '#CFF1EE',
   },
   iconTheme: {
     primary: '#53D0C9',
-    secondary: '#CFF1EE'
-  }
+    secondary: '#CFF1EE',
+  },
 }
 
 export const errorOptions = {
@@ -28,10 +28,10 @@ export const errorOptions = {
     border: 'none',
     padding: '16px',
     color: '#06090B',
-    background: '#FBCCD6'
+    background: '#FBCCD6',
   },
   iconTheme: {
     primary: '#ED5276',
-    secondary: '#FBCCD6'
-  }
+    secondary: '#FBCCD6',
+  },
 }

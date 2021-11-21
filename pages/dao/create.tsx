@@ -7,7 +7,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { CW20_CODE_ID, DAO_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-import { errorNotify } from 'util/toast'
+import { errorNotify, successNotify } from 'util/toast'
 
 function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
   return (
@@ -115,6 +115,8 @@ const CreateDao: NextPage = () => {
         if (response.contractAddress.length > 0) {
           router.push(`/dao/${encodeURIComponent(response.contractAddress)}`)
         }
+
+        successNotify('Successfully added')
       })
       .catch((err: any) => {
         setLoading(false)

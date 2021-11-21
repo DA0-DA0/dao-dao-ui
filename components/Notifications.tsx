@@ -5,7 +5,7 @@ const Notifications = () => (
   <Toaster
     toastOptions={{
       success: successOptions,
-      error: errorOptions
+      error: errorOptions,
     }}
   />
 )
