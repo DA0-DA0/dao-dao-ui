@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ThemeToggle from 'components/ThemeToggle'
 import NavContractLabel from 'components/NavContractLabel'
+import Logo from 'components/Logo'
 
 function Nav() {
   const { walletAddress, connectWallet, disconnect } = useSigningClient()
@@ -24,8 +25,7 @@ function Nav() {
           <Link href="/">
             <a>
               {PUBLIC_SITE_ICON_URL.length > 0 ? (
-                <Image
-                  src={PUBLIC_SITE_ICON_URL}
+                <Logo
                   height={32}
                   width={32}
                   alt={`${PUBLIC_SITE_TITLE} Logo`}

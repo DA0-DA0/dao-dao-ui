@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  --logo-fill: #06090B;
+}
+
+html[data-theme=junoDark] {
+  --logo-fill: #fff;
+}
