@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { useSigningClient } from 'contexts/cosmwasm'
-
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 function ContractLabel() {
+  let router = useRouter()
+  let contractAddress = router.query.contractAddress as string
   const { signingClient } = useSigningClient()
   const [label, setLabel] = useState('')
 
@@ -17,7 +18,7 @@ function ContractLabel() {
     signingClient.getContract(contractAddress).then((response) => {
       setLabel(response.label)
     })
-  }, [signingClient])
+  }, [signingClient, contractAddress])
 
   if (label.length === 0) {
     return null

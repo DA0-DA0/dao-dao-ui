@@ -50,13 +50,6 @@ In the frontend repo, setup up your local environment
 cp .env.example .env.local
 ```
 
-Add the addresses from earlier.
-
-```bash
-NEXT_PUBLIC_DAO_CONTRACT_ADDRESS=wasm1nc5tatafv6eyq7llkr2gv50ff9e22mnfhap4vz
-NEXT_PUBLIC_DAO_TOKEN_ADDRESS=wasm14hj2tavq8fpesdwxxcu44rty3hh90vhujgqwg3
-```
-
 Then, run the development server:
 
 ```bash

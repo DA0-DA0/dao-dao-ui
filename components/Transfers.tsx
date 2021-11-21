@@ -14,11 +14,14 @@ interface TxEvent {
   attributes: TxEventAttribute[]
 }
 
-const DAO_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
-function TransferRow({ tx }: { tx: IndexedTx }) {
+function TransferRow({
+  contract_address,
+  tx,
+}: {
+  contract_address: string
+  tx: IndexedTx
+}) {
   const [{ events }] = JSON.parse(tx.rawLog)
-  console.log('events', events)
 
   const [transfer] = events.filter((event: TxEvent) => event.type == 'transfer')
 
@@ -33,7 +36,7 @@ function TransferRow({ tx }: { tx: IndexedTx }) {
     })
   )
 
-  const isSender = sender == DAO_CONTRACT_ADDRESS
+  const isSender = sender == contract_address
 
   const address = isSender ? recipient : sender
   const sign = isSender ? '-' : '+'
@@ -47,7 +50,6 @@ function TransferRow({ tx }: { tx: IndexedTx }) {
   )} ${convertFromMicroDenom(udenom)}`
 
   // TODO(@ebaker): add link to block explorer
-
   return (
     <tr className="hover">
       <td>{tx.height}</td>
@@ -60,7 +62,13 @@ function TransferRow({ tx }: { tx: IndexedTx }) {
   )
 }
 
-function Transfers({ txs }: { txs: IndexedTx[] }) {
+function Transfers({
+  contract_address,
+  txs,
+}: {
+  contract_address: string
+  txs: IndexedTx[]
+}) {
   return (
     <>
       <h3 className="text-2xl mb-2">Transfers</h3>
@@ -76,7 +84,11 @@ function Transfers({ txs }: { txs: IndexedTx[] }) {
           </thead>
           <tbody>
             {txs.map((tx: IndexedTx) => (
-              <TransferRow key={tx.hash} tx={tx} />
+              <TransferRow
+                key={tx.hash}
+                tx={tx}
+                contract_address={contract_address}
+              />
             ))}
           </tbody>
         </table>
