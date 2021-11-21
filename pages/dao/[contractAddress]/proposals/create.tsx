@@ -9,10 +9,9 @@ import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
 const ProposalCreate: NextPage = () => {
-  const router = useRouter()
+  let router = useRouter()
+  let { contractAddress } = router.query
 
   const { walletAddress, signingClient } = useSigningClient()
   const [transactionHash, setTransactionHash] = useState('')
@@ -45,7 +44,7 @@ const ProposalCreate: NextPage = () => {
         const initialMessage = `Saved Proposal "${proposal.title}"`
         const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
 
-        router.push(`/proposals/${value}?${paramStr}`)
+        router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
       }
     } catch (e: any) {
       console.error(
@@ -62,7 +61,9 @@ const ProposalCreate: NextPage = () => {
 
   const content = proposalID ? (
     <div>
-      <a href={`/proposals/${proposalID}`}>{`${proposalID} saved`}</a>
+      <a
+        href={`/dao/${contractAddress}/proposals/${proposalID}`}
+      >{`${proposalID} saved`}</a>
       <LineAlert className="mt-2" variant="success" msg="Proposal Saved" />
     </div>
   ) : (

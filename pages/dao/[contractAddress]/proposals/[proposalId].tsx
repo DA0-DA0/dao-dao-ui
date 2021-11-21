@@ -6,10 +6,10 @@ import LineAlert from 'components/LineAlert'
 import { useProposal } from 'hooks/proposals'
 import ProposalDetails from 'components/ProposalDetails'
 
-const contractAddress = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
-
 const Proposal: NextPage = () => {
-  const router = useRouter()
+  let router = useRouter()
+  let { contractAddress } = router.query
+
   const proposalId = router.query.proposalId as string
 
   const {
@@ -49,7 +49,7 @@ const Proposal: NextPage = () => {
                 style={{ marginLeft: '-100px' }}
                 onClick={(e) => {
                   e.preventDefault()
-                  router.push(`/multisig/${contractAddress}/proposals`)
+                  router.push(`/dao/${contractAddress}/proposals`)
                 }}
               >
                 {'< Back'}

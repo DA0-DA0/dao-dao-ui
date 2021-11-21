@@ -157,7 +157,7 @@ const CreateMultisig: NextPage = () => {
               <tr>
                 <td colSpan={2} className="text-right">
                   <button
-                    className="btn btn-outline btn-primary btn-md text-md rounded-full"
+                    className="btn btn-outline btn-primary btn-md text-md"
                     onClick={(e) => {
                       e.preventDefault()
                       setCount(count + 1)
@@ -219,7 +219,7 @@ const CreateMultisig: NextPage = () => {
           </table>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl rounded-full w-full ${
+              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
                 loading ? 'loading' : ''
               }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
@@ -240,7 +240,7 @@ const CreateMultisig: NextPage = () => {
               className="mt-4 box-border px-4 py-2 btn btn-primary"
               onClick={(e) => {
                 e.preventDefault()
-                router.push(`/${encodeURIComponent(contractAddress)}`)
+                router.push(`/multisig/${encodeURIComponent(contractAddress)}`)
               }}
             >
               View Multisig &#8599;
