@@ -6,10 +6,7 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-
-const MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_FIXED_MULTISIG_CODE_ID as string
-)
+import { MULTISIG_CODE_ID } from 'util/constants'
 
 interface MultisigListType {
   address: String

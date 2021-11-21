@@ -4,12 +4,11 @@ import { useRouter } from 'next/router'
 import { useProposals } from 'hooks/proposals'
 import ProposalList from 'components/ProposalList'
 
-const Home: NextPage = () => {
+const DaoProposals: NextPage = () => {
   const router = useRouter()
-  let { contractAddress } = router.query
-  const { proposals, hideLoadMore, loading, setStartBefore } = useProposals(
-    contractAddress as string
-  )
+  let contractAddress = router.query.contractAddress as string
+  const { proposals, hideLoadMore, loading, setStartBefore } =
+    useProposals(contractAddress)
 
   return (
     <WalletLoader loading={!proposals || (proposals.length === 0 && loading)}>
@@ -28,7 +27,7 @@ const Home: NextPage = () => {
       </div>
       <ProposalList
         proposals={proposals}
-        contractAddress={contractAddress as string}
+        contractAddress={contractAddress}
         hideLoadMore={hideLoadMore}
         onLoadMore={() => {
           const proposal = proposals && proposals[proposals.length - 1]
@@ -42,4 +41,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default DaoProposals

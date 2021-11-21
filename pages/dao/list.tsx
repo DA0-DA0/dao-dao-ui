@@ -5,10 +5,7 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-
-const DAO_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_DAO_CONTRACT_CODE_ID as string
-)
+import { DAO_CODE_ID } from 'util/constants'
 
 interface DaoListType {
   address: string

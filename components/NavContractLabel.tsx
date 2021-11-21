@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 function ContractLabel() {
-  let router = useRouter()
-  let contractAddress = router.query.contractAddress as string
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
   const { signingClient } = useSigningClient()
   const [label, setLabel] = useState('')
 

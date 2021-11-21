@@ -10,8 +10,8 @@ import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
 
 const ProposalCreate: NextPage = () => {
-  let router = useRouter()
-  let { contractAddress } = router.query
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
 
   const { walletAddress, signingClient } = useSigningClient()
   const [transactionHash, setTransactionHash] = useState('')
@@ -27,7 +27,7 @@ const ProposalCreate: NextPage = () => {
     try {
       const response = await signingClient?.execute(
         walletAddress,
-        contractAddress as string,
+        contractAddress,
         { propose },
         defaultExecuteFee,
         memo
@@ -57,8 +57,6 @@ const ProposalCreate: NextPage = () => {
     }
   }
 
-  const complete = transactionHash.length > 0
-
   const content = proposalID ? (
     <div>
       <a
@@ -71,7 +69,7 @@ const ProposalCreate: NextPage = () => {
       onProposal={handleProposal}
       error={error}
       loading={loading}
-      contractAddress={contractAddress as string}
+      contractAddress={contractAddress}
       recipientAddress={walletAddress}
     />
   )

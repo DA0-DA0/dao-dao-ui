@@ -16,17 +16,14 @@ const DaoHome: NextPage = () => {
   let { signingClient } = useSigningClient()
   let [daoInfo, setDaoInfo] = useState<DaoListType | null>()
 
-  let router = useRouter()
-  let { contractAddress } = router.query
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
 
   useEffect(() => {
     let getDaoInfo = async () => {
-      let dao = await signingClient?.queryContractSmart(
-        contractAddress as string,
-        {
-          get_config: {},
-        }
-      )
+      let dao = await signingClient?.queryContractSmart(contractAddress, {
+        get_config: {},
+      })
       if (dao?.config) setDaoInfo(dao.config)
     }
     getDaoInfo()

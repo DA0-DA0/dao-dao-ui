@@ -7,14 +7,14 @@ import { useRouter } from 'next/router'
 import WalletLoader from 'components/WalletLoader'
 
 const Home: NextPage = () => {
-  let router = useRouter()
-  let { contractAddress } = router.query
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
 
   const { signingClient } = useSigningClient()
   const [label, setLabel] = useState('')
 
   useEffect(() => {
-    signingClient?.getContract(contractAddress as string).then((response) => {
+    signingClient?.getContract(contractAddress).then((response) => {
       setLabel(response.label)
     })
   }, [signingClient, contractAddress])

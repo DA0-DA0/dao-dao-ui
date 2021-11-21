@@ -7,10 +7,8 @@ import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg, Voter } from 'types/cw3'
+import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-
-const MULTISIG_CODE_ID =
-  parseInt(process.env.NEXT_PUBLIC_FIXED_MULTISIG_CODE_ID as string) || 49
 
 function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
   return (

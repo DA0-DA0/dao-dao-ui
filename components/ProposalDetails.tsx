@@ -1,6 +1,8 @@
 import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
+import { useThemeContext } from 'contexts/theme'
 import { useRouter } from 'next/router'
+import { dark, light } from 'rich-markdown-editor/dist/styles/theme'
 import { ProposalResponse, VoteInfo } from 'types/cw3'
 
 function ProposalDetails({
@@ -19,15 +21,23 @@ function ProposalDetails({
   close: () => void
 }) {
   const router = useRouter()
+  const themeContext = useThemeContext()
+
   const proposalMessageContent = proposal?.msgs?.length ? (
     <code className="mb-12 break-all whitespace-pre">
       {JSON.stringify(proposal.msgs, undefined, 2)}
     </code>
   ) : null
+
   return (
     <>
       <h1 className="text-3xl font-bold mb-8">{proposal.title}</h1>
-      <Markdown className="mb-8" readOnly={true} value={proposal.description} />
+      <Markdown
+        className="mb-8"
+        readOnly={true}
+        theme={themeContext.theme === 'junoLight' ? light : dark}
+        value={proposal.description}
+      />
 
       {proposalMessageContent}
 

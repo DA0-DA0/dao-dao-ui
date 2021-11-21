@@ -220,11 +220,6 @@ export default function ProposalEditor({
     )
   }
 
-  const editorTheme =
-    document.documentElement.getAttribute('data-theme') === 'junoLight'
-      ? light
-      : dark
-
   return (
     <div className="flex flex-col w-full flex-row">
       <div className="grid bg-base-100">
@@ -252,7 +247,7 @@ export default function ProposalEditor({
                 onBlur={handleDescriptionBlur}
                 onChange={handleDescriptionChange}
                 readOnly={complete}
-                theme={editorTheme}
+                theme={themeContext.theme === 'junoLight' ? light : dark}
                 value={proposal.description}
                 dark={themeContext.theme === 'junoDark'}
               />

@@ -10,12 +10,12 @@ import {
 import { useRouter } from 'next/router'
 
 const Treasury: NextPage = () => {
-  let router = useRouter()
-  let { contractAddress } = router.query
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
 
-  const { nativeBalances } = useNativeBalances(contractAddress as string)
-  const cw20 = useCw20Balances(contractAddress as string)
-  const { txs } = useTransactions(contractAddress as string)
+  const { nativeBalances } = useNativeBalances(contractAddress)
+  const cw20 = useCw20Balances(contractAddress)
+  const { txs } = useTransactions(contractAddress)
 
   return (
     <WalletLoader>
@@ -27,7 +27,7 @@ const Treasury: NextPage = () => {
         />
       </div>
       <div className="text-left w-full">
-        <Transfers txs={txs} contract_address={contractAddress as string} />
+        <Transfers txs={txs} contract_address={contractAddress} />
       </div>
     </WalletLoader>
   )

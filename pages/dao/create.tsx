@@ -5,14 +5,8 @@ import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { CW20_CODE_ID, DAO_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-
-const DAO_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_DAO_CONTRACT_CODE_ID as string
-)
-const CW20_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_DAO_TOKEN_CODE_ID as string
-)
 
 function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
   return (
