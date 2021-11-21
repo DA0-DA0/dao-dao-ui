@@ -2,7 +2,6 @@ import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
 import { useRouter } from 'next/router'
-import { dark, light } from 'rich-markdown-editor/dist/styles/theme'
 import { ProposalResponse, VoteInfo } from 'types/cw3'
 
 function ProposalDetails({
@@ -35,7 +34,7 @@ function ProposalDetails({
       <Markdown
         className="mb-8"
         readOnly={true}
-        theme={themeContext.theme === 'junoLight' ? light : dark}
+        dark={themeContext.theme === 'junoDark'}
         value={proposal.description}
       />
 

@@ -6,10 +6,9 @@ import { SigningCosmWasmProvider } from 'contexts/cosmwasm'
 import { ThemeProvider } from 'contexts/theme'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [theme, setTheme] = useState('initialvalue')
+  const [theme, setTheme] = useState('junoLight')
 
   function updateTheme(themeName: string) {
-    console.log(`updateTheme ${themeName}`)
     setTheme(themeName)
   }
 
