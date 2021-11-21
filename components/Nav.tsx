@@ -1,6 +1,5 @@
 import { useSigningClient } from 'contexts/cosmwasm'
 import Link from 'next/link'
-import Image from 'next/image'
 import ThemeToggle from 'components/ThemeToggle'
 import NavContractLabel from 'components/NavContractLabel'
 import Logo from 'components/Logo'
@@ -40,18 +39,7 @@ function Nav() {
               {PUBLIC_SITE_TITLE}
             </a>
           </Link>
-          <div className="flex-1 px-2 mx-2">
-            <div className="items-stretch hidden lg:flex">
-              <Link href="/proposals">
-                <a className="btn btn-ghost btn-sm rounded-btn">Proposals</a>
-              </Link>
-              <Link href="/treasury">
-                <a className="btn btn-ghost btn-sm rounded-btn">Treasury</a>
-              </Link>
-            </div>
-          </div>
         </div>
-        {/* <NavContractLabel /> */}
         <ThemeToggle />
         <div className="flex flex-grow md:flex-grow-0 max-w-full">
           <button

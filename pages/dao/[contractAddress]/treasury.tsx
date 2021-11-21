@@ -7,13 +7,15 @@ import {
   useCw20Balances,
   useTransactions,
 } from 'hooks/treasury'
+import { useRouter } from 'next/router'
 
-const DAO_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
+const Treasury: NextPage = () => {
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
 
-const Home: NextPage = () => {
-  const { nativeBalances } = useNativeBalances(DAO_CONTRACT_ADDRESS)
-  const cw20 = useCw20Balances(DAO_CONTRACT_ADDRESS)
-  const { txs } = useTransactions(DAO_CONTRACT_ADDRESS)
+  const { nativeBalances } = useNativeBalances(contractAddress)
+  const cw20 = useCw20Balances(contractAddress)
+  const { txs } = useTransactions(contractAddress)
 
   return (
     <WalletLoader>
@@ -25,10 +27,10 @@ const Home: NextPage = () => {
         />
       </div>
       <div className="text-left w-full">
-        <Transfers txs={txs} />
+        <Transfers txs={txs} contract_address={contractAddress} />
       </div>
     </WalletLoader>
   )
 }
 
-export default Home
+export default Treasury

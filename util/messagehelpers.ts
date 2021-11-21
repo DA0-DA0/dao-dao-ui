@@ -1,6 +1,5 @@
 import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/cw3'
 
-const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_CONTRACT_ADDRESS || ''
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
 
 export const TYPE_KEY = '@type'
@@ -10,7 +9,7 @@ export const MAX_LABEL_LEN = 64
 export function makeBankMessage(
   amount: string,
   to_address: string,
-  from_address = DAO_ADDRESS,
+  from_address: string,
   denom = DENOM
 ): BankMsg {
   return {
@@ -31,7 +30,7 @@ export function makeBankMessage(
 export function makeSpendMessage(
   amount: string,
   to_address: string,
-  from_address = DAO_ADDRESS,
+  from_address: string,
   denom = DENOM
 ): CosmosMsgFor_Empty_1 {
   const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)

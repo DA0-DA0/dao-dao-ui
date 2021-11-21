@@ -27,7 +27,7 @@ const Home: NextPage = () => {
         />
       </div>
       <div className="text-left w-full">
-        <Transfers txs={txs} />
+        <Transfers txs={txs} contract_address={contractAddress} />
       </div>
     </WalletLoader>
   )

@@ -20,7 +20,8 @@ import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import { useThemeContext } from '../contexts/theme'
+import { useThemeContext } from 'contexts/theme'
+import { dark, light } from 'rich-markdown-editor/dist/styles/theme'
 
 export default function ProposalEditor({
   initialProposal,
@@ -246,6 +247,7 @@ export default function ProposalEditor({
                 onBlur={handleDescriptionBlur}
                 onChange={handleDescriptionChange}
                 readOnly={complete}
+                theme={themeContext.theme === 'junoLight' ? light : dark}
                 value={proposal.description}
                 dark={themeContext.theme === 'junoDark'}
               />

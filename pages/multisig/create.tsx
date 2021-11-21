@@ -7,10 +7,8 @@ import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg, Voter } from 'types/cw3'
+import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-
-const MULTISIG_CODE_ID =
-  parseInt(process.env.NEXT_PUBLIC_FIXED_MULTISIG_CODE_ID as string) || 49
 
 function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
   return (
@@ -137,7 +135,7 @@ const CreateMultisig: NextPage = () => {
 
   return (
     <WalletLoader>
-      <div className="text-center container mx-auto max-w-lg">
+      <div className="text-left container mx-auto max-w-lg">
         <h1 className="text-5xl font-bold mb-8">New Multisig</h1>
         <form
           className="container mx-auto max-w-lg mb-8"
@@ -157,7 +155,7 @@ const CreateMultisig: NextPage = () => {
               <tr>
                 <td colSpan={2} className="text-right">
                   <button
-                    className="btn btn-outline btn-primary btn-md text-md rounded-full"
+                    className="btn btn-outline btn-primary btn-md text-md"
                     onClick={(e) => {
                       e.preventDefault()
                       setCount(count + 1)
@@ -219,7 +217,7 @@ const CreateMultisig: NextPage = () => {
           </table>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl rounded-full w-full ${
+              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
                 loading ? 'loading' : ''
               }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
@@ -240,7 +238,7 @@ const CreateMultisig: NextPage = () => {
               className="mt-4 box-border px-4 py-2 btn btn-primary"
               onClick={(e) => {
                 e.preventDefault()
-                router.push(`/${encodeURIComponent(contractAddress)}`)
+                router.push(`/multisig/${encodeURIComponent(contractAddress)}`)
               }}
             >
               View Multisig &#8599;

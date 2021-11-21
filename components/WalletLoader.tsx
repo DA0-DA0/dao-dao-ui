@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { ChevronRightIcon } from '@heroicons/react/solid'
 import { useSigningClient } from 'contexts/cosmwasm'
 import Loader from './Loader'
 
@@ -28,34 +29,31 @@ function WalletLoader({
     return (
       <div className="max-w-full">
         <h1 className="text-6xl font-bold">
-          Welcome to {process.env.NEXT_PUBLIC_SITE_TITLE}!
+          {process.env.NEXT_PUBLIC_SITE_TITLE}
         </h1>
 
         {process.env.NEXT_PUBLIC_SITE_DESCRIPTION && (
-          <h3 className="mt-3 text-3xl">
+          <h3 className="mt-3 text-4xl">
             {process.env.NEXT_PUBLIC_SITE_DESCRIPTION}
           </h3>
         )}
 
-        <p className="mt-3 text-2xl">
+        <p className="mt-8 text-xl">
           Get started by installing{' '}
-          <a
-            className="pl-1 link link-primary link-hover"
-            href="https://keplr.app/"
-          >
+          <a className="link link-primary link-hover" href="https://keplr.app/">
             Keplr wallet
           </a>
         </p>
 
         <div className="flex flex-wrap items-center justify-around md:max-w-4xl mt-6 sm:w-full">
           <button
-            className="p-6 mt-6 text-left border border-secondary hover:border-primary w-96 rounded-xl hover:text-primary focus:text-primary-focus"
+            className="p-6 mt-6 text-left border border-secondary hover:border-primary rounded-xl hover:text-primary focus:text-primary-focus"
             onClick={connectWallet}
           >
-            <h3 className="text-2xl font-bold">Connect your wallet &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Create and manage your multsig by connecting your Keplr wallet.
-            </p>
+            <h3 className="text-2xl font-bold">
+              Connect your wallet{' '}
+              <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
+            </h3>
           </button>
         </div>
       </div>
