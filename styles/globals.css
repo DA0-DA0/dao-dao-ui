@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 html {
-  --logo-fill: #06090B;
+  --logo-fill: #06090b;
 }
 
-html[data-theme=junoDark] {
+html[data-theme='junoDark'] {
   --logo-fill: #fff;
 }
 
