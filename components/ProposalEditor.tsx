@@ -20,7 +20,8 @@ import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import { useThemeContext } from '../contexts/theme'
+import { useThemeContext } from 'contexts/theme'
+import { dark, light } from 'rich-markdown-editor/dist/styles/theme'
 
 export default function ProposalEditor({
   initialProposal,
@@ -219,6 +220,11 @@ export default function ProposalEditor({
     )
   }
 
+  const editorTheme =
+    document.documentElement.getAttribute('data-theme') === 'junoLight'
+      ? light
+      : dark
+
   return (
     <div className="flex flex-col w-full flex-row">
       <div className="grid bg-base-100">
@@ -246,6 +252,7 @@ export default function ProposalEditor({
                 onBlur={handleDescriptionBlur}
                 onChange={handleDescriptionChange}
                 readOnly={complete}
+                theme={editorTheme}
                 value={proposal.description}
                 dark={themeContext.theme === 'junoDark'}
               />

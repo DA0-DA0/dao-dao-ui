@@ -137,7 +137,7 @@ const CreateMultisig: NextPage = () => {
 
   return (
     <WalletLoader>
-      <div className="text-center container mx-auto max-w-lg">
+      <div className="text-left container mx-auto max-w-lg">
         <h1 className="text-5xl font-bold mb-8">New Multisig</h1>
         <form
           className="container mx-auto max-w-lg mb-8"
