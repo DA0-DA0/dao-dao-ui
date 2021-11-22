@@ -1,11 +1,8 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { defaultTheme } from 'components/ThemeToggle'
 import React from 'react'
-import { ThemeProvider } from '../contexts/theme'
 
 class MyDocument extends Document {
-  theme: string = defaultTheme
-
   static async getInitialProps(ctx: any) {
     const initialProps = await Document.getInitialProps(ctx)
     return { ...initialProps }

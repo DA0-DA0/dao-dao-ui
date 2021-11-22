@@ -9,7 +9,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState('initialvalue')
 
   function updateTheme(themeName: string) {
-    console.log(`updateTheme ${themeName}`)
     setTheme(themeName)
   }
 
