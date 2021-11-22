@@ -8,6 +8,13 @@ interface CosmosKeplrWindow extends Window {
 
 declare let window: CosmosKeplrWindow
 
+export function isKeplrInstalled() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+  return !!(window.getOfflineSigner || window.keplr)
+}
+
 export const connectKeplr = async () => {
   // Keplr extension injects the offline signer that is compatible with cosmJS.
   // You can get this offline signer from `window.getOfflineSigner(chainId:string)` after load event.
