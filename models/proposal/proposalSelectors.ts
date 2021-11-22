@@ -45,7 +45,10 @@ export function getActiveMessageId(proposal: Proposal): string {
 }
 
 export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
-  if (spendMsg?.messageType === ProposalMessageType.Spend) {
+  if (
+    spendMsg?.messageType === ProposalMessageType.Spend ||
+    spendMsg?.messageType === ProposalMessageType.Mint
+  ) {
     const coins = (spendMsg.message as any)?.bank?.send?.amount as Coin[]
     if (coins?.length) {
       return coins[0]?.amount
@@ -57,7 +60,10 @@ export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
 export function getSpendRecipient(
   spendMsg?: MessageMapEntry
 ): string | undefined {
-  if (spendMsg?.messageType === ProposalMessageType.Spend) {
+  if (
+    spendMsg?.messageType === ProposalMessageType.Spend ||
+    spendMsg?.messageType === ProposalMessageType.Mint
+  ) {
     const send = (spendMsg.message as any)?.bank?.send
     if (send) {
       return send?.to_address
@@ -65,6 +71,9 @@ export function getSpendRecipient(
   }
   return undefined
 }
+
+export const getMintAmount = getSpendAmount
+export const getMintRecipient = getSpendRecipient
 
 export function proposalMessages(
   proposal: Proposal,

@@ -21,6 +21,7 @@ import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
+import MintEditor from './MintEditor'
 
 export default function ProposalEditor({
   initialProposal,
@@ -64,7 +65,7 @@ export default function ProposalEditor({
       id: 'mint',
       execute: () => addMessage(ProposalMessageType.Mint),
       href: '#',
-      isEnabled: () => false,
+      isEnabled: () => true,
     },
   ]
 
@@ -102,6 +103,15 @@ export default function ProposalEditor({
           ></SpendEditor>
         )
         break
+      case ProposalMessageType.Mint: {
+        modeEditor = <MintEditor
+        dispatch={dispatch}
+        mintMsg={mapEntry}
+        contractAddress={contractAddress}
+        initialRecipientAddress={recipientAddress}
+      ></MintEditor>
+        break;
+      }
       case ProposalMessageType.Custom:
         modeEditor = <CustomEditor dispatch={dispatch} customMsg={mapEntry} />
         break
@@ -150,6 +160,8 @@ export default function ProposalEditor({
   const addMessage = (messageType: ProposalMessageType) => {
     if (messageType === ProposalMessageType.Spend) {
       addSpendMessage()
+    } else if (messageType === ProposalMessageType.Mint) {
+      addMintMessage()
     } else if (messageType === ProposalMessageType.Custom) {
       addCustomMessage()
     }
@@ -172,6 +184,26 @@ export default function ProposalEditor({
       try {
         const message = makeSpendMessage('', recipientAddress, contractAddress)
         const messageType = ProposalMessageType.Spend
+        const action: ProposalAction = {
+          type: 'addMessage',
+          message,
+          messageType,
+        }
+        dispatch(action)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
+
+  const addMintMessage = () => {
+    const validAddress = !!(
+      recipientAddress && isValidAddress(recipientAddress)
+    )
+    if (validAddress) {
+      try {
+        const message = makeSpendMessage('', recipientAddress, contractAddress)
+        const messageType = ProposalMessageType.Mint
         const action: ProposalAction = {
           type: 'addMessage',
           message,

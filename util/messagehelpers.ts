@@ -39,6 +39,19 @@ export function makeSpendMessage(
   }
 }
 
+export function makeMintMessage(
+  amount: string,
+  to_address: string,
+  from_address: string,
+  denom = DENOM
+): CosmosMsgFor_Empty_1 {
+  const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
+  return {
+    bank,
+  }
+}
+
+
 export interface MessageAction {
   label: string
   id: string
