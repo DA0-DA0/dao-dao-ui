@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { connectKeplr } from 'services/keplr'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { successNotify } from 'util/toast'
 
 export interface ISigningCosmWasmClientContext {
   walletAddress: string
@@ -47,6 +48,7 @@ export const useSigningCosmWasmClient = (): ISigningCosmWasmClientContext => {
       setWalletAddress(address)
 
       setLoading(false)
+      successNotify('Successfully connected')
     } catch (error) {
       setError(error as any)
     }

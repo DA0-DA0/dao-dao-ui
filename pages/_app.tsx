@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app'
 import Layout from 'components/Layout'
 import { SigningCosmWasmProvider } from 'contexts/cosmwasm'
 import { ThemeProvider } from 'contexts/theme'
+import Notifications from 'components/Notifications'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState('junoLight')
@@ -17,6 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemeProvider updateTheme={updateTheme} theme={theme}>
         <Layout>
           <Component {...pageProps} />
+          <Notifications />
         </Layout>
       </ThemeProvider>
     </SigningCosmWasmProvider>
