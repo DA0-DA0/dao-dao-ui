@@ -38,18 +38,24 @@ const MultisigList: NextPage = () => {
   // Get list of MULTISIG info
   useEffect(() => {
     let getMultisigs = async () => {
-      let contracts = await signingClient?.getContracts(MULTISIG_CODE_ID)
+      try {
+        let contracts = await signingClient?.getContracts(MULTISIG_CODE_ID)
 
-      let multisigList: Array<Contract> = []
-      if (contracts) {
-        for (let address of contracts) {
-          signingClient?.getContract(address).then((response) => {
-            multisigList.push(response)
-          })
+        let multisigList: Array<Contract> = []
+        if (contracts) {
+          for (let address of contracts) {
+            signingClient?.getContract(address).then((response) => {
+              multisigList.push(response)
+            })
+          }
+          if (multisigList.length > 0) {
+            setMultisigs(multisigList)
+          }
         }
-        if (multisigList.length > 0) {
-          setMultisigs(multisigList)
-        }
+      } catch (e) {
+        // Handles the edge case where there are no contracts at
+        // all and the API throws.
+        return []
       }
     }
     getMultisigs()
