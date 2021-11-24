@@ -23,6 +23,7 @@
     "@types/react-json-editor-ajrm": "^2.5.2",
     "barrelsby": "^2.3.0",
     "daisyui": "^1.14.0",
+    "dotenv": "^10.0.0",
     "json-schema-to-typescript": "^10.1.5",
     "jsoneditor": "^9.5.6",
     "lodash.clonedeep": "^4.5.0",

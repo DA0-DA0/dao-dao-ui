@@ -3,14 +3,24 @@ import Barrelsby from 'barrelsby/bin'
 import { Arguments } from 'barrelsby/bin/options/options'
 import fs from 'fs'
 import { exec } from 'child_process'
+import dotenv from 'dotenv'
+
+dotenv.config({path: '.env.local'})
 
 const DAO_NAME = 'cw-dao'
-const SCHEMA_DIR = '../cw-dao/contracts/cw-dao/schema'
 const BUILD_DIR = 'build'
 
 function codegen() {
+  const directories = process.env.SCHEMA_DIRECTORIES?.split(',').map(dir => dir.trim()) ?? []
+  console.log(`SCHEMA_DIRECTORIES: ${process.env.SCHEMA_DIRECTORIES}, directories: ${directories}`)
+  for (const dir of directories) {
+    codegenDirectory(dir)
+  }
+}
+
+function codegenDirectory(dir: string) {
   const outputDir = `@types/${DAO_NAME}`
-  const cmd = `npx json-schema-to-typescript -i ${SCHEMA_DIR} -o ${outputDir}`// && npx barrelsby --delete -s -q -d ${outputDir}`
+  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputDir}`// && npx barrelsby --delete -s -q -d ${outputDir}`
 
   exec(cmd, (error, stdout, stderr) => {
     if (error) {

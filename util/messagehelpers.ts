@@ -47,7 +47,7 @@ export function makeMintMessage(
 ): CosmosMsgFor_Empty_1 {
   const mint: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
   return {
-    mint,
+    custom: {}, // TODO(gavindoughtie): This is wrong and needs codegen to work.
   }
 }
 
