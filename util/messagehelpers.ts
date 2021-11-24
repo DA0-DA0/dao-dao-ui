@@ -45,9 +45,9 @@ export function makeMintMessage(
   from_address: string,
   denom = DENOM
 ): CosmosMsgFor_Empty_1 {
-  const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
+  const mint: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
   return {
-    bank,
+    mint,
   }
 }
 
