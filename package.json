@@ -35,7 +35,8 @@
     "react-json-editor-ajrm": "^2.5.13",
     "rich-markdown-editor": "^11.18.15",
     "styled-components": "^5.3.3",
-    "theme-change": "^2.0.2"
+    "theme-change": "^2.0.2",
+    "ts-dedupe": "^0.3.1"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^11.1.2",

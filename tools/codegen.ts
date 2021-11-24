@@ -2,13 +2,16 @@ import { compile, compileFromFile } from 'json-schema-to-typescript'
 import Barrelsby from 'barrelsby/bin'
 import { Arguments } from 'barrelsby/bin/options/options'
 import fs from 'fs'
+import path from 'path'
 import { exec } from 'child_process'
 import dotenv from 'dotenv'
+import { dedupe } from "ts-dedupe"
 
 dotenv.config({path: '.env.local'})
 
-const DAO_NAME = 'cw-dao'
+const DAO_NAME = 'dao-contracts'
 const BUILD_DIR = 'build'
+const TYPES_DIR = 'types'
 
 function codegen() {
   const directories = process.env.SCHEMA_DIRECTORIES?.split(',').map(dir => dir.trim()) ?? []
@@ -16,10 +19,16 @@ function codegen() {
   for (const dir of directories) {
     codegenDirectory(dir)
   }
+  const outputPath = path.join(TYPES_DIR, DAO_NAME)
+  dedupe({
+    project: path.join(outputPath, 'tsconfig.json'),
+    duplicatesFile: path.join(outputPath, 'shared-types.d.ts'),
+    barrelFile: path.join(outputPath, 'index.ts')
+  })
 }
 
 function codegenDirectory(dir: string) {
-  const outputDir = `@types/${DAO_NAME}`
+  const outputDir = `${TYPES_DIR}/${DAO_NAME}`
   const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputDir}`// && npx barrelsby --delete -s -q -d ${outputDir}`
 
   exec(cmd, (error, stdout, stderr) => {
@@ -49,14 +58,6 @@ async function xcodegen() {
   }
   const result = Barrelsby(barrelsbyArgs)
   console.dir(result)
-
-  // // or, compile a JS object
-  // let mySchema = {
-  //   properties: [...]
-  // }
-  // compile(mySchema, 'MySchema')
-  //   .then(ts => ...)
-  // }
 }
 
 codegen()
