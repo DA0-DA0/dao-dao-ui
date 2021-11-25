@@ -55,11 +55,36 @@ function codegenDirectory(outputDir: string, dir: string): Promise<boolean> {
   })
 }
 
+function getSchemaDirectories(rootDir: string, contracts?: string) {
+  const contractList = contracts?.split(',').map((dir) => dir.trim()) ?? []
+  const directories: string[] = []
+  if (contractList.length) {
+    // get the schema directory for each contract
+    for (const contractName in contractList) {
+      const schemaDir = path.join(rootDir, contractName, 'schema')
+      directories.push(schemaDir)
+    }
+  } else {
+    // get all the schema directories in all the contract directories
+  }
+  return directories
+}
+
 function main() {
-  const directories =
-    process.env.SCHEMA_DIRECTORIES?.split(',').map((dir) => dir.trim()) ?? []
   const outputPath = path.join(TYPES_DIR, DAO_NAME)
-  codegen(directories, outputPath)
+  const daodaoContractsDir =
+    process.env.DAODAO_SCHEMA_ROOT ?? '../dao-contracts/contracts'
+  const daodaoDirectories = getSchemaDirectories(
+    daodaoContractsDir,
+    process.env.DAODAO_CONTRACTS
+  )
+  const cwplusContractsDir =
+    process.env.CWPLUS_SCHEMA_ROOT ?? '../cw-plus/contracts'
+  const cwplusDirectories = getSchemaDirectories(
+    cwplusContractsDir,
+    process.env.CWPLUS_CONTRACTS
+  )
+  codegen([...cwplusDirectories, ...daodaoDirectories], outputPath)
 }
 
 main()
