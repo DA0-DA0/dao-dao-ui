@@ -144,6 +144,24 @@ const CreateMultisig: NextPage = () => {
           <table className="w-full mb-8">
             <thead>
               <tr>
+                <th>Label</th>
+              </tr>
+            </thead>
+            <tbody>
+              <td>
+                <input
+                  className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
+                  name="label"
+                  type="text"
+                  placeholder="My multisig name"
+                  readOnly={complete}
+                />
+              </td>
+            </tbody>
+          </table>
+          <table className="w-full mb-8">
+            <thead>
+              <tr>
                 <th>Address</th>
                 <th>Weight</th>
               </tr>
@@ -175,7 +193,6 @@ const CreateMultisig: NextPage = () => {
                 <th className="text-left box-border px-2 text-sm">
                   Max Voting Period (seconds)
                 </th>
-                <th className="text-left">Label</th>
               </tr>
             </thead>
             <tbody>
@@ -200,15 +217,6 @@ const CreateMultisig: NextPage = () => {
                     min={1}
                     max={2147483647}
                     defaultValue={604800}
-                    readOnly={complete}
-                  />
-                </td>
-                <td>
-                  <input
-                    className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
-                    name="label"
-                    type="text"
-                    placeholder="My multisig name"
                     readOnly={complete}
                   />
                 </td>
