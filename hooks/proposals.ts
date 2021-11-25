@@ -80,6 +80,7 @@ export function useProposal(contractAddress: string, proposalId: string) {
   }, [walletAddress, signingClient, proposalId, timestamp])
 
   const vote = async (vote: string) => {
+    setError('')
     signingClient
       ?.execute(
         walletAddress,
