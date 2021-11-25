@@ -21,7 +21,6 @@
     "@cosmjs/stargate": "^0.26.2",
     "@heroicons/react": "^1.0.5",
     "@types/react-json-editor-ajrm": "^2.5.2",
-    "barrelsby": "^2.3.0",
     "daisyui": "^1.14.0",
     "dotenv": "^10.0.0",
     "json-schema-to-typescript": "^10.1.5",

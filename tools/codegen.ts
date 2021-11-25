@@ -1,63 +1,65 @@
-import { compile, compileFromFile } from 'json-schema-to-typescript'
-import Barrelsby from 'barrelsby/bin'
-import { Arguments } from 'barrelsby/bin/options/options'
-import fs from 'fs'
-import path from 'path'
 import { exec } from 'child_process'
 import dotenv from 'dotenv'
-import { dedupe } from "ts-dedupe"
+import fs from 'fs'
+import path from 'path'
+import { dedupe } from 'ts-dedupe'
 
-dotenv.config({path: '.env.local'})
+dotenv.config({ path: '.env.local' })
 
 const DAO_NAME = 'dao-contracts'
-const BUILD_DIR = 'build'
 const TYPES_DIR = 'types'
 
-function codegen() {
-  const directories = process.env.SCHEMA_DIRECTORIES?.split(',').map(dir => dir.trim()) ?? []
-  console.log(`SCHEMA_DIRECTORIES: ${process.env.SCHEMA_DIRECTORIES}, directories: ${directories}`)
+export async function codegen(directories: string[], outputPath: string) {
+  const promises = []
   for (const dir of directories) {
-    codegenDirectory(dir)
+    promises.push(codegenDirectory(outputPath, dir))
   }
-  const outputPath = path.join(TYPES_DIR, DAO_NAME)
+  fs.writeFileSync(
+    path.join(outputPath, 'tsconfig.json'),
+    `{
+      "compilerOptions": {
+        "target": "es2017",
+        "lib": ["esnext"],
+        "baseUrl": ".",
+        "sourceMap": true
+      },
+      "include": ["*.ts"],
+      "exclude": ["node_modules"]
+    }    
+  `
+  )
+  await Promise.all(promises)
   dedupe({
     project: path.join(outputPath, 'tsconfig.json'),
     duplicatesFile: path.join(outputPath, 'shared-types.d.ts'),
-    barrelFile: path.join(outputPath, 'index.ts')
+    barrelFile: path.join(outputPath, 'index.ts'),
   })
 }
 
-function codegenDirectory(dir: string) {
-  const outputDir = `${TYPES_DIR}/${DAO_NAME}`
-  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputDir}`// && npx barrelsby --delete -s -q -d ${outputDir}`
+function codegenDirectory(outputDir: string, dir: string): Promise<boolean> {
+  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputDir}`
 
-  exec(cmd, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`error: ${error.message}`)
-      return
-    }
-    if (stderr) {
-      console.error(`stderr: ${stderr}`)
-      return
-    }
-    console.log(`stdout: ${stdout}`)
+  return new Promise((resolve, reject) => {
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`error: ${error.message}`)
+        reject(error)
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`)
+        reject(stderr)
+      }
+      console.log(`stdout: ${stdout}`)
+      resolve(true)
+    })
   })
 }
 
-async function xcodegen() {
-  // compile from file
-  const ts = await compileFromFile('tools/foo.json')
-  fs.writeFileSync(`${BUILD_DIR}/foo.d.ts`, ts)
-  const barrelsbyArgs: Arguments = {
-    directory: `./${BUILD_DIR}`, // '@types',
-    singleQuotes: true,
-    structure: 'flat',
-    delete: true,
-    name: `${BUILD_DIR}/cw`,
-    include: [`${BUILD_DIR}/\w*.ts`],
-  }
-  const result = Barrelsby(barrelsbyArgs)
-  console.dir(result)
+function main() {
+  const directories =
+    process.env.SCHEMA_DIRECTORIES?.split(',').map((dir) => dir.trim()) ?? []
+  const outputPath = path.join(TYPES_DIR, DAO_NAME)
+  codegen(directories, outputPath)
 }
 
-codegen()
+main()
