@@ -7,63 +7,43 @@
 
 export type QueryMsg =
   | {
-      balance: {
+      claims: {
         address: string;
         [k: string]: unknown;
       };
     }
   | {
-      voting_power_at_height: {
-        address: string;
-        height: number;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      delegation: {
+      staked: {
         address: string;
         [k: string]: unknown;
       };
     }
   | {
-      token_info: {
+      admin: {
         [k: string]: unknown;
       };
     }
   | {
-      minter: {
+      total_weight: {
         [k: string]: unknown;
       };
     }
   | {
-      allowance: {
-        owner: string;
-        spender: string;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      all_allowances: {
-        limit?: number | null;
-        owner: string;
-        start_after?: string | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      all_accounts: {
+      list_members: {
         limit?: number | null;
         start_after?: string | null;
         [k: string]: unknown;
       };
     }
   | {
-      marketing_info: {
+      member: {
+        addr: string;
+        at_height?: number | null;
         [k: string]: unknown;
       };
     }
   | {
-      download_logo: {
+      hooks: {
         [k: string]: unknown;
       };
     };

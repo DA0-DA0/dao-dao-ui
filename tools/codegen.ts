@@ -29,11 +29,23 @@ export async function codegen(directories: string[], outputPath: string) {
   `
   )
   await Promise.all(promises)
-  dedupe({
+  const options = {
     project: path.join(outputPath, 'tsconfig.json'),
     duplicatesFile: path.join(outputPath, 'shared-types.d.ts'),
     barrelFile: path.join(outputPath, 'index.ts'),
-  })
+    retainEmptyFiles: false,
+  }
+  try {
+    fs.unlinkSync(options.barrelFile)
+  } catch (e) {
+    console.error(e)
+  }
+  try {
+    fs.unlinkSync(options.duplicatesFile)
+  } catch (e) {
+    console.error(e)
+  }
+  dedupe(options)
 }
 
 function codegenDirectory(outputDir: string, dir: string): Promise<boolean> {
@@ -49,42 +61,68 @@ function codegenDirectory(outputDir: string, dir: string): Promise<boolean> {
         console.error(`stderr: ${stderr}`)
         reject(stderr)
       }
-      console.log(`stdout: ${stdout}`)
       resolve(true)
     })
   })
 }
 
-function getSchemaDirectories(rootDir: string, contracts?: string) {
-  const contractList = contracts?.split(',').map((dir) => dir.trim()) ?? []
-  const directories: string[] = []
-  if (contractList.length) {
-    // get the schema directory for each contract
-    for (const contractName in contractList) {
-      const schemaDir = path.join(rootDir, contractName, 'schema')
-      directories.push(schemaDir)
+function getSchemaDirectories(
+  rootDir: string,
+  contracts?: string
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const contractList = contracts?.split(',').map((dir) => dir.trim()) ?? []
+    const directories: string[] = []
+    if (contractList.length) {
+      // get the schema directory for each contract
+      for (const contractName of contractList) {
+        const schemaDir = path.join(rootDir, contractName, 'schema')
+        directories.push(schemaDir)
+      }
+      resolve(directories)
+    } else {
+      // get all the schema directories in all the contract directories
+      fs.readdir(rootDir, (err, dirEntries) => {
+        // console.log(`entries for ${rootDir}`)
+        // console.dir(dirEntries)
+        if (err) console.error(err)
+        dirEntries.forEach((entry) => {
+          // console.log(`processing entry ${entry}`)
+          try {
+            const schemaDir = path.resolve(rootDir, entry, 'schema')
+            if (fs.lstatSync(schemaDir).isDirectory()) {
+              // console.log(`adding ${schemaDir}`)
+              directories.push(schemaDir)
+            } else {
+              console.log(`${schemaDir} is not a directory`)
+            }
+          } catch (e) {
+            // console.warn(e)
+          }
+        })
+        resolve(directories)
+      })
     }
-  } else {
-    // get all the schema directories in all the contract directories
-  }
-  return directories
+  })
 }
 
-function main() {
+async function main() {
   const outputPath = path.join(TYPES_DIR, DAO_NAME)
+  const cwPlusOutputPath = path.join(TYPES_DIR, 'cw-plus')
   const daodaoContractsDir =
     process.env.DAODAO_SCHEMA_ROOT ?? '../dao-contracts/contracts'
-  const daodaoDirectories = getSchemaDirectories(
+  const daodaoDirectories = await getSchemaDirectories(
     daodaoContractsDir,
     process.env.DAODAO_CONTRACTS
   )
   const cwplusContractsDir =
     process.env.CWPLUS_SCHEMA_ROOT ?? '../cw-plus/contracts'
-  const cwplusDirectories = getSchemaDirectories(
+  const cwplusDirectories = await getSchemaDirectories(
     cwplusContractsDir,
     process.env.CWPLUS_CONTRACTS
   )
-  codegen([...cwplusDirectories, ...daodaoDirectories], outputPath)
+  codegen(cwplusDirectories, cwPlusOutputPath)
+  codegen(daodaoDirectories, outputPath)
 }
 
 main()
