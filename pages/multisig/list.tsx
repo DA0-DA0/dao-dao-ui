@@ -5,7 +5,6 @@ import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { MULTISIG_CODE_ID } from 'util/constants'
 
 interface MultisigListType {
@@ -32,12 +31,14 @@ const MultisigListComponent: FunctionComponent<MultisigListType> = ({
 }
 
 const MultisigList: NextPage = () => {
-  let [multisigs, setMultisigs] = useState<Array<Contract>>([])
-  let { signingClient } = useSigningClient()
+  const [multisigs, setMultisigs] = useState<Array<Contract>>([])
+  const { signingClient } = useSigningClient()
+  const [loading, setLoading] = useState(false)
 
   // Get list of MULTISIG info
   useEffect(() => {
-    let getMultisigs = async () => {
+    const getMultisigs = async () => {
+      setLoading(true)
       try {
         let contracts = await signingClient?.getContracts(MULTISIG_CODE_ID)
 
@@ -51,10 +52,12 @@ const MultisigList: NextPage = () => {
           if (multisigList.length > 0) {
             setMultisigs(multisigList)
           }
+          setLoading(false)
         }
       } catch (e) {
         // Handles the edge case where there are no contracts at
         // all and the API throws.
+        setLoading(false)
         return []
       }
     }
@@ -62,7 +65,7 @@ const MultisigList: NextPage = () => {
   }, [signingClient])
 
   return (
-    <WalletLoader>
+    <WalletLoader loading={loading}>
       <h1 className="text-6xl font-bold">MULTISIGs</h1>
       {multisigs.length > 0 ? (
         multisigs.map((multisig, key) => (
