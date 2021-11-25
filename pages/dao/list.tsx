@@ -1,17 +1,10 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/solid'
 import WalletLoader from 'components/WalletLoader'
-import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { DAO_CODE_ID } from 'util/constants'
-
-interface DaoListType {
-  address: string
-  name: string
-  description: string
-}
+import { useDaosList, DaoListType } from 'hooks/dao'
 
 const DaoListComponent: FunctionComponent<DaoListType> = ({
   address,
@@ -34,37 +27,10 @@ const DaoListComponent: FunctionComponent<DaoListType> = ({
 }
 
 const DaoList: NextPage = () => {
-  let [daos, setDaos] = useState<Array<DaoListType>>([])
-  let { signingClient } = useSigningClient()
-
-  // Get list of DAO info
-  useEffect(() => {
-    let getDaos = async () => {
-      let contracts = await signingClient?.getContracts(DAO_CODE_ID)
-
-      let daoList = []
-      if (contracts) {
-        for (let address of contracts) {
-          let daoInfo = await signingClient?.queryContractSmart(address, {
-            get_config: {},
-          })
-          if (daoInfo?.config) {
-            let config = {
-              ...daoInfo.config,
-              address,
-            }
-            daoList.push(config)
-          }
-        }
-
-        setDaos(daoList)
-      }
-    }
-    getDaos()
-  }, [])
+  const { daos, loading } = useDaosList(DAO_CODE_ID)
 
   return (
-    <WalletLoader>
+    <WalletLoader loading={loading}>
       <h1 className="text-6xl font-bold">DAOs</h1>
       {daos.length > 0 ? (
         daos.map((dao, key) => (
