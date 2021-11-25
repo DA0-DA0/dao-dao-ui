@@ -142,11 +142,11 @@ const CreateMultisig: NextPage = () => {
           onSubmit={handleSubmit}
         >
           <table className="w-full mb-8">
-            <thread>
+            <thead>
               <tr>
                 <th>Label</th>
               </tr>
-            </thread>
+            </thead>
             <tbody>
               <td>
                 <input
