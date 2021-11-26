@@ -41,7 +41,7 @@ export function useProposals(contractAddress: string) {
       }
     }
     sign(signingClient)
-  }, [walletAddress, signingClient, startBefore])
+  }, [walletAddress, signingClient, startBefore, contractAddress])
   return { proposals, hideLoadMore, loading, setStartBefore }
 }
 
@@ -77,7 +77,7 @@ export function useProposal(contractAddress: string, proposalId: string) {
         setLoading(false)
         setError(err.message)
       })
-  }, [walletAddress, signingClient, proposalId, timestamp])
+  }, [walletAddress, signingClient, proposalId, timestamp, contractAddress])
 
   const vote = async (vote: string) => {
     signingClient

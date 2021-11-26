@@ -1,4 +1,4 @@
-import { Coin } from 'types/contracts/cw-plus'
+import { Coin, Uint128 } from 'types/contracts/cw-plus'
 import {
   MessageMap,
   MessageMapEntry,
@@ -72,7 +72,16 @@ export function getSpendRecipient(
   return undefined
 }
 
-export const getMintAmount = getSpendAmount
+export function getMintAmount(mintMessage?: MessageMapEntry): string | undefined {
+  if (
+    mintMessage?.messageType === ProposalMessageType.Mint
+  ) {
+    const amount = (mintMessage.message as any)?.mint.amount
+    return amount
+  }
+  return undefined
+}
+
 export const getMintRecipient = getSpendRecipient
 
 export function proposalMessages(

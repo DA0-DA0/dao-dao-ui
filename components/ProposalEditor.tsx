@@ -107,7 +107,6 @@ export default function ProposalEditor({
         modeEditor = <MintEditor
         dispatch={dispatch}
         mintMsg={mapEntry}
-        contractAddress={contractAddress}
         initialRecipientAddress={recipientAddress}
       ></MintEditor>
         break;

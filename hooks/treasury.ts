@@ -21,7 +21,7 @@ export function useNativeBalances(contractAddress: string) {
           console.error('StargateClient getAllBalances error: ', error)
         )
     })
-  }, [timestamp])
+  }, [timestamp, contractAddress])
 
   return { nativeBalances, setTimestamp }
 }
@@ -56,7 +56,7 @@ export function useCw20Balances(contractAddress: string) {
       .catch((error) =>
         console.error('queryContractSmart {cw20_balances: {}} error', error)
       )
-  }, [signingClient])
+  }, [signingClient, contractAddress])
   return { balances, info }
 }
 
@@ -75,6 +75,6 @@ export function useTransactions(contractAddress: string) {
         setTxs(response as IndexedTx[])
       })
       .catch((error) => console.log(error))
-  }, [signingClient])
+  }, [signingClient, contractAddress])
   return { txs }
 }

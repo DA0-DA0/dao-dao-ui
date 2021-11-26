@@ -1,3 +1,4 @@
+import { getSpendAmount } from 'models/proposal/proposalSelectors'
 import { BankMsg, Coin, CosmosMsgFor_Empty_1, Cw20ExecuteMsg } from 'types/contracts/cw-plus'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -71,7 +72,7 @@ export function labelForAmount(amount: Coin[]): string {
 }
 
 export function labelForMessage(
-  msg?: CosmosMsgFor_Empty_1,
+  msg?: CosmosMsgFor_Empty_1 | Cw20ExecuteMsg,
   defaultMessage = ''
 ): string {
   if (!msg) {
@@ -88,6 +89,10 @@ export function labelForMessage(
     } else if (anyMsg.bank.burn) {
       messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
     }
+  } else if (anyMsg.mint) {
+    messageString = `${anyMsg.mint.amount} -> ${
+      anyMsg.mint.recipient
+    }`
   } else if (anyMsg.custom) {
     const customMap: { [k: string]: any } = anyMsg.custom
     messageString = Object.entries(customMap)
