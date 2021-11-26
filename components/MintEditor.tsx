@@ -13,13 +13,11 @@ import { makeMintMessage } from '../util/messagehelpers'
 
 export default function MintEditor({
   dispatch,
-  contractAddress,
   initialRecipientAddress,
   mintMsg,
 }: {
   dispatch: (action: ProposalAction) => void
   mintMsg?: MessageMapEntry
-  contractAddress: string
   initialRecipientAddress: string
 }) {
   const [validAddress, setValidAddress] = useState(
@@ -47,7 +45,7 @@ export default function MintEditor({
       const messageType = mintMsg?.messageType ?? ProposalMessageType.Mint
       let action: ProposalAction
 
-      const message = makeMintMessage(amount, recipient, contractAddress)
+      const message = makeMintMessage(amount, recipient)
       if (id) {
         action = {
           type: 'updateMessage',

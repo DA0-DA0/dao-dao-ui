@@ -1,4 +1,4 @@
-import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
+import { BankMsg, Coin, CosmosMsgFor_Empty_1, Cw20ExecuteMsg } from 'types/contracts/cw-plus'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
 
@@ -41,14 +41,15 @@ export function makeSpendMessage(
 
 export function makeMintMessage(
   amount: string,
-  to_address: string,
-  from_address: string,
-  denom = DENOM
-): CosmosMsgFor_Empty_1 {
-  const mint: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
-  return {
-    custom: {}, // TODO(gavindoughtie): This is wrong and needs codegen to work.
+  to_address: string
+): Cw20ExecuteMsg {
+  const msg: Cw20ExecuteMsg = {
+    mint: {
+      amount,
+      recipient: to_address
+    }
   }
+  return msg
 }
 
 
