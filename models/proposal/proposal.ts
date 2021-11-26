@@ -1,5 +1,5 @@
 // Client-side proposal representation
-import { CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
 import { labelForMessage } from '../../util/messagehelpers'
 import { MessageMap } from './messageMap'
 

@@ -1,11 +1,11 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { useEffect, useState } from 'react'
-import { ProposalListResponse, ProposalResponse, Timestamp } from 'types/cw3'
+import { ProposalListResponse, ProposalResponse } from 'types/contracts/cw-plus'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
-import { VoteInfo } from 'types/cw3'
+import { VoteInfo } from 'types/contracts/cw-plus'
 
 export function useProposals(contractAddress: string) {
   const { walletAddress, signingClient } = useSigningClient()

@@ -1,4 +1,4 @@
-import { Coin } from '../../types/cw3'
+import { Coin } from 'types/contracts/cw-plus'
 import {
   MessageMap,
   MessageMapEntry,

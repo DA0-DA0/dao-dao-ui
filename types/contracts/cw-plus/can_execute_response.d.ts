@@ -5,10 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface TokenInfoResponse {
-  /**
-   * Should be a url point to a json file
-   */
-  url: string;
+export interface CanExecuteResponse {
+  can_execute: boolean;
   [k: string]: unknown;
 }

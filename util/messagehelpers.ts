@@ -1,4 +1,4 @@
-import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
 

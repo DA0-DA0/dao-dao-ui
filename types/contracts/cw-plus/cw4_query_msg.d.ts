@@ -5,19 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type QueryMsg =
-  | {
-      claims: {
-        address: string;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      staked: {
-        address: string;
-        [k: string]: unknown;
-      };
-    }
+export type Cw4QueryMsg =
   | {
       admin: {
         [k: string]: unknown;

@@ -13,7 +13,7 @@ import {
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import Editor from 'rich-markdown-editor'
-import { CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
 import { isValidAddress } from 'util/isValidAddress'
 import { labelForMessage, makeSpendMessage } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'

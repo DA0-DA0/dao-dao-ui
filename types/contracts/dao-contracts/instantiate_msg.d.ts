@@ -1,7 +1,12 @@
 /* tslint:disable */
-import { Logo, Uint128 } from "./shared-types";
+import { Duration, Logo, Uint128 } from "./shared-types";
 
 export interface InstantiateMsg {
+  cw20_base: InstantiateMsg1;
+  unstaking_duration?: Duration | null;
+  [k: string]: unknown;
+}
+export interface InstantiateMsg1 {
   decimals: number;
   initial_balances: Cw20Coin[];
   marketing?: InstantiateMarketingInfo | null;

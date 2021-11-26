@@ -88,8 +88,19 @@ export type ExecuteMsg =
       upload_logo: Logo;
     }
   | {
-      delegate_votes: {
-        recipient: string;
+      stake: {
+        amount: Uint128;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      unstake: {
+        amount: Uint128;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      claim: {
         [k: string]: unknown;
       };
     };

@@ -1,4 +1,4 @@
-import { CosmosMsgFor_Empty_1 } from '../../types/cw3'
+import { CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
 import { ProposalMessageType } from './messageMap'
 
 export type ProposalSetTitle = {
