@@ -50,12 +50,16 @@ function writeTsconfig(outputPath: string) {
   )
 }
 
-export async function codegen(directories: string[], outputPath: string) {
+export async function codegen(directories: string[][], outputPath: string) {
   const promises = []
-  for (const dir of directories) {
-    promises.push(codegenDirectory(outputPath, dir))
+  for (const [dir, contractName] of directories) {
+    // const fullPath = path.join(outputPath, contractName)
+    // if (fs.existsSync(fullPath)) {
+    //   writeTsconfig(fullPath)
+    // }
+    promises.push(codegenDirectory(outputPath, dir, contractName))
   }
-  writeTsconfig(outputPath)
+  // writeTsconfig(outputPath)
   await Promise.all(promises)
 }
 
@@ -75,23 +79,31 @@ async function run(cmd: string): Promise<boolean> {
   })
 }
 
-function codegenDirectory(outputDir: string, dir: string): Promise<boolean> {
-  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputDir}`
-  return run(cmd)
+async function codegenDirectory(
+  outputDir: string,
+  dir: string,
+  contractName: string
+): Promise<void> {
+  const outputPath = path.join(outputDir, contractName)
+  ensurePath(outputPath)
+  writeTsconfig(outputPath)
+  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputPath}`
+  await run(cmd)
+  return dedup(outputPath)
 }
 
 function getSchemaDirectories(
   rootDir: string,
   contracts?: string
-): Promise<string[]> {
+): Promise<string[][]> {
   return new Promise((resolve, reject) => {
     const contractList = contracts?.split(',').map((dir) => dir.trim()) ?? []
-    const directories: string[] = []
+    const directories: string[][] = []
     if (contractList.length) {
       // get the schema directory for each contract
       for (const contractName of contractList) {
         const schemaDir = path.join(rootDir, contractName, 'schema')
-        directories.push(schemaDir)
+        directories.push([schemaDir, contractName])
       }
       resolve(directories)
     } else {
@@ -103,10 +115,13 @@ function getSchemaDirectories(
         dirEntries.forEach((entry) => {
           // console.log(`processing entry ${entry}`)
           try {
-            const schemaDir = path.resolve(rootDir, entry, 'schema')            
-            if (fs.existsSync(schemaDir) && fs.lstatSync(schemaDir).isDirectory()) {
+            const schemaDir = path.resolve(rootDir, entry, 'schema')
+            if (
+              fs.existsSync(schemaDir) &&
+              fs.lstatSync(schemaDir).isDirectory()
+            ) {
               // console.log(`adding ${schemaDir}`)
-              directories.push(schemaDir)
+              directories.push([schemaDir, entry])
             } else {
               console.log(`${schemaDir} is not a directory`)
             }
@@ -120,7 +135,7 @@ function getSchemaDirectories(
   })
 }
 
-function dedup(inputPath: string, outputPath?: string) {
+function dedup(inputPath: string, outputPath?: string): Promise<void> {
   if (!outputPath) {
     outputPath = inputPath
   }
@@ -128,15 +143,11 @@ function dedup(inputPath: string, outputPath?: string) {
     project: path.join(inputPath, 'tsconfig.json'),
     duplicatesFile: path.join(outputPath, 'shared-types.d.ts'),
     barrelFile: path.join(outputPath, 'index.ts'),
-    retainEmptyFiles: false,
+    // retainEmptyFiles: false,
   }
   deleteFile(options.barrelFile)
   deleteFile(options.duplicatesFile)
-  try {
-    dedupe(options)
-  } catch (e) {
-    console.error(e)
-  }
+  return dedupe(options)
 }
 
 function ensurePath(outputPath: string) {
@@ -182,8 +193,8 @@ async function main() {
     cwPlusOutputPath
   )
   await codegen(daodaoDirectories, daodaoOutputPath)
-  dedup(cwPlusOutputPath)
-  dedup(daodaoOutputPath)
+  //dedup(cwPlusOutputPath)
+  //dedup(daodaoOutputPath)
 }
 
 main()

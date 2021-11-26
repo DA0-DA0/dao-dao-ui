@@ -6,9 +6,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { InstantiateMsg } from 'types/contracts/cw-plus'
-import { InstantiateMsg as DAOInstantiateMsg } from 'types/contracts/dao-contracts'
-import { VoterDetail } from 'types/contracts/cw-plus'
+// import { InstantiateMsg } from 'types/contracts/cw-plus/cw3'
+import { InstantiateMsg } from 'types/contracts/cw-plus/cw3-fixed-multisig/instantiate_msg'
+// import { InstantiateMsg as DAOInstantiateMsg } from 'types/contracts/dao-contracts'
+// import { VoterDetail } from 'types/contracts/cw-plus'
 
 import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
@@ -49,9 +50,9 @@ function validateNonEmpty(msg: InstantiateMsg, label: string) {
   if (!min_bond) {
     return false
   }
-  const unboundingTime = (unbonding_period as any).time;
+  const unboundingTime = (unbonding_period as any).time
   if (isNaN(unboundingTime)) {
-    return false;
+    return false
   }
   if (label.length === 0) {
     return false
@@ -95,19 +96,15 @@ const CreateMultisig: NextPage = () => {
       addr: formEl[`address_${index}`]?.value?.trim(),
       weight: parseInt(formEl[`weight_${index}`]?.value?.trim()),
     }))
-    const required_weight = `${parseInt(formEl.threshold.value?.trim())}`
+    const required_weight = parseInt(formEl.threshold.value?.trim(), 10)
     const max_voting_period = {
       time: parseInt(formEl.duration.value?.trim()),
     }
 
     const msg: InstantiateMsg = {
       voters,
-      min_bond: required_weight,
-      unbonding_period: max_voting_period,
-      tokens_per_weight: '1', // ???
-      denom: {
-        cw20: '???'
-      }
+      required_weight,
+      max_voting_period,
     }
 
     const label = formEl.label.value.trim()

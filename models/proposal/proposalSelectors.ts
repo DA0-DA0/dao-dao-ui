@@ -1,4 +1,4 @@
-import { Coin, Uint128 } from 'types/contracts/cw-plus'
+import { Coin, Uint128 } from 'types/contracts/cw-plus/cw3'
 import {
   MessageMap,
   MessageMapEntry,
@@ -44,11 +44,10 @@ export function getActiveMessageId(proposal: Proposal): string {
   return proposal.activeMessageId
 }
 
-export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
-  if (
-    spendMsg?.messageType === ProposalMessageType.Spend ||
-    spendMsg?.messageType === ProposalMessageType.Mint
-  ) {
+export function getSpendAmount(
+  spendMsg?: MessageMapEntry
+): Uint128 | undefined {
+  if (spendMsg?.messageType === ProposalMessageType.Spend) {
     const coins = (spendMsg.message as any)?.bank?.send?.amount as Coin[]
     if (coins?.length) {
       return coins[0]?.amount
@@ -60,10 +59,7 @@ export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
 export function getSpendRecipient(
   spendMsg?: MessageMapEntry
 ): string | undefined {
-  if (
-    spendMsg?.messageType === ProposalMessageType.Spend ||
-    spendMsg?.messageType === ProposalMessageType.Mint
-  ) {
+  if (spendMsg?.messageType === ProposalMessageType.Spend) {
     const send = (spendMsg.message as any)?.bank?.send
     if (send) {
       return send?.to_address
@@ -72,10 +68,10 @@ export function getSpendRecipient(
   return undefined
 }
 
-export function getMintAmount(mintMessage?: MessageMapEntry): string | undefined {
-  if (
-    mintMessage?.messageType === ProposalMessageType.Mint
-  ) {
+export function getMintAmount(
+  mintMessage?: MessageMapEntry
+): Uint128 | undefined {
+  if (mintMessage?.messageType === ProposalMessageType.Mint) {
     const amount = (mintMessage.message as any)?.mint.amount
     return amount
   }

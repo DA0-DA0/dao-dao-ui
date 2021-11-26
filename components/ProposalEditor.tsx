@@ -13,9 +13,13 @@ import {
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import Editor from 'rich-markdown-editor'
-import { CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
+import { CosmosMsgFor_Empty } from 'types/contracts/cw-plus/cw3'
 import { isValidAddress } from 'util/isValidAddress'
-import { labelForMessage, makeMintMessage, makeSpendMessage } from 'util/messagehelpers'
+import {
+  labelForMessage,
+  makeMintMessage,
+  makeSpendMessage,
+} from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
@@ -104,12 +108,14 @@ export default function ProposalEditor({
         )
         break
       case ProposalMessageType.Mint: {
-        modeEditor = <MintEditor
-        dispatch={dispatch}
-        mintMsg={mapEntry}
-        initialRecipientAddress={recipientAddress}
-      ></MintEditor>
-        break;
+        modeEditor = (
+          <MintEditor
+            dispatch={dispatch}
+            mintMsg={mapEntry}
+            initialRecipientAddress={recipientAddress}
+          ></MintEditor>
+        )
+        break
       }
       case ProposalMessageType.Custom:
         modeEditor = <CustomEditor dispatch={dispatch} customMsg={mapEntry} />
@@ -169,7 +175,7 @@ export default function ProposalEditor({
   const addCustomMessage = () => {
     const action: ProposalAction = {
       type: 'addMessage',
-      message: { custom: {} } as CosmosMsgFor_Empty_1,
+      message: { custom: {} } as CosmosMsgFor_Empty,
       messageType: ProposalMessageType.Custom,
     }
     dispatch(action)

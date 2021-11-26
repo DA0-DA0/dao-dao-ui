@@ -1,5 +1,10 @@
-import { getSpendAmount } from 'models/proposal/proposalSelectors'
-import { BankMsg, Coin, CosmosMsgFor_Empty_1, Cw20ExecuteMsg } from 'types/contracts/cw-plus'
+import {
+  BankMsg,
+  Coin,
+  CosmosMsgFor_Empty,
+  ExecuteMsg,
+} from 'types/contracts/cw-plus/cw3'
+import { ExecuteMsg as DAOExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
 
@@ -33,7 +38,7 @@ export function makeSpendMessage(
   to_address: string,
   from_address: string,
   denom = DENOM
-): CosmosMsgFor_Empty_1 {
+): CosmosMsgFor_Empty {
   const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
   return {
     bank,
@@ -43,16 +48,15 @@ export function makeSpendMessage(
 export function makeMintMessage(
   amount: string,
   to_address: string
-): Cw20ExecuteMsg {
-  const msg: Cw20ExecuteMsg = {
+): DAOExecuteMsg {
+  const msg: DAOExecuteMsg = {
     mint: {
       amount,
-      recipient: to_address
-    }
+      recipient: to_address,
+    },
   }
   return msg
 }
-
 
 export interface MessageAction {
   label: string
@@ -72,7 +76,7 @@ export function labelForAmount(amount: Coin[]): string {
 }
 
 export function labelForMessage(
-  msg?: CosmosMsgFor_Empty_1 | Cw20ExecuteMsg,
+  msg?: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg,
   defaultMessage = ''
 ): string {
   if (!msg) {
@@ -90,9 +94,7 @@ export function labelForMessage(
       messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
     }
   } else if (anyMsg.mint) {
-    messageString = `${anyMsg.mint.amount} -> ${
-      anyMsg.mint.recipient
-    }`
+    messageString = `${anyMsg.mint.amount} -> ${anyMsg.mint.recipient}`
   } else if (anyMsg.custom) {
     const customMap: { [k: string]: any } = anyMsg.custom
     messageString = Object.entries(customMap)

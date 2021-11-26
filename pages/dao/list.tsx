@@ -61,7 +61,7 @@ const DaoList: NextPage = () => {
       }
     }
     getDaos()
-  }, [])
+  }, [signingClient])
 
   return (
     <WalletLoader>

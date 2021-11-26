@@ -104,10 +104,7 @@ describe('ProposalReducer', () => {
   })
 
   it('should update an existing mint message', () => {
-    const message: any = makeMintMessage(
-      '9',
-      'send_address'
-    )
+    const message: any = makeMintMessage('9', 'send_address')
     const addMessageAction: ProposalAddMessage = {
       type: 'addMessage',
       messageType: ProposalMessageType.Mint,
@@ -120,10 +117,7 @@ describe('ProposalReducer', () => {
     expect(messages.length).toBe(1)
     let activeMessage = messages[0]
 
-    const updatedMessage: any = makeMintMessage(
-      '99',
-      'send_address2'
-    )
+    const updatedMessage: any = makeMintMessage('99', 'send_address2')
     const updateMessageAction: ProposalUpdateMessage = {
       type: 'updateMessage',
       id: activeMessage.id,

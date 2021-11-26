@@ -2,7 +2,7 @@ import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
 import { useRouter } from 'next/router'
-import { ProposalResponse, VoteInfo } from 'types/contracts/cw-plus'
+import { ProposalResponse, VoteInfo } from 'types/contracts/cw-plus/cw3'
 
 function ProposalDetails({
   proposal,
