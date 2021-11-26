@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import { FormEvent } from 'react'
 import WalletLoader from 'components/WalletLoader'
+import HelpTooltip from 'components/HelpTooltip'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
@@ -189,9 +190,13 @@ const CreateMultisig: NextPage = () => {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left">Threshold</th>
+                <th className="text-left">
+                  Threshold
+                  <HelpTooltip text="The amount of weight that must commit to a proposal before that proposal will be executed." />
+                </th>
                 <th className="text-left box-border px-2 text-sm">
                   Max Voting Period (seconds)
+                  <HelpTooltip text="The amount of time a proposal can be voted on before expiring" />
                 </th>
               </tr>
             </thead>
