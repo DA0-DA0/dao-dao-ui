@@ -1,4 +1,4 @@
-import { CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
+import { CosmosMsgFor_Empty_1, Cw20ExecuteMsg } from 'types/contracts/cw-plus'
 
 export enum ProposalMessageType {
   Collect = 'collect',
@@ -14,7 +14,7 @@ export type MessageMapEntry = {
   id: string
   messageType: ProposalMessageType
   order: number
-  message: CosmosMsgFor_Empty_1
+  message: CosmosMsgFor_Empty_1 | Cw20ExecuteMsg
 }
 
 export type MessageMap = { [key: string]: MessageMapEntry }

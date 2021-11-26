@@ -15,7 +15,7 @@ import {
 import Editor from 'rich-markdown-editor'
 import { CosmosMsgFor_Empty_1 } from 'types/contracts/cw-plus'
 import { isValidAddress } from 'util/isValidAddress'
-import { labelForMessage, makeSpendMessage } from 'util/messagehelpers'
+import { labelForMessage, makeMintMessage, makeSpendMessage } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
@@ -202,7 +202,7 @@ export default function ProposalEditor({
     )
     if (validAddress) {
       try {
-        const message = makeSpendMessage('', recipientAddress, contractAddress)
+        const message = makeMintMessage('', recipientAddress)
         const messageType = ProposalMessageType.Mint
         const action: ProposalAction = {
           type: 'addMessage',
