@@ -3,12 +3,104 @@ import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import { dedupe } from 'ts-dedupe'
+import {
+  compileFromFile,
+  Options,
+  DEFAULT_OPTIONS,
+} from 'json-schema-to-typescript'
 import { IDeDupeOptions } from 'ts-dedupe/dist/contracts'
+
+export type CompilationSpec = {
+  contractName: string
+  schemaDir: string
+  schemaFiles: string[]
+  outputPath: string
+  options: Options
+}
 
 dotenv.config({ path: '.env.local' })
 
 const DAO_NAME = 'dao-contracts'
 const TYPES_DIR = 'types'
+const CONTRACTS_OUTPUT_DIR = path.join(TYPES_DIR, 'contracts')
+const TSCONFIG_DEFAULT = `{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["esnext"],
+    "baseUrl": ".",
+    "sourceMap": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules"]
+}    
+`
+
+const CODEGEN_NO_DEDUP = !!process.env.NO_DEDUP
+const CODEGEN_LOG_LEVEL = process.env.CODEGEN_LOG_LEVEL || ''
+
+const DEFAULT_CONFIG = {
+  schemaRoots: [
+    {
+      name: 'dao-contracts',
+      paths: [process.env.DAODAO_SCHEMA_ROOT || '../dao-contracts/contracts'],
+      outputName: 'dao-contracts',
+      outputDir: CONTRACTS_OUTPUT_DIR,
+    },
+    {
+      name: 'cw-plus',
+      paths: [
+        process.env.CWPLUS_CONTRACTS || '../cw-plus/contracts',
+        process.env.CWPLUS_PACKAGES || '../cw-plus/packages',
+      ],
+      outputName: 'cw-plus',
+      outputDir: CONTRACTS_OUTPUT_DIR,
+    },
+  ],
+  tsconfig: TSCONFIG_DEFAULT,
+  writeTsconfig: false,
+}
+
+async function getSchemaFiles(schemaDir: string): Promise<string[]> {
+  return new Promise((resove, reject) => {
+    const schemaFiles: string[] = []
+    fs.readdir(schemaDir, (err, dirEntries) => {
+      if (err) {
+        console.error(err)
+      }
+
+      dirEntries.forEach((entry) => {
+        const fullPath = path.join(schemaDir, entry)
+        if (entry.endsWith('.json') && fs.existsSync(fullPath)) {
+          schemaFiles.push(fullPath)
+        }
+      })
+
+      resove(schemaFiles)
+    })
+  })
+}
+
+async function schemaCompileOptions(
+  contractName: string,
+  contractRoot: string,
+  outputDir: string,
+  schemaDir: string
+): Promise<CompilationSpec> {
+  const schemaFiles = await getSchemaFiles(schemaDir)
+  const outputPath = path.join(outputDir, contractRoot, contractName)
+  const options: Options = {
+    ...DEFAULT_OPTIONS,
+    bannerComment: '',
+    format: false,
+  }
+  return {
+    contractName,
+    schemaDir,
+    schemaFiles,
+    outputPath,
+    options,
+  }
+}
 
 function deleteFile(filePath?: string) {
   if (!filePath) {
@@ -33,37 +125,22 @@ function removeDirectory(dir: string) {
   }
 }
 
-function writeTsconfig(outputPath: string) {
-  fs.writeFileSync(
-    path.join(outputPath, 'tsconfig.json'),
-    `{
-      "compilerOptions": {
-        "target": "es2017",
-        "lib": ["esnext"],
-        "baseUrl": ".",
-        "sourceMap": true
-      },
-      "include": ["*.ts"],
-      "exclude": ["node_modules"]
-    }    
-  `
-  )
+function writeTsconfig(outputPath: string, tsconfig = TSCONFIG_DEFAULT) {
+  fs.writeFileSync(path.join(outputPath, 'tsconfig.json'), tsconfig)
 }
 
 export async function codegen(directories: string[][], outputPath: string) {
   const promises = []
   for (const [dir, contractName] of directories) {
-    // const fullPath = path.join(outputPath, contractName)
-    // if (fs.existsSync(fullPath)) {
-    //   writeTsconfig(fullPath)
-    // }
     promises.push(codegenDirectory(outputPath, dir, contractName))
   }
-  // writeTsconfig(outputPath)
   await Promise.all(promises)
 }
 
 async function run(cmd: string): Promise<boolean> {
+  if (CODEGEN_LOG_LEVEL === 'verbose') {
+    console.log(cmd)
+  }
   return new Promise((resolve, reject) => {
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
@@ -87,8 +164,17 @@ async function codegenDirectory(
   const outputPath = path.join(outputDir, contractName)
   ensurePath(outputPath)
   writeTsconfig(outputPath)
-  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputPath}`
+  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputPath} --bannerComment '/* fml */' --no-format`
   await run(cmd)
+  if (CODEGEN_LOG_LEVEL === 'verbose') {
+    console.log(`generated definitions from ${dir}`)
+  }
+  if (CODEGEN_NO_DEDUP) {
+    if (CODEGEN_LOG_LEVEL === 'verbose') {
+      console.log(`Skipping dedup step for ${dir}`)
+    }
+    return
+  }
   return dedup(outputPath)
 }
 
@@ -109,18 +195,22 @@ function getSchemaDirectories(
     } else {
       // get all the schema directories in all the contract directories
       fs.readdir(rootDir, (err, dirEntries) => {
-        // console.log(`entries for ${rootDir}`)
-        // console.dir(dirEntries)
-        if (err) console.error(err)
+        if (err) {
+          console.error(err)
+          return
+        }
+        if (!dirEntries) {
+          console.warn(`no entries found in ${rootDir}`)
+          resolve([])
+          return
+        }
         dirEntries.forEach((entry) => {
-          // console.log(`processing entry ${entry}`)
           try {
             const schemaDir = path.resolve(rootDir, entry, 'schema')
             if (
               fs.existsSync(schemaDir) &&
               fs.lstatSync(schemaDir).isDirectory()
             ) {
-              // console.log(`adding ${schemaDir}`)
               directories.push([schemaDir, entry])
             } else {
               console.log(`${schemaDir} is not a directory`)
@@ -135,7 +225,60 @@ function getSchemaDirectories(
   })
 }
 
-function dedup(inputPath: string, outputPath?: string): Promise<void> {
+function isEmptyFile(filename: string) {
+  const contents = fs.readFileSync(filename, 'utf8').trim()
+  return !contents
+}
+
+async function findEmptyFiles(directory: string): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const emptyFiles: string[] = []
+    fs.readdir(directory, (err, dirEntries) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+      if (!dirEntries) {
+        console.warn(`no entries found in ${directory}`)
+        resolve([])
+        return
+      }
+      dirEntries.forEach((entry) => {
+        try {
+          const filename = path.resolve(directory, entry)
+          if (
+            fs.existsSync(filename) &&
+            !fs.lstatSync(filename).isDirectory()
+          ) {
+            if (isEmptyFile(filename)) {
+              emptyFiles.push(entry.replace('.d.ts', ''))
+            }
+          }
+        } catch (e) {
+          console.warn(e)
+        }
+      })
+      resolve(emptyFiles)
+    })
+  })
+}
+
+function removeEmptyItems(barrelFile: string, emptyFiles: string[]) {
+  const emptyFileSet = new Set<string>(emptyFiles.map(emptyName => `export * from "./${emptyName}";`))
+  const contents = fs.readFileSync(barrelFile, 'utf-8')
+  const lines = contents.split('\n')
+  const outputLines = []
+  for (const line of lines) {
+    if (emptyFileSet.has(line)) {
+      outputLines.push(`// dedup emptied this file\n// ${line}`)
+    } else {
+      outputLines.push(line)
+    }
+  }
+  fs.writeFileSync(barrelFile, outputLines.join('\n'))
+}
+
+async function dedup(inputPath: string, outputPath?: string): Promise<void> {
   if (!outputPath) {
     outputPath = inputPath
   }
@@ -143,11 +286,21 @@ function dedup(inputPath: string, outputPath?: string): Promise<void> {
     project: path.join(inputPath, 'tsconfig.json'),
     duplicatesFile: path.join(outputPath, 'shared-types.d.ts'),
     barrelFile: path.join(outputPath, 'index.ts'),
-    // retainEmptyFiles: false,
+    retainEmptyFiles: true,
+  }
+  if (CODEGEN_LOG_LEVEL === 'verbose') {
+    options.logger = console
   }
   deleteFile(options.barrelFile)
   deleteFile(options.duplicatesFile)
-  return dedupe(options)
+  await dedupe(options)
+  // Now, remove any files fully emptied by dedup'ing
+  // from the index file
+  const emptyFiles = await findEmptyFiles(outputPath)
+  if (emptyFiles.length && options.barrelFile) {
+    console.log(`emptyFiles in ${outputPath}: ${emptyFiles}`)
+    removeEmptyItems(options.barrelFile, emptyFiles)
+  }
 }
 
 function ensurePath(outputPath: string) {
@@ -155,46 +308,65 @@ function ensurePath(outputPath: string) {
     return
   }
   try {
-    fs.mkdirSync(outputPath)
+    fs.mkdirSync(outputPath, { recursive: true })
   } catch (e) {
     console.log(e)
   }
 }
 
-async function main() {
-  const contractsPath = path.join(TYPES_DIR, 'contracts')
-  const daodaoOutputPath = path.join(contractsPath, DAO_NAME)
-  const cwPlusOutputPath = path.join(contractsPath, 'cw-plus')
-  removeDirectory(contractsPath)
-  ensurePath(contractsPath)
-  ensurePath(daodaoOutputPath)
-  ensurePath(cwPlusOutputPath)
-  const daodaoContractsDir =
-    process.env.DAODAO_SCHEMA_ROOT ?? '../dao-contracts/contracts'
-  const daodaoDirectories = await getSchemaDirectories(
-    daodaoContractsDir,
-    process.env.DAODAO_CONTRACTS
+async function compileSchemaFile(schemaFile: string, spec: CompilationSpec) {
+  const outputFile = path.join(
+    spec.outputPath,
+    path.basename(schemaFile).replace('.json', '.d.ts')
   )
-  const cwPlusRoot = process.env.CWPLUS_ROOT ?? '../cw-plus'
-  const cwplusContractsDir = path.join(cwPlusRoot, 'contracts')
-  const cwPlusPackagesDir = path.join(cwPlusRoot, 'packages')
+  const ts = await compileFromFile(schemaFile, spec.options)
+  ensurePath(path.dirname(outputFile))
+  fs.writeFileSync(outputFile, ts)
+}
 
-  const cwplusDirectories = await getSchemaDirectories(
-    cwplusContractsDir,
-    process.env.CWPLUS_CONTRACTS
-  )
-  const cwplusPackageDirectories = await getSchemaDirectories(
-    cwPlusPackagesDir,
-    process.env.CWPLUS_CONTRACTS
-  )
-  // Gen into subdirectories
-  await codegen(
-    [...cwplusDirectories, ...cwplusPackageDirectories],
-    cwPlusOutputPath
-  )
-  await codegen(daodaoDirectories, daodaoOutputPath)
-  //dedup(cwPlusOutputPath)
-  //dedup(daodaoOutputPath)
+async function main() {
+  let config = {
+    ...DEFAULT_CONFIG,
+  }
+  removeDirectory(CONTRACTS_OUTPUT_DIR)
+
+  const compilationSpecs = []
+  for (const root of config.schemaRoots) {
+    const { name, paths, outputName, outputDir } = root
+    ensurePath(path.join(outputDir, outputName))
+    for (const path of paths) {
+      const schemaDirectories = await getSchemaDirectories(path)
+      for (const [directory, contractName] of schemaDirectories) {
+        const compilationOptions = await schemaCompileOptions(
+          contractName,
+          name,
+          outputDir,
+          directory
+        )
+        compilationSpecs.push(compilationOptions)
+      }
+    }
+  }
+  console.dir(compilationSpecs)
+  const compilationPromises = []
+  for (const spec of compilationSpecs) {
+    for (const schemaFile of spec.schemaFiles) {
+      compilationPromises.push(compileSchemaFile(schemaFile, spec))
+    }
+  }
+  await Promise.all(compilationPromises)
+  if (CODEGEN_NO_DEDUP) {
+    if (CODEGEN_LOG_LEVEL === 'verbose') {
+      console.log(`Skipping dedup step`)
+    }
+  } else {
+    const dedupPromises = []
+    for (const spec of compilationSpecs) {
+      writeTsconfig(spec.outputPath)
+      dedupPromises.push(dedup(spec.outputPath))
+    }
+    await Promise.all(dedupPromises)
+  }
 }
 
 main()
