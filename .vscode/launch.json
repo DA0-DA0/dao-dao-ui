@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch codegen",
+      "name": "Debug codegen",
       "program": "${workspaceFolder}/tools/codegen.ts",
       "request": "launch",
       "preLaunchTask": "tsc: build - tsconfig.tools.json",
@@ -26,14 +26,6 @@
       "request": "launch",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/jest",
       "cwd": "${workspaceFolder}"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug codegen",
-      "program": "${workspaceFolder}/tools/codegen.ts",
-      "preLaunchTask": "tsc: build - tsconfig.tools.json",
-      "outFiles": ["${workspaceFolder}/out/**/*.js"]
     }
   ]
 }
