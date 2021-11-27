@@ -2,6 +2,7 @@ import React, { FormEvent, useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import LineAlert from 'components/LineAlert'
 import WalletLoader from 'components/WalletLoader'
+import HelpTooltip from 'components/HelpTooltip'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -230,9 +231,13 @@ const CreateDao: NextPage = () => {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left">Threshold</th>
+                <th className="text-left">
+                  Threshold
+                  <HelpTooltip text="The percentage of tokens that must vote yes for a proposal to pass" />
+                </th>
                 <th className="text-left box-border px-2 text-sm">
                   Max Voting Period (seconds)
+                  <HelpTooltip text="The time during which a proposal is open for voting. Proposals expire after this period passes" />
                 </th>
               </tr>
             </thead>
@@ -264,7 +269,10 @@ const CreateDao: NextPage = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-bold">Proposal Deposit</span>
+              <span className="label-text font-bold">
+                Proposal Deposit
+                <HelpTooltip text="The number of tokens that must be deposited to create a proposal" />
+              </span>
             </label>
             <input
               className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
