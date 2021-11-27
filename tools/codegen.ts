@@ -20,7 +20,6 @@ export type CompilationSpec = {
 
 dotenv.config({ path: '.env.local' })
 
-const DAO_NAME = 'dao-contracts'
 const TYPES_DIR = 'types'
 const CONTRACTS_OUTPUT_DIR = path.join(TYPES_DIR, 'contracts')
 const TSCONFIG_DEFAULT = `{
@@ -36,7 +35,33 @@ const TSCONFIG_DEFAULT = `{
 `
 
 const CODEGEN_NO_DEDUP = !!process.env.NO_DEDUP
-const CODEGEN_LOG_LEVEL = process.env.CODEGEN_LOG_LEVEL || ''
+const CODEGEN_LOG_LEVEL = (() => {
+  const logLevel = process.env.CODEGEN_LOG_LEVEL || ''
+  if (logLevel === 'verbose') {
+    return 2
+  }
+  if (logLevel === 'debug') {
+    return 3
+  }
+  if (logLevel === 'silent') {
+    return -1
+  }
+  return 1
+})()
+
+enum LogLevels {
+  Silent = -1,
+  Verbose = 2,
+  Debug = 3,
+  Normal = 1,
+}
+
+function log(msg: string, level = LogLevels.Normal) {
+  if (CODEGEN_LOG_LEVEL < level) {
+    return
+  }
+  console.log(msg)
+}
 
 const DEFAULT_CONFIG = {
   schemaRoots: [
@@ -57,7 +82,6 @@ const DEFAULT_CONFIG = {
     },
   ],
   tsconfig: TSCONFIG_DEFAULT,
-  writeTsconfig: false,
 }
 
 async function getSchemaFiles(schemaDir: string): Promise<string[]> {
@@ -118,8 +142,6 @@ function deleteFile(filePath?: string) {
 function removeDirectory(dir: string) {
   try {
     fs.rmdirSync(dir, { recursive: true })
-
-    console.log(`${dir} is deleted!`)
   } catch (err) {
     console.error(`Error while deleting ${dir}.`)
   }
@@ -129,18 +151,8 @@ function writeTsconfig(outputPath: string, tsconfig = TSCONFIG_DEFAULT) {
   fs.writeFileSync(path.join(outputPath, 'tsconfig.json'), tsconfig)
 }
 
-export async function codegen(directories: string[][], outputPath: string) {
-  const promises = []
-  for (const [dir, contractName] of directories) {
-    promises.push(codegenDirectory(outputPath, dir, contractName))
-  }
-  await Promise.all(promises)
-}
-
 async function run(cmd: string): Promise<boolean> {
-  if (CODEGEN_LOG_LEVEL === 'verbose') {
-    console.log(cmd)
-  }
+  log(cmd, LogLevels.Verbose)
   return new Promise((resolve, reject) => {
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
@@ -154,28 +166,6 @@ async function run(cmd: string): Promise<boolean> {
       resolve(true)
     })
   })
-}
-
-async function codegenDirectory(
-  outputDir: string,
-  dir: string,
-  contractName: string
-): Promise<void> {
-  const outputPath = path.join(outputDir, contractName)
-  ensurePath(outputPath)
-  writeTsconfig(outputPath)
-  const cmd = `npx json-schema-to-typescript -i ${dir} -o ${outputPath} --bannerComment '/* fml */' --no-format`
-  await run(cmd)
-  if (CODEGEN_LOG_LEVEL === 'verbose') {
-    console.log(`generated definitions from ${dir}`)
-  }
-  if (CODEGEN_NO_DEDUP) {
-    if (CODEGEN_LOG_LEVEL === 'verbose') {
-      console.log(`Skipping dedup step for ${dir}`)
-    }
-    return
-  }
-  return dedup(outputPath)
 }
 
 function getSchemaDirectories(
@@ -213,7 +203,7 @@ function getSchemaDirectories(
             ) {
               directories.push([schemaDir, entry])
             } else {
-              console.log(`${schemaDir} is not a directory`)
+              log(`${schemaDir} is not a directory`, LogLevels.Verbose)
             }
           } catch (e) {
             console.warn(e)
@@ -284,23 +274,25 @@ async function dedup(inputPath: string, outputPath?: string): Promise<void> {
   if (!outputPath) {
     outputPath = inputPath
   }
+  log(`starting dedup files in ${inputPath}...`, LogLevels.Verbose)
   const options: IDeDupeOptions = {
     project: path.join(inputPath, 'tsconfig.json'),
     duplicatesFile: path.join(outputPath, 'shared-types.d.ts'),
     barrelFile: path.join(outputPath, 'index.ts'),
     retainEmptyFiles: true,
   }
-  if (CODEGEN_LOG_LEVEL === 'verbose') {
+  if (CODEGEN_LOG_LEVEL === LogLevels.Debug) {
     options.logger = console
   }
   deleteFile(options.barrelFile)
   deleteFile(options.duplicatesFile)
   await dedupe(options)
+  log(`dedup complete for ${outputPath}`, LogLevels.Verbose)
   // Now, remove any files fully emptied by dedup'ing
   // from the index file
   const emptyFiles = await findEmptyFiles(outputPath)
   if (emptyFiles.length && options.barrelFile) {
-    console.log(`emptyFiles in ${outputPath}: ${emptyFiles}`)
+    log(`emptyFiles in ${outputPath}: ${emptyFiles}`, LogLevels.Verbose)
     removeEmptyItems(options.barrelFile, emptyFiles)
   }
 }
@@ -330,9 +322,12 @@ async function main() {
   let config = {
     ...DEFAULT_CONFIG,
   }
+  log(`Clearing output path ${CONTRACTS_OUTPUT_DIR}`)
   removeDirectory(CONTRACTS_OUTPUT_DIR)
 
   const compilationSpecs = []
+  let fileCount = 0
+  log('Calculating generation specs...')
   for (const root of config.schemaRoots) {
     const { name, paths, outputName, outputDir } = root
     ensurePath(path.join(outputDir, outputName))
@@ -345,11 +340,21 @@ async function main() {
           outputDir,
           directory
         )
+        fileCount += compilationOptions?.schemaFiles?.length ?? 0
         compilationSpecs.push(compilationOptions)
       }
     }
   }
-  console.dir(compilationSpecs)
+  log(
+    `code generating for ${fileCount} files in ${
+      compilationSpecs?.length ?? 0
+    } specs...`
+  )
+  if (CODEGEN_LOG_LEVEL === LogLevels.Debug) {
+    console.log('Compilation specs:')
+    console.dir(compilationSpecs)
+  }
+
   const compilationPromises = []
   for (const spec of compilationSpecs) {
     for (const schemaFile of spec.schemaFiles) {
@@ -358,17 +363,16 @@ async function main() {
   }
   await Promise.all(compilationPromises)
   if (CODEGEN_NO_DEDUP) {
-    if (CODEGEN_LOG_LEVEL === 'verbose') {
-      console.log(`Skipping dedup step`)
-    }
+    log(`Skipping dedup step`, LogLevels.Verbose)
   } else {
     const dedupPromises = []
     for (const spec of compilationSpecs) {
-      writeTsconfig(spec.outputPath)
+      writeTsconfig(spec.outputPath, config.tsconfig)
       dedupPromises.push(dedup(spec.outputPath))
     }
     await Promise.all(dedupPromises)
   }
+  log(`code generation complete`, LogLevels.Normal)
 }
 
 main()
