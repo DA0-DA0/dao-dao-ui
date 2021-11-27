@@ -1,4 +1,4 @@
 export interface AdminResponse {
-admin?: (string | null)
-[k: string]: unknown
+  admin?: string | null
+  [k: string]: unknown
 }

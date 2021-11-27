@@ -1,4 +1,4 @@
 export interface LatestStageResponse {
-latest_stage: number
-[k: string]: unknown
+  latest_stage: number
+  [k: string]: unknown
 }

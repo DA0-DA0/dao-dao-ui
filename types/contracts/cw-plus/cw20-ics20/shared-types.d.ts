@@ -11,42 +11,42 @@
  *
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
-export type Uint128 = string;
+export type Uint128 = string
 export interface ChannelInfo {
-    [k: string]: unknown;
-    /**
-     * the connection this exists on (you can use to query client/consensus info)
-     */
-    connection_id: string;
-    /**
-     * the remote channel/port we connect to
-     */
-    counterparty_endpoint: IbcEndpoint;
-    /**
-     * id of this channel
-     */
-    id: string;
+  [k: string]: unknown
+  /**
+   * the connection this exists on (you can use to query client/consensus info)
+   */
+  connection_id: string
+  /**
+   * the remote channel/port we connect to
+   */
+  counterparty_endpoint: IbcEndpoint
+  /**
+   * id of this channel
+   */
+  id: string
 }
 export interface IbcEndpoint {
-    [k: string]: unknown;
-    channel_id: string;
-    port_id: string;
+  [k: string]: unknown
+  channel_id: string
+  port_id: string
 }
 /**
  * This is the message we accept via Receive
  */
 export interface TransferMsg {
-    [k: string]: unknown;
-    /**
-     * The local channel to send the packets on
-     */
-    channel: string;
-    /**
-     * The remote address to send to. Don't use HumanAddress as this will likely have a different Bech32 prefix than we use and cannot be validated locally
-     */
-    remote_address: string;
-    /**
-     * How long the packet lives in seconds. If not specified, use default_timeout
-     */
-    timeout?: (number | null);
+  [k: string]: unknown
+  /**
+   * The local channel to send the packets on
+   */
+  channel: string
+  /**
+   * The remote address to send to. Don't use HumanAddress as this will likely have a different Bech32 prefix than we use and cannot be validated locally
+   */
+  remote_address: string
+  /**
+   * How long the packet lives in seconds. If not specified, use default_timeout
+   */
+  timeout?: number | null
 }

@@ -1,6 +1,6 @@
-import { VoterDetail } from "./shared-types";
+import { VoterDetail } from './shared-types'
 
 export interface VoterListResponse {
-voters: VoterDetail[]
-[k: string]: unknown
+  voters: VoterDetail[]
+  [k: string]: unknown
 }

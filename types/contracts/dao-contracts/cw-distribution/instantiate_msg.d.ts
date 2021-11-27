@@ -1,3 +1,3 @@
 export interface InstantiateMsg {
-[k: string]: unknown
+  [k: string]: unknown
 }

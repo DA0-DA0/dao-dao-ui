@@ -1,4 +1,4 @@
 export interface CanExecuteResponse {
-can_execute: boolean
-[k: string]: unknown
+  can_execute: boolean
+  [k: string]: unknown
 }

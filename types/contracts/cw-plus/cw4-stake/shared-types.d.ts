@@ -11,12 +11,14 @@
  *
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
-export type Uint128 = string;
-export type Denom = ({
-    native: string
-    } | {
-    cw20: Addr
-    });
+export type Uint128 = string
+export type Denom =
+  | {
+      native: string
+    }
+  | {
+      cw20: Addr
+    }
 /**
  * A human readable address.
  *
@@ -26,4 +28,4 @@ export type Denom = ({
  *
  * This type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.
  */
-export type Addr = string;
+export type Addr = string

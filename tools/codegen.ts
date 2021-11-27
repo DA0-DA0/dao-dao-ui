@@ -264,7 +264,9 @@ async function findEmptyFiles(directory: string): Promise<string[]> {
 }
 
 function removeEmptyItems(barrelFile: string, emptyFiles: string[]) {
-  const emptyFileSet = new Set<string>(emptyFiles.map(emptyName => `export * from "./${emptyName}";`))
+  const emptyFileSet = new Set<string>(
+    emptyFiles.map((emptyName) => `export * from "./${emptyName}";`)
+  )
   const contents = fs.readFileSync(barrelFile, 'utf-8')
   const lines = contents.split('\n')
   const outputLines = []

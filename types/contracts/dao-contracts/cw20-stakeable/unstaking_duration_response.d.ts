@@ -1,6 +1,6 @@
-import { Duration } from "./shared-types";
+import { Duration } from './shared-types'
 
 export interface UnstakingDurationResponse {
-duration?: (Duration | null)
-[k: string]: unknown
+  duration?: Duration | null
+  [k: string]: unknown
 }

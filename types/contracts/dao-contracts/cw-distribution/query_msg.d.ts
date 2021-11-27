@@ -1,3 +1,3 @@
 export interface QueryMsg {
-[k: string]: unknown
+  [k: string]: unknown
 }

@@ -1,10 +1,12 @@
-import { CreateMsg } from "./shared-types";
+import { CreateMsg } from './shared-types'
 
-export type ReceiveMsg = ({
-create: CreateMsg
-} | {
-top_up: {
-id: string
-[k: string]: unknown
-}
-})
+export type ReceiveMsg =
+  | {
+      create: CreateMsg
+    }
+  | {
+      top_up: {
+        id: string
+        [k: string]: unknown
+      }
+    }

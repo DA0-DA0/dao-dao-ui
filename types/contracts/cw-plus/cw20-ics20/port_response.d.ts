@@ -1,4 +1,4 @@
 export interface PortResponse {
-port_id: string
-[k: string]: unknown
+  port_id: string
+  [k: string]: unknown
 }

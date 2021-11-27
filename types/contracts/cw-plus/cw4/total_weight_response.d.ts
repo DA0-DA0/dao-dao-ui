@@ -1,4 +1,4 @@
 export interface TotalWeightResponse {
-weight: number
-[k: string]: unknown
+  weight: number
+  [k: string]: unknown
 }

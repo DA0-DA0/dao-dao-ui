@@ -1,6 +1,6 @@
-import { VoteInfo } from "./shared-types";
+import { VoteInfo } from './shared-types'
 
 export interface VoteResponse {
-vote?: (VoteInfo | null)
-[k: string]: unknown
+  vote?: VoteInfo | null
+  [k: string]: unknown
 }

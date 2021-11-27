@@ -1,5 +1,5 @@
 export type ReceiveMsg = {
-bond: {
-[k: string]: unknown
-}
+  bond: {
+    [k: string]: unknown
+  }
 }

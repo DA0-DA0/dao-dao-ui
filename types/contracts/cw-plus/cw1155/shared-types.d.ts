@@ -1,15 +1,18 @@
 /**
  * Expiration represents a point in time when some event happens. It can compare with a BlockInfo and will return is_expired() == true once the condition is hit (and for every block in the future)
  */
-export type Expiration = ({
-    at_height: number
-    } | {
-    at_time: Timestamp
-    } | {
-    never: {
-    [k: string]: unknown
+export type Expiration =
+  | {
+      at_height: number
     }
-    });
+  | {
+      at_time: Timestamp
+    }
+  | {
+      never: {
+        [k: string]: unknown
+      }
+    }
 /**
  * A point in time in nanosecond precision.
  *
@@ -21,7 +24,7 @@ export type Expiration = ({
  *
  * let ts = ts.plus_seconds(2); assert_eq!(ts.nanos(), 3_000_000_202); assert_eq!(ts.seconds(), 3); assert_eq!(ts.subsec_nanos(), 202); ```
  */
-export type Timestamp = Uint64;
+export type Timestamp = Uint64
 /**
  * A thin wrapper around u64 that is using strings for JSON encoding/decoding, such that the full u64 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
  *
@@ -33,7 +36,7 @@ export type Timestamp = Uint64;
  *
  * let b = Uint64::from(70u32); assert_eq!(b.u64(), 70); ```
  */
-export type Uint64 = string;
+export type Uint64 = string
 /**
  * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
  *
@@ -47,10 +50,10 @@ export type Uint64 = string;
  *
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
-export type Uint128 = string;
+export type Uint128 = string
 /**
  * Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.
  *
  * This is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>
  */
-export type Binary = string;
+export type Binary = string

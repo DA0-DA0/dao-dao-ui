@@ -1,5 +1,5 @@
 export interface AdminListResponse {
-admins: string[]
-mutable: boolean
-[k: string]: unknown
+  admins: string[]
+  mutable: boolean
+  [k: string]: unknown
 }

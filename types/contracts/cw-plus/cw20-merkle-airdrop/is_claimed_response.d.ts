@@ -1,4 +1,4 @@
 export interface IsClaimedResponse {
-is_claimed: boolean
-[k: string]: unknown
+  is_claimed: boolean
+  [k: string]: unknown
 }

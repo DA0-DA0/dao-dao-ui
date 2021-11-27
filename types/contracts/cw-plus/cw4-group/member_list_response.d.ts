@@ -1,6 +1,6 @@
-import { Member } from "./shared-types";
+import { Member } from './shared-types'
 
 export interface MemberListResponse {
-members: Member[]
-[k: string]: unknown
+  members: Member[]
+  [k: string]: unknown
 }

@@ -1,5 +1,5 @@
 export type WhitelistQueryMsg = {
-admin_list: {
-[k: string]: unknown
-}
+  admin_list: {
+    [k: string]: unknown
+  }
 }
