@@ -7,7 +7,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { InstantiateMsg, Voter } from 'types/cw3'
+// import { InstantiateMsg } from 'types/contracts/cw-plus/cw3'
+import { InstantiateMsg } from 'types/contracts/cw-plus/cw3-fixed-multisig/instantiate_msg'
+// import { InstantiateMsg as DAOInstantiateMsg } from 'types/contracts/dao-contracts'
+// import { VoterDetail } from 'types/contracts/cw-plus'
+
 import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 
@@ -40,18 +44,26 @@ function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
 }
 
 function validateNonEmpty(msg: InstantiateMsg, label: string) {
-  const { required_weight, max_voting_period, voters } = msg
-  if (isNaN(required_weight) || isNaN(max_voting_period.time)) {
+  const { min_bond, unbonding_period, voters } = msg
+  // if (isNaN(min_bond) || isNaN(unbonding_period.time)) {
+  //   return false
+  // }
+  if (!min_bond) {
+    return false
+  }
+  const unboundingTime = (unbonding_period as any).time
+  if (isNaN(unboundingTime)) {
     return false
   }
   if (label.length === 0) {
     return false
   }
-  if (
-    voters.some(({ addr, weight }: Voter) => addr.length === 0 || isNaN(weight))
-  ) {
-    return false
-  }
+  // Voters?
+  // if (
+  //   voters.some(({ addr, weight }: VoterDetail) => addr.length === 0 || isNaN(weight))
+  // ) {
+  //   return false
+  // }
   return true
 }
 
@@ -85,12 +97,12 @@ const CreateMultisig: NextPage = () => {
       addr: formEl[`address_${index}`]?.value?.trim(),
       weight: parseInt(formEl[`weight_${index}`]?.value?.trim()),
     }))
-    const required_weight = parseInt(formEl.threshold.value?.trim())
+    const required_weight = parseInt(formEl.threshold.value?.trim(), 10)
     const max_voting_period = {
       time: parseInt(formEl.duration.value?.trim()),
     }
 
-    const msg = {
+    const msg: InstantiateMsg = {
       voters,
       required_weight,
       max_voting_period,

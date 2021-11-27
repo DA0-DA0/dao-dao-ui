@@ -1,5 +1,5 @@
 import LineAlert from 'components/LineAlert'
-import { VoteInfo } from 'types/cw3'
+import { VoteInfo } from 'types/contracts/cw-plus/cw3'
 
 function VoteButtons({
   onVoteYes = () => {},

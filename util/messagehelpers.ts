@@ -1,4 +1,10 @@
-import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/cw3'
+import {
+  BankMsg,
+  Coin,
+  CosmosMsgFor_Empty,
+  ExecuteMsg,
+} from 'types/contracts/cw-plus/cw3'
+import { ExecuteMsg as DAOExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
 
@@ -32,11 +38,24 @@ export function makeSpendMessage(
   to_address: string,
   from_address: string,
   denom = DENOM
-): CosmosMsgFor_Empty_1 {
+): CosmosMsgFor_Empty {
   const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
   return {
     bank,
   }
+}
+
+export function makeMintMessage(
+  amount: string,
+  to_address: string
+): DAOExecuteMsg {
+  const msg: DAOExecuteMsg = {
+    mint: {
+      amount,
+      recipient: to_address,
+    },
+  }
+  return msg
 }
 
 export interface MessageAction {
@@ -57,7 +76,7 @@ export function labelForAmount(amount: Coin[]): string {
 }
 
 export function labelForMessage(
-  msg?: CosmosMsgFor_Empty_1,
+  msg?: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg,
   defaultMessage = ''
 ): string {
   if (!msg) {
@@ -74,6 +93,8 @@ export function labelForMessage(
     } else if (anyMsg.bank.burn) {
       messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
     }
+  } else if (anyMsg.mint) {
+    messageString = `${anyMsg.mint.amount} -> ${anyMsg.mint.recipient}`
   } else if (anyMsg.custom) {
     const customMap: { [k: string]: any } = anyMsg.custom
     messageString = Object.entries(customMap)

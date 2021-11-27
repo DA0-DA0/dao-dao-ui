@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug codegen",
+      "program": "${workspaceFolder}/tools/codegen.ts",
+      "request": "launch",
+      "preLaunchTask": "tsc: build - tsconfig.tools.json",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "pwa-node"
+    },
+    {
       "type": "pwa-chrome",
       "request": "launch",
       "name": "Debug Frontend (localhost)",

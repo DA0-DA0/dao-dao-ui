@@ -1,7 +1,7 @@
 import 'jest'
 
 import { Proposal, EmptyProposal } from './proposal'
-import { makeBankMessage } from '../../util/messagehelpers'
+import { makeBankMessage, makeMintMessage } from '../../util/messagehelpers'
 import { ProposalReducer } from './proposalReducer'
 import {
   ProposalAddMessage,
@@ -68,7 +68,7 @@ describe('ProposalReducer', () => {
     expect(messages[0].message).toEqual(addMessageAction.message)
   })
 
-  it('should update an existing message', () => {
+  it('should update an existing spend message', () => {
     const message: any = makeBankMessage(
       '9',
       'send_address',
@@ -93,6 +93,31 @@ describe('ProposalReducer', () => {
       'dao_address',
       'test_denom'
     )
+    const updateMessageAction: ProposalUpdateMessage = {
+      type: 'updateMessage',
+      id: activeMessage.id,
+      message: updatedMessage,
+    }
+    reduced = ProposalReducer(reduced, updateMessageAction)
+    const updatedMapEntry = getMessage(reduced, activeMessage.id)
+    expect(updatedMapEntry?.message).toEqual(updatedMessage)
+  })
+
+  it('should update an existing mint message', () => {
+    const message: any = makeMintMessage('9', 'send_address')
+    const addMessageAction: ProposalAddMessage = {
+      type: 'addMessage',
+      messageType: ProposalMessageType.Mint,
+      message,
+    }
+
+    // Test that the message is added to the proposal
+    let reduced = ProposalReducer(proposal, addMessageAction)
+    const messages = proposalMessages(reduced, ProposalMessageType.Mint)
+    expect(messages.length).toBe(1)
+    let activeMessage = messages[0]
+
+    const updatedMessage: any = makeMintMessage('99', 'send_address2')
     const updateMessageAction: ProposalUpdateMessage = {
       type: 'updateMessage',
       id: activeMessage.id,
