@@ -237,7 +237,7 @@ const CreateDao: NextPage = () => {
                 </th>
                 <th className="text-left box-border px-2 text-sm">
                   Max Voting Period (seconds)
-                  <HelpTooltip text="The amount of time a proposal can be voted on before expiring" />
+                  <HelpTooltip text="The time during which a proposal is open for voting. Proposals expire after this period passes" />
                 </th>
               </tr>
             </thead>
