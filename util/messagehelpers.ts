@@ -4,7 +4,13 @@ import {
   CosmosMsgFor_Empty,
   ExecuteMsg,
 } from 'types/contracts/cw-plus/cw3'
-import { ExecuteMsg as DAOExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
+import { ExecuteMsg as MintExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
+import {
+  Cw20Coin,
+  Duration,
+  InstantiateMsg as DaoInstantiateMsg,
+} from 'types/contracts/dao-contracts/cw-dao'
+import { CW20_CODE_ID } from 'util/constants'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
 
@@ -48,12 +54,67 @@ export function makeSpendMessage(
 export function makeMintMessage(
   amount: string,
   to_address: string
-): DAOExecuteMsg {
-  const msg: DAOExecuteMsg = {
+): MintExecuteMsg {
+  const msg: MintExecuteMsg = {
     mint: {
       amount,
       recipient: to_address,
     },
+  }
+  return msg
+}
+
+export function validDaoInstantiateMessageParams(
+  name?: string,
+  description?: string,
+  tokenName?: string,
+  tokenSymbol?: string,
+  owners?: Cw20Coin[],
+  percentage?: string | number,
+  max_voting_period?: Duration,
+  proposal_deposit_amount?: string | number
+): boolean {
+  return false
+}
+
+export function makeDaoInstantiateMessage(
+  name: string,
+  description: string,
+  tokenName: string,
+  tokenSymbol: string,
+  owners: Cw20Coin[],
+  percentage: string | number,
+  max_voting_period: Duration,
+  proposal_deposit_amount: string | number
+): DaoInstantiateMsg {
+  if (typeof percentage === 'number') {
+    percentage = `${percentage}`
+  }
+  if (typeof proposal_deposit_amount === 'number') {
+    proposal_deposit_amount = `${proposal_deposit_amount}`
+  }
+  const msg: DaoInstantiateMsg = {
+    name,
+    description,
+    gov_token: {
+      instantiate_new_cw20: {
+        code_id: CW20_CODE_ID,
+        label: tokenName,
+        msg: {
+          name: tokenName,
+          symbol: tokenSymbol,
+          decimals: 6,
+          initial_balances: owners,
+        },
+      },
+    },
+    threshold: {
+      absolute_percentage: {
+        percentage,
+      },
+    },
+    max_voting_period,
+    proposal_deposit_amount,
   }
   return msg
 }
@@ -76,7 +137,7 @@ export function labelForAmount(amount: Coin[]): string {
 }
 
 export function labelForMessage(
-  msg?: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg,
+  msg?: CosmosMsgFor_Empty | ExecuteMsg | MintExecuteMsg,
   defaultMessage = ''
 ): string {
   if (!msg) {
