@@ -33,7 +33,7 @@ export default function CustomEditor({
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
   const themeContext = useThemeContext()
 
-  function updateCustom(message: { custom: any }) {
+  function updateCustom(message: any) {
     try {
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom

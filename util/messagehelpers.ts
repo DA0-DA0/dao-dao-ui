@@ -1,5 +1,5 @@
 import { toBase64, toAscii } from '@cosmjs/encoding'
-import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { BankMsg, Coin, CosmosMsgFor_Empty_1, WasmMsg } from 'types/cw3'
 import { convertDenomToHumanReadableDenom } from './conversion'
 
 const DENOM = convertDenomToHumanReadableDenom(
@@ -31,18 +31,19 @@ export function makeBankMessage(
   }
 }
 
-export function makeWasmMessage(message: any): any {
+export function makeWasmMessage(message: any): WasmMsg {
   // We need to encode Wasm Execute and Instantiate messages
+  let msg = message
   if (message?.wasm?.execute) {
-    message.wasm.execute.msg = toBase64(
+    msg.wasm.execute.msg = toBase64(
       toAscii(JSON.stringify(message.wasm.execute.msg))
     )
   } else if (message?.wasm?.instantiate) {
-    message.wasm.instantiate.msg = toBase64(
+    msg.wasm.instantiate.msg = toBase64(
       toAscii(JSON.stringify(message.wasm.instantiate.msg))
     )
   }
-  return message
+  return msg
 }
 
 export function makeSpendMessage(
