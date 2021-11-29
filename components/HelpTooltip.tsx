@@ -1,7 +1,4 @@
-import {
-  InformationCircleIcon,
-  BanIcon,
-} from '@heroicons/react/outline'
+import { InformationCircleIcon, BanIcon } from '@heroicons/react/outline'
 
 export default function HelpTooltip({
   text,

@@ -1,42 +1,31 @@
+import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import HelpTooltip from 'components/HelpTooltip'
+import WalletLoader from 'components/WalletLoader'
+import { useSigningClient } from 'contexts/cosmwasm'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import React, {
   ChangeEventHandler,
   ReactElement,
   useEffect,
   useState,
 } from 'react'
-import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import LineAlert from 'components/LineAlert'
 import { useForm } from 'react-hook-form'
-import WalletLoader from 'components/WalletLoader'
-import HelpTooltip from 'components/HelpTooltip'
-import { useSigningClient } from 'contexts/cosmwasm'
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
+import { InstantiateMsg } from 'types/contracts/dao-contracts/cw-dao'
 import { DAO_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-import { errorNotify, successNotify } from 'util/toast'
-import { InstantiateMsg } from 'types/contracts/dao-contracts/cw-dao'
+import { isValidAddress } from 'util/isValidAddress'
 import { makeDaoInstantiateMessage } from 'util/messagehelpers'
+import { errorNotify, successNotify } from 'util/toast'
 
 const THRESHOLD_GRANULARITY = 1000
-
-interface FormElements extends HTMLFormControlsCollection {
-  duration: HTMLInputElement
-  threshold: HTMLInputElement
-  label: HTMLInputElement
-  [key: string]: any
-}
-
-interface DaoFormElement extends HTMLFormElement {
-  readonly elements: FormElements
-}
 
 interface DaoCreateData {
   deposit: string
   description: string
   duration: string
   label: string
-  refund: boolean
+  refund: string | boolean
   threshold: string
   tokenName: string
   tokenSymbol: string
@@ -48,17 +37,11 @@ const CreateDao: NextPage = () => {
   const router = useRouter()
   const { walletAddress, signingClient } = useSigningClient()
   const [count, setCount] = useState(2)
-  const [contractAddress, setContractAddress] = useState('')
+  const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
-  // const [name, setName] = useState('')
-  // const [description, setDescription] = useState('')
-  // const [tokenName, setTokenName] = useState('')
-  // const [tokenSymbol, setTokenSymbol] = useState('')
-  const [refund, setRefund] = useState(true)
-  // const [proposalDepositAmount, setProposalDepositAmount] = useState(0)
-  const [threshold, setThreshold] = useState(THRESHOLD_GRANULARITY)
+  // Default to 75% of the vote
+  const [threshold, setThreshold] = useState(THRESHOLD_GRANULARITY * 0.75)
   const {
     register,
     handleSubmit,
@@ -104,11 +87,14 @@ const CreateDao: NextPage = () => {
       address: getIndexedValue('address', index),
       amount: getIndexedValue('weight', index),
     }))
-    const threshold = parseInt(getStringValue('threshold') || '0', 10)
+    const threshold = getIntValue('threshold')
     const maxVotingPeriod = {
-      height: getIntValue('duration'),
+      time: getIntValue('duration'),
     }
-
+    const refund =
+      typeof data.refund === 'string'
+        ? getIntValue('refund') === 1
+        : !!data.refund
     const msg: InstantiateMsg = makeDaoInstantiateMessage(
       data.label,
       data.description,
@@ -116,13 +102,11 @@ const CreateDao: NextPage = () => {
       data.tokenSymbol,
       owners,
       threshold / THRESHOLD_GRANULARITY,
-      {
-        time: parseInt(data.duration ?? '0', 10),
-      },
-      data.proposalDepositAmount
+      maxVotingPeriod,
+      getIntValue('proposalDepositAmount') || 0,
+      refund
     )
 
-    // Shouldn't the wallet component take care of this?
     if (!signingClient) {
       setLoading(false)
       setError('Please try reconnecting your wallet.')
@@ -147,7 +131,6 @@ const CreateDao: NextPage = () => {
       })
       .catch((err: any) => {
         setLoading(false)
-        console.log('err', err)
         setError(err.message)
       })
   }
@@ -156,13 +139,11 @@ const CreateDao: NextPage = () => {
 
   const InputField = ({
     fieldName,
-    checked,
     label,
     toolTip,
     type,
     placeholder,
     readOnly,
-    value,
     errorMessage,
     onChange,
     size,
@@ -171,15 +152,14 @@ const CreateDao: NextPage = () => {
     min,
     max,
     showErrorMessage,
+    validate,
   }: {
     fieldName: string
-    checked?: boolean
     label?: string
     toolTip?: string
     type?: string
     placeholder?: string
     readOnly?: boolean
-    value?: string | number
     errorMessage?: string
     size?: number
     defaultValue?: string | number
@@ -188,6 +168,7 @@ const CreateDao: NextPage = () => {
     max?: number
     showErrorMessage?: boolean
     onChange?: ChangeEventHandler<HTMLInputElement>
+    validate?: (val: string) => boolean
   }) => {
     let options = undefined
     if (typeof required === 'undefined') {
@@ -195,6 +176,9 @@ const CreateDao: NextPage = () => {
     }
     if (required) {
       options = { required }
+    }
+    if (validate) {
+      options = { ...options, validate }
     }
     const errorText = fieldErrorMessage(fieldName, errorMessage)
     const errorComponent =
@@ -211,62 +195,42 @@ const CreateDao: NextPage = () => {
         {tooltipComponent}
       </label>
     ) : null
-    let inputComponent
-    if (type === 'checkbox') {      
-      inputComponent = (
-        <input
-          {...register(fieldName, options)}
-          checked={true}
-          className="toggle"
-          type={type}
-          readOnly={readOnly}
-          onChange={(e) => {
-            console.log(
-              `onChange called ${e?.target?.value}/ checked: ${e.target.checked}`
-            )
-            console.dir(e)
-            if (onChange) {
-              onChange(e)
-            }
-          }}
-        />
-      )
-    } else {
-      inputComponent = (
-        <input
-          {...register(fieldName, options)}
-          className={
-            errorText
-              ? `block box-border m-0 w-full rounded input input-bordered focus:input-primary input-error`
-              : `block box-border m-0 w-full rounded input input-bordered focus:input-primary`
-          }
-          defaultValue={defaultValue}
-          type={type || 'text'}
-          placeholder={placeholder || label}
-          readOnly={readOnly}
-          onChange={(e) => {
-            console.log(
-              `onChange called ${e?.target?.value}/ checked: ${e.target.checked}`
-            )
-            console.dir(e)
-            if (onChange) {
-              onChange(e)
-            }
-          }}
-          size={size}
-          min={min}
-          max={max}
-        />
-      )
-    }
-    return <div className="form-control">{labelComponent}{inputComponent}</div>
+    const inputComponent = (
+      <input
+        {...register(fieldName, options)}
+        className={
+          type === 'checkbox'
+            ? 'toggle'
+            : errorText
+            ? `block box-border m-0 w-full rounded input input-bordered focus:input-primary input-error`
+            : `block box-border m-0 w-full rounded input input-bordered focus:input-primary`
+        }
+        defaultValue={defaultValue}
+        defaultChecked={
+          type === 'checkbox' && defaultValue === 1 ? true : undefined
+        }
+        type={type || 'text'}
+        placeholder={placeholder || label}
+        readOnly={readOnly}
+        onChange={onChange}
+        size={size}
+        min={min}
+        max={max}
+      />
+    )
+    return (
+      <div className="form-control">
+        {labelComponent}
+        {inputComponent}
+      </div>
+    )
   }
 
   function AddressErrorRow({ idx }: { idx: number }) {
     const addressName = `address_${idx}`
     const weightName = `weight_${idx}`
     const addressErrorMessage =
-      fieldErrorMessage(addressName, 'Address Required') || ''
+      fieldErrorMessage(addressName, 'Valid walet address required') || ''
     const weightErrorMessage =
       fieldErrorMessage(weightName, 'Weight must be non-zero') || ''
     return (
@@ -297,6 +261,7 @@ const CreateDao: NextPage = () => {
             size={45}
             readOnly={readOnly}
             showErrorMessage={false}
+            validate={isValidAddress}
           />
         </td>
         <td className="pb-2">
@@ -314,6 +279,7 @@ const CreateDao: NextPage = () => {
       </tr>
     )
   }
+
   const addressRows: ReactElement[] = []
   for (let index = 0; index < count; index++) {
     addressRows.push(<AddressErrorRow key={`${index}_err_row`} idx={index} />)
@@ -365,8 +331,18 @@ const CreateDao: NextPage = () => {
           <table className="w-full mb-8">
             <thead>
               <tr>
-                <th className="text-left">Address</th>
-                <th className="text-left">Amount</th>
+                <th className="text-left">
+                  Address{' '}
+                  <HelpTooltip
+                    text={'Wallet address to receive initial tokens'}
+                  />
+                </th>
+                <th className="text-left">
+                  Amount{' '}
+                  <HelpTooltip
+                    text={'Initial tokens minted for this address'}
+                  />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -443,34 +419,21 @@ const CreateDao: NextPage = () => {
             type="number"
             readOnly={complete}
             required={false}
+            defaultValue={0}
+            min={0}
           />
 
-          <InputField
-            fieldName="refund"
-            label="Refund Proposal Deposits"
-            toolTip="Whether deposits are refunded after proposal voting"
-            type="checkbox"
-            defaultValue={1}
-            //onChange={(e) => setRefund(!refund)}
-            readOnly={complete}
-          />
-
-          {/* <div className="p-6 card bordered">
-            <div className="form-control">
-              <label className="cursor-pointer label" htmlFor="refund">
-                <span className="label-text">Refund Proposal Deposits</span>
-              </label>
-              <input
-                type="checkbox"
-                className="toggle"
-                {...register('refund')}
-              />
-              <HelpTooltip
-                text={'Whether deposits are refunded after proposal voting'}
-              />
-            </div>
-          </div> */}
-
+          <div className="p-6 card bordered">
+            <InputField
+              fieldName="refund"
+              label="Refund Proposal Deposits"
+              toolTip="Whether deposits are refunded after proposal voting"
+              type="checkbox"
+              defaultValue={1}
+              readOnly={complete}
+              required={false}
+            />
+          </div>
           {!complete && (
             <button
               className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${

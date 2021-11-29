@@ -85,7 +85,8 @@ export function makeDaoInstantiateMessage(
   owners: Cw20Coin[],
   percentage: string | number,
   max_voting_period: Duration,
-  proposal_deposit_amount: string | number
+  proposal_deposit_amount: string | number,
+  refund_failed_proposals: boolean
 ): DaoInstantiateMsg {
   if (typeof percentage === 'number') {
     percentage = `${percentage}`
@@ -115,6 +116,7 @@ export function makeDaoInstantiateMessage(
     },
     max_voting_period,
     proposal_deposit_amount,
+    refund_failed_proposals,
   }
   return msg
 }
