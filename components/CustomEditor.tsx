@@ -9,6 +9,7 @@ import JSONInput from 'react-json-editor-ajrm'
 // @ts-ignore
 import locale from 'react-json-editor-ajrm/locale/en'
 import { useThemeContext } from '../contexts/theme'
+import { makeWasmMessage } from 'util/messagehelpers'
 
 type JSONError = {
   line?: number
@@ -37,6 +38,7 @@ export default function CustomEditor({
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
       let action: ProposalAction
+      message = makeWasmMessage(message)
 
       if (id) {
         action = {
