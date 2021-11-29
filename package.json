@@ -15,8 +15,8 @@
     "ts:watch": "yarn ts --watch"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.26.2",
-    "@cosmjs/stargate": "^0.26.2",
+    "@cosmjs/cosmwasm-stargate": "^0.26.5",
+    "@cosmjs/stargate": "^0.26.5",
     "@heroicons/react": "^1.0.5",
     "@types/react-json-editor-ajrm": "^2.5.2",
     "daisyui": "^1.14.0",
