@@ -1,4 +1,9 @@
-import React, { FormEvent, useEffect, useState } from 'react'
+import React, {
+  ChangeEventHandler,
+  ReactElement,
+  useEffect,
+  useState,
+} from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import LineAlert from 'components/LineAlert'
 import { useForm } from 'react-hook-form'
@@ -14,48 +19,6 @@ import { InstantiateMsg } from 'types/contracts/dao-contracts/cw-dao'
 import { makeDaoInstantiateMessage } from 'util/messagehelpers'
 
 const THRESHOLD_GRANULARITY = 1000
-
-function AddressRow({
-  idx,
-  readOnly,
-  register,
-  fieldError,
-}: {
-  idx: number
-  readOnly: boolean
-  register: any
-  fieldError: any
-}) {
-  const addressName = `address_${idx}`
-  const weightName = `weight_${idx}`
-  return (
-    <tr key={idx}>
-      <td className="pr-2 pb-2">
-        <input
-          className="block box-border m-0 w-full rounded input input-bordered focus:input-primary font-mono"
-          type="text"
-          {...register(addressName, { required: true })}
-          placeholder="wallet address..."
-          size={45}
-          readOnly={readOnly}
-        />
-        {fieldError(addressName, 'Address Required')}
-      </td>
-      <td className="pb-2">
-        <input
-          type="number"
-          className="block box-border m-0 w-full rounded input input-bordered focus:input-primary font-mono"
-          {...register(weightName, { required: true })}
-          defaultValue="1"
-          min={1}
-          max={999}
-          readOnly={readOnly}
-        />
-        {fieldError(weightName, 'Weight must be non-zero')}
-      </td>
-    </tr>
-  )
-}
 
 interface FormElements extends HTMLFormControlsCollection {
   duration: HTMLInputElement
@@ -75,8 +38,9 @@ interface DaoCreateData {
   label: string
   refund: boolean
   threshold: string
-  'token-name': string
-  'token-symbol': string
+  tokenName: string
+  tokenSymbol: string
+  proposalDepositAmount: string
   [key: string]: string | boolean
 }
 
@@ -88,12 +52,12 @@ const CreateDao: NextPage = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [tokenName, setTokenName] = useState('')
-  const [tokenSymbol, setTokenSymbol] = useState('')
+  // const [name, setName] = useState('')
+  // const [description, setDescription] = useState('')
+  // const [tokenName, setTokenName] = useState('')
+  // const [tokenSymbol, setTokenSymbol] = useState('')
   const [refund, setRefund] = useState(true)
-  const [proposalDepositAmount, setProposalDepositAmount] = useState(0)
+  // const [proposalDepositAmount, setProposalDepositAmount] = useState(0)
   const [threshold, setThreshold] = useState(THRESHOLD_GRANULARITY)
   const {
     register,
@@ -105,7 +69,7 @@ const CreateDao: NextPage = () => {
     if (error) errorNotify(error)
   }, [error])
 
-  function fieldError(fieldName: string, msg?: string) {
+  function fieldErrorMessage(fieldName: string, msg?: string) {
     const err = errors[fieldName]
     if (err) {
       if (!msg) {
@@ -115,9 +79,9 @@ const CreateDao: NextPage = () => {
           msg = `bad input for ${fieldName} (${err.type})`
         }
       }
-      return <LineAlert variant="error" msg={msg} />
+      return msg
     }
-    return null
+    return ''
   }
 
   const onSubmit = (data: DaoCreateData) => {
@@ -146,14 +110,16 @@ const CreateDao: NextPage = () => {
     }
 
     const msg: InstantiateMsg = makeDaoInstantiateMessage(
-      name,
-      description,
-      tokenName,
-      tokenSymbol,
+      data.label,
+      data.description,
+      data.tokenName,
+      data.tokenSymbol,
       owners,
       threshold / THRESHOLD_GRANULARITY,
-      maxVotingPeriod,
-      proposalDepositAmount
+      {
+        time: parseInt(data.duration ?? '0', 10),
+      },
+      data.proposalDepositAmount
     )
 
     // Shouldn't the wallet component take care of this?
@@ -164,7 +130,13 @@ const CreateDao: NextPage = () => {
     }
 
     signingClient
-      .instantiate(walletAddress, DAO_CODE_ID, msg, name, defaultExecuteFee)
+      .instantiate(
+        walletAddress,
+        DAO_CODE_ID,
+        msg,
+        data.label,
+        defaultExecuteFee
+      )
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
@@ -182,6 +154,172 @@ const CreateDao: NextPage = () => {
 
   const complete = contractAddress.length > 0
 
+  const InputField = ({
+    fieldName,
+    checked,
+    label,
+    toolTip,
+    type,
+    placeholder,
+    readOnly,
+    value,
+    errorMessage,
+    onChange,
+    size,
+    defaultValue,
+    required,
+    min,
+    max,
+    showErrorMessage,
+  }: {
+    fieldName: string
+    checked?: boolean
+    label?: string
+    toolTip?: string
+    type?: string
+    placeholder?: string
+    readOnly?: boolean
+    value?: string | number
+    errorMessage?: string
+    size?: number
+    defaultValue?: string | number
+    required?: boolean
+    min?: number
+    max?: number
+    showErrorMessage?: boolean
+    onChange?: ChangeEventHandler<HTMLInputElement>
+  }) => {
+    let options = undefined
+    if (typeof required === 'undefined') {
+      required = true
+    }
+    if (required) {
+      options = { required }
+    }
+    const errorText = fieldErrorMessage(fieldName, errorMessage)
+    const errorComponent =
+      errorText && !(showErrorMessage === false) ? (
+        <span className="label-text text-error flex-1 text-right">
+          {errorText}
+        </span>
+      ) : null
+    const tooltipComponent = toolTip ? <HelpTooltip text={toolTip} /> : null
+    const labelComponent = label ? (
+      <label className="label" htmlFor={fieldName}>
+        <span className="label-text font-bold">{label || fieldName}</span>
+        {errorComponent}
+        {tooltipComponent}
+      </label>
+    ) : null
+    let inputComponent
+    if (type === 'checkbox') {      
+      inputComponent = (
+        <input
+          {...register(fieldName, options)}
+          checked={true}
+          className="toggle"
+          type={type}
+          readOnly={readOnly}
+          onChange={(e) => {
+            console.log(
+              `onChange called ${e?.target?.value}/ checked: ${e.target.checked}`
+            )
+            console.dir(e)
+            if (onChange) {
+              onChange(e)
+            }
+          }}
+        />
+      )
+    } else {
+      inputComponent = (
+        <input
+          {...register(fieldName, options)}
+          className={
+            errorText
+              ? `block box-border m-0 w-full rounded input input-bordered focus:input-primary input-error`
+              : `block box-border m-0 w-full rounded input input-bordered focus:input-primary`
+          }
+          defaultValue={defaultValue}
+          type={type || 'text'}
+          placeholder={placeholder || label}
+          readOnly={readOnly}
+          onChange={(e) => {
+            console.log(
+              `onChange called ${e?.target?.value}/ checked: ${e.target.checked}`
+            )
+            console.dir(e)
+            if (onChange) {
+              onChange(e)
+            }
+          }}
+          size={size}
+          min={min}
+          max={max}
+        />
+      )
+    }
+    return <div className="form-control">{labelComponent}{inputComponent}</div>
+  }
+
+  function AddressErrorRow({ idx }: { idx: number }) {
+    const addressName = `address_${idx}`
+    const weightName = `weight_${idx}`
+    const addressErrorMessage =
+      fieldErrorMessage(addressName, 'Address Required') || ''
+    const weightErrorMessage =
+      fieldErrorMessage(weightName, 'Weight must be non-zero') || ''
+    return (
+      <tr>
+        <td className="pr-2 pb-2">
+          <div className="label-text text-error flex-1 text-right">
+            {addressErrorMessage}
+          </div>
+        </td>
+        <td className="pb-2">
+          <div className="label-text text-error flex-1 text-right">
+            {weightErrorMessage}
+          </div>
+        </td>
+      </tr>
+    )
+  }
+
+  function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
+    const addressName = `address_${idx}`
+    const weightName = `weight_${idx}`
+    return (
+      <tr>
+        <td className="pr-2 pb-2">
+          <InputField
+            fieldName={addressName}
+            placeholder="wallet address..."
+            size={45}
+            readOnly={readOnly}
+            showErrorMessage={false}
+          />
+        </td>
+        <td className="pb-2">
+          <InputField
+            fieldName={weightName}
+            size={45}
+            readOnly={readOnly}
+            type="number"
+            defaultValue="1"
+            min={1}
+            max={999}
+            showErrorMessage={false}
+          />
+        </td>
+      </tr>
+    )
+  }
+  const addressRows: ReactElement[] = []
+  for (let index = 0; index < count; index++) {
+    addressRows.push(<AddressErrorRow key={`${index}_err_row`} idx={index} />)
+    addressRows.push(<AddressRow key={index} idx={index} readOnly={complete} />)
+  }
+
   return (
     <WalletLoader>
       <div className="text-left container mx-auto max-w-lg">
@@ -191,67 +329,37 @@ const CreateDao: NextPage = () => {
           onSubmit={handleSubmit<DaoCreateData>(onSubmit)}
         >
           <h2 className="mt-10 mb-6 text-2xl">Basic Config</h2>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Name</span>
-            </label>
-            <input
-              className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
-              type="text"
-              placeholder="Name"
-              readOnly={complete}
-              value={name}
-              {...register('label', { required: true })}
-              onChange={(e) => setName(e.target.value)}
-            />
-            {fieldError('label', 'DAO name required')}
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Description</span>
-            </label>
-            <textarea
-              className="textarea h-24 textarea-bordered"
-              {...register('description', { required: true })}
-              placeholder="Your DAO description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
-            {fieldError('description', 'DAO description required')}
-          </div>
+          <InputField
+            fieldName="label"
+            label="Name"
+            toolTip="Name the DAO"
+            errorMessage="DAO name required"
+            readOnly={complete}
+          />
+          <InputField
+            fieldName="description"
+            label="Description"
+            toolTip="Your DAO description"
+            errorMessage="DAO description required"
+            readOnly={complete}
+          />
 
           <h2 className="mt-8 mb-6 text-2xl">Governance Token Config</h2>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Token Name</span>
-            </label>
-            <input
-              className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
-              {...register('token-name', { required: true })}
-              type="text"
-              placeholder="Token name"
-              readOnly={complete}
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
-            />
-            {fieldError('token-name', 'Token name required')}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-bold">Symbol</span>
-              </label>
-              <input
-                className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
-                {...register('token-symbol', { required: true })}
-                type="text"
-                placeholder="Token symbol"
-                readOnly={complete}
-                value={tokenSymbol}
-                onChange={(e) => setTokenSymbol(e.target.value)}
-              />
-              {fieldError('token-symbol', 'Token symbol required')}
-            </div>
-          </div>
+          <InputField
+            fieldName="tokenName"
+            label="Token Name"
+            toolTip="The full name of your token (My Awesome Token)"
+            errorMessage="Token name required"
+            readOnly={complete}
+          />
+          <InputField
+            fieldName="tokenSymbol"
+            label="Token Symbol"
+            toolTip="The short symbol name of your token (MAT)"
+            errorMessage="Token symbol required"
+            readOnly={complete}
+          />
+
           <h2 className="mt-8 mb-6 text-xl">Token Distribution</h2>
 
           <table className="w-full mb-8">
@@ -262,15 +370,7 @@ const CreateDao: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {[...Array(count)].map((_item, index) => (
-                <AddressRow
-                  key={index}
-                  idx={index}
-                  readOnly={complete}
-                  register={register}
-                  fieldError={fieldError}
-                />
-              ))}
+              {addressRows}
               <tr>
                 <td colSpan={2} className="text-right">
                   <button
@@ -336,39 +436,40 @@ const CreateDao: NextPage = () => {
             </tbody>
           </table>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">
-                Proposal Deposit
-                <HelpTooltip text="The number of tokens that must be deposited to create a proposal" />
-              </span>
-            </label>
-            <input
-              className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
-              {...register('deposit')}
-              type="number"
-              onChange={(e) =>
-                setProposalDepositAmount(parseInt(e.target.value ?? '0', 10))
-              }
-              value={proposalDepositAmount}
-              readOnly={complete}
-            />
-          </div>
+          <InputField
+            fieldName="deposit"
+            label="Proposal Deposit"
+            toolTip="The number of tokens that must be deposited to create a proposal"
+            type="number"
+            readOnly={complete}
+            required={false}
+          />
 
-          <div className="p-6 card bordered">
+          <InputField
+            fieldName="refund"
+            label="Refund Proposal Deposits"
+            toolTip="Whether deposits are refunded after proposal voting"
+            type="checkbox"
+            defaultValue={1}
+            //onChange={(e) => setRefund(!refund)}
+            readOnly={complete}
+          />
+
+          {/* <div className="p-6 card bordered">
             <div className="form-control">
-              <label className="cursor-pointer label">
+              <label className="cursor-pointer label" htmlFor="refund">
                 <span className="label-text">Refund Proposal Deposits</span>
-                <input
-                  type="checkbox"
-                  checked={refund}
-                  className="toggle"
-                  {...register('refund')}
-                  onChange={(e) => setRefund(e.target.value === 'true')}
-                />
               </label>
+              <input
+                type="checkbox"
+                className="toggle"
+                {...register('refund')}
+              />
+              <HelpTooltip
+                text={'Whether deposits are refunded after proposal voting'}
+              />
             </div>
-          </div>
+          </div> */}
 
           {!complete && (
             <button
