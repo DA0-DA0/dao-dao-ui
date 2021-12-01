@@ -31,8 +31,10 @@ export function makeBankMessage(
   }
 }
 
-export function makeWasmMessage(message: any): WasmMsg {
-  // We need to encode Wasm Execute and Instantiate messages
+export function makeWasmMessage(message: { wasm: any }): {
+  wasm: WasmMsg
+} {
+  // We need to encode Wasm Execute, Instantiate, and Migrate messages
   let msg = message
   if (message?.wasm?.execute) {
     msg.wasm.execute.msg = toBase64(
@@ -42,7 +44,12 @@ export function makeWasmMessage(message: any): WasmMsg {
     msg.wasm.instantiate.msg = toBase64(
       toAscii(JSON.stringify(message.wasm.instantiate.msg))
     )
+  } else if (message.wasm.migrate) {
+    msg.wasm.migrate.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.migrate.msg))
+    )
   }
+  // Messages such as update or clear admin pass through without modification
   return msg
 }
 
