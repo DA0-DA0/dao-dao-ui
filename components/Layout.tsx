@@ -5,7 +5,8 @@ import TwitterLogo from 'components/TwitterLogo'
 import GitHubLogo from 'components/GitHubLogo'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
-const POWERED_BY_URL = 'https://junochain.com'
+
+const POWERED_BY_URL = 'https://junonetwork.io'
 const TWITTER_URL = 'https://twitter.com/da0_da0'
 const GITHUB_URL = 'https://github.com/DA0-DA0'
 
