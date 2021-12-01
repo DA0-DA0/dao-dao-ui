@@ -6,15 +6,17 @@ import {
   useNativeBalances,
   useCw20Balances,
   useTransactions,
+  useDaoCw20BalancesForWallet,
 } from 'hooks/treasury'
 import { useRouter } from 'next/router'
 
 const Treasury: NextPage = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
+  const walletCw20 = useDaoCw20BalancesForWallet(contractAddress)
 
   const { nativeBalances } = useNativeBalances(contractAddress)
-  const cw20 = useCw20Balances(contractAddress)
+  const daoCw20 = useCw20Balances(contractAddress)
   const { txs } = useTransactions(contractAddress)
 
   return (
@@ -22,8 +24,9 @@ const Treasury: NextPage = () => {
       <div className="text-left my-8 w-full">
         <TokenBalances
           native={nativeBalances}
-          cw20={cw20.balances}
-          cw20info={cw20.info}
+          cw20={daoCw20.balances}
+          cw20Wallet={walletCw20.balances}
+          cw20info={daoCw20.info}
         />
       </div>
       <div className="text-left w-full">

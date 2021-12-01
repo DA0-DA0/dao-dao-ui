@@ -26,6 +26,60 @@ export function useNativeBalances(contractAddress: string) {
   return { nativeBalances, setTimestamp }
 }
 
+export function useDaoCw20BalancesForWallet(daoAddress: string) {
+  const { signingClient, walletAddress } = useSigningClient()
+  const [balances, setBalances] = useState<Cw20Balance[]>([])
+  let [info, setInfo] = useState<TokenInfo[]>([])
+
+  useEffect(() => {
+    if (!signingClient || !walletAddress) {
+      return
+    }
+    signingClient
+      ?.queryContractSmart(daoAddress, { cw20_balances: {} })
+      .then(async (response) => {
+        const daoBalances = response.cw20_balances as Cw20Balance[]
+
+        const info = (await Promise.all(
+          daoBalances.map(({ address }) =>
+            signingClient.queryContractSmart(address, {
+              token_info: {},
+            })
+          )
+        ).catch((error) =>
+          console.error(`queryContractSmart {token_info: {}} error: `, error)
+        )) as TokenInfo[]
+
+        console.log(daoBalances)
+        const balances = (await Promise.all(
+          daoBalances.map(async ({ address }) => {
+            const balance = await signingClient.queryContractSmart(address, {
+              balance: {
+                address: walletAddress,
+              },
+            })
+            return {
+              address: address,
+              amount: balance,
+            }
+          })
+        ).catch((error) =>
+          console.error(
+            `queryContractSmart {balance: { address: ${walletAddress}}} error: `,
+            error
+          )
+        )) as Cw20Balance[]
+
+        setBalances(balances)
+        setInfo(info)
+      })
+      .catch((error) =>
+        console.error('queryContractSmart {cw20_balances: {}} error', error)
+      )
+  }, [signingClient])
+  return { balances, info }
+}
+
 export function useCw20Balances(contractAddress: string) {
   const { signingClient } = useSigningClient()
   const [balances, setBalances] = useState<Cw20Balance[]>([])

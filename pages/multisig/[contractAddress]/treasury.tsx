@@ -7,11 +7,14 @@ import {
   useNativeBalances,
   useCw20Balances,
   useTransactions,
+  useDaoCw20BalancesForWallet,
 } from 'hooks/treasury'
 
 const Home: NextPage = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
+
+  const walletCw20 = useDaoCw20BalancesForWallet(contractAddress)
 
   const { nativeBalances } = useNativeBalances(contractAddress)
   const cw20 = useCw20Balances(contractAddress)
@@ -23,6 +26,7 @@ const Home: NextPage = () => {
         <TokenBalances
           native={nativeBalances}
           cw20={cw20.balances}
+          cw20Wallet={walletCw20.balances}
           cw20info={cw20.info}
         />
       </div>
