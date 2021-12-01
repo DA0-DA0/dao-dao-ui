@@ -1,6 +1,27 @@
 import { useState, useEffect } from 'react'
 import { useSigningClient } from 'contexts/cosmwasm'
 
+export function useDaoConfig(contractAddress: string) {
+  let { signingClient } = useSigningClient()
+  // TODO (@jakehartnell): add types when we have them
+  let [daoInfo, setDaoInfo] = useState<any | null>()
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    let getDaoInfo = async () => {
+      setLoading(true)
+      let dao = await signingClient?.queryContractSmart(contractAddress, {
+        get_config: {},
+      })
+      if (dao?.config) setDaoInfo(dao.config)
+      setLoading(false)
+    }
+    getDaoInfo()
+  }, [signingClient, contractAddress])
+
+  return { ...daoInfo, loading }
+}
+
 export interface DaoListType {
   address: string
   name: string
