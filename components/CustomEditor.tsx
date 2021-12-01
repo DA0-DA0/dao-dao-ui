@@ -38,7 +38,8 @@ export default function CustomEditor({
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
       let action: ProposalAction
-      message = makeWasmMessage(message)
+      // If it is a WasmMsg, make sure it's properly encoded
+      if (message.wasm) message = makeWasmMessage(message)
 
       if (id) {
         action = {
