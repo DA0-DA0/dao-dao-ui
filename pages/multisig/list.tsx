@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/solid'
 import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
@@ -33,7 +33,7 @@ const MultisigList: NextPage = () => {
   const { multisigs, loading } = useMultisigsList(MULTISIG_CODE_ID)
   return (
     <WalletLoader loading={loading}>
-      <h1 className="text-6xl font-bold">MULTISIGs</h1>
+      <h1 className="text-6xl font-bold">Multisigs</h1>
       {multisigs.length > 0 ? (
         multisigs.map((multisig, key) => (
           <MultisigListComponent
@@ -43,7 +43,14 @@ const MultisigList: NextPage = () => {
           />
         ))
       ) : (
-        <p>No MULTISIGs : (</p>
+        <>
+          <p className="text-xl my-8">No multisigs found.</p>
+          <Link href="/multisig/create" passHref>
+            <button className="btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl">
+              Create Multisig
+            </button>
+          </Link>
+        </>
       )}
     </WalletLoader>
   )
