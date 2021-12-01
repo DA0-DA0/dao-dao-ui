@@ -39,6 +39,7 @@ function Nav() {
               {PUBLIC_SITE_TITLE}
             </a>
           </Link>
+          <NavContractLabel />
         </div>
         <ThemeToggle />
         <div className="flex flex-grow md:flex-grow-0 max-w-full">
