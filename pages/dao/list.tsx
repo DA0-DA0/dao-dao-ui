@@ -42,7 +42,14 @@ const DaoList: NextPage = () => {
           />
         ))
       ) : (
-        <p>No DAOs : (</p>
+        <>
+          <p className="text-xl my-8">No DAOs</p>
+          <Link href="/multisig/create" passHref>
+            <button className="btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl">
+              Create a DAO
+            </button>
+          </Link>
+        </>
       )}
     </WalletLoader>
   )

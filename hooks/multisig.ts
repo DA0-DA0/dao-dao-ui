@@ -13,7 +13,6 @@ export function useMultisigsList(codeId: number) {
       setLoading(true)
       try {
         const contracts = await signingClient?.getContracts(codeId)
-        console.log('contracts', contracts)
 
         const multisigList: Array<Contract> = []
         if (contracts) {
@@ -25,14 +24,6 @@ export function useMultisigsList(codeId: number) {
             ) as Array<Contract>
             if (list) setMultisigs(filtered)
           })
-          // for (let address of contracts) {
-          //   .then((response) => {
-          //     multisigList.push(response)
-          //   })
-          // }
-          // if (multisigList.length > 0) {
-          //   setMultisigs(multisigList)
-          // }
           setLoading(false)
         }
       } catch (e) {

@@ -8,17 +8,24 @@ function ContractLabel() {
   const contractAddress = router.query.contractAddress as string
   const { signingClient } = useSigningClient()
   const [label, setLabel] = useState('')
+  const [link, setLink] = useState('')
 
   useEffect(() => {
-    if (contractAddress.length === 0 || !signingClient) {
+    if (!contractAddress || !signingClient) {
       setLabel('')
       return
-    }
+    } else {
+      signingClient.getContract(contractAddress).then((response) => {
+        setLabel(response.label)
+      })
 
-    signingClient.getContract(contractAddress).then((response) => {
-      setLabel(response.label)
-    })
-  }, [signingClient, contractAddress])
+      if (router.pathname.includes('/dao/[contractAddress]')) {
+        setLink(`/dao/${contractAddress}/`)
+      } else {
+        setLink(`/multisig/${contractAddress}/`)
+      }
+    }
+  }, [signingClient, contractAddress, router])
 
   if (label.length === 0) {
     return null
@@ -39,7 +46,7 @@ function ContractLabel() {
           d="M9 5l7 7-7 7"
         ></path>
       </svg>
-      <Link href={`/proposals`}>
+      <Link href={link}>
         <a className="capitalize hover:underline text-2xl">{label}</a>
       </Link>
     </div>

@@ -15,7 +15,7 @@ const icons = {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
-      className="flex-shrink-0 w-6 h-6 ml-2"
+      className="flex-shrink-0 w-6 h-6 ml-2 inline"
     >
       <path
         strokeLinecap="round"
@@ -30,7 +30,7 @@ const icons = {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="w-6 h-6 ml-2 stroke-current"
+      className="w-6 h-6 ml-2 stroke-current inline"
     >
       <path
         strokeLinecap="round"
@@ -45,7 +45,7 @@ const icons = {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="w-6 h-6 ml-2 stroke-current"
+      className="w-6 h-6 ml-2 stroke-current inline"
     >
       <path
         strokeLinecap="round"
@@ -60,7 +60,7 @@ const icons = {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="w-6 h-6 ml-2 stroke-current"
+      className="w-6 h-6 ml-2 stroke-current inline"
     >
       <path
         strokeLinecap="round"
@@ -98,16 +98,22 @@ export default function ProposalCard({
             <div className="card-title flex flex-row justify-between m-0">
               <div>{title}</div>
               {status === 'passed' && (
-                <div className="text-2xl text-warning">{icons.warning}</div>
+                <div className="text-2xl text-warning">
+                  {icons.warning} {status}
+                </div>
               )}
               {status === 'rejected' && (
-                <div className="text-2xl text-error">{icons.error}</div>
+                <div className="text-2xl text-error">
+                  {icons.error} {status}
+                </div>
               )}
               {status === 'executed' && (
-                <div className="text-2xl text-success">&#x2713;</div>
+                <div className="text-2xl text-success">&#x2713; {status}</div>
               )}
               {status === 'open' && (
-                <div className="text-2xl text-info">{icons.bell}</div>
+                <div className="text-2xl text-info">
+                  {icons.bell} {status}
+                </div>
               )}
             </div>
           </div>
