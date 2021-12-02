@@ -14,9 +14,7 @@ function ContractLabel() {
     if (!contractAddress || !signingClient) {
       setLabel('')
       return
-    }
-
-    if (contractAddress) {
+    } else {
       signingClient.getContract(contractAddress).then((response) => {
         setLabel(response.label)
       })
