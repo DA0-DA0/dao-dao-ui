@@ -32,7 +32,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
   let [info, setInfo] = useState<TokenInfo[]>([])
 
   useEffect(() => {
-    if (!signingClient || !walletAddress) {
+    if (!signingClient || walletAddress.length == 0) {
       return
     }
     signingClient
@@ -50,7 +50,6 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
           console.error(`queryContractSmart {token_info: {}} error: `, error)
         )) as TokenInfo[]
 
-        console.log(daoBalances)
         const balances = (await Promise.all(
           daoBalances.map(async ({ address }) => {
             const balance = await signingClient.queryContractSmart(address, {
@@ -60,7 +59,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
             })
             return {
               address: address,
-              amount: balance,
+              amount: balance.balance,
             }
           })
         ).catch((error) =>
