@@ -1,5 +1,6 @@
-import { CosmosMsgFor_Empty } from 'types/contracts/cw-plus/cw3'
-import { ExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
+import { CosmosMsgFor_Empty } from '@dao_dao/types/contracts/cw3-dao'
+import { ExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
+
 import { ProposalMessageType } from './messageMap'
 
 export type ProposalSetTitle = {

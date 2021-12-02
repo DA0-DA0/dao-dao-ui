@@ -1,6 +1,7 @@
 // Client-side proposal representation
-import { CosmosMsgFor_Empty, ExecuteMsg } from 'types/contracts/cw-plus/cw3'
-import { ExecuteMsg as DAOExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
+import { CosmosMsgFor_Empty, ExecuteMsg } from '@dao_dao/types/contracts/cw3-dao'
+import { ExecuteMsg as DAOExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
+
 import { labelForMessage } from '../../util/messagehelpers'
 import { MessageMap } from './messageMap'
 

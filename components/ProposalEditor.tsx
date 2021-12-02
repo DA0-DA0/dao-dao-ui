@@ -13,7 +13,6 @@ import {
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import Editor from 'rich-markdown-editor'
-import { CosmosMsgFor_Empty } from 'types/contracts/cw-plus/cw3'
 import { isValidAddress } from 'util/isValidAddress'
 import {
   labelForMessage,
@@ -26,6 +25,7 @@ import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 import MintEditor from './MintEditor'
+import { CosmosMsgFor_Empty } from '@dao_dao/types/contracts/cw3-dao'
 
 export default function ProposalEditor({
   initialProposal,

@@ -1,4 +1,4 @@
-import { Coin, Uint128 } from 'types/contracts/cw-plus/cw3'
+import { Coin, Uint128 } from '@dao_dao/types/contracts/cw3-dao'
 import {
   MessageMap,
   MessageMapEntry,

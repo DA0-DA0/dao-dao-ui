@@ -4,7 +4,7 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import {
   Cw20Coin,
   TokenInfoResponse,
-} from 'types/contracts/dao-contracts/cw20-gov'
+} from '@dao_dao/types/contracts/cw20-gov'
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 

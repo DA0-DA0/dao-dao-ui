@@ -3,13 +3,10 @@ import {
   Coin,
   CosmosMsgFor_Empty,
   ExecuteMsg,
-} from 'types/contracts/cw-plus/cw3'
-import { ExecuteMsg as MintExecuteMsg } from 'types/contracts/dao-contracts/cw20-gov'
-import {
-  Cw20Coin,
-  Duration,
   InstantiateMsg as DaoInstantiateMsg,
-} from 'types/contracts/dao-contracts/cw-dao'
+} from '@dao_dao/types/contracts/cw3-dao'
+import { ExecuteMsg as MintExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
+import { Cw20Coin, Duration } from '@dao_dao/types/contracts/cw20-stakeable'
 import { CW20_CODE_ID } from 'util/constants'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''

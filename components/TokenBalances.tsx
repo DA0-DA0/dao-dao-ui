@@ -2,7 +2,7 @@ import { Coin } from '@cosmjs/stargate'
 import {
   Cw20Coin,
   TokenInfoResponse,
-} from 'types/contracts/dao-contracts/cw20-gov'
+} from '@dao_dao/types/contracts/cw20-gov'
 import {
   convertMicroDenomToDenom,
   convertFromMicroDenom,

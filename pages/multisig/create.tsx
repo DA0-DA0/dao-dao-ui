@@ -7,10 +7,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-// import { InstantiateMsg } from 'types/contracts/cw-plus/cw3'
-import { InstantiateMsg } from 'types/contracts/cw-plus/cw3-fixed-multisig/instantiate_msg'
-// import { InstantiateMsg as DAOInstantiateMsg } from 'types/contracts/dao-contracts'
-// import { VoterDetail } from 'types/contracts/cw-plus'
+import { InstantiateMsg } from '@dao_dao/types/contracts/cw3-flex-multisig/instantiate_msg'
 
 import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
@@ -102,11 +99,13 @@ const CreateMultisig: NextPage = () => {
       time: parseInt(formEl.duration.value?.trim()),
     }
 
-    const msg: InstantiateMsg = {
+    // TODO(gavindoughtie): This is left over from the fixed multisig,
+    // and the flex multisig is what we're going to be using.
+    const msg: any /*InstantiateMsg*/ = {
       voters,
-      required_weight,
+      // required_weight,
       max_voting_period,
-    }
+    }; // TODO
 
     const label = formEl.label.value.trim()
 
