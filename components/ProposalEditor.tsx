@@ -13,14 +13,19 @@ import {
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import Editor from 'rich-markdown-editor'
-import { CosmosMsgFor_Empty_1 } from 'types/cw3'
 import { isValidAddress } from 'util/isValidAddress'
-import { labelForMessage, makeSpendMessage } from 'util/messagehelpers'
+import {
+  labelForMessage,
+  makeMintMessage,
+  makeSpendMessage,
+} from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
+import MintEditor from './MintEditor'
+import { CosmosMsgFor_Empty } from '@dao_dao/types/contracts/cw3-dao'
 
 export default function ProposalEditor({
   initialProposal,
@@ -71,7 +76,7 @@ export default function ProposalEditor({
       id: 'mint',
       execute: () => addMessage(ProposalMessageType.Mint),
       href: '#',
-      isEnabled: () => false,
+      isEnabled: () => true,
     },
   ]
 
@@ -109,6 +114,16 @@ export default function ProposalEditor({
           ></SpendEditor>
         )
         break
+      case ProposalMessageType.Mint: {
+        modeEditor = (
+          <MintEditor
+            dispatch={dispatch}
+            mintMsg={mapEntry}
+            initialRecipientAddress={recipientAddress}
+          ></MintEditor>
+        )
+        break
+      }
       case ProposalMessageType.Custom:
         modeEditor = <CustomEditor dispatch={dispatch} customMsg={mapEntry} />
         break
@@ -160,6 +175,8 @@ export default function ProposalEditor({
   const addMessage = (messageType: ProposalMessageType) => {
     if (messageType === ProposalMessageType.Spend) {
       addSpendMessage()
+    } else if (messageType === ProposalMessageType.Mint) {
+      addMintMessage()
     } else if (messageType === ProposalMessageType.Custom) {
       addCustomMessage()
     } else if (messageType === ProposalMessageType.Wasm) {
@@ -179,7 +196,7 @@ export default function ProposalEditor({
   const addCustomMessage = () => {
     const action: ProposalAction = {
       type: 'addMessage',
-      message: { custom: {} } as CosmosMsgFor_Empty_1,
+      message: { custom: {} } as CosmosMsgFor_Empty,
       messageType: ProposalMessageType.Custom,
     }
     dispatch(action)
@@ -193,6 +210,26 @@ export default function ProposalEditor({
       try {
         const message = makeSpendMessage('', recipientAddress, contractAddress)
         const messageType = ProposalMessageType.Spend
+        const action: ProposalAction = {
+          type: 'addMessage',
+          message,
+          messageType,
+        }
+        dispatch(action)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
+
+  const addMintMessage = () => {
+    const validAddress = !!(
+      recipientAddress && isValidAddress(recipientAddress)
+    )
+    if (validAddress) {
+      try {
+        const message = makeMintMessage('', recipientAddress)
+        const messageType = ProposalMessageType.Mint
         const action: ProposalAction = {
           type: 'addMessage',
           message,

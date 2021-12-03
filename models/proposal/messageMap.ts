@@ -1,4 +1,5 @@
-import { CosmosMsgFor_Empty_1 } from '../../types/cw3'
+import { CosmosMsgFor_Empty, ExecuteMsg } from '@dao_dao/types/contracts/cw3-dao'
+import { ExecuteMsg as DAOExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
 
 export enum ProposalMessageType {
   Collect = 'collect',
@@ -15,7 +16,7 @@ export type MessageMapEntry = {
   id: string
   messageType: ProposalMessageType
   order: number
-  message: CosmosMsgFor_Empty_1
+  message: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg
 }
 
 export type MessageMap = { [key: string]: MessageMapEntry }

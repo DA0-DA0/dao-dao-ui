@@ -1,5 +1,7 @@
 // Client-side proposal representation
-import { CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { CosmosMsgFor_Empty, ExecuteMsg } from '@dao_dao/types/contracts/cw3-dao'
+import { ExecuteMsg as DAOExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
+
 import { labelForMessage } from '../../util/messagehelpers'
 import { MessageMap } from './messageMap'
 
@@ -12,7 +14,9 @@ export type Proposal = {
   nextId: number
   // Which message is currently selected
   activeMessageId: string
-  pendingMessages: { [key: string]: CosmosMsgFor_Empty_1 }
+  pendingMessages: {
+    [key: string]: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg
+  }
 }
 
 export const EmptyProposal: Proposal = {

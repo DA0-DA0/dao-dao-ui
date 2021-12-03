@@ -1,8 +1,7 @@
 import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
-import { useRouter } from 'next/router'
-import { ProposalResponse, VoteInfo } from 'types/cw3'
+import { VoteInfo, ProposalResponse } from '@dao_dao/types/contracts/cw3-dao'
 
 function ProposalDetails({
   proposal,
@@ -19,7 +18,6 @@ function ProposalDetails({
   execute: () => void
   close: () => void
 }) {
-  const router = useRouter()
   const themeContext = useThemeContext()
 
   const proposalMessageContent = proposal?.msgs?.length ? (

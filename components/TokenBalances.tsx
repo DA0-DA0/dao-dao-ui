@@ -1,7 +1,11 @@
 import { Coin } from '@cosmjs/stargate'
-import { Cw20Balance } from 'types/cw-dao'
-import { TokenInfo } from 'types/cw20'
+import { Cw20Balance } from '@dao_dao/types/cw3-dao'
+import { TokenInfo } from '@dao_dao/types/cw20-gov'
 import HelpTooltip from 'components/HelpTooltip'
+import { Cw20Coin } from '@dao_dao/types/contracts/cw3-dao'
+import {
+  TokenInfoResponse,
+} from '@dao_dao/types/contracts/cw20-gov'
 import {
   convertMicroDenomToDenom,
   convertFromMicroDenom,

@@ -1,4 +1,4 @@
-import { Coin, BankMsg } from '../../types/cw3'
+import { Coin, Uint128 } from '@dao_dao/types/contracts/cw3-dao'
 import {
   MessageMap,
   MessageMapEntry,
@@ -83,7 +83,9 @@ export function getActiveMessageId(proposal: Proposal): string {
   return proposal.activeMessageId
 }
 
-export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
+export function getSpendAmount(
+  spendMsg?: MessageMapEntry
+): Uint128 | undefined {
   if (spendMsg?.messageType === ProposalMessageType.Spend) {
     const coins = (spendMsg.message as any)?.bank?.send?.amount as Coin[]
     if (coins?.length) {
@@ -104,6 +106,18 @@ export function getSpendRecipient(
   }
   return undefined
 }
+
+export function getMintAmount(
+  mintMessage?: MessageMapEntry
+): Uint128 | undefined {
+  if (mintMessage?.messageType === ProposalMessageType.Mint) {
+    const amount = (mintMessage.message as any)?.mint.amount
+    return amount
+  }
+  return undefined
+}
+
+export const getMintRecipient = getSpendRecipient
 
 export function proposalMessages(
   proposal: Proposal,
