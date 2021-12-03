@@ -31,6 +31,7 @@ export function makeBankMessage(
   }
 }
 
+// This function mutates its input message
 export function makeWasmMessage(message: { wasm: any }): {
   wasm: WasmMsg
 } {
