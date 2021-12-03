@@ -1,6 +1,6 @@
 import { Coin } from '@cosmjs/stargate'
+import { Cw20Coin } from '@dao_dao/types/contracts/cw3-dao'
 import {
-  Cw20Coin,
   TokenInfoResponse,
 } from '@dao_dao/types/contracts/cw20-gov'
 import {

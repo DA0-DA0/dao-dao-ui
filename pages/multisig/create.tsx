@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { InstantiateMsg } from '@dao_dao/types/contracts/cw3-flex-multisig/instantiate_msg'
+import { InstantiateMsg } from '@dao_dao/types/contracts/cw3-flex-multisig'
 
 import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'

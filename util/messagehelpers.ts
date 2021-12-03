@@ -4,9 +4,10 @@ import {
   CosmosMsgFor_Empty,
   ExecuteMsg,
   InstantiateMsg as DaoInstantiateMsg,
+  Cw20Coin,
+  Duration
 } from '@dao_dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
-import { Cw20Coin, Duration } from '@dao_dao/types/contracts/cw20-stakeable'
 import { CW20_CODE_ID } from 'util/constants'
 
 const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
