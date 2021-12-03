@@ -7,9 +7,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-flex-multisig'
-
-import { MULTISIG_CODE_ID } from 'util/constants'
+import { Voter } from 'types/cw3'
+import { C4_GROUP_CODE_ID, FLEX_MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 
 function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
@@ -40,19 +39,21 @@ function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
   )
 }
 
-function validateNonEmpty(msg: InstantiateMsg, label: string) {
-  const { min_bond, unbonding_period, voters } = msg
-  // if (isNaN(min_bond) || isNaN(unbonding_period.time)) {
-  //   return false
-  // }
-  if (!min_bond) {
+// @gavindoughtie: TODO add generated types
+function validateNonEmpty(msg: any, label: string) {
+  const { threshold, max_voting_period, group } = msg
+  if (isNaN(threshold.absolute_count.weight) || isNaN(max_voting_period.time)) {
     return false
   }
   const unboundingTime = (unbonding_period as any).time
   if (isNaN(unboundingTime)) {
     return false
   }
-  if (label.length === 0) {
+  if (
+    group.instantiate_new_group.voters.some(
+      ({ addr, weight }: Voter) => addr.length === 0 || isNaN(weight)
+    )
+  ) {
     return false
   }
   // Voters?
@@ -99,15 +100,23 @@ const CreateMultisig: NextPage = () => {
       time: parseInt(formEl.duration.value?.trim()),
     }
 
-    // TODO(gavindoughtie): This is left over from the fixed multisig,
-    // and the flex multisig is what we're going to be using.
-    const msg: any /*InstantiateMsg*/ = {
-      voters,
-      // required_weight,
-      max_voting_period,
-    } // TODO
-
     const label = formEl.label.value.trim()
+
+    const msg = {
+      group: {
+        instantiate_new_group: {
+          code_id: C4_GROUP_CODE_ID,
+          label,
+          voters,
+        },
+      },
+      threshold: {
+        absolute_count: {
+          weight: required_weight,
+        },
+      },
+      max_voting_period,
+    }
 
     // @ebaker TODO: add more validation
     if (!validateNonEmpty(msg, label)) {
@@ -125,7 +134,7 @@ const CreateMultisig: NextPage = () => {
     signingClient
       .instantiate(
         walletAddress,
-        MULTISIG_CODE_ID,
+        FLEX_MULTISIG_CODE_ID,
         msg,
         label,
         defaultExecuteFee
