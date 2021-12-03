@@ -168,7 +168,7 @@ export function useCreateProposal(contractAddress: string) {
     setLoading(true)
     setError('')
 
-    const propose = messageForProposal(proposal)
+    const propose = messageForProposal(proposal, contractAddress)
     const memo = memoForProposal(proposal)
 
     try {

@@ -77,6 +77,21 @@ export function makeSpendMessage(
   }
 }
 
+export function makeExecutableMintMessage(
+  msg: MintExecuteMsg,
+  contract_addr: string
+): CosmosMsgFor_Empty {
+  return {
+    wasm: {
+      execute: {
+        contract_addr,
+        msg: toBase64(toAscii(JSON.stringify(msg))),
+        funds: [],
+      },
+    },
+  }
+}
+
 export function makeMintMessage(
   amount: string,
   to_address: string

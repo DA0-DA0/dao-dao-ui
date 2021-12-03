@@ -1,6 +1,9 @@
 import { FormEvent, FormEventHandler, useReducer, useState } from 'react'
 import { useThemeContext } from 'contexts/theme'
-import { ProposalMessageType } from 'models/proposal/messageMap'
+import {
+  ProposalMessageType,
+  MessageMapEntry,
+} from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
   ProposalAction,
@@ -16,6 +19,7 @@ import Editor from 'rich-markdown-editor'
 import { isValidAddress } from 'util/isValidAddress'
 import {
   labelForMessage,
+  makeExecutableMintMessage,
   makeMintMessage,
   makeSpendMessage,
 } from 'util/messagehelpers'
@@ -271,7 +275,7 @@ export default function ProposalEditor({
   if (editProposalJson) {
     return (
       <RawEditor
-        json={messageForProposal(proposal)}
+        json={messageForProposal(proposal, contractAddress)}
         onChange={handleJsonChanged}
       ></RawEditor>
     )

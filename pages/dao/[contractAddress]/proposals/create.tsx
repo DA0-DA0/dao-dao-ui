@@ -22,7 +22,7 @@ const ProposalCreate: NextPage = () => {
   const handleProposal = async (proposal: Proposal) => {
     setLoading(true)
     setError('')
-    const propose = messageForProposal(proposal)
+    const propose = messageForProposal(proposal, contractAddress)
     const memo = memoForProposal(proposal)
     try {
       const response = await signingClient?.execute(
