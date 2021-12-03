@@ -105,7 +105,7 @@ const CreateMultisig: NextPage = () => {
       voters,
       // required_weight,
       max_voting_period,
-    }; // TODO
+    } // TODO
 
     const label = formEl.label.value.trim()
 

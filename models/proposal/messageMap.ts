@@ -1,4 +1,7 @@
-import { CosmosMsgFor_Empty, ExecuteMsg } from '@dao_dao/types/contracts/cw3-dao'
+import {
+  CosmosMsgFor_Empty,
+  ExecuteMsg,
+} from '@dao_dao/types/contracts/cw3-dao'
 import { ExecuteMsg as DAOExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
 
 export enum ProposalMessageType {

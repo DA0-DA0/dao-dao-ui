@@ -11,7 +11,7 @@ import {
   WasmMsg,
 } from '@dao_dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
-import { CW20_CODE_ID } from 'util/constants'
+import { CW20_CODE_ID } from './constants'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
