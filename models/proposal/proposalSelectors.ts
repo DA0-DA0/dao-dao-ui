@@ -1,4 +1,4 @@
-import { Coin } from '../../types/cw3'
+import { Coin, BankMsg } from '../../types/cw3'
 import {
   MessageMap,
   MessageMapEntry,
@@ -6,10 +6,49 @@ import {
   messageSort,
 } from './messageMap'
 import { Proposal } from './proposal'
+import {
+  convertDenomToContractReadableDenom,
+  convertDenomToMicroDenom,
+} from '../../util/conversion'
 
 /// Returns the outgoing message for COSMOS
 export function messageForProposal(proposal: Proposal) {
   const msgs = Object.values(proposal.messageMap).map((mapEntry) => {
+    // Spend proposals are inputted in human readable form (ex:
+    // junox). Contracts expect things in the micro form (ex: ujunox)
+    // so we, painfully, do some conversions:
+    if (mapEntry.messageType === ProposalMessageType.Spend) {
+      let microMessage = mapEntry.message
+      const bank = (microMessage as any).bank as BankMsg
+      if (!bank) {
+        return
+      }
+
+      let amounts: Coin[]
+      let variant: string
+      if ('send' in bank) {
+        amounts = (bank as any).send.amount
+        variant = 'send'
+      } else if ('burn' in bank) {
+        amounts = (bank as any).burn.amount
+        variant = 'burn'
+      } else {
+        console.error(`unexpected bank message: (${JSON.stringify(bank)})`)
+        return
+      }
+
+      const microAmounts = amounts.map((coin) => {
+        const microCoin = coin
+        microCoin.amount = convertDenomToMicroDenom(coin.amount)
+        microCoin.denom = convertDenomToContractReadableDenom(coin.denom)
+        return microCoin
+      }) as Coin[]
+
+      ;(((microMessage as any).bank as any)[variant] as any).amount =
+        microAmounts
+
+      return microMessage
+    }
     return mapEntry.message
   })
   const msg: Record<string, unknown> = {
