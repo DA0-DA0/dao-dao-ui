@@ -4,7 +4,7 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import {
   TokenInfoResponse,
 } from '@dao_dao/types/contracts/cw20-gov'
-import { Cw20Coin } from '@dao_dao/types/contracts/cw3-dao'
+import { Cw20Coin, Cw20BalancesResponse, Cw20CoinVerified } from '@dao_dao/types/contracts/cw3-dao'
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 
@@ -30,8 +30,8 @@ export function useNativeBalances(contractAddress: string) {
 
 export function useDaoCw20BalancesForWallet(daoAddress: string) {
   const { signingClient, walletAddress } = useSigningClient()
-  const [balances, setBalances] = useState<Cw20Balance[]>([])
-  let [info, setInfo] = useState<TokenInfo[]>([])
+  const [balances, setBalances] = useState<Cw20CoinVerified[]>([])
+  let [info, setInfo] = useState<TokenInfoResponse[]>([])
 
   useEffect(() => {
     if (!signingClient || walletAddress.length == 0) {
@@ -39,8 +39,8 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
     }
     signingClient
       ?.queryContractSmart(daoAddress, { cw20_balances: {} })
-      .then(async (response) => {
-        const daoBalances = response.cw20_balances as Cw20Balance[]
+      .then(async (response: Cw20BalancesResponse) => {
+        const daoBalances = response.cw20_balances
 
         const info = (await Promise.all(
           daoBalances.map(({ address }) =>
@@ -50,7 +50,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
           )
         ).catch((error) =>
           console.error(`queryContractSmart {token_info: {}} error: `, error)
-        )) as TokenInfo[]
+        )) as TokenInfoResponse[]
 
         const balances = (await Promise.all(
           daoBalances.map(async ({ address }) => {
@@ -69,7 +69,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
             `queryContractSmart {balance: { address: ${walletAddress}}} error: `,
             error
           )
-        )) as Cw20Balance[]
+        )) as Cw20CoinVerified[]
 
         setBalances(balances)
         setInfo(info)
@@ -77,7 +77,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
       .catch((error) =>
         console.error('queryContractSmart {cw20_balances: {}} error', error)
       )
-  }, [signingClient])
+  }, [signingClient, daoAddress, walletAddress])
   return { balances, info }
 }
 

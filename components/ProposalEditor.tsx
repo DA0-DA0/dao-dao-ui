@@ -187,7 +187,7 @@ export default function ProposalEditor({
   const addWasmMessage = () => {
     const action: ProposalAction = {
       type: 'addMessage',
-      message: { wasm: {} } as CosmosMsgFor_Empty_1,
+      message: { wasm: {} } as CosmosMsgFor_Empty,
       messageType: ProposalMessageType.Wasm,
     }
     dispatch(action)

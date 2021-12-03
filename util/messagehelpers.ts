@@ -1,5 +1,4 @@
 import { toBase64, toAscii } from '@cosmjs/encoding'
-import { BankMsg, Coin, CosmosMsgFor_Empty_1, WasmMsg } from 'types/cw3'
 import { convertDenomToHumanReadableDenom } from './conversion'
 import {
   BankMsg,
@@ -8,7 +7,8 @@ import {
   ExecuteMsg,
   InstantiateMsg as DaoInstantiateMsg,
   Cw20Coin,
-  Duration
+  Duration,
+  WasmMsg,
 } from '@dao_dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
 import { CW20_CODE_ID } from 'util/constants'
