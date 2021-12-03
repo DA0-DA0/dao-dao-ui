@@ -19,6 +19,7 @@
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.26.5",
     "@cosmjs/stargate": "^0.26.5",
+    "@dao-dao/types": "^0.0.1",
     "@heroicons/react": "^1.0.5",
     "@types/react-json-editor-ajrm": "^2.5.2",
     "daisyui": "^1.14.0",
