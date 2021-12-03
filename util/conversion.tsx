@@ -27,6 +27,20 @@ export function convertToFixedDecimals(amount: number | string): string {
   } else return String(amount)
 }
 
+export function convertDenomToHumanReadableDenom(denom: string): string {
+  if (denom.startsWith('u')) {
+    return denom.substring(1)
+  }
+  return denom
+}
+
+export function convertDenomToContractReadableDenom(denom: string): string {
+  if (denom.startsWith('u')) {
+    return denom
+  }
+  return 'u' + denom
+}
+
 export const zeroVotingCoin = {
   amount: '0',
   denom: 'ucredits',

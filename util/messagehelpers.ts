@@ -1,6 +1,9 @@
 import { BankMsg, Coin, CosmosMsgFor_Empty_1 } from 'types/cw3'
+import { convertDenomToHumanReadableDenom } from './conversion'
 
-const DENOM = process.env.NEXT_PUBLIC_STAKING_DENOM || ''
+const DENOM = convertDenomToHumanReadableDenom(
+  process.env.NEXT_PUBLIC_STAKING_DENOM || ''
+)
 
 export const TYPE_KEY = '@type'
 export const BANK_SEND_TYPE = '/cosmos.bank.v1beta1.MsgSend'
