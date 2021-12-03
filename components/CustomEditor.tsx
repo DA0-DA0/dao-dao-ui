@@ -9,6 +9,7 @@ import JSONInput from 'react-json-editor-ajrm'
 // @ts-ignore
 import locale from 'react-json-editor-ajrm/locale/en'
 import { useThemeContext } from '../contexts/theme'
+import { makeWasmMessage } from 'util/messagehelpers'
 
 type JSONError = {
   line?: number
@@ -32,11 +33,13 @@ export default function CustomEditor({
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
   const themeContext = useThemeContext()
 
-  function updateCustom(message: { custom: any }) {
+  function updateCustom(message: any) {
     try {
       const id = customMsg?.id ?? ''
       const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
       let action: ProposalAction
+      // If it is a WasmMsg, make sure it's properly encoded
+      if (message.wasm) message = makeWasmMessage(message)
 
       if (id) {
         action = {

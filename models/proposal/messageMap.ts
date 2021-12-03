@@ -3,6 +3,7 @@ import { CosmosMsgFor_Empty_1 } from '../../types/cw3'
 export enum ProposalMessageType {
   Collect = 'collect',
   Custom = 'custom',
+  Wasm = 'wasm',
   IBC = 'ibc',
   Mint = 'mint',
   Spend = 'spend',
