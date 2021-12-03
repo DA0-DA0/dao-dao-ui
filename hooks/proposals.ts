@@ -4,7 +4,7 @@ import {
   ProposalListResponse,
   ProposalResponse,
   VoteInfo,
-} from '@dao_dao/types/contracts/cw3-dao'
+} from '@dao-dao/types/contracts/cw3-dao'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'

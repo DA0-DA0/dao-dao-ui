@@ -1,5 +1,5 @@
 import ProposalCard from 'components/ProposalCard'
-import { ProposalResponse, Timestamp } from '@dao_dao/types/contracts/cw3-dao'
+import { ProposalResponse, Timestamp } from '@dao-dao/types/contracts/cw3-dao'
 
 type Expiration = {
   at_time: Timestamp

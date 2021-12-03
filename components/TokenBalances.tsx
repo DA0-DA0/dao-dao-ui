@@ -4,8 +4,8 @@ import {
   convertMicroDenomToDenom,
   convertFromMicroDenom,
 } from 'util/conversion'
-import { Cw20CoinVerified } from '@dao_dao/types/contracts/cw3-dao'
-import { TokenInfoResponse } from '@dao_dao/types/contracts/cw20-stakeable'
+import { Cw20CoinVerified } from '@dao-dao/types/contracts/cw3-dao'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-stakeable'
 
 function TokenBalance({
   amount,

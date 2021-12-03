@@ -1,7 +1,7 @@
 import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
-import { VoteInfo, ProposalResponse } from '@dao_dao/types/contracts/cw3-dao'
+import { VoteInfo, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 
 function ProposalDetails({
   proposal,

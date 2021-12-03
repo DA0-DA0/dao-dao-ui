@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react'
 import { useForm } from 'react-hook-form'
-import { InstantiateMsg } from '@dao_dao/types/contracts/cw3-dao'
+import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { DAO_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'

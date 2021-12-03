@@ -9,8 +9,8 @@ import {
   Cw20Coin,
   Duration,
   WasmMsg,
-} from '@dao_dao/types/contracts/cw3-dao'
-import { ExecuteMsg as MintExecuteMsg } from '@dao_dao/types/contracts/cw20-gov'
+} from '@dao-dao/types/contracts/cw3-dao'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import { CW20_CODE_ID } from './constants'
 
 const DENOM = convertDenomToHumanReadableDenom(

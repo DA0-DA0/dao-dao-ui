@@ -29,7 +29,7 @@ import MessageSelector from './MessageSelector'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 import MintEditor from './MintEditor'
-import { CosmosMsgFor_Empty } from '@dao_dao/types/contracts/cw3-dao'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 
 export default function ProposalEditor({
   initialProposal,

@@ -1,12 +1,12 @@
 import { StargateClient, IndexedTx, Coin } from '@cosmjs/stargate'
 import { useState, useEffect } from 'react'
 import { useSigningClient } from 'contexts/cosmwasm'
-import { TokenInfoResponse } from '@dao_dao/types/contracts/cw20-gov'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   Cw20Coin,
   Cw20BalancesResponse,
   Cw20CoinVerified,
-} from '@dao_dao/types/contracts/cw3-dao'
+} from '@dao-dao/types/contracts/cw3-dao'
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 
