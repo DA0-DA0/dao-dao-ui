@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "codegen": "npx ts-node --project tsconfig.tools.json tools/codegen.ts",
     "dev": "next dev",
     "build": "next build",
     "analyze": "cross-env ANALYZE=true next build",
@@ -13,8 +12,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "ts": "tsc --noEmit --incremental",
-    "ts:watch": "yarn ts --watch",
-    "schema:generate": "npx json-schema-to-typescript -i ../cw-dao/contracts/cw-dao/schema -o \"@types/${PWD##*/}\" && npx barrelsby --delete -s -q -d \"@types/${PWD##*/}\""
+    "ts:watch": "yarn ts --watch"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.26.5",
@@ -36,8 +34,7 @@
     "react-json-editor-ajrm": "^2.5.13",
     "rich-markdown-editor": "^11.18.15",
     "styled-components": "^5.3.3",
-    "theme-change": "^2.0.2",
-    "ts-dedupe": "^0.3.1"
+    "theme-change": "^2.0.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^11.1.2",
