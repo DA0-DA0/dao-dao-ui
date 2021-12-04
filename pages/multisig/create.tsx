@@ -7,6 +7,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import {
+  InstantiateMsg,
+  Member,
+} from '@dao-dao/types/contracts/cw3-flex-multisig'
 import { C4_GROUP_CODE_ID, FLEX_MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 
@@ -38,15 +42,26 @@ function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
   )
 }
 
-// @gavindoughtie: TODO add generated types
-function validateNonEmpty(msg: any, label: string) {
+function validateNonEmpty(msg: InstantiateMsg, label: string) {
   const { threshold, max_voting_period, group } = msg
-  if (isNaN(threshold.absolute_count.weight) || isNaN(max_voting_period.time)) {
+  const absoluteCount = (threshold as any)?.absolute_count
+  const time = (max_voting_period as any)?.time
+  if (absoluteCount === undefined || time === undefined) {
+    return false
+  }
+  if (isNaN(absoluteCount.weight) || isNaN(time)) {
+    return false
+  }
+  if (label.length === 0) {
+    return false
+  }
+  const voters = (group as any)?.instantiate_new_group?.voters
+  if (!voters?.length) {
     return false
   }
   if (
-    group.instantiate_new_group.voters.some(
-      ({ addr, weight }: any) => addr.length === 0 || isNaN(weight)
+    voters.some(
+      ({ addr, weight }: Member) => addr.length === 0 || isNaN(weight)
     )
   ) {
     return false
@@ -91,7 +106,7 @@ const CreateMultisig: NextPage = () => {
 
     const label = formEl.label.value.trim()
 
-    const msg = {
+    const msg: InstantiateMsg = {
       group: {
         instantiate_new_group: {
           code_id: C4_GROUP_CODE_ID,
