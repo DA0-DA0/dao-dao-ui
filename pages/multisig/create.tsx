@@ -101,7 +101,7 @@ const CreateMultisig: NextPage = () => {
     }))
     const required_weight = parseInt(formEl.threshold.value?.trim(), 10)
     const max_voting_period = {
-      time: parseInt(formEl.duration.value?.trim()),
+      time: parseInt(formEl.duration.value?.trim() ?? '0', 10),
     }
 
     const label = formEl.label.value.trim()
