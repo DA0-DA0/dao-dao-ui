@@ -7,7 +7,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { Voter } from 'types/cw3'
 import { C4_GROUP_CODE_ID, FLEX_MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 
@@ -45,23 +44,13 @@ function validateNonEmpty(msg: any, label: string) {
   if (isNaN(threshold.absolute_count.weight) || isNaN(max_voting_period.time)) {
     return false
   }
-  const unboundingTime = (unbonding_period as any).time
-  if (isNaN(unboundingTime)) {
-    return false
-  }
   if (
     group.instantiate_new_group.voters.some(
-      ({ addr, weight }: Voter) => addr.length === 0 || isNaN(weight)
+      ({ addr, weight }: any) => addr.length === 0 || isNaN(weight)
     )
   ) {
     return false
   }
-  // Voters?
-  // if (
-  //   voters.some(({ addr, weight }: VoterDetail) => addr.length === 0 || isNaN(weight))
-  // ) {
-  //   return false
-  // }
   return true
 }
 
