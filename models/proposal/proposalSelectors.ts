@@ -1,4 +1,5 @@
 import { BankMsg, Coin, Uint128 } from '@dao-dao/types/contracts/cw3-dao'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   MessageMap,
   MessageMapEntry,
@@ -54,10 +55,11 @@ export function messageForProposal(
       return microMessage
     }
     if (mapEntry.messageType === ProposalMessageType.Mint) {
-      return makeExecutableMintMessage(
-        mapEntry.message as any,
-        contractAddress
-      ) as any
+      const mintMessage = mapEntry.message as any
+      if (mintMessage.amount) {
+        mintMessage.amount = convertDenomToMicroDenom(mintMessage.amount)
+      }
+      return makeExecutableMintMessage(mintMessage, contractAddress) as any
     }
     return mapEntry.message
   })
