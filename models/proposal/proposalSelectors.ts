@@ -1,10 +1,12 @@
-import { Coin, BankMsg } from '../../types/cw3'
+import { BankMsg, Coin, Uint128 } from '@dao-dao/types/contracts/cw3-dao'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   MessageMap,
   MessageMapEntry,
   ProposalMessageType,
   messageSort,
 } from './messageMap'
+import { makeExecutableMintMessage } from '../../util/messagehelpers'
 import { Proposal } from './proposal'
 import {
   convertDenomToContractReadableDenom,
@@ -12,7 +14,10 @@ import {
 } from '../../util/conversion'
 
 /// Returns the outgoing message for COSMOS
-export function messageForProposal(proposal: Proposal) {
+export function messageForProposal(
+  proposal: Proposal,
+  contractAddress: string
+) {
   const msgs = Object.values(proposal.messageMap).map((mapEntry) => {
     // Spend proposals are inputted in human readable form (ex:
     // junox). Contracts expect things in the micro form (ex: ujunox)
@@ -49,6 +54,13 @@ export function messageForProposal(proposal: Proposal) {
 
       return microMessage
     }
+    if (mapEntry.messageType === ProposalMessageType.Mint) {
+      const mintMessage = mapEntry.message as any
+      if (mintMessage.amount) {
+        mintMessage.amount = convertDenomToMicroDenom(mintMessage.amount)
+      }
+      return makeExecutableMintMessage(mintMessage, contractAddress) as any
+    }
     return mapEntry.message
   })
   const msg: Record<string, unknown> = {
@@ -83,7 +95,9 @@ export function getActiveMessageId(proposal: Proposal): string {
   return proposal.activeMessageId
 }
 
-export function getSpendAmount(spendMsg?: MessageMapEntry): string | undefined {
+export function getSpendAmount(
+  spendMsg?: MessageMapEntry
+): Uint128 | undefined {
   if (spendMsg?.messageType === ProposalMessageType.Spend) {
     const coins = (spendMsg.message as any)?.bank?.send?.amount as Coin[]
     if (coins?.length) {
@@ -104,6 +118,18 @@ export function getSpendRecipient(
   }
   return undefined
 }
+
+export function getMintAmount(
+  mintMessage?: MessageMapEntry
+): Uint128 | undefined {
+  if (mintMessage?.messageType === ProposalMessageType.Mint) {
+    const amount = (mintMessage.message as any)?.mint.amount
+    return amount
+  }
+  return undefined
+}
+
+export const getMintRecipient = getSpendRecipient
 
 export function proposalMessages(
   proposal: Proposal,

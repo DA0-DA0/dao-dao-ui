@@ -1,4 +1,6 @@
-import { CosmosMsgFor_Empty_1 } from '../../types/cw3'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { ExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
+
 import { ProposalMessageType } from './messageMap'
 
 export type ProposalSetTitle = {
@@ -13,20 +15,20 @@ export type ProposalSetDescription = {
 
 export type ProposalAddMessage = {
   type: 'addMessage'
-  message: CosmosMsgFor_Empty_1
+  message: CosmosMsgFor_Empty | ExecuteMsg
   messageType?: ProposalMessageType
 }
 
 export type ProposalUpdateMessage = {
   type: 'updateMessage'
   id: string
-  message?: CosmosMsgFor_Empty_1
+  message?: CosmosMsgFor_Empty | ExecuteMsg
 }
 
 export type ProposalUpdatePendingMessage = {
   type: 'updatePendingMessage'
   id: string
-  message?: CosmosMsgFor_Empty_1
+  message?: CosmosMsgFor_Empty | ExecuteMsg
 }
 
 export type ProposalRemoveMessage = {

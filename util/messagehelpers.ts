@@ -1,6 +1,17 @@
 import { toBase64, toAscii } from '@cosmjs/encoding'
-import { BankMsg, Coin, CosmosMsgFor_Empty_1, WasmMsg } from 'types/cw3'
 import { convertDenomToHumanReadableDenom } from './conversion'
+import {
+  BankMsg,
+  Coin,
+  CosmosMsgFor_Empty,
+  ExecuteMsg,
+  InstantiateMsg as DaoInstantiateMsg,
+  Cw20Coin,
+  Duration,
+  WasmMsg,
+} from '@dao-dao/types/contracts/cw3-dao'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
+import { CW20_CODE_ID } from './constants'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -59,11 +70,96 @@ export function makeSpendMessage(
   to_address: string,
   from_address: string,
   denom = DENOM
-): CosmosMsgFor_Empty_1 {
+): CosmosMsgFor_Empty {
   const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
   return {
     bank,
   }
+}
+
+export function makeExecutableMintMessage(
+  msg: MintExecuteMsg,
+  contract_addr: string
+): CosmosMsgFor_Empty {
+  return {
+    wasm: {
+      execute: {
+        contract_addr,
+        msg: toBase64(toAscii(JSON.stringify(msg))),
+        funds: [],
+      },
+    },
+  }
+}
+
+export function makeMintMessage(
+  amount: string,
+  to_address: string
+): MintExecuteMsg {
+  const msg: MintExecuteMsg = {
+    mint: {
+      amount,
+      recipient: to_address,
+    },
+  }
+  return msg
+}
+
+export function validDaoInstantiateMessageParams(
+  name?: string,
+  description?: string,
+  tokenName?: string,
+  tokenSymbol?: string,
+  owners?: Cw20Coin[],
+  percentage?: string | number,
+  max_voting_period?: Duration,
+  proposal_deposit_amount?: string | number
+): boolean {
+  return false
+}
+
+export function makeDaoInstantiateMessage(
+  name: string,
+  description: string,
+  tokenName: string,
+  tokenSymbol: string,
+  owners: Cw20Coin[],
+  percentage: string | number,
+  max_voting_period: Duration,
+  proposal_deposit_amount: string | number,
+  refund_failed_proposals: boolean
+): DaoInstantiateMsg {
+  if (typeof percentage === 'number') {
+    percentage = `${percentage}`
+  }
+  if (typeof proposal_deposit_amount === 'number') {
+    proposal_deposit_amount = `${proposal_deposit_amount}`
+  }
+  const msg: DaoInstantiateMsg = {
+    name,
+    description,
+    gov_token: {
+      instantiate_new_cw20: {
+        code_id: CW20_CODE_ID,
+        label: tokenName,
+        msg: {
+          name: tokenName,
+          symbol: tokenSymbol,
+          decimals: 6,
+          initial_balances: owners,
+        },
+      },
+    },
+    threshold: {
+      absolute_percentage: {
+        percentage,
+      },
+    },
+    max_voting_period,
+    proposal_deposit_amount,
+    refund_failed_proposals,
+  }
+  return msg
 }
 
 export interface MessageAction {
@@ -84,7 +180,7 @@ export function labelForAmount(amount: Coin[]): string {
 }
 
 export function labelForMessage(
-  msg?: CosmosMsgFor_Empty_1,
+  msg?: CosmosMsgFor_Empty | ExecuteMsg | MintExecuteMsg,
   defaultMessage = ''
 ): string {
   if (!msg) {
@@ -101,6 +197,8 @@ export function labelForMessage(
     } else if (anyMsg.bank.burn) {
       messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
     }
+  } else if (anyMsg.mint) {
+    messageString = `${anyMsg.mint.amount} -> ${anyMsg.mint.recipient}`
   } else if (anyMsg.custom) {
     const customMap: { [k: string]: any } = anyMsg.custom
     messageString = Object.entries(customMap)

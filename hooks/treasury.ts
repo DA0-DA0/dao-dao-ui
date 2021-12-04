@@ -1,8 +1,12 @@
 import { StargateClient, IndexedTx, Coin } from '@cosmjs/stargate'
 import { useState, useEffect } from 'react'
 import { useSigningClient } from 'contexts/cosmwasm'
-import { TokenInfo } from 'types/cw20'
-import { Cw20Balance } from 'types/cw-dao'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import {
+  Cw20Coin,
+  Cw20BalancesResponse,
+  Cw20CoinVerified,
+} from '@dao-dao/types/contracts/cw3-dao'
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 
@@ -21,15 +25,15 @@ export function useNativeBalances(contractAddress: string) {
           console.error('StargateClient getAllBalances error: ', error)
         )
     })
-  }, [timestamp])
+  }, [timestamp, contractAddress])
 
   return { nativeBalances, setTimestamp }
 }
 
 export function useDaoCw20BalancesForWallet(daoAddress: string) {
   const { signingClient, walletAddress } = useSigningClient()
-  const [balances, setBalances] = useState<Cw20Balance[]>([])
-  let [info, setInfo] = useState<TokenInfo[]>([])
+  const [balances, setBalances] = useState<Cw20CoinVerified[]>([])
+  let [info, setInfo] = useState<TokenInfoResponse[]>([])
 
   useEffect(() => {
     if (!signingClient || walletAddress.length == 0) {
@@ -37,8 +41,8 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
     }
     signingClient
       ?.queryContractSmart(daoAddress, { cw20_balances: {} })
-      .then(async (response) => {
-        const daoBalances = response.cw20_balances as Cw20Balance[]
+      .then(async (response: Cw20BalancesResponse) => {
+        const daoBalances = response.cw20_balances
 
         const info = (await Promise.all(
           daoBalances.map(({ address }) =>
@@ -48,7 +52,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
           )
         ).catch((error) =>
           console.error(`queryContractSmart {token_info: {}} error: `, error)
-        )) as TokenInfo[]
+        )) as TokenInfoResponse[]
 
         const balances = (await Promise.all(
           daoBalances.map(async ({ address }) => {
@@ -67,7 +71,7 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
             `queryContractSmart {balance: { address: ${walletAddress}}} error: `,
             error
           )
-        )) as Cw20Balance[]
+        )) as Cw20CoinVerified[]
 
         setBalances(balances)
         setInfo(info)
@@ -75,14 +79,14 @@ export function useDaoCw20BalancesForWallet(daoAddress: string) {
       .catch((error) =>
         console.error('queryContractSmart {cw20_balances: {}} error', error)
       )
-  }, [signingClient])
+  }, [signingClient, daoAddress, walletAddress])
   return { balances, info }
 }
 
 export function useCw20Balances(contractAddress: string) {
   const { signingClient } = useSigningClient()
-  const [balances, setBalances] = useState<Cw20Balance[]>([])
-  const [info, setInfo] = useState<TokenInfo[]>([])
+  const [balances, setBalances] = useState<Cw20Coin[]>([])
+  const [info, setInfo] = useState<TokenInfoResponse[]>([])
 
   useEffect(() => {
     if (!signingClient) {
@@ -91,7 +95,7 @@ export function useCw20Balances(contractAddress: string) {
     signingClient
       ?.queryContractSmart(contractAddress, { cw20_balances: {} })
       .then(async (response) => {
-        const balances = response.cw20_balances as Cw20Balance[]
+        const balances = response.cw20_balances as Cw20Coin[]
 
         const info = (await Promise.all(
           balances.map(({ address }) =>
@@ -101,7 +105,7 @@ export function useCw20Balances(contractAddress: string) {
           )
         ).catch((error) =>
           console.error(`queryContractSmart {token_info: {}} error: `, error)
-        )) as TokenInfo[]
+        )) as TokenInfoResponse[]
 
         setBalances(balances)
         setInfo(info)
@@ -109,7 +113,7 @@ export function useCw20Balances(contractAddress: string) {
       .catch((error) =>
         console.error('queryContractSmart {cw20_balances: {}} error', error)
       )
-  }, [signingClient])
+  }, [signingClient, contractAddress])
   return { balances, info }
 }
 
@@ -128,6 +132,6 @@ export function useTransactions(contractAddress: string) {
         setTxs(response as IndexedTx[])
       })
       .catch((error) => console.log(error))
-  }, [signingClient])
+  }, [signingClient, contractAddress])
   return { txs }
 }

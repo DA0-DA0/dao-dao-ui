@@ -1,11 +1,11 @@
 import { Coin } from '@cosmjs/stargate'
-import { Cw20Balance } from 'types/cw-dao'
-import { TokenInfo } from 'types/cw20'
 import HelpTooltip from 'components/HelpTooltip'
 import {
   convertMicroDenomToDenom,
   convertFromMicroDenom,
 } from 'util/conversion'
+import { Cw20CoinVerified } from '@dao-dao/types/contracts/cw3-dao'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-stakeable'
 
 function TokenBalance({
   amount,
@@ -36,9 +36,9 @@ function TokenBalances({
   cw20info,
 }: {
   native: Coin[]
-  cw20: Cw20Balance[]
-  cw20Wallet: Cw20Balance[]
-  cw20info: TokenInfo[]
+  cw20: Cw20CoinVerified[]
+  cw20Wallet: Cw20CoinVerified[]
+  cw20info: TokenInfoResponse[]
 }) {
   return (
     <>
