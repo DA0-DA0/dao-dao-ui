@@ -17,7 +17,9 @@ const ProposalCreate: NextPage = () => {
   const handleProposal = (proposal: Proposal) => {
     execute(proposal).then(() => {
       const paramStr = `initialMessageStatus=success`
-      router.push(`${ROUTE_PREFIX}/${proposalID}?${paramStr}`)
+
+      if (proposalID.length > 0)
+        router.push(`${ROUTE_PREFIX}/${proposalID}?${paramStr}`)
     })
   }
 
