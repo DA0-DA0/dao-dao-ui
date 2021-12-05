@@ -5,12 +5,12 @@ import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
   ProposalAction,
   ProposalRemoveMessage,
-  ProposalUpdateFromMessage
+  ProposalUpdateFromMessage,
 } from 'models/proposal/proposalActions'
 import { ProposalReducer } from 'models/proposal/proposalReducer'
 import {
   messageForProposal,
-  proposalMessages
+  proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import { useReducer, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -19,12 +19,12 @@ import { isValidAddress } from 'util/isValidAddress'
 import {
   labelForMessage,
   makeMintMessage,
-  makeSpendMessage
+  makeSpendMessage,
 } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
 import InputField, {
   InputFieldLabel,
-  makeFieldErrorMessage
+  makeFieldErrorMessage,
 } from './InputField'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
@@ -52,7 +52,8 @@ export default function ProposalEditor({
   })
   const [description, setDescription] = useState('')
   const [editProposalJson, setEditProposalJson] = useState(false)
-  const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] = useState('')
+  const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
+    useState('')
   const themeContext = useThemeContext()
   const {
     register,
@@ -309,9 +310,9 @@ export default function ProposalEditor({
 
   const fieldErrorMessage = makeFieldErrorMessage(errors)
 
-  const editorClassName = proposalDescriptionErrorMessage ? 
-    'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl' :
-    'input input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl'
+  const editorClassName = proposalDescriptionErrorMessage
+    ? 'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl'
+    : 'input input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl'
 
   return (
     <div className="flex flex-col w-full flex-row">

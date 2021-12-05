@@ -1,13 +1,13 @@
 import { useThemeContext } from 'contexts/theme'
-import React, {
-  ChangeEventHandler
-} from 'react'
+import React, { ChangeEventHandler } from 'react'
 import {
   FieldErrors,
   FieldPath,
-  FieldPathValue, RegisterOptions, UseFormRegister,
+  FieldPathValue,
+  RegisterOptions,
+  UseFormRegister,
   Validate,
-  MultipleFieldErrors
+  MultipleFieldErrors,
 } from 'react-hook-form'
 import HelpTooltip from './HelpTooltip'
 
@@ -15,10 +15,7 @@ export function makeFieldErrorMessage<
   TFieldValues,
   TFieldName extends FieldPath<TFieldValues>
 >(errors: FieldErrors<TFieldValues>) {
-  return function (
-    fieldName: TFieldName,
-    msg?: string
-  ): string {
+  return function (fieldName: TFieldName, msg?: string): string {
     const err = (errors as any)[fieldName]
     if (err) {
       if (!msg) {
@@ -87,7 +84,7 @@ export default function InputField<
   showErrorMessage,
   validate,
   register,
-  fieldErrorMessage
+  fieldErrorMessage,
 }: {
   fieldName: TFieldName
   label?: string

@@ -448,7 +448,7 @@ const CreateDao: NextPage = () => {
               readOnly={complete}
               required={false}
               register={register}
-              fieldErrorMessage={fieldErrorMessage}  
+              fieldErrorMessage={fieldErrorMessage}
             />
           </div>
           {!complete && (
