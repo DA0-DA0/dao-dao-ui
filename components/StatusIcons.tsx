@@ -1,20 +1,19 @@
+import { STATUS_COLORS } from 'util/constants'
 import SvgPassed from './icons/Passed'
 import SvgExecuted from './icons/Executed'
 import SvgOpen from './icons/Open'
 import SvgRejected from './icons/Rejected'
 
-const StatusIcons = {
-  passed: (
-    <SvgPassed color="#6A78FF" style={{ display: 'inline' }} />
-  ),
+const StatusIcons: { [key: string]: JSX.Element } = {
+  open: <SvgOpen color={STATUS_COLORS.open} style={{ display: 'inline' }} />,
   executed: (
-    <SvgExecuted color="#53D0C9" style={{ display: 'inline' }} />
+    <SvgExecuted color={STATUS_COLORS.executed} style={{ display: 'inline' }} />
   ),
-  open: (
-    <SvgOpen color="#00BAFF" style={{ display: 'inline' }} />
+  passed: (
+    <SvgPassed color={STATUS_COLORS.passed} style={{ display: 'inline' }} />
   ),
   rejected: (
-    <SvgRejected color="#ED5276" style={{ display: 'inline' }} />
+    <SvgRejected color={STATUS_COLORS.rejected} style={{ display: 'inline' }} />
   ),
 }
 

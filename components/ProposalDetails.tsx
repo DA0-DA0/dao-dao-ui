@@ -3,6 +3,7 @@ import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
 import { VoteInfo, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import ProposalVotes from 'components/ProposalVotes'
+import ProposalStatus from './ProposalStatus'
 
 function ProposalDetails({
   proposal,
@@ -29,7 +30,13 @@ function ProposalDetails({
 
   return (
     <>
-      <h1 className="text-3xl font-bold mb-8">{proposal.title}</h1>
+      <div className="mt-2 mb-8 flex justify-between items-center">
+        <h1 className="text-3xl font-bold inline align-middle">
+          {proposal.title}
+        </h1>
+        <ProposalStatus status={proposal.status} />
+      </div>
+
       <Markdown
         className="mb-8"
         readOnly={true}
