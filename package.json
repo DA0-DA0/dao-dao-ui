@@ -12,7 +12,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "ts": "tsc --noEmit --incremental",
-    "ts:watch": "yarn ts --watch"
+    "ts:watch": "yarn ts --watch",
+    "svgr:clean": "rm -rf components/icons/*",
+    "svgr": "./node_modules/.bin/svgr --out-dir components/icons --typescript --no-index --icon --replace-attr-values \"#191D20={props.color}\" -- assets/icons"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.26.5",
@@ -38,6 +40,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^11.1.2",
+    "@svgr/cli": "^6.1.1",
     "@types/jest": "^27.0.2",
     "@types/jsoneditor": "^9.5.1",
     "@types/lodash.clonedeep": "^4.5.6",

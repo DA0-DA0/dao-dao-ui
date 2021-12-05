@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Status from './Status'
 
 interface ProposalCardProps {
   title: string
@@ -97,7 +98,7 @@ export default function ProposalCard({
           <div className="card-body py-4 px-8">
             <div className="card-title flex flex-row justify-between m-0">
               <div>{title}</div>
-              {status === 'passed' && (
+              {/* {status === 'passed' && (
                 <div className="text-2xl text-warning">
                   {icons.warning} {status}
                 </div>
@@ -114,7 +115,8 @@ export default function ProposalCard({
                 <div className="text-2xl text-info">
                   {icons.bell} {status}
                 </div>
-              )}
+              )} */}
+              <Status status={status} />
             </div>
           </div>
         </div>
