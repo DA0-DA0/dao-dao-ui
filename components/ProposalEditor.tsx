@@ -1,35 +1,36 @@
-import { FormEvent, FormEventHandler, useReducer, useState } from 'react'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { useThemeContext } from 'contexts/theme'
-import {
-  ProposalMessageType,
-  MessageMapEntry,
-} from 'models/proposal/messageMap'
+import { ProposalMessageType } from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
   ProposalAction,
   ProposalRemoveMessage,
-  ProposalUpdateFromMessage,
+  ProposalUpdateFromMessage
 } from 'models/proposal/proposalActions'
 import { ProposalReducer } from 'models/proposal/proposalReducer'
 import {
   messageForProposal,
-  proposalMessages,
+  proposalMessages
 } from 'models/proposal/proposalSelectors'
+import { useReducer, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import Editor from 'rich-markdown-editor'
 import { isValidAddress } from 'util/isValidAddress'
 import {
   labelForMessage,
-  makeExecutableMintMessage,
   makeMintMessage,
-  makeSpendMessage,
+  makeSpendMessage
 } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
+import InputField, {
+  InputFieldLabel,
+  makeFieldErrorMessage
+} from './InputField'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
+import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import MintEditor from './MintEditor'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 
 export default function ProposalEditor({
   initialProposal,
@@ -49,9 +50,15 @@ export default function ProposalEditor({
   const [proposal, dispatch] = useReducer(ProposalReducer, {
     ...(initialProposal || EmptyProposal),
   })
+  const [description, setDescription] = useState('')
   const [editProposalJson, setEditProposalJson] = useState(false)
-  const [value, setValue] = useState('')
+  const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] = useState('')
   const themeContext = useThemeContext()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm()
 
   const messageActions = [
     {
@@ -86,9 +93,23 @@ export default function ProposalEditor({
 
   const complete = false
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (e: FormEvent) => {
-    e.preventDefault()
-    onProposal(proposal)
+  function isProposalValid(proposalToCheck: Proposal): boolean {
+    if (!proposalToCheck) {
+      return false
+    }
+    if (!(proposalToCheck.description && proposalToCheck.title)) {
+      return false
+    }
+    return true
+  }
+
+  function onSubmit(_formData: any) {
+    // We don't actually care about what the form processor returned in this
+    // case, just that the proposal is filled out correctly, which if
+    // the submit method gets called it will be.
+    if (isProposalValid(proposal)) {
+      onProposal(proposal)
+    }
   }
 
   function setProposalTitle(title: string) {
@@ -97,6 +118,11 @@ export default function ProposalEditor({
 
   function setProposalDescription(description: string) {
     dispatch({ type: 'setDescription', description })
+    if (description) {
+      setProposalDescriptionErrorMessage('')
+    } else {
+      setProposalDescriptionErrorMessage('Proposal description required')
+    }
   }
 
   let messages = proposalMessages(proposal).map((mapEntry, key) => {
@@ -105,10 +131,6 @@ export default function ProposalEditor({
     let modeEditor = null
     switch (mapEntry?.messageType) {
       case ProposalMessageType.Spend:
-        let amount = ''
-        if (mapEntry?.message) {
-          amount = (mapEntry.message as any).bank?.send?.amount[0]?.amount
-        }
         modeEditor = (
           <SpendEditor
             dispatch={dispatch}
@@ -264,11 +286,15 @@ export default function ProposalEditor({
   }
 
   function handleDescriptionChange(newValue: () => string) {
-    setValue(newValue)
+    let val = newValue()
+    if (val.trim() == '\\') {
+      val = ''
+    }
+    setDescription(val)
   }
 
   function handleDescriptionBlur() {
-    setProposalDescription(value)
+    setProposalDescription(description)
   }
 
   // TODO preview mode for the whole proposal
@@ -281,6 +307,12 @@ export default function ProposalEditor({
     )
   }
 
+  const fieldErrorMessage = makeFieldErrorMessage(errors)
+
+  const editorClassName = proposalDescriptionErrorMessage ? 
+    'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl' :
+    'input input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl'
+
   return (
     <div className="flex flex-col w-full flex-row">
       <div className="grid bg-base-100">
@@ -289,27 +321,31 @@ export default function ProposalEditor({
             <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit<any>(onSubmit)}
             >
-              <label className="block text-xl">Title</label>
-              <input
-                className="input input-bordered rounded box-border px-8 w-full focus:input-primary text-xl"
-                name="label"
+              <InputField
+                fieldName="label"
+                label="Name"
+                toolTip="Name the Proposal"
+                errorMessage="Proposal name required"
+                readOnly={complete}
+                register={register}
+                fieldErrorMessage={fieldErrorMessage}
                 onChange={(e) => setProposalTitle(e?.target?.value)}
-                readOnly={complete}
-                value={proposal.title}
               />
-              <label className="block mt-4 text-xl">
-                Description{' '}
-                <span className="text-sm opacity-60">(Markdown Supported)</span>
-              </label>
+              <InputFieldLabel
+                errorText={proposalDescriptionErrorMessage}
+                fieldName="description"
+                label="Description"
+                toolTip="Your proposal description"
+              />
               <Editor
-                className="input input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl"
-                onBlur={handleDescriptionBlur}
+                className={editorClassName}
                 onChange={handleDescriptionChange}
+                defaultValue={proposal.description}
                 readOnly={complete}
-                value={proposal.description}
                 dark={themeContext.theme === 'junoDark'}
+                id="description"
               />
               <label htmlFor="message-list" className="block mt-4 text-xl">
                 Messages
@@ -326,6 +362,9 @@ export default function ProposalEditor({
                   style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
                   type="submit"
                   disabled={loading}
+                  onClick={(e) => {
+                    setProposalDescription(description)
+                  }}
                 >
                   Create Proposal
                 </button>
