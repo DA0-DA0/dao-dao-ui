@@ -2,6 +2,7 @@ import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
 import { VoteInfo, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import ProposalVotes from 'components/ProposalVotes'
 
 function ProposalDetails({
   proposal,
@@ -65,6 +66,7 @@ function ProposalDetails({
           )}
         </div>
       )}
+      <ProposalVotes votes={votes} />
     </>
   )
 }
