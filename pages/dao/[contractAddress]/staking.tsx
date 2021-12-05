@@ -1,68 +1,121 @@
+import React, { useState } from 'react'
 import type { NextPage } from 'next'
 import WalletLoader from 'components/WalletLoader'
-import { TokenBalance } from 'components/TokenBalances'
 import { useDaoConfig } from 'hooks/dao'
+import { useCw20WalletBalance } from 'hooks/cw20'
 import { useStaking } from 'hooks/staking'
-import { useDaoCw20BalancesForWallet } from 'hooks/treasury'
 import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
+import {
+  convertMicroDenomToDenom,
+  convertDenomToMicroDenom,
+} from 'util/conversion'
+
+export function TokenBalance({
+  amount,
+  symbol,
+  title,
+}: {
+  amount: string
+  symbol?: string
+  title: string
+}) {
+  return (
+    <div className="card bordered shadow-lg card-side m-2 inline-flex">
+      <div className="card-body py-6">
+        <h2 className="card-title">{title}</h2>
+        <p>
+          {convertMicroDenomToDenom(amount)} {symbol}
+        </p>
+      </div>
+    </div>
+  )
+}
 
 const Staking: NextPage = () => {
+  const [amount, setAmount] = useState('')
+
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const balances = useDaoCw20BalancesForWallet(contractAddress)
-  const { config, gov_token } = useDaoConfig(contractAddress)
+  const {
+    gov_token,
+    loading: daoConfigLoading,
+    error: daoConfigError,
+  } = useDaoConfig(contractAddress)
+
+  const {
+    loading: cw20Loading,
+    error: cw20Error,
+    balance,
+    tokenInfo,
+  } = useCw20WalletBalance(gov_token)
 
   const {
     loading: stakingLoading,
     error: stakingError,
-    claim,
-    delegateVotes,
     stake,
+    stakedBalance,
     unstake,
   } = useStaking(gov_token)
 
-  const handleStake = () => {
-    stake('1000')
+  const handleStake = async () => {
+    await stake(convertDenomToMicroDenom(amount))
+    setAmount('')
   }
 
-  const handleDelegateVotes = () => {
-    delegateVotes('juno1s4ckh9405q0a3jhkwx9wkf9hsjh66nmu769tz5')
-  }
-
-  const handleUnstake = () => {
-    unstake('1000')
-  }
-
-  const handleClaim = () => {
-    claim()
+  const handleUnstake = async () => {
+    await unstake(convertDenomToMicroDenom(amount))
+    setAmount('')
   }
 
   return (
-    <WalletLoader>
-      {balances?.balances.length > 0
-        ? balances.balances.map((balance, index) => (
-            <TokenBalance
-              key={balance.address}
-              amount={balance.amount}
-              denom={balances.info[index]?.name}
-              symbol={balances.info[index]?.symbol}
-            />
-          ))
-        : null}
-      <button className="btn btn-base" onClick={handleStake}>
-        Stake
-      </button>
-      <button className="btn btn-base" onClick={handleDelegateVotes}>
-        Delegate votes
-      </button>
-      <button className="btn btn-base" onClick={handleUnstake}>
-        Unstake
-      </button>
-      <button className="btn btn-base" onClick={handleClaim}>
-        Claim
-      </button>
+    <WalletLoader loading={stakingLoading || daoConfigLoading || cw20Loading}>
+      <TokenBalance
+        title="DAO token Balance"
+        amount={balance?.balance}
+        symbol={tokenInfo?.symbol}
+      />
+      <TokenBalance
+        title="Staked DAO Tokens"
+        amount={stakedBalance?.balance}
+        symbol={tokenInfo?.symbol}
+      />
+
+      <div className="form-control my-8">
+        <label className="label">
+          <span className="label-text">Amount</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Amount to Stake / Unstake"
+          className="input input-bordered"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <button className="btn btn-base inline-flex mx-2" onClick={handleStake}>
+          Stake
+        </button>
+        <button
+          className="btn btn-base inline-flex mx-2"
+          onClick={handleUnstake}
+        >
+          Unstake
+        </button>
+      </div>
+      {cw20Error && (
+        <div className="mt-8">
+          <LineAlert variant="error" msg={cw20Error} />
+        </div>
+      )}
+      {daoConfigError && (
+        <div className="mt-8">
+          <LineAlert variant="error" msg={daoConfigError} />
+        </div>
+      )}
       {stakingError && (
         <div className="mt-8">
           <LineAlert variant="error" msg={stakingError} />

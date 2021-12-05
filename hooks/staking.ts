@@ -54,7 +54,7 @@ export function useStaking(contractAddress: string) {
 
   const claim = async () => {
     setError('')
-    signingClient
+    await signingClient
       ?.execute(
         walletAddress,
         contractAddress,
@@ -75,7 +75,7 @@ export function useStaking(contractAddress: string) {
 
   const delegateVotes = async (recipient: string) => {
     setError('')
-    signingClient
+    await signingClient
       ?.execute(
         walletAddress,
         contractAddress,
@@ -98,7 +98,7 @@ export function useStaking(contractAddress: string) {
 
   const stake = async (amount: string) => {
     setError('')
-    signingClient
+    await signingClient
       ?.execute(
         walletAddress,
         contractAddress,
@@ -121,7 +121,7 @@ export function useStaking(contractAddress: string) {
 
   const unstake = async (amount: string) => {
     setError('')
-    signingClient
+    await signingClient
       ?.execute(
         walletAddress,
         contractAddress,
