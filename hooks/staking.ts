@@ -2,25 +2,54 @@ import { useState, useEffect } from 'react'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { defaultExecuteFee } from 'util/fee'
 
+// Returns staking info and methods for a cw20-stakable contract
 export function useStaking(contractAddress: string) {
   const { walletAddress, signingClient } = useSigningClient()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const [stakedBalance, setStakedBalance] = useState(null)
+  const [claims, setClaims] = useState(null)
+  const [delegation, setDelegation] = useState(null)
+  const [totalStaked, setTotalStaked] = useState(null)
 
   useEffect(() => {
     if (walletAddress.length === 0 || !signingClient) {
       return
     }
     setLoading(true)
-    signingClient
-      ?.queryContractSmart(contractAddress, {
+    Promise.all([
+      signingClient?.queryContractSmart(contractAddress, {
         staked_balance_at_height: {
           address: walletAddress,
         },
+      }),
+      signingClient?.queryContractSmart(contractAddress, {
+        claims: {
+          address: walletAddress,
+        },
+      }),
+      signingClient?.queryContractSmart(contractAddress, {
+        delegation: {
+          address: walletAddress,
+        },
+      }),
+      signingClient?.queryContractSmart(contractAddress, {
+        total_staked_at_height: {},
+      }),
+    ])
+      .then((values) => {
+        const [stakedBalance, claims, delegation, totalStaked] = values
+        setStakedBalance(stakedBalance)
+        setClaims(claims)
+        setTotalStaked(totalStaked)
+        setDelegation(delegation)
+        setLoading(false)
       })
-      .then(console.log)
-      .catch((e) => setError(e.msg))
-    setLoading(false)
+      .catch((e) => {
+        setError(e.msg)
+        setLoading(false)
+      })
   }, [contractAddress, signingClient, walletAddress])
 
   const claim = async () => {
@@ -118,8 +147,12 @@ export function useStaking(contractAddress: string) {
     loading,
     error,
     claim,
+    claims,
     delegateVotes,
+    delegation,
     stake,
+    stakedBalance,
+    totalStaked,
     unstake,
   }
 }

@@ -12,11 +12,13 @@ import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
 
+// Returns a list of proposals and pagination methods
 export function useProposals(contractAddress: string) {
   const { walletAddress, signingClient } = useSigningClient()
+  const [error, setError] = useState<Error | null>(null)
+  const [loading, setLoading] = useState(false)
   const [proposals, setProposals] = useState<ProposalResponse[]>([])
   const [hideLoadMore, setHideLoadMore] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [startBefore, setStartBefore] = useState<number | null>(null)
 
   useEffect(() => {
@@ -42,21 +44,23 @@ export function useProposals(contractAddress: string) {
         }
         setProposals((p) => p.concat(response.proposals))
       } catch (err) {
+        setError(err)
         setLoading(false)
       }
     }
     sign(signingClient)
   }, [walletAddress, signingClient, startBefore, contractAddress])
-  return { proposals, hideLoadMore, loading, setStartBefore }
+  return { proposals, hideLoadMore, loading, error, setStartBefore }
 }
 
+// Returns proposal info and associated contract methods
 export function useProposal(contractAddress: string, proposalId: string) {
   const { walletAddress, signingClient } = useSigningClient()
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [votes, setVotes] = useState<VoteInfo[]>([])
   const [tally, setTally] = useState<ProposalTallyResponse>()
   const [proposal, setProposal] = useState<ProposalResponse | null>(null)
-  const [error, setError] = useState('')
   const [timestamp, setTimestamp] = useState(new Date())
   const [transactionHash, setTransactionHash] = useState('')
 
@@ -166,6 +170,8 @@ export function useProposal(contractAddress: string, proposalId: string) {
   }
 }
 
+// Returns an excute method used to create a proposal
+// When a proposal is created, it returns a proposalID
 export function useCreateProposal(contractAddress: string) {
   const { walletAddress, signingClient } = useSigningClient()
   const [error, setError] = useState('')
