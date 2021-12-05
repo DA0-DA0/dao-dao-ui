@@ -3,7 +3,7 @@ import { Cw20CoinVerified } from '@dao-dao/types/contracts/cw3-dao'
 import TokenBalance from 'components/TokenBalance'
 import Cw20TokenBalance from 'components/Cw20TokenBalance'
 
-function TokenBalances({
+export function TokenBalances({
   native,
   cw20Balances,
 }: {
