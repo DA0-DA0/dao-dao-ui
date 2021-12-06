@@ -7,7 +7,6 @@ import {
   RegisterOptions,
   UseFormRegister,
   Validate,
-  MultipleFieldErrors,
 } from 'react-hook-form'
 import HelpTooltip from './HelpTooltip'
 
@@ -71,14 +70,14 @@ export default function InputField<
   fieldName,
   label,
   toolTip,
-  type,
-  placeholder,
+  type = 'text',
+  placeholder = '',
   readOnly,
   errorMessage,
   onChange,
   size,
   defaultValue,
-  required,
+  required = true,
   min,
   max,
   showErrorMessage,
@@ -106,20 +105,7 @@ export default function InputField<
   register: UseFormRegister<TFieldValues>
   fieldErrorMessage(a: any, b: any): string
 }) {
-  const themeContext = useThemeContext()
-
-  let options:
-    | RegisterOptions<TFieldValues, FieldPath<TFieldValues>>
-    | undefined
-  if (typeof required === 'undefined') {
-    required = true
-  }
-  if (required) {
-    options = { required }
-  }
-  if (validate) {
-    options = { ...options, validate }
-  }
+  const options = { required, validate }
   const errorText = fieldErrorMessage(fieldName, errorMessage)
   const labelComponent = (
     <InputFieldLabel
@@ -130,9 +116,7 @@ export default function InputField<
       showErrorMessage={showErrorMessage}
     />
   )
-  let inputComponent
-
-  inputComponent = (
+  const inputComponent = (
     <input
       {...register(fieldName, options)}
       className={
@@ -146,8 +130,8 @@ export default function InputField<
       defaultChecked={
         type === 'checkbox' && defaultValue === 1 ? true : undefined
       }
-      type={type || 'text'}
-      placeholder={placeholder || label}
+      type={type}
+      placeholder={placeholder}
       readOnly={readOnly}
       onChange={onChange}
       size={size}
