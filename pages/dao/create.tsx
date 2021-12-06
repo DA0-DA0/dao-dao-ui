@@ -4,12 +4,7 @@ import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, {
-  ChangeEventHandler,
-  ReactElement,
-  useEffect,
-  useState,
-} from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { DAO_CODE_ID } from 'util/constants'
@@ -17,6 +12,7 @@ import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeDaoInstantiateMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
+import InputField from 'components/InputField'
 
 const THRESHOLD_GRANULARITY = 1000
 
@@ -137,95 +133,6 @@ const CreateDao: NextPage = () => {
 
   const complete = contractAddress.length > 0
 
-  const InputField = ({
-    fieldName,
-    label,
-    toolTip,
-    type,
-    placeholder,
-    readOnly,
-    errorMessage,
-    onChange,
-    size,
-    defaultValue,
-    required,
-    min,
-    max,
-    showErrorMessage,
-    validate,
-  }: {
-    fieldName: string
-    label?: string
-    toolTip?: string
-    type?: string
-    placeholder?: string
-    readOnly?: boolean
-    errorMessage?: string
-    size?: number
-    defaultValue?: string | number
-    required?: boolean
-    min?: number
-    max?: number
-    showErrorMessage?: boolean
-    onChange?: ChangeEventHandler<HTMLInputElement>
-    validate?: (val: string) => boolean
-  }) => {
-    let options = undefined
-    if (typeof required === 'undefined') {
-      required = true
-    }
-    if (required) {
-      options = { required }
-    }
-    if (validate) {
-      options = { ...options, validate }
-    }
-    const errorText = fieldErrorMessage(fieldName, errorMessage)
-    const errorComponent =
-      errorText && !(showErrorMessage === false) ? (
-        <span className="label-text text-error flex-1 text-right">
-          {errorText}
-        </span>
-      ) : null
-    const tooltipComponent = toolTip ? <HelpTooltip text={toolTip} /> : null
-    const labelComponent = label ? (
-      <label className="label" htmlFor={fieldName}>
-        <span className="label-text font-bold">{label || fieldName}</span>
-        {errorComponent}
-        {tooltipComponent}
-      </label>
-    ) : null
-    const inputComponent = (
-      <input
-        {...register(fieldName, options)}
-        className={
-          type === 'checkbox'
-            ? 'toggle'
-            : errorText
-            ? `block box-border m-0 w-full rounded input input-bordered focus:input-primary input-error`
-            : `block box-border m-0 w-full rounded input input-bordered focus:input-primary`
-        }
-        defaultValue={defaultValue}
-        defaultChecked={
-          type === 'checkbox' && defaultValue === 1 ? true : undefined
-        }
-        type={type || 'text'}
-        placeholder={placeholder || label}
-        readOnly={readOnly}
-        onChange={onChange}
-        size={size}
-        min={min}
-        max={max}
-      />
-    )
-    return (
-      <div className="form-control">
-        {labelComponent}
-        {inputComponent}
-      </div>
-    )
-  }
-
   function AddressErrorRow({ idx }: { idx: number }) {
     const addressName = `address_${idx}`
     const weightName = `weight_${idx}`
@@ -262,6 +169,8 @@ const CreateDao: NextPage = () => {
             readOnly={readOnly}
             showErrorMessage={false}
             validate={isValidAddress}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
         </td>
         <td className="pb-2">
@@ -274,6 +183,8 @@ const CreateDao: NextPage = () => {
             min={1}
             max={999}
             showErrorMessage={false}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
         </td>
       </tr>
@@ -301,6 +212,8 @@ const CreateDao: NextPage = () => {
             toolTip="Name the DAO"
             errorMessage="DAO name required"
             readOnly={complete}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
           <InputField
             fieldName="description"
@@ -308,6 +221,8 @@ const CreateDao: NextPage = () => {
             toolTip="Your DAO description"
             errorMessage="DAO description required"
             readOnly={complete}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
 
           <h2 className="mt-8 mb-6 text-2xl">Governance Token Config</h2>
@@ -317,6 +232,8 @@ const CreateDao: NextPage = () => {
             toolTip="The full name of your token (My Awesome Token)"
             errorMessage="Token name required"
             readOnly={complete}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
           <InputField
             fieldName="tokenSymbol"
@@ -324,6 +241,8 @@ const CreateDao: NextPage = () => {
             toolTip="The short symbol name of your token (MAT)"
             errorMessage="Token symbol required"
             readOnly={complete}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
 
           <h2 className="mt-8 mb-6 text-xl">Token Distribution</h2>
@@ -421,6 +340,8 @@ const CreateDao: NextPage = () => {
             required={false}
             defaultValue={0}
             min={0}
+            register={register}
+            fieldErrorMessage={fieldErrorMessage}
           />
 
           <div className="p-6 card bordered">
@@ -432,6 +353,8 @@ const CreateDao: NextPage = () => {
               defaultValue={1}
               readOnly={complete}
               required={false}
+              register={register}
+              fieldErrorMessage={fieldErrorMessage}
             />
           </div>
           {!complete && (
