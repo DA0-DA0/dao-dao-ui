@@ -344,7 +344,7 @@ const CreateDao: NextPage = () => {
             fieldErrorMessage={fieldErrorMessage}
           />
 
-          <div className="p-6 card bordered">
+          <div className="p-6 bordered">
             <InputField
               fieldName="refund"
               label="Refund Proposal Deposits"
