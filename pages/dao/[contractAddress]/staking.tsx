@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import type { NextPage } from 'next'
+import HelpTooltip from 'components/HelpTooltip'
 import WalletLoader from 'components/WalletLoader'
 import { useDaoConfig } from 'hooks/dao'
 import { useCw20WalletBalance } from 'hooks/cw20'
@@ -15,15 +16,19 @@ export function TokenBalance({
   amount,
   symbol,
   title,
+  tooltip,
 }: {
   amount: string
   symbol?: string
   title: string
+  tooltip: string
 }) {
   return (
     <div className="card bordered shadow-lg card-side m-2 inline-flex">
       <div className="card-body py-6">
-        <h2 className="card-title">{title}</h2>
+        <h2 className="card-title">
+          {title} <HelpTooltip text={tooltip} />
+        </h2>
         <p>
           {convertMicroDenomToDenom(amount)} {symbol}
         </p>
@@ -73,12 +78,14 @@ const Staking: NextPage = () => {
     <WalletLoader loading={stakingLoading || daoConfigLoading || cw20Loading}>
       <TokenBalance
         title="DAO token Balance"
-        amount={balance?.balance}
+        tooltip="Your token balance minus staked tokens. Stake your tokens to gain voting power in the DAO and be eligible for staking rewards. Note, best to leave some unstaked if you wish to create proposals and your DAO requires proposal deposits."
+        amount={balance?.balance as string}
         symbol={tokenInfo?.symbol}
       />
       <TokenBalance
         title="Staked DAO Tokens"
-        amount={stakedBalance?.balance}
+        tooltip="Your total staked tokens balance. These count towards your voting power in the DAO."
+        amount={stakedBalance?.balance as string}
         symbol={tokenInfo?.symbol}
       />
 
