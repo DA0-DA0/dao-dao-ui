@@ -2,6 +2,9 @@ import {
   convertMicroDenomToDenom,
   convertFromMicroDenom,
 } from 'util/conversion'
+import { useRecoilValueLoadable } from 'recoil'
+import { transactions } from 'selectors/treasury'
+
 import { IndexedTx } from '@cosmjs/stargate'
 
 interface TxEventAttribute {
@@ -62,38 +65,50 @@ function TransferRow({
   )
 }
 
-function Transfers({
-  contract_address,
-  txs,
-}: {
-  contract_address: string
-  txs: IndexedTx[]
-}) {
+function TransferRows({ contractAddress }: { contractAddress: string }) {
+  const txs = useRecoilValueLoadable(transactions(contractAddress))
+  switch (txs.state) {
+    case 'hasValue':
+      return (
+        <>
+          {txs.contents.map((tx: IndexedTx) => (
+            <TransferRow
+              key={tx.hash}
+              tx={tx}
+              contract_address={contractAddress}
+            />
+          ))}
+        </>
+      )
+
+    case 'loading':
+      return (
+        <tr>
+          <td colSpan={3}>Loading...</td>
+        </tr>
+      )
+    case 'hasError':
+      throw txs.contents
+  }
+}
+
+function Transfers({ contract_address }: { contract_address: string }) {
   return (
-    <>
-      <h3 className="text-2xl mb-2">Transfers</h3>
-      <div className="border border-base-200 rounded-lg pb-1 shadow-lg">
-        <table className="table w-full">
-          <thead>
-            <tr>
-              <th>Block Height</th>
-              <th>Source/Recipient</th>
-              {/* <th>Memo</th> */}
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {txs.map((tx: IndexedTx) => (
-              <TransferRow
-                key={tx.hash}
-                tx={tx}
-                contract_address={contract_address}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
+    <div className="border border-base-200 rounded-lg pb-1 shadow-lg">
+      <table className="table w-full">
+        <thead>
+          <tr>
+            <th>Block Height</th>
+            <th>Source/Recipient</th>
+            {/* <th>Memo</th> */}
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <TransferRows contractAddress={contract_address} />
+        </tbody>
+      </table>
+    </div>
   )
 }
 
