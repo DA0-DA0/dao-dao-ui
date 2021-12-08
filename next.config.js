@@ -7,6 +7,10 @@ let config = {
   distDir: 'dist',
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
+  react: {
+    useSuspense: false,
+    wait: true,
+  },
 }
 
 // Only need rewrites for local development

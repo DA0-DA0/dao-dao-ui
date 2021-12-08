@@ -5,13 +5,8 @@ import Layout from 'components/Layout'
 import { SigningCosmWasmProvider } from 'contexts/cosmwasm'
 import { ThemeProvider } from 'contexts/theme'
 import Notifications from 'components/Notifications'
-import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from 'recoil'
+import { RecoilRoot } from 'recoil'
+import { Suspense } from 'react'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState('junoLight')
@@ -22,14 +17,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <RecoilRoot>
-      <SigningCosmWasmProvider>
-        <ThemeProvider updateTheme={updateTheme} theme={theme}>
-          <Layout>
-            <Component {...pageProps} />
-            <Notifications />
-          </Layout>
-        </ThemeProvider>
-      </SigningCosmWasmProvider>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SigningCosmWasmProvider>
+          <ThemeProvider updateTheme={updateTheme} theme={theme}>
+            <Layout>
+              <Component {...pageProps} />
+              <Notifications />
+            </Layout>
+          </ThemeProvider>
+        </SigningCosmWasmProvider>
+      </Suspense>
     </RecoilRoot>
   )
 }
