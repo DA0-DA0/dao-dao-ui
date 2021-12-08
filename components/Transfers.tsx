@@ -66,7 +66,9 @@ function TransferRow({
 }
 
 function TransferRows({ contractAddress }: { contractAddress: string }) {
+  // transactions load slowly, show loading state with useRecoilValueLoadable
   const txs = useRecoilValueLoadable(transactions(contractAddress))
+
   switch (txs.state) {
     case 'hasValue':
       return (

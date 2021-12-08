@@ -1,10 +1,10 @@
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 import { walletTokenBalance } from 'selectors/treasury'
 import Cw20TokenBalance from 'components/Cw20TokenBalance'
 
 function WalletTokenBalances({ tokenAddresses }: { tokenAddresses: string[] }) {
-  const balances = tokenAddresses.map((address) =>
-    useRecoilValue(walletTokenBalance(address))
+  const balances = useRecoilValue(
+    waitForAll(tokenAddresses.map((address) => walletTokenBalance(address)))
   )
 
   return (

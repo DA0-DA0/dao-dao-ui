@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil'
-import { nativeBalance, cw20Balances, cw20TokenInfo } from 'selectors/treasury'
+import { cw20TokenInfo } from 'selectors/treasury'
 
 import TokenBalance from 'components/TokenBalance'
 
