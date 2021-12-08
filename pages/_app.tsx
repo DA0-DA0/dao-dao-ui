@@ -7,6 +7,7 @@ import { ThemeProvider } from 'contexts/theme'
 import Notifications from 'components/Notifications'
 import { RecoilRoot } from 'recoil'
 import { Suspense } from 'react'
+import LoadingScreen from 'components/LoadingScreen'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState('junoLight')
@@ -17,7 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <RecoilRoot>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<LoadingScreen />}>
         <SigningCosmWasmProvider>
           <ThemeProvider updateTheme={updateTheme} theme={theme}>
             <Layout>
