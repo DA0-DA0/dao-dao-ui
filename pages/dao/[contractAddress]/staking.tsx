@@ -76,18 +76,22 @@ const Staking: NextPage = () => {
 
   return (
     <WalletLoader loading={stakingLoading || daoConfigLoading || cw20Loading}>
-      <TokenBalance
-        title="DAO token Balance"
-        tooltip="Your token balance minus staked tokens. Stake your tokens to gain voting power in the DAO and be eligible for staking rewards. Note, best to leave some unstaked if you wish to create proposals and your DAO requires proposal deposits."
-        amount={balance?.balance as string}
-        symbol={tokenInfo?.symbol}
-      />
-      <TokenBalance
-        title="Staked DAO Tokens"
-        tooltip="Your total staked tokens balance. These count towards your voting power in the DAO."
-        amount={stakedBalance?.balance as string}
-        symbol={tokenInfo?.symbol}
-      />
+      {balance && (
+        <TokenBalance
+          title="DAO token Balance"
+          tooltip="Your token balance minus staked tokens. Stake your tokens to gain voting power in the DAO and be eligible for staking rewards. Note, best to leave some unstaked if you wish to create proposals and your DAO requires proposal deposits."
+          amount={balance?.balance as string}
+          symbol={tokenInfo?.symbol}
+        />
+      )}
+      {stakedBalance && (
+        <TokenBalance
+          title="Staked DAO Tokens"
+          tooltip="Your total staked tokens balance. These count towards your voting power in the DAO."
+          amount={stakedBalance?.balance as string}
+          symbol={tokenInfo?.symbol}
+        />
+      )}
 
       <div className="form-control my-8">
         <label className="label">
@@ -115,7 +119,7 @@ const Staking: NextPage = () => {
       </div>
       {cw20Error && (
         <div className="mt-8">
-          <LineAlert variant="error" msg={cw20Error} />
+          <LineAlert variant="error" msg={cw20Error.message} />
         </div>
       )}
       {daoConfigError && (

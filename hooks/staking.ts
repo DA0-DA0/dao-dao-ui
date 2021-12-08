@@ -8,10 +8,10 @@ export function useStaking(contractAddress: string) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const [stakedBalance, setStakedBalance] = useState(null)
-  const [claims, setClaims] = useState(null)
-  const [delegation, setDelegation] = useState(null)
-  const [totalStaked, setTotalStaked] = useState(null)
+  const [stakedBalance, setStakedBalance] = useState({ balance: '0' })
+  const [claims, setClaims] = useState()
+  const [delegation, setDelegation] = useState()
+  const [totalStaked, setTotalStaked] = useState({ total: '0' })
 
   useEffect(() => {
     if (walletAddress.length === 0 || !signingClient) {
