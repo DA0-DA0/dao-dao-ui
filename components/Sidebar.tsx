@@ -36,7 +36,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const Sidebar = () => {
+export const Sidebar = () => {
   const { walletAddress, connectWallet, disconnect } = useSigningClient()
   const handleConnect = () => {
     if (walletAddress.length === 0) {
@@ -123,11 +123,11 @@ export default function SidebarLayout({ children }) {
 
   return (
     <>
-      <div>
+      <div className="h-full flex">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
-            className="fixed inset-0 flex z-40 md:hidden"
+            className="fixed inset-0 flex z-40 lg:hidden"
             onClose={setSidebarOpen}
           >
             <Transition.Child
@@ -150,7 +150,7 @@ export default function SidebarLayout({ children }) {
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <div className="relative flex-1 flex flex-col max-w-xs w-full bg-base-100">
+              <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white focus:outline-none">
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-300"
@@ -163,11 +163,14 @@ export default function SidebarLayout({ children }) {
                   <div className="absolute top-0 right-0 -mr-12 pt-2">
                     <button
                       type="button"
-                      className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-base"
+                      className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                       onClick={() => setSidebarOpen(false)}
                     >
                       <span className="sr-only">Close sidebar</span>
-                      <XIcon className="h-6 w-6 text-base" aria-hidden="true" />
+                      <XIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
                     </button>
                   </div>
                 </Transition.Child>
@@ -180,24 +183,49 @@ export default function SidebarLayout({ children }) {
           </Dialog>
         </Transition.Root>
 
-        {/* Static sidebar for desktop */}
-        <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-          <Sidebar />
-        </div>
-        <div className="md:pl-64 flex flex-col flex-1">
-          <div className="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-100">
-            <button
-              type="button"
-              className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-base-500"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <span className="sr-only">Open sidebar</span>
-              <MenuIcon className="h-6 w-6" aria-hidden="true" />
-            </button>
+        <div className="hidden lg:flex lg:flex-shrink-0">
+          <div className="flex flex-col w-64">
+            <Sidebar />
           </div>
-          <main className="flex-1">
-            <div className="py-6">{children}</div>
-          </main>
+        </div>
+        <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
+          <div className="lg:hidden">
+            <div className="flex items-center justify-between bg-gray-50 border-b border-gray-200 px-4 py-1.5">
+              <div>
+                <Link href="/">
+                  <a>
+                    <Logo
+                      height={32}
+                      width={32}
+                      alt={`${PUBLIC_SITE_TITLE} Logo`}
+                    />
+                  </a>
+                </Link>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  className="-mr-3 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <span className="sr-only">Open sidebar</span>
+                  <MenuIcon className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 relative z-0 flex overflow-hidden">
+            <main className="flex-1 relative z-0 overflow-y-auto focus:outline-none">
+              <div className="absolute inset-0 py-6 px-4 sm:px-6 lg:px-8">
+                <div className="h-full">{children}</div>
+              </div>
+            </main>
+            <aside className="hidden relative xl:flex xl:flex-col flex-shrink-0 w-96 border-l border-gray-200 overflow-y-auto">
+              <div className="absolute inset-0 py-6 px-4 sm:px-6 lg:px-8">
+                <div className="h-full"></div>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
     </>
