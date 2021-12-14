@@ -1,4 +1,5 @@
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import HelpTooltip from 'components/HelpTooltip'
 import { useThemeContext } from 'contexts/theme'
 import { ProposalMessageType } from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
@@ -349,7 +350,8 @@ export default function ProposalEditor({
                 id="description"
               />
               <label htmlFor="message-list" className="block mt-4 text-xl">
-                Messages
+                Messages{' '}
+                <HelpTooltip text="Messages that will be executed on chain." />
               </label>
               <ul id="message-list">{messages}</ul>
               <br />
