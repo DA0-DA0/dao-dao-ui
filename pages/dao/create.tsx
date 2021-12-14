@@ -137,7 +137,7 @@ const CreateDao: NextPage = () => {
     const addressName = `address_${idx}`
     const weightName = `weight_${idx}`
     const addressErrorMessage =
-      fieldErrorMessage(addressName, 'Valid walet address required') || ''
+      fieldErrorMessage(addressName, 'Valid wallet address required') || ''
     const weightErrorMessage =
       fieldErrorMessage(weightName, 'Weight must be non-zero') || ''
     return (
