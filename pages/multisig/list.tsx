@@ -4,7 +4,7 @@ import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useMultisigsList } from 'hooks/multisig'
-import { FLEX_MULTISIG_CODE_ID } from 'util/constants'
+import { MULTISIG_CODE_ID } from 'util/constants'
 
 interface MultisigListType {
   address: String
@@ -30,7 +30,7 @@ const MultisigListComponent: FunctionComponent<MultisigListType> = ({
 }
 
 const MultisigList: NextPage = () => {
-  const { multisigs, loading } = useMultisigsList(FLEX_MULTISIG_CODE_ID)
+  const { multisigs, loading } = useMultisigsList(MULTISIG_CODE_ID)
   return (
     <WalletLoader loading={loading}>
       <h1 className="text-6xl font-bold">Multisigs</h1>

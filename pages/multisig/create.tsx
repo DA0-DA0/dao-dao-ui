@@ -11,7 +11,7 @@ import {
   InstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-flex-multisig'
-import { C4_GROUP_CODE_ID, FLEX_MULTISIG_CODE_ID } from 'util/constants'
+import { C4_GROUP_CODE_ID, MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 
 function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
@@ -138,7 +138,7 @@ const CreateMultisig: NextPage = () => {
     signingClient
       .instantiate(
         walletAddress,
-        FLEX_MULTISIG_CODE_ID,
+        MULTISIG_CODE_ID,
         msg,
         label,
         defaultExecuteFee
