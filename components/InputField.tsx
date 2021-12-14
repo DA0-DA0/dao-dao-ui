@@ -84,6 +84,7 @@ export default function InputField<
   validate,
   register,
   fieldErrorMessage,
+  autoComplete = 'false',
 }: {
   fieldName: TFieldName
   label?: string
@@ -104,6 +105,7 @@ export default function InputField<
     | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>
   register: UseFormRegister<TFieldValues>
   fieldErrorMessage(a: any, b: any): string
+  autoComplete?: string
 }) {
   const options = { required, validate }
   const errorText = fieldErrorMessage(fieldName, errorMessage)
@@ -137,6 +139,7 @@ export default function InputField<
       size={size}
       min={min}
       max={max}
+      autoComplete={autoComplete}
     />
   )
 

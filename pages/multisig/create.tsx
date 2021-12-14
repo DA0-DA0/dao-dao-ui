@@ -175,6 +175,7 @@ const CreateMultisig: NextPage = () => {
             <tbody>
               <td>
                 <input
+                  autoComplete="false"
                   className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
                   name="label"
                   type="text"
