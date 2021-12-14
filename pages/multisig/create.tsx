@@ -19,7 +19,7 @@ function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
     <tr key={idx}>
       <td className="pr-2 pb-2">
         <input
-          className="block box-border m-0 w-full rounded input input-bordered focus:input-primary font-mono"
+          className="block box-border m-0 w-full rounded input input-bordered font-mono"
           type="text"
           name={`address_${idx}`}
           placeholder="wallet address..."
@@ -30,7 +30,7 @@ function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
       <td className="pb-2">
         <input
           type="number"
-          className="block box-border m-0 w-full rounded input input-bordered focus:input-primary font-mono"
+          className="block box-border m-0 w-full rounded input input-bordered font-mono"
           name={`weight_${idx}`}
           defaultValue="1"
           min={1}
@@ -176,7 +176,7 @@ const CreateMultisig: NextPage = () => {
               <td>
                 <input
                   autoComplete="false"
-                  className="block box-border m-0 w-full rounded  input input-bordered focus:input-primary"
+                  className="block box-border m-0 w-full rounded input input-bordered "
                   name="label"
                   type="text"
                   placeholder="My multisig name"
@@ -229,7 +229,7 @@ const CreateMultisig: NextPage = () => {
               <tr>
                 <td>
                   <input
-                    className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
+                    className="block box-border m-0 w-full rounded input input-bordered"
                     name="threshold"
                     type="number"
                     defaultValue={count}
@@ -240,7 +240,7 @@ const CreateMultisig: NextPage = () => {
                 </td>
                 <td className="box-border px-2">
                   <input
-                    className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
+                    className="block box-border m-0 w-full rounded input input-bordered"
                     name="duration"
                     type="number"
                     placeholder="duration in seconds"

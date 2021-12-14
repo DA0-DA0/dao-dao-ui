@@ -303,7 +303,7 @@ const CreateDao: NextPage = () => {
               <tr>
                 <td>
                   <input
-                    className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
+                    className="block box-border m-0 w-full rounded input input-bordered"
                     {...register('threshold')}
                     type="range"
                     min={0}
@@ -317,7 +317,7 @@ const CreateDao: NextPage = () => {
                 </td>
                 <td className="box-border px-2">
                   <input
-                    className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
+                    className="block box-border m-0 w-full rounded input input-bordered"
                     {...register('duration')}
                     type="number"
                     placeholder="duration in seconds"

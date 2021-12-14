@@ -311,8 +311,8 @@ export default function ProposalEditor({
   const fieldErrorMessage = makeFieldErrorMessage(errors)
 
   const editorClassName = proposalDescriptionErrorMessage
-    ? 'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl'
-    : 'input input-bordered rounded box-border py-3 px-8 h-full w-full focus:input-primary text-xl'
+    ? 'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full text-xl'
+    : 'input input-bordered rounded box-border py-3 px-8 h-full w-full text-xl'
 
   return (
     <div className="flex flex-col w-full flex-row">

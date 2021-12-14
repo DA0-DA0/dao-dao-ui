@@ -125,8 +125,8 @@ export default function InputField<
         type === 'checkbox'
           ? 'toggle'
           : errorText
-          ? `block box-border m-0 w-full rounded input input-bordered focus:input-primary input-error`
-          : `block box-border m-0 w-full rounded input input-bordered focus:input-primary`
+          ? `block box-border m-0 w-full rounded input input-bordered input-error`
+          : `block box-border m-0 w-full rounded input input-bordered`
       }
       defaultValue={defaultValue}
       defaultChecked={
