@@ -84,6 +84,7 @@ export default function InputField<
   validate,
   register,
   fieldErrorMessage,
+  autoComplete = 'false',
 }: {
   fieldName: TFieldName
   label?: string
@@ -104,6 +105,7 @@ export default function InputField<
     | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>
   register: UseFormRegister<TFieldValues>
   fieldErrorMessage(a: any, b: any): string
+  autoComplete?: string
 }) {
   const options = { required, validate }
   const errorText = fieldErrorMessage(fieldName, errorMessage)
@@ -123,8 +125,8 @@ export default function InputField<
         type === 'checkbox'
           ? 'toggle'
           : errorText
-          ? `block box-border m-0 w-full rounded input input-bordered focus:input-primary input-error`
-          : `block box-border m-0 w-full rounded input input-bordered focus:input-primary`
+          ? `block box-border m-0 w-full rounded input input-bordered input-error`
+          : `block box-border m-0 w-full rounded input input-bordered`
       }
       defaultValue={defaultValue}
       defaultChecked={
@@ -137,6 +139,7 @@ export default function InputField<
       size={size}
       min={min}
       max={max}
+      autoComplete={autoComplete}
     />
   )
 

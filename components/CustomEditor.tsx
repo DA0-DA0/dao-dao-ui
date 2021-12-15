@@ -101,7 +101,7 @@ export default function CustomEditor({
   )
 
   return (
-    <div className="mt-4 border box-border rounded focus:input-primary">
+    <div className="mt-4 border box-border rounded">
       {status}
       <JSONInput
         id="json_editor"

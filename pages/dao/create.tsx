@@ -1,18 +1,19 @@
+import React, { ReactElement, useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
+import { XIcon } from '@heroicons/react/solid'
 import HelpTooltip from 'components/HelpTooltip'
+import InputField from 'components/InputField'
 import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { ReactElement, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { DAO_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeDaoInstantiateMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
-import InputField from 'components/InputField'
 
 const THRESHOLD_GRANULARITY = 1000
 
@@ -137,7 +138,7 @@ const CreateDao: NextPage = () => {
     const addressName = `address_${idx}`
     const weightName = `weight_${idx}`
     const addressErrorMessage =
-      fieldErrorMessage(addressName, 'Valid walet address required') || ''
+      fieldErrorMessage(addressName, 'Valid wallet address required') || ''
     const weightErrorMessage =
       fieldErrorMessage(weightName, 'Weight must be non-zero') || ''
     return (
@@ -187,6 +188,19 @@ const CreateDao: NextPage = () => {
             fieldErrorMessage={fieldErrorMessage}
           />
         </td>
+        {idx > 1 && (
+          <td className="absolute p-2.5">
+            <button
+              className="btn btn-outline btn-circle btn-sm"
+              onClick={(e) => {
+                e.preventDefault()
+                setCount(count - 1)
+              }}
+            >
+              <XIcon className="inline-block w-4 h-4 stroke-current" />
+            </button>
+          </td>
+        )}
       </tr>
     )
   }
@@ -303,7 +317,7 @@ const CreateDao: NextPage = () => {
               <tr>
                 <td>
                   <input
-                    className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
+                    className="block box-border m-0 w-full rounded input input-bordered"
                     {...register('threshold')}
                     type="range"
                     min={0}
@@ -317,7 +331,7 @@ const CreateDao: NextPage = () => {
                 </td>
                 <td className="box-border px-2">
                   <input
-                    className="block box-border m-0 w-full rounded input input-bordered focus:input-primary"
+                    className="block box-border m-0 w-full rounded input input-bordered"
                     {...register('duration')}
                     type="number"
                     placeholder="duration in seconds"

@@ -17,8 +17,8 @@
     "svgr": "./node_modules/.bin/svgr --out-dir components/icons --typescript --no-index --icon --replace-attr-values \"#191D20={props.color}\" -- assets/icons"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.26.5",
-    "@cosmjs/stargate": "^0.26.5",
+    "@cosmjs/cosmwasm-stargate": "^0.27.0-rc2",
+    "@cosmjs/stargate": "^0.27.0-rc2",
     "@dao-dao/types": "^0.0.1",
     "@heroicons/react": "^1.0.5",
     "@types/react-json-editor-ajrm": "^2.5.2",
@@ -29,13 +29,13 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "next": "^12.0.7",
-    "react": "^18.0.0-beta-12bffc78d-20211206",
-    "react-dom": "^18.0.0-beta-12bffc78d-20211206",
+    "react": "^18.0.0-beta-24dd07bd2-20211208",
+    "react-dom": "^18.0.0-beta-24dd07bd2-20211208",
     "react-hook-form": "^7.20.4",
     "react-hot-toast": "^2.1.1",
     "react-json-editor-ajrm": "^2.5.13",
     "recoil": "^0.5.2",
-    "rich-markdown-editor": "^11.18.15",
+    "rich-markdown-editor": "^11.20.0",
     "styled-components": "^5.3.3",
     "theme-change": "^2.0.2"
   },

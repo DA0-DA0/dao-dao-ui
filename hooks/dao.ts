@@ -62,7 +62,7 @@ export function useDaosList(codeId: number) {
       }
     }
     getDaos()
-  }, [signingClient])
+  }, [signingClient, codeId])
 
   return { daos, loading }
 }

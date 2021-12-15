@@ -91,7 +91,7 @@ export default function MintEditor({
         type="number"
         id="amount"
         value={amount}
-        className="input input-bordered rounded box-border p-3 w-full focus:input-primary text-xl"
+        className="input input-bordered rounded box-border p-3 w-full text-xl"
         name="amount"
         readOnly={false}
         onChange={handleAmount}

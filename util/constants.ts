@@ -9,12 +9,7 @@ export const CW20_CODE_ID = parseInt(
 )
 
 export const MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_FIXED_MULTISIG_CODE_ID as string,
-  10
-)
-
-export const FLEX_MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_FLEX_MULTISIG_CODE_ID as string,
+  process.env.NEXT_PUBLIC_MULTISIG_CODE_ID as string,
   10
 )
 
