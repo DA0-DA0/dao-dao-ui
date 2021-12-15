@@ -17,8 +17,8 @@
     "svgr": "./node_modules/.bin/svgr --out-dir components/icons --typescript --no-index --icon --replace-attr-values \"#191D20={props.color}\" -- assets/icons"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.26.5",
-    "@cosmjs/stargate": "^0.26.5",
+    "@cosmjs/cosmwasm-stargate": "^0.27.0-rc2",
+    "@cosmjs/stargate": "^0.27.0-rc2",
     "@dao-dao/types": "^0.0.1",
     "@heroicons/react": "^1.0.5",
     "@types/react-json-editor-ajrm": "^2.5.2",
