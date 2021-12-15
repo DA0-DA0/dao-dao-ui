@@ -2,18 +2,17 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import { useState, useEffect } from 'react'
 import { Contract } from '@cosmjs/cosmwasm-stargate'
 
-export function useMultisigsList(codeId: number) {
-  const [multisigs, setMultisigs] = useState<Array<Contract>>([])
+export function useCodeListContracts(codeId: number) {
+  const [multisigs, setConracts] = useState<Array<Contract>>([])
   const { signingClient } = useSigningClient()
   const [loading, setLoading] = useState(false)
 
-  // Get list of MULTISIG info
+  // Get list of contracts by code ID
   useEffect(() => {
-    const getMultisigs = async () => {
+    const getConracts = async () => {
       setLoading(true)
       try {
         const contracts = await signingClient?.getContracts(codeId)
-
         if (contracts) {
           Promise.all(
             contracts.map((address) => signingClient?.getContract(address))
@@ -21,7 +20,7 @@ export function useMultisigsList(codeId: number) {
             const filtered = list.filter(
               (item) => item !== undefined
             ) as Array<Contract>
-            if (list) setMultisigs(filtered)
+            if (list) setConracts(filtered)
           })
           setLoading(false)
         }
@@ -32,7 +31,7 @@ export function useMultisigsList(codeId: number) {
         return []
       }
     }
-    getMultisigs()
+    getConracts()
   }, [signingClient, codeId])
   return { multisigs, loading }
 }
