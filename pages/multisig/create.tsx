@@ -77,8 +77,11 @@ const CreateMultisig: NextPage = () => {
     }
 
     const label = formEl.label.value.trim()
+    const description = formEl.description.value.trim()
 
     const msg: InstantiateMsg = {
+      name: label,
+      description,
       group: {
         instantiate_new_group: {
           code_id: C4_GROUP_CODE_ID,
@@ -179,7 +182,7 @@ const CreateMultisig: NextPage = () => {
           <table className="w-full mb-8">
             <thead>
               <tr>
-                <th>Label</th>
+                <th>Name</th>
               </tr>
             </thead>
             <tbody>
@@ -190,6 +193,25 @@ const CreateMultisig: NextPage = () => {
                   name="label"
                   type="text"
                   placeholder="My multisig name"
+                  readOnly={complete}
+                />
+              </td>
+            </tbody>
+          </table>
+          <table className="w-full mb-8">
+            <thead>
+              <tr>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <td>
+                <input
+                  autoComplete="false"
+                  className="block box-border m-0 w-full rounded input input-bordered "
+                  name="description"
+                  type="text"
+                  placeholder="What is this multisig for?"
                   readOnly={complete}
                 />
               </td>
