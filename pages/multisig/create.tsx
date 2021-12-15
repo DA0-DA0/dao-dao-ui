@@ -1,46 +1,18 @@
-import type { NextPage } from 'next'
-import { FormEvent } from 'react'
-import WalletLoader from 'components/WalletLoader'
-import HelpTooltip from 'components/HelpTooltip'
-import { useSigningClient } from 'contexts/cosmwasm'
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import LineAlert from 'components/LineAlert'
+import React, { FormEvent, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import {
   InstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-flex-multisig'
+import { XIcon } from '@heroicons/react/solid'
+import HelpTooltip from 'components/HelpTooltip'
+import LineAlert from 'components/LineAlert'
+import WalletLoader from 'components/WalletLoader'
+import { useSigningClient } from 'contexts/cosmwasm'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import { C4_GROUP_CODE_ID, MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-
-function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
-  return (
-    <tr key={idx}>
-      <td className="pr-2 pb-2">
-        <input
-          className="block box-border m-0 w-full rounded input input-bordered font-mono"
-          type="text"
-          name={`address_${idx}`}
-          placeholder="wallet address..."
-          size={45}
-          readOnly={readOnly}
-        />
-      </td>
-      <td className="pb-2">
-        <input
-          type="number"
-          className="block box-border m-0 w-full rounded input input-bordered font-mono"
-          name={`weight_${idx}`}
-          defaultValue="1"
-          min={1}
-          max={999}
-          readOnly={readOnly}
-        />
-      </td>
-    </tr>
-  )
-}
 
 function validateNonEmpty(msg: InstantiateMsg, label: string) {
   const { threshold, max_voting_period, group } = msg
@@ -88,7 +60,7 @@ const CreateMultisig: NextPage = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (event: FormEvent<MultisigFormElement>) => {
+  const onSubmit = (event: FormEvent<MultisigFormElement>) => {
     event.preventDefault()
     setError('')
     setLoading(true)
@@ -158,14 +130,52 @@ const CreateMultisig: NextPage = () => {
 
   const complete = contractAddress.length > 0
 
+  function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
+    return (
+      <tr key={idx}>
+        <td className="pr-2 pb-2">
+          <input
+            className="block box-border m-0 w-full rounded input input-bordered font-mono"
+            type="text"
+            name={`address_${idx}`}
+            placeholder="wallet address..."
+            size={45}
+            readOnly={readOnly}
+          />
+        </td>
+        <td className="pb-2">
+          <input
+            type="number"
+            className="block box-border m-0 w-full rounded input input-bordered font-mono"
+            name={`weight_${idx}`}
+            defaultValue="1"
+            min={1}
+            max={999}
+            readOnly={readOnly}
+          />
+        </td>
+        {idx > 1 && (
+          <td className="absolute p-2.5">
+            <button
+              className="btn btn-outline btn-circle btn-sm"
+              onClick={(e) => {
+                e.preventDefault()
+                setCount(count - 1)
+              }}
+            >
+              <XIcon className="inline-block w-4 h-4 stroke-current" />
+            </button>
+          </td>
+        )}
+      </tr>
+    )
+  }
+
   return (
     <WalletLoader>
       <div className="text-left container mx-auto max-w-lg">
         <h1 className="text-5xl font-bold mb-8">New Multisig</h1>
-        <form
-          className="container mx-auto max-w-lg mb-8"
-          onSubmit={handleSubmit}
-        >
+        <form className="container mx-auto max-w-lg mb-8" onSubmit={onSubmit}>
           <table className="w-full mb-8">
             <thead>
               <tr>
