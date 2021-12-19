@@ -43,18 +43,14 @@ const Staking: NextPage = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const {
-    gov_token,
-    loading: daoConfigLoading,
-    error: daoConfigError,
-  } = useDaoConfig(contractAddress)
+  const { daoInfo, loading: daoConfigLoading } = useDaoConfig(contractAddress)
 
   const {
     loading: cw20Loading,
     error: cw20Error,
     balance,
     tokenInfo,
-  } = useCw20WalletBalance(gov_token)
+  } = useCw20WalletBalance(daoInfo?.gov_token)
 
   const {
     loading: stakingLoading,
@@ -62,7 +58,7 @@ const Staking: NextPage = () => {
     stake,
     stakedBalance,
     unstake,
-  } = useStaking(gov_token)
+  } = useStaking(daoInfo?.gov_token)
 
   const handleStake = async () => {
     await stake(convertDenomToMicroDenom(amount))
@@ -120,11 +116,6 @@ const Staking: NextPage = () => {
       {cw20Error && (
         <div className="mt-8">
           <LineAlert variant="error" msg={cw20Error.message} />
-        </div>
-      )}
-      {daoConfigError && (
-        <div className="mt-8">
-          <LineAlert variant="error" msg={daoConfigError} />
         </div>
       )}
       {stakingError && (

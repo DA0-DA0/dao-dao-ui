@@ -38,15 +38,13 @@ function actions(contractAddress: string) {
         <p className="mt-4 text-xl">Manage DAO finances.</p>
       </LinkCard>
       <LinkCard href={`/dao/${contractAddress}/staking`}>
-        <a className="p-6 mt-6 text-left border border-secondary hover:border-primary w-96 rounded-xl hover:text-primary focus:text-primary-focus">
-          <h3 className="text-2xl font-bold">
-            Staking{' '}
-            <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
-          </h3>
-          <p className="mt-4 text-xl">
-            Staking your tokens to vote and earn rewards.
-          </p>
-        </a>
+        <h3 className="text-2xl font-bold">
+          Staking{' '}
+          <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
+        </h3>
+        <p className="mt-4 text-xl">
+          Staking your tokens to vote and earn rewards.
+        </p>
       </LinkCard>
     </>
   )
