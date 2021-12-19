@@ -1,8 +1,13 @@
 import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
-import { VoteInfo, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import {
+  VoteInfo,
+  ProposalResponse,
+  ProposalTallyResponse,
+} from '@dao-dao/types/contracts/cw3-dao'
 import ProposalVotes from 'components/ProposalVotes'
+import ProposalTally from 'components/ProposalTally'
 import ProposalStatus from './ProposalStatus'
 
 function ProposalDetails({
@@ -12,6 +17,8 @@ function ProposalDetails({
   vote,
   execute,
   close,
+  tally,
+  multisig, // Needed to determine if denom or microdenom should be shown.
 }: {
   proposal: ProposalResponse
   walletAddress: string
@@ -19,6 +26,8 @@ function ProposalDetails({
   vote: (arg0: string) => Promise<void>
   execute: () => void
   close: () => void
+  tally: ProposalTallyResponse | undefined
+  multisig: boolean
 }) {
   const themeContext = useThemeContext()
 
@@ -31,7 +40,7 @@ function ProposalDetails({
   return (
     <>
       <div className="mt-2 mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold inline align-middle">
+        <h1 className="text-4xl font-bold inline align-middle">
           {proposal.title}
         </h1>
         <ProposalStatus status={proposal.status} />
@@ -53,7 +62,7 @@ function ProposalDetails({
         walletAddress={walletAddress}
         status={proposal.status}
       />
-      {proposal.status !== 'open' && (
+      {proposal.status !== 'open' && proposal.msgs.length > 0 && (
         <div className="flex justify-between items-center content-center my-8">
           {proposal.status === 'passed' && proposal?.msgs?.length > 0 && (
             <button
@@ -73,7 +82,8 @@ function ProposalDetails({
           )}
         </div>
       )}
-      <ProposalVotes votes={votes} />
+      {tally ? <ProposalTally tally={tally} multisig={multisig} /> : null}
+      <ProposalVotes votes={votes} walletAddress={walletAddress} />
     </>
   )
 }

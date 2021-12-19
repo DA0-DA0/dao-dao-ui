@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import {
   ProposalListResponse,
   ProposalResponse,
+  ProposalTallyResponse,
+  ThresholdResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { useSigningClient } from 'contexts/cosmwasm'
@@ -52,6 +54,7 @@ export function useProposal(contractAddress: string, proposalId: string) {
   const { walletAddress, signingClient } = useSigningClient()
   const [loading, setLoading] = useState(false)
   const [votes, setVotes] = useState<VoteInfo[]>([])
+  const [tally, setTally] = useState<ProposalTallyResponse>()
   const [proposal, setProposal] = useState<ProposalResponse | null>(null)
   const [error, setError] = useState('')
   const [timestamp, setTimestamp] = useState(new Date())
@@ -69,11 +72,15 @@ export function useProposal(contractAddress: string, proposalId: string) {
       signingClient.queryContractSmart(contractAddress, {
         list_votes: { proposal_id: parseInt(proposalId) },
       }),
+      signingClient.queryContractSmart(contractAddress, {
+        tally: { proposal_id: parseInt(proposalId) },
+      }),
     ])
       .then((values) => {
-        const [proposal, { votes }] = values
+        const [proposal, { votes }, tally] = values
         setProposal(proposal)
         setVotes(votes)
+        setTally(tally)
         setLoading(false)
       })
       .catch((err) => {
@@ -155,6 +162,7 @@ export function useProposal(contractAddress: string, proposalId: string) {
     vote,
     execute,
     close,
+    tally,
   }
 }
 

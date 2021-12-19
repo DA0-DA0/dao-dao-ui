@@ -508,10 +508,10 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.27.0-rc2.tgz#58717efdf6e9a6c840c874fd957995498f6f93e9"
   integrity sha512-GphNKb87sfpQI14EFKu062xzitczJvY/6c0ELQnuBo+4geIUGSVeJ7g1uOzQ+ki/nb6JbVMo1sR5Z37N9olVrg==
 
-"@dao-dao/types@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@dao-dao/types/-/types-0.0.1.tgz#458a82ba25225f491f1555da71578718b4e6034b"
-  integrity sha512-YV1J4xy/19RiXjzSWJWkgp2Qasn60mX83xHVbi16cRMaOW5Gn2nE+8pezOYQuEIWRiReF0BwvcJXsJaThiSrjg==
+"@dao-dao/types@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@dao-dao/types/-/types-0.0.2.tgz#2c7017e6bed1fca0ef5c9406bfb16c436ad87dca"
+  integrity sha512-ckMejWYHU5qBBKOVLifPXaWorTn6DelBUujvKNe0HBJkTcfmQerYDcNMN4dd1bKTJ2Q5TXWzkLwBtS4ShB458A==
   dependencies:
     dotenv "^10.0.0"
     json-schema-to-typescript "^10.1.5"
@@ -6038,10 +6038,10 @@ rgba-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/rgba-regex/-/rgba-regex-1.0.0.tgz#43374e2e2ca0968b0ef1523460b7d730ff22eeb3"
   integrity sha1-QzdOLiyglosO8VI0YLfXMP8i7rM=
 
-rich-markdown-editor@^11.20.0:
-  version "11.21.1"
-  resolved "https://registry.yarnpkg.com/rich-markdown-editor/-/rich-markdown-editor-11.21.1.tgz#c96d200377ec0c62607593c4c35830f256229ec3"
-  integrity sha512-rvx2RhMUR804Bdt5gKYnHIblv0VUGR1d1uQ1fr3+C5e7V5VdwGSyp7vpvrc5iFkKe7jGZYj0WOCh42AzfLCW1g==
+rich-markdown-editor@^11.21.3:
+  version "11.21.3"
+  resolved "https://registry.yarnpkg.com/rich-markdown-editor/-/rich-markdown-editor-11.21.3.tgz#9c1fc32d10e75c1adf53e7fda7d4a72be52f3363"
+  integrity sha512-XqVDfwDiGMVVtb+HUY35FQvfo97ECAe+Pgo1veFiYiL5f9Jfp9zuF6fOK5eze9h8rApBsgD9iVHEsA8/gyv5Jg==
   dependencies:
     copy-to-clipboard "^3.0.8"
     fuzzy-search "^3.2.1"
