@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { useProposal } from 'hooks/proposals'
 import ProposalDetails from 'components/ProposalDetails'
+import Link from 'next/link'
 
 const Proposal: NextPage = () => {
   let router = useRouter()
@@ -22,6 +23,7 @@ const Proposal: NextPage = () => {
     vote,
     execute,
     close,
+    tally,
   } = useProposal(contractAddress as string, proposalId)
 
   const initialMessage: string | undefined = router.query.initialMessage as any
@@ -43,17 +45,12 @@ const Proposal: NextPage = () => {
               No proposal with that ID found.
             </div>
           ) : (
-            <div className="container mx-auto w-96 lg:w-6/12 max-w-full text-left">
-              <button
-                className="btn btn-primary float-left"
-                style={{ marginLeft: '-100px' }}
-                onClick={(e) => {
-                  e.preventDefault()
-                  router.push(`/dao/${contractAddress}/proposals`)
-                }}
-              >
-                {'< Back'}
-              </button>
+            <div className="mx-auto max-w-prose w-screen text-left">
+              <div className="justify-left flex">
+                <Link href={`/dao/${contractAddress}/proposals`}>
+                  <a className="link">{'< Back'}</a>
+                </Link>
+              </div>
 
               <ProposalDetails
                 proposal={proposal}
@@ -62,6 +59,8 @@ const Proposal: NextPage = () => {
                 vote={vote}
                 execute={execute}
                 close={close}
+                tally={tally}
+                multisig={false}
               />
 
               {error && (

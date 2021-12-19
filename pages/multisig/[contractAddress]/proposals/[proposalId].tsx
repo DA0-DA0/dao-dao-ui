@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import LineAlert from 'components/LineAlert'
 import { useProposal } from 'hooks/proposals'
 import ProposalDetails from 'components/ProposalDetails'
+import Link from 'next/link'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -21,6 +22,7 @@ const Proposal: NextPage = () => {
     vote,
     execute,
     close,
+    tally,
   } = useProposal(contractAddress, proposalId)
 
   return (
@@ -32,17 +34,13 @@ const Proposal: NextPage = () => {
               No proposal with that ID found.
             </div>
           ) : (
-            <div className="container mx-auto w-96 lg:w-6/12 max-w-full text-left">
-              <button
-                className="btn btn-primary float-left"
-                style={{ marginLeft: '-100px' }}
-                onClick={(e) => {
-                  e.preventDefault()
-                  router.push(`/multisig/${contractAddress}/proposals`)
-                }}
-              >
-                {'< Back'}
-              </button>
+            <div className="mx-auto max-w-prose w-screen text-left">
+              <div className="justify-left flex">
+                <Link href={`/dao/${contractAddress}/proposals`}>
+                  <a className="link">{'< Back'}</a>
+                </Link>
+              </div>
+
               <ProposalDetails
                 proposal={proposal}
                 walletAddress={walletAddress}
@@ -50,6 +48,8 @@ const Proposal: NextPage = () => {
                 vote={vote}
                 execute={execute}
                 close={close}
+                tally={tally}
+                multisig={false}
               />
 
               {error && (
