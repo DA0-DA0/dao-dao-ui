@@ -23,9 +23,7 @@ const Home: NextPage = () => {
           DAOs{' '}
           <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
         </h3>
-        <p className="mt-4 text-xl">
-          Organizations with governance tokens.
-        </p>
+        <p className="mt-4 text-xl">Organizations with governance tokens.</p>
       </LinkCard>
     </WalletLoader>
   )
