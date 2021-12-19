@@ -5,6 +5,7 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useMultisigsList } from 'hooks/multisig'
 import { MULTISIG_CODE_ID } from 'util/constants'
+import LinkCard from 'components/LinkCard'
 
 interface MultisigListType {
   address: String
@@ -16,16 +17,12 @@ const MultisigListComponent: FunctionComponent<MultisigListType> = ({
   label,
 }) => {
   return (
-    <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 max-w-full sm:w-full">
-      <Link href={`/multisig/${address}`} passHref>
-        <a className="p-6 mt-6 text-left border border-secondary hover:border-primary w-96 rounded-xl hover:text-primary focus:text-primary-focus">
-          <h3 className="text-2xl font-bold">
-            {label}{' '}
-            <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
-          </h3>
-        </a>
-      </Link>
-    </div>
+    <LinkCard href={`/multisig/${address}`}>
+      <h3 className="text-2xl font-bold">
+        {label}{' '}
+        <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
+      </h3>
+    </LinkCard>
   )
 }
 
