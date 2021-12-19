@@ -50,7 +50,7 @@ const Staking: NextPage = () => {
     error: cw20Error,
     balance,
     tokenInfo,
-  } = useCw20WalletBalance(daoInfo?.gov_token)
+  } = useCw20WalletBalance(daoInfo?.gov_token as string)
 
   const {
     loading: stakingLoading,
@@ -58,7 +58,7 @@ const Staking: NextPage = () => {
     stake,
     stakedBalance,
     unstake,
-  } = useStaking(daoInfo?.gov_token)
+  } = useStaking(daoInfo?.gov_token as string)
 
   const handleStake = async () => {
     await stake(convertDenomToMicroDenom(amount))
