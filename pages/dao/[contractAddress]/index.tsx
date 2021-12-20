@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/solid'
 import WalletLoader from 'components/WalletLoader'
-import { useSigningClient } from 'contexts/cosmwasm'
 import { useDaoConfig } from 'hooks/dao'
 import type { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
 import LinkCard from 'components/LinkCard'
 import ClipboardText from 'components/ClipboardText'
-import TrueFalseIndicator from 'components/TrueFalseIndicator'
 import { useTokenConfig } from 'hooks/govToken'
 import { convertMicroDenomToDenom } from 'util/conversion'
 
@@ -36,6 +33,15 @@ function actions(contractAddress: string) {
           <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
         </h3>
         <p className="mt-4 text-xl">Manage DAO finances.</p>
+      </LinkCard>
+      <LinkCard href={`/dao/${contractAddress}/staking`}>
+        <h3 className="text-2xl font-bold">
+          Staking{' '}
+          <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
+        </h3>
+        <p className="mt-4 text-xl">
+          Stake your tokens to vote and earn rewards.
+        </p>
       </LinkCard>
     </>
   )

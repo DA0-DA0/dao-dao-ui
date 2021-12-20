@@ -508,10 +508,10 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.27.0-rc2.tgz#58717efdf6e9a6c840c874fd957995498f6f93e9"
   integrity sha512-GphNKb87sfpQI14EFKu062xzitczJvY/6c0ELQnuBo+4geIUGSVeJ7g1uOzQ+ki/nb6JbVMo1sR5Z37N9olVrg==
 
-"@dao-dao/types@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@dao-dao/types/-/types-0.0.2.tgz#2c7017e6bed1fca0ef5c9406bfb16c436ad87dca"
-  integrity sha512-ckMejWYHU5qBBKOVLifPXaWorTn6DelBUujvKNe0HBJkTcfmQerYDcNMN4dd1bKTJ2Q5TXWzkLwBtS4ShB458A==
+"@dao-dao/types@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@dao-dao/types/-/types-0.0.3.tgz#bf511ff5ff6857fd0cbdafc2496aee34c8b1d313"
+  integrity sha512-sQVXXwBfDpjtekKpMvvXWUqbEAnn8G3ouEGna9xDsRcs4nm6nz5ZScHS6mQ828f6lHnO6uhwSsjeWSqgDmC0cA==
   dependencies:
     dotenv "^10.0.0"
     json-schema-to-typescript "^10.1.5"
