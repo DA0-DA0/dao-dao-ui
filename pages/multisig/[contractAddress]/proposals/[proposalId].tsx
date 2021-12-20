@@ -36,7 +36,7 @@ const Proposal: NextPage = () => {
           ) : (
             <div className="mx-auto max-w-prose w-screen text-left">
               <div className="justify-left flex">
-                <Link href={`/dao/${contractAddress}/proposals`}>
+                <Link href={`/multisig/${contractAddress}/proposals`}>
                   <a className="link">{'< Back'}</a>
                 </Link>
               </div>
