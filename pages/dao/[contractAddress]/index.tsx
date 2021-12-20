@@ -40,7 +40,7 @@ function actions(contractAddress: string) {
           <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
         </h3>
         <p className="mt-4 text-xl">
-          Staking your tokens to vote and earn rewards.
+          Stake your tokens to vote and earn rewards.
         </p>
       </LinkCard>
     </>
