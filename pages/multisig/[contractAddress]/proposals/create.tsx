@@ -4,6 +4,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCreateProposal } from 'hooks/proposals'
 import { Proposal } from 'models/proposal/proposal'
+import { successNotify } from 'util/toast'
 
 const ProposalCreate: NextPage = () => {
   const router = useRouter()
@@ -13,7 +14,9 @@ const ProposalCreate: NextPage = () => {
     useCreateProposal(contractAddress)
 
   const handleProposal = (proposal: Proposal, contractAddress: string) => {
-    execute(proposal)
+    execute(proposal).then(() => {
+      successNotify('New Proposal Created')
+    })
   }
 
   if (proposalID) {

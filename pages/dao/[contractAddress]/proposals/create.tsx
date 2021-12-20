@@ -8,16 +8,15 @@ import { useState } from 'react'
 import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
+import { successNotify } from 'util/toast'
 
 const ProposalCreate: NextPage = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
   const { walletAddress, signingClient } = useSigningClient()
-  const [transactionHash, setTransactionHash] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [proposalID, setProposalID] = useState('')
 
   const handleProposal = async (
     proposal: Proposal,
@@ -42,17 +41,13 @@ const ProposalCreate: NextPage = () => {
       )
       setLoading(false)
       if (response) {
-        setTransactionHash(response.transactionHash)
         const [{ events }] = response.logs
         const [wasm] = events.filter((e) => e.type === 'wasm')
         const [{ value }] = wasm.attributes.filter(
           (w) => w.key === 'proposal_id'
         )
-        setProposalID(value)
-        const initialMessage = `Saved Proposal "${proposal.title}"`
-        const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
-
-        router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
+        successNotify('New Proposal Created')
+        router.push(`/dao/${contractAddress}/proposals/${value}`)
       }
     } catch (e: any) {
       console.error(
@@ -65,26 +60,17 @@ const ProposalCreate: NextPage = () => {
     }
   }
 
-  const content = proposalID ? (
-    <div>
-      <a
-        href={`/dao/${contractAddress}/proposals/${proposalID}`}
-      >{`${proposalID} saved`}</a>
-      <LineAlert className="mt-2" variant="success" msg="Proposal Saved" />
-    </div>
-  ) : (
-    <ProposalEditor
-      onProposal={handleProposal}
-      error={error}
-      loading={loading}
-      contractAddress={contractAddress}
-      recipientAddress={walletAddress}
-    />
-  )
-
   return (
     <WalletLoader>
-      <div className="flex flex-col w-full">{content}</div>
+      <div className="flex flex-col w-full">
+        <ProposalEditor
+          onProposal={handleProposal}
+          error={error}
+          loading={loading}
+          contractAddress={contractAddress}
+          recipientAddress={walletAddress}
+        />
+      </div>
     </WalletLoader>
   )
 }

@@ -13,6 +13,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { C4_GROUP_CODE_ID, MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
+import { successNotify } from 'util/toast'
 
 function validateNonEmpty(msg: InstantiateMsg, label: string) {
   const { threshold, max_voting_period, group } = msg
@@ -121,7 +122,8 @@ const CreateMultisig: NextPage = () => {
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
-          setContractAddress(response.contractAddress)
+          successNotify('New Multisig Created')
+          router.push(`/multisig/${response.contractAddress}`)
         }
       })
       .catch((err: any) => {
@@ -300,21 +302,6 @@ const CreateMultisig: NextPage = () => {
         </form>
 
         {error && <LineAlert variant="error" msg={error} />}
-
-        {contractAddress !== '' && (
-          <div className="text-right">
-            <LineAlert variant="success" msg={`Success!`} />
-            <button
-              className="mt-4 box-border px-4 py-2 btn btn-primary"
-              onClick={(e) => {
-                e.preventDefault()
-                router.push(`/multisig/${encodeURIComponent(contractAddress)}`)
-              }}
-            >
-              View Multisig &#8599;
-            </button>
-          </div>
-        )}
       </div>
     </WalletLoader>
   )
