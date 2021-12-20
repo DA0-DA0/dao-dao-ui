@@ -49,7 +49,7 @@ const Proposal: NextPage = () => {
                 execute={execute}
                 close={close}
                 tally={tally}
-                multisig={false}
+                multisig={true}
               />
 
               {error && (
