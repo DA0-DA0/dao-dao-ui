@@ -25,7 +25,6 @@ const ProposalCreate: NextPage = () => {
     const propose = messageForProposal(proposal, contractAddress)
     const memo = memoForProposal(proposal)
     try {
-      console.log(JSON.stringify(propose))
       const response = await signingClient?.execute(
         walletAddress,
         contractAddress,
