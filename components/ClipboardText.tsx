@@ -27,7 +27,7 @@ export default function ClipboardText({
           readOnly
           type="text"
           value={address}
-          className="border rounded-md p-2 w-full"
+          className="border rounded-md p-2 w-full text-base-content bg-base-100"
         />
         <button
           className="border rounded-md p-2 mx-2"
