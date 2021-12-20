@@ -16,7 +16,8 @@ import {
 /// Returns the outgoing message for COSMOS
 export function messageForProposal(
   proposal: Proposal,
-  contractAddress: string
+  contractAddress: string,
+  govTokenAddress?: string
 ) {
   const msgs = Object.values(proposal.messageMap).map((mapEntry) => {
     // Spend proposals are inputted in human readable form (ex:
@@ -59,7 +60,7 @@ export function messageForProposal(
       if (mintMessage.amount) {
         mintMessage.amount = convertDenomToMicroDenom(mintMessage.amount)
       }
-      return makeExecutableMintMessage(mintMessage, contractAddress) as any
+      return makeExecutableMintMessage(mintMessage, govTokenAddress as string)
     }
     return mapEntry.message
   })

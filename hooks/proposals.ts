@@ -44,7 +44,7 @@ export function useProposals(contractAddress: string) {
         }
         setProposals((p) => p.concat(response.proposals))
       } catch (err) {
-        setError(err)
+        setError(err as Error)
         setLoading(false)
       }
     }

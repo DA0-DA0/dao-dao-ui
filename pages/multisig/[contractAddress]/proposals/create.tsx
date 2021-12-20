@@ -14,7 +14,11 @@ const ProposalCreate: NextPage = () => {
   const { walletAddress, loading, error, proposalID, execute } =
     useCreateProposal(contractAddress)
 
-  const handleProposal = (proposal: Proposal) => {
+  const handleProposal = (
+    proposal: Proposal,
+    contractAddress: string,
+    govTokenAddress?: string
+  ) => {
     execute(proposal).then(() => {
       const paramStr = `initialMessageStatus=success`
 
@@ -37,6 +41,7 @@ const ProposalCreate: NextPage = () => {
       loading={loading}
       contractAddress={contractAddress}
       recipientAddress={walletAddress}
+      multisig={true}
     />
   )
 

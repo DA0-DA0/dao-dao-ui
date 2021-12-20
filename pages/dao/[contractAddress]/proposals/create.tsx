@@ -19,10 +19,18 @@ const ProposalCreate: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [proposalID, setProposalID] = useState('')
 
-  const handleProposal = async (proposal: Proposal) => {
+  const handleProposal = async (
+    proposal: Proposal,
+    contractAddress: string,
+    govTokenAddress?: string
+  ) => {
     setLoading(true)
     setError('')
-    const propose = messageForProposal(proposal, contractAddress)
+    const propose = messageForProposal(
+      proposal,
+      contractAddress,
+      govTokenAddress
+    )
     const memo = memoForProposal(proposal)
     try {
       const response = await signingClient?.execute(

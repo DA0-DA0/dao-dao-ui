@@ -9,7 +9,7 @@ import {
 } from 'models/proposal/proposalSelectors'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeMintMessage } from '../util/messagehelpers'
+import { makeMintMessage } from 'util/messagehelpers'
 
 export default function MintEditor({
   dispatch,
@@ -46,6 +46,7 @@ export default function MintEditor({
       let action: ProposalAction
 
       const message = makeMintMessage(amount, recipient)
+
       if (id) {
         action = {
           type: 'updateMessage',
