@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect, useCallback } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import {
   CalendarIcon,
@@ -26,6 +26,17 @@ const POWERED_BY_URL = 'https://junonetwork.io'
 const TWITTER_URL = 'https://twitter.com/da0_da0'
 const GITHUB_URL = 'https://github.com/DA0-DA0'
 
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useRecoilState,
+  useSetRecoilState,
+} from 'recoil'
+import * as cosm from 'selectors/cosm'
+import * as treas from 'selectors/treasury'
+
+const isPromise = (x: any) => Object(x).constructor === Promise
+
 const navigation = [
   { name: 'DAOs', href: '/dao', icon: HomeIcon, current: true },
   { name: 'Multisigs', href: '/multisig', icon: UsersIcon, current: false },
@@ -37,12 +48,31 @@ function classNames(...classes) {
 }
 
 export const Sidebar = () => {
-  const { walletAddress, connectWallet, disconnect } = useSigningClient()
+  // const { walletAddress, connectWallet, disconnect } = useSigningClient()
+  const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
+
+  const offlineSigner = (window as any).keplr.getOfflineSigner(CHAIN_ID)
+
+  const [walletAddress, setWalletAddress] = useRecoilState(
+    cosm.userWalletAddress
+  )
+
+  console.log('walletAddress', walletAddress)
+
+  const connectWallet = useCallback(() => {
+    const getWallet = async () => {
+      const [{ address }] = await offlineSigner.getAccounts()
+      setWalletAddress(address)
+    }
+    getWallet()
+  }, [])
+
+  // const walletAddress = useRecoilValue(cosm.userWalletAddress)
   const handleConnect = () => {
     if (walletAddress.length === 0) {
       connectWallet()
     } else {
-      disconnect()
+      setWalletAddress('')
     }
   }
 
@@ -73,9 +103,8 @@ export const Sidebar = () => {
         </div>
         <nav className="mt-5 flex-1 px-2 space-y-1">
           {navigation.map((item) => (
-            <Link href={item.href} passHref>
+            <Link key={item.name} href={item.href} passHref>
               <a
-                key={item.name}
                 className={classNames(
                   item.current
                     ? 'bg-base-content hover:bg-base-content text-base-100'
@@ -90,7 +119,7 @@ export const Sidebar = () => {
         </nav>
       </div>
       <div className="flex-shrink-0 flex border-t border-base p-4">
-        <a href="#" className="flex-shrink-0 w-full group block">
+        <div className="flex-shrink-0 w-full group block">
           <div className="flex items-center">
             <div className="ml-3">
               <p className="text-sm font-medium text-base">
@@ -112,7 +141,7 @@ export const Sidebar = () => {
               </p>
             </div>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   )
@@ -123,7 +152,7 @@ export default function SidebarLayout({ children }) {
 
   return (
     <>
-      <div className="h-full flex">
+      <div className="h-screen flex">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
