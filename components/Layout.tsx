@@ -1,10 +1,61 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import Head from 'next/head'
 import SidebarLayout from 'components/Sidebar'
+import LoadingScreen from 'components/LoadingScreen'
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useRecoilRefresher_UNSTABLE,
+  useSetRecoilState,
+  useRecoilState,
+} from 'recoil'
+import * as cosm from 'selectors/cosm'
+import * as treas from 'selectors/treasury'
+import {
+  getKeplr,
+  connectKeplr,
+  connectKeplrWithoutAlerts,
+} from 'services/keplr'
+import WalletLoader from 'components/WalletLoader'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 export default function Layout({ children }: { children: ReactNode }) {
+  const [loaded, setLoaded] = useState(false)
+  const [keplrInstance, setKeplrInstance] = useState(null)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
+
+    async function loadKeplr() {
+      try {
+        const myKelpr = await getKeplr()
+        await connectKeplrWithoutAlerts()
+        await (window as any).keplr.enable(CHAIN_ID)
+        // const result = (window as any).getOfflineSigner(CHAIN_ID)
+        // console.log('result', result)
+        setKeplrInstance(myKelpr)
+      } catch (error) {
+        console.log('errorz', error)
+        setError(true)
+      }
+    }
+    if (keplrInstance === null) {
+      loadKeplr()
+    }
+
+    window.addEventListener('keplr_keystorechange', () => {
+      console.log(
+        'Key store in Keplr is changed. You may need to refetch the account info.'
+      )
+
+      loadKeplr()
+    })
+    if (keplrInstance) {
+      setLoaded(true)
+    }
+  }, [keplrInstance])
   return (
     <div>
       <Head>
@@ -12,7 +63,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
         <link rel="icon" href="/yin_yang.png" />
       </Head>
-      <SidebarLayout>{children}</SidebarLayout>
+      {error && <WalletLoader>Install Kelpr</WalletLoader>}
+      {!keplrInstance && !error && <LoadingScreen />}
+
+      {loaded && <SidebarLayout>{children}</SidebarLayout>}
     </div>
   )
 }
