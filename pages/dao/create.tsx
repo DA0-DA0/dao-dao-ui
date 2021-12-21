@@ -16,6 +16,7 @@ import { makeDaoInstantiateMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
 
 const THRESHOLD_GRANULARITY = 1000
+const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
 interface DaoCreateData {
   deposit: string
@@ -39,6 +40,8 @@ const CreateDao: NextPage = () => {
   const [loading, setLoading] = useState(false)
   // Default to 75% of the vote
   const [threshold, setThreshold] = useState(THRESHOLD_GRANULARITY * 0.75)
+  const [seconds, setSeconds] = useState(DEFAULT_MAX_VOTING_PERIOD_SECONDS)
+
   const {
     register,
     handleSubmit,
@@ -63,6 +66,18 @@ const CreateDao: NextPage = () => {
     }
     return ''
   }
+
+  function secondsToHms(seconds: string): string {
+    const secondsInt = Number(seconds);
+    var h = Math.floor(secondsInt / 3600);
+    var m = Math.floor(secondsInt % 3600 / 60);
+    var s = Math.floor(secondsInt % 3600 % 60);
+
+    var hDisplay = h > 0 ? h + (h == 1 ? " hr" : " hrs") + (m > 0 || s > 0 ? ", ":"") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " min" : " mins") + (s > 0 ? ", ":"") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " sec" : " secs") : "";
+    return hDisplay + mDisplay + sDisplay;
+}
 
   const onSubmit = (data: DaoCreateData) => {
     setError('')
@@ -210,7 +225,6 @@ const CreateDao: NextPage = () => {
     addressRows.push(<AddressErrorRow key={`${index}_err_row`} idx={index} />)
     addressRows.push(<AddressRow key={index} idx={index} readOnly={complete} />)
   }
-
   return (
     <WalletLoader>
       <div className="text-left container mx-auto max-w-lg">
@@ -337,9 +351,15 @@ const CreateDao: NextPage = () => {
                     placeholder="duration in seconds"
                     min={1}
                     max={2147483647}
+                    onChange={(e) =>
+                      setSeconds(parseInt(e.target?.value).toString())
+                    }
                     defaultValue={604800}
                     readOnly={complete}
                   />
+                  <div style={{ position: 'absolute', textAlign: 'end', padding: '5px 0 0 17px', fontSize: ' 12px', color: 'grey' }}>
+                    {secondsToHms(seconds)}
+                  </div>
                 </td>
               </tr>
             </tbody>
