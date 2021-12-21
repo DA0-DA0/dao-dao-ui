@@ -34,7 +34,7 @@ interface DaoCreateData {
 const CreateDao: NextPage = () => {
   const router = useRouter()
   const { walletAddress, signingClient } = useSigningClient()
-  const [count, setCount] = useState(2)
+  const [count, setCount] = useState(1)
   const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -68,16 +68,18 @@ const CreateDao: NextPage = () => {
   }
 
   function secondsToHms(seconds: string): string {
-    const secondsInt = Number(seconds);
-    var h = Math.floor(secondsInt / 3600);
-    var m = Math.floor(secondsInt % 3600 / 60);
-    var s = Math.floor(secondsInt % 3600 % 60);
+    const secondsInt = Number(seconds)
+    var h = Math.floor(secondsInt / 3600)
+    var m = Math.floor((secondsInt % 3600) / 60)
+    var s = Math.floor((secondsInt % 3600) % 60)
 
-    var hDisplay = h > 0 ? h + (h == 1 ? " hr" : " hrs") + (m > 0 || s > 0 ? ", ":"") : "";
-    var mDisplay = m > 0 ? m + (m == 1 ? " min" : " mins") + (s > 0 ? ", ":"") : "";
-    var sDisplay = s > 0 ? s + (s == 1 ? " sec" : " secs") : "";
-    return hDisplay + mDisplay + sDisplay;
-}
+    var hDisplay =
+      h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
+    var mDisplay =
+      m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
+    var sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
+    return hDisplay + mDisplay + sDisplay
+  }
 
   const onSubmit = (data: DaoCreateData) => {
     setError('')
@@ -203,7 +205,7 @@ const CreateDao: NextPage = () => {
             fieldErrorMessage={fieldErrorMessage}
           />
         </td>
-        {idx > 1 && (
+        {idx > 0 && (
           <td className="absolute p-2.5">
             <button
               className="btn btn-outline btn-circle btn-sm"
@@ -357,7 +359,15 @@ const CreateDao: NextPage = () => {
                     defaultValue={604800}
                     readOnly={complete}
                   />
-                  <div style={{ position: 'absolute', textAlign: 'end', padding: '5px 0 0 17px', fontSize: ' 12px', color: 'grey' }}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      textAlign: 'end',
+                      padding: '5px 0 0 17px',
+                      fontSize: ' 12px',
+                      color: 'grey',
+                    }}
+                  >
                     {secondsToHms(seconds)}
                   </div>
                 </td>
