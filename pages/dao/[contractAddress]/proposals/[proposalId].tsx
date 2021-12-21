@@ -26,20 +26,10 @@ const Proposal: NextPage = () => {
     tally,
   } = useProposal(contractAddress as string, proposalId)
 
-  const initialMessage: string | undefined = router.query.initialMessage as any
-  const initialMessageStatus: 'success' | 'error' | undefined = router.query
-    .initialMessageStatus as any
-
-  const initialMessageComponent =
-    initialMessage && initialMessageStatus ? (
-      <LineAlert msg={initialMessage} variant={initialMessageStatus} />
-    ) : null
-
   return (
     <WalletLoader loading={loading}>
       <div className="flex flex-col w-full">
         <div className="grid bg-base-100 place-items-center">
-          {initialMessageComponent}
           {!proposal ? (
             <div className="text-center m-8">
               No proposal with that ID found.

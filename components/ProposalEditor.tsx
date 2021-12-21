@@ -1,6 +1,7 @@
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import HelpTooltip from 'components/HelpTooltip'
 import { useThemeContext } from 'contexts/theme'
+import { useDaoConfig } from 'hooks/dao'
 import { ProposalMessageType } from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
@@ -40,21 +41,29 @@ export default function ProposalEditor({
   onProposal,
   contractAddress,
   recipientAddress,
+  multisig,
 }: {
   initialProposal?: Proposal
   loading?: boolean
   error?: string
-  onProposal: (proposal: Proposal) => void
+  onProposal: (
+    proposal: Proposal,
+    contractAddress: string,
+    govTokenAddress?: string
+  ) => void
   contractAddress: string
   recipientAddress: string
+  multisig?: boolean
 }) {
   const [proposal, dispatch] = useReducer(ProposalReducer, {
     ...(initialProposal || EmptyProposal),
   })
+
   const [description, setDescription] = useState('')
   const [editProposalJson, setEditProposalJson] = useState(false)
   const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
     useState('')
+
   const themeContext = useThemeContext()
   const {
     register,
@@ -62,7 +71,7 @@ export default function ProposalEditor({
     formState: { errors },
   } = useForm()
 
-  const messageActions = [
+  let messageActions = [
     {
       label: 'Spend',
       id: 'spend',
@@ -84,14 +93,22 @@ export default function ProposalEditor({
       href: '#',
       isEnabled: () => true,
     },
-    {
+  ]
+
+  // Try to fetch DAO info...
+  const { daoInfo } = useDaoConfig(contractAddress)
+
+  // If DAO
+  if (!multisig) {
+    // Add DAO specific actions
+    messageActions.push({
       label: 'Mint',
       id: 'mint',
       execute: () => addMessage(ProposalMessageType.Mint),
       href: '#',
       isEnabled: () => true,
-    },
-  ]
+    })
+  }
 
   const complete = false
 
@@ -110,7 +127,7 @@ export default function ProposalEditor({
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
     if (isProposalValid(proposal)) {
-      onProposal(proposal)
+      onProposal(proposal, contractAddress, daoInfo?.gov_token)
     }
   }
 

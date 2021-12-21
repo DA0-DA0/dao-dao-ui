@@ -124,7 +124,7 @@ const CreateDao: NextPage = () => {
           router.push(`/dao/${encodeURIComponent(response.contractAddress)}`)
         }
 
-        successNotify('Successfully added')
+        successNotify('New DAO Created')
       })
       .catch((err: any) => {
         setLoading(false)

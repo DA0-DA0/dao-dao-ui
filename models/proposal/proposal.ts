@@ -8,7 +8,7 @@ import { ExecuteMsg as DAOExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import { labelForMessage } from '../../util/messagehelpers'
 import { MessageMap } from './messageMap'
 
-export const MEMO_MAX_LEN = 255
+export const MEMO_MAX_LEN = 245
 
 export type Proposal = {
   title: string
