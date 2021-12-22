@@ -149,12 +149,12 @@ const DaoHome: NextPage = () => {
         <>
           <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
           <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
-          {member ?
+          {member ? (
             <p className="text-success">
               <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
               <i> You are a member</i>
             </p>
-            : null}
+          ) : null}
           <div className="tabs mt-3 -mb-3">
             <button
               className={

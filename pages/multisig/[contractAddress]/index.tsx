@@ -26,12 +26,12 @@ const Home: NextPage = () => {
   return (
     <WalletLoader>
       <h1 className="text-6xl font-bold">{label}</h1>
-      {member ?
+      {member ? (
         <p className="text-success mt-2">
           <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
           <i> You are a member</i>
         </p>
-        : null}
+      ) : null}
       <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 max-w-full sm:w-full">
         <Link href={`/multisig/${contractAddress}/proposals`} passHref>
           <a className="p-6 mt-6 text-left border border-secondary hover:border-primary w-96 rounded-xl hover:text-primary focus:text-primary-focus">

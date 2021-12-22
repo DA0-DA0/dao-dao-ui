@@ -56,14 +56,14 @@ export function useDaosList(codeId: number) {
           })
           const voterInfo = await signingClient?.queryContractSmart(address, {
             voter: {
-              address: walletAddress
-            }
+              address: walletAddress,
+            },
           })
           if (daoInfo?.config) {
             const config = {
               ...daoInfo.config,
               address,
-              member: voterInfo.weight !== "0",
+              member: voterInfo.weight !== '0',
             }
             daoList.push(config)
           }

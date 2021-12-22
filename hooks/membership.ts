@@ -11,12 +11,15 @@ export function useIsMember(contractAddress: string) {
     }
 
     const getIsMember = async () => {
-      const voterInfo = await signingClient?.queryContractSmart(contractAddress, {
-        voter: {
-          address: walletAddress
+      const voterInfo = await signingClient?.queryContractSmart(
+        contractAddress,
+        {
+          voter: {
+            address: walletAddress,
+          },
         }
-      })
-      setMember(voterInfo.weight !== "0")
+      )
+      setMember(voterInfo.weight !== '0')
     }
 
     getIsMember()

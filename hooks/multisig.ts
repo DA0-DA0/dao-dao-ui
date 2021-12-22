@@ -2,8 +2,8 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import { useState, useEffect } from 'react'
 
 export interface MultisigListType {
-  address: string,
-  label: string,
+  address: string
+  label: string
   member: boolean
 }
 
@@ -28,13 +28,13 @@ export function useMultisigsList(codeId: number) {
           const sigInfo = await signingClient?.getContract(address)
           const voterInfo = await signingClient?.queryContractSmart(address, {
             voter: {
-              address: walletAddress
-            }
+              address: walletAddress,
+            },
           })
           if (sigInfo) {
             sigList.push({
               ...sigInfo,
-              member: voterInfo.weight !== "0"
+              member: voterInfo.weight !== '0',
             })
           }
         }

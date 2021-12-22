@@ -21,12 +21,12 @@ const DaoListComponent: FunctionComponent<DaoListType> = ({
         <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
       </h3>
       <p className="mt-4 text-xl">{description}</p>
-      {member ?
+      {member ? (
         <p className="mt-4 text-success">
           <CheckIcon className="h-4 w-4 mb-1 mr-1 inline" />
           <i> You are a member</i>
         </p>
-        : null}
+      ) : null}
     </LinkCard>
   )
 }
@@ -47,8 +47,10 @@ const DaoList: NextPage = () => {
   return (
     <WalletLoader loading={loading}>
       <h1 className="text-6xl font-bold">DAOs</h1>
-      <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">Personal DAOs</h2>
-      {memberDaos.length > 0 ?
+      <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">
+        Personal DAOs
+      </h2>
+      {memberDaos.length > 0 ? (
         memberDaos.map((dao, key) => (
           <DaoListComponent
             address={dao?.address}
@@ -58,32 +60,31 @@ const DaoList: NextPage = () => {
             key={key}
           />
         ))
-        : (
-          <>
-            <p className="text-xl my-8">Not part of any DAOs</p>
-            <Link href="/multisig/create" passHref>
-              <button className="btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl">
-                Create a DAO
-              </button>
-            </Link>
-          </>
-        )
-      }
+      ) : (
+        <>
+          <p className="text-xl my-8">Not part of any DAOs</p>
+          <Link href="/multisig/create" passHref>
+            <button className="btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl">
+              Create a DAO
+            </button>
+          </Link>
+        </>
+      )}
       {nonMemberDaos.length > 0 ? (
         <>
           <hr />
-          <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">Other DAOs</h2>
-          {
-            nonMemberDaos.map((dao, key) => (
-              <DaoListComponent
-                address={dao?.address}
-                name={dao?.name}
-                description={dao?.description}
-                member={dao?.member}
-                key={key}
-              />
-            ))
-          }
+          <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">
+            Other DAOs
+          </h2>
+          {nonMemberDaos.map((dao, key) => (
+            <DaoListComponent
+              address={dao?.address}
+              name={dao?.name}
+              description={dao?.description}
+              member={dao?.member}
+              key={key}
+            />
+          ))}
         </>
       ) : null}
     </WalletLoader>
