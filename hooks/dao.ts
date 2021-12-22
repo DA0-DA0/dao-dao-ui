@@ -31,16 +31,17 @@ export interface DaoListType {
   address: string
   name: string
   description: string
+  member: boolean
 }
 
 export function useDaosList(codeId: number) {
   const [daos, setDaos] = useState<Array<DaoListType>>([])
   const [loading, setLoading] = useState(false)
-  const { signingClient } = useSigningClient()
+  const { signingClient, walletAddress } = useSigningClient()
 
   // Get list of DAO info
   useEffect(() => {
-    if (!signingClient) {
+    if (!signingClient || !walletAddress) {
       return
     }
     const getDaos = async () => {
@@ -53,10 +54,16 @@ export function useDaosList(codeId: number) {
           const daoInfo = await signingClient?.queryContractSmart(address, {
             get_config: {},
           })
+          const voterInfo = await signingClient?.queryContractSmart(address, {
+            voter: {
+              address: walletAddress
+            }
+          })
           if (daoInfo?.config) {
             const config = {
               ...daoInfo.config,
               address,
+              member: voterInfo.weight !== "0",
             }
             daoList.push(config)
           }
