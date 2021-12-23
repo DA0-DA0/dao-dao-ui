@@ -10,17 +10,19 @@ function ProposalList({
   proposals,
   hideLoadMore,
   onLoadMore,
+  member,
 }: {
   contractAddress: string
   proposals: ProposalResponse[]
   hideLoadMore: boolean
   onLoadMore: () => void
+  member: boolean
 }) {
   return (
     <div className="w-96 lg:w-6/12 max-w-full">
       {proposals?.length === 0 && (
         <div className="text-center">
-          No proposals found, please create a proposal.
+          No proposals found {member ? ', please create a proposal.' : null}
         </div>
       )}
       {proposals &&
