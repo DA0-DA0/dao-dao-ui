@@ -9,6 +9,8 @@ import LinkCard from 'components/LinkCard'
 import ClipboardText from 'components/ClipboardText'
 import { useTokenConfig } from 'hooks/govToken'
 import { convertMicroDenomToDenom } from 'util/conversion'
+import { useIsMember } from 'hooks/membership'
+import { CheckIcon } from '@heroicons/react/outline'
 
 enum TabState {
   Actions,
@@ -139,14 +141,21 @@ const DaoHome: NextPage = () => {
 
   let { daoInfo, loading } = useDaoConfig(contractAddress)
   let { tokenInfo } = useTokenConfig(daoInfo ? daoInfo.gov_token : undefined)
+  const { member } = useIsMember(contractAddress)
 
   return (
     <WalletLoader loading={loading}>
       {daoInfo ? (
         <>
           <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
-          <h4 className="text-xl">{daoInfo.config.description}</h4>
-          <div className="tabs mt-6">
+          <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
+          {member ? (
+            <p className="text-success">
+              <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
+              <i> You are a member</i>
+            </p>
+          ) : null}
+          <div className="tabs mt-3 -mb-3">
             <button
               className={
                 'tab tab-lg tab-bordered' +

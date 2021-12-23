@@ -1,38 +1,50 @@
 import { useSigningClient } from 'contexts/cosmwasm'
 import { useState, useEffect } from 'react'
-import { Contract } from '@cosmjs/cosmwasm-stargate'
+
+export interface MultisigListType {
+  address: string
+  label: string
+  member: boolean
+}
 
 export function useMultisigsList(codeId: number) {
-  const [multisigs, setMultisigs] = useState<Array<Contract>>([])
-  const { signingClient } = useSigningClient()
+  const [multisigs, setMultisigs] = useState<Array<MultisigListType>>([])
+  const { signingClient, walletAddress } = useSigningClient()
   const [loading, setLoading] = useState(false)
 
   // Get list of MULTISIG info
   useEffect(() => {
+    if (!signingClient || !walletAddress) {
+      return
+    }
+
     const getMultisigs = async () => {
       setLoading(true)
-      try {
-        const contracts = await signingClient?.getContracts(codeId)
+      const contracts = await signingClient?.getContracts(codeId)
 
-        if (contracts) {
-          Promise.all(
-            contracts.map((address) => signingClient?.getContract(address))
-          ).then((list) => {
-            const filtered = list.filter(
-              (item) => item !== undefined
-            ) as Array<Contract>
-            if (list) setMultisigs(filtered)
+      const sigList = []
+      if (contracts) {
+        for (const address of contracts) {
+          const sigInfo = await signingClient?.getContract(address)
+          const voterInfo = await signingClient?.queryContractSmart(address, {
+            voter: {
+              address: walletAddress,
+            },
           })
-          setLoading(false)
+          if (sigInfo) {
+            sigList.push({
+              ...sigInfo,
+              member: voterInfo.weight !== '0',
+            })
+          }
         }
-      } catch (e) {
-        // Handles the edge case where there are no contracts at
-        // all and the API throws.
-        setLoading(false)
-        return []
       }
+
+      setMultisigs(sigList)
+      setLoading(false)
     }
     getMultisigs()
   }, [signingClient, codeId])
+
   return { multisigs, loading }
 }
