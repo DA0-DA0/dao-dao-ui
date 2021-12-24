@@ -1,22 +1,21 @@
+<!--
 ## Preview
 
 <p align="center" width="100%">
     <img alt="cw-dao UI preview" src="https://i.imgur.com/Dtk9eyO.gif">
 </p>
+-->
 
-## Summary
+## DAO DAO UI
 
-This project creates a web UI around the [cw-dao](https://github.com/DA0-DA0/cw-dao) smart contract. Enabling users to:
+This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/cw3-dao) and [cw3-multisig](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/cw3-multisig) smart contracts. Enabling users to:
 
-- View proposals for a previously instantiated cw-dao
-- Create proposals for sending funds from the cw-dao instance
-- Vote on proposals created by other users of the cw-dao instance
+- Create a governance token based DAO or multisig
+- View proposals and treasury info
+- Easily create proposals
+- Vote on proposals
 
-## Proposal List UI
-
-The proposal list UI provides icons indicating proposal status:
-
-<img alt="proposal status UI table" src="https://i.imgur.com/P5FDDJ8.png">
+You can find more info in our [documentation](https://docs.daodao.zone).
 
 ## Development
 
@@ -28,17 +27,17 @@ To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a doc
 
 First, make sure you have `docker` installed.
 
-Then, in a new terminal, clone the [cw-dao](https://github.com/DA0-DA0/cw-dao) repo, and folow [the instructions for running the chain in a development environment](https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment).
+Then, in a new terminal, clone the [dao-contracts](https://github.com/DA0-DA0/dao-contracts) repo, and follow [the instructions for running the chain in a development environment](https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment).
 
-> Note: Assuming you follow those directions to configure it with the default wasm account, you'll also want to import that account's mnemonic into Keplr (Add account -> Import existing account -> copy mnemonic from [default account](https://github.com/DA0-DA0/cw-dao/blob/main/default-account.txt)).
+> Note: Assuming you follow those directions to configure it with the default wasm account, you'll also want to import that account's mnemonic into Keplr (Add account -> Import existing account -> copy mnemonic from [default account](https://github.com/DA0-DA0/dao-contracts/blob/main/default-account.txt)).
 
 ### Setup Frontend
 
 #### Clone this repo and install dependencies
 
 ```bash
-git clone https://github.com/DA0-DA0/cw-dao-dapp
-cd cw-dao-dapp
+git clone https://github.com/DA0-DA0/dao-ui
+cd dao-ui
 yarn
 ```
 
