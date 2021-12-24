@@ -13,7 +13,6 @@ import {
 } from '@heroicons/react/outline'
 import Logo from 'components/Logo'
 import Link from 'next/link'
-import { useSigningClient } from 'contexts/cosmwasm'
 import ThemeToggle from 'components/ThemeToggle'
 import NavContractLabel from 'components/NavContractLabel'
 import TwitterLogo from 'components/TwitterLogo'
@@ -27,15 +26,11 @@ const TWITTER_URL = 'https://twitter.com/da0_da0'
 const GITHUB_URL = 'https://github.com/DA0-DA0'
 
 import {
-  useRecoilValue,
-  useRecoilValueLoadable,
   useRecoilState,
-  useSetRecoilState,
+  useRecoilRefresher_UNSTABLE,
+  useResetRecoilState,
 } from 'recoil'
-import * as cosm from 'selectors/cosm'
-import * as treas from 'selectors/treasury'
-
-const isPromise = (x: any) => Object(x).constructor === Promise
+import * as cosm from 'atoms/cosm'
 
 const navigation = [
   { name: 'DAOs', href: '/dao', icon: HomeIcon, current: true },
@@ -48,29 +43,17 @@ function classNames(...classes) {
 }
 
 export const Sidebar = () => {
-  // const { walletAddress, connectWallet, disconnect } = useSigningClient()
-  const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
-
-  const offlineSigner = (window as any).keplr.getOfflineSigner(CHAIN_ID)
-
-  const [walletAddress, setWalletAddress] = useRecoilState(
-    cosm.userWalletAddress
+  const wallet = cosm.walletAddress
+  const [walletAddress, setWalletAddress] = useRecoilState(wallet)
+  const resetOfflineSigner = useRecoilRefresher_UNSTABLE(
+    cosm.kelprOfflineSigner
   )
+  const resetWallet = useResetRecoilState(cosm.walletAddress)
 
-  console.log('walletAddress', walletAddress)
-
-  const connectWallet = useCallback(() => {
-    const getWallet = async () => {
-      const [{ address }] = await offlineSigner.getAccounts()
-      setWalletAddress(address)
-    }
-    getWallet()
-  }, [])
-
-  // const walletAddress = useRecoilValue(cosm.userWalletAddress)
   const handleConnect = () => {
     if (walletAddress.length === 0) {
-      connectWallet()
+      resetOfflineSigner()
+      resetWallet()
     } else {
       setWalletAddress('')
     }

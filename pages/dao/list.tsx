@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/solid'
+import LoadingScreen from 'components/LoadingScreen'
 import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
 import Link from 'next/link'
@@ -7,13 +8,16 @@ import { DAO_CODE_ID } from 'util/constants'
 import { useDaosList, DaoListType } from 'hooks/dao'
 import LinkCard from 'components/LinkCard'
 import { CheckIcon } from '@heroicons/react/outline'
+import { useRecoilValue } from 'recoil'
+import { contractsByCodeId } from 'selectors/contracts'
+import { daoInfo } from 'selectors/daos'
 
 const DaoListComponent: FunctionComponent<DaoListType> = ({
   address,
-  name,
-  description,
   member,
 }) => {
+  const { name, description } = useRecoilValue(daoInfo(address))
+
   return (
     <LinkCard href={`/dao/${address}`}>
       <h3 className="text-2xl font-bold">
@@ -32,7 +36,9 @@ const DaoListComponent: FunctionComponent<DaoListType> = ({
 }
 
 const DaoList: NextPage = () => {
-  const { daos, loading } = useDaosList(DAO_CODE_ID)
+  const { daos } = useDaosList(DAO_CODE_ID)
+  // const daos = useRecoilValue(contractsByCodeId(DAO_CODE_ID))
+
   let memberDaos = []
   let nonMemberDaos = []
 
@@ -45,7 +51,7 @@ const DaoList: NextPage = () => {
   }
 
   return (
-    <WalletLoader loading={loading}>
+    <div>
       <h1 className="text-6xl font-bold">DAOs</h1>
       <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">
         Personal DAOs
@@ -54,8 +60,6 @@ const DaoList: NextPage = () => {
         memberDaos.map((dao, key) => (
           <DaoListComponent
             address={dao?.address}
-            name={dao?.name}
-            description={dao?.description}
             member={dao?.member}
             key={key}
           />
@@ -79,15 +83,13 @@ const DaoList: NextPage = () => {
           {nonMemberDaos.map((dao, key) => (
             <DaoListComponent
               address={dao?.address}
-              name={dao?.name}
-              description={dao?.description}
               member={dao?.member}
               key={key}
             />
           ))}
         </>
       ) : null}
-    </WalletLoader>
+    </div>
   )
 }
 

@@ -29,8 +29,6 @@ export function useDaoConfig(contractAddress: string) {
 
 export interface DaoListType {
   address: string
-  name: string
-  description: string
   member: boolean
 }
 
@@ -74,7 +72,7 @@ export function useDaosList(codeId: number) {
       }
     }
     getDaos()
-  }, [signingClient, codeId])
+  }, [signingClient, codeId, walletAddress])
 
   return { daos, loading }
 }
