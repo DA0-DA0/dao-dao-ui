@@ -29,8 +29,6 @@ export function useDaoConfig(contractAddress: string) {
 
 export interface DaoListType {
   address: string
-  name: string
-  description: string
 }
 
 export function useDaosList(codeId: number) {

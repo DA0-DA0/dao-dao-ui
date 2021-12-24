@@ -2,20 +2,9 @@ import { ReactNode, useState, useEffect } from 'react'
 import Head from 'next/head'
 import SidebarLayout from 'components/Sidebar'
 import LoadingScreen from 'components/LoadingScreen'
-import {
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useRecoilRefresher_UNSTABLE,
-  useSetRecoilState,
-  useRecoilState,
-} from 'recoil'
-import * as cosm from 'selectors/cosm'
-import * as treas from 'selectors/treasury'
-import {
-  getKeplr,
-  connectKeplr,
-  connectKeplrWithoutAlerts,
-} from 'services/keplr'
+import { useRecoilRefresher_UNSTABLE } from 'recoil'
+import * as cosm from 'atoms/cosm'
+import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import WalletLoader from 'components/WalletLoader'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
@@ -24,6 +13,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(false)
   const [keplrInstance, setKeplrInstance] = useState(null)
   const [error, setError] = useState(false)
+  const reset = useRecoilRefresher_UNSTABLE(cosm.kelprOfflineSigner)
 
   useEffect(() => {
     const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
@@ -49,6 +39,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       console.log(
         'Key store in Keplr is changed. You may need to refetch the account info.'
       )
+      reset()
 
       loadKeplr()
     })

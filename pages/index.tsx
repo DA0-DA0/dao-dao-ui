@@ -6,7 +6,7 @@ import LinkCard from 'components/LinkCard'
 
 const Home: NextPage = () => {
   return (
-    <WalletLoader>
+    <div>
       <h1 className="text-6xl font-bold">InterChain DAO Tooling</h1>
 
       <div className="mt-3 text-2xl">Choose your adventure...</div>
@@ -25,7 +25,7 @@ const Home: NextPage = () => {
         </h3>
         <p className="mt-4 text-xl">Organizations with governance tokens.</p>
       </LinkCard>
-    </WalletLoader>
+    </div>
   )
 }
 

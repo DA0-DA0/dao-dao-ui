@@ -6,12 +6,13 @@ import Link from 'next/link'
 import { DAO_CODE_ID } from 'util/constants'
 import { useDaosList, DaoListType } from 'hooks/dao'
 import LinkCard from 'components/LinkCard'
+import { useRecoilValue } from 'recoil'
+import { contractsByCodeId } from 'selectors/contracts'
+import { daoInfo } from 'selectors/daos'
 
-const DaoListComponent: FunctionComponent<DaoListType> = ({
-  address,
-  name,
-  description,
-}) => {
+const DaoListComponent: FunctionComponent<DaoListType> = ({ address }) => {
+  const { name, description } = useRecoilValue(daoInfo(address))
+
   return (
     <LinkCard href={`/dao/${address}`}>
       <h3 className="text-2xl font-bold">
@@ -24,19 +25,15 @@ const DaoListComponent: FunctionComponent<DaoListType> = ({
 }
 
 const DaoList: NextPage = () => {
-  const { daos, loading } = useDaosList(DAO_CODE_ID)
+  // const { daos, loading } = useDaosList(DAO_CODE_ID)
+  const daos = useRecoilValue(contractsByCodeId(DAO_CODE_ID))
 
   return (
-    <WalletLoader loading={loading}>
+    <div>
       <h1 className="text-6xl font-bold">DAOs</h1>
       {daos.length > 0 ? (
-        daos.map((dao, key) => (
-          <DaoListComponent
-            address={dao?.address}
-            name={dao?.name}
-            description={dao?.description}
-            key={key}
-          />
+        daos.map((address) => (
+          <DaoListComponent address={address} key={address} />
         ))
       ) : (
         <>
@@ -48,7 +45,7 @@ const DaoList: NextPage = () => {
           </Link>
         </>
       )}
-    </WalletLoader>
+    </div>
   )
 }
 
