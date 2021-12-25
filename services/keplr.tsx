@@ -113,9 +113,9 @@ export const connectKeplr = async () => {
           // Currently, Keplr doesn't support dynamic calculation of the gas prices based on on-chain data.
           // Make sure that the gas prices are higher than the minimum gas prices accepted by chain validators and RPC/REST endpoint.
           gasPriceStep: {
-            low: 0.01,
-            average: 0.025,
-            high: 0.04,
+            low: 0.03,
+            average: 0.04,
+            high: 0.05,
           },
         })
       } catch {
