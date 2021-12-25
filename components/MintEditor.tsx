@@ -20,6 +20,7 @@ export default function MintEditor({
   mintMsg?: MessageMapEntry
   initialRecipientAddress: string
 }) {
+  const [address, setAddress] = useState(initialRecipientAddress)
   const [validAddress, setValidAddress] = useState(
     isValidAddress(initialRecipientAddress)
   )
@@ -65,9 +66,8 @@ export default function MintEditor({
   }
 
   function handleRecipientAddress(e: React.FormEvent<HTMLInputElement>) {
-    const address = e.currentTarget?.value
     const valid = !!(address && isValidAddress(address))
-    updateMint(undefined, { recipientAddress: address })
+    updateMint(e, { recipientAddress: address })
     setValidAddress(valid)
   }
 
@@ -79,36 +79,44 @@ export default function MintEditor({
   let inputBaseClass =
     'input input-bordered rounded box-border p-3 w-full text-xl'
   let inputErrorClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl bg-error'
+    'input input-bordered rounded box-border p-3 w-full text-xl input-error'
 
   let addressClass = validAddress ? inputBaseClass : inputErrorClass
 
   return (
     <div>
-      <label htmlFor="amount" className="block mt-4">
-        Amount
-      </label>
-      <input
-        type="number"
-        id="amount"
-        value={amount}
-        className="input input-bordered rounded box-border p-3 w-full text-xl"
-        name="amount"
-        readOnly={false}
-        onChange={handleAmount}
-      />
-      <label htmlFor="recipientAddress" className="block mt-4">
-        Recipient Address{validAddress ? '' : ' (Invalid Address)'}
-      </label>
-      <input
-        type="text"
-        id="recipientAddress"
-        className={addressClass}
-        name="recipientAddress"
-        readOnly={false}
-        onChange={handleRecipientAddress}
-        value={recipientAddress}
-      />
+      <div className="form-control">
+        <label htmlFor="amount" className="label">
+          <span className="label-text font-bold">Amount</span>
+        </label>
+        <input
+          type="number"
+          id="amount"
+          value={amount}
+          className="input input-bordered rounded box-border p-3 w-full text-xl"
+          name="amount"
+          onChange={handleAmount}
+        />
+      </div>
+      <div className="form-control">
+        <label htmlFor="recipientAddress" className="label">
+          <span className="label-text font-bold">Recipient Address</span>
+        </label>
+        <input
+          type="text"
+          id="recipientAddress"
+          className={addressClass}
+          name="recipientAddress"
+          onChange={(e) => setAddress(e.target.value)}
+          onBlur={handleRecipientAddress}
+          value={address}
+        />
+        {!validAddress && (
+          <label className="label">
+            <span className="label-text-alt text-error">Invalid address</span>
+          </label>
+        )}
+      </div>
     </div>
   )
 }
