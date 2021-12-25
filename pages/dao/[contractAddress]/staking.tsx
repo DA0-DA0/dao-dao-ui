@@ -24,7 +24,7 @@ export function TokenBalance({
   tooltip: string
 }) {
   return (
-    <div className="card bordered shadow-lg card-side m-2 inline-flex">
+    <div className="card bordered shadow-lg card-side m-2 inline-flex overflow-visible">
       <div className="card-body py-6">
         <h2 className="card-title">
           {title} <HelpTooltip text={tooltip} />
