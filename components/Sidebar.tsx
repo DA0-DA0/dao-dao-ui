@@ -1,16 +1,7 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState, useEffect, useCallback } from 'react'
+import React, { Fragment, FunctionComponent, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import {
-  CalendarIcon,
-  ChartBarIcon,
-  FolderIcon,
-  HomeIcon,
-  InboxIcon,
-  MenuIcon,
-  UsersIcon,
-  XIcon,
-} from '@heroicons/react/outline'
+import { HomeIcon, MenuIcon, UsersIcon, XIcon } from '@heroicons/react/outline'
 import Logo from 'components/Logo'
 import Link from 'next/link'
 import ThemeToggle from 'components/ThemeToggle'
@@ -38,7 +29,7 @@ const navigation = [
 ]
 
 // TODO move to util?
-function classNames(...classes) {
+function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
@@ -130,7 +121,7 @@ export const Sidebar = () => {
   )
 }
 
-export default function SidebarLayout({ children }) {
+export default function SidebarLayout({ children }: { children: any }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (

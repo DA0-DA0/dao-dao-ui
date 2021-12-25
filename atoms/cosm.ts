@@ -2,7 +2,7 @@ import {
   CosmWasmClient,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { OfflineSigner } from '@cosmjs/launchpad'
+import { OfflineSigner } from '@cosmjs/proto-signing'
 import { StargateClient } from '@cosmjs/stargate'
 import { atomFamily, selectorFamily, atom, selector } from 'recoil'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
