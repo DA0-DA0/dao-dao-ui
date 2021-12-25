@@ -1,5 +1,5 @@
 import 'styles/globals.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { AppProps } from 'next/app'
 import Layout from 'components/Layout'
 import { SigningCosmWasmProvider } from 'contexts/cosmwasm'
@@ -11,6 +11,8 @@ import LoadingScreen from 'components/LoadingScreen'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState('junoLight')
+  const [loaded, setLoaded] = useState(false)
+  useEffect(() => setLoaded(true), [])
 
   function updateTheme(themeName: string) {
     setTheme(themeName)
@@ -21,10 +23,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Suspense fallback={<LoadingScreen />}>
         <SigningCosmWasmProvider>
           <ThemeProvider updateTheme={updateTheme} theme={theme}>
-            <Layout>
-              <Component {...pageProps} />
-              <Notifications />
-            </Layout>
+            {loaded && (
+              <Layout>
+                <Component {...pageProps} />
+                <Notifications />
+              </Layout>
+            )}
           </ThemeProvider>
         </SigningCosmWasmProvider>
       </Suspense>

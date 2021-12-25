@@ -1,12 +1,11 @@
 import { ReactNode, useState, useEffect } from 'react'
-import * as cosm from 'atoms/cosm'
-import Nav from 'components/Nav'
-import Footer from 'components/Footer'
-import LoadingScreen from 'components/LoadingScreen'
-import WalletLoader from 'components/WalletLoader'
 import Head from 'next/head'
+import SidebarLayout from 'components/Sidebar'
+import LoadingScreen from 'components/LoadingScreen'
 import { useRecoilRefresher_UNSTABLE } from 'recoil'
+import * as cosm from 'atoms/cosm'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
+import WalletLoader from 'components/WalletLoader'
 import { Keplr } from '@keplr-wallet/types'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
@@ -31,7 +30,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         setError(true)
       }
     }
-
     if (!keplrInstance) {
       loadKeplr()
     }
@@ -50,7 +48,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   }, [keplrInstance, reset])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-100 text-base-content">
+    <div>
       <Head>
         <title>{PUBLIC_SITE_TITLE}</title>
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
@@ -59,15 +57,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       {error && <WalletLoader>Install Kelpr</WalletLoader>}
       {!keplrInstance && !error && <LoadingScreen />}
 
-      {loaded && (
-        <>
-          <Nav />
-          <main className="flex flex-col items-center justify-center w-full flex-1 p-2 md:px-20 text-center">
-            {children}
-          </main>
-          <Footer />
-        </>
-      )}
+      {loaded && <SidebarLayout>{children}</SidebarLayout>}
     </div>
   )
 }

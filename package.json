@@ -18,9 +18,12 @@
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.27.0-rc2",
+    "@cosmjs/proto-signing": "^0.27.0-rc2",
     "@cosmjs/stargate": "^0.27.0-rc2",
     "@dao-dao/types": "^0.0.4",
+    "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
+    "@keplr-wallet/types": "^0.9.10",
     "@types/react-json-editor-ajrm": "^2.5.2",
     "daisyui": "^1.16.6",
     "dotenv": "^10.0.0",

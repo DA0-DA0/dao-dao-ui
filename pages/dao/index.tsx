@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const Home: NextPage = () => {
   return (
-    <WalletLoader>
+    <div>
       <h1 className="text-6xl font-bold">DAOs</h1>
 
       <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 max-w-full sm:w-full">
@@ -34,7 +34,7 @@ const Home: NextPage = () => {
           </a>
         </Link>
       </div>
-    </WalletLoader>
+    </div>
   )
 }
 
