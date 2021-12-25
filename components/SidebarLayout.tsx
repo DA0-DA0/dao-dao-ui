@@ -24,15 +24,13 @@ export default function Layout({ children }: { children: ReactNode }) {
         const myKelpr = await getKeplr()
         await connectKeplrWithoutAlerts()
         await (window as any).keplr.enable(CHAIN_ID)
-        // const result = (window as any).getOfflineSigner(CHAIN_ID)
-        // console.log('result', result)
         setKeplrInstance(myKelpr)
       } catch (error) {
-        console.log('errorz', error)
+        console.error(error)
         setError(true)
       }
     }
-    if (keplrInstance === null) {
+    if (!keplrInstance) {
       loadKeplr()
     }
 
@@ -47,7 +45,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     if (keplrInstance) {
       setLoaded(true)
     }
-  }, [keplrInstance])
+  }, [keplrInstance, reset])
 
   return (
     <div>

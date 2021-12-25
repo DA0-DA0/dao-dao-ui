@@ -27,11 +27,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         await (window as any).keplr.enable(CHAIN_ID)
         setKeplrInstance(myKelpr)
       } catch (error) {
-        console.log('errorz', error)
+        console.error(error)
         setError(true)
       }
     }
-    if (keplrInstance === null) {
+
+    if (!keplrInstance) {
       loadKeplr()
     }
 
@@ -46,7 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     if (keplrInstance) {
       setLoaded(true)
     }
-  }, [keplrInstance])
+  }, [keplrInstance, reset])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-base-100 text-base-content">

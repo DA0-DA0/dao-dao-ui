@@ -1,7 +1,5 @@
 import React, { FunctionComponent } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/solid'
-import LoadingScreen from 'components/LoadingScreen'
-import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { DAO_CODE_ID } from 'util/constants'
