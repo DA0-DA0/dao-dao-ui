@@ -88,3 +88,21 @@ export const walletTokenBalance = selectorFamily({
       }
     },
 })
+
+export const walletStakedTokenBalance = selectorFamily({
+  key: 'WalletStakedTokenBalance',
+  get:
+    (tokenAddress: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+
+      const wallet = get(walletAddress)
+      const response = (await client.queryContractSmart(tokenAddress, {
+        staked_balance_at_height: { address: wallet },
+      })) as any
+      return {
+        amount: response.balance,
+        address: tokenAddress,
+      }
+    },
+})

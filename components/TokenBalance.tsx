@@ -1,3 +1,4 @@
+import { LockClosedIcon } from '@heroicons/react/outline'
 import {
   convertMicroDenomToDenom,
   convertFromMicroDenom,
@@ -18,8 +19,7 @@ function TokenBalance({
     <div className="card bordered shadow-lg card-side mr-2">
       <div className="card-body py-6">
         <h2 className="card-title">{symbol}</h2>
-        <p>{convertMicroDenomToDenom(amount)}</p>
-        {/* <p>-</p> */}
+        <p className="w-full text-center">{convertMicroDenomToDenom(amount)}</p>
       </div>
     </div>
   )
