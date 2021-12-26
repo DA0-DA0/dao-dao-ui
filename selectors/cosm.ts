@@ -65,13 +65,21 @@ export const walletAddressSelector = selector({
 
 export const voterInfoSelector = selectorFamily({
   key: 'voterInfo',
-  get: ({contractAddress, walletAddress}: {contractAddress: string, walletAddress: string}) => async ({get}) => {
-    // const client = get(cosmWasmSigningClient)
-    const client = get(cosmWasmClient)
-    return client?.queryContractSmart(contractAddress, {
-      voter: {
-        address: walletAddress,
-      },
-    })
-  }
+  get:
+    ({
+      contractAddress,
+      walletAddress,
+    }: {
+      contractAddress: string
+      walletAddress: string
+    }) =>
+    async ({ get }) => {
+      // const client = get(cosmWasmSigningClient)
+      const client = get(cosmWasmClient)
+      return client?.queryContractSmart(contractAddress, {
+        voter: {
+          address: walletAddress,
+        },
+      })
+    },
 })

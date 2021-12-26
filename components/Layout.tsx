@@ -7,7 +7,7 @@ import Head from 'next/head'
 import { useRecoilRefresher_UNSTABLE } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import { Keplr } from '@keplr-wallet/types'
-import {kelprOfflineSigner} from 'selectors/cosm'
+import { kelprOfflineSigner } from 'selectors/cosm'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 

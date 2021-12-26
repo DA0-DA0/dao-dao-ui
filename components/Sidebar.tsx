@@ -7,9 +7,14 @@ import TwitterLogo from 'components/TwitterLogo'
 import Link from 'next/link'
 import React, { Fragment, useState } from 'react'
 import {
-  useRecoilRefresher_UNSTABLE, useRecoilValue, useResetRecoilState
+  useRecoilRefresher_UNSTABLE,
+  useRecoilValue,
+  useResetRecoilState,
 } from 'recoil'
-import { kelprOfflineSigner as kelprOfflineSignerSelector, walletAddressSelector } from 'selectors/cosm'
+import {
+  kelprOfflineSigner as kelprOfflineSignerSelector,
+  walletAddressSelector,
+} from 'selectors/cosm'
 
 const PUBLIC_SITE_ICON_URL = process.env.NEXT_PUBLIC_SITE_ICON_URL || ''
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
@@ -17,7 +22,6 @@ const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 const POWERED_BY_URL = 'https://junonetwork.io'
 const TWITTER_URL = 'https://twitter.com/da0_da0'
 const GITHUB_URL = 'https://github.com/DA0-DA0'
-
 
 const navigation = [
   { name: 'DAOs', href: '/dao', icon: HomeIcon, current: true },

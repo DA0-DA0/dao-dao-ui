@@ -1,4 +1,7 @@
-import { proposalsRequestIdAtom, proposalsRequestStartBeforeAtom } from 'atoms/proposals'
+import {
+  proposalsRequestIdAtom,
+  proposalsRequestStartBeforeAtom,
+} from 'atoms/proposals'
 import ProposalList from 'components/ProposalList'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -9,10 +12,16 @@ import { onChainProposalsSelector } from 'selectors/proposals'
 const DaoProposals: NextPage = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const [startBefore, setStartBefore] = useRecoilState(proposalsRequestStartBeforeAtom)
+  const [startBefore, setStartBefore] = useRecoilState(
+    proposalsRequestStartBeforeAtom
+  )
   const hideLoadMore = false
-  const proposals = useRecoilValue(onChainProposalsSelector({contractAddress, startBefore}))
-  const [proposalRequestId, setProposalRequestId] = useRecoilState(proposalsRequestIdAtom)
+  const proposals = useRecoilValue(
+    onChainProposalsSelector({ contractAddress, startBefore })
+  )
+  const [proposalRequestId, setProposalRequestId] = useRecoilState(
+    proposalsRequestIdAtom
+  )
   const member = useRecoilValue(isMemberSelector(contractAddress))
 
   return (

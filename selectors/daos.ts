@@ -9,10 +9,7 @@ import { DAO_CODE_ID } from 'util/constants'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { DaoListType } from 'hooks/dao'
 
-export const isMemberSelector = selectorFamily<
-  boolean,
-  string
->({
+export const isMemberSelector = selectorFamily<boolean, string>({
   key: 'isMember',
   get:
     (contractAddress) =>

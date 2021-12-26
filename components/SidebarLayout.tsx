@@ -6,7 +6,7 @@ import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import WalletLoader from 'components/WalletLoader'
 import { Keplr } from '@keplr-wallet/types'
-import {kelprOfflineSigner as kelprOfflineSignerSelector} from 'selectors/cosm'
+import { kelprOfflineSigner as kelprOfflineSignerSelector } from 'selectors/cosm'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 

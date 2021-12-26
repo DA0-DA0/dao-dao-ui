@@ -11,9 +11,12 @@ import { daoSelector, daosSelector } from 'selectors/daos'
 const DaoListComponent: FunctionComponent<DaoListType> = ({
   address,
   member,
-  dao
+  dao,
 }) => {
-  const { name, description } = dao ?? {name: 'loading', description: 'loading'}
+  const { name, description } = dao ?? {
+    name: 'loading',
+    description: 'loading',
+  }
 
   return (
     <LinkCard href={`/dao/${address}`}>
@@ -38,13 +41,13 @@ const DaoList: NextPage = () => {
   let nonMemberDaos: DaoListType[] = []
 
   // useEffect(() => {
-    for (const dao of daos) {
-      if (dao?.member === true) {
-        memberDaos.push(dao)
-      } else {
-        nonMemberDaos.push(dao)
-      }
+  for (const dao of daos) {
+    if (dao?.member === true) {
+      memberDaos.push(dao)
+    } else {
+      nonMemberDaos.push(dao)
     }
+  }
   // })
 
   return (

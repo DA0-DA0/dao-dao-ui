@@ -143,43 +143,43 @@ const DaoHome: NextPage = () => {
   const member = useRecoilValue(isMemberSelector(contractAddress))
 
   if (!daoInfo) {
-    return  <p>DAO not found</p>
+    return <p>DAO not found</p>
   }
 
   return (
-        <div>
-          <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
-          <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
-          {member ? (
-            <p className="text-success">
-              <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
-              <i> You are a member</i>
-            </p>
-          ) : null}
-          <div className="tabs mt-3 -mb-3">
-            <button
-              className={
-                'tab tab-lg tab-bordered' +
-                (tab === TabState.Actions ? ' tab-active' : '')
-              }
-              onClick={() => setTab(TabState.Actions)}
-            >
-              Actions
-            </button>
-            <button
-              className={
-                'tab tab-lg tab-bordered' +
-                (tab === TabState.Info ? ' tab-active' : '')
-              }
-              onClick={() => setTab(TabState.Info)}
-            >
-              Info
-            </button>
-          </div>
-          <div className="card p-2 max-w-prose">
-            {selectInfo(tab, contractAddress, daoInfo, tokenInfo)}
-          </div>
-        </div>      
+    <div>
+      <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
+      <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
+      {member ? (
+        <p className="text-success">
+          <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
+          <i> You are a member</i>
+        </p>
+      ) : null}
+      <div className="tabs mt-3 -mb-3">
+        <button
+          className={
+            'tab tab-lg tab-bordered' +
+            (tab === TabState.Actions ? ' tab-active' : '')
+          }
+          onClick={() => setTab(TabState.Actions)}
+        >
+          Actions
+        </button>
+        <button
+          className={
+            'tab tab-lg tab-bordered' +
+            (tab === TabState.Info ? ' tab-active' : '')
+          }
+          onClick={() => setTab(TabState.Info)}
+        >
+          Info
+        </button>
+      </div>
+      <div className="card p-2 max-w-prose">
+        {selectInfo(tab, contractAddress, daoInfo, tokenInfo)}
+      </div>
+    </div>
   )
 }
 
