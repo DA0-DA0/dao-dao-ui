@@ -52,6 +52,7 @@ const DaoProposals: NextPage = () => {
             setProposalRequestId(proposalRequestId + 1)
           }
         }}
+        member={member}
       />
       <div></div>
     </div>
