@@ -76,13 +76,6 @@ export default function MintEditor({
     setAmount(amount)
   }
 
-  let inputBaseClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl'
-  let inputErrorClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl input-error'
-
-  let addressClass = validAddress ? inputBaseClass : inputErrorClass
-
   return (
     <div>
       <div className="form-control">
@@ -105,7 +98,7 @@ export default function MintEditor({
         <input
           type="text"
           id="recipientAddress"
-          className={addressClass}
+          className={validAddress ? 'dao-input' : 'dao-input-error'}
           name="recipientAddress"
           onChange={(e) => setAddress(e.target.value)}
           onBlur={handleRecipientAddress}
