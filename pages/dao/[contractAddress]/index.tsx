@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
+import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { CheckIcon } from '@heroicons/react/outline'
 import { ChevronRightIcon } from '@heroicons/react/solid'
-import WalletLoader from 'components/WalletLoader'
-import { useDaoConfig } from 'hooks/dao'
+import ClipboardText from 'components/ClipboardText'
+import LinkCard from 'components/LinkCard'
+import { useTokenConfig } from 'hooks/govToken'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
-import LinkCard from 'components/LinkCard'
-import ClipboardText from 'components/ClipboardText'
-import { useTokenConfig } from 'hooks/govToken'
+import React, { useState } from 'react'
+import { useRecoilValue } from 'recoil'
+import { daoSelector, isMemberSelector } from 'selectors/daos'
 import { convertMicroDenomToDenom } from 'util/conversion'
-import { useIsMember } from 'hooks/membership'
-import { CheckIcon } from '@heroicons/react/outline'
 
 enum TabState {
   Actions,
@@ -139,50 +138,48 @@ const DaoHome: NextPage = () => {
 
   const [tab, setTab] = useState<TabState>(TabState.Actions)
 
-  let { daoInfo, loading } = useDaoConfig(contractAddress)
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
   let { tokenInfo } = useTokenConfig(daoInfo ? daoInfo.gov_token : undefined)
-  const { member } = useIsMember(contractAddress)
+  const member = useRecoilValue(isMemberSelector(contractAddress))
+
+  if (!daoInfo) {
+    return <p>DAO not found</p>
+  }
 
   return (
-    <WalletLoader loading={loading}>
-      {daoInfo ? (
-        <>
-          <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
-          <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
-          {member ? (
-            <p className="text-success">
-              <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
-              <i> You are a member</i>
-            </p>
-          ) : null}
-          <div className="tabs mt-3 -mb-3">
-            <button
-              className={
-                'tab tab-lg tab-bordered' +
-                (tab === TabState.Actions ? ' tab-active' : '')
-              }
-              onClick={() => setTab(TabState.Actions)}
-            >
-              Actions
-            </button>
-            <button
-              className={
-                'tab tab-lg tab-bordered' +
-                (tab === TabState.Info ? ' tab-active' : '')
-              }
-              onClick={() => setTab(TabState.Info)}
-            >
-              Info
-            </button>
-          </div>
-          <div className="card p-2 max-w-prose">
-            {selectInfo(tab, contractAddress, daoInfo, tokenInfo)}
-          </div>
-        </>
-      ) : (
-        <p>DAO not found</p>
-      )}
-    </WalletLoader>
+    <div>
+      <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
+      <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
+      {member ? (
+        <p className="text-success">
+          <CheckIcon className="mt-1 h-4 w-4 mb-1 mr-1 inline" />
+          <i> You are a member</i>
+        </p>
+      ) : null}
+      <div className="tabs mt-3 -mb-3">
+        <button
+          className={
+            'tab tab-lg tab-bordered' +
+            (tab === TabState.Actions ? ' tab-active' : '')
+          }
+          onClick={() => setTab(TabState.Actions)}
+        >
+          Actions
+        </button>
+        <button
+          className={
+            'tab tab-lg tab-bordered' +
+            (tab === TabState.Info ? ' tab-active' : '')
+          }
+          onClick={() => setTab(TabState.Info)}
+        >
+          Info
+        </button>
+      </div>
+      <div className="card p-2 max-w-prose">
+        {selectInfo(tab, contractAddress, daoInfo, tokenInfo)}
+      </div>
+    </div>
   )
 }
 

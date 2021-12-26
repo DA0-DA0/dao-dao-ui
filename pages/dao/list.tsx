@@ -1,20 +1,22 @@
-import React, { FunctionComponent } from 'react'
+import { CheckIcon } from '@heroicons/react/outline'
 import { ChevronRightIcon } from '@heroicons/react/solid'
+import LinkCard from 'components/LinkCard'
+import { DaoListType } from 'hooks/dao'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { DAO_CODE_ID } from 'util/constants'
-import { useDaosList, DaoListType } from 'hooks/dao'
-import LinkCard from 'components/LinkCard'
-import { CheckIcon } from '@heroicons/react/outline'
+import React, { FunctionComponent, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
-import { contractsByCodeId } from 'selectors/contracts'
-import { daoInfo } from 'selectors/daos'
+import { daoSelector, daosSelector } from 'selectors/daos'
 
 const DaoListComponent: FunctionComponent<DaoListType> = ({
   address,
   member,
+  dao,
 }) => {
-  const { name, description } = useRecoilValue(daoInfo(address))
+  const { name, description } = dao ?? {
+    name: 'loading',
+    description: 'loading',
+  }
 
   return (
     <LinkCard href={`/dao/${address}`}>
@@ -34,12 +36,11 @@ const DaoListComponent: FunctionComponent<DaoListType> = ({
 }
 
 const DaoList: NextPage = () => {
-  const { daos } = useDaosList(DAO_CODE_ID)
-  // const daos = useRecoilValue(contractsByCodeId(DAO_CODE_ID))
+  const daos = useRecoilValue(daosSelector)
+  let memberDaos: DaoListType[] = []
+  let nonMemberDaos: DaoListType[] = []
 
-  let memberDaos = []
-  let nonMemberDaos = []
-
+  // useEffect(() => {
   for (const dao of daos) {
     if (dao?.member === true) {
       memberDaos.push(dao)
@@ -47,6 +48,7 @@ const DaoList: NextPage = () => {
       nonMemberDaos.push(dao)
     }
   }
+  // })
 
   return (
     <div>
@@ -55,10 +57,11 @@ const DaoList: NextPage = () => {
         Personal DAOs
       </h2>
       {memberDaos.length > 0 ? (
-        memberDaos.map((dao, key) => (
+        memberDaos.map((memberDao, key) => (
           <DaoListComponent
-            address={dao?.address}
-            member={dao?.member}
+            address={memberDao?.address}
+            member={memberDao?.member}
+            dao={memberDao.dao}
             key={key}
           />
         ))
@@ -82,6 +85,7 @@ const DaoList: NextPage = () => {
             <DaoListComponent
               address={dao?.address}
               member={dao?.member}
+              dao={dao.dao}
               key={key}
             />
           ))}

@@ -2,19 +2,21 @@ import { ReactNode, useState, useEffect } from 'react'
 import Head from 'next/head'
 import SidebarLayout from 'components/Sidebar'
 import LoadingScreen from 'components/LoadingScreen'
-import { useRecoilRefresher_UNSTABLE } from 'recoil'
-import * as cosm from 'atoms/cosm'
+import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import WalletLoader from 'components/WalletLoader'
 import { Keplr } from '@keplr-wallet/types'
+import { kelprOfflineSigner as kelprOfflineSignerSelector } from 'selectors/cosm'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 export default function Layout({ children }: { children: ReactNode }) {
+  // TODO: more recoil here
   const [loaded, setLoaded] = useState(false)
   const [keplrInstance, setKeplrInstance] = useState<Keplr | undefined>()
   const [error, setError] = useState(false)
-  const reset = useRecoilRefresher_UNSTABLE(cosm.kelprOfflineSigner)
+  const kelprOfflineSigner = useRecoilValue(kelprOfflineSignerSelector)
+  const reset = useRecoilRefresher_UNSTABLE(kelprOfflineSigner)
 
   useEffect(() => {
     const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
