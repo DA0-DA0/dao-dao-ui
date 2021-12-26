@@ -1,5 +1,4 @@
 import { ReactNode, useState, useEffect } from 'react'
-import * as cosm from 'atoms/cosm'
 import Nav from 'components/Nav'
 import Footer from 'components/Footer'
 import LoadingScreen from 'components/LoadingScreen'
@@ -8,6 +7,7 @@ import Head from 'next/head'
 import { useRecoilRefresher_UNSTABLE } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import { Keplr } from '@keplr-wallet/types'
+import {kelprOfflineSigner} from 'selectors/cosm'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(false)
   const [keplrInstance, setKeplrInstance] = useState<Keplr | undefined>()
   const [error, setError] = useState(false)
-  const reset = useRecoilRefresher_UNSTABLE(cosm.kelprOfflineSigner)
+  const reset = useRecoilRefresher_UNSTABLE(kelprOfflineSigner)
 
   useEffect(() => {
     const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID

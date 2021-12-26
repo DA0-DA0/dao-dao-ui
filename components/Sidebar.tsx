@@ -1,13 +1,15 @@
 /* This example requires Tailwind CSS v2.0+ */
-import React, { Fragment, FunctionComponent, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { HomeIcon, MenuIcon, UsersIcon, XIcon } from '@heroicons/react/outline'
-import Logo from 'components/Logo'
-import Link from 'next/link'
-import ThemeToggle from 'components/ThemeToggle'
-import NavContractLabel from 'components/NavContractLabel'
-import TwitterLogo from 'components/TwitterLogo'
 import GitHubLogo from 'components/GitHubLogo'
+import Logo from 'components/Logo'
+import TwitterLogo from 'components/TwitterLogo'
+import Link from 'next/link'
+import React, { Fragment, useState } from 'react'
+import {
+  useRecoilRefresher_UNSTABLE, useRecoilValue, useResetRecoilState
+} from 'recoil'
+import { kelprOfflineSigner as kelprOfflineSignerSelector, walletAddressSelector } from 'selectors/cosm'
 
 const PUBLIC_SITE_ICON_URL = process.env.NEXT_PUBLIC_SITE_ICON_URL || ''
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
@@ -16,12 +18,6 @@ const POWERED_BY_URL = 'https://junonetwork.io'
 const TWITTER_URL = 'https://twitter.com/da0_da0'
 const GITHUB_URL = 'https://github.com/DA0-DA0'
 
-import {
-  useRecoilState,
-  useRecoilRefresher_UNSTABLE,
-  useResetRecoilState,
-} from 'recoil'
-import * as cosm from 'atoms/cosm'
 
 const navigation = [
   { name: 'DAOs', href: '/dao', icon: HomeIcon, current: true },
@@ -34,19 +30,16 @@ function classNames(...classes: any) {
 }
 
 export const Sidebar = () => {
-  const wallet = cosm.walletAddress
-  const [walletAddress, setWalletAddress] = useRecoilState(wallet)
+  const walletAddress = useRecoilValue(walletAddressSelector)
   const resetOfflineSigner = useRecoilRefresher_UNSTABLE(
-    cosm.kelprOfflineSigner
+    kelprOfflineSignerSelector
   )
-  const resetWallet = useResetRecoilState(cosm.walletAddress)
+  const resetWallet = useResetRecoilState(walletAddress)
 
   const handleConnect = () => {
     if (walletAddress.length === 0) {
       resetOfflineSigner()
       resetWallet()
-    } else {
-      setWalletAddress('')
     }
   }
 

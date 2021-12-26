@@ -11,6 +11,8 @@ import { useTokenConfig } from 'hooks/govToken'
 import { convertMicroDenomToDenom } from 'util/conversion'
 import { useIsMember } from 'hooks/membership'
 import { CheckIcon } from '@heroicons/react/outline'
+import { daoSelector } from 'selectors/daos'
+import { useRecoilValue } from 'recoil'
 
 enum TabState {
   Actions,
@@ -139,14 +141,17 @@ const DaoHome: NextPage = () => {
 
   const [tab, setTab] = useState<TabState>(TabState.Actions)
 
-  let { daoInfo, loading } = useDaoConfig(contractAddress)
+  // let { daoInfo, loading } = useDaoConfig(contractAddress)
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
   let { tokenInfo } = useTokenConfig(daoInfo ? daoInfo.gov_token : undefined)
   const { member } = useIsMember(contractAddress)
 
+  if (!daoInfo) {
+    return  <p>DAO not found</p>
+  }
+
   return (
-    <WalletLoader loading={loading}>
-      {daoInfo ? (
-        <>
+        <div>
           <h1 className="text-6xl font-bold">{daoInfo.config.name}</h1>
           <h4 className="text-xl mt-3">{daoInfo.config.description}</h4>
           {member ? (
@@ -178,11 +183,7 @@ const DaoHome: NextPage = () => {
           <div className="card p-2 max-w-prose">
             {selectInfo(tab, contractAddress, daoInfo, tokenInfo)}
           </div>
-        </>
-      ) : (
-        <p>DAO not found</p>
-      )}
-    </WalletLoader>
+        </div>      
   )
 }
 

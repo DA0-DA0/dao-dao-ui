@@ -30,6 +30,7 @@ export function useDaoConfig(contractAddress: string) {
 export interface DaoListType {
   address: string
   member: boolean
+  dao: any
 }
 
 export function useDaosList(codeId: number) {

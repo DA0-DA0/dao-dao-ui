@@ -1,20 +1,28 @@
-import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useProposals } from 'hooks/proposals'
 import ProposalList from 'components/ProposalList'
-import { useIsMember } from 'hooks/membership'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { daoSelector, isMemberSelector } from 'selectors/daos'
+import { useProposals } from 'hooks/proposals'
+import { onChainProposalsSelector } from 'selectors/proposals'
+import { useState } from 'react'
+import { proposalsRequestIdAtom, proposalsRequestStartBeforeAtom } from 'atoms/proposals'
 
 const DaoProposals: NextPage = () => {
   const router = useRouter()
-  let contractAddress = router.query.contractAddress as string
-  const { proposals, hideLoadMore, loading, setStartBefore } =
-    useProposals(contractAddress)
+  const contractAddress = router.query.contractAddress as string
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const [startBefore, setStartBefore] = useRecoilState(proposalsRequestStartBeforeAtom)
+  const hideLoadMore = false
+  const proposals = useRecoilValue(onChainProposalsSelector({contractAddress, startBefore}))
+  const [proposalRequestId, setProposalRequestId] = useRecoilState(proposalsRequestIdAtom)
+  // const { proposals, hideLoadMore, loading, setStartBefore } =
+  //   useProposals(contractAddress)
 
-  const { member } = useIsMember(contractAddress)
+  const member = useRecoilValue(isMemberSelector(contractAddress))
 
   return (
-    <WalletLoader loading={!proposals || (proposals.length === 0 && loading)}>
+    <div>
       <div className="flex flex-col w-96 lg:w-6/12 max-w-full px-2 py-4">
         <div className="flex flex-row justify-between items-center mb-4">
           <h1 className="text-lg font-bold sm:text-3xl">Proposals</h1>
@@ -38,12 +46,12 @@ const DaoProposals: NextPage = () => {
           const proposal = proposals && proposals[proposals.length - 1]
           if (proposal) {
             setStartBefore(proposal.id)
+            setProposalRequestId(proposalRequestId + 1)
           }
         }}
-        member={member}
       />
       <div></div>
-    </WalletLoader>
+    </div>
   )
 }
 
