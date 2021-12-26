@@ -1,18 +1,15 @@
-import React, { useState } from 'react'
+import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { CheckIcon } from '@heroicons/react/outline'
 import { ChevronRightIcon } from '@heroicons/react/solid'
-import WalletLoader from 'components/WalletLoader'
-import { useDaoConfig } from 'hooks/dao'
+import ClipboardText from 'components/ClipboardText'
+import LinkCard from 'components/LinkCard'
+import { useTokenConfig } from 'hooks/govToken'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
-import LinkCard from 'components/LinkCard'
-import ClipboardText from 'components/ClipboardText'
-import { useTokenConfig } from 'hooks/govToken'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import { useIsMember } from 'hooks/membership'
-import { CheckIcon } from '@heroicons/react/outline'
-import { daoSelector } from 'selectors/daos'
+import React, { useState } from 'react'
 import { useRecoilValue } from 'recoil'
+import { daoSelector, isMemberSelector } from 'selectors/daos'
+import { convertMicroDenomToDenom } from 'util/conversion'
 
 enum TabState {
   Actions,
@@ -141,10 +138,9 @@ const DaoHome: NextPage = () => {
 
   const [tab, setTab] = useState<TabState>(TabState.Actions)
 
-  // let { daoInfo, loading } = useDaoConfig(contractAddress)
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   let { tokenInfo } = useTokenConfig(daoInfo ? daoInfo.gov_token : undefined)
-  const { member } = useIsMember(contractAddress)
+  const member = useRecoilValue(isMemberSelector(contractAddress))
 
   if (!daoInfo) {
     return  <p>DAO not found</p>
