@@ -10,6 +10,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import { DAO_CODE_ID } from 'util/constants'
+import { convertDenomToMicroDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeDaoInstantiateMessage } from 'util/messagehelpers'
@@ -99,7 +100,8 @@ const CreateDao: NextPage = () => {
     }
     const owners = [...Array(count)].map((_item, index) => ({
       address: getIndexedValue('address', index),
-      amount: getIndexedValue('weight', index),
+      // Convert human readable amount to micro denom amount
+      amount: convertDenomToMicroDenom(getIndexedValue('weight', index)),
     }))
     const threshold = getIntValue('threshold')
     const maxVotingPeriod = {
@@ -198,8 +200,7 @@ const CreateDao: NextPage = () => {
             readOnly={readOnly}
             type="number"
             defaultValue="1"
-            min={1}
-            max={999}
+            min={0.000001}
             showErrorMessage={false}
             register={register}
             fieldErrorMessage={fieldErrorMessage}

@@ -57,8 +57,10 @@ export function messageForProposal(
     }
     if (mapEntry.messageType === ProposalMessageType.Mint) {
       const mintMessage = mapEntry.message as any
-      if (mintMessage.amount) {
-        mintMessage.amount = convertDenomToMicroDenom(mintMessage.amount)
+      if (mintMessage?.mint?.amount) {
+        mintMessage.mint.amount = convertDenomToMicroDenom(
+          mintMessage.mint.amount
+        )
       }
       return makeExecutableMintMessage(mintMessage, govTokenAddress as string)
     }
