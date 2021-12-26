@@ -25,7 +25,7 @@ const DaoProposals: NextPage = () => {
   const member = useRecoilValue(isMemberSelector(contractAddress))
 
   return (
-    <div>
+    <>
       <div className="flex flex-col w-96 lg:w-6/12 max-w-full px-2 py-4">
         <div className="flex flex-row justify-between items-center mb-4">
           <h1 className="text-lg font-bold sm:text-3xl">Proposals</h1>
@@ -54,8 +54,7 @@ const DaoProposals: NextPage = () => {
         }}
         member={member}
       />
-      <div></div>
-    </div>
+    </>
   )
 }
 

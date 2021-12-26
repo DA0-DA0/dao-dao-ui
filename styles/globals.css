@@ -28,3 +28,9 @@ html,
 body {
   font-family: 'Inter', sans-serif;
 }
+
+ol,
+ul,
+menu {
+  list-style: inherit;
+}
