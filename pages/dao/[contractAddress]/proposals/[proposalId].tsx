@@ -3,31 +3,48 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import LineAlert from 'components/LineAlert'
-import { useProposal } from 'hooks/proposals'
 import ProposalDetails from 'components/ProposalDetails'
 import Link from 'next/link'
+import { useRecoilValue, useRecoilTransaction_UNSTABLE, useRecoilValueLoadable } from 'recoil'
+import { ProposalSelectorParams, proposalSelector, votesSelector, tallySelector, voteSelector, voteTransactionFn } from 'selectors/proposals'
+import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
 
 const Proposal: NextPage = () => {
   let router = useRouter()
-  let { contractAddress } = router.query
+  const proposalParams: ProposalSelectorParams = router.query as unknown as ProposalSelectorParams;
+  const proposal = useRecoilValue(proposalSelector(proposalParams))
+  const contractAddress = router.query.contractAddress
+  const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const proposalId = router.query.proposalId as string
+  const votes = useRecoilValue(votesSelector(proposalParams))
+  const tally = useRecoilValue(tallySelector(proposalParams))
+  const setVote = useRecoilTransaction_UNSTABLE((transactionInterface) => voteTransactionFn(transactionInterface, {...proposalParams, walletAddress}))
+//    voteSelector({...proposalParams, walletAddress}))
+  const signingClient = useRecoilValueLoadable(cosmWasmSigningClient)
+  console.dir(signingClient)
 
-  const {
-    walletAddress,
-    loading,
-    error,
-    proposal,
-    votes,
-    transactionHash,
-    vote,
-    execute,
-    close,
-    tally,
-  } = useProposal(contractAddress as string, proposalId)
+  // TODO(gavin.doughtie): fix these
+  const vote = signingClient?.state === 'hasValue' ? async (voteValue: 'yes' | 'no') => {
+    setVote(signingClient.contents, voteValue)
+  } : () => {}
+
+  const error = undefined
+  const execute = () => {}
+  const transactionHash = ''
+  // const {
+  //   walletAddress,
+  //   loading,
+  //   error,
+  //   proposal,
+  //   votes,
+  //   transactionHash,
+  //   vote,
+  //   execute,
+  //   close,
+  //   tally,
+  // } = useProposal(contractAddress as string, proposalId)
 
   return (
-    <WalletLoader loading={loading}>
       <div className="flex flex-col w-full">
         <div className="grid bg-base-100 place-items-center">
           {!proposal ? (
@@ -69,7 +86,6 @@ const Proposal: NextPage = () => {
           )}
         </div>
       </div>
-    </WalletLoader>
   )
 }
 

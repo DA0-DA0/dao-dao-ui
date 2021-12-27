@@ -1,8 +1,6 @@
-import type { NextPage } from 'next'
 import { ChevronRightIcon } from '@heroicons/react/solid'
-import WalletLoader from 'components/WalletLoader'
-import Link from 'next/link'
 import LinkCard from 'components/LinkCard'
+import type { NextPage } from 'next'
 
 const Home: NextPage = () => {
   return (

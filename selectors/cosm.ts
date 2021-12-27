@@ -52,6 +52,9 @@ export const cosmWasmSigningClient = selector({
       offlineSigner
     )
   },
+  // We have to do this because of how SigningCosmWasmClient
+  // will update its internal chainId
+  dangerouslyAllowMutability: true
 })
 
 export const walletAddressSelector = selector({

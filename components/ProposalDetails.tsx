@@ -23,7 +23,7 @@ function ProposalDetails({
   proposal: ProposalResponse
   walletAddress: string
   votes: VoteInfo[]
-  vote: (arg0: string) => Promise<void>
+  vote: (arg0: 'yes' | 'no') => Promise<void>
   execute: () => void
   close: () => void
   tally: ProposalTallyResponse | undefined
