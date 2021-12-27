@@ -1,6 +1,9 @@
+import React, { useEffect, useReducer, useState } from 'react'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import HelpTooltip from 'components/HelpTooltip'
+import { useSigningClient } from 'contexts/cosmwasm'
 import { useThemeContext } from 'contexts/theme'
+import { useCw20IncreaseAllowance } from 'hooks/cw20'
 import { useDaoConfig } from 'hooks/dao'
 import { ProposalMessageType } from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
@@ -14,7 +17,6 @@ import {
   messageForProposal,
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
-import { useReducer, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Editor from 'rich-markdown-editor'
 import { isValidAddress } from 'util/isValidAddress'
@@ -59,10 +61,14 @@ export default function ProposalEditor({
     ...(initialProposal || EmptyProposal),
   })
 
+  const { execute: cw20ExecuteIncreaseAllowance } = useCw20IncreaseAllowance()
+
   const [description, setDescription] = useState('')
   const [editProposalJson, setEditProposalJson] = useState(false)
   const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
     useState('')
+  const [deposit, setDeposit] = useState('0')
+  const [tokenAddress, setTokenAddress] = useState('')
 
   const themeContext = useThemeContext()
   const {
@@ -95,9 +101,6 @@ export default function ProposalEditor({
     },
   ]
 
-  // Try to fetch DAO info...
-  const { daoInfo } = useDaoConfig(contractAddress)
-
   // If DAO
   if (!multisig) {
     // Add DAO specific actions
@@ -110,7 +113,12 @@ export default function ProposalEditor({
     })
   }
 
-  const complete = false
+  // Try to fetch DAO info...
+  const { daoInfo } = useDaoConfig(contractAddress)
+  useEffect(() => {
+    setDeposit(daoInfo?.config.proposal_deposit as string)
+    setTokenAddress(daoInfo?.gov_token as string)
+  }, [daoInfo])
 
   function isProposalValid(proposalToCheck: Proposal): boolean {
     if (!proposalToCheck) {
@@ -122,7 +130,11 @@ export default function ProposalEditor({
     return true
   }
 
-  function onSubmit(_formData: any) {
+  async function onSubmit(_formData: any) {
+    // If the contract needs a deposit, increase allowance
+    if (deposit && deposit !== '0') {
+      await cw20ExecuteIncreaseAllowance(tokenAddress, deposit, contractAddress)
+    }
     // We don't actually care about what the form processor returned in this
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
@@ -312,10 +324,6 @@ export default function ProposalEditor({
     setDescription(val)
   }
 
-  function handleDescriptionBlur() {
-    setProposalDescription(description)
-  }
-
   // TODO preview mode for the whole proposal
   if (editProposalJson) {
     return (
@@ -347,7 +355,6 @@ export default function ProposalEditor({
                 label="Name"
                 toolTip="Name the Proposal"
                 errorMessage="Proposal name required"
-                readOnly={complete}
                 register={register}
                 fieldErrorMessage={fieldErrorMessage}
                 onChange={(e) => setProposalTitle(e?.target?.value)}
@@ -362,7 +369,6 @@ export default function ProposalEditor({
                 className={editorClassName}
                 onChange={handleDescriptionChange}
                 defaultValue={proposal.description}
-                readOnly={complete}
                 dark={themeContext.theme === 'junoDark'}
                 id="description"
               />
@@ -374,21 +380,21 @@ export default function ProposalEditor({
               <br />
               <MessageSelector actions={messageActions}></MessageSelector>
               <br />
-              {!complete && (
-                <button
-                  className={`btn btn-primary text-lg mt-8 ml-auto ${
-                    loading ? 'loading' : ''
-                  }`}
-                  style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                  type="submit"
-                  disabled={loading}
-                  onClick={(e) => {
-                    setProposalDescription(description)
-                  }}
-                >
-                  Create Proposal
-                </button>
-              )}
+              <button
+                className={`btn btn-primary text-lg mt-8 ml-auto ${
+                  loading ? 'loading' : ''
+                }`}
+                style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                type="submit"
+                disabled={loading}
+                onClick={(e) => {
+                  setProposalDescription(description)
+                }}
+              >
+                {deposit && deposit !== '0'
+                  ? 'Deposit & Create Propsal'
+                  : 'Create Proposal'}
+              </button>
               {error && (
                 <div className="mt-8">
                   <LineAlert variant="error" msg={error} />
