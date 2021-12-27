@@ -54,7 +54,7 @@ export const cosmWasmSigningClient = selector({
   },
   // We have to do this because of how SigningCosmWasmClient
   // will update its internal chainId
-  dangerouslyAllowMutability: true
+  dangerouslyAllowMutability: true,
 })
 
 export const walletAddressSelector = selector({

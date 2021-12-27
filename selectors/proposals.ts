@@ -107,6 +107,7 @@ const executeProposal =
 
 export const voteTransactionFn = (
   { get }: TransactionInterface_UNSTABLE,
+  setTransactionHash: (hash: string) => void,
   { contractAddress, proposalId, walletAddress }: ProposalExecuteParams
 ) => {
   // const signingClient = get(cosmWasmSigningClient)
@@ -114,9 +115,10 @@ export const voteTransactionFn = (
     const result = await signingClient.execute(
       walletAddress,
       contractAddress,
-      {vote: { proposal_id: parsedProposalId(proposalId), vote }},
+      { vote: { proposal_id: parsedProposalId(proposalId), vote } },
       defaultExecuteFee
     )
+    setTransactionHash(result.transactionHash)
     return result
   }
 }
