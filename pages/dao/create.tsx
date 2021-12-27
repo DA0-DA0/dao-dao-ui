@@ -111,6 +111,7 @@ const CreateDao: NextPage = () => {
       typeof data.refund === 'string'
         ? getIntValue('refund') === 1
         : !!data.refund
+
     const msg: InstantiateMsg = makeDaoInstantiateMessage(
       data.label,
       data.description,
@@ -119,7 +120,7 @@ const CreateDao: NextPage = () => {
       owners,
       threshold / THRESHOLD_GRANULARITY,
       maxVotingPeriod,
-      getIntValue('proposalDepositAmount') || 0,
+      getIntValue('deposit') || 0,
       refund
     )
 
@@ -200,7 +201,6 @@ const CreateDao: NextPage = () => {
             readOnly={readOnly}
             type="number"
             defaultValue="1"
-            min={0.000001}
             showErrorMessage={false}
             register={register}
             fieldErrorMessage={fieldErrorMessage}
