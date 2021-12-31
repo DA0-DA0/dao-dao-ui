@@ -42,5 +42,25 @@
     "success": "#65f09a",
     "warning": "#f0df95",
     "error": "#f06c65"
+  },
+  "daoDaoLight": {
+    "primary": "#06090B",
+    "body": "rgba(25, 29, 32, 0.95)",
+    "secondary": "rgba(25, 29, 32, 0.8)",
+    "tertiary": "rgba(25, 29, 32, 0.6)",
+    "disabled": "rgba(25, 29, 32, 0.4)",
+    "brand": "rgba(126, 93, 255, 0.9)",
+    "error": "rgba(237, 82, 118, 0.95)",
+    "valid": "rgba(83, 208, 201, 0.9)"
+  },
+  "daoDaoDark": {
+    "primary": "#F3F6F8",
+    "body": "rgba(255, 255, 255, 0.95)",
+    "secondary": "rgba(255, 255, 255, 0.8)",
+    "tertiary": "rgba(255, 255, 255, 0.6)",
+    "disabled": "rgba(255, 255, 255, 0.4)",
+    "brand": "rgba(126, 93, 255, 0.9)",
+    "error": "rgba(237, 82, 118, 0.9)",
+    "valid": "rgba(83, 208, 201, 0.9)"
   }
 }
