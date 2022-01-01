@@ -1,7 +1,7 @@
 {
   "junoLight": {
-    "primary": "#f0827d",
-    "primary-focus": "#e67873",
+    "primary": "#06090B",
+    "primary-focus": "#06090B",
     "primary-content": "#fff",
     "secondary": "#9f9f9f",
     "secondary-focus": "#959595",
@@ -15,15 +15,15 @@
     "base-100": "#fff",
     "base-200": "#f9fafb",
     "base-300": "#d1d5db",
-    "base-content": "#1f2937",
-    "info": "#71f0e9",
-    "success": "#65f09a",
+    "base-content": "#06090B",
+    "info": "#00BAFF",
+    "success": "#53D0C9",
     "warning": "#f0df95",
-    "error": "#f06c65"
+    "error": "#ED5276"
   },
   "junoDark": {
-    "primary": "#f0827d",
-    "primary-focus": "#e67873",
+    "primary": "#FFFFFF",
+    "primary-focus": "#FFFFFF",
     "primary-content": "#181a1b",
     "secondary": "#9f9f9f",
     "secondary-focus": "#959595",
@@ -34,13 +34,13 @@
     "neutral": "#3d4451",
     "neutral-focus": "#2a2e37",
     "neutral-content": "#fff",
-    "base-100": "#181a1b",
+    "base-100": "#06090B",
     "base-200": "#22212c",
     "base-300": "#1d1e25",
     "base-content": "#fff",
-    "info": "#71f0e9",
-    "success": "#65f09a",
+    "info": "#00BAFF",
+    "success": "#53D0C9",
     "warning": "#f0df95",
-    "error": "#f06c65"
+    "error": "#ED5276"
   }
 }
