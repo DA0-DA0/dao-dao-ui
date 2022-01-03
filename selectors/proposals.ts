@@ -8,6 +8,7 @@ import {
 import { cosmWasmClient, cosmWasmSigningClient } from './cosm'
 import { proposalsRequestIdAtom } from 'atoms/proposals'
 import { defaultExecuteFee } from 'util/fee'
+import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
 export type ProposalIdInput = string | number
 
@@ -87,77 +88,23 @@ const queryProposal =
     }
   }
 
-const executeProposal =
-  <T>(key: string) =>
-  (
-    params: any,
-    { contractAddress, proposalId, walletAddress }: ProposalExecuteParams
-  ): ((params: any) => Promise<T>) => {
-    return async ({ get }) => {
-      const signingClient = get(cosmWasmSigningClient)
-      const response = await signingClient.execute(
-        walletAddress,
-        contractAddress,
-        { ...proposalIdParam(proposalId), ...params },
-        defaultExecuteFee
-      )
-      return response
-    }
-  }
-
-export const voteTransactionFn = (
-  { get }: TransactionInterface_UNSTABLE,
-  setTransactionHash: (hash: string) => void,
+  export const vote = (
+  signingClient: SigningCosmWasmClient,
   { contractAddress, proposalId, walletAddress }: ProposalExecuteParams
-) => {
-  // const signingClient = get(cosmWasmSigningClient)
-  return async (signingClient: any, vote: 'yes' | 'no') => {
-    const result = await signingClient.execute(
+): ((vote: 'yes' | 'no') => Promise<ExecuteResult>) => {
+  return (vote: string) =>
+    signingClient.execute(
       walletAddress,
       contractAddress,
       { vote: { proposal_id: parsedProposalId(proposalId), vote } },
       defaultExecuteFee
     )
-    setTransactionHash(result.transactionHash)
-    return result
-  }
 }
 
 export const voteSelector = selectorFamily<any, any>({
   key: 'vote',
-  get: queryProposal('query_vote', 'vote'),
-  // set:
-  //   ({ contractAddress, proposalId, walletAddress }: ProposalExecuteParams) =>
-  //   async ({ set, get }, newValue: 'yes' | 'no' | DefaultValue) => {
-  //     const signingClient = get(cosmWasmSigningClient)
-  //     return await signingClient.execute(
-  //       walletAddress,
-  //       contractAddress,
-  //       { ...proposalIdParam(proposalId), vote: { vote: newValue } },
-  //       defaultExecuteFee
-  //     )
-  //   },
+  get: queryProposal('query_vote', 'vote')
 })
-// const vote = async (vote: string) => {
-//   setError('')
-//   signingClient
-//     ?.execute(
-//       walletAddress,
-//       contractAddress,
-//       {
-//         vote: { proposal_id: parseInt(proposalId), vote },
-//       },
-//       defaultExecuteFee
-//     )
-//     .then((response) => {
-//       setTimestamp(new Date())
-//       setTransactionHash(response.transactionHash)
-//     })
-//     .catch((err) => {
-//       setLoading(false)
-//       setError(err.message)
-//     })
-//}
 
 export const proposalSelector = selectorFamily<
   ProposalResponse,

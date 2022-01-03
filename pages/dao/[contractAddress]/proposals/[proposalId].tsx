@@ -9,43 +9,48 @@ import {
   useRecoilValue,
   useRecoilTransaction_UNSTABLE,
   useRecoilValueLoadable,
+  useRecoilState,
+  useRecoilRefresher_UNSTABLE,
 } from 'recoil'
 import {
   ProposalSelectorParams,
   proposalSelector,
   votesSelector,
   tallySelector,
-  voteSelector,
-  voteTransactionFn,
+  vote as voteFn,
 } from 'selectors/proposals'
 import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
+import { proposalsRequestIdAtom } from 'atoms/proposals'
 
 const Proposal: NextPage = () => {
   let router = useRouter()
   const proposalParams: ProposalSelectorParams =
     router.query as unknown as ProposalSelectorParams
-  const proposal = useRecoilValue(proposalSelector(proposalParams))
   const contractAddress = router.query.contractAddress
+  const proposal = useRecoilValue(proposalSelector(proposalParams))
+  // const proposalRefresh = useRecoilRefresher_UNSTABLE(proposal)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
   const votes = useRecoilValue(votesSelector(proposalParams))
   const tally = useRecoilValue(tallySelector(proposalParams))
-  const setVote = useRecoilTransaction_UNSTABLE((transactionInterface) =>
-    voteTransactionFn(transactionInterface, setTransactionHash, {
+  const signingClient = useRecoilValueLoadable(cosmWasmSigningClient)
+  const [transactionHash, setTransactionHash] = useState('')
+  const [proposalsRequestId, setProposalsRequestId] = useRecoilState(
+    proposalsRequestIdAtom
+  )
+
+  let vote = undefined
+  if (signingClient?.state === 'hasValue') {
+    const setVote = voteFn(signingClient.contents, {
       ...proposalParams,
       walletAddress,
     })
-  )
-  //    voteSelector({...proposalParams, walletAddress}))
-  const signingClient = useRecoilValueLoadable(cosmWasmSigningClient)
-  const [transactionHash, setTransactionHash] = useState('')
-
-  const vote =
-    signingClient?.state === 'hasValue'
-      ? async (voteValue: 'yes' | 'no') => {
-          setVote(signingClient.contents, voteValue)
-        }
-      : () => {}
+    vote = async (vote: 'yes' | 'no') => {
+      const results = await setVote(vote)
+      setTransactionHash(results.transactionHash)
+      setProposalsRequestId(proposalsRequestId + 1)
+    }
+  }
 
   const error = undefined
   const execute = () => {}

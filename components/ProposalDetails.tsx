@@ -23,7 +23,7 @@ function ProposalDetails({
   proposal: ProposalResponse
   walletAddress: string
   votes: VoteInfo[]
-  vote: (arg0: 'yes' | 'no') => Promise<void>
+  vote?: (arg0: 'yes' | 'no') => Promise<void>
   execute: () => void
   close: () => void
   tally: ProposalTallyResponse | undefined
@@ -56,8 +56,8 @@ function ProposalDetails({
       {proposalMessageContent}
 
       <VoteButtons
-        onVoteYes={vote.bind(null, 'yes')}
-        onVoteNo={vote.bind(null, 'no')}
+        onVoteYes={vote?.bind(null, 'yes')}
+        onVoteNo={vote?.bind(null, 'no')}
         votes={votes}
         walletAddress={walletAddress}
         status={proposal.status}

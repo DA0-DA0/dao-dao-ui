@@ -25,12 +25,14 @@ function VoteButtons({
   return (
     <div className="flex justify-between content-center mt-2">
       <button
+        disabled={!onVoteYes}
         className="box-border px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
         onClick={onVoteYes}
       >
         Vote Yes
       </button>
       <button
+        disabled={!onVoteNo}
         className="box-border px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white"
         onClick={onVoteNo}
       >
