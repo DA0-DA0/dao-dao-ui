@@ -9,6 +9,8 @@ import { memoForProposal, Proposal } from 'models/proposal/proposal'
 import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
 import { successNotify } from 'util/toast'
+import { proposalsRequestIdAtom } from 'atoms/proposals'
+import { useRecoilState } from 'recoil'
 
 const ProposalCreate: NextPage = () => {
   const router = useRouter()
@@ -17,6 +19,7 @@ const ProposalCreate: NextPage = () => {
   const { walletAddress, signingClient } = useSigningClient()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [proposalsRequestId, setProposalsRequestId] = useRecoilState(proposalsRequestIdAtom)
 
   const handleProposal = async (
     proposal: Proposal,
@@ -40,6 +43,8 @@ const ProposalCreate: NextPage = () => {
         memo
       )
       setLoading(false)
+      // Force a re-query of the proposals list
+      setProposalsRequestId(proposalsRequestId + 1)
       if (response) {
         const [{ events }] = response.logs
         const [wasm] = events.filter((e) => e.type === 'wasm')

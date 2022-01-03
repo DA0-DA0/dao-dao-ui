@@ -27,8 +27,9 @@ const Proposal: NextPage = () => {
   const proposalParams: ProposalSelectorParams =
     router.query as unknown as ProposalSelectorParams
   const contractAddress = router.query.contractAddress
-  const proposal = useRecoilValue(proposalSelector(proposalParams))
-  // const proposalRefresh = useRecoilRefresher_UNSTABLE(proposal)
+  const proposalValue = proposalSelector(proposalParams)
+  const proposal = useRecoilValue(proposalValue)
+  const proposalRefresh = useRecoilRefresher_UNSTABLE(proposalValue)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
   const votes = useRecoilValue(votesSelector(proposalParams))
@@ -49,6 +50,7 @@ const Proposal: NextPage = () => {
       const results = await setVote(vote)
       setTransactionHash(results.transactionHash)
       setProposalsRequestId(proposalsRequestId + 1)
+      proposalRefresh()
     }
   }
 
