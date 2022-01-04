@@ -29,7 +29,7 @@ export const cosmWasmClient = selector({
 // })
 
 const getWaitKeplr = async () => {
-  await connectKeplr()
+  connectKeplr()
 
   // enable website to access kepler
   await (window as any).keplr.enable(CHAIN_ID)

@@ -156,7 +156,7 @@ const DaoHome: NextPage = () => {
           <i> You are a member</i>
         </p>
       ) : null}
-      <div className="tabs mt-3 -mb-3">
+      <div className="tabs mt-3 -mb-3 justify-center">
         <button
           className={
             'tab tab-lg tab-bordered' +
