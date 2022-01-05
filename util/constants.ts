@@ -8,6 +8,11 @@ export const CW20_CODE_ID = parseInt(
   10
 )
 
+export const STAKE_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_STAKE_CW20_CODE_ID as string,
+  10
+)
+
 export const MULTISIG_CODE_ID = parseInt(
   process.env.NEXT_PUBLIC_MULTISIG_CODE_ID as string,
   10

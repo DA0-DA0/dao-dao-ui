@@ -11,7 +11,7 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import { CW20_CODE_ID } from './constants'
+import { CW20_CODE_ID, STAKE_CODE_ID } from './constants'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -140,7 +140,7 @@ export function makeDaoInstantiateMessage(
     description,
     gov_token: {
       instantiate_new_cw20: {
-        code_id: CW20_CODE_ID,
+        cw20_code_id: CW20_CODE_ID,
         label: tokenName,
         msg: {
           name: tokenName,
@@ -148,6 +148,7 @@ export function makeDaoInstantiateMessage(
           decimals: 6,
           initial_balances: owners,
         },
+        stake_contract_code_id: STAKE_CODE_ID,
       },
     },
     threshold: {
