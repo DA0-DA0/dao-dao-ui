@@ -10,9 +10,11 @@ export const onChainProposalsSelector = selectorFamily<ProposalResponse[], any>(
       ({
         contractAddress,
         startBefore,
+        limit,
       }: {
         contractAddress: string
         startBefore: number
+        limit: number
       }) =>
       async ({ get }) => {
         const requestId = get(proposalsRequestIdAtom)
@@ -21,7 +23,7 @@ export const onChainProposalsSelector = selectorFamily<ProposalResponse[], any>(
         const { proposals } = await client.queryContractSmart(contractAddress, {
           reverse_proposals: {
             ...(startBefore && { start_before: startBefore }),
-            limit: 10,
+            limit: limit,
           },
         })
         return proposals

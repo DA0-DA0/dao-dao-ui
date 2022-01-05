@@ -58,7 +58,10 @@ const Staking: NextPage = () => {
     stake,
     stakedBalance,
     unstake,
-  } = useStaking(daoInfo?.gov_token as string)
+  } = useStaking(
+    daoInfo?.gov_token as string,
+    daoInfo?.staking_contract as string
+  )
 
   const handleStake = async () => {
     await stake(convertDenomToMicroDenom(amount))

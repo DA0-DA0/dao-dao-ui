@@ -86,13 +86,6 @@ export default function ProposalEditor({
       isEnabled: () => true,
     },
     {
-      label: 'Wasm',
-      id: 'wasm',
-      execute: () => addMessage(ProposalMessageType.Wasm),
-      href: '#',
-      isEnabled: () => true,
-    },
-    {
       label: 'Custom',
       id: 'custom',
       execute: () => addMessage(ProposalMessageType.Custom),
@@ -184,9 +177,6 @@ export default function ProposalEditor({
       case ProposalMessageType.Custom:
         modeEditor = <CustomEditor dispatch={dispatch} customMsg={mapEntry} />
         break
-      case ProposalMessageType.Wasm:
-        modeEditor = <CustomEditor dispatch={dispatch} customMsg={mapEntry} />
-        break
     }
 
     return (
@@ -236,18 +226,7 @@ export default function ProposalEditor({
       addMintMessage()
     } else if (messageType === ProposalMessageType.Custom) {
       addCustomMessage()
-    } else if (messageType === ProposalMessageType.Wasm) {
-      addWasmMessage()
     }
-  }
-
-  const addWasmMessage = () => {
-    const action: ProposalAction = {
-      type: 'addMessage',
-      message: { wasm: {} } as CosmosMsgFor_Empty,
-      messageType: ProposalMessageType.Wasm,
-    }
-    dispatch(action)
   }
 
   const addCustomMessage = () => {

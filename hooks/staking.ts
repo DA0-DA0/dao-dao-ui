@@ -3,14 +3,13 @@ import { useSigningClient } from 'contexts/cosmwasm'
 import { defaultExecuteFee } from 'util/fee'
 
 // Returns staking info and methods for a cw20-stakable contract
-export function useStaking(contractAddress: string) {
+export function useStaking(govTokenAddress: string, stakingAddress: string) {
   const { walletAddress, signingClient } = useSigningClient()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const [stakedBalance, setStakedBalance] = useState({ balance: '0' })
   const [claims, setClaims] = useState()
-  const [delegation, setDelegation] = useState()
   const [totalStaked, setTotalStaked] = useState({ total: '0' })
 
   useEffect(() => {
@@ -19,70 +18,41 @@ export function useStaking(contractAddress: string) {
     }
     setLoading(true)
     Promise.all([
-      signingClient?.queryContractSmart(contractAddress, {
+      signingClient?.queryContractSmart(stakingAddress, {
         staked_balance_at_height: {
           address: walletAddress,
         },
       }),
-      signingClient?.queryContractSmart(contractAddress, {
+      signingClient?.queryContractSmart(stakingAddress, {
         claims: {
           address: walletAddress,
         },
       }),
-      signingClient?.queryContractSmart(contractAddress, {
-        delegation: {
-          address: walletAddress,
-        },
-      }),
-      signingClient?.queryContractSmart(contractAddress, {
+      signingClient?.queryContractSmart(stakingAddress, {
         total_staked_at_height: {},
       }),
     ])
       .then((values) => {
-        const [stakedBalance, claims, delegation, totalStaked] = values
+        const [stakedBalance, claims, totalStaked] = values
         setStakedBalance(stakedBalance)
         setClaims(claims)
         setTotalStaked(totalStaked)
-        setDelegation(delegation)
         setLoading(false)
       })
       .catch((e) => {
         setError(e.msg)
         setLoading(false)
       })
-  }, [contractAddress, signingClient, walletAddress])
+  }, [stakingAddress, signingClient, walletAddress])
 
   const claim = async () => {
     setError('')
     await signingClient
       ?.execute(
         walletAddress,
-        contractAddress,
+        govTokenAddress,
         {
           claim: {},
-        },
-        defaultExecuteFee
-      )
-      .then((response) => {
-        console.log(response)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setLoading(false)
-        setError(err.message)
-      })
-  }
-
-  const delegateVotes = async (recipient: string) => {
-    setError('')
-    await signingClient
-      ?.execute(
-        walletAddress,
-        contractAddress,
-        {
-          delegate_votes: {
-            recipient,
-          },
         },
         defaultExecuteFee
       )
@@ -101,10 +71,13 @@ export function useStaking(contractAddress: string) {
     await signingClient
       ?.execute(
         walletAddress,
-        contractAddress,
+        govTokenAddress,
         {
-          stake: {
-            amount,
+          send: {
+            owner: walletAddress,
+            contract: stakingAddress,
+            amount: amount,
+            msg: btoa('{"stake": {}}'),
           },
         },
         defaultExecuteFee
@@ -124,7 +97,7 @@ export function useStaking(contractAddress: string) {
     await signingClient
       ?.execute(
         walletAddress,
-        contractAddress,
+        stakingAddress,
         {
           unstake: {
             amount,
@@ -148,8 +121,6 @@ export function useStaking(contractAddress: string) {
     error,
     claim,
     claims,
-    delegateVotes,
-    delegation,
     stake,
     stakedBalance,
     totalStaked,
