@@ -407,8 +407,9 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${loading ? 'loading' : ''
-                }`}
+              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
+                loading ? 'loading' : ''
+              }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}

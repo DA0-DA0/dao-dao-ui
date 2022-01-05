@@ -12,7 +12,7 @@ export function isValidTicker(ticker: string): boolean {
     return false
   }
   return bytes.every((byte) => {
-    if ((byte != 45) && (byte < 65 || byte > 90) && (byte < 97 || byte > 122)) {
+    if (byte != 45 && (byte < 65 || byte > 90) && (byte < 97 || byte > 122)) {
       return false
     }
     return true
