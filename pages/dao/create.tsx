@@ -15,6 +15,7 @@ import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeDaoInstantiateMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
+import { isValidName, isValidTicker } from 'util/isValidTicker'
 
 const THRESHOLD_GRANULARITY = 1000
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
@@ -260,20 +261,22 @@ const CreateDao: NextPage = () => {
           <InputField
             fieldName="tokenName"
             label="Token Name"
-            toolTip="The full name of your token (My Awesome Token)"
-            errorMessage="Token name required"
+            toolTip="The full name of your token. 3-50 characters."
+            errorMessage="Valid token name required"
             readOnly={complete}
             register={register}
             fieldErrorMessage={fieldErrorMessage}
+            validate={isValidName}
           />
           <InputField
             fieldName="tokenSymbol"
             label="Token Symbol"
-            toolTip="The short symbol name of your token (MAT)"
-            errorMessage="Token symbol required"
+            toolTip="The short symbol name of your token. 3-12 non-numeric characters or dashes."
+            errorMessage="Valid token symbol required"
             readOnly={complete}
             register={register}
             fieldErrorMessage={fieldErrorMessage}
+            validate={isValidTicker}
           />
 
           <h2 className="mt-8 mb-6 text-xl">Token Distribution</h2>
@@ -404,9 +407,8 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
-                loading ? 'loading' : ''
-              }`}
+              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${loading ? 'loading' : ''
+                }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}

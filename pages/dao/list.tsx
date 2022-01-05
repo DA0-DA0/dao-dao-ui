@@ -68,7 +68,7 @@ const DaoList: NextPage = () => {
       ) : (
         <>
           <p className="text-xl my-8">Not part of any DAOs</p>
-          <Link href="/multisig/create" passHref>
+          <Link href="/dao/create" passHref>
             <button className="btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl">
               Create a DAO
             </button>
