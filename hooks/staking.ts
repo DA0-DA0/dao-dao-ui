@@ -77,8 +77,8 @@ export function useStaking(govTokenAddress: string, stakingAddress: string) {
             owner: walletAddress,
             contract: stakingAddress,
             amount: amount,
-            msg: btoa('{"stake": {}}')
-          }
+            msg: btoa('{"stake": {}}'),
+          },
         },
         defaultExecuteFee
       )

@@ -7,7 +7,6 @@ import { ExecuteMsg as DAOExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 export enum ProposalMessageType {
   Collect = 'collect',
   Custom = 'custom',
-  Wasm = 'wasm',
   IBC = 'ibc',
   Mint = 'mint',
   Spend = 'spend',
