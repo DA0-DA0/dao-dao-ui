@@ -13,22 +13,32 @@ import { DAO_CODE_ID } from 'util/constants'
 import { convertDenomToMicroDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeDaoInstantiateMessage } from 'util/messagehelpers'
+import { makeDaoInstantiateWithNewTokenMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
 
 const THRESHOLD_GRANULARITY = 1000
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
+enum TokenMode {
+  UseExisting,
+  Create,
+}
+
 interface DaoCreateData {
   deposit: string
   description: string
   duration: string
+
   label: string
-  refund: string | boolean
   threshold: string
   tokenName: string
   tokenSymbol: string
+  daoInitialBalance: string
+
+  existingTokenAddress: string
+
+  refund: string | boolean
   proposalDepositAmount: string
   [key: string]: string | boolean
 }
@@ -43,6 +53,8 @@ const CreateDao: NextPage = () => {
   // Default to 75% of the vote
   const [threshold, setThreshold] = useState(THRESHOLD_GRANULARITY * 0.75)
   const [seconds, setSeconds] = useState(DEFAULT_MAX_VOTING_PERIOD_SECONDS)
+
+  const [tokenMode, setTokenMode] = useState(TokenMode.Create)
 
   const {
     register,
@@ -113,17 +125,20 @@ const CreateDao: NextPage = () => {
         ? getIntValue('refund') === 1
         : !!data.refund
 
-    const msg: InstantiateMsg = makeDaoInstantiateMessage(
+    const msg: InstantiateMsg = makeDaoInstantiateWithNewTokenMessage(
       data.label,
       data.description,
       data.tokenName,
       data.tokenSymbol,
       owners,
+      convertDenomToMicroDenom(data.daoInitialBalance),
       threshold / THRESHOLD_GRANULARITY,
       maxVotingPeriod,
       getIntValue('deposit') || 0,
       refund
     )
+
+    console.log(msg)
 
     if (!signingClient) {
       setLoading(false)
@@ -208,9 +223,9 @@ const CreateDao: NextPage = () => {
           />
         </td>
         {idx > 0 && (
-          <td className="absolute p-2.5">
+          <td className="p-2.5">
             <button
-              className="btn btn-outline btn-circle btn-sm"
+              className="btn btn-outline btn-circle btn-xs mb-1.5"
               onClick={(e) => {
                 e.preventDefault()
                 setCount(count - 1)
@@ -257,64 +272,109 @@ const CreateDao: NextPage = () => {
             fieldErrorMessage={fieldErrorMessage}
           />
 
-          <h2 className="mt-8 mb-6 text-2xl">Governance Token Config</h2>
-          <InputField
-            fieldName="tokenName"
-            label="Token Name"
-            toolTip="The full name of your token. 3-50 characters."
-            errorMessage="Valid token name required"
-            readOnly={complete}
-            register={register}
-            fieldErrorMessage={fieldErrorMessage}
-            validate={isValidName}
-          />
-          <InputField
-            fieldName="tokenSymbol"
-            label="Token Symbol"
-            toolTip="The short symbol name of your token. 3-12 non-numeric characters or dashes."
-            errorMessage="Valid token symbol required"
-            readOnly={complete}
-            register={register}
-            fieldErrorMessage={fieldErrorMessage}
-            validate={isValidTicker}
-          />
+          <div className="tabs mt-8">
+            <button
+              className={"tab tab-lifted tab-lg" + (tokenMode == TokenMode.Create ? " tab-active" : "")}
+              onClick={() => setTokenMode(TokenMode.Create)}
+              type="button"
+            >
+              Create New Token
+            </button>
+            <button
+              className={"tab tab-lifted tab-lg" + (tokenMode == TokenMode.UseExisting ? " tab-active" : "")}
+              onClick={() => setTokenMode(TokenMode.UseExisting)}
+              type="button"
+            >
+              Use Existing Token
+            </button>
+            <div className="flex-1 cursor-default tab tab-lifted"></div>
+          </div>
 
-          <h2 className="mt-8 mb-6 text-xl">Token Distribution</h2>
+          <div className="border-r border-b border-l border-solid p-3 border-base-300 rounded-b-lg">
+            {tokenMode == TokenMode.Create ?
+              <>
+                <InputField
+                  fieldName="tokenName"
+                  label="Token Name"
+                  toolTip="The full name of your token. 3-50 characters."
+                  errorMessage="Valid token name required"
+                  readOnly={complete}
+                  register={register}
+                  fieldErrorMessage={fieldErrorMessage}
+                  validate={isValidName}
+                />
+                <InputField
+                  fieldName="tokenSymbol"
+                  label="Token Symbol"
+                  toolTip="The short symbol name of your token. 3-12 non-numeric characters or dashes."
+                  errorMessage="Valid token symbol required"
+                  readOnly={complete}
+                  register={register}
+                  fieldErrorMessage={fieldErrorMessage}
+                  validate={isValidTicker}
+                />
 
-          <table className="w-full mb-8">
-            <thead>
-              <tr>
-                <th className="text-left">
-                  Address{' '}
-                  <HelpTooltip
-                    text={'Wallet address to receive initial tokens'}
-                  />
-                </th>
-                <th className="text-left">
-                  Amount{' '}
-                  <HelpTooltip
-                    text={'Initial tokens minted for this address'}
-                  />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {addressRows}
-              <tr>
-                <td colSpan={2} className="text-right">
-                  <button
-                    className="btn btn-outline btn-primary btn-md text-md"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setCount(count + 1)
-                    }}
-                  >
-                    + Add another
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                <h2 className="mt-8 mb-4 text-xl">Token Distribution</h2>
+
+                <InputField
+                  label="DAO Initial Balance"
+                  toolTip="The number of governance tokens the DAO should be initialized with."
+                  fieldName="daoInitialBalance"
+                  readOnly={complete}
+                  type="number"
+                  defaultValue="0"
+                  register={register}
+                  fieldErrorMessage={fieldErrorMessage}
+                />
+
+                <table className="w-full mb-4 mt-6">
+                  <thead>
+                    <tr>
+                      <th className="text-left">
+                        Address{' '}
+                        <HelpTooltip
+                          text={'Wallet address to receive initial tokens'}
+                        />
+                      </th>
+                      <th className="text-left">
+                        Amount{' '}
+                        <HelpTooltip
+                          text={'Initial tokens minted for this address'}
+                        />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {addressRows}
+                    <tr>
+                      <td colSpan={2} className="text-right">
+                        <button
+                          className="btn btn-outline btn-primary btn-md text-md"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            setCount(count + 1)
+                          }}
+                        >
+                          + Add another
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </>
+              : <InputField
+                label="Existing Token Address"
+                toolTip="The address of the cw20 token that you would like to govern your DAO with."
+                fieldName="existingTokenAddresss"
+                placeholder="token address"
+                errorMessage="Valid token address required"
+                readOnly={complete}
+                validate={isValidAddress}
+                register={register}
+                fieldErrorMessage={fieldErrorMessage}
+              />
+            }
+          </div>
 
           <h2 className="my-8 text-2xl">Voting Config</h2>
           <table className="w-full my-4">
@@ -407,9 +467,8 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
-                loading ? 'loading' : ''
-              }`}
+              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${loading ? 'loading' : ''
+                }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}
@@ -418,8 +477,8 @@ const CreateDao: NextPage = () => {
             </button>
           )}
         </form>
-      </div>
-    </WalletLoader>
+      </div >
+    </WalletLoader >
   )
 }
 

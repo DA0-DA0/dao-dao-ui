@@ -9,6 +9,7 @@ import {
   Cw20Coin,
   Duration,
   WasmMsg,
+  Uint128,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import { CW20_CODE_ID, STAKE_CODE_ID } from './constants'
@@ -118,12 +119,13 @@ export function validDaoInstantiateMessageParams(
   return false
 }
 
-export function makeDaoInstantiateMessage(
+export function makeDaoInstantiateWithNewTokenMessage(
   name: string,
   description: string,
   tokenName: string,
   tokenSymbol: string,
   owners: Cw20Coin[],
+  daoInitialBalance: Uint128,
   percentage: string | number,
   max_voting_period: Duration,
   proposal_deposit_amount: string | number,
@@ -149,6 +151,7 @@ export function makeDaoInstantiateMessage(
           initial_balances: owners,
         },
         stake_contract_code_id: STAKE_CODE_ID,
+        initial_dao_balance: daoInitialBalance
       },
     },
     threshold: {
@@ -192,9 +195,8 @@ export function labelForMessage(
   let messageString = ''
   if (anyMsg.bank) {
     if (anyMsg.bank.send) {
-      messageString = `${labelForAmount(anyMsg.bank.send.amount)} -> ${
-        anyMsg.bank.send.to_address
-      }`
+      messageString = `${labelForAmount(anyMsg.bank.send.amount)} -> ${anyMsg.bank.send.to_address
+        }`
     } else if (anyMsg.bank.burn) {
       messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
     }
