@@ -9,9 +9,10 @@ import {
   Cw20Coin,
   Duration,
   WasmMsg,
+  Uint128,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import { CW20_CODE_ID } from './constants'
+import { CW20_CODE_ID, STAKE_CODE_ID } from './constants'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -118,14 +119,59 @@ export function validDaoInstantiateMessageParams(
   return false
 }
 
-export function makeDaoInstantiateMessage(
+// Instantiate message for a DAO that is using an existing cw20 token
+// as its governance token.
+export function makeDaoInstantiateWithExistingTokenMessage(
+  name: string,
+  description: string,
+  tokenAddress: string,
+  percentage: string | number,
+  max_voting_period: Duration,
+  unstaking_duration: Duration,
+  proposal_deposit_amount: string | number,
+  refund_failed_proposals: boolean
+): DaoInstantiateMsg {
+  if (typeof percentage === 'number') {
+    percentage = `${percentage}`
+  }
+  if (typeof proposal_deposit_amount === 'number') {
+    proposal_deposit_amount = `${proposal_deposit_amount}`
+  }
+  const msg: DaoInstantiateMsg = {
+    name,
+    description,
+    gov_token: {
+      use_existing_cw20: {
+        addr: tokenAddress,
+        label: `dao_${name}_staking_contract`,
+        stake_contract_code_id: STAKE_CODE_ID,
+        unstaking_duration,
+      },
+    },
+    threshold: {
+      absolute_percentage: {
+        percentage,
+      },
+    },
+    max_voting_period,
+    proposal_deposit_amount,
+    refund_failed_proposals,
+  }
+  return msg
+}
+
+// Instantiate message for a DAO which is creating a new cw20 token to
+// use as its governance token.
+export function makeDaoInstantiateWithNewTokenMessage(
   name: string,
   description: string,
   tokenName: string,
   tokenSymbol: string,
   owners: Cw20Coin[],
+  dao_initial_balance: Uint128,
   percentage: string | number,
   max_voting_period: Duration,
+  unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
   refund_failed_proposals: boolean
 ): DaoInstantiateMsg {
@@ -140,7 +186,7 @@ export function makeDaoInstantiateMessage(
     description,
     gov_token: {
       instantiate_new_cw20: {
-        code_id: CW20_CODE_ID,
+        cw20_code_id: CW20_CODE_ID,
         label: tokenName,
         msg: {
           name: tokenName,
@@ -148,6 +194,9 @@ export function makeDaoInstantiateMessage(
           decimals: 6,
           initial_balances: owners,
         },
+        stake_contract_code_id: STAKE_CODE_ID,
+        initial_dao_balance: dao_initial_balance,
+        unstaking_duration,
       },
     },
     threshold: {
