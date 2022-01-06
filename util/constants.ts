@@ -4,7 +4,7 @@ export const DAO_CODE_ID = parseInt(
 )
 
 export const CW20_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_DAO_TOKEN_CODE_ID as string,
+  process.env.NEXT_PUBLIC_CW20_CODE_ID as string,
   10
 )
 
