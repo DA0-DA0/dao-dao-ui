@@ -13,12 +13,15 @@ import { DAO_CODE_ID } from 'util/constants'
 import { convertDenomToMicroDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeDaoInstantiateWithNewTokenMessage } from 'util/messagehelpers'
+import {
+  makeDaoInstantiateWithExistingTokenMessage,
+  makeDaoInstantiateWithNewTokenMessage,
+} from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
 
-const THRESHOLD_GRANULARITY = 1000
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
+const DEFAULT_UNSTAKING_DURATION_SECONDS = '43200' // 12 hours
 
 enum TokenMode {
   UseExisting,
@@ -30,14 +33,20 @@ interface DaoCreateData {
   description: string
   duration: string
 
+  // The `tokenMode` state varaible inside of `CreateDAO` determines
+  // which of these fields we use to instantiate the DAO.
+
+  // Fields for creating a DAO with a new token.
   label: string
   threshold: string
   tokenName: string
   tokenSymbol: string
   daoInitialBalance: string
 
+  // Field for creating a DAO with an existing token.
   existingTokenAddress: string
 
+  unstakingDuration: string
   refund: string | boolean
   proposalDepositAmount: string
   [key: string]: string | boolean
@@ -50,9 +59,12 @@ const CreateDao: NextPage = () => {
   const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  // Default to 75% of the vote
-  const [threshold, setThreshold] = useState(THRESHOLD_GRANULARITY * 0.75)
-  const [seconds, setSeconds] = useState(DEFAULT_MAX_VOTING_PERIOD_SECONDS)
+  const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
+    DEFAULT_MAX_VOTING_PERIOD_SECONDS
+  )
+  const [unstakingDurationSeconds, setUnstakingDurationSeconds] = useState(
+    DEFAULT_UNSTAKING_DURATION_SECONDS
+  )
 
   const [tokenMode, setTokenMode] = useState(TokenMode.Create)
 
@@ -120,23 +132,39 @@ const CreateDao: NextPage = () => {
     const maxVotingPeriod = {
       time: getIntValue('duration'),
     }
+    const unstakingDuration = {
+      time: getIntValue('unstakingDuration'),
+    }
     const refund =
       typeof data.refund === 'string'
         ? getIntValue('refund') === 1
         : !!data.refund
 
-    const msg: InstantiateMsg = makeDaoInstantiateWithNewTokenMessage(
-      data.label,
-      data.description,
-      data.tokenName,
-      data.tokenSymbol,
-      owners,
-      convertDenomToMicroDenom(data.daoInitialBalance),
-      threshold / THRESHOLD_GRANULARITY,
-      maxVotingPeriod,
-      getIntValue('deposit') || 0,
-      refund
-    )
+    const msg: InstantiateMsg =
+      tokenMode == TokenMode.Create
+        ? makeDaoInstantiateWithNewTokenMessage(
+            data.label,
+            data.description,
+            data.tokenName,
+            data.tokenSymbol,
+            owners,
+            convertDenomToMicroDenom(data.daoInitialBalance),
+            threshold / 100, // Conversion to decimal percentage
+            maxVotingPeriod,
+            unstakingDuration,
+            getIntValue('deposit') || 0,
+            refund
+          )
+        : makeDaoInstantiateWithExistingTokenMessage(
+            data.label,
+            data.description,
+            data.existingTokenAddress,
+            threshold / 100, // Conversion to decimal percentage
+            maxVotingPeriod,
+            unstakingDuration,
+            getIntValue('deposit') || 0,
+            refund
+          )
 
     console.log(msg)
 
@@ -165,6 +193,7 @@ const CreateDao: NextPage = () => {
       .catch((err: any) => {
         setLoading(false)
         setError(err.message)
+        console.log(err.message)
       })
   }
 
@@ -253,35 +282,43 @@ const CreateDao: NextPage = () => {
           onSubmit={handleSubmit<DaoCreateData>(onSubmit)}
         >
           <h2 className="mt-10 mb-6 text-2xl">Basic Config</h2>
-          <InputField
-            fieldName="label"
-            label="Name"
-            toolTip="Name the DAO"
-            errorMessage="DAO name required"
-            readOnly={complete}
-            register={register}
-            fieldErrorMessage={fieldErrorMessage}
-          />
-          <InputField
-            fieldName="description"
-            label="Description"
-            toolTip="Your DAO description"
-            errorMessage="DAO description required"
-            readOnly={complete}
-            register={register}
-            fieldErrorMessage={fieldErrorMessage}
-          />
+          <div className="px-3">
+            <InputField
+              fieldName="label"
+              label="Name"
+              toolTip="Name the DAO"
+              errorMessage="DAO name required"
+              readOnly={complete}
+              register={register}
+              fieldErrorMessage={fieldErrorMessage}
+            />
+            <InputField
+              fieldName="description"
+              label="Description"
+              toolTip="Your DAO description"
+              errorMessage="DAO description required"
+              readOnly={complete}
+              register={register}
+              fieldErrorMessage={fieldErrorMessage}
+            />
+          </div>
 
           <div className="tabs mt-8">
             <button
-              className={"tab tab-lifted tab-lg" + (tokenMode == TokenMode.Create ? " tab-active" : "")}
+              className={
+                'tab tab-lifted tab-lg' +
+                (tokenMode == TokenMode.Create ? ' tab-active' : '')
+              }
               onClick={() => setTokenMode(TokenMode.Create)}
               type="button"
             >
               Create New Token
             </button>
             <button
-              className={"tab tab-lifted tab-lg" + (tokenMode == TokenMode.UseExisting ? " tab-active" : "")}
+              className={
+                'tab tab-lifted tab-lg' +
+                (tokenMode == TokenMode.UseExisting ? ' tab-active' : '')
+              }
               onClick={() => setTokenMode(TokenMode.UseExisting)}
               type="button"
             >
@@ -291,7 +328,7 @@ const CreateDao: NextPage = () => {
           </div>
 
           <div className="border-r border-b border-l border-solid p-3 border-base-300 rounded-b-lg">
-            {tokenMode == TokenMode.Create ?
+            {tokenMode == TokenMode.Create ? (
               <>
                 <InputField
                   fieldName="tokenName"
@@ -362,10 +399,11 @@ const CreateDao: NextPage = () => {
                   </tbody>
                 </table>
               </>
-              : <InputField
+            ) : (
+              <InputField
                 label="Existing Token Address"
                 toolTip="The address of the cw20 token that you would like to govern your DAO with."
-                fieldName="existingTokenAddresss"
+                fieldName="existingTokenAddress"
                 placeholder="token address"
                 errorMessage="Valid token address required"
                 readOnly={complete}
@@ -373,86 +411,92 @@ const CreateDao: NextPage = () => {
                 register={register}
                 fieldErrorMessage={fieldErrorMessage}
               />
-            }
+            )}
           </div>
 
           <h2 className="my-8 text-2xl">Voting Config</h2>
-          <table className="w-full my-4">
-            <thead>
-              <tr>
-                <th className="text-left w-65">
-                  <span className="w-60 inline-block">
-                    Threshold{' '}
-                    {((threshold / THRESHOLD_GRANULARITY) * 100).toFixed(2)}%
-                  </span>
-                  <HelpTooltip text="The percentage of tokens that must vote yes for a proposal to pass" />
-                </th>
-                <th className="text-left box-border px-2 text-sm">
-                  Max Voting Period (seconds)
-                  <HelpTooltip text="The time during which a proposal is open for voting. Proposals expire after this period passes" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <input
-                    className="block box-border m-0 w-full rounded input input-bordered"
-                    {...register('threshold')}
-                    type="range"
-                    min={0}
-                    max={THRESHOLD_GRANULARITY}
-                    onChange={(e) =>
-                      setThreshold(parseInt(e.target?.value ?? '0', 10))
-                    }
-                    defaultValue={threshold}
-                    readOnly={complete}
-                  />
-                </td>
-                <td className="box-border px-2">
-                  <input
-                    className="block box-border m-0 w-full rounded input input-bordered"
-                    {...register('duration')}
-                    type="number"
-                    placeholder="duration in seconds"
-                    min={1}
-                    max={2147483647}
-                    onChange={(e) =>
-                      setSeconds(parseInt(e.target?.value).toString())
-                    }
-                    defaultValue={604800}
-                    readOnly={complete}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      textAlign: 'end',
-                      padding: '5px 0 0 17px',
-                      fontSize: ' 12px',
-                      color: 'grey',
-                    }}
-                  >
-                    {secondsToHms(seconds)}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <InputField
-            fieldName="deposit"
-            label="Proposal Deposit"
-            toolTip="The number of tokens that must be deposited to create a proposal"
-            type="number"
-            readOnly={complete}
-            required={false}
-            defaultValue={0}
-            min={0}
-            register={register}
-            fieldErrorMessage={fieldErrorMessage}
-          />
-
-          <div className="p-6 bordered">
+          <div className="grid grid-cols-2 gap-x-4 mb-8 px-3">
+            <InputField
+              fieldName="threshold"
+              label="Passing Threshold (%)"
+              toolTip="The percentage of tokens that must vote yes for a proposal to pass"
+              type="number"
+              readOnly={complete}
+              defaultValue={75}
+              min={1}
+              max={100}
+              register={register}
+              fieldErrorMessage={fieldErrorMessage}
+            />
+            <div>
+              <InputField
+                fieldName="duration"
+                label="Voting Duration (seconds)"
+                toolTip="The time during which a proposal is open for voting. Proposals expire after this period passes"
+                type="number"
+                placeholder="duration in seconds"
+                readOnly={complete}
+                defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+                min={1}
+                max={2147483647}
+                register={register}
+                fieldErrorMessage={fieldErrorMessage}
+                onChange={(e) =>
+                  setVotingPeriodSeconds(parseInt(e.target?.value).toString())
+                }
+              />
+              <div
+                style={{
+                  textAlign: 'end',
+                  padding: '5px 0 0 17px',
+                  fontSize: ' 12px',
+                  color: 'grey',
+                }}
+              >
+                {secondsToHms(votingPeriodSeconds)}
+              </div>
+            </div>
+            <InputField
+              fieldName="deposit"
+              label="Proposal Deposit"
+              toolTip="The number of tokens that must be deposited to create a proposal"
+              type="number"
+              readOnly={complete}
+              required={false}
+              defaultValue={0}
+              min={0}
+              register={register}
+              fieldErrorMessage={fieldErrorMessage}
+            />
+            <div>
+              <InputField
+                fieldName="unstakingDuration"
+                label="Unstaking Duration (seconds)"
+                toolTip="The amount of time that unstaking governance tokens takes in seconds"
+                type="number"
+                placeholder="duration in seconds"
+                readOnly={complete}
+                defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
+                min={0}
+                register={register}
+                fieldErrorMessage={fieldErrorMessage}
+                onChange={(e) =>
+                  setUnstakingDurationSeconds(
+                    parseInt(e.target?.value).toString()
+                  )
+                }
+              />
+              <div
+                style={{
+                  textAlign: 'end',
+                  padding: '5px 0 0 17px',
+                  fontSize: ' 12px',
+                  color: 'grey',
+                }}
+              >
+                {secondsToHms(unstakingDurationSeconds)}
+              </div>
+            </div>
             <InputField
               fieldName="refund"
               label="Refund Proposal Deposits"
@@ -467,8 +511,9 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${loading ? 'loading' : ''
-                }`}
+              className={`mt-8 btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
+                loading ? 'loading' : ''
+              }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}
@@ -477,8 +522,8 @@ const CreateDao: NextPage = () => {
             </button>
           )}
         </form>
-      </div >
-    </WalletLoader >
+      </div>
+    </WalletLoader>
   )
 }
 

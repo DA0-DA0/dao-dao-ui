@@ -119,15 +119,59 @@ export function validDaoInstantiateMessageParams(
   return false
 }
 
+// Instantiate message for a DAO that is using an existing cw20 token
+// as its governance token.
+export function makeDaoInstantiateWithExistingTokenMessage(
+  name: string,
+  description: string,
+  tokenAddress: string,
+  percentage: string | number,
+  max_voting_period: Duration,
+  unstaking_duration: Duration,
+  proposal_deposit_amount: string | number,
+  refund_failed_proposals: boolean
+): DaoInstantiateMsg {
+  if (typeof percentage === 'number') {
+    percentage = `${percentage}`
+  }
+  if (typeof proposal_deposit_amount === 'number') {
+    proposal_deposit_amount = `${proposal_deposit_amount}`
+  }
+  const msg: DaoInstantiateMsg = {
+    name,
+    description,
+    gov_token: {
+      use_existing_cw20: {
+        addr: tokenAddress,
+        label: `dao_${name}_staking_contract`,
+        stake_contract_code_id: STAKE_CODE_ID,
+        unstaking_duration,
+      },
+    },
+    threshold: {
+      absolute_percentage: {
+        percentage,
+      },
+    },
+    max_voting_period,
+    proposal_deposit_amount,
+    refund_failed_proposals,
+  }
+  return msg
+}
+
+// Instantiate message for a DAO which is creating a new cw20 token to
+// use as its governance token.
 export function makeDaoInstantiateWithNewTokenMessage(
   name: string,
   description: string,
   tokenName: string,
   tokenSymbol: string,
   owners: Cw20Coin[],
-  daoInitialBalance: Uint128,
+  dao_initial_balance: Uint128,
   percentage: string | number,
   max_voting_period: Duration,
+  unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
   refund_failed_proposals: boolean
 ): DaoInstantiateMsg {
@@ -151,7 +195,8 @@ export function makeDaoInstantiateWithNewTokenMessage(
           initial_balances: owners,
         },
         stake_contract_code_id: STAKE_CODE_ID,
-        initial_dao_balance: daoInitialBalance
+        initial_dao_balance: dao_initial_balance,
+        unstaking_duration,
       },
     },
     threshold: {
@@ -195,8 +240,9 @@ export function labelForMessage(
   let messageString = ''
   if (anyMsg.bank) {
     if (anyMsg.bank.send) {
-      messageString = `${labelForAmount(anyMsg.bank.send.amount)} -> ${anyMsg.bank.send.to_address
-        }`
+      messageString = `${labelForAmount(anyMsg.bank.send.amount)} -> ${
+        anyMsg.bank.send.to_address
+      }`
     } else if (anyMsg.bank.burn) {
       messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
     }
