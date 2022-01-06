@@ -34,7 +34,7 @@ export function useMultisigsList(codeId: number) {
           if (sigInfo) {
             sigList.push({
               ...sigInfo,
-              member: voterInfo.weight !== '0',
+              member: voterInfo.weight && parseInt(voterInfo.weight, 10) > 0,
             })
           }
         }
