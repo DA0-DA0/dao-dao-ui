@@ -10,6 +10,7 @@ import JSONInput from 'react-json-editor-ajrm'
 import locale from 'react-json-editor-ajrm/locale/en'
 import { useThemeContext } from '../contexts/theme'
 import { makeWasmMessage } from 'util/messagehelpers'
+import ReactJson from 'react-json-view'
 
 type JSONError = {
   line?: number
@@ -31,7 +32,18 @@ export default function CustomEditor({
 }) {
   const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
+  const [editTextMode, setEditTextMode] = useState(false);
   const themeContext = useThemeContext()
+
+  const EditObj = (e: any) => {
+    setLastInputJson(e.updated_src);
+  };
+  const AddObj = (e: any) => {
+    setLastInputJson(e.updated_src);
+  };
+  const DeleteObj = (e: any) => {
+    setLastInputJson(e.updated_src);
+  };
 
   function updateCustom(message: any) {
     try {
@@ -102,21 +114,32 @@ export default function CustomEditor({
 
   return (
     <div className="mt-4 border box-border rounded">
+       <button className="btn btn-outline btn-primary btn-sm text-sm" onClick={() => setEditTextMode(!editTextMode)}>{editTextMode ? 'Tree Editor' : 'Text Editor'}</button>
       {status}
-      <JSONInput
-        id="json_editor"
-        locale={locale}
-        height="100%"
-        width="100%"
-        waitAfterKeyPress={200}
-        onChange={handleMessage}
-        onBlur={handleMessage}
-        reset={false}
-        confirmGood={false}
-        style={style}
-        placeholder={lastInputJson ? undefined : customMsg.message}
-        theme={getEditorTheme(themeContext.theme)}
+      {editTextMode ? (
+        <JSONInput
+          id="json_editor"
+          locale={locale}
+          height="100%"
+          width="100%"
+          waitAfterKeyPress={200}
+          onChange={handleMessage}
+          onBlur={handleMessage}
+          reset={false}
+          confirmGood={false}
+          style={style}
+          placeholder={lastInputJson ? lastInputJson : customMsg.message}
+          theme={getEditorTheme(themeContext.theme)}
       />
+      ) : (
+        <ReactJson
+          src={lastInputJson ? lastInputJson : customMsg.message}
+          onDelete={DeleteObj}
+          onEdit={EditObj}
+          onAdd={AddObj}
+          name={null}
+        />
+      )}
     </div>
   )
 }
