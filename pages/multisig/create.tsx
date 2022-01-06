@@ -14,6 +14,7 @@ import { useRouter } from 'next/router'
 import { C4_GROUP_CODE_ID, MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
 import { successNotify } from 'util/toast'
+import { cleanChainError } from 'util/cleanChainError'
 
 function validateNonEmpty(msg: InstantiateMsg, label: string) {
   const { threshold, max_voting_period, group } = msg
@@ -301,7 +302,7 @@ const CreateMultisig: NextPage = () => {
           )}
         </form>
 
-        {error && <LineAlert variant="error" msg={error} />}
+        {error && <LineAlert variant="error" msg={cleanChainError(error)} />}
       </div>
     </WalletLoader>
   )

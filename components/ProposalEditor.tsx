@@ -35,6 +35,7 @@ import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
+import { cleanChainError } from 'util/cleanChainError'
 
 export default function ProposalEditor({
   initialProposal,
@@ -376,7 +377,7 @@ export default function ProposalEditor({
               </button>
               {error && (
                 <div className="mt-8">
-                  <LineAlert variant="error" msg={error} />
+                  <LineAlert variant="error" msg={cleanChainError(error)} />
                 </div>
               )}
             </form>

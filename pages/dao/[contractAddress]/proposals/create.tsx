@@ -11,6 +11,7 @@ import { defaultExecuteFee } from 'util/fee'
 import { successNotify } from 'util/toast'
 import { useRecoilState } from 'recoil'
 import { proposalsCreatedAtom } from 'atoms/proposals'
+import { cleanChainError } from 'util/cleanChainError'
 
 const ProposalCreate: NextPage = () => {
   const router = useRouter()

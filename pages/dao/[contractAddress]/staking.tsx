@@ -11,6 +11,7 @@ import {
   convertMicroDenomToDenom,
   convertDenomToMicroDenom,
 } from 'util/conversion'
+import { cleanChainError } from 'util/cleanChainError'
 
 export function TokenBalance({
   amount,
@@ -118,12 +119,12 @@ const Staking: NextPage = () => {
       </div>
       {cw20Error && (
         <div className="mt-8">
-          <LineAlert variant="error" msg={cw20Error.message} />
+          <LineAlert variant="error" msg={cleanChainError(cw20Error.message)} />
         </div>
       )}
       {stakingError && (
         <div className="mt-8">
-          <LineAlert variant="error" msg={stakingError} />
+          <LineAlert variant="error" msg={cleanChainError(stakingError)} />
         </div>
       )}
     </WalletLoader>

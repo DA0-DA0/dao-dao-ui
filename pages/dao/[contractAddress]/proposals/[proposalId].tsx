@@ -6,6 +6,7 @@ import LineAlert from 'components/LineAlert'
 import { useProposal } from 'hooks/proposals'
 import ProposalDetails from 'components/ProposalDetails'
 import Link from 'next/link'
+import { cleanChainError } from 'util/cleanChainError'
 
 const Proposal: NextPage = () => {
   let router = useRouter()
@@ -54,7 +55,11 @@ const Proposal: NextPage = () => {
               />
 
               {error && (
-                <LineAlert className="mt-2" variant="error" msg={error} />
+                <LineAlert
+                  className="mt-2"
+                  variant="error"
+                  msg={cleanChainError(error)}
+                />
               )}
 
               {transactionHash.length > 0 && (
