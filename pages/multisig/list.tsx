@@ -67,6 +67,9 @@ const MultisigList: NextPage = () => {
           </Link>
         </>
       )}
+      <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">
+        Community Multisigs
+      </h2>
       {nonMemberSigs.length > 0
         ? nonMemberSigs.map((multisig, key) => (
             <MultisigListComponent
