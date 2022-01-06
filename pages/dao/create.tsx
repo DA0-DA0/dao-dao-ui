@@ -19,6 +19,7 @@ import {
 } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
+import { cleanChainError } from 'util/cleanChainError'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 const DEFAULT_UNSTAKING_DURATION_SECONDS = '43200' // 12 hours
@@ -75,7 +76,7 @@ const CreateDao: NextPage = () => {
   } = useForm()
 
   useEffect(() => {
-    if (error) errorNotify(error)
+    if (error) errorNotify(cleanChainError(error))
   }, [error])
 
   function fieldErrorMessage(fieldName: string, msg?: string) {
@@ -166,6 +167,7 @@ const CreateDao: NextPage = () => {
             refund
           )
 
+    console.log('instantiating DAO with message:')
     console.log(msg)
 
     if (!signingClient) {
