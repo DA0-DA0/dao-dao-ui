@@ -16,6 +16,7 @@ export const successOptions = {
     padding: '16px',
     color: '#06090B',
     background: '#CFF1EE',
+    wordBreak: 'break-all',
   },
   iconTheme: {
     primary: '#53D0C9',
@@ -29,6 +30,7 @@ export const errorOptions = {
     padding: '16px',
     color: '#06090B',
     background: '#FBCCD6',
+    wordBreak: 'break-all',
   },
   iconTheme: {
     primary: '#ED5276',
