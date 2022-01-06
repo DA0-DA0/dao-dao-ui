@@ -502,7 +502,7 @@ const CreateDao: NextPage = () => {
             <InputField
               fieldName="refund"
               label="Refund Proposal Deposits"
-              toolTip="Whether deposits are refunded after proposal voting"
+              toolTip="Refund deposits if proposal fails"
               type="checkbox"
               defaultValue={1}
               readOnly={complete}
