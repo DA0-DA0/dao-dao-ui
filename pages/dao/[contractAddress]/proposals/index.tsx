@@ -93,7 +93,7 @@ const DaoProposals: NextPage = () => {
 
   const [_pri, setProposalRequestId] = useRecoilState(proposalsRequestIdAtom)
 
-  const member = useRecoilValue(isMemberSelector(contractAddress))
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
 
   return (
     <>

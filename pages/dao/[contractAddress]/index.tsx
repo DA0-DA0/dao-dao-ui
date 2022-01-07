@@ -140,7 +140,7 @@ const DaoHome: NextPage = () => {
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   let { tokenInfo } = useTokenConfig(daoInfo ? daoInfo.gov_token : undefined)
-  const member = useRecoilValue(isMemberSelector(contractAddress))
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
 
   if (!daoInfo) {
     return <p>DAO not found</p>

@@ -7,9 +7,20 @@ import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { DaoListType } from 'hooks/dao'
 
-export const isMemberSelector = selectorFamily<boolean, string>({
+export interface MemberStatus {
+  member: boolean
+  weight: number
+}
+
+export interface DaoListType {
+  address: string
+  member: boolean
+  dao: any
+  weight: number
+}
+
+export const isMemberSelector = selectorFamily<MemberStatus, string>({
   key: 'isMember',
   get:
     (contractAddress) =>
@@ -18,7 +29,10 @@ export const isMemberSelector = selectorFamily<boolean, string>({
       const voterInfo = get(
         voterInfoSelector({ contractAddress, walletAddress })
       )
-      return voterInfo.weight !== '0'
+      return {
+        member: voterInfo.weight && voterInfo.weight !== '0',
+        weight: voterInfo.weight,
+      }
     },
 })
 
@@ -28,11 +42,12 @@ export const daosSelector = selector<DaoListType[]>({
     const daoAddresses = get(contractsByCodeId(DAO_CODE_ID))
     return daoAddresses.map((contractAddress) => {
       const daoResponse = get(daoSelector(contractAddress))
-      const member = get(isMemberSelector(contractAddress))
+      const { member, weight } = get(isMemberSelector(contractAddress))
       return {
         dao: daoResponse.config,
         address: contractAddress,
         member,
+        weight,
       }
     })
   },
