@@ -1,37 +1,45 @@
-import { CheckIcon } from '@heroicons/react/outline'
-import { ChevronRightIcon } from '@heroicons/react/solid'
-import LinkCard from 'components/LinkCard'
+import { PlusIcon, SparklesIcon, UserIcon } from '@heroicons/react/outline'
+import Logo from 'components/Logo'
 import { DaoListType } from 'hooks/dao'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import React, { FunctionComponent, useEffect } from 'react'
+import React from 'react'
 import { useRecoilValue } from 'recoil'
-import { daoSelector, daosSelector } from 'selectors/daos'
+import { daosSelector } from 'selectors/daos'
 
-const DaoListComponent: FunctionComponent<DaoListType> = ({
-  address,
-  member,
-  dao,
-}) => {
-  const { name, description } = dao ?? {
-    name: 'loading',
-    description: 'loading',
-  }
-
+function DaoCard({ dao, address }: { dao: any; address: string }) {
   return (
-    <LinkCard href={`/dao/${address}`}>
-      <h3 className="text-2xl font-bold">
-        {name}{' '}
-        <ChevronRightIcon className="inline-block w-6 h-6 ml-2 stroke-current" />
-      </h3>
-      <p className="mt-4 text-xl">{description}</p>
-      {member ? (
-        <p className="mt-4 text-success">
-          <CheckIcon className="h-4 w-4 mb-1 mr-1 inline" />
-          <i> You are a member</i>
-        </p>
-      ) : null}
-    </LinkCard>
+    <Link href={`/dao/${address}`}>
+      <a>
+        <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200">
+          <div className="mt-6">
+            <Logo height={70} width={70} alt={dao.name} />
+          </div>
+          <h3 className="text-lg font-semibold mt-3">{dao.name}</h3>
+          <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
+            {dao.description}
+          </p>
+        </div>
+      </a>
+    </Link>
+  )
+}
+
+function MysteryDaoCard() {
+  return (
+    <Link href="/dao/create">
+      <a>
+        <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200">
+          <div className="mt-6">
+            <Logo height={70} width={70} alt="mystery dao" />
+          </div>
+          <h3 className="text-lg font-semibold mt-3">???</h3>
+          <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
+            not part of any daos - what will you build?
+          </p>
+        </div>
+      </a>
+    </Link>
   )
 }
 
@@ -40,7 +48,6 @@ const DaoList: NextPage = () => {
   let memberDaos: DaoListType[] = []
   let nonMemberDaos: DaoListType[] = []
 
-  // useEffect(() => {
   for (const dao of daos) {
     if (dao?.member === true) {
       memberDaos.push(dao)
@@ -48,49 +55,44 @@ const DaoList: NextPage = () => {
       nonMemberDaos.push(dao)
     }
   }
-  // })
 
   return (
-    <div>
-      <h1 className="text-6xl font-bold">DAOs</h1>
-      <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">
-        Personal DAOs
-      </h2>
-      {memberDaos.length > 0 ? (
-        memberDaos.map((memberDao, key) => (
-          <DaoListComponent
-            address={memberDao?.address}
-            member={memberDao?.member}
-            dao={memberDao.dao}
-            key={key}
-          />
-        ))
-      ) : (
-        <>
-          <p className="text-xl my-8">Not part of any DAOs</p>
-          <Link href="/dao/create" passHref>
-            <button className="btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl">
-              Create a DAO
-            </button>
-          </Link>
-        </>
-      )}
-      {nonMemberDaos.length > 0 ? (
-        <>
-          <hr />
-          <h2 className="text-3xl font-bold mt-8 text-left max-w-sm w-full -mb-3">
+    <div className="grid grid-cols-6">
+      <div className="p-6 w-full col-span-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-semibold">DAOs</h1>
+          <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
+            Create a Dao <PlusIcon className="inline w-5 h-5 ml-1" />
+          </button>
+        </div>
+        <div className="mt-6">
+          <h2 className="text-lg mb-2">
+            <UserIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Your DAOs
+          </h2>
+          <div className="flex flex-wrap">
+            {memberDaos.length ? (
+              memberDaos.map((dao, idx) => (
+                <DaoCard dao={dao.dao} address={dao.address} key={idx} />
+              ))
+            ) : (
+              <MysteryDaoCard />
+            )}
+          </div>
+        </div>
+        <div className="mt-6">
+          <h2 className="text-lg mb-2">
+            <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
             Other DAOs
           </h2>
-          {nonMemberDaos.map((dao, key) => (
-            <DaoListComponent
-              address={dao?.address}
-              member={dao?.member}
-              dao={dao.dao}
-              key={key}
-            />
-          ))}
-        </>
-      ) : null}
+          <div className="flex flex-wrap">
+            {nonMemberDaos.map((dao, idx) => (
+              <DaoCard dao={dao.dao} address={dao.address} key={idx} />
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="col-start-5 col-span-2 border p-6 h-screen"></div>
     </div>
   )
 }

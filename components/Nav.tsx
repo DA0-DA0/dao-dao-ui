@@ -25,7 +25,7 @@ function WalletConnect() {
   return (
     <div className="flex flex-grow md:flex-grow-0 mt-4">
       <button
-        className="block btn btn-outline bg-primary text-primary-content w-full normal-case truncate p-2 text-left"
+        className="block btn bg-primary text-primary-content w-full normal-case truncate p-2 text-left"
         onClick={handleConnect}
       >
         {walletAddress || (
@@ -41,8 +41,8 @@ function WalletConnect() {
 
 function Nav() {
   return (
-    <nav className="px-6 py-6 text-lg min-h-screen flex flex-col justify-between border-r border-secondary">
-      <div className="">
+    <nav className="p-6 text-lg min-h-screen flex flex-col justify-between border-r border-base-300">
+      <div>
         <div className="flex items-center">
           <Link href="/">
             <a>
@@ -53,15 +53,19 @@ function Nav() {
         <WalletConnect />
         <div className="ml-1">
           <div className="mt-3">
-            <h3 className="text-secondary font-mono mb-1">Daos</h3>
+            <h3 className="text-secondary font-mono mb-1">DAOs</h3>
             <ul className="list-none ml-2">
               <li>
                 <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
-                Explore
+                <Link href="/dao/list">
+                  <a>Explore</a>
+                </Link>
               </li>
               <li>
                 <BeakerIcon className="inline w-5 h-5 mr-2 mb-1" />
-                Create
+                <Link href="/dao/create">
+                  <a>Create</a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -70,11 +74,15 @@ function Nav() {
             <ul className="list-none ml-2">
               <li>
                 <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
-                Explore
+                <Link href="/multisig/list">
+                  <a>Explore</a>
+                </Link>
               </li>
               <li>
                 <BeakerIcon className="inline w-5 h-5 mr-2 mb-1" />
-                Create
+                <Link href="/multisig/create">
+                  <a>Create</a>
+                </Link>
               </li>
             </ul>
           </div>
