@@ -161,9 +161,9 @@ const CreateMultisig: NextPage = () => {
           />
         </td>
         {idx > 1 && (
-          <td className="absolute p-2.5">
+          <td className="p-2.5">
             <button
-              className="btn btn-outline btn-circle btn-sm"
+              className="btn btn-outline btn-circle btn-xs"
               onClick={(e) => {
                 e.preventDefault()
                 setCount(count - 1)
@@ -179,13 +179,13 @@ const CreateMultisig: NextPage = () => {
 
   return (
     <WalletLoader>
-      <div className="text-left container mx-auto max-w-lg">
-        <h1 className="text-5xl font-bold mb-8">New Multisig</h1>
+      <div className="text-left container max-w-lg p-6">
+        <h1 className="text-3xl font-semibold mb-8">New multisig</h1>
         <form className="container mx-auto max-w-lg mb-8" onSubmit={onSubmit}>
           <table className="w-full mb-8">
             <thead>
               <tr>
-                <th>Name</th>
+                <th className="label-text font-bold">Name</th>
               </tr>
             </thead>
             <tbody>
@@ -204,7 +204,7 @@ const CreateMultisig: NextPage = () => {
           <table className="w-full mb-8">
             <thead>
               <tr>
-                <th>Description</th>
+                <th className="label-text font-bold">Description</th>
               </tr>
             </thead>
             <tbody>
@@ -223,8 +223,8 @@ const CreateMultisig: NextPage = () => {
           <table className="w-full mb-8">
             <thead>
               <tr>
-                <th>Address</th>
-                <th>Weight</th>
+                <th className="label-text font-bold">Address</th>
+                <th className="label-text font-bold">Weight</th>
               </tr>
             </thead>
             <tbody>
@@ -234,7 +234,7 @@ const CreateMultisig: NextPage = () => {
               <tr>
                 <td colSpan={2} className="text-right">
                   <button
-                    className="btn btn-outline btn-primary btn-md text-md"
+                    className="btn btn-outline btn-primary btn-sm text-md"
                     onClick={(e) => {
                       e.preventDefault()
                       setCount(count + 1)
@@ -250,11 +250,11 @@ const CreateMultisig: NextPage = () => {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left">
+                <th className="text-left label-text font-bold">
                   Threshold
                   <HelpTooltip text="The amount of voting weight that must commit to a proposal before it's executed" />
                 </th>
-                <th className="text-left box-border px-2 text-sm">
+                <th className="text-left box-border px-2 text-sm label-text font-bold">
                   Max Voting Period (seconds)
                   <HelpTooltip text="The time during which a proposal is open for voting. Proposals expire after this period passes" />
                 </th>
@@ -290,7 +290,7 @@ const CreateMultisig: NextPage = () => {
           </table>
           {!complete && (
             <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
+              className={`mt-3 btn btn-primary btn-md font-semibold hover:text-base-100 normal-case text-lg w-full ${
                 loading ? 'loading' : ''
               }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}

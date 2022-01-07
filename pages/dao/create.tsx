@@ -20,6 +20,7 @@ import {
 import { errorNotify, successNotify } from 'util/toast'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
 import { cleanChainError } from 'util/cleanChainError'
+import { ClipboardListIcon, PaperClipIcon } from '@heroicons/react/outline'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 const DEFAULT_UNSTAKING_DURATION_SECONDS = '43200' // 12 hours
@@ -277,13 +278,16 @@ const CreateDao: NextPage = () => {
   }
   return (
     <WalletLoader>
-      <div className="text-left container mx-auto max-w-lg">
-        <h1 className="text-5xl font-bold my-8">New DAO</h1>
+      <div className="text-left container max-w-lg p-6">
+        <h1 className="text-3xl font-semibold">New DAO</h1>
         <form
           className="container mx-auto max-w-lg mb-8"
           onSubmit={handleSubmit<DaoCreateData>(onSubmit)}
         >
-          <h2 className="mt-10 mb-6 text-2xl">Basic Config</h2>
+          <h2 className="mt-10 mb-6 text-lg">
+            <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Basic config
+          </h2>
           <div className="px-3">
             <InputField
               fieldName="label"
@@ -314,7 +318,7 @@ const CreateDao: NextPage = () => {
               onClick={() => setTokenMode(TokenMode.Create)}
               type="button"
             >
-              Create New Token
+              Create new token
             </button>
             <button
               className={
@@ -324,7 +328,7 @@ const CreateDao: NextPage = () => {
               onClick={() => setTokenMode(TokenMode.UseExisting)}
               type="button"
             >
-              Use Existing Token
+              Use existing token
             </button>
             <div className="flex-1 cursor-default tab tab-lifted"></div>
           </div>
@@ -353,7 +357,7 @@ const CreateDao: NextPage = () => {
                   validate={isValidTicker}
                 />
 
-                <h2 className="mt-8 mb-4 text-xl">Token Distribution</h2>
+                <h2 className="mt-8 mb-4 text-lg">Token distribution</h2>
 
                 <InputField
                   label="DAO Initial Balance"
@@ -388,7 +392,7 @@ const CreateDao: NextPage = () => {
                     <tr>
                       <td colSpan={2} className="text-right">
                         <button
-                          className="btn btn-outline btn-primary btn-md text-md"
+                          className="btn btn-outline btn-primary btn-sm text-md"
                           onClick={(e) => {
                             e.preventDefault()
                             setCount(count + 1)
@@ -416,7 +420,10 @@ const CreateDao: NextPage = () => {
             )}
           </div>
 
-          <h2 className="my-8 text-2xl">Voting Config</h2>
+          <h2 className="my-8 text-lg">
+            <ClipboardListIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Voting Config
+          </h2>
           <div className="grid grid-cols-2 gap-x-4 mb-8 px-3">
             <InputField
               fieldName="threshold"
@@ -513,14 +520,14 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`mt-8 btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
+              className={`mt-3 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg w-full ${
                 loading ? 'loading' : ''
               }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}
             >
-              Create Dao
+              Create DAO
             </button>
           )}
         </form>

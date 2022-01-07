@@ -41,7 +41,7 @@ function WalletConnect() {
 
 function Nav() {
   return (
-    <nav className="p-6 text-lg min-h-screen flex flex-col justify-between border-r border-base-300">
+    <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
         <div className="flex items-center">
           <Link href="/">
