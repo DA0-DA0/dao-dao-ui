@@ -3,8 +3,16 @@ import Link from 'next/link'
 import ThemeToggle from 'components/ThemeToggle'
 import NavContractLabel from 'components/NavContractLabel'
 import Logo from 'components/Logo'
+import {
+  BeakerIcon,
+  CashIcon,
+  ExternalLinkIcon,
+  MapIcon,
+} from '@heroicons/react/outline'
 
-function Nav() {
+const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
+
+function WalletConnect() {
   const { walletAddress, connectWallet, disconnect } = useSigningClient()
   const handleConnect = () => {
     if (walletAddress.length === 0) {
@@ -14,46 +22,85 @@ function Nav() {
     }
   }
 
-  const PUBLIC_SITE_ICON_URL = process.env.NEXT_PUBLIC_SITE_ICON_URL || ''
-  const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
-
   return (
-    <div className="border-b w-screen px-2 md:px-16">
-      <nav className="flex flex-wrap text-center md:text-left md:flex flex-row w-full justify-between items-center py-4 ">
+    <div className="flex flex-grow md:flex-grow-0 mt-4">
+      <button
+        className="block btn btn-outline bg-primary text-primary-content w-full normal-case truncate p-2 text-left"
+        onClick={handleConnect}
+      >
+        {walletAddress || (
+          <>
+            <CashIcon className="inline w-6 h-6 mr-1" />
+            Connect Wallet
+          </>
+        )}
+      </button>
+    </div>
+  )
+}
+
+function Nav() {
+  return (
+    <nav className="px-6 py-6 text-lg min-h-screen flex flex-col justify-between border-r border-secondary">
+      <div className="">
         <div className="flex items-center">
           <Link href="/">
             <a>
-              {PUBLIC_SITE_ICON_URL.length > 0 ? (
-                <Logo
-                  height={32}
-                  width={32}
-                  alt={`${PUBLIC_SITE_TITLE} Logo`}
-                />
-              ) : (
-                <span className="text-2xl">⚛️ </span>
-              )}
+              <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
             </a>
           </Link>
-          <Link href="/">
-            <a className="ml-1 md:ml-2 link link-hover font-semibold text-xl md:text-2xl align-top">
-              {PUBLIC_SITE_TITLE}
-            </a>
-          </Link>
-          <NavContractLabel />
         </div>
-        <ThemeToggle />
-        <div className="flex flex-grow md:flex-grow-0 max-w-full">
-          <button
-            className={`block btn btn-outline btn-primary w-full max-w-full truncate ${
-              walletAddress.length > 0 ? 'lowercase' : ''
-            }`}
-            onClick={handleConnect}
-          >
-            {walletAddress || 'Connect Wallet'}
-          </button>
+        <WalletConnect />
+        <div className="ml-1">
+          <div className="mt-3">
+            <h3 className="text-secondary font-mono mb-1">Daos</h3>
+            <ul className="list-none ml-2">
+              <li>
+                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Explore
+              </li>
+              <li>
+                <BeakerIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Create
+              </li>
+            </ul>
+          </div>
+          <div className="mt-3">
+            <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
+            <ul className="list-none ml-2">
+              <li>
+                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Explore
+              </li>
+              <li>
+                <BeakerIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Create
+              </li>
+            </ul>
+          </div>
         </div>
-      </nav>
-    </div>
+      </div>
+      <div className="ml-1">
+        <h3 className="text-secondary font-mono mb-1">dao dao v0.2</h3>
+        <ul className="ml-2 list-none">
+          <li>
+            <ThemeToggle />
+          </li>
+          <li>
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Docs
+          </li>
+          <li>
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
+            GitHub
+          </li>
+          <li>
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Twitter
+          </li>
+        </ul>
+      </div>
+    </nav>
   )
 }
 
