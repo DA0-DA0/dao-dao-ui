@@ -47,11 +47,12 @@ export const onChainProposalsSelector = selectorFamily<
   {
     contractAddress: string
     startBefore: number
+    limit: number
   }
 >({
   key: 'onChainProposals',
   get:
-    ({ contractAddress, startBefore }) =>
+    ({ contractAddress, startBefore, limit }) =>
     async ({ get }) => {
       // While this looks like a no-op, it forces a dependency on
       // the proposalRequestId, which can be incremented to force
@@ -62,13 +63,12 @@ export const onChainProposalsSelector = selectorFamily<
       const { proposals } = await client.queryContractSmart(contractAddress, {
         reverse_proposals: {
           ...(startBefore && { start_before: startBefore }),
-          limit: 10,
+          limit,
         },
       })
       return proposals
     },
 })
-
 const queryProposal =
   <T>(key: string, keyedResult?: string) =>
   ({
@@ -79,33 +79,16 @@ const queryProposal =
       const client = get(cosmWasmClient)
       const result = await client.queryContractSmart(
         contractAddress,
-        startBefore,
-        limit,
-      }: {
-        contractAddress: string
-        startBefore: number
-        limit: number
-      }) =>
-      async ({ get }) => {
-        const requestId = get(proposalsRequestIdAtom)
-        console.log(`fetching proposals, requestId: ${requestId}`)
-        const client = get(cosmWasmClient)
-        const { proposals } = await client.queryContractSmart(contractAddress, {
-        // proposalParam(key, proposalId) ?
-          reverse_proposals: {
-            ...(startBefore && { start_before: startBefore }),
-            limit: limit,
-          },
-        })
-        //if (keyedResult) {
-        //return result[keyedResult]
-      //}
-
-        return proposals
-      },
+        proposalParam(key, proposalId)
+      )
+      if (keyedResult) {
+        return result[keyedResult]
+      }
+      return result
+    }
   }
 
-  export const vote = (
+export const vote = (
   signingClient: SigningCosmWasmClient,
   { contractAddress, proposalId, walletAddress }: ProposalExecuteParams
 ): ((vote: 'yes' | 'no') => Promise<ExecuteResult>) => {
@@ -120,7 +103,7 @@ const queryProposal =
 
 export const voteSelector = selectorFamily<any, any>({
   key: 'vote',
-  get: queryProposal('query_vote', 'vote')
+  get: queryProposal('query_vote', 'vote'),
 })
 
 export const proposalSelector = selectorFamily<

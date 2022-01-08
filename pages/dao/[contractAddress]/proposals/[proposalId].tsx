@@ -70,75 +70,95 @@ const Proposal: NextPage = () => {
   //   tally,
   // } = useProposal(contractAddress as string, proposalId)
 
+  if (!proposal) {
+    return (
+      <div className="grid bg-base-100 place-items-center">
+        <div className="text-center m-8">No proposal with that ID found.</div>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col w-full">
       <div className="grid bg-base-100 place-items-center">
-        {!proposal ? (
-          <div className="text-center m-8">No proposal with that ID found.</div>
-        ) : (
-          <div className="mx-auto max-w-prose w-screen text-left">
-            <div className="justify-left flex">
-              <Link href={`/dao/${contractAddress}/proposals`}>
-                <a className="link">{'< Back'}</a>
-              </Link>
-            </div>
+        <div className="mx-auto max-w-prose w-screen text-left">
+          <div className="justify-left flex">
+            <Link href={`/dao/${contractAddress}/proposals`}>
+              <a className="link">{'< Back'}</a>
+            </Link>
+          </div>
 
-            <ProposalDetails
-              proposal={proposal}
-              walletAddress={walletAddress}
-              votes={votes}
-              vote={vote}
-              execute={execute}
-              close={close}
-              tally={tally}
-              multisig={false}
+          <ProposalDetails
+            proposal={proposal}
+            walletAddress={walletAddress}
+            votes={votes}
+            vote={vote}
+            execute={execute}
+            close={close}
+            tally={tally}
+            multisig={false}
+          />
+
+          {error && (
+            <LineAlert
+              className="mt-2"
+              variant="error"
+              msg={cleanChainError(error)}
             />
+          )}
 
-            {error && (
-              <LineAlert className="mt-2" variant="error" msg={error} />
-            )}
-
-            {transactionHash.length > 0 && (
-              <div className="mt-8">
-                <LineAlert
-                  variant="success"
-                  msg={`Success! Transaction Hash: ${transactionHash}`}
-                />
-              </div>
-
-              <ProposalDetails
-                proposal={proposal}
-                walletAddress={walletAddress}
-                votes={votes}
-                vote={vote}
-                execute={execute}
-                close={close}
-                tally={tally}
-                multisig={false}
+          {transactionHash.length > 0 && (
+            <div className="mt-8">
+              <LineAlert
+                variant="success"
+                msg={`Success! Transaction Hash: ${transactionHash}`}
               />
-
-              {error && (
-                <LineAlert
-                  className="mt-2"
-                  variant="error"
-                  msg={cleanChainError(error)}
-                />
-              )}
-
-              {transactionHash.length > 0 && (
-                <div className="mt-8">
-                  <LineAlert
-                    variant="success"
-                    msg={`Success! Transaction Hash: ${transactionHash}`}
-                  />
-                </div>
-              )}
             </div>
           )}
         </div>
       </div>
     </div>
   )
+
+  // return (
+  //   <div className="flex flex-col w-full">
+  //     <div className="grid bg-base-100 place-items-center">
+  //       {!proposal ? (
+  //         <div className="text-center m-8">No proposal with that ID found.</div>
+  //       ) : (
+  //         <div className="mx-auto max-w-prose w-screen text-left">
+  //           <div className="justify-left flex">
+  //             <Link href={`/dao/${contractAddress}/proposals`}>
+  //               <a className="link">{'< Back'}</a>
+  //             </Link>
+  //           </div>
+
+  //           <ProposalDetails
+  //             proposal={proposal}
+  //             walletAddress={walletAddress}
+  //             votes={votes}
+  //             vote={vote}
+  //             execute={execute}
+  //             close={close}
+  //             tally={tally}
+  //             multisig={false}
+  //           />
+
+  //           {error && (
+  //             <LineAlert className="mt-2" variant="error" msg={cleanChainError(error)} />
+  //           )}
+
+  //           {transactionHash.length > 0 && (
+  //             <div className="mt-8">
+  //               <LineAlert
+  //                 variant="success"
+  //                 msg={`Success! Transaction Hash: ${transactionHash}`}
+  //               />
+  //             </div>
+  //         )}
+  //       </div>
+  //       </div>
+  //   </div>
+  // )
 }
 
 export default Proposal
