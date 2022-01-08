@@ -118,7 +118,18 @@ export default function InputField<
       showErrorMessage={showErrorMessage}
     />
   )
-  const inputComponent = (
+  const inputComponent = type === 'textarea' ? (
+    <textarea {...register(fieldName, options)}
+    placeholder={placeholder}
+      readOnly={readOnly}
+      onChange={onChange as any}
+      className={
+          errorText
+          ? `block box-border m-0 w-full rounded input input-bordered input-error`
+          : `block box-border m-0 w-full rounded input input-bordered`
+      }
+      autoComplete={autoComplete} />
+  ) : (
     <input
       {...register(fieldName, options)}
       className={

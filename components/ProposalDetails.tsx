@@ -1,4 +1,3 @@
-import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
 import {
@@ -46,12 +45,14 @@ function ProposalDetails({
         <ProposalStatus status={proposal.status} />
       </div>
 
-      <Markdown
+      { /* TODO(gavin.doughtie): re-implement markdown */}
+      <pre>{proposal.description}</pre>
+      {/* <Markdown
         className="mb-8"
         readOnly={true}
         dark={themeContext.theme === 'junoDark'}
         value={proposal.description}
-      />
+      /> */}
 
       {proposalMessageContent}
 
