@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer, useState } from 'react'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import HelpTooltip from 'components/HelpTooltip'
-import { useSigningClient } from 'contexts/cosmwasm'
 import { useThemeContext } from 'contexts/theme'
 import { useCw20IncreaseAllowance } from 'hooks/cw20'
 import { useDaoConfig } from 'hooks/dao'
@@ -18,7 +17,6 @@ import {
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import { useForm } from 'react-hook-form'
-import Editor from 'rich-markdown-editor'
 import { isValidAddress } from 'util/isValidAddress'
 import {
   labelForMessage,
@@ -339,18 +337,16 @@ export default function ProposalEditor({
                 fieldErrorMessage={fieldErrorMessage}
                 onChange={(e) => setProposalTitle(e?.target?.value)}
               />
-              <InputFieldLabel
-                errorText={proposalDescriptionErrorMessage}
+              <InputField
                 fieldName="description"
+                errorMessage={proposalDescriptionErrorMessage}
+                fieldErrorMessage={fieldErrorMessage}
+                register={register}
                 label="Description"
                 toolTip="Your proposal description"
-              />
-              <Editor
-                className={editorClassName}
-                onChange={handleDescriptionChange}
+                type="textarea"
+                onChange={(e) => handleDescriptionChange(() => e.target.value)}
                 defaultValue={proposal.description}
-                dark={themeContext.theme === 'junoDark'}
-                id="description"
               />
               <label htmlFor="message-list" className="block mt-4 text-xl">
                 Messages{' '}

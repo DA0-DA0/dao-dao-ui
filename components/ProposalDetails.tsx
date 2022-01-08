@@ -1,4 +1,3 @@
-import Markdown from 'rich-markdown-editor'
 import VoteButtons from 'components/VoteButtons'
 import { useThemeContext } from 'contexts/theme'
 import {
@@ -23,7 +22,7 @@ function ProposalDetails({
   proposal: ProposalResponse
   walletAddress: string
   votes: VoteInfo[]
-  vote: (arg0: string) => Promise<void>
+  vote?: (arg0: 'yes' | 'no') => Promise<void>
   execute: () => void
   close: () => void
   tally: ProposalTallyResponse | undefined
@@ -46,18 +45,20 @@ function ProposalDetails({
         <ProposalStatus status={proposal.status} />
       </div>
 
-      <Markdown
+      {/* TODO(gavin.doughtie): re-implement markdown */}
+      <pre>{proposal.description}</pre>
+      {/* <Markdown
         className="mb-8"
         readOnly={true}
         dark={themeContext.theme === 'junoDark'}
         value={proposal.description}
-      />
+      /> */}
 
       {proposalMessageContent}
 
       <VoteButtons
-        onVoteYes={vote.bind(null, 'yes')}
-        onVoteNo={vote.bind(null, 'no')}
+        onVoteYes={vote?.bind(null, 'yes')}
+        onVoteNo={vote?.bind(null, 'no')}
         votes={votes}
         walletAddress={walletAddress}
         status={proposal.status}

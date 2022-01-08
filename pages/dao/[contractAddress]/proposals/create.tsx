@@ -10,7 +10,7 @@ import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
 import { successNotify } from 'util/toast'
 import { useRecoilState } from 'recoil'
-import { proposalsCreatedAtom } from 'atoms/proposals'
+import { proposalsCreatedAtom, proposalsRequestIdAtom } from 'atoms/proposals'
 import { cleanChainError } from 'util/cleanChainError'
 
 const ProposalCreate: NextPage = () => {
@@ -20,6 +20,9 @@ const ProposalCreate: NextPage = () => {
   const { walletAddress, signingClient } = useSigningClient()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [proposalsRequestId, setProposalsRequestId] = useRecoilState(
+    proposalsRequestIdAtom
+  )
 
   // Used to notify the proposal list that it needs to update to
   // include the newly created proposal.
@@ -47,6 +50,8 @@ const ProposalCreate: NextPage = () => {
         memo
       )
       setLoading(false)
+      // Force a re-query of the proposals list
+      setProposalsRequestId(proposalsRequestId + 1)
       if (response) {
         const [{ events }] = response.logs
         const [wasm] = events.filter((e) => e.type === 'wasm')
