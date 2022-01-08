@@ -85,7 +85,7 @@ const DaoHome: NextPage = () => {
   const stakedPercent = (100 * stakedTotal) / Number(tokenInfo?.total_supply)
 
   return (
-    <div className="grid grid-cols-6">
+    <div className="grid grid-cols-6 overflow-auto mb-3">
       <div className="w-full col-span-4">
         <div className="h-2/5 bg-gradient-radial from-accent via-base-100">
           <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
@@ -157,7 +157,7 @@ const DaoHome: NextPage = () => {
           </div>
         </body>
       </div>
-      <div className="col-start-5 col-span-2 border border-l border-base-300 p-6 h-screen">
+      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
         <h2 className="font-medium text-lg">Treasury</h2>
         <h3 className="font-mono text-sm mt-6 text-secondary">
           DAO's Balances

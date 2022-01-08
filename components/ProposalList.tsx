@@ -1,11 +1,17 @@
 import { Expiration, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import {
+  CloudDownloadIcon,
+  DownloadIcon,
+  PlusIcon,
+} from '@heroicons/react/outline'
+import {
   proposalListAtom,
   proposalsCreatedAtom,
   proposalsRequestStartBeforeAtom,
 } from 'atoms/proposals'
 import Link from 'next/link'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { proposalCount } from 'selectors/daos'
 import { onChainProposalsSelector } from 'selectors/proposals'
 import ProposalStatus from './ProposalStatus'
 
@@ -155,19 +161,37 @@ export function ProposalList({ contractAddress }: { contractAddress: string }) {
     })
   }
 
+  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
+  const showLoadMore = propList.length < proposalsTotal
+
   if (!propList.length) {
     return <p>no proposals</p>
   }
   return (
-    <ul>
-      {propList.map((prop, idx) => (
-        <ProposalLine
-          prop={prop}
-          key={prop.id}
-          border={idx !== propList.length - 1}
-          contractAddress={contractAddress}
-        />
-      ))}
-    </ul>
+    <div>
+      <ul>
+        {propList.map((prop, idx) => (
+          <ProposalLine
+            prop={prop}
+            key={prop.id}
+            border={idx !== propList.length - 1 || showLoadMore}
+            contractAddress={contractAddress}
+          />
+        ))}
+      </ul>
+      {showLoadMore && (
+        <button
+          className="btn btn-sm btn-outline normal-case text-left text-sm font-mono mt-3"
+          onClick={() => {
+            const proposal = propList && propList[propList.length - 1]
+            if (proposal) {
+              setStartBefore(proposal.id)
+            }
+          }}
+        >
+          Load more <DownloadIcon className="inline w-5 h-5 ml-1" />
+        </button>
+      )}
+    </div>
   )
 }
