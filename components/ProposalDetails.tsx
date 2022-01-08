@@ -45,7 +45,7 @@ function ProposalDetails({
         <ProposalStatus status={proposal.status} />
       </div>
 
-      { /* TODO(gavin.doughtie): re-implement markdown */}
+      {/* TODO(gavin.doughtie): re-implement markdown */}
       <pre>{proposal.description}</pre>
       {/* <Markdown
         className="mb-8"

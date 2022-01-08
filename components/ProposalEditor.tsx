@@ -345,7 +345,7 @@ export default function ProposalEditor({
                 label="Description"
                 toolTip="Your proposal description"
                 type="textarea"
-                onChange={e => handleDescriptionChange(() => e.target.value)}
+                onChange={(e) => handleDescriptionChange(() => e.target.value)}
                 defaultValue={proposal.description}
               />
               <label htmlFor="message-list" className="block mt-4 text-xl">

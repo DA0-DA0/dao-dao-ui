@@ -20,7 +20,9 @@ const ProposalCreate: NextPage = () => {
   const { walletAddress, signingClient } = useSigningClient()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [proposalsRequestId, setProposalsRequestId] = useRecoilState(proposalsRequestIdAtom)
+  const [proposalsRequestId, setProposalsRequestId] = useRecoilState(
+    proposalsRequestIdAtom
+  )
 
   // Used to notify the proposal list that it needs to update to
   // include the newly created proposal.
