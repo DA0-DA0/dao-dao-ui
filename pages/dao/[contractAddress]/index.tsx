@@ -5,6 +5,7 @@ import {
   LibraryIcon,
   LinkIcon,
   PencilIcon,
+  PlusIcon,
   PlusSmIcon,
   UserIcon,
 } from '@heroicons/react/outline'
@@ -30,6 +31,7 @@ import {
   walletStakedTokenBalance,
   walletTokenBalance,
 } from 'selectors/treasury'
+import { ProposalList } from 'components/ProposalList'
 
 function BalanceCard({
   denom,
@@ -114,7 +116,7 @@ const DaoHome: NextPage = () => {
               </div>
             </div>
 
-            <div className="w-full border-y border-neutral py-1">
+            <div className="w-full border-y border-neutral py-2">
               <ul className="list-none flex justify-around text-sm">
                 <li>
                   <CurrencyDollarIcon className="w-5 h-5 mb-1 mr-1 inline" />
@@ -139,7 +141,21 @@ const DaoHome: NextPage = () => {
               </ul>
             </div>
           </div>
-        </div>
+        </div>{' '}
+        {/* end header */}
+        <body className="px-6">
+          <div className="flex justify-between items-center">
+            <h2 className="font-medium text-lg">Proposals</h2>
+            <Link href={`/dao/${contractAddress}/proposals/create`}>
+              <button className="btn btn-sm btn-outline normal-case text-left">
+                New proposal <PlusIcon className="inline w-5 h-5 ml-1" />
+              </button>
+            </Link>
+          </div>
+          <div className="px-4 mt-4">
+            <ProposalList contractAddress={contractAddress} />
+          </div>
+        </body>
       </div>
       <div className="col-start-5 col-span-2 border border-l border-base-300 p-6 h-screen">
         <h2 className="font-medium text-lg">Treasury</h2>

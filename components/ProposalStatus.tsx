@@ -5,10 +5,7 @@ type ProposalStatusProps = { status: string }
 
 function ProposalStatus({ status }: ProposalStatusProps) {
   return (
-    <div className="text-base" style={{ color: STATUS_COLORS[status] }}>
-      {StatusIcons[status]}
-      <span className="ml-1 font-medium capitalize align-middle">{status}</span>
-    </div>
+    <div style={{ color: STATUS_COLORS[status] }}>{StatusIcons[status]}</div>
   )
 }
 
