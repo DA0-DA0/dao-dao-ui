@@ -187,6 +187,7 @@ export function makeDaoInstantiateWithNewTokenMessage(
     gov_token: {
       instantiate_new_cw20: {
         cw20_code_id: CW20_CODE_ID,
+        code_id: CW20_CODE_ID,
         label: tokenName,
         msg: {
           name: tokenName,
