@@ -1,5 +1,5 @@
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { atom } from 'recoil'
+import { atom, atomFamily } from 'recoil'
 
 export const proposalsRequestIdAtom = atom<number>({
   key: 'proposalsRequestId',
