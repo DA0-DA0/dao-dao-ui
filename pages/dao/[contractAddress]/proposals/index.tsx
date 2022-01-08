@@ -35,11 +35,15 @@ const DaoProposals: NextPage = () => {
     proposalsRequestStartBeforeAtom
   )
 
-  const [propList, setPropList] = useRecoilState(proposalListAtom)
+  const [propList, setPropList] = useRecoilState(
+    proposalListAtom(contractAddress)
+  )
 
   // Update the proposal list with any proposals that were created
   // since we were last here.
-  const [propsCreated, setPropsCreated] = useRecoilState(proposalsCreatedAtom)
+  const [propsCreated, setPropsCreated] = useRecoilState(
+    proposalsCreatedAtom(contractAddress)
+  )
   const newProps = useRecoilValue(
     onChainProposalsSelector({
       contractAddress,

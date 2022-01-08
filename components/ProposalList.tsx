@@ -98,9 +98,13 @@ export function ProposalList({ contractAddress }: { contractAddress: string }) {
     proposalsRequestStartBeforeAtom
   )
   // The proposals that we have loaded.
-  const [propList, setPropList] = useRecoilState(proposalListAtom)
+  const [propList, setPropList] = useRecoilState(
+    proposalListAtom(contractAddress)
+  )
   // The number of proposals that have been created by the visitor and not added to the propList
-  const [propsCreated, setPropsCreated] = useRecoilState(proposalsCreatedAtom)
+  const [propsCreated, setPropsCreated] = useRecoilState(
+    proposalsCreatedAtom(contractAddress)
+  )
 
   // Update the proposal list with any proposals that were created
   // since we were last here.

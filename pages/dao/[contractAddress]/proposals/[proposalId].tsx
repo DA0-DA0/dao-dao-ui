@@ -20,26 +20,14 @@ import {
   votesSelector,
 } from 'selectors/proposals'
 import { cleanChainError } from 'util/cleanChainError'
-import { defaultExecuteFee } from 'util/fee'
+import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
+import { useRecoilValue } from 'recoil'
+import { daoSelector } from 'selectors/daos'
 
 const Proposal: NextPage = () => {
   let router = useRouter()
-  const proposalParams: ProposalSelectorParams =
-    router.query as unknown as ProposalSelectorParams
-  const contractAddress = router.query.contractAddress as string
-  const proposalValue = proposalSelector(proposalParams)
-  const proposal = useRecoilValue(proposalValue)
-  const proposalRefresh = useRecoilRefresher_UNSTABLE(proposalValue)
-  const walletAddress = useRecoilValue(walletAddressSelector)
-
-  const votes = useRecoilValue(votesSelector(proposalParams))
-  const tally = useRecoilValue(tallySelector(proposalParams))
-  const signingClient = useRecoilValueLoadable(cosmWasmSigningClient)
-  const [transactionHash, setTransactionHash] = useState('')
-  const [error, setError] = useState(undefined)
-  const [proposalsRequestId, setProposalsRequestId] = useRecoilState(
-    proposalsRequestIdAtom
-  )
+  let contractAddress = router.query.contractAddress as string
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
 
   let execute = () => {}
   let vote = undefined
@@ -84,25 +72,40 @@ const Proposal: NextPage = () => {
     )
   }
   return (
-    <div className="flex flex-col w-full">
-      <div className="grid bg-base-100 place-items-center">
-        <div className="mx-auto max-w-prose w-screen text-left">
-          <div className="justify-left flex">
-            <Link href={`/dao/${contractAddress}/proposals`}>
-              <a className="link">{'< Back'}</a>
+    <WalletLoader loading={loading}>
+      <div className="grid grid-cols-6">
+        <div className="w-full col-span-4 p-6">
+          <div className="text-md font-medium text-secondary-focus mb-6">
+            <ArrowNarrowLeftIcon className="inline w-5 h-5 mr-2 mb-1" />
+            <Link href="/dao/list">
+              <a className="mr-2">DAOs</a>
+            </Link>
+            /
+            <Link href={`/dao/${contractAddress}`}>
+              <a className="mx-2">{daoInfo.config.name}</a>
+            </Link>
+            /
+            <Link href={router.asPath}>
+              <a className="ml-2">Proposal #{proposalId}</a>
             </Link>
           </div>
 
-          <ProposalDetails
-            proposal={proposal}
-            walletAddress={walletAddress}
-            votes={votes}
-            vote={vote}
-            execute={execute}
-            close={close}
-            tally={tally}
-            multisig={false}
-          />
+          {!proposal ? (
+            <div className="text-center m-8">
+              No proposal with that ID found.
+            </div>
+          ) : (
+            <div>
+              <ProposalDetails
+                proposal={proposal}
+                walletAddress={walletAddress}
+                votes={votes}
+                vote={vote}
+                execute={execute}
+                close={close}
+                tally={tally}
+                multisig={false}
+              />
 
           {error && (
             <LineAlert

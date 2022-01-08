@@ -180,7 +180,7 @@ export default function ProposalEditor({
 
     return (
       <li
-        className="py-8"
+        className="my-4"
         key={mapEntry.id}
         onClick={() =>
           dispatch({
@@ -323,7 +323,7 @@ export default function ProposalEditor({
       <div className="grid bg-base-100">
         <div className="flex">
           <div className="text-left container mx-auto">
-            <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
+            <h1 className="text-2xl font-medium mb-3">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
               onSubmit={handleSubmit<any>(onSubmit)}
@@ -331,7 +331,7 @@ export default function ProposalEditor({
               <InputField
                 fieldName="label"
                 label="Name"
-                toolTip="Name the Proposal"
+                toolTip="The name of the Proposal"
                 errorMessage="Proposal name required"
                 register={register}
                 fieldErrorMessage={fieldErrorMessage}
@@ -348,16 +348,16 @@ export default function ProposalEditor({
                 onChange={(e) => handleDescriptionChange(() => e.target.value)}
                 defaultValue={proposal.description}
               />
-              <label htmlFor="message-list" className="block mt-4 text-xl">
+              <label htmlFor="message-list" className="block mt-6 text-lg">
                 Messages{' '}
                 <HelpTooltip text="Messages that will be executed on chain." />
               </label>
-              <ul id="message-list">{messages}</ul>
+              <ul id="message-list list-none">{messages}</ul>
               <br />
               <MessageSelector actions={messageActions}></MessageSelector>
               <br />
               <button
-                className={`btn btn-primary text-lg mt-8 ml-auto ${
+                className={`btn btn-primary btn-md font-semibold normal-case text-lg mt-6 ml-auto ${
                   loading ? 'loading' : ''
                 }`}
                 style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
@@ -368,8 +368,8 @@ export default function ProposalEditor({
                 }}
               >
                 {deposit && deposit !== '0'
-                  ? 'Deposit & Create Propsal'
-                  : 'Create Proposal'}
+                  ? 'Deposit & create propsal'
+                  : 'Create proposal'}
               </button>
               {error && (
                 <div className="mt-8">
