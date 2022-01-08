@@ -1,14 +1,9 @@
-import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  DefaultValue,
-  selectorFamily,
-  TransactionInterface_UNSTABLE,
-  useRecoilTransaction_UNSTABLE,
-} from 'recoil'
-import { cosmWasmClient, cosmWasmSigningClient } from './cosm'
-import { proposalsRequestIdAtom } from 'atoms/proposals'
-import { defaultExecuteFee } from 'util/fee'
 import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { proposalsRequestIdAtom } from 'atoms/proposals'
+import { selectorFamily } from 'recoil'
+import { defaultExecuteFee } from 'util/fee'
+import { cosmWasmClient } from './cosm'
 
 export type ProposalIdInput = string | number
 
