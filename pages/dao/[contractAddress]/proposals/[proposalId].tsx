@@ -50,9 +50,9 @@ const Proposal: NextPage = () => {
     })
     vote = async (vote: 'yes' | 'no') => {
       const results = await setVote(vote)
-      setTransactionHash(results.transactionHash)
       setProposalsRequestId(proposalsRequestId + 1)
       proposalRefresh()
+      setTransactionHash(results.transactionHash)
     }
 
     if (contractAddress) {
