@@ -1,27 +1,25 @@
-import { useState } from 'react'
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-
+import { proposalsRequestIdAtom } from 'atoms/proposals'
 import LineAlert from 'components/LineAlert'
 import ProposalDetails from 'components/ProposalDetails'
+import type { NextPage } from 'next'
 import Link from 'next/link'
-import { cleanChainError } from 'util/cleanChainError'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
 import {
-  useRecoilValue,
-  useRecoilTransaction_UNSTABLE,
-  useRecoilValueLoadable,
-  useRecoilState,
   useRecoilRefresher_UNSTABLE,
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
 } from 'recoil'
+import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
 import {
-  ProposalSelectorParams,
   proposalSelector,
-  votesSelector,
+  ProposalSelectorParams,
   tallySelector,
   vote as voteFn,
+  votesSelector,
 } from 'selectors/proposals'
-import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
-import { proposalsRequestIdAtom } from 'atoms/proposals'
+import { cleanChainError } from 'util/cleanChainError'
 import { defaultExecuteFee } from 'util/fee'
 
 const Proposal: NextPage = () => {
