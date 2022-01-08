@@ -83,7 +83,7 @@ export const walletTokenBalance = selectorFamily({
         balance: { address: wallet },
       })) as any
       return {
-        amount: response.balance,
+        amount: Number(response.balance),
         address: tokenAddress,
       }
     },

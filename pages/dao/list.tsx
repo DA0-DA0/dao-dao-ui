@@ -132,7 +132,7 @@ const DaoList: NextPage = () => {
         </div>
       </div>
       <div className="col-start-5 col-span-2 border border-l border-base-300 p-6 h-screen">
-        <h2 className="font-medium">Overview</h2>
+        <h2 className="font-medium text-lg">Overview</h2>
         <div className="mt-6">
           <ul className="list-none ml-2 leading-relaxed">
             <li>

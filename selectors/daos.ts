@@ -7,6 +7,7 @@ import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
 export interface MemberStatus {
   member: boolean
@@ -19,6 +20,45 @@ export interface DaoListType {
   dao: any
   weight: number
 }
+
+export const tokenConfig = selectorFamily<TokenInfoResponse, string>({
+  key: 'govTokenConfig',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        token_info: {},
+      })
+      return response
+    },
+})
+
+export const totalStaked = selectorFamily<number, string>({
+  key: 'totalStaked',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        total_staked_at_height: {},
+      })
+      return Number(response.total)
+    },
+})
+
+export const proposalCount = selectorFamily<number, string>({
+  key: 'daoProposalCount',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        proposal_count: {},
+      })
+      return response
+    },
+})
 
 export const isMemberSelector = selectorFamily<MemberStatus, string>({
   key: 'isMember',

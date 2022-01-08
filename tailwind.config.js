@@ -8,7 +8,12 @@ module.exports = {
   },
   darkMode: 'media',
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'gradient-radial':
+          'radial-gradient(ellipse at top, var(--tw-gradient-stops))',
+      },
+    },
   },
   plugins: [require('daisyui')],
   daisyui: {
