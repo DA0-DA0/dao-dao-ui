@@ -34,8 +34,63 @@ import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 import { cleanChainError } from 'util/cleanChainError'
+import { CashIcon, CogIcon, SparklesIcon } from '@heroicons/react/outline'
 
-export default function ProposalEditor({
+enum ProposalTemplate {
+  Custom,
+  Spend,
+  Mint,
+}
+
+function ProposalTemplateSelector({
+  template,
+  selected,
+}: {
+  template: ProposalTemplate
+  selected: boolean
+}) {
+  let center = null
+
+  switch (template) {
+    case ProposalTemplate.Custom:
+      center = (
+        <>
+          <CogIcon className="w-9 h-9" />
+          <p>Custom</p>
+        </>
+      )
+      break
+    case ProposalTemplate.Spend:
+      center = (
+        <>
+          <CashIcon className="w-9 h-9" />
+          <p>Spend</p>
+        </>
+      )
+      break
+    case ProposalTemplate.Mint:
+      center = (
+        <>
+          <SparklesIcon className="w-9 h-9" />
+          <p>Mint</p>
+        </>
+      )
+      break
+  }
+
+  return (
+    <div
+      className={
+        'px-6 py-4 shadow hover:shadow-sm rounded-2xl flex flex-col justify-center items-center bg-gradient-to-b to-base-300' +
+        (selected ? ' from-accent' : ' from-base-300')
+      }
+    >
+      {center}
+    </div>
+  )
+}
+
+export function ProposalEditor({
   initialProposal,
   loading,
   error,
@@ -238,42 +293,32 @@ export default function ProposalEditor({
   }
 
   const addSpendMessage = () => {
-    const validAddress = !!(
-      recipientAddress && isValidAddress(recipientAddress)
-    )
-    if (validAddress) {
-      try {
-        const message = makeSpendMessage('', recipientAddress, contractAddress)
-        const messageType = ProposalMessageType.Spend
-        const action: ProposalAction = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-        dispatch(action)
-      } catch (e) {
-        console.error(e)
+    try {
+      const message = makeSpendMessage('', recipientAddress, contractAddress)
+      const messageType = ProposalMessageType.Spend
+      const action: ProposalAction = {
+        type: 'addMessage',
+        message,
+        messageType,
       }
+      dispatch(action)
+    } catch (e) {
+      console.error(e)
     }
   }
 
   const addMintMessage = () => {
-    const validAddress = !!(
-      recipientAddress && isValidAddress(recipientAddress)
-    )
-    if (validAddress) {
-      try {
-        const message = makeMintMessage('', recipientAddress)
-        const messageType = ProposalMessageType.Mint
-        const action: ProposalAction = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-        dispatch(action)
-      } catch (e) {
-        console.error(e)
+    try {
+      const message = makeMintMessage('', recipientAddress)
+      const messageType = ProposalMessageType.Mint
+      const action: ProposalAction = {
+        type: 'addMessage',
+        message,
+        messageType,
       }
+      dispatch(action)
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -320,19 +365,32 @@ export default function ProposalEditor({
 
   return (
     <div className="flex flex-col w-full flex-row">
-      <div className="grid bg-base-100">
+      <div className="grid grid-cols-5 gap-4">
+        <ProposalTemplateSelector
+          template={ProposalTemplate.Custom}
+          selected={false}
+        />
+        <ProposalTemplateSelector
+          template={ProposalTemplate.Spend}
+          selected={true}
+        />
+        <ProposalTemplateSelector
+          template={ProposalTemplate.Mint}
+          selected={false}
+        />
+      </div>
+      <div className="grid mt-3">
         <div className="flex">
           <div className="text-left container mx-auto">
-            <h1 className="text-2xl font-medium mb-3">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
               onSubmit={handleSubmit<any>(onSubmit)}
             >
               <InputField
                 fieldName="label"
-                label="Name"
-                toolTip="The name of the Proposal"
-                errorMessage="Proposal name required"
+                label="Title"
+                toolTip="The title of the Proposal"
+                errorMessage="Proposal title required"
                 register={register}
                 fieldErrorMessage={fieldErrorMessage}
                 onChange={(e) => setProposalTitle(e?.target?.value)}
@@ -348,12 +406,15 @@ export default function ProposalEditor({
                 onChange={(e) => handleDescriptionChange(() => e.target.value)}
                 defaultValue={proposal.description}
               />
-              <label htmlFor="message-list" className="block mt-6 text-lg">
-                Messages{' '}
-                <HelpTooltip text="Messages that will be executed on chain." />
+              <label htmlFor="message-list" className="label">
+                <span className="label-text text-secondary text-medium mt-3">
+                  Messages{' '}
+                  <HelpTooltip text="Messages that will be executed on chain." />
+                </span>
               </label>
-              <ul id="message-list list-none">{messages}</ul>
-              <br />
+              <ul id="message-list" className="list-none">
+                {messages}
+              </ul>
               <MessageSelector actions={messageActions}></MessageSelector>
               <br />
               <button

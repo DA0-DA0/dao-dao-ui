@@ -55,7 +55,9 @@ export function InputFieldLabel({
   const tooltipComponent = toolTip ? <HelpTooltip text={toolTip} /> : null
   return (
     <label className="label" htmlFor={fieldName}>
-      <span className="label-text font-bold">{label || fieldName}</span>
+      <span className="label-text text-secondary text-medium mt-3">
+        {label || fieldName}
+      </span>
       {errorComponent}
       {tooltipComponent}
     </label>
@@ -118,44 +120,30 @@ export default function InputField<
       showErrorMessage={showErrorMessage}
     />
   )
-  const inputComponent =
-    type === 'textarea' ? (
-      <textarea
-        {...register(fieldName, options)}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        onChange={onChange as any}
-        className={
-          errorText
-            ? `block box-border m-0 w-full rounded input input-bordered input-error`
-            : `block box-border m-0 w-full rounded input input-bordered`
-        }
-        autoComplete={autoComplete}
-      />
-    ) : (
-      <input
-        {...register(fieldName, options)}
-        className={
-          type === 'checkbox'
-            ? 'toggle'
-            : errorText
-            ? `block box-border m-0 w-full rounded input input-bordered input-error`
-            : `block box-border m-0 w-full rounded input input-bordered`
-        }
-        defaultValue={defaultValue}
-        defaultChecked={
-          type === 'checkbox' && defaultValue === 1 ? true : undefined
-        }
-        type={type}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        onChange={onChange}
-        size={size}
-        min={min}
-        max={max}
-        autoComplete={autoComplete}
-      />
-    )
+  const inputComponent = (
+    <input
+      {...register(fieldName, options)}
+      className={
+        type === 'checkbox'
+          ? 'toggle'
+          : errorText
+          ? `block box-border m-0 w-full rounded-lg input input-bordered input-error`
+          : `block box-border m-0 w-full rounded-lg input input-bordered`
+      }
+      defaultValue={defaultValue}
+      defaultChecked={
+        type === 'checkbox' && defaultValue === 1 ? true : undefined
+      }
+      type={type}
+      placeholder={placeholder}
+      readOnly={readOnly}
+      onChange={onChange}
+      size={size}
+      min={min}
+      max={max}
+      autoComplete={autoComplete}
+    />
+  )
 
   return (
     <div className="form-control">

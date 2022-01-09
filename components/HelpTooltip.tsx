@@ -11,7 +11,7 @@ export default function HelpTooltip({
   if (errorText) {
     icon = <BanIcon className="text-error" />
   } else {
-    icon = <InformationCircleIcon />
+    icon = <InformationCircleIcon className="text-secondary" />
   }
   return (
     <div

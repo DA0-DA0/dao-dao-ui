@@ -11,6 +11,16 @@ import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeSpendMessage } from '../util/messagehelpers'
 
+function AmountSelector({
+  onChange,
+  denom,
+}: {
+  onChange: Function
+  denom: string
+}) {
+  return null
+}
+
 export default function SpendEditor({
   dispatch,
   contractAddress,
@@ -81,7 +91,9 @@ export default function SpendEditor({
     <div>
       <div className="form-control">
         <label htmlFor="amount" className="label">
-          <span className="label-text font-bold">Amount</span>
+          <span className="label-text text-secondary text-medium mt-3">
+            Amount
+          </span>
         </label>
         <input
           type="number"
@@ -94,7 +106,9 @@ export default function SpendEditor({
       </div>
       <div className="form-control">
         <label htmlFor="recipientAddress" className="label">
-          <span className="label-text font-bold">Recipient Address</span>
+          <span className="label-text text-secondary text-medium ">
+            Recipient Address
+          </span>
         </label>
         <input
           type="text"

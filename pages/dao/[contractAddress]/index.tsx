@@ -87,7 +87,7 @@ const DaoHome: NextPage = () => {
   return (
     <div className="grid grid-cols-6 overflow-auto mb-3">
       <div className="w-full col-span-4">
-        <div className="h-2/5 bg-gradient-radial from-accent via-base-100">
+        <div className="h-2/5 bg-gradient-radial-t from-accent via-base-100">
           <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
             <div className="text-md font-medium text-secondary-focus">
               <ArrowNarrowLeftIcon className="inline w-5 h-5 mr-2 mb-1" />
