@@ -9,14 +9,16 @@ function get_bytes(s: string) {
 export function isValidTicker(ticker: string): true | string {
   const bytes = get_bytes(ticker)
   if (bytes.length < 3 || bytes.length > 12) {
-    return "Invalid length"
+    return 'Invalid length'
   }
-  return bytes.every((byte) => {
-    if (byte != 45 && (byte < 65 || byte > 90) && (byte < 97 || byte > 122)) {
-      return false
-    }
-    return true
-  }) || "Invalid character"
+  return (
+    bytes.every((byte) => {
+      if (byte != 45 && (byte < 65 || byte > 90) && (byte < 97 || byte > 122)) {
+        return false
+      }
+      return true
+    }) || 'Invalid character'
+  )
 }
 
 // Same as the `is_valid_name` function in cw20-base in the cw-plus
@@ -24,7 +26,7 @@ export function isValidTicker(ticker: string): true | string {
 export function isValidName(name: string): true | string {
   const bytes = get_bytes(name)
   if (bytes.length < 3 || bytes.length > 50) {
-    return "Invalid token name"
+    return 'Invalid token name'
   }
   return true
 }

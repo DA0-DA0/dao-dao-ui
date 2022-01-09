@@ -1,4 +1,10 @@
-import React, { ChangeEvent, ChangeEventHandler, ReactElement, useEffect, useState } from 'react'
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  ReactElement,
+  useEffect,
+  useState,
+} from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { XIcon } from '@heroicons/react/solid'
@@ -64,12 +70,9 @@ interface DaoCreateData {
   proposalDepositAmount: string
 }
 
-const validateRequired = (v: string) =>
-  v.length > 0 || 'Field is required'
+const validateRequired = (v: string) => v.length > 0 || 'Field is required'
 
-const validatePositive = (v: string) =>
-  parseInt(v) > 0 ||
-  'Must be positive'
+const validatePositive = (v: string) => parseInt(v) > 0 || 'Must be positive'
 
 const validatePercent = (v: string) => {
   const p = Number(v)
@@ -190,7 +193,6 @@ function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   )
 }
 
-
 function InputErrorMessage({ error }: { error: FieldError }) {
   if (error && error.message) {
     return <span className="text-xs text-error mt-1 ml-1">{error.message}</span>
@@ -247,7 +249,10 @@ const smallestVoteCartelSelector = selector({
     const weights = get(tokenWeightsAtom)
 
     const total = weights.reduce((p, n) => p + n, 0)
-    const shares = weights.map((w) => w / total).sort().reverse()
+    const shares = weights
+      .map((w) => w / total)
+      .sort()
+      .reverse()
 
     let votePower = 0
     let votes = 0
@@ -266,17 +271,20 @@ const smallestVoteCartelSelector = selector({
 
 function MinorityRuleWarning({ memberCount }: { memberCount: number }) {
   const cartel = useRecoilValue(smallestVoteCartelSelector)
-  const cartelPercent = cartel / memberCount * 100
+  const cartelPercent = (cartel / memberCount) * 100
 
-  const warn = cartelPercent <= 30
+  const warn = cartelPercent <= 20
 
   if (warn) {
     return (
       <div className="outline outline-warning shadow-md shadow-warning rounded-lg w-full py-4 px-6 flex items-center">
         <div>
-          <h3 className="font-mono text-sm">WARNING: Minority rule is possible</h3>
+          <h3 className="font-mono text-sm">
+            WARNING: Minority rule is possible
+          </h3>
           <p className="text-sm mt-2">
-            A minority of accounts ({cartel}) could approve a proposal that the majority opposes.
+            {cartelPercent}% of accounts could approve a proposal that the
+            remaining {100 - cartelPercent}% oppose.
           </p>
         </div>
       </div>
@@ -372,28 +380,28 @@ const CreateDao: NextPage = () => {
     const msg: InstantiateMsg =
       tokenMode == TokenMode.Create
         ? makeDaoInstantiateWithNewTokenMessage(
-          data.name,
-          data.description,
-          data.tokenName,
-          data.tokenSymbol,
-          owners,
-          convertDenomToMicroDenom(data.daoInitialBalance),
-          threshold / 100, // Conversion to decimal percentage
-          maxVotingPeriod,
-          unstakingDuration,
-          getIntValue('deposit') || 0,
-          refund
-        )
+            data.name,
+            data.description,
+            data.tokenName,
+            data.tokenSymbol,
+            owners,
+            convertDenomToMicroDenom(data.daoInitialBalance),
+            threshold / 100, // Conversion to decimal percentage
+            maxVotingPeriod,
+            unstakingDuration,
+            getIntValue('deposit') || 0,
+            refund
+          )
         : makeDaoInstantiateWithExistingTokenMessage(
-          data.name,
-          data.description,
-          data.existingTokenAddress,
-          threshold / 100, // Conversion to decimal percentage
-          maxVotingPeriod,
-          unstakingDuration,
-          getIntValue('deposit') || 0,
-          refund
-        )
+            data.name,
+            data.description,
+            data.existingTokenAddress,
+            threshold / 100, // Conversion to decimal percentage
+            maxVotingPeriod,
+            unstakingDuration,
+            getIntValue('deposit') || 0,
+            refund
+          )
 
     console.log('instantiating DAO with message:')
     console.log(msg)
@@ -550,10 +558,7 @@ const CreateDao: NextPage = () => {
                             label={weightLabel}
                             register={register}
                             error={errors[weightLabel]}
-                            validation={[
-                              validateRequired,
-                              validatePositive,
-                            ]}
+                            validation={[validateRequired, validatePositive]}
                             defaultValue="1"
                             onChange={(e) => {
                               const val = e?.target?.value
@@ -587,7 +592,7 @@ const CreateDao: NextPage = () => {
                   >
                     +
                   </button>
-                  {count > 1 &&
+                  {count > 1 && (
                     <button
                       className="btn btn-outline btn-primary btn-sm text-md normal-case"
                       onClick={(e) => {
@@ -601,7 +606,8 @@ const CreateDao: NextPage = () => {
                       }}
                     >
                       -
-                    </button>}
+                    </button>
+                  )}
                 </div>
               </>
             ) : (
@@ -629,7 +635,11 @@ const CreateDao: NextPage = () => {
                 label="threshold"
                 register={register}
                 error={errors.threshold}
-                validation={[validateRequired, validatePositive, validatePercent]}
+                validation={[
+                  validateRequired,
+                  validatePositive,
+                  validatePercent,
+                ]}
                 defaultValue="75"
                 onChange={(e) => setPassThreshold(Number(e?.target?.value))}
               />
@@ -696,17 +706,15 @@ const CreateDao: NextPage = () => {
 
             <div className="form-control">
               <InputLabel name="Refund Proposal Deposits" />
-              <ToggleInput
-                label="refund"
-                register={register}
-              />
+              <ToggleInput label="refund" register={register} />
               <InputErrorMessage error={errors.refund} />
             </div>
           </div>
           {!complete && (
             <button
-              className={`mt-3 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg w-full ${loading ? 'loading' : ''
-                }`}
+              className={`mt-3 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg w-full ${
+                loading ? 'loading' : ''
+              }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}
@@ -715,14 +723,14 @@ const CreateDao: NextPage = () => {
             </button>
           )}
         </form>
-      </div >
+      </div>
 
       <div className="col-span-2">
         <div className="sticky top-0 p-6 w-full">
           <MinorityRuleWarning memberCount={count} />
         </div>
       </div>
-    </div >
+    </div>
   )
 }
 
