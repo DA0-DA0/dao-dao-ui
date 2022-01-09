@@ -1,21 +1,11 @@
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  ReactElement,
-  useEffect,
-  useState,
-} from 'react'
+import React, { ChangeEventHandler, useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
-import { XIcon } from '@heroicons/react/solid'
-import HelpTooltip from 'components/HelpTooltip'
-import InputField from 'components/InputField'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import {
   FieldError,
-  FieldPath,
   FieldPathValue,
   Path,
   useForm,
@@ -36,16 +26,11 @@ import { cleanChainError } from 'util/cleanChainError'
 import {
   ArrowNarrowLeftIcon,
   ClipboardListIcon,
+  InformationCircleIcon,
   PaperClipIcon,
 } from '@heroicons/react/outline'
 import Link from 'next/link'
-import {
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 interface DaoCreateData {
   deposit: string
@@ -82,7 +67,7 @@ const validatePercent = (v: string) => {
 function InputLabel({ name }: { name: string }) {
   return (
     <label className="label">
-      <span className="label-text">{name}</span>
+      <span className="label-text text-secondary text-medium">{name}</span>
     </label>
   )
 }
@@ -232,9 +217,16 @@ interface DaoCreateData {
   [key: string]: string | boolean
 }
 
+// Atoms for keeping track of token distrbution so that we can warn
+// about potentially problematic ones.
 const tokenWeightsAtom = atom<number[]>({
   key: 'tokenWeightsAtom',
   default: [],
+})
+
+const daoInitialBalanceAtom = atom<number>({
+  key: 'daoInitialBalanceAtom',
+  default: 0,
 })
 
 const passThresholdAtom = atom({
@@ -247,8 +239,9 @@ const smallestVoteCartelSelector = selector({
   get: ({ get }) => {
     const threshold = get(passThresholdAtom) / 100
     const weights = get(tokenWeightsAtom)
+    const dao = get(daoInitialBalanceAtom)
 
-    const total = weights.reduce((p, n) => p + n, 0)
+    const total = weights.reduce((p, n) => p + n, 0) + dao
     const shares = weights
       .map((w) => w / total)
       .sort()
@@ -274,20 +267,41 @@ function MinorityRuleWarning({ memberCount }: { memberCount: number }) {
   const cartelPercent = (cartel / memberCount) * 100
 
   const warn = cartelPercent <= 20
+  const localeOptions = { maximumSignificantDigits: 3 }
 
   if (warn) {
     return (
-      <div className="outline outline-warning shadow-md shadow-warning rounded-lg w-full py-4 px-6 flex items-center">
-        <div>
-          <h3 className="font-mono text-sm">
-            WARNING: Minority rule is possible
-          </h3>
-          <p className="text-sm mt-2">
-            {cartelPercent}% of accounts could approve a proposal that the
-            remaining {100 - cartelPercent}% oppose.
-          </p>
+      <>
+        <div className="outline outline-warning shadow-md rounded-lg w-full py-4 px-6 flex items-center">
+          <div>
+            <h3 className="font-mono text-sm">
+              WARNING: Minority rule is possible
+            </h3>
+            <p className="text-sm mt-2">
+              {cartelPercent.toLocaleString(undefined, localeOptions)}% of
+              accounts could approve a proposal that the remaining{' '}
+              {(100 - cartelPercent).toLocaleString(undefined, localeOptions)}%
+              oppose.
+            </p>
+          </div>
         </div>
-      </div>
+
+        <div className="outline outline-info shadow-md rounded-lg w-full py-4 px-6 flex items-center mt-3">
+          <div>
+            <h3 className="font-mono text-sm">
+              <InformationCircleIcon className="h-4 w-4 inline mb-0.5 mr-2" />
+              Tip
+            </h3>
+            <p className="text-sm mt-2">
+              Consider{' '}
+              <Link href="/multisig/create">
+                <a className="link">creating a multisig</a>
+              </Link>{' '}
+              or allocating some tokens to the DAO.
+            </p>
+          </div>
+        </div>
+      </>
     )
   }
   return null
@@ -315,6 +329,10 @@ const CreateDao: NextPage = () => {
   // Holds the threshold for a vote to pass as the form is being
   // filled out. Used to surface warnings about minority rule.
   const setPassThreshold = useSetRecoilState(passThresholdAtom)
+  // Holds the initial balance of the DAO which needs to be treated
+  // different than wallet balance in detecting problematic token
+  // distributions.
+  const setDaoInitialBalance = useSetRecoilState(daoInitialBalanceAtom)
 
   const {
     register,
@@ -325,10 +343,6 @@ const CreateDao: NextPage = () => {
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
   }, [error])
-
-  function fieldErrorMessage(fieldName: string, msg?: string) {
-    return msg || ''
-  }
 
   function secondsToHms(seconds: string): string {
     const secondsInt = Number(seconds)
@@ -446,8 +460,6 @@ const CreateDao: NextPage = () => {
             <a className="mr-2">DAOs</a>
           </Link>
         </div>
-
-        <h1 className="text-3xl font-semibold mt-6">New DAO</h1>
         <form className="mb-8" onSubmit={handleSubmit<DaoCreateData>(onSubmit)}>
           <h2 className="mt-10 text-lg">
             <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
@@ -526,13 +538,30 @@ const CreateDao: NextPage = () => {
                   <InputErrorMessage error={errors.tokenSymbol} />
                 </div>
 
-                <h2 className="mt-8 mb-4 text-lg">Token distribution</h2>
+                <h2 className="mt-8 mb-2 text-lg">Token distribution</h2>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <h3 className="label-text font-semibold col-span-2">
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <div className="form-control col-span-1">
+                    <InputLabel name="DAO initial balance" />
+                    <NumberInput
+                      label="daoInitialBalance"
+                      register={register}
+                      error={errors.daoInitialBalance}
+                      validation={[validateRequired, validatePositive]}
+                      defaultValue="0"
+                      onChange={(e) => {
+                        const val = e?.target?.value
+                        setDaoInitialBalance(Number(val))
+                      }}
+                    />
+                    <InputErrorMessage error={errors.daoInitialBalance} />
+                  </div>
+                  <div className="col-span-2"></div>
+
+                  <h3 className="label-text col-span-2 text-secondary">
                     Address
                   </h3>
-                  <h3 className="label-text font-semibold">Amount</h3>
+                  <h3 className="label-text text-secondary">Amount</h3>
                 </div>
                 <ul className="list-none">
                   {[...Array(count).keys()].map((idx) => {
@@ -580,7 +609,7 @@ const CreateDao: NextPage = () => {
                 </ul>
                 <div className="btn-group">
                   <button
-                    className="btn btn-outline btn-primary btn-sm text-md normal-case"
+                    className="btn btn-outline btn-sm text-md normal-case"
                     onClick={(e) => {
                       e.preventDefault()
                       setCount(count + 1)
@@ -592,22 +621,23 @@ const CreateDao: NextPage = () => {
                   >
                     +
                   </button>
-                  {count > 1 && (
-                    <button
-                      className="btn btn-outline btn-primary btn-sm text-md normal-case"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setCount(count - 1)
-                        setTokenWeights((weights) => {
-                          const newWeights = [...weights]
-                          newWeights.pop()
-                          return newWeights
-                        })
-                      }}
-                    >
-                      -
-                    </button>
-                  )}
+                  <button
+                    className={
+                      'btn btn-outline btn-primary btn-sm text-md normal-case' +
+                      (count <= 1 ? ' btn-disabled btn-secondary' : '')
+                    }
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setCount(count - 1)
+                      setTokenWeights((weights) => {
+                        const newWeights = [...weights]
+                        newWeights.pop()
+                        return newWeights
+                      })
+                    }}
+                  >
+                    -
+                  </button>
                 </div>
               </>
             ) : (
@@ -712,7 +742,7 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`mt-3 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg w-full ${
+              className={`mt-3 w-44 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg ${
                 loading ? 'loading' : ''
               }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
