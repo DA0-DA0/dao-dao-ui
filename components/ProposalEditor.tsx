@@ -1,12 +1,12 @@
 import { CosmosMsgFor_Empty, Proposal } from '@dao-dao/types/contracts/cw3-dao'
 import {
-  contractProposalMapAtom, draftProposalAtom, draftProposalItem, nextDraftProposalIdAtom, proposalsRequestIdAtom
+  contractProposalMapAtom, draftProposalAtom, draftProposalItem, nextDraftProposalIdAtom, proposalListAtom, proposalsRequestIdAtom
 } from 'atoms/proposals'
 import HelpTooltip from 'components/HelpTooltip'
 import { useThemeContext } from 'contexts/theme'
 import { EmptyProposal, EmptyProposalItem } from 'models/proposal/proposal'
 import { proposalMessages } from 'models/proposal/proposalSelectors'
-import { useRouter } from 'next/router'
+import { NextRouter, useRouter } from 'next/router'
 import { ChangeEvent, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
@@ -61,7 +61,7 @@ export default function ProposalEditor({
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const router = useRouter()
+  const router: NextRouter = useRouter()
   const [contractProposalMap, setContractProposalMap] = useRecoilState(
     contractProposalMapAtom
   )
@@ -73,7 +73,7 @@ export default function ProposalEditor({
     proposalsRequestIdAtom
   )
   const resetProposals = useResetRecoilState(
-    proposalsState as any// probably this is wrong
+    proposalListAtom
   )
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState(
     nextDraftProposalIdAtom

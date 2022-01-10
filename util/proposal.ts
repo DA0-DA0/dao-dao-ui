@@ -6,7 +6,7 @@ import { TransactionInterface_UNSTABLE } from 'recoil'
 import { ContractProposalMap, ProposalMap, ProposalMapItem } from 'types/proposals'
 import { contractProposalMapAtom, draftProposalItem, nextDraftProposalIdAtom } from 'atoms/proposals'
 import { defaultExecuteFee } from './fee'
-import { Router } from 'next/router'
+import { NextRouter } from 'next/router'
 
 export function isProposal(
   proposal: Proposal | ProposalResponse | ProposalMapItem | undefined
@@ -137,7 +137,7 @@ export const createDraftProposalTransaction =
     signingClient: SigningCosmWasmClient
     walletAddress: string
     contractAddress: string
-    router: Router
+    router: NextRouter
     setTransactionHash: (hash: string) => void
   }) =>
   async (proposal: Proposal) => {
