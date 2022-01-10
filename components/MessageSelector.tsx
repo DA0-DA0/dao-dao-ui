@@ -27,11 +27,11 @@ export default function MessageSelector({
 
   return (
     <select
-      className="select select-bordered w-full max-w-xs"
+      className="select select-bordered w-full max-w-xs font-normal"
       onChange={handleItemSelected}
       value={-1}
     >
-      <option disabled={false}>Add Message...</option>
+      <option disabled={false}>Add message</option>
       {items}
     </select>
   )

@@ -4,18 +4,10 @@ import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import {
-  FieldError,
-  FieldPathValue,
-  Path,
-  useForm,
-  UseFormRegister,
-  Validate,
-} from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { DAO_CODE_ID } from 'util/constants'
 import { convertDenomToMicroDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
-import { isValidAddress } from 'util/isValidAddress'
 import {
   makeDaoInstantiateWithExistingTokenMessage,
   makeDaoInstantiateWithNewTokenMessage,
@@ -31,6 +23,19 @@ import {
 } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  InputLabel,
+  ToggleInput,
+  NumberInput,
+  TextInput,
+  InputErrorMessage,
+} from 'components/InputField'
+import {
+  validateAddress,
+  validatePercent,
+  validatePositive,
+  validateRequired,
+} from 'util/formValidation'
 
 interface DaoCreateData {
   deposit: string
@@ -53,136 +58,6 @@ interface DaoCreateData {
   unstakingDuration: string
   refund: string | boolean
   proposalDepositAmount: string
-}
-
-const validateRequired = (v: string) => v.length > 0 || 'Field is required'
-
-const validatePositive = (v: string) => parseInt(v) > 0 || 'Must be positive'
-
-const validatePercent = (v: string) => {
-  const p = Number(v)
-  return (p <= 100 && p >= 0) || 'Invalid percentage'
-}
-
-function InputLabel({ name }: { name: string }) {
-  return (
-    <label className="label">
-      <span className="label-text text-secondary text-medium">{name}</span>
-    </label>
-  )
-}
-
-/**
- * @param label      - the label for the value that this will contain.
- * @param register   - the register function returned by `useForm`.
- * @param error      - any errors that have occured during validation of this
- *                     input.
- * @param validation - a list of functions that, when given the current value
- *                     of this field, return true if the value is valid and an
- *                     error message otherwise.
- */
-function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
-  label,
-  register,
-  validation,
-  onChange,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  onChange?: ChangeEventHandler<HTMLInputElement>
-}) {
-  const validate = validation?.reduce(
-    (a, v) => ({ ...a, [v.toString()]: v }),
-    {}
-  )
-  return (
-    <input
-      type="checkbox"
-      defaultChecked={true}
-      className="toggle toggle-lg"
-      {...register(label, { validate, onChange })}
-    />
-  )
-}
-
-/**
- * @param label      - the label for the value that this will contain.
- * @param register   - the register function returned by `useForm`.
- * @param error      - any errors that have occured during validation of this
- *                     input.
- * @param validation - a list of functions that, when given the current value
- *                     of this field, return true if the value is valid and an
- *                     error message otherwise.
- */
-function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
-  label,
-  register,
-  error,
-  validation,
-  onChange,
-  defaultValue,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  onChange?: ChangeEventHandler<HTMLInputElement>
-  defaultValue?: string
-}) {
-  const validate = validation?.reduce(
-    (a, v) => ({ ...a, [v.toString()]: v }),
-    {}
-  )
-  return (
-    <input
-      type="number"
-      defaultValue={defaultValue}
-      className={'input input-bordered' + (error ? ' input-error' : '')}
-      {...register(label, { validate, onChange })}
-    />
-  )
-}
-
-/**
- * @param label      - the label for the value that this will contain.
- * @param register   - the register function returned by `useForm`.
- * @param error      - any errors that have occured during validation of this
- *                     input.
- * @param validation - a list of functions that, when given the current value
- *                     of this field, return true if the value is valid and an
- *                     error message otherwise.
- */
-function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
-  label,
-  register,
-  error,
-  validation,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-}) {
-  const validate = validation?.reduce(
-    (a, v) => ({ ...a, [v.toString()]: v }),
-    {}
-  )
-  return (
-    <input
-      type="text"
-      className={'input input-bordered' + (error ? ' input-error' : '')}
-      {...register(label, { validate })}
-    />
-  )
-}
-
-function InputErrorMessage({ error }: { error: FieldError }) {
-  if (error && error.message) {
-    return <span className="text-xs text-error mt-1 ml-1">{error.message}</span>
-  }
-  return null
 }
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
@@ -346,15 +221,15 @@ const CreateDao: NextPage = () => {
 
   function secondsToHms(seconds: string): string {
     const secondsInt = Number(seconds)
-    var h = Math.floor(secondsInt / 3600)
-    var m = Math.floor((secondsInt % 3600) / 60)
-    var s = Math.floor((secondsInt % 3600) % 60)
+    const h = Math.floor(secondsInt / 3600)
+    const m = Math.floor((secondsInt % 3600) / 60)
+    const s = Math.floor((secondsInt % 3600) % 60)
 
-    var hDisplay =
+    const hDisplay =
       h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
-    var mDisplay =
+    const mDisplay =
       m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
-    var sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
+    const sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
     return hDisplay + mDisplay + sDisplay
   }
 
@@ -578,7 +453,7 @@ const CreateDao: NextPage = () => {
                             label={addressLabel}
                             register={register}
                             error={errors[addressLabel]}
-                            validation={[isValidAddress, validateRequired]}
+                            validation={[validateAddress, validateRequired]}
                           />
                           <InputErrorMessage error={errors[addressLabel]} />
                         </div>
@@ -647,7 +522,7 @@ const CreateDao: NextPage = () => {
                   label="existingTokenAddress"
                   register={register}
                   error={errors.existingTokenAddress}
-                  validation={[isValidAddress, validateRequired]}
+                  validation={[validateAddress, validateRequired]}
                 />
                 <InputErrorMessage error={errors.existingTokenAddress} />
               </div>
@@ -667,7 +542,7 @@ const CreateDao: NextPage = () => {
                 error={errors.threshold}
                 validation={[
                   validateRequired,
-                  validatePositive,
+                  validatePercent,
                   validatePercent,
                 ]}
                 defaultValue="75"
