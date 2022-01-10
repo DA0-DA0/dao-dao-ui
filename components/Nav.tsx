@@ -4,11 +4,14 @@ import ThemeToggle from 'components/ThemeToggle'
 import NavContractLabel from 'components/NavContractLabel'
 import Logo from 'components/Logo'
 import {
-  BeakerIcon,
+  ArrowRightIcon,
   CashIcon,
   ExternalLinkIcon,
-  MapIcon,
+  LibraryIcon,
 } from '@heroicons/react/outline'
+import { useRecoilValue } from 'recoil'
+import { daosSelector } from 'selectors/daos'
+import { sigsSelector } from 'selectors/multisigs'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
@@ -39,7 +42,22 @@ function WalletConnect() {
   )
 }
 
+function MemberDisplay({ name }: { name: string }) {
+  return (
+    <div>
+      <LibraryIcon className="inline h-5 w-5 mb-1 mr-2" />
+      {name}
+    </div>
+  )
+}
+
 function Nav() {
+  const daos = useRecoilValue(daosSelector)
+  const memberDaos = daos.filter((dao) => dao.member)
+
+  const sigs = useRecoilValue(sigsSelector)
+  const memberSigs = sigs.filter((sig) => sig.member)
+
   return (
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
@@ -54,34 +72,48 @@ function Nav() {
         <div className="ml-1">
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">DAOs</h3>
+
             <ul className="list-none ml-2">
-              <li>
-                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+              {memberDaos.map((dao) => (
+                <li key={dao.dao.name} className="mt-1">
+                  <Link href={`/dao/${dao.address}`}>
+                    <a>
+                      <MemberDisplay name={dao.dao.name} />
+                    </a>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="list-none ml-2">
+              <li className="mt-1">
+                <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
                 <Link href="/dao/list">
-                  <a>Explore</a>
-                </Link>
-              </li>
-              <li>
-                <BeakerIcon className="inline w-5 h-5 mr-2 mb-1" />
-                <Link href="/dao/create">
-                  <a>Create</a>
+                  <a>All DAOs</a>
                 </Link>
               </li>
             </ul>
           </div>
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
+
             <ul className="list-none ml-2">
-              <li>
-                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+              {memberSigs.map((sig) => (
+                <li key={sig.name} className="mt-1">
+                  <Link href={`/multisig/${sig.address}`}>
+                    <a>
+                      <MemberDisplay name={sig.name} />
+                    </a>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="list-none ml-2">
+              <li className="mt-1">
+                <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
                 <Link href="/multisig/list">
-                  <a>Explore</a>
-                </Link>
-              </li>
-              <li>
-                <BeakerIcon className="inline w-5 h-5 mr-2 mb-1" />
-                <Link href="/multisig/create">
-                  <a>Create</a>
+                  <a>All Multisigs</a>
                 </Link>
               </li>
             </ul>
