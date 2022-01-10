@@ -13,6 +13,7 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import { CW20_CODE_ID, STAKE_CODE_ID } from './constants'
+import { MintMsg } from 'types/messages'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -256,4 +257,48 @@ export function labelForMessage(
     messageString = messageString.slice(0, MAX_LABEL_LEN) || ''
   }
   return messageString
+}
+
+export function isBankMsg(msg?: CosmosMsgFor_Empty): msg is { bank: BankMsg } {
+  return (msg as any).bank !== undefined
+}
+
+export function isBurnMsg(msg?: BankMsg): msg is {
+  burn: {
+    amount: Coin[]
+    [k: string]: unknown
+  }
+} {
+  return (msg as any)?.burn !== undefined
+}
+
+export function isSendMsg(msg?: BankMsg): msg is {
+  send: {
+    amount: Coin[]
+    to_address: string
+    [k: string]: unknown
+  }
+} {
+  return (msg as any)?.send !== undefined
+}
+
+export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
+  return (msg as any)?.wasm !== undefined
+}
+
+export function isExecuteMsg(msg?: any): msg is {
+  execute: {
+    contract_addr: string
+    funds: Coin[]
+    msg: any
+  }
+} {
+  return (msg as any)?.execute !== undefined
+}
+
+export function isMintMsg(msg: any): msg is MintMsg {
+  if (isExecuteMsg(msg)) {
+    return msg.execute?.msg?.mint !== undefined
+  }
+  return false
 }
