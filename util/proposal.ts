@@ -58,11 +58,13 @@ export const createDraftProposalTransaction =
     signingClient,
     contractAddress,
     draftProposals,
+    router
   }: {
     walletAddress: string
     signingClient: SigningCosmWasmClient
     contractAddress: string
-    draftProposals: ProposalMap
+    draftProposals: ProposalMap,
+    router: NextRouter
   }) =>
   ({ get, set }: TransactionInterface_UNSTABLE) => {
     const setLoading = (loading: boolean) => set(loadingAtom, loading)
@@ -108,7 +110,9 @@ export const createDraftProposalTransaction =
           )
           const title = `Saved Proposal "${propose.title}"`
           setActiveStatus({ status: 'success', title })
-          // router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
+          const initialMessage = `Saved Proposal "${propose.title}"`
+          const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
+          router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`) 
         }
       } catch (e: any) {
         console.error(
@@ -153,6 +157,7 @@ export const createDraftProposalTransaction =
         memo
       )
       setLoading(false)
+      debugger
       if (response) {
         setTransactionHash(response.transactionHash)
         const [{ events }] = response.logs

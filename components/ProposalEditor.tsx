@@ -85,7 +85,8 @@ export default function ProposalEditor({
       walletAddress,
       signingClient,
       contractAddress,
-      draftProposals
+      draftProposals,
+      router
     }),
     [walletAddress, signingClient, contractAddress, draftProposals]
   )
@@ -107,7 +108,7 @@ export default function ProposalEditor({
   }
 
   const createProposal = (proposal: Proposal) => {
-    createProposalFunction(proposalId, proposal)
+    return createProposalFunction(proposalId, proposal)
   }
 
   const saveDraftProposal = (draftProposal: Proposal) => {
