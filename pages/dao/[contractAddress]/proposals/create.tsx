@@ -1,6 +1,5 @@
 import LineAlert from 'components/LineAlert'
 import { ProposalEditor } from 'components/ProposalEditor'
-import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'

@@ -35,7 +35,7 @@ const getWaitKeplr = async () => {
   await (window as any).keplr.enable(CHAIN_ID)
 
   // get offline signer for signing txs
-  return (window as any).keplr.getOfflineSigner(CHAIN_ID)
+  return (window as any).keplr.getOfflineSignerAuto(CHAIN_ID)
 }
 
 export const kelprOfflineSigner = selector({
