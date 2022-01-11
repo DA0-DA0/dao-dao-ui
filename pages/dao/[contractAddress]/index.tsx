@@ -32,35 +32,8 @@ import {
   walletTokenBalance,
 } from 'selectors/treasury'
 import { ProposalList } from 'components/ProposalList'
-
-function BalanceCard({
-  denom,
-  title,
-  amount,
-}: {
-  denom: string
-  title: string
-  amount: string
-}) {
-  return (
-    <div className="shadow p-6 rounded-lg w-full border border-base-300 h-28 mt-2">
-      <h2 className="text-sm font-mono text-secondary">{title}</h2>
-      <p className="mt-2 font-bold">
-        $ {amount} {denom}
-      </p>
-      <div className="flex justify-end">
-        <div className="btn-group">
-          <button className="btn-outline btn btn-xs btn-square border-secondary">
-            +
-          </button>
-          <button className="btn-outline btn btn-xs btn-square border-secondary">
-            -
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { ContractBalances, BalanceCard, ContractProposalsDispaly, GradientHero, HeroContractFooter, HeroContractHeader } from 'components/ContractView'
+import { Breadcrumbs } from 'components/Breadcrumbs'
 
 const DaoHome: NextPage = () => {
   const router = useRouter()
@@ -86,102 +59,47 @@ const DaoHome: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6 overflow-auto mb-3">
-      <div className="w-full col-span-4">
-        <div className="h-2/5 bg-gradient-radial-t from-accent via-base-100">
-          <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
-            <div className="text-md font-medium text-secondary-focus">
-              <ArrowNarrowLeftIcon className="inline w-5 h-5 mr-2 mb-1" />
-              <Link href="/dao/list">
-                <a className="mr-2">DAOs</a>
-              </Link>
-              /
-              <Link href={router.asPath}>
-                <a className="ml-2">{daoInfo.config.name}</a>
-              </Link>
-            </div>
+      <div className="col-span-4 min-h-screen">
+        <GradientHero>
+          <Breadcrumbs crumbs={[["/dao/list", "DAOs"], [router.asPath, daoInfo.config.name]]} />
 
-            <div className="flex items-center flex-col">
-              <Logo width={85} height={85} alt="DAO DAO logo" />
-              <div className="flex flex-col items-center">
-                <div>
-                  <h1 className="text-2xl font-medium mt-3">
-                    {daoInfo.config.name}
-                    <LinkIcon className="inline w-5 h-5 mb-1 ml-2" />
-                    {member && (
-                      <UserIcon className="inline w-5 h-5 mb-1 ml-1" />
-                    )}
-                  </h1>
-                </div>
-                <p className="mt-2 font-mono">{daoInfo.config.description}</p>
-              </div>
-            </div>
+          <HeroContractHeader
+            name={daoInfo.config.name}
+            description={daoInfo.config.description}
+            member={member}
+          />
 
-            <div className="w-full border-y border-neutral py-2">
-              <ul className="list-none flex justify-around text-sm">
-                <li>
-                  <CurrencyDollarIcon className="w-5 h-5 mb-1 mr-1 inline" />
-                  {convertMicroDenomToDenom(
-                    tokenInfo?.total_supply
-                  ).toLocaleString()}{' '}
-                  ${tokenInfo?.symbol}
-                </li>
-                <li>
-                  <LibraryIcon className="w-5 h-5 mb-1 mr-1 inline" />
-                  {stakedPercent}% ${tokenInfo?.symbol} staked
-                </li>
-                <li>
-                  <PencilIcon className="w-5 h-5 mb-1 mr-1 inline" />
-                  {proposalsTotal} proposals
-                </li>
-                <li>
-                  <KeyIcon className="w-5 h-5 mb-1 mr-1 inline" />$
-                  {convertMicroDenomToDenom(daoInfo?.config.proposal_deposit)}{' '}
-                  proposal deposit
-                </li>
-              </ul>
+          <HeroContractFooter>
+            <div>
+              <CurrencyDollarIcon className="w-5 h-5 mb-1 mr-1 inline" />
+              ${tokenInfo?.symbol}
             </div>
-          </div>
-        </div>{' '}
-        {/* end header */}
+            <div>
+              <LibraryIcon className="w-5 h-5 mb-1 mr-1 inline" />
+              {stakedPercent}% ${tokenInfo?.symbol} staked
+            </div>
+            <div>
+              <PencilIcon className="w-5 h-5 mb-1 mr-1 inline" />
+              {proposalsTotal} proposals
+            </div>
+            <div>
+              <KeyIcon className="w-5 h-5 mb-1 mr-1 inline" />$
+              {convertMicroDenomToDenom(daoInfo?.config.proposal_deposit)}{' '}
+              proposal deposit
+            </div>
+          </HeroContractFooter>
+
+        </GradientHero>
         <body className="px-6">
-          <div className="flex justify-between items-center">
-            <h2 className="font-medium text-lg">Proposals</h2>
-            <Link href={`/dao/${contractAddress}/proposals/create`}>
-              <button className="btn btn-sm btn-outline normal-case text-left">
-                New proposal <PlusIcon className="inline w-5 h-5 ml-1" />
-              </button>
-            </Link>
-          </div>
-          <div className="px-4 mt-4">
-            <ProposalList contractAddress={contractAddress} />
-          </div>
+          <ContractProposalsDispaly contractAddress={contractAddress} proposalCreateLink={`/multisig/${contractAddress}/proposals/create`} />
         </body>
       </div>
       <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <h2 className="font-medium text-lg">Treasury</h2>
-        <h3 className="font-mono text-sm mt-6 text-secondary">
-          DAO's Balances
-        </h3>
-        <ul className="list-none mt-1 text-medium font-semibold">
-          {nativeBalances.map((coin, idx) => {
-            const symbol = convertFromMicroDenom(coin.denom)
-            return (
-              <li key={idx}>
-                $ {convertMicroDenomToDenom(coin.amount).toLocaleString()}{' '}
-                {symbol}
-              </li>
-            )
-          })}
-          {cw20balances.map(({ address, amount }) => {
-            const tokenInfo = useRecoilValue(cw20TokenInfo(address))
-            return (
-              <li key={tokenInfo.name}>
-                $ {convertMicroDenomToDenom(amount).toLocaleString()}{' '}
-                {tokenInfo.symbol}
-              </li>
-            )
-          })}
-        </ul>
+        <ContractBalances
+          contractType="DAO"
+          native={nativeBalances}
+          cw20={cw20balances}
+        />
         <hr className="mt-8 mb-6" />
         <h2 className="font-medium text-md">Your shares</h2>
         <ul className="list-none mt-3">
@@ -233,7 +151,7 @@ const DaoHome: NextPage = () => {
           </div>
         ) : null}
       </div>
-    </div>
+    </div >
   )
 }
 

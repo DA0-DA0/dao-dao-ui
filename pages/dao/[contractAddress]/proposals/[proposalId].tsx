@@ -23,6 +23,7 @@ import { cleanChainError } from 'util/cleanChainError'
 import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
 import { daoSelector } from 'selectors/daos'
+import { Breadcrumbs } from 'components/Breadcrumbs'
 
 const Proposal: NextPage = () => {
   let router = useRouter()
@@ -75,20 +76,7 @@ const Proposal: NextPage = () => {
     <WalletLoader loading={loading}>
       <div className="grid grid-cols-6">
         <div className="w-full col-span-4 p-6">
-          <div className="text-md font-medium text-secondary-focus mb-6">
-            <ArrowNarrowLeftIcon className="inline w-5 h-5 mr-2 mb-1" />
-            <Link href="/dao/list">
-              <a className="mr-2">DAOs</a>
-            </Link>
-            /
-            <Link href={`/dao/${contractAddress}`}>
-              <a className="mx-2">{daoInfo.config.name}</a>
-            </Link>
-            /
-            <Link href={router.asPath}>
-              <a className="ml-2">Proposal #{proposalId}</a>
-            </Link>
-          </div>
+          <Breadcrumbs crumbs={[["/dao/list", "DAOs"], [`/dao/${contractAddress}`, daoInfo.config.name], [router.asPath, `Proposal #${proposalId}`]]} />
 
           {!proposal ? (
             <div className="text-center m-8">
@@ -125,7 +113,7 @@ const Proposal: NextPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </WalletLoader >
   )
 }
 
