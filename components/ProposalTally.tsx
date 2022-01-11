@@ -80,7 +80,7 @@ function ProposalTally({
   multisig,
 }: {
   tally: ProposalTallyResponse
-  multisig: boolean
+  multisig?: boolean
 }) {
   return (
     <>

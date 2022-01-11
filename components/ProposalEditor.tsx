@@ -34,6 +34,8 @@ import {
 } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
 import { daoSelector, tokenConfig } from 'selectors/daos'
+import { sigSelector } from 'selectors/multisigs'
+import { ContractConfigWrapper } from 'util/contractConfigWrapper'
 
 export function ProposalEditor({
   initialProposal,
@@ -103,13 +105,16 @@ export function ProposalEditor({
   }
 
   // Try to fetch DAO info...
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
+  const contractConfig = new ContractConfigWrapper(
+    multisig
+      ? useRecoilValue(sigSelector(contractAddress))
+      : useRecoilValue(daoSelector(contractAddress))
+  )
 
   useEffect(() => {
-    setDeposit(daoInfo?.config.proposal_deposit as string)
-    setTokenAddress(daoInfo?.gov_token as string)
-  }, [daoInfo])
+    setDeposit(contractConfig.proposal_deposit.toString())
+    setTokenAddress(contractConfig?.gov_token)
+  }, [contractConfig])
 
   function isProposalValid(proposalToCheck: Proposal): boolean {
     if (!proposalToCheck) {
@@ -130,7 +135,7 @@ export function ProposalEditor({
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
     if (isProposalValid(proposal)) {
-      onProposal(proposal, contractAddress, daoInfo?.gov_token)
+      onProposal(proposal, contractAddress, contractConfig?.gov_token)
     }
   }
 
@@ -147,7 +152,7 @@ export function ProposalEditor({
     }
   }
 
-  let messages = proposalMessages(proposal).map((mapEntry, key) => {
+  let messages = proposalMessages(proposal).map((mapEntry) => {
     let modeEditor = null
     let label = ''
     switch (mapEntry?.messageType) {
@@ -166,7 +171,7 @@ export function ProposalEditor({
           <MintEditor
             dispatch={dispatch}
             mintMsg={mapEntry}
-            denom={tokenInfo.symbol}
+            denom={contractConfig.gov_token_symbol}
           ></MintEditor>
         )
         label = 'Mint'

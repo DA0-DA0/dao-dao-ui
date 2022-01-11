@@ -41,59 +41,57 @@ export const sigSelector = selectorFamily<ConfigResponse, string>({
   key: 'multisig',
   get:
     (address: string) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClient)
-        const config = await client.queryContractSmart(
-          address,
-          'get_config' as unknown as Record<string, unknown>
-        )
-        return config
-      },
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const config = await client.queryContractSmart(
+        address,
+        'get_config' as unknown as Record<string, unknown>
+      )
+      return config
+    },
 })
 
 export const totalWeight = selectorFamily<number, string>({
   key: 'multisigTotalWeight',
   get:
     (address: string) =>
-      async ({ get }) => {
-        const sigInfo = get(sigSelector(address))
-        const client = get(cosmWasmClient)
-        const total_votes = await client.queryContractSmart(
-          sigInfo.group_address,
-          { total_weight: {} }
-        )
-        return total_votes.weight
-      }
+    async ({ get }) => {
+      const sigInfo = get(sigSelector(address))
+      const client = get(cosmWasmClient)
+      const total_votes = await client.queryContractSmart(
+        sigInfo.group_address,
+        { total_weight: {} }
+      )
+      return total_votes.weight
+    },
 })
 
 export const memberWeight = selectorFamily<number, string>({
   key: 'multisigMemberWeight',
   get:
     (address: string) =>
-      async ({ get }) => {
-        const sigInfo = get(sigSelector(address))
-        const client = get(cosmWasmClient)
-        const memberAddress = get(walletAddress)
-        const member = await client.queryContractSmart(
-          sigInfo.group_address,
-          { member: { addr: memberAddress } }
-        )
-        return member.weight
-      }
+    async ({ get }) => {
+      const sigInfo = get(sigSelector(address))
+      const client = get(cosmWasmClient)
+      const memberAddress = get(walletAddress)
+      const member = await client.queryContractSmart(sigInfo.group_address, {
+        member: { addr: memberAddress },
+      })
+      return member.weight
+    },
 })
 
 export const listMembers = selectorFamily<MultisigMemberInfo[], string>({
   key: 'multisigMemberList',
   get:
     (address: string) =>
-      async ({ get }) => {
-        const sigInfo = get(sigSelector(address))
-        const client = get(cosmWasmClient)
-        const members = await client.queryContractSmart(
-          sigInfo.group_address,
-          { list_members: {} }
-        )
-        console.log(members)
-        return members.members
-      }
+    async ({ get }) => {
+      const sigInfo = get(sigSelector(address))
+      const client = get(cosmWasmClient)
+      const members = await client.queryContractSmart(sigInfo.group_address, {
+        list_members: {},
+      })
+      console.log(members)
+      return members.members
+    },
 })

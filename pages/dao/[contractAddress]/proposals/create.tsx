@@ -81,11 +81,13 @@ const ProposalCreate: NextPage = () => {
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
-        <Breadcrumbs crumbs={[
-          ["/dao/list", "DAOs"],
-          [`/dao/${contractAddress}`, daoInfo.config.name],
-          [router.asPath, "Create proposal"]
-        ]} />
+        <Breadcrumbs
+          crumbs={[
+            ['/dao/list', 'DAOs'],
+            [`/dao/${contractAddress}`, daoInfo.config.name],
+            [router.asPath, 'Create proposal'],
+          ]}
+        />
 
         <ProposalEditor
           onProposal={handleProposal}
@@ -99,7 +101,7 @@ const ProposalCreate: NextPage = () => {
           </div>
         )}
       </div>
-    </div >
+    </div>
   )
 }
 

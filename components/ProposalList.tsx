@@ -1,9 +1,5 @@
 import { Expiration, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  CloudDownloadIcon,
-  DownloadIcon,
-  PlusIcon,
-} from '@heroicons/react/outline'
+import { DownloadIcon } from '@heroicons/react/outline'
 import {
   proposalListAtom,
   proposalsCreatedAtom,
@@ -46,12 +42,11 @@ const secondsToHm = (seconds: number) => {
 
   var hDisplay =
     h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
-  var mDisplay =
-    m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
+  var mDisplay = m > 0 ? m + (m == 1 ? ' min' : ' mins') : ''
   return hDisplay + mDisplay
 }
 
-const getEnd = (exp: Expiration) => {
+export const getEnd = (exp: Expiration) => {
   if ('at_time' in exp) {
     const end = Number(exp['at_time'])
     const nowSeconds = new Date().getTime() / 1000
@@ -59,7 +54,7 @@ const getEnd = (exp: Expiration) => {
     if (endSeconds <= nowSeconds) {
       return 'Completed'
     } else {
-      return secondsToHm(endSeconds - nowSeconds) + ' remaining'
+      return secondsToHm(endSeconds - nowSeconds)
     }
   }
   // Not much we can say about proposals that expire at a block
@@ -71,13 +66,19 @@ function ProposalLine({
   prop,
   border,
   contractAddress,
+  multisig,
 }: {
   prop: ProposalResponse
   border: boolean
   contractAddress: string
+  multisig?: boolean
 }) {
   return (
-    <Link href={`/dao/${contractAddress}/proposals/${prop.id}`}>
+    <Link
+      href={`/${multisig ? 'multisig' : 'dao'}/${contractAddress}/proposals/${
+        prop.id
+      }`}
+    >
       <a>
         <div
           className={
@@ -87,18 +88,22 @@ function ProposalLine({
           <p className="font-mono text-sm text-secondary">
             # {zeroPad(prop.id, 6)}
           </p>
-          <p className="text-xl">
-            <ProposalStatus status={prop.status} />
-          </p>
+          <ProposalStatus status={prop.status} />
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
-          <p className="text-neutral">{getEnd(prop.expires)}</p>
+          <p className="text-neutral">{getEnd(prop.expires)} remaining</p>
         </div>
       </a>
     </Link>
   )
 }
 
-export function ProposalList({ contractAddress }: { contractAddress: string }) {
+export function ProposalList({
+  contractAddress,
+  multisig,
+}: {
+  contractAddress: string
+  multisig?: boolean
+}) {
   // Our position in the DAO's list of proposals.
   const [startBefore, setStartBefore] = useRecoilState(
     proposalsRequestStartBeforeAtom
@@ -176,6 +181,7 @@ export function ProposalList({ contractAddress }: { contractAddress: string }) {
             key={prop.id}
             border={idx !== propList.length - 1 || showLoadMore}
             contractAddress={contractAddress}
+            multisig={multisig}
           />
         ))}
       </ul>

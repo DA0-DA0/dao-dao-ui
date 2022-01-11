@@ -1,20 +1,19 @@
-import { Coin } from "@cosmjs/proto-signing";
-import { Cw20Coin } from "@dao-dao/types/contracts/cw3-dao";
-import { LinkIcon, PlusIcon, UserIcon } from "@heroicons/react/outline";
-import Link from "next/link";
-import { Children, cloneElement, ReactNode } from "react";
-import { useRecoilValue } from "recoil";
-import { cw20TokenInfo } from "selectors/treasury";
-import { convertDenomToHumanReadableDenom, convertFromMicroDenom, convertMicroDenomToDenom } from "util/conversion";
-import Logo from "./Logo";
-import { ProposalList } from "./ProposalList";
+import { Coin } from '@cosmjs/proto-signing'
+import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
+import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
+import { Children, cloneElement, ReactNode } from 'react'
+import { useRecoilValue } from 'recoil'
+import { cw20TokenInfo } from 'selectors/treasury'
+import {
+  convertDenomToHumanReadableDenom,
+  convertFromMicroDenom,
+  convertMicroDenomToDenom,
+} from 'util/conversion'
+import Logo from './Logo'
+import { ProposalList } from './ProposalList'
 
-
-export function GradientHero({
-  children
-}: {
-  children: ReactNode
-}) {
+export function GradientHero({ children }: { children: ReactNode }) {
   return (
     <div className="h-2/5 bg-gradient-radial-t from-accent via-base-100">
       <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
@@ -27,7 +26,7 @@ export function GradientHero({
 export function HeroContractHeader({
   name,
   member,
-  description
+  description,
 }: {
   name: string
   member: boolean
@@ -41,31 +40,22 @@ export function HeroContractHeader({
           <h1 className="text-2xl font-medium mt-3">
             {name}
             <LinkIcon className="inline w-5 h-5 mb-1 ml-2" />
-            {member && (
-              <UserIcon className="inline w-5 h-5 mb-1 ml-1" />
-            )}
+            {member && <UserIcon className="inline w-5 h-5 mb-1 ml-1" />}
           </h1>
         </div>
         {description && <p className="mt-2 font-mono">{description}</p>}
       </div>
     </div>
-
   )
 }
 
-export function HeroContractFooter({
-  children
-}: {
-  children: ReactNode
-}) {
+export function HeroContractFooter({ children }: { children: ReactNode }) {
   const childList = Children.toArray(children)
   return (
     <div className="w-full border-y border-neutral py-2">
       <ul className="list-none flex justify-around text-sm">
         {Children.map(childList, (child) => (
-          <li>
-            {child}
-          </li>
+          <li>{child}</li>
         ))}
       </ul>
     </div>
@@ -75,9 +65,11 @@ export function HeroContractFooter({
 export function ContractProposalsDispaly({
   contractAddress,
   proposalCreateLink,
+  multisig,
 }: {
-  contractAddress: string,
+  contractAddress: string
   proposalCreateLink: string
+  multisig?: boolean
 }) {
   return (
     <>
@@ -90,7 +82,7 @@ export function ContractProposalsDispaly({
         </Link>
       </div>
       <div className="px-4 mt-4">
-        <ProposalList contractAddress={contractAddress} />
+        <ProposalList contractAddress={contractAddress} multisig={multisig} />
       </div>
     </>
   )
@@ -99,10 +91,10 @@ export function ContractProposalsDispaly({
 export function ContractBalances({
   contractType,
   native,
-  cw20
+  cw20,
 }: {
-  contractType: "DAO" | "Multisig",
-  native: Coin[],
+  contractType: 'DAO' | 'Multisig'
+  native: Coin[]
   cw20?: Cw20Coin[]
 }) {
   return (
@@ -116,24 +108,28 @@ export function ContractBalances({
           const symbol = convertFromMicroDenom(coin.denom)
           return (
             <li key={idx}>
-              {convertMicroDenomToDenom(coin.amount).toLocaleString()}{' '}
-              ${symbol}
+              {convertMicroDenomToDenom(coin.amount).toLocaleString()} ${symbol}
             </li>
           )
         })}
-        {!native.length &&
+        {!native.length && (
           <li key="nobalance" className="text-uppercase">
-            0 ${convertDenomToHumanReadableDenom(process.env.NEXT_PUBLIC_STAKING_DENOM as string).toUpperCase()}
-          </li>}
-        {cw20 && cw20.map(({ address, amount }) => {
-          const tokenInfo = useRecoilValue(cw20TokenInfo(address))
-          return (
-            <li key={tokenInfo.name}>
-              {convertMicroDenomToDenom(amount).toLocaleString()}{' '}
-              ${tokenInfo.symbol}
-            </li>
-          )
-        })}
+            0 $
+            {convertDenomToHumanReadableDenom(
+              process.env.NEXT_PUBLIC_STAKING_DENOM as string
+            ).toUpperCase()}
+          </li>
+        )}
+        {cw20 &&
+          cw20.map(({ address, amount }) => {
+            const tokenInfo = useRecoilValue(cw20TokenInfo(address))
+            return (
+              <li key={tokenInfo.name}>
+                {convertMicroDenomToDenom(amount).toLocaleString()} $
+                {tokenInfo.symbol}
+              </li>
+            )
+          })}
       </ul>
     </>
   )

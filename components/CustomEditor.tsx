@@ -17,7 +17,7 @@ type JSONError = {
 }
 
 function getEditorTheme(appTheme: string): string {
-  return appTheme === 'junoDark'
+  return appTheme !== 'junoDark'
     ? 'dark_vscode_tribute'
     : 'light_mitsuketa_tribute'
 }

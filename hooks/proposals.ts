@@ -65,7 +65,7 @@ export function useProposal(contractAddress: string, proposalId: string) {
   const [transactionHash, setTransactionHash] = useState('')
 
   useEffect(() => {
-    if (walletAddress.length === 0 || !signingClient) {
+    if (!signingClient) {
       return
     }
     setLoading(true)
@@ -179,6 +179,11 @@ export function useCreateProposal(contractAddress: string) {
   const [proposalID, setProposalID] = useState('')
 
   const execute = async (proposal: Proposal) => {
+    if (!signingClient) {
+      setError('Please connect your wallet')
+      return
+    }
+
     setLoading(true)
     setError('')
 

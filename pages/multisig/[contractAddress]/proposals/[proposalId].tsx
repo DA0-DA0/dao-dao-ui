@@ -1,79 +1,44 @@
-import WalletLoader from 'components/WalletLoader'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import LineAlert from 'components/LineAlert'
-import { useProposal } from 'hooks/proposals'
-import ProposalDetails from 'components/ProposalDetails'
-import Link from 'next/link'
-import { cleanChainError } from 'util/cleanChainError'
+import {
+  ProposalDetails,
+  ProposalDetailsSidebar,
+} from 'components/ProposalDetails'
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import { useRecoilValue } from 'recoil'
+import { sigSelector } from 'selectors/multisigs'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
   const proposalId = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
-
-  const {
-    walletAddress,
-    loading,
-    error,
-    proposal,
-    votes,
-    transactionHash,
-    vote,
-    execute,
-    close,
-    tally,
-  } = useProposal(contractAddress, proposalId)
+  const sigInfo = useRecoilValue(sigSelector(contractAddress))
 
   return (
-    <WalletLoader loading={loading}>
-      <div className="flex flex-col w-full">
-        <div className="grid bg-base-100 place-items-center mt-8">
-          {!proposal ? (
-            <div className="text-center mb-8">
-              No proposal with that ID found.
-            </div>
-          ) : (
-            <div className="mx-auto max-w-prose w-screen text-left">
-              <div className="justify-left flex">
-                <Link href={`/multisig/${contractAddress}/proposals`}>
-                  <a className="link">{'< Back'}</a>
-                </Link>
-              </div>
-
-              <ProposalDetails
-                proposal={proposal}
-                walletAddress={walletAddress}
-                votes={votes}
-                vote={vote}
-                execute={execute}
-                close={close}
-                tally={tally}
-                multisig={true}
-              />
-
-              {error && (
-                <LineAlert
-                  className="mt-2"
-                  variant="error"
-                  msg={cleanChainError(error)}
-                />
-              )}
-
-              {transactionHash.length > 0 && (
-                <div className="mt-8">
-                  <LineAlert
-                    variant="success"
-                    msg={`Success! Transaction Hash: ${transactionHash}`}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+    <div className="grid grid-cols-6">
+      <div className="w-full col-span-4 p-6">
+        <Breadcrumbs
+          crumbs={[
+            ['/multisig/list', 'Multisigs'],
+            [`/multisig/${contractAddress}`, sigInfo.config.name],
+            [router.asPath, `Proposal ${proposalId}`],
+          ]}
+        />
+        <ProposalDetails
+          contractAddress={contractAddress}
+          proposalId={Number(proposalId)}
+          multisig
+        />
       </div>
-    </WalletLoader>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen">
+        <ProposalDetailsSidebar
+          contractAddress={contractAddress}
+          proposalId={Number(proposalId)}
+          multisig
+        />
+      </div>
+    </div>
   )
 }
 

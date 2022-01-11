@@ -1,17 +1,11 @@
 import {
-  ArrowNarrowLeftIcon,
   CurrencyDollarIcon,
   KeyIcon,
   LibraryIcon,
-  LinkIcon,
   PencilIcon,
-  PlusIcon,
   PlusSmIcon,
-  UserIcon,
 } from '@heroicons/react/outline'
-import Logo from 'components/Logo'
 import type { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
@@ -22,17 +16,20 @@ import {
   tokenConfig,
   totalStaked,
 } from 'selectors/daos'
-import { cw20Balances, cw20TokenInfo, nativeBalance } from 'selectors/treasury'
-import {
-  convertFromMicroDenom,
-  convertMicroDenomToDenom,
-} from 'util/conversion'
+import { cw20Balances, nativeBalance } from 'selectors/treasury'
+import { convertMicroDenomToDenom } from 'util/conversion'
 import {
   walletStakedTokenBalance,
   walletTokenBalance,
 } from 'selectors/treasury'
-import { ProposalList } from 'components/ProposalList'
-import { ContractBalances, BalanceCard, ContractProposalsDispaly, GradientHero, HeroContractFooter, HeroContractHeader } from 'components/ContractView'
+import {
+  ContractBalances,
+  BalanceCard,
+  ContractProposalsDispaly,
+  GradientHero,
+  HeroContractFooter,
+  HeroContractHeader,
+} from 'components/ContractView'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 
 const DaoHome: NextPage = () => {
@@ -61,7 +58,12 @@ const DaoHome: NextPage = () => {
     <div className="grid grid-cols-6 overflow-auto mb-3">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <Breadcrumbs crumbs={[["/dao/list", "DAOs"], [router.asPath, daoInfo.config.name]]} />
+          <Breadcrumbs
+            crumbs={[
+              ['/dao/list', 'DAOs'],
+              [router.asPath, daoInfo.config.name],
+            ]}
+          />
 
           <HeroContractHeader
             name={daoInfo.config.name}
@@ -71,8 +73,8 @@ const DaoHome: NextPage = () => {
 
           <HeroContractFooter>
             <div>
-              <CurrencyDollarIcon className="w-5 h-5 mb-1 mr-1 inline" />
-              ${tokenInfo?.symbol}
+              <CurrencyDollarIcon className="w-5 h-5 mb-1 mr-1 inline" />$
+              {tokenInfo?.symbol}
             </div>
             <div>
               <LibraryIcon className="w-5 h-5 mb-1 mr-1 inline" />
@@ -88,11 +90,13 @@ const DaoHome: NextPage = () => {
               proposal deposit
             </div>
           </HeroContractFooter>
-
         </GradientHero>
-        <body className="px-6">
-          <ContractProposalsDispaly contractAddress={contractAddress} proposalCreateLink={`/multisig/${contractAddress}/proposals/create`} />
-        </body>
+        <div className="px-6">
+          <ContractProposalsDispaly
+            contractAddress={contractAddress}
+            proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
+          />
+        </div>
       </div>
       <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
         <ContractBalances
@@ -151,7 +155,7 @@ const DaoHome: NextPage = () => {
           </div>
         ) : null}
       </div>
-    </div >
+    </div>
   )
 }
 

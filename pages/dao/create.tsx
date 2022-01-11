@@ -270,28 +270,28 @@ const CreateDao: NextPage = () => {
     const msg: InstantiateMsg =
       tokenMode == TokenMode.Create
         ? makeDaoInstantiateWithNewTokenMessage(
-          data.name,
-          data.description,
-          data.tokenName,
-          data.tokenSymbol,
-          owners,
-          convertDenomToMicroDenom(data.daoInitialBalance),
-          threshold / 100, // Conversion to decimal percentage
-          maxVotingPeriod,
-          unstakingDuration,
-          getIntValue('deposit') || 0,
-          refund
-        )
+            data.name,
+            data.description,
+            data.tokenName,
+            data.tokenSymbol,
+            owners,
+            convertDenomToMicroDenom(data.daoInitialBalance),
+            threshold / 100, // Conversion to decimal percentage
+            maxVotingPeriod,
+            unstakingDuration,
+            getIntValue('deposit') || 0,
+            refund
+          )
         : makeDaoInstantiateWithExistingTokenMessage(
-          data.name,
-          data.description,
-          data.existingTokenAddress,
-          threshold / 100, // Conversion to decimal percentage
-          maxVotingPeriod,
-          unstakingDuration,
-          getIntValue('deposit') || 0,
-          refund
-        )
+            data.name,
+            data.description,
+            data.existingTokenAddress,
+            threshold / 100, // Conversion to decimal percentage
+            maxVotingPeriod,
+            unstakingDuration,
+            getIntValue('deposit') || 0,
+            refund
+          )
 
     console.log('instantiating DAO with message:')
     console.log(msg)
@@ -330,10 +330,12 @@ const CreateDao: NextPage = () => {
   return (
     <div className="grid grid-cols-6">
       <div className="p-6 w-full col-span-4">
-        <Breadcrumbs crumbs={[
-          ["/dao/list", "DAOs"],
-          [router.asPath, "Create DAO"]
-        ]} />
+        <Breadcrumbs
+          crumbs={[
+            ['/dao/list', 'DAOs'],
+            [router.asPath, 'Create DAO'],
+          ]}
+        />
 
         <form className="mb-8" onSubmit={handleSubmit<DaoCreateData>(onSubmit)}>
           <h2 className="mt-10 text-lg">
@@ -617,8 +619,9 @@ const CreateDao: NextPage = () => {
           </div>
           {!complete && (
             <button
-              className={`mt-3 w-44 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg ${loading ? 'loading' : ''
-                }`}
+              className={`mt-3 w-44 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg ${
+                loading ? 'loading' : ''
+              }`}
               style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
               type="submit"
               disabled={loading}
