@@ -2,7 +2,7 @@ import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
 import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { Children, cloneElement, ReactNode } from 'react'
+import { Children, ReactNode } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 import { cw20TokenInfo } from 'selectors/treasury'
 import {
@@ -10,7 +10,7 @@ import {
   convertFromMicroDenom,
   convertMicroDenomToDenom,
 } from 'util/conversion'
-import Logo from './Logo'
+import { Logo } from './Logo'
 import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {

@@ -1,8 +1,7 @@
 import { useSigningClient } from 'contexts/cosmwasm'
 import Link from 'next/link'
 import ThemeToggle from 'components/ThemeToggle'
-import NavContractLabel from 'components/NavContractLabel'
-import Logo from 'components/Logo'
+import { Logo } from 'components/Logo'
 import {
   ArrowRightIcon,
   CashIcon,

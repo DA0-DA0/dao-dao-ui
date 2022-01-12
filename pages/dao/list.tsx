@@ -6,7 +6,7 @@ import {
   UserGroupIcon,
   UserIcon,
 } from '@heroicons/react/outline'
-import Logo from 'components/Logo'
+import { Logo } from 'components/Logo'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import React from 'react'

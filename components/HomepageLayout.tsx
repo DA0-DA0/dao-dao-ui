@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { ReactNode } from "react";
+import { ReactNode } from 'react'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 

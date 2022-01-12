@@ -9,7 +9,7 @@ import {
 import React from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import Logo from 'components/Logo'
+import { Logo } from 'components/Logo'
 import { useRecoilValue } from 'recoil'
 import { sigsSelector, MultisigListType } from 'selectors/multisigs'
 

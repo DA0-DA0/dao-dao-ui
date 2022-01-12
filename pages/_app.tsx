@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     setTheme(themeName)
   }
 
-  if (router.pathname === "/") {
+  if (router.pathname === '/') {
     return (
       <RecoilRoot>
         <Suspense fallback={<LoadingScreen />}>

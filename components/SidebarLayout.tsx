@@ -1,9 +1,5 @@
-import Link from 'next/link'
 import { ReactNode } from 'react'
-import Logo from 'components/Logo'
 import Nav from './Nav'
-
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 export function SidebarLayout({ children }: { children: ReactNode }) {
   return (
