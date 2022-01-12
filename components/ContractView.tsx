@@ -3,7 +3,7 @@ import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
 import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { Children, cloneElement, ReactNode } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 import { cw20TokenInfo } from 'selectors/treasury'
 import {
   convertDenomToHumanReadableDenom,
@@ -75,7 +75,7 @@ export function ContractProposalsDispaly({
     <>
       <div className="flex justify-between items-center">
         <h2 className="font-medium text-lg">Proposals</h2>
-        <Link href={proposalCreateLink}>
+        <Link href={proposalCreateLink} passHref>
           <button className="btn btn-sm btn-outline normal-case text-left">
             New proposal <PlusIcon className="inline w-5 h-5 ml-1" />
           </button>
@@ -97,6 +97,15 @@ export function ContractBalances({
   native: Coin[]
   cw20?: Cw20Coin[]
 }) {
+  const cw20List = cw20 ? cw20 : []
+  const cw20Info = useRecoilValue(
+    waitForAll(cw20List.map(({ address }) => cw20TokenInfo(address)))
+  )
+  const cw20InfoBalance = cw20Info.map((info, idx) => ({
+    info: info,
+    amount: cw20List[idx].amount,
+  }))
+
   return (
     <>
       <h2 className="font-medium text-lg">Treasury</h2>
@@ -120,16 +129,13 @@ export function ContractBalances({
             ).toUpperCase()}
           </li>
         )}
-        {cw20 &&
-          cw20.map(({ address, amount }) => {
-            const tokenInfo = useRecoilValue(cw20TokenInfo(address))
-            return (
-              <li key={tokenInfo.name}>
-                {convertMicroDenomToDenom(amount).toLocaleString()} $
-                {tokenInfo.symbol}
-              </li>
-            )
-          })}
+        {cw20InfoBalance.map(({ info, amount }) => {
+          return (
+            <li key={info.name}>
+              {convertMicroDenomToDenom(amount).toLocaleString()} ${info.symbol}
+            </li>
+          )
+        })}
       </ul>
     </>
   )

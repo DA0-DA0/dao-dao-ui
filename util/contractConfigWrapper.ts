@@ -1,7 +1,8 @@
 import { ConfigResponse as SigConfig } from '@dao-dao/types/contracts/cw3-flex-multisig'
 import { ConfigResponse as DaoConfig } from '@dao-dao/types/contracts/cw3-dao'
-import { useRecoilValue, waitForAll } from 'recoil'
-import { tokenConfig } from 'selectors/daos'
+import { selectorFamily, useRecoilValue, waitForAll } from 'recoil'
+import { daoSelector, tokenConfig } from 'selectors/daos'
+import { sigSelector } from 'selectors/multisigs'
 
 type Config = SigConfig | DaoConfig
 
@@ -44,3 +45,23 @@ export class ContractConfigWrapper {
     return tokenInfo.length ? tokenInfo[0].symbol : ''
   }
 }
+
+export const contractConfigSelector = selectorFamily<
+  Config,
+  { contractAddress: string; multisig: boolean }
+>({
+  key: 'contractConfigSelector',
+  get:
+    ({
+      contractAddress,
+      multisig,
+    }: {
+      contractAddress: string
+      multisig: boolean
+    }) =>
+    async ({ get }) => {
+      return multisig
+        ? get(sigSelector(contractAddress))
+        : get(daoSelector(contractAddress))
+    },
+})
