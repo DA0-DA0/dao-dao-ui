@@ -90,7 +90,7 @@ function ProposalLine({
           </p>
           <ProposalStatus status={prop.status} />
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
-          <p className="text-neutral">{getEnd(prop.expires)} remaining</p>
+          <p className="text-neutral text-sm">{getEnd(prop.expires)}</p>
         </div>
       </a>
     </Link>

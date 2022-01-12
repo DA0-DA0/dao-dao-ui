@@ -12,8 +12,6 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { proposalsCreatedAtom } from 'atoms/proposals'
 import { cleanChainError } from 'util/cleanChainError'
 import { daoSelector } from 'selectors/daos'
-import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
-import Link from 'next/link'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 
 const ProposalCreate: NextPage = () => {
@@ -41,11 +39,7 @@ const ProposalCreate: NextPage = () => {
     if (!signingClient || !walletAddress) {
       setError('Wallet is not connected')
     }
-    const propose = messageForProposal(
-      proposal,
-      contractAddress,
-      govTokenAddress
-    )
+    const propose = messageForProposal(proposal, govTokenAddress)
     const memo = memoForProposal(proposal)
     try {
       const response = await signingClient?.execute(

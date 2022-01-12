@@ -1,8 +1,6 @@
 import React, { useEffect, useReducer, useState } from 'react'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import HelpTooltip from 'components/HelpTooltip'
 import { useCw20IncreaseAllowance } from 'hooks/cw20'
-import { useDaoConfig } from 'hooks/dao'
 import { ProposalMessageType } from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
@@ -19,21 +17,13 @@ import { useForm } from 'react-hook-form'
 import { makeMintMessage, makeSpendMessage } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
 import InputField, { makeFieldErrorMessage } from './InputField'
-import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import { cleanChainError } from 'util/cleanChainError'
-import {
-  CashIcon,
-  CogIcon,
-  PaperClipIcon,
-  SparklesIcon,
-  XIcon,
-} from '@heroicons/react/outline'
+import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
-import { daoSelector, tokenConfig } from 'selectors/daos'
+import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { ContractConfigWrapper } from 'util/contractConfigWrapper'
 
@@ -287,7 +277,7 @@ export function ProposalEditor({
   if (editProposalJson) {
     return (
       <RawEditor
-        json={messageForProposal(proposal, contractAddress)}
+        json={messageForProposal(proposal)}
         onChange={handleJsonChanged}
       ></RawEditor>
     )
@@ -349,7 +339,7 @@ export function ProposalEditor({
                 style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
                 type="submit"
                 disabled={loading}
-                onClick={(e) => {
+                onClick={(_e) => {
                   setProposalDescription(description)
                 }}
               >

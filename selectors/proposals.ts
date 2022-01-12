@@ -3,8 +3,7 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { selectorFamily } from 'recoil'
-import { defaultExecuteFee } from 'util/fee'
+import { atomFamily, selectorFamily } from 'recoil'
 import { cosmWasmClient } from './cosm'
 
 export type ProposalIdInput = string | number
@@ -86,6 +85,20 @@ const queryProposal =
   }
 )
 
+// Indicates how many times a given proposal has been updated via the
+// UI. For example, voting on a proposal ought to increment the update
+// count for the proposal.
+//
+// This is used by proposal selectors so that they might update when a
+// UI action triggers the database to change.
+export const proposalUpdateCountAtom = atomFamily<
+  number,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalUpdateCountAtom',
+  default: 0,
+})
+
 export const proposalSelector = selectorFamily<
   ProposalResponse,
   { contractAddress: string; proposalId: number }
@@ -100,6 +113,8 @@ export const proposalSelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
       const client = get(cosmWasmClient)
       const proposal = await client.queryContractSmart(contractAddress, {
         proposal: { proposal_id: proposalId },
@@ -122,6 +137,8 @@ export const proposalVotesSelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
       const client = get(cosmWasmClient)
       const votes = await client.queryContractSmart(contractAddress, {
         list_votes: { proposal_id: proposalId },
@@ -144,6 +161,8 @@ export const proposalTallySelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
       const client = get(cosmWasmClient)
       const tally = await client.queryContractSmart(contractAddress, {
         tally: { proposal_id: proposalId },

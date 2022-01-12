@@ -16,7 +16,6 @@ import {
 /// Returns the outgoing message for COSMOS
 export function messageForProposal(
   proposal: Proposal,
-  contractAddress: string,
   govTokenAddress?: string
 ) {
   const msgs = Object.values(proposal.messageMap).map((mapEntry) => {
@@ -24,7 +23,9 @@ export function messageForProposal(
     // junox). Contracts expect things in the micro form (ex: ujunox)
     // so we, painfully, do some conversions:
     if (mapEntry.messageType === ProposalMessageType.Spend) {
-      let microMessage = mapEntry.message
+      // Without doing a deep copy here we run the risk of modifying
+      // fields of the message which are displayed in the UI.
+      let microMessage = JSON.parse(JSON.stringify(mapEntry.message))
       const bank = (microMessage as any).bank as BankMsg
       if (!bank) {
         return
