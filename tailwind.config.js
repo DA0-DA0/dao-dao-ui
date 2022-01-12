@@ -17,7 +17,7 @@ module.exports = {
           'radial-gradient(80% 40% at top, var(--tw-gradient-stops))',
       },
       animation: {
-        'spin-slow': 'spin 15s linear infinite',
+        'spin-slow': 'spin 10s linear infinite',
       },
     },
   },
