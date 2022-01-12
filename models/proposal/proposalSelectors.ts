@@ -57,7 +57,8 @@ export function messageForProposal(
       return microMessage
     }
     if (mapEntry.messageType === ProposalMessageType.Mint) {
-      const mintMessage = mapEntry.message as any
+      const mintMessage = JSON.parse(JSON.stringify(mapEntry.message))
+      console.log(mintMessage)
       if (mintMessage?.mint?.amount) {
         mintMessage.mint.amount = convertDenomToMicroDenom(
           mintMessage.mint.amount

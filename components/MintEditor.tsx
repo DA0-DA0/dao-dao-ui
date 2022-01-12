@@ -20,10 +20,8 @@ export default function MintEditor({
   mintMsg?: MessageMapEntry
   denom: string
 }) {
-  const [address, setAddress] = useState('')
+  const [address, setAddress] = useState(getMintRecipient(mintMsg) || '')
   const [validAddress, setValidAddress] = useState(true)
-
-  let recipientAddress = getMintRecipient(mintMsg) || ''
 
   let amount = getMintAmount(mintMsg) ?? ''
 
@@ -32,12 +30,12 @@ export default function MintEditor({
     updateMint()
   }
 
-  function updateMint(e?: FormEvent, options?: { recipientAddress?: string }) {
+  function updateMint(e?: FormEvent) {
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
-    const recipient = options?.recipientAddress ?? recipientAddress
+    const recipient = isValidAddress(address) ? address : ''
 
     try {
       const id = mintMsg?.id ?? ''
@@ -45,6 +43,8 @@ export default function MintEditor({
       let action: ProposalAction
 
       const message = makeMintMessage(amount, recipient)
+      console.log('update')
+      console.log(message)
 
       if (id) {
         action = {
@@ -65,7 +65,7 @@ export default function MintEditor({
 
   function handleRecipientAddress(e: React.FormEvent<HTMLInputElement>) {
     const valid = !!(address && isValidAddress(address))
-    updateMint(e, { recipientAddress: address })
+    updateMint(e)
     setValidAddress(valid)
   }
 
@@ -83,13 +83,17 @@ export default function MintEditor({
           </span>
         </label>
         <input
+          required
           type="text"
           id="recipientAddress"
           className={
             'input input-bordered' + (!validAddress ? ' input-error' : '')
           }
           name="recipientAddress"
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={(e) => {
+            setAddress(e.target.value)
+            setValidAddress(isValidAddress(address))
+          }}
           onBlur={handleRecipientAddress}
           value={address}
         />
@@ -105,8 +109,9 @@ export default function MintEditor({
           <span className="label-text text-secondary text-medium ">Amount</span>
         </label>
         <input
+          required
           type="number"
-          id="recipientAddress"
+          id="mintAmount"
           className="input input-bordered"
           name="amount"
           onChange={handleAmount}

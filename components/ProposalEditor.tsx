@@ -94,12 +94,13 @@ export function ProposalEditor({
     })
   }
 
-  // Try to fetch DAO info...
   const contractConfig = new ContractConfigWrapper(
     multisig
       ? useRecoilValue(sigSelector(contractAddress))
       : useRecoilValue(daoSelector(contractAddress))
   )
+  // We can't call a variable number of hooks per render so we need to 'fetch' this unconditionally.
+  const govTokenSymbol = contractConfig.gov_token_symbol
 
   useEffect(() => {
     setDeposit(contractConfig.proposal_deposit.toString())
@@ -161,7 +162,7 @@ export function ProposalEditor({
           <MintEditor
             dispatch={dispatch}
             mintMsg={mapEntry}
-            denom={contractConfig.gov_token_symbol}
+            denom={govTokenSymbol}
           ></MintEditor>
         )
         label = 'Mint'

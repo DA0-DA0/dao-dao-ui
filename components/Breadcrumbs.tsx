@@ -6,16 +6,18 @@ import Link from 'next/link'
  */
 export function Breadcrumbs({ crumbs }: { crumbs: Array<[string, string]> }) {
   return (
-    <div className="text-md font-medium text-secondary-focus">
-      <ArrowNarrowLeftIcon className="inline w-5 h-5 mb-1" />
+    <ul className="text-md font-medium text-secondary-focus list-none flex">
+      <li key="icon">
+        <ArrowNarrowLeftIcon className="inline w-5 h-5 mb-1" />
+      </li>
       {crumbs.map(([link, name], idx) => (
-        <>
+        <li key={name}>
           <Link href={link}>
             <a className="mx-2">{name}</a>
           </Link>
           {idx != crumbs.length - 1 && '/'}
-        </>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }

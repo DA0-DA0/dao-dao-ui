@@ -1,6 +1,6 @@
 import { ConfigResponse as SigConfig } from '@dao-dao/types/contracts/cw3-flex-multisig'
 import { ConfigResponse as DaoConfig } from '@dao-dao/types/contracts/cw3-dao'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 import { tokenConfig } from 'selectors/daos'
 
 type Config = SigConfig | DaoConfig
@@ -31,10 +31,16 @@ export class ContractConfigWrapper {
   }
 
   get gov_token_symbol() {
-    if ('gov_token' in this.base) {
-      const tokenInfo = useRecoilValue(tokenConfig(this.gov_token))
-      return tokenInfo.symbol
-    }
-    return ''
+    // Must call hooks the same number of times every render so we do
+    // this little maneuver. I age ten years every time I have to do
+    // this.
+    const tokenInfo = useRecoilValue(
+      waitForAll(
+        (this.gov_token ? [this.gov_token] : []).map((address) =>
+          tokenConfig(address)
+        )
+      )
+    )
+    return tokenInfo.length ? tokenInfo[0].symbol : ''
   }
 }
