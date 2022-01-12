@@ -128,15 +128,29 @@ function Nav() {
           </li>
           <li>
             <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Docs
+            <a href="https://docs.daodao.zone" target="_blank" rel="noreferrer">
+              Docs
+            </a>
           </li>
           <li>
             <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
-            GitHub
+            <a
+              href="https://github.com/da0-da0"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
           </li>
           <li>
             <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Twitter
+            <a
+              href="https://twitter.com/da0_da0"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Twitter
+            </a>
           </li>
         </ul>
       </div>

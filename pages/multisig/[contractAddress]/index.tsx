@@ -95,6 +95,7 @@ const Home: NextPage = () => {
           <HeroContractHeader
             name={sigInfo.config.name}
             member={memberInfo.member}
+            description={sigInfo.config.description}
           />
 
           <HeroContractFooter>

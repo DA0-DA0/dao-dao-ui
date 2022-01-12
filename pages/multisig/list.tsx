@@ -116,7 +116,7 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-start-5 col-span-2 border border-l border-base-300 p-6 h-screen">
+      <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
         <h2 className="font-medium">Overview</h2>
         <div className="mt-6">
           <ul className="list-none ml-2 leading-relaxed">

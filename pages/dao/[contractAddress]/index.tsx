@@ -52,7 +52,10 @@ const DaoHome: NextPage = () => {
     walletStakedTokenBalance(daoInfo?.staking_contract)
   )
 
-  const stakedPercent = (100 * stakedTotal) / Number(tokenInfo?.total_supply)
+  const stakedPercent = (
+    (100 * stakedTotal) /
+    Number(tokenInfo?.total_supply)
+  ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
 
   return (
     <div className="grid grid-cols-6 overflow-auto mb-3">
@@ -73,10 +76,6 @@ const DaoHome: NextPage = () => {
 
           <HeroContractFooter>
             <div>
-              <CurrencyDollarIcon className="w-5 h-5 mb-1 mr-1 inline" />$
-              {tokenInfo?.symbol}
-            </div>
-            <div>
               <LibraryIcon className="w-5 h-5 mb-1 mr-1 inline" />
               {stakedPercent}% ${tokenInfo?.symbol} staked
             </div>
@@ -85,9 +84,9 @@ const DaoHome: NextPage = () => {
               {proposalsTotal} proposals
             </div>
             <div>
-              <KeyIcon className="w-5 h-5 mb-1 mr-1 inline" />$
-              {convertMicroDenomToDenom(daoInfo?.config.proposal_deposit)}{' '}
-              proposal deposit
+              <KeyIcon className="w-5 h-5 mb-1 mr-1 inline" />
+              {convertMicroDenomToDenom(daoInfo?.config.proposal_deposit)} $
+              {tokenInfo.symbol} proposal deposit
             </div>
           </HeroContractFooter>
         </GradientHero>
@@ -109,7 +108,7 @@ const DaoHome: NextPage = () => {
         <ul className="list-none mt-3">
           <li>
             <BalanceCard
-              title="balance"
+              title="Balance"
               amount={convertMicroDenomToDenom(
                 govTokenBalance?.amount
               ).toLocaleString()}
@@ -118,7 +117,7 @@ const DaoHome: NextPage = () => {
           </li>
           <li>
             <BalanceCard
-              title={`votes (= staked ${tokenInfo?.symbol})`}
+              title={`Voting power (staked ${tokenInfo?.symbol})`}
               amount={convertMicroDenomToDenom(
                 stakedGovTokenBalance.amount
               ).toLocaleString()}
@@ -141,7 +140,9 @@ const DaoHome: NextPage = () => {
                 `${(
                   (govTokenBalance.amount / stakedGovTokenBalance.amount) *
                   100
-                ).toLocaleString()}%`}{' '}
+                ).toLocaleString(undefined, {
+                  maximumSignificantDigits: 3,
+                })}%`}{' '}
               more voting power and help you defend your positions for{' '}
               {daoInfo.config.name}
               {"'"}s direction.

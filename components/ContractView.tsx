@@ -30,7 +30,7 @@ export function HeroContractHeader({
 }: {
   name: string
   member: boolean
-  description?: string
+  description: string
 }) {
   return (
     <div className="flex items-center flex-col">
@@ -43,7 +43,7 @@ export function HeroContractHeader({
             {member && <UserIcon className="inline w-5 h-5 mb-1 ml-1" />}
           </h1>
         </div>
-        {description && <p className="mt-2 font-mono">{description}</p>}
+        <p className="mt-2 font-mono">{description}</p>
       </div>
     </div>
   )
