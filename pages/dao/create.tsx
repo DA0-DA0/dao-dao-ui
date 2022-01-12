@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { useSigningClient } from 'contexts/cosmwasm'
@@ -16,10 +16,9 @@ import { errorNotify, successNotify } from 'util/toast'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
 import { cleanChainError } from 'util/cleanChainError'
 import {
-  ArrowNarrowLeftIcon,
-  ClipboardListIcon,
   InformationCircleIcon,
   PaperClipIcon,
+  ScaleIcon,
 } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -59,6 +58,7 @@ interface DaoCreateData {
   unstakingDuration: string
   refund: string | boolean
   proposalDepositAmount: string
+  [key: string]: string | boolean
 }
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
@@ -67,30 +67,6 @@ const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
 enum TokenMode {
   UseExisting,
   Create,
-}
-
-interface DaoCreateData {
-  deposit: string
-  description: string
-  duration: string
-
-  // The `tokenMode` state varaible inside of `CreateDAO` determines
-  // which of these fields we use to instantiate the DAO.
-
-  // Fields for creating a DAO with a new token.
-  label: string
-  threshold: string
-  tokenName: string
-  tokenSymbol: string
-  daoInitialBalance: string
-
-  // Field for creating a DAO with an existing token.
-  existingTokenAddress: string
-
-  unstakingDuration: string
-  refund: string | boolean
-  proposalDepositAmount: string
-  [key: string]: string | boolean
 }
 
 // Atoms for keeping track of token distrbution so that we can warn
@@ -183,6 +159,20 @@ function MinorityRuleWarning({ memberCount }: { memberCount: number }) {
   return null
 }
 
+export function secondsToHms(seconds: string): string {
+  const secondsInt = Number(seconds)
+  const h = Math.floor(secondsInt / 3600)
+  const m = Math.floor((secondsInt % 3600) / 60)
+  const s = Math.floor((secondsInt % 3600) % 60)
+
+  const hDisplay =
+    h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
+  const mDisplay =
+    m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
+  const sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
+  return hDisplay + mDisplay + sDisplay
+}
+
 const CreateDao: NextPage = () => {
   const router = useRouter()
   const { walletAddress, signingClient } = useSigningClient()
@@ -219,20 +209,6 @@ const CreateDao: NextPage = () => {
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
   }, [error])
-
-  function secondsToHms(seconds: string): string {
-    const secondsInt = Number(seconds)
-    const h = Math.floor(secondsInt / 3600)
-    const m = Math.floor((secondsInt % 3600) / 60)
-    const s = Math.floor((secondsInt % 3600) % 60)
-
-    const hDisplay =
-      h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
-    const mDisplay =
-      m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
-    const sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
-    return hDisplay + mDisplay + sDisplay
-  }
 
   const onSubmit = (data: DaoCreateData) => {
     setError('')
@@ -298,7 +274,7 @@ const CreateDao: NextPage = () => {
 
     if (!signingClient) {
       setLoading(false)
-      setError('Please try reconnecting your wallet.')
+      setError('Wallet not connected')
       return
     }
 
@@ -532,7 +508,7 @@ const CreateDao: NextPage = () => {
           </div>
 
           <h2 className="mt-8 text-lg">
-            <ClipboardListIcon className="inline w-5 h-5 mr-2 mb-1" />
+            <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
             Voting Config
           </h2>
           <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
@@ -542,11 +518,7 @@ const CreateDao: NextPage = () => {
                 label="threshold"
                 register={register}
                 error={errors.threshold}
-                validation={[
-                  validateRequired,
-                  validatePercent,
-                  validatePercent,
-                ]}
+                validation={[validateRequired, validatePercent]}
                 defaultValue="75"
                 onChange={(e) => setPassThreshold(Number(e?.target?.value))}
               />
@@ -582,7 +554,7 @@ const CreateDao: NextPage = () => {
                 label="deposit"
                 register={register}
                 error={errors.deposit}
-                validation={[validateRequired, validatePositive]}
+                validation={[validateRequired]}
                 defaultValue="0"
               />
               <InputErrorMessage error={errors.deposit} />
@@ -594,7 +566,7 @@ const CreateDao: NextPage = () => {
                 label="unstakingDuration"
                 register={register}
                 error={errors.unstakingDuration}
-                validation={[validateRequired, validatePositive]}
+                validation={[validateRequired]}
                 onChange={(e) => setUnstakingDurationSeconds(e?.target?.value)}
                 defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
               />

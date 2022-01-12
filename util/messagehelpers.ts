@@ -12,7 +12,11 @@ import {
   Uint128,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import { CW20_CODE_ID, STAKE_CODE_ID } from './constants'
+import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
+import {
+  InstantiateMsg as MultisigInstantiateMsg,
+  Member,
+} from '@dao-dao/types/contracts/cw3-multisig'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -209,6 +213,34 @@ export function makeDaoInstantiateWithNewTokenMessage(
     refund_failed_proposals,
   }
   return msg
+}
+
+export function makeMultisigInstantiateMessage(
+  name: string,
+  description: string,
+  voters: Member[],
+  threshold: number,
+  max_voting_period: number
+): MultisigInstantiateMsg {
+  return {
+    name,
+    description,
+    group: {
+      instantiate_new_group: {
+        code_id: C4_GROUP_CODE_ID,
+        label: name,
+        voters,
+      },
+    },
+    threshold: {
+      absolute_count: {
+        weight: threshold,
+      },
+    },
+    max_voting_period: {
+      time: max_voting_period,
+    },
+  }
 }
 
 export interface MessageAction {
