@@ -15,10 +15,10 @@ const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 function EnterAppButton() {
   return (
     <Link href="/dao/list" passHref>
-      <a className="btn btn-sm normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md">
+      <a className="btn btn-lg normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md">
         Enter the app
         <ArrowNarrowRightIcon
-          className="w-4 h-4 ml-2"
+          className="w-6 h-4 ml-9"
           style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
         />
       </a>
@@ -42,7 +42,7 @@ function InfoCard({
       </div>
       <div>
         <h3 className="text-xl font-medium">{title}</h3>
-        <p className="text-sm text-secondary mt-1">{body}</p>
+        <p className="text-base text-secondary mt-1">{body}</p>
       </div>
     </div>
   )
@@ -106,8 +106,8 @@ const Home: NextPage = () => {
       </nav>
       <div className="flex flex-col items-center">
         <div className="text-center">
-          <h1 className="text-5xl font-medium mt-12">DAOs for everyone</h1>
-          <p className="text-secondary max-w-lg my-5">
+          <h1 className="text-7xl font-medium mt-12">DAOs for everyone.</h1>
+          <p className="text-lg text-secondary max-w-lg my-5">
             We provide tooling for creating, deploying, managing, and joining
             DAOs. Built with love on Juno.
           </p>
@@ -130,7 +130,7 @@ const Home: NextPage = () => {
           </InfoCard>
           <InfoCard
             title="Join the Cosmoverse"
-            body="Launch tokens and share them across chains. Your DAO can send and receive assets to any chain that supports IBC."
+            body="Launch tokens and share them. Send and receive assets to any chain that supports IBC."
           >
             <StarIcon />
           </InfoCard>
