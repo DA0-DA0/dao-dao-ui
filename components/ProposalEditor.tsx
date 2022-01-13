@@ -1,6 +1,11 @@
 import { CosmosMsgFor_Empty, Proposal } from '@dao-dao/types/contracts/cw3-dao'
 import {
-  contractProposalMapAtom, draftProposalAtom, draftProposalItem, nextDraftProposalIdAtom, proposalListAtom, proposalsRequestIdAtom
+  contractProposalMapAtom,
+  draftProposalAtom,
+  draftProposalItem,
+  nextDraftProposalIdAtom,
+  proposalListAtom,
+  proposalsRequestIdAtom,
 } from 'atoms/proposals'
 import HelpTooltip from 'components/HelpTooltip'
 import { useThemeContext } from 'contexts/theme'
@@ -13,25 +18,30 @@ import {
   useRecoilState,
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
-  useResetRecoilState
+  useResetRecoilState,
 } from 'recoil'
 import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
 import { draftProposalsSelector, proposalsSelector } from 'selectors/proposals'
 import {
-  isBankMsg, isBurnMsg, isMintMsg, isSendMsg, labelForMessage,
+  isBankMsg,
+  isBurnMsg,
+  isMintMsg,
+  isSendMsg,
+  labelForMessage,
   makeMintMessage,
-  makeSpendMessage
+  makeSpendMessage,
 } from 'util/messagehelpers'
 import { createProposalTransaction, isProposal } from 'util/proposal'
 import InputField, {
   InputFieldLabel,
-  makeFieldErrorMessage
+  makeFieldErrorMessage,
 } from './InputField'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
+import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 
 export default function ProposalEditor({
   proposalId,
@@ -48,10 +58,12 @@ export default function ProposalEditor({
   contractAddress: string
   recipientAddress: string
 }) {
-  const proposalsState = proposalsSelector({ contractAddress, startBefore: 0, limit: 10 })
-  const proposals = useRecoilValue(
-    proposalsState
-  )
+  const proposalsState = proposalsSelector({
+    contractAddress,
+    startBefore: 0,
+    limit: 10,
+  })
+  const proposals = useRecoilValue(proposalsState)
   const [editProposalJson, setEditProposalJson] = useState(false)
   const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
     useState('')
@@ -72,9 +84,7 @@ export default function ProposalEditor({
   const [nextProposalRequestId, setNextProposalRequestId] = useRecoilState(
     proposalsRequestIdAtom
   )
-  const resetProposals = useResetRecoilState(
-    proposalListAtom
-  )
+  const resetProposals = useResetRecoilState(proposalListAtom)
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState(
     nextDraftProposalIdAtom
   )
@@ -86,7 +96,7 @@ export default function ProposalEditor({
       signingClient,
       contractAddress,
       draftProposals,
-      router
+      router,
     }),
     [walletAddress, signingClient, contractAddress, draftProposals]
   )
@@ -98,9 +108,9 @@ export default function ProposalEditor({
   const proposal: Proposal =
     proposalMapItem?.proposal && isProposal(proposalMapItem?.proposal)
       ? proposalMapItem.proposal
-      : { ...EmptyProposal } as any as Proposal
+      : ({ ...EmptyProposal } as any as Proposal)
 
-  console.log({proposal})
+  console.log({ proposal })
 
   if (!proposalMapItem?.proposal) {
     // We're creating a new proposal, so bump the draft ID:
@@ -231,7 +241,7 @@ export default function ProposalEditor({
   let messages = (proposal?.msgs ?? []).map((msg, messageIndex) => {
     const label = labelForMessage(msg)
     const modeEditor = <div>TODO: editor for {label}</div>
-/*
+    /*
     let modeEditor = null
     if (isBankMsg(msg)) {
       if (isSendMsg(msg.bank) && proposalId !== undefined) {
@@ -337,11 +347,15 @@ export default function ProposalEditor({
   }
 
   const addMintMessage = () => {
-    try {
-      addMessage(makeMintMessage('', recipientAddress))
-    } catch (e) {
-      console.error(e)
-    }
+    // TODO(gavin.doughtie): fix
+    // try {
+    //   const msg: CosmosMsgFor_Empty = {
+    //     wasm: makeMintMessage('', recipientAddress)
+    //   }
+    //   addMessage(msg)
+    // } catch (e) {
+    //   console.error(e)
+    // }
   }
 
   const removeMessage = (messageIndex: number) => {
@@ -404,94 +418,95 @@ export default function ProposalEditor({
               className="text-left container mx-auto"
               onSubmit={handleSubmit<any>(onSubmit)}
             >
-<h2 className="text-lg">
-<PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
-Basic config
-</h2>
-<div className="px-3">
-              <InputField
-                fieldName="label"
-                label="Name"
-                toolTip="Name the Proposal"
-                errorMessage="Proposal name required"
-                readOnly={complete}
-                register={register}
-                fieldErrorMessage={fieldErrorMessage}
-                defaultValue={proposal.title}
-                onChange={(e) => setProposalTitle(e?.target?.value)}
-              />
-              <InputFieldLabel
-                errorText={proposalDescriptionErrorMessage}
-                fieldName="description"
-                label="Description"
-                toolTip="Your proposal description"
-              />
-              <textarea
-                className={editorClassName}
-                // onChange={handleDescriptionChange}
-                onChange={handleDescriptionTextChange}
-                defaultValue={proposal.description}
-                readOnly={complete}
-                // dark={themeContext.theme === 'junoDark'}
-                onBlur={handleDescriptionBlur}
-                id="description"
-              ></textarea>
-              <label htmlFor="message-list" className="block mt-4 text-xl">
-                Messages{' '}
-                <HelpTooltip text="Messages that will be executed on chain." />
-              </label>
-              <ul id="message-list">{messages}</ul>
-              <br />
+              <h2 className="text-lg">
+                <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Basic config
+              </h2>
+              <div className="px-3">
+                <InputField
+                  fieldName="label"
+                  label="Name"
+                  toolTip="Name the Proposal"
+                  errorMessage="Proposal name required"
+                  readOnly={complete}
+                  register={register}
+                  fieldErrorMessage={fieldErrorMessage}
+                  defaultValue={proposal.title}
+                  onChange={(e) => setProposalTitle(e?.target?.value)}
+                />
+                <InputFieldLabel
+                  errorText={proposalDescriptionErrorMessage}
+                  fieldName="description"
+                  label="Description"
+                  toolTip="Your proposal description"
+                />
+                <textarea
+                  className={editorClassName}
+                  // onChange={handleDescriptionChange}
+                  onChange={handleDescriptionTextChange}
+                  defaultValue={proposal.description}
+                  readOnly={complete}
+                  // dark={themeContext.theme === 'junoDark'}
+                  onBlur={handleDescriptionBlur}
+                  id="description"
+                ></textarea>
+                <label htmlFor="message-list" className="block mt-4 text-xl">
+                  Messages{' '}
+                  <HelpTooltip text="Messages that will be executed on chain." />
+                </label>
+                <ul id="message-list">{messages}</ul>
+                <br />
 
-              <MessageSelector actions={messageActions}></MessageSelector>
-              <br />
+                <MessageSelector actions={messageActions}></MessageSelector>
+                <br />
 
-              {!complete && (
-                <div>
-                  <button
-                    key="create"
-                    className={`btn btn-primary text-lg mt-8 ml-auto ${
-                      loading ? 'loading' : ''
-                    }`}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                    type="submit"
-                    disabled={loading}
-                  >
-                    Create Proposal
-                  </button>
-                  <button
-                    key="save_draft"
-                    className={`btn btn-secondary text-lg mt-8 ml-auto ${
-                      loading ? 'loading' : ''
-                    }`}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                    disabled={loading}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      saveDraftProposal(proposal)
-                    }}
-                  >
-                    Save Draft
-                  </button>
-                  <button
-                    key="delete_draft"
-                    className={`btn btn-secondary text-lg mt-8 ml-auto ${
-                      loading ? 'loading' : ''
-                    }`}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                    disabled={loading}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      deleteDraftProposal()
-                    }}
-                  >
-                    Delete Draft
-                  </button>
-                </div>
-              )}
-              {errorComponent}
+                {!complete && (
+                  <div>
+                    <button
+                      key="create"
+                      className={`btn btn-primary text-lg mt-8 ml-auto ${
+                        loading ? 'loading' : ''
+                      }`}
+                      style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                      type="submit"
+                      disabled={loading}
+                    >
+                      Create Proposal
+                    </button>
+                    <button
+                      key="save_draft"
+                      className={`btn btn-secondary text-lg mt-8 ml-auto ${
+                        loading ? 'loading' : ''
+                      }`}
+                      style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                      disabled={loading}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        saveDraftProposal(proposal)
+                      }}
+                    >
+                      Save Draft
+                    </button>
+                    <button
+                      key="delete_draft"
+                      className={`btn btn-secondary text-lg mt-8 ml-auto ${
+                        loading ? 'loading' : ''
+                      }`}
+                      style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                      disabled={loading}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        deleteDraftProposal()
+                      }}
+                    >
+                      Delete Draft
+                    </button>
+                  </div>
+                )}
+                {errorComponent}
+              </div>
             </form>
           </div>
         </div>

@@ -1,17 +1,12 @@
 import {
   ProposalResponse,
   ProposalTallyResponse,
-  VoteInfo,
+  VoteInfo
 } from '@dao-dao/types/contracts/cw3-dao'
-import { proposalsRequestIdAtom } from 'atoms/proposals'
-import { atomFamily, selectorFamily } from 'recoil'
-import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { proposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
-import { selectorFamily } from 'recoil'
-import { defaultExecuteFee } from 'util/fee'
-import { cosmWasmClient } from './cosm'
+import { atomFamily, selectorFamily } from 'recoil'
 import { ProposalMap } from 'types/proposals'
+import { cosmWasmClient } from './cosm'
 
 export type ProposalIdInput = string | number
 
