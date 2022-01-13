@@ -53,7 +53,7 @@ function InfoCard({
   )
 }
 
-      // <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
+// <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
 function GradientWrapper({ children }: { children: ReactNode }) {
   return (
     <div className="overflow-x-hidden">
@@ -95,10 +95,7 @@ const Home: NextPage = () => {
             <div>
               <ThemeToggle />
             </div>
-            <a
-              href="https://docs.daodao.zone"
-              className="flex items-center"
-            >
+            <a href="https://docs.daodao.zone" className="flex items-center">
               Documentation
               <ArrowNarrowRightIcon
                 className="inline w-4 h-4 ml-2"
@@ -110,11 +107,13 @@ const Home: NextPage = () => {
         </div>
       </nav>
       <div className="flex flex-col items-center justify-center">
-            <h1 className="text-7xl text-center font-medium mt-12">DAOs for everyone.</h1>
-            <p className="text-lg text-center max-w-lg my-5 text-secondary">
-              We provide tooling for creating, deploying, managing, and joining
-              DAOs. Built with love on Juno.
-            </p>
+        <h1 className="text-7xl text-center font-medium mt-12">
+          DAOs for everyone.
+        </h1>
+        <p className="text-lg text-center max-w-lg my-5 text-secondary">
+          We provide tooling for creating, deploying, managing, and joining
+          DAOs. Built with love on Juno.
+        </p>
         <div className="mb-12">
           <EnterAppButton />
         </div>
