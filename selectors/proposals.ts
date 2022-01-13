@@ -5,7 +5,13 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 import { proposalsRequestIdAtom } from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
+import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { proposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
+import { selectorFamily } from 'recoil'
+import { defaultExecuteFee } from 'util/fee'
 import { cosmWasmClient } from './cosm'
+import { ProposalMap } from 'types/proposals'
 
 export type ProposalIdInput = string | number
 
@@ -150,5 +156,34 @@ export const proposalTallySelector = selectorFamily<
         tally: { proposal_id: proposalId },
       })
       return tally
+    },
+})
+
+export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
+  key: 'draftProposals',
+  get:
+    (contractAddress) =>
+    ({ get }) => {
+      return get(proposalMapAtom(contractAddress))
+    },
+})
+
+export const proposalsSelector = selectorFamily<
+  ProposalResponse[],
+  {
+    contractAddress: string
+    startBefore: number
+    limit: number
+  }
+>({
+  key: 'proposals',
+  get:
+    ({ contractAddress, startBefore, limit }) =>
+    async ({ get }) => {
+      const onChainProposalList = get(
+        onChainProposalsSelector({ contractAddress, startBefore, limit })
+      )
+      // TODO(gavin.doughtie): add in draft proposals
+      return onChainProposalList
     },
 })
