@@ -56,7 +56,7 @@ function InfoCard({
       // <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
 function GradientWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-x-hidden">
       <div className="fixed top-1/4 left-1/2 -mt-[100px] -ml-[250px] animate-spin-slow">
         <LogoNoborder width={500} height={500} />
       </div>
