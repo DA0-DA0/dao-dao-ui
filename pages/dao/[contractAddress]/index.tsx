@@ -119,11 +119,11 @@ const DaoHome: NextPage = () => {
               denom={tokenInfo?.symbol}
               onPlus={() => {
                 setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
+                setStakingDefault(StakingMode.Unstake)
               }}
               onMinus={() => {
                 setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
+                setStakingDefault(StakingMode.Stake)
               }}
             />
           </li>
@@ -136,11 +136,11 @@ const DaoHome: NextPage = () => {
               denom={tokenInfo?.symbol}
               onPlus={() => {
                 setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
+                setStakingDefault(StakingMode.Stake)
               }}
               onMinus={() => {
                 setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
+                setStakingDefault(StakingMode.Unstake)
               }}
             />
           </li>
