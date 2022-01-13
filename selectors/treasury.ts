@@ -1,4 +1,4 @@
-import { selector, selectorFamily } from 'recoil'
+import { atomFamily, selector, selectorFamily } from 'recoil'
 import { IndexedTx, Coin } from '@cosmjs/stargate'
 import {
   // Cw20Coin,
@@ -71,6 +71,13 @@ export const walletAddress = selector({
   },
 })
 
+// Counts the number of times that a wallet token balance has been
+// changed. Used to invalidate state when a staking event occurs.
+export const walletTokenBalanceUpdateCountAtom = atomFamily<number, string>({
+  key: 'walletTokenBalanceUpdateCount',
+  default: 0,
+})
+
 export const walletTokenBalance = selectorFamily({
   key: 'WalletTokenBalance',
   get:
@@ -79,6 +86,7 @@ export const walletTokenBalance = selectorFamily({
       const client = get(cosmWasmClient)
 
       const wallet = get(walletAddress)
+      get(walletTokenBalanceUpdateCountAtom(wallet))
       const response = (await client.queryContractSmart(tokenAddress, {
         balance: { address: wallet },
       })) as any
@@ -97,6 +105,7 @@ export const walletStakedTokenBalance = selectorFamily({
       const client = get(cosmWasmClient)
 
       const wallet = get(walletAddress)
+      get(walletTokenBalanceUpdateCountAtom(wallet))
       const response = (await client.queryContractSmart(tokenAddress, {
         staked_balance_at_height: { address: wallet },
       })) as any

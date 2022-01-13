@@ -127,7 +127,7 @@ const MultisigList: NextPage = () => {
             <li>
               <UserGroupIcon className="inline w-5 h-5 mr-2 mb-1" />
               Part of {memberSigs.length} multisig
-              {memberSigs.length > 1 && 's'}
+              {memberSigs.length != 1 && 's'}
             </li>
             <li>
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />

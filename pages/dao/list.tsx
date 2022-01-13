@@ -142,7 +142,7 @@ const DaoList: NextPage = () => {
             <li>
               <UserGroupIcon className="inline w-5 h-5 mr-2 mb-1" />
               Part of {memberDaos.length} DAO
-              {memberDaos.length > 1 && 's'}
+              {memberDaos.length != 1 && 's'}
             </li>
             <li>
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />

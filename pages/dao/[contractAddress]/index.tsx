@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import {
   daoSelector,
@@ -31,6 +31,7 @@ import {
   HeroContractHeader,
 } from 'components/ContractView'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import { StakingModal, StakingMode } from 'components/StakingModal'
 
 const DaoHome: NextPage = () => {
   const router = useRouter()
@@ -51,6 +52,9 @@ const DaoHome: NextPage = () => {
   const stakedGovTokenBalance = useRecoilValue(
     walletStakedTokenBalance(daoInfo?.staking_contract)
   )
+
+  const [showStaking, setShowStaking] = useState(false)
+  const [stakingDefault, setStakingDefault] = useState(StakingMode.Stake)
 
   const stakedPercent = (
     (100 * stakedTotal) /
@@ -113,6 +117,14 @@ const DaoHome: NextPage = () => {
                 govTokenBalance?.amount
               ).toLocaleString()}
               denom={tokenInfo?.symbol}
+              onPlus={() => {
+                setShowStaking(true)
+                setStakingDefault(StakingMode.Stake)
+              }}
+              onMinus={() => {
+                setShowStaking(true)
+                setStakingDefault(StakingMode.Unstake)
+              }}
             />
           </li>
           <li>
@@ -122,6 +134,14 @@ const DaoHome: NextPage = () => {
                 stakedGovTokenBalance.amount
               ).toLocaleString()}
               denom={tokenInfo?.symbol}
+              onPlus={() => {
+                setShowStaking(true)
+                setStakingDefault(StakingMode.Unstake)
+              }}
+              onMinus={() => {
+                setShowStaking(true)
+                setStakingDefault(StakingMode.Stake)
+              }}
             />
           </li>
         </ul>
@@ -148,13 +168,27 @@ const DaoHome: NextPage = () => {
               {"'"}s direction.
             </p>
             <div className="text-right mt-3">
-              <button className="btn btn-sm btn-ghost normal-case font-normal">
+              <button
+                className="btn btn-sm btn-ghost normal-case font-normal"
+                onClick={() => {
+                  setShowStaking(true)
+                  setStakingDefault(StakingMode.Stake)
+                }}
+              >
                 Stake tokens
                 <PlusSmIcon className="inline w-5 h-5 ml-2" />
               </button>
             </div>
           </div>
         ) : null}
+        {showStaking && (
+          <StakingModal
+            defaultMode={stakingDefault}
+            contractAddress={contractAddress}
+            tokenSymbol={tokenInfo.symbol}
+            onClose={() => setShowStaking(false)}
+          />
+        )}
       </div>
     </div>
   )

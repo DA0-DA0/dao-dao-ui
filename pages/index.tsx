@@ -54,8 +54,7 @@ function GradientWrapper({ children }: { children: ReactNode }) {
       <div className="fixed -top-12 left-1/2 -ml-[250px] text-transparent animate-spin-slow">
         <LogoNoborder width={500} height={500} />
       </div>
-      <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full">
-      </div>
+      <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full"></div>
       <div className="bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-60 w-screen h-screen flex flex-col justify-between">
         {children}
       </div>

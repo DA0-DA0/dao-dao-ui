@@ -6,7 +6,7 @@ import {
 import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
-import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { ConfigResponse, Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
 export interface MemberStatus {
@@ -103,5 +103,19 @@ export const daoSelector = selectorFamily<ConfigResponse, string>({
         get_config: {},
       })
       return response
+    },
+})
+
+export const unstakingDuration = selectorFamily<Duration, string>({
+  key: 'govTokenUnstakingDuration',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(address, {
+        unstaking_duration: {},
+      })
+      // Returns null of there is no unstaking duration.
+      return response.duration || { time: 0 }
     },
 })

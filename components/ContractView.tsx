@@ -2,7 +2,7 @@ import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
 import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { Children, ReactNode } from 'react'
+import { Children, MouseEventHandler, ReactNode } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 import { cw20TokenInfo } from 'selectors/treasury'
 import {
@@ -145,10 +145,14 @@ export function BalanceCard({
   denom,
   title,
   amount,
+  onPlus,
+  onMinus,
 }: {
   denom: string
   title: string
   amount: string
+  onPlus: MouseEventHandler<HTMLButtonElement>
+  onMinus: MouseEventHandler<HTMLButtonElement>
 }) {
   return (
     <div className="shadow p-6 rounded-lg w-full border border-base-300 h-28 mt-2">
@@ -158,10 +162,16 @@ export function BalanceCard({
       </p>
       <div className="flex justify-end">
         <div className="btn-group">
-          <button className="btn-outline btn btn-xs btn-square border-secondary">
+          <button
+            className="btn-outline btn btn-xs btn-square border-secondary"
+            onClick={onPlus}
+          >
             +
           </button>
-          <button className="btn-outline btn btn-xs btn-square border-secondary">
+          <button
+            className="btn-outline btn btn-xs btn-square border-secondary"
+            onClick={onMinus}
+          >
             -
           </button>
         </div>
