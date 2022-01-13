@@ -15,13 +15,6 @@ const Proposal: NextPage = () => {
   const contractAddress = router.query.contractAddress as string
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
 
-  if (!proposal) {
-    return (
-      <div className="grid bg-base-100 place-items-center">
-        <div className="text-center m-8">No proposal with that ID found.</div>
-      </div>
-    )
-  }
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">

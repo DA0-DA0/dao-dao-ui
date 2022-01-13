@@ -15,7 +15,12 @@ const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
     <Link href="/dao/list" passHref>
-      <a className={"btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md" + (small ? " btn-sm" : " btn-lg")}>
+      <a
+        className={
+          'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
+          (small ? ' btn-sm' : ' btn-lg')
+        }
+      >
         Enter the app
         <ArrowNarrowRightIcon
           className="w-6 h-4 ml-2"

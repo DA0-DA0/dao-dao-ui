@@ -3,6 +3,7 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
+import { proposalsRequestIdAtom } from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
 import { cosmWasmClient } from './cosm'
 
@@ -65,25 +66,6 @@ export const onChainProposalsSelector = selectorFamily<
       return proposals
     },
 })
-const queryProposal =
-  <T>(key: string, keyedResult?: string) =>
-  ({
-    contractAddress,
-    proposalId,
-  }: ProposalSelectorParams): ((params: any) => Promise<T>) => {
-    return async ({ get }) => {
-      const client = get(cosmWasmClient)
-      const result = await client.queryContractSmart(
-        contractAddress,
-        proposalParam(key, proposalId)
-      )
-      if (keyedResult) {
-        return result[keyedResult]
-      }
-      return result
-    }
-  }
-)
 
 // Indicates how many times a given proposal has been updated via the
 // UI. For example, voting on a proposal ought to increment the update
