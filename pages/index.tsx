@@ -53,10 +53,11 @@ function InfoCard({
   )
 }
 
+// <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
 function GradientWrapper({ children }: { children: ReactNode }) {
   return (
-    <div>
-      <div className="fixed -top-12 left-1/2 -ml-[250px] text-transparent animate-spin-slow">
+    <div className="overflow-x-hidden">
+      <div className="fixed top-1/4 left-1/2 -mt-[100px] -ml-[250px] animate-spin-slow">
         <LogoNoborder width={500} height={500} />
       </div>
       <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full"></div>
@@ -83,7 +84,7 @@ const Home: NextPage = () => {
               </div>
               <p className="font-medium mr-1">DAO</p>
               <p
-                className="font-medium text-secondary"
+                className="font-medium text-secondary font-semibold"
                 style={{ transform: 'scaleY(-1) scaleX(-1)' }}
               >
                 DAO
@@ -91,13 +92,10 @@ const Home: NextPage = () => {
             </a>
           </Link>
           <div className="flex gap-4 items-center">
-            <div className="text-secondary">
+            <div>
               <ThemeToggle />
             </div>
-            <a
-              href="https://docs.daodao.zone"
-              className="flex items-center text-secondary"
-            >
+            <a href="https://docs.daodao.zone" className="flex items-center">
               Documentation
               <ArrowNarrowRightIcon
                 className="inline w-4 h-4 ml-2"
@@ -108,9 +106,11 @@ const Home: NextPage = () => {
           </div>
         </div>
       </nav>
-      <div className="flex flex-col items-center">
-        <h1 className="text-7xl font-medium mt-12">DAOs for everyone.</h1>
-        <p className="text-lg text-secondary text-center max-w-lg my-5">
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="text-7xl text-center font-medium mt-12">
+          DAOs for everyone.
+        </h1>
+        <p className="text-lg text-center max-w-lg my-5 text-secondary">
           We provide tooling for creating, deploying, managing, and joining
           DAOs. Built with love on Juno.
         </p>
