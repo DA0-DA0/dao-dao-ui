@@ -118,7 +118,7 @@ const Home: NextPage = () => {
         <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">
           <InfoCard
             title="Create DAOs"
-            body="Create DAOs with a point-and-click interface. No command line required.."
+            body="Make DAOs with a visual interface. No command line required."
           >
             <PlusSmIcon />
           </InfoCard>
@@ -130,7 +130,7 @@ const Home: NextPage = () => {
           </InfoCard>
           <InfoCard
             title="Launch tokens"
-            body="Launch tokens and share them. Transfer assets across any chain that supports IBC."
+            body="Launch your token. Share them across any chain that supports IBC."
           >
             <StarIcon />
           </InfoCard>
