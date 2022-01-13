@@ -129,8 +129,8 @@ const Home: NextPage = () => {
             <ScaleIcon />
           </InfoCard>
           <InfoCard
-            title="Join the Cosmoverse"
-            body="Launch tokens and share them. Send and receive assets to any chain that supports IBC."
+            title="Launch tokens"
+            body="Launch tokens and share them. Transfer assets across any chain that supports IBC."
           >
             <StarIcon />
           </InfoCard>
