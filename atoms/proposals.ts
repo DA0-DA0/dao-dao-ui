@@ -1,5 +1,5 @@
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { atom } from 'recoil'
+import { atom, atomFamily } from 'recoil'
 
 export const proposalsRequestIdAtom = atom<number>({
   key: 'proposalsRequestId',
@@ -11,14 +11,14 @@ export const proposalsRequestStartBeforeAtom = atom<number>({
   default: 0,
 })
 
-export const proposalListAtom = atom<ProposalResponse[]>({
+export const proposalListAtom = atomFamily<ProposalResponse[], string>({
   key: 'proposalList',
   default: [],
 })
 
 // The number of proposals that have been created since we updated the
 // proposal listing.
-export const proposalsCreatedAtom = atom<number>({
+export const proposalsCreatedAtom = atomFamily<number, string>({
   key: 'proposalsCreatedAtom',
   default: 0,
 })

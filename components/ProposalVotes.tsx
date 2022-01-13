@@ -1,13 +1,11 @@
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
 import { UserIcon } from '@heroicons/react/outline'
+import { useRecoilValue } from 'recoil'
+import { walletAddress as selectWalletAddress } from 'selectors/treasury'
 
-function ProposalVotes({
-  votes,
-  walletAddress,
-}: {
-  votes: VoteInfo[]
-  walletAddress: string
-}) {
+function ProposalVotes({ votes }: { votes: VoteInfo[] }) {
+  const walletAddress = useRecoilValue(selectWalletAddress)
+
   return (
     <div className="overflow-x-auto">
       <table className="table w-full">

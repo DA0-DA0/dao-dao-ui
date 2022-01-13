@@ -1,9 +1,6 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import HelpTooltip from 'components/HelpTooltip'
-import { useThemeContext } from 'contexts/theme'
 import { useCw20IncreaseAllowance } from 'hooks/cw20'
-import { useDaoConfig } from 'hooks/dao'
 import { ProposalMessageType } from 'models/proposal/messageMap'
 import { EmptyProposal, Proposal } from 'models/proposal/proposal'
 import {
@@ -17,28 +14,25 @@ import {
   proposalMessages,
 } from 'models/proposal/proposalSelectors'
 import { useForm } from 'react-hook-form'
-import { isValidAddress } from 'util/isValidAddress'
-import {
-  labelForMessage,
-  makeMintMessage,
-  makeSpendMessage,
-} from 'util/messagehelpers'
+import { makeMintMessage, makeSpendMessage } from 'util/messagehelpers'
 import CustomEditor from './CustomEditor'
-import InputField, {
-  InputFieldLabel,
-  makeFieldErrorMessage,
-} from './InputField'
-import LineAlert from './LineAlert'
+import InputField, { makeFieldErrorMessage } from './InputField'
 import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import { cleanChainError } from 'util/cleanChainError'
+import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
+import { useRecoilValue } from 'recoil'
+import { daoSelector } from 'selectors/daos'
+import { sigSelector } from 'selectors/multisigs'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
 
-export default function ProposalEditor({
+export function ProposalEditor({
   initialProposal,
   loading,
-  error,
   onProposal,
   contractAddress,
   recipientAddress,
@@ -46,7 +40,6 @@ export default function ProposalEditor({
 }: {
   initialProposal?: Proposal
   loading?: boolean
-  error?: string
   onProposal: (
     proposal: Proposal,
     contractAddress: string,
@@ -69,7 +62,6 @@ export default function ProposalEditor({
   const [deposit, setDeposit] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
 
-  const themeContext = useThemeContext()
   const {
     register,
     handleSubmit,
@@ -105,12 +97,21 @@ export default function ProposalEditor({
     })
   }
 
-  // Try to fetch DAO info...
-  const { daoInfo } = useDaoConfig(contractAddress)
+  const config = useRecoilValue(
+    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  )
+
+  const contractConfig = useMemo(
+    () => new ContractConfigWrapper(config),
+    [config]
+  )
+  // We can't call a variable number of hooks per render so we need to 'fetch' this unconditionally.
+  const govTokenSymbol = contractConfig.gov_token_symbol
+
   useEffect(() => {
-    setDeposit(daoInfo?.config.proposal_deposit as string)
-    setTokenAddress(daoInfo?.gov_token as string)
-  }, [daoInfo])
+    setDeposit(contractConfig.proposal_deposit.toString())
+    setTokenAddress(contractConfig?.gov_token)
+  }, [contractConfig])
 
   function isProposalValid(proposalToCheck: Proposal): boolean {
     if (!proposalToCheck) {
@@ -131,7 +132,7 @@ export default function ProposalEditor({
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
     if (isProposalValid(proposal)) {
-      onProposal(proposal, contractAddress, daoInfo?.gov_token)
+      onProposal(proposal, contractAddress, contractConfig?.gov_token)
     }
   }
 
@@ -148,10 +149,9 @@ export default function ProposalEditor({
     }
   }
 
-  let messages = proposalMessages(proposal).map((mapEntry, key) => {
-    const label = labelForMessage(mapEntry.message)
-
+  let messages = proposalMessages(proposal).map((mapEntry) => {
     let modeEditor = null
+    let label = ''
     switch (mapEntry?.messageType) {
       case ProposalMessageType.Spend:
         modeEditor = (
@@ -159,28 +159,30 @@ export default function ProposalEditor({
             dispatch={dispatch}
             spendMsg={mapEntry}
             contractAddress={contractAddress}
-            initialRecipientAddress={recipientAddress}
           ></SpendEditor>
         )
+        label = 'Spend'
         break
       case ProposalMessageType.Mint: {
         modeEditor = (
           <MintEditor
             dispatch={dispatch}
             mintMsg={mapEntry}
-            initialRecipientAddress={recipientAddress}
+            denom={govTokenSymbol}
           ></MintEditor>
         )
+        label = 'Mint'
         break
       }
       case ProposalMessageType.Custom:
         modeEditor = <CustomEditor dispatch={dispatch} customMsg={mapEntry} />
+        label = 'Custom'
         break
     }
 
     return (
       <li
-        className="py-8"
+        className="my-4 px-4 py-2 border-l-2 rounded-lg border-accent"
         key={mapEntry.id}
         onClick={() =>
           dispatch({
@@ -189,29 +191,15 @@ export default function ProposalEditor({
           })
         }
       >
-        <div title={label} className="whitespace-nowrap text-left">
-          <h5 className="text-lg font-bold">
-            {mapEntry.messageType.toUpperCase()} {label}{' '}
-            <button
-              onClick={() => removeMessage(mapEntry.id)}
-              title="Delete message"
-              className="btn btn-circle btn-xs float-right"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="inline-block w-4 h-4 stroke-current"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-          </h5>
+        <div className="flex justify-between">
+          <h5 className="ml-1 mb-1">{label}</h5>
+          <button
+            onClick={() => removeMessage(mapEntry.id)}
+            title="Delete message"
+            className="btn btn-circle btn-xs bg-primary-content border-none text-neutral hover:bg-base-200"
+          >
+            <XIcon />
+          </button>
         </div>
         {modeEditor}
       </li>
@@ -238,42 +226,32 @@ export default function ProposalEditor({
   }
 
   const addSpendMessage = () => {
-    const validAddress = !!(
-      recipientAddress && isValidAddress(recipientAddress)
-    )
-    if (validAddress) {
-      try {
-        const message = makeSpendMessage('', recipientAddress, contractAddress)
-        const messageType = ProposalMessageType.Spend
-        const action: ProposalAction = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-        dispatch(action)
-      } catch (e) {
-        console.error(e)
+    try {
+      const message = makeSpendMessage('', recipientAddress, contractAddress)
+      const messageType = ProposalMessageType.Spend
+      const action: ProposalAction = {
+        type: 'addMessage',
+        message,
+        messageType,
       }
+      dispatch(action)
+    } catch (e) {
+      console.error(e)
     }
   }
 
   const addMintMessage = () => {
-    const validAddress = !!(
-      recipientAddress && isValidAddress(recipientAddress)
-    )
-    if (validAddress) {
-      try {
-        const message = makeMintMessage('', recipientAddress)
-        const messageType = ProposalMessageType.Mint
-        const action: ProposalAction = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-        dispatch(action)
-      } catch (e) {
-        console.error(e)
+    try {
+      const message = makeMintMessage('', recipientAddress)
+      const messageType = ProposalMessageType.Mint
+      const action: ProposalAction = {
+        type: 'addMessage',
+        message,
+        messageType,
       }
+      dispatch(action)
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -306,7 +284,7 @@ export default function ProposalEditor({
   if (editProposalJson) {
     return (
       <RawEditor
-        json={messageForProposal(proposal, contractAddress)}
+        json={messageForProposal(proposal)}
         onChange={handleJsonChanged}
       ></RawEditor>
     )
@@ -314,68 +292,68 @@ export default function ProposalEditor({
 
   const fieldErrorMessage = makeFieldErrorMessage(errors)
 
-  const editorClassName = proposalDescriptionErrorMessage
-    ? 'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full text-xl'
-    : 'input input-bordered rounded box-border py-3 px-8 h-full w-full text-xl'
-
   return (
     <div className="flex flex-col w-full flex-row">
-      <div className="grid bg-base-100">
+      <div className="grid mt-3">
         <div className="flex">
           <div className="text-left container mx-auto">
-            <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
               onSubmit={handleSubmit<any>(onSubmit)}
             >
-              <InputField
-                fieldName="label"
-                label="Name"
-                toolTip="Name the Proposal"
-                errorMessage="Proposal name required"
-                register={register}
-                fieldErrorMessage={fieldErrorMessage}
-                onChange={(e) => setProposalTitle(e?.target?.value)}
-              />
-              <InputField
-                fieldName="description"
-                errorMessage={proposalDescriptionErrorMessage}
-                fieldErrorMessage={fieldErrorMessage}
-                register={register}
-                label="Description"
-                toolTip="Your proposal description"
-                type="textarea"
-                onChange={(e) => handleDescriptionChange(() => e.target.value)}
-                defaultValue={proposal.description}
-              />
-              <label htmlFor="message-list" className="block mt-4 text-xl">
-                Messages{' '}
-                <HelpTooltip text="Messages that will be executed on chain." />
-              </label>
-              <ul id="message-list">{messages}</ul>
-              <br />
-              <MessageSelector actions={messageActions}></MessageSelector>
-              <br />
+              <h2 className="text-lg">
+                <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Basic config
+              </h2>
+              <div className="px-3">
+                <InputField
+                  fieldName="label"
+                  label="Title"
+                  toolTip="The title of the Proposal"
+                  errorMessage="Proposal title required"
+                  register={register}
+                  fieldErrorMessage={fieldErrorMessage}
+                  onChange={(e) => setProposalTitle(e?.target?.value)}
+                />
+                <InputField
+                  fieldName="description"
+                  errorMessage={proposalDescriptionErrorMessage}
+                  fieldErrorMessage={fieldErrorMessage}
+                  register={register}
+                  label="Description"
+                  toolTip="Your proposal description"
+                  type="textarea"
+                  onChange={(e) =>
+                    handleDescriptionChange(() => e.target.value)
+                  }
+                  defaultValue={proposal.description}
+                />
+              </div>
+              <h2 className="text-lg mt-6 mb-3">
+                <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Messages
+              </h2>
+              <div className="px-3">
+                <ul id="message-list" className="list-none">
+                  {messages}
+                </ul>
+                <MessageSelector actions={messageActions}></MessageSelector>
+              </div>
               <button
-                className={`btn btn-primary text-lg mt-8 ml-auto ${
+                className={`btn btn-primary btn-md font-semibold normal-case text-lg mt-6 ml-auto ${
                   loading ? 'loading' : ''
                 }`}
                 style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
                 type="submit"
                 disabled={loading}
-                onClick={(e) => {
+                onClick={(_e) => {
                   setProposalDescription(description)
                 }}
               >
                 {deposit && deposit !== '0'
-                  ? 'Deposit & Create Propsal'
-                  : 'Create Proposal'}
+                  ? 'Deposit & create propsal'
+                  : 'Create proposal'}
               </button>
-              {error && (
-                <div className="mt-8">
-                  <LineAlert variant="error" msg={cleanChainError(error)} />
-                </div>
-              )}
             </form>
           </div>
         </div>

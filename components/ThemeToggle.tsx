@@ -17,28 +17,24 @@ function ThemeToggle() {
   const updatedTheme =
     themeContext.theme !== defaultTheme ? defaultTheme : themes[1]
 
+  const icon =
+    themeContext.theme === themes[0] ? (
+      <MoonIcon className="inline w-5 h-5 mr-2" />
+    ) : (
+      <SunIcon className="inline w-5 h-5 mr-2" />
+    )
+  const text = themeContext.theme === themes[0] ? 'Dark theme' : 'Light theme'
+
   return (
-    <div className="form-control lg:mr-4 md:ml-auto">
-      <label className="cursor-pointer label">
-        <span className="label-text">
-          <SunIcon className="w-6 h-6 mr-1" />
-        </span>
-        <input
-          type="checkbox"
-          className="toggle toggle-secondary mx-1"
-          data-act-class="active"
-          data-set-theme={updatedTheme}
-          checked={themeContext.theme !== themes[0]}
-          onClick={() => {
-            themeContext.updateTheme(updatedTheme)
-          }}
-          readOnly
-        />
-        <span className="label-text">
-          <MoonIcon className="ml-1 w-6 h-6" />
-        </span>
-      </label>
-    </div>
+    <button
+      type="button"
+      data-set-theme={updatedTheme}
+      onClick={() => themeContext.updateTheme(updatedTheme)}
+      className="flex items-center"
+    >
+      {icon}
+      {text}
+    </button>
   )
 }
 

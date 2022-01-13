@@ -1,114 +1,97 @@
-import React, { FormEvent, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import {
-  InstantiateMsg,
-  Member,
-} from '@dao-dao/types/contracts/cw3-flex-multisig'
-import { XIcon } from '@heroicons/react/solid'
-import HelpTooltip from 'components/HelpTooltip'
-import LineAlert from 'components/LineAlert'
-import WalletLoader from 'components/WalletLoader'
 import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { C4_GROUP_CODE_ID, MULTISIG_CODE_ID } from 'util/constants'
+import { MULTISIG_CODE_ID } from 'util/constants'
 import { defaultExecuteFee } from 'util/fee'
-import { successNotify } from 'util/toast'
+import { errorNotify, successNotify } from 'util/toast'
 import { cleanChainError } from 'util/cleanChainError'
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import { useForm } from 'react-hook-form'
+import { PaperClipIcon, ScaleIcon, UsersIcon } from '@heroicons/react/outline'
+import {
+  InputErrorMessage,
+  InputLabel,
+  NumberInput,
+  TextInput,
+} from 'components/InputField'
+import {
+  validateAddress,
+  validatePercent,
+  validatePositive,
+  validateRequired,
+} from 'util/formValidation'
+import { secondsToHms } from 'pages/dao/create'
+import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
 
-function validateNonEmpty(msg: InstantiateMsg, label: string) {
-  const { threshold, max_voting_period, group } = msg
-  const absoluteCount = (threshold as any)?.absolute_count
-  const time = (max_voting_period as any)?.time
-  if (absoluteCount === undefined || time === undefined) {
-    return false
-  }
-  if (isNaN(absoluteCount.weight) || isNaN(time)) {
-    return false
-  }
-  if (label.length === 0) {
-    return false
-  }
-  const voters = (group as any)?.instantiate_new_group?.voters
-  if (!voters?.length) {
-    return false
-  }
-  if (
-    voters.some(
-      ({ addr, weight }: Member) => addr.length === 0 || isNaN(weight)
-    )
-  ) {
-    return false
-  }
-  return true
-}
+const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
-interface FormElements extends HTMLFormControlsCollection {
-  duration: HTMLInputElement
-  threshold: HTMLInputElement
-  label: HTMLInputElement
-  [key: string]: any
-}
+interface MultisigCreateData {
+  name: string
+  description: string
 
-interface MultisigFormElement extends HTMLFormElement {
-  readonly elements: FormElements
+  duration: string
+  threshold: string
+
+  [key: string]: string
 }
 
 const CreateMultisig: NextPage = () => {
   const router = useRouter()
-  const { walletAddress, signingClient } = useSigningClient()
-  const [count, setCount] = useState(2)
-  const [contractAddress, setContractAddress] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
 
-  const onSubmit = (event: FormEvent<MultisigFormElement>) => {
-    event.preventDefault()
+  const [loading, setLoading] = useState(false)
+  const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
+    DEFAULT_MAX_VOTING_PERIOD_SECONDS
+  )
+  // The number of addresses involved in the multisig.
+  const [count, setCount] = useState(1)
+  const [error, setError] = useState('')
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm()
+  const { walletAddress, signingClient } = useSigningClient()
+
+  useEffect(() => {
+    if (error) errorNotify(cleanChainError(error))
+  }, [error])
+
+  const onSubmit = (data: MultisigCreateData) => {
     setError('')
     setLoading(true)
 
-    const formEl = event.currentTarget as MultisigFormElement
-
+    function getStringValue(key: string): string {
+      const val = data[key]
+      if (typeof val === 'string') {
+        return val.trim()
+      }
+      return ''
+    }
+    function getIndexedValue(prefix: string, index: number): string {
+      return getStringValue(`${prefix}_${index}`)
+    }
     const voters = [...Array(count)].map((_item, index) => ({
-      addr: formEl[`address_${index}`]?.value?.trim(),
-      weight: parseInt(formEl[`weight_${index}`]?.value?.trim()),
+      addr: getIndexedValue('address', index),
+      // Convert human readable amount to micro denom amount
+      weight: Number(getIndexedValue('weight', index)),
     }))
-    const required_weight = parseInt(formEl.threshold.value?.trim(), 10)
-    const max_voting_period = {
-      time: parseInt(formEl.duration.value?.trim() ?? '0', 10),
-    }
 
-    const label = formEl.label.value.trim()
-    const description = formEl.description.value.trim()
+    const msg = makeMultisigInstantiateMessage(
+      data.name,
+      data.description,
+      voters,
+      Number(data.threshold),
+      Number(data.duration)
+    )
+    console.log('instantiating multisig with message:')
+    console.log(msg)
 
-    const msg: InstantiateMsg = {
-      name: label,
-      description,
-      group: {
-        instantiate_new_group: {
-          code_id: C4_GROUP_CODE_ID,
-          label,
-          voters,
-        },
-      },
-      threshold: {
-        absolute_count: {
-          weight: required_weight,
-        },
-      },
-      max_voting_period,
-    }
-
-    // @ebaker TODO: add more validation
-    if (!validateNonEmpty(msg, label)) {
+    if (!signingClient || !walletAddress) {
       setLoading(false)
-      setError('All fields are required.')
-      return
-    }
-
-    if (!signingClient) {
-      setLoading(false)
-      setError('Please try reconnecting your wallet.')
+      setError('Wallet not connected')
       return
     }
 
@@ -117,194 +100,189 @@ const CreateMultisig: NextPage = () => {
         walletAddress,
         MULTISIG_CODE_ID,
         msg,
-        label,
+        data.name,
         defaultExecuteFee
       )
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
-          successNotify('New Multisig Created')
-          router.push(`/multisig/${response.contractAddress}`)
+          router.push(
+            `/multisig/${encodeURIComponent(response.contractAddress)}`
+          )
         }
+
+        successNotify('New multisig created')
       })
       .catch((err: any) => {
         setLoading(false)
-        console.log('err', err)
         setError(err.message)
+        console.log(err.message)
       })
   }
 
-  const complete = contractAddress.length > 0
-
-  function AddressRow({ idx, readOnly }: { idx: number; readOnly: boolean }) {
-    return (
-      <tr key={idx}>
-        <td className="pr-2 pb-2">
-          <input
-            className="block box-border m-0 w-full rounded input input-bordered font-mono"
-            type="text"
-            name={`address_${idx}`}
-            placeholder="wallet address..."
-            size={45}
-            readOnly={readOnly}
-          />
-        </td>
-        <td className="pb-2">
-          <input
-            type="number"
-            className="block box-border m-0 w-full rounded input input-bordered font-mono"
-            name={`weight_${idx}`}
-            defaultValue="1"
-            min={1}
-            max={999}
-            readOnly={readOnly}
-          />
-        </td>
-        {idx > 1 && (
-          <td className="absolute p-2.5">
-            <button
-              className="btn btn-outline btn-circle btn-sm"
-              onClick={(e) => {
-                e.preventDefault()
-                setCount(count - 1)
-              }}
-            >
-              <XIcon className="inline-block w-4 h-4 stroke-current" />
-            </button>
-          </td>
-        )}
-      </tr>
-    )
-  }
-
   return (
-    <WalletLoader>
-      <div className="text-left container mx-auto max-w-lg">
-        <h1 className="text-5xl font-bold mb-8">New Multisig</h1>
-        <form className="container mx-auto max-w-lg mb-8" onSubmit={onSubmit}>
-          <table className="w-full mb-8">
-            <thead>
-              <tr>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <td>
-                <input
-                  autoComplete="false"
-                  className="block box-border m-0 w-full rounded input input-bordered "
-                  name="label"
-                  type="text"
-                  placeholder="My multisig name"
-                  readOnly={complete}
-                />
-              </td>
-            </tbody>
-          </table>
-          <table className="w-full mb-8">
-            <thead>
-              <tr>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <td>
-                <input
-                  autoComplete="false"
-                  className="block box-border m-0 w-full rounded input input-bordered "
-                  name="description"
-                  type="text"
-                  placeholder="What is this multisig for?"
-                  readOnly={complete}
-                />
-              </td>
-            </tbody>
-          </table>
-          <table className="w-full mb-8">
-            <thead>
-              <tr>
-                <th>Address</th>
-                <th>Weight</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...Array(count)].map((_item, index) => (
-                <AddressRow key={index} idx={index} readOnly={complete} />
-              ))}
-              <tr>
-                <td colSpan={2} className="text-right">
-                  <button
-                    className="btn btn-outline btn-primary btn-md text-md"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setCount(count + 1)
-                    }}
-                  >
-                    + Add another
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <div className="grid grid-cols-6">
+      <div className="p-6 w-full col-span-4">
+        <Breadcrumbs
+          crumbs={[
+            ['/multisig/list', 'Multisigs'],
+            [router.asPath, 'Create multisig'],
+          ]}
+        />
+        <form
+          className="mb-8"
+          onSubmit={handleSubmit<MultisigCreateData>(onSubmit)}
+        >
+          <h2 className="mt-10 text-lg">
+            <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Basic config
+          </h2>
+          <div className="px-3">
+            <div className="form-control">
+              <InputLabel name="Name" />
+              <TextInput
+                label="name"
+                register={register}
+                error={errors.name}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.name} />
+            </div>
 
-          <table className="w-full my-4">
-            <thead>
-              <tr>
-                <th className="text-left">
-                  Threshold
-                  <HelpTooltip text="The amount of voting weight that must commit to a proposal before it's executed" />
-                </th>
-                <th className="text-left box-border px-2 text-sm">
-                  Max Voting Period (seconds)
-                  <HelpTooltip text="The time during which a proposal is open for voting. Proposals expire after this period passes" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <input
-                    className="block box-border m-0 w-full rounded input input-bordered"
-                    name="threshold"
-                    type="number"
-                    defaultValue={count}
-                    min={1}
-                    max={999}
-                    readOnly={complete}
-                  />
-                </td>
-                <td className="box-border px-2">
-                  <input
-                    className="block box-border m-0 w-full rounded input input-bordered"
-                    name="duration"
-                    type="number"
-                    placeholder="duration in seconds"
-                    min={1}
-                    max={2147483647}
-                    defaultValue={604800}
-                    readOnly={complete}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          {!complete && (
-            <button
-              className={`btn btn-primary btn-lg font-semibold hover:text-base-100 text-2xl w-full ${
-                loading ? 'loading' : ''
-              }`}
-              style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-              type="submit"
-              disabled={loading}
-            >
-              Create Multisig
-            </button>
-          )}
+            <div className="form-control">
+              <InputLabel name="Description" />
+              <TextInput
+                label="description"
+                register={register}
+                error={errors.description}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.description} />
+            </div>
+          </div>
+
+          <h2 className="mb-2 text-lg mt-8">
+            <UsersIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Members
+          </h2>
+
+          <div className="px-3">
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              <h3 className="label-text col-span-2 text-secondary">Address</h3>
+              <h3 className="label-text text-secondary">Weight</h3>
+            </div>
+            <ul className="list-none">
+              {[...Array(count).keys()].map((idx) => {
+                // These labels are later used in conjunction
+                // with `count` to extract the input addresses
+                // and weights.
+                const addressLabel = `address_${idx}`
+                const weightLabel = `weight_${idx}`
+
+                return (
+                  <li key={idx} className="grid grid-cols-3 gap-2 my-2">
+                    <div className="form-control col-span-2">
+                      <TextInput
+                        label={addressLabel}
+                        register={register}
+                        error={errors[addressLabel]}
+                        validation={[validateAddress, validateRequired]}
+                      />
+                      <InputErrorMessage error={errors[addressLabel]} />
+                    </div>
+                    <div className="form-control">
+                      <NumberInput
+                        label={weightLabel}
+                        register={register}
+                        error={errors[weightLabel]}
+                        validation={[validateRequired, validatePositive]}
+                        defaultValue="1"
+                      />
+                      <InputErrorMessage error={errors[weightLabel]} />
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+            <div className="btn-group">
+              <button
+                className="btn btn-outline btn-sm text-md normal-case"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setCount(count + 1)
+                }}
+              >
+                +
+              </button>
+              <button
+                className={
+                  'btn btn-outline btn-primary btn-sm text-md normal-case' +
+                  (count <= 1 ? ' btn-disabled btn-secondary' : '')
+                }
+                onClick={(e) => {
+                  e.preventDefault()
+                  setCount(count - 1)
+                }}
+              >
+                -
+              </button>
+            </div>
+          </div>
+
+          <h2 className="mt-8 text-lg">
+            <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
+            Voting config
+          </h2>
+          <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
+            <div className="form-control">
+              <InputLabel name="Passing Threshold" />
+              <NumberInput
+                label="threshold"
+                register={register}
+                error={errors.threshold}
+                validation={[validateRequired, validatePercent]}
+                defaultValue="1"
+              />
+              <InputErrorMessage error={errors.threshold} />
+            </div>
+
+            <div className="form-control">
+              <InputLabel name="Voting Duration (seconds)" />
+              <NumberInput
+                label="duration"
+                register={register}
+                error={errors.duration}
+                validation={[validateRequired, validatePositive]}
+                onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
+                defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+              />
+              <InputErrorMessage error={errors.duration} />
+              <div
+                style={{
+                  textAlign: 'end',
+                  padding: '5px 0 0 17px',
+                  fontSize: ' 12px',
+                  color: 'grey',
+                }}
+              >
+                {secondsToHms(votingPeriodSeconds)}
+              </div>
+            </div>
+          </div>
+
+          <button
+            className={`mt-3 w-48 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg ${
+              loading ? 'loading' : ''
+            }`}
+            style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+            type="submit"
+            disabled={loading}
+          >
+            Create multisig
+          </button>
         </form>
-
-        {error && <LineAlert variant="error" msg={cleanChainError(error)} />}
       </div>
-    </WalletLoader>
+    </div>
   )
 }
 

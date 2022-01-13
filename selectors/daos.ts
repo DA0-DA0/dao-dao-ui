@@ -6,10 +6,61 @@ import {
 import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
-import { ConfigResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { DaoListType } from 'hooks/dao'
+import { ConfigResponse, Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
-export const isMemberSelector = selectorFamily<boolean, string>({
+export interface MemberStatus {
+  member: boolean
+  weight: number
+}
+
+export interface DaoListType {
+  address: string
+  member: boolean
+  dao: any
+  weight: number
+}
+
+export const tokenConfig = selectorFamily<TokenInfoResponse, string>({
+  key: 'govTokenConfig',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        token_info: {},
+      })
+      return response
+    },
+})
+
+export const totalStaked = selectorFamily<number, string>({
+  key: 'totalStaked',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        total_staked_at_height: {},
+      })
+      return Number(response.total)
+    },
+})
+
+export const proposalCount = selectorFamily<number, string>({
+  key: 'daoProposalCount',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        proposal_count: {},
+      })
+      return response
+    },
+})
+
+export const isMemberSelector = selectorFamily<MemberStatus, string>({
   key: 'isMember',
   get:
     (contractAddress) =>
@@ -18,7 +69,10 @@ export const isMemberSelector = selectorFamily<boolean, string>({
       const voterInfo = get(
         voterInfoSelector({ contractAddress, walletAddress })
       )
-      return voterInfo.weight !== '0'
+      return {
+        member: voterInfo.weight && voterInfo.weight !== '0',
+        weight: voterInfo.weight,
+      }
     },
 })
 
@@ -28,11 +82,12 @@ export const daosSelector = selector<DaoListType[]>({
     const daoAddresses = get(contractsByCodeId(DAO_CODE_ID))
     return daoAddresses.map((contractAddress) => {
       const daoResponse = get(daoSelector(contractAddress))
-      const member = get(isMemberSelector(contractAddress))
+      const { member, weight } = get(isMemberSelector(contractAddress))
       return {
         dao: daoResponse.config,
         address: contractAddress,
         member,
+        weight,
       }
     })
   },
@@ -48,5 +103,19 @@ export const daoSelector = selectorFamily<ConfigResponse, string>({
         get_config: {},
       })
       return response
+    },
+})
+
+export const unstakingDuration = selectorFamily<Duration, string>({
+  key: 'govTokenUnstakingDuration',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(address, {
+        unstaking_duration: {},
+      })
+      // Returns null of there is no unstaking duration.
+      return response.duration || { time: 0 }
     },
 })

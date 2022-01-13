@@ -8,6 +8,7 @@ import { useRecoilRefresher_UNSTABLE } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import { Keplr } from '@keplr-wallet/types'
 import { kelprOfflineSigner } from 'selectors/cosm'
+import { SidebarLayout } from 'components/SidebarLayout'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -50,7 +51,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   }, [keplrInstance, reset])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-100 text-base-content">
+    <>
       <Head>
         <title>{PUBLIC_SITE_TITLE}</title>
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
@@ -59,15 +60,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       {error && <WalletLoader>Install Kelpr</WalletLoader>}
       {!keplrInstance && !error && <LoadingScreen />}
 
-      {loaded && (
-        <>
-          <Nav />
-          <main className="flex flex-col items-center justify-center w-full flex-1 p-2 md:px-20 text-center">
-            {children}
-          </main>
-          <Footer />
-        </>
-      )}
-    </div>
+      {loaded && <SidebarLayout>{children}</SidebarLayout>}
+    </>
   )
 }

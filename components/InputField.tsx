@@ -3,8 +3,9 @@ import React, { ChangeEventHandler } from 'react'
 import {
   FieldErrors,
   FieldPath,
+  FieldError,
+  Path,
   FieldPathValue,
-  RegisterOptions,
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
@@ -55,7 +56,9 @@ export function InputFieldLabel({
   const tooltipComponent = toolTip ? <HelpTooltip text={toolTip} /> : null
   return (
     <label className="label" htmlFor={fieldName}>
-      <span className="label-text font-bold">{label || fieldName}</span>
+      <span className="label-text text-secondary text-medium mt-3">
+        {label || fieldName}
+      </span>
       {errorComponent}
       {tooltipComponent}
     </label>
@@ -118,44 +121,30 @@ export default function InputField<
       showErrorMessage={showErrorMessage}
     />
   )
-  const inputComponent =
-    type === 'textarea' ? (
-      <textarea
-        {...register(fieldName, options)}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        onChange={onChange as any}
-        className={
-          errorText
-            ? `block box-border m-0 w-full rounded input input-bordered input-error`
-            : `block box-border m-0 w-full rounded input input-bordered`
-        }
-        autoComplete={autoComplete}
-      />
-    ) : (
-      <input
-        {...register(fieldName, options)}
-        className={
-          type === 'checkbox'
-            ? 'toggle'
-            : errorText
-            ? `block box-border m-0 w-full rounded input input-bordered input-error`
-            : `block box-border m-0 w-full rounded input input-bordered`
-        }
-        defaultValue={defaultValue}
-        defaultChecked={
-          type === 'checkbox' && defaultValue === 1 ? true : undefined
-        }
-        type={type}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        onChange={onChange}
-        size={size}
-        min={min}
-        max={max}
-        autoComplete={autoComplete}
-      />
-    )
+  const inputComponent = (
+    <input
+      {...register(fieldName, options)}
+      className={
+        type === 'checkbox'
+          ? 'toggle'
+          : errorText
+          ? `block box-border m-0 w-full rounded-lg input input-bordered input-error`
+          : `block box-border m-0 w-full rounded-lg input input-bordered`
+      }
+      defaultValue={defaultValue}
+      defaultChecked={
+        type === 'checkbox' && defaultValue === 1 ? true : undefined
+      }
+      type={type}
+      placeholder={placeholder}
+      readOnly={readOnly}
+      onChange={onChange}
+      size={size}
+      min={min}
+      max={max}
+      autoComplete={autoComplete}
+    />
+  )
 
   return (
     <div className="form-control">
@@ -163,4 +152,125 @@ export default function InputField<
       {inputComponent}
     </div>
   )
+}
+
+export function InputLabel({ name }: { name: string }) {
+  return (
+    <label className="label">
+      <span className="label-text text-secondary text-medium">{name}</span>
+    </label>
+  )
+}
+
+/**
+ * @param label      - the label for the value that this will contain.
+ * @param register   - the register function returned by `useForm`.
+ * @param error      - any errors that have occured during validation of this
+ *                     input.
+ * @param validation - a list of functions that, when given the current value
+ *                     of this field, return true if the value is valid and an
+ *                     error message otherwise.
+ */
+export function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
+  label,
+  register,
+  validation,
+  onChange,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  onChange?: ChangeEventHandler<HTMLInputElement>
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+  return (
+    <input
+      type="checkbox"
+      defaultChecked={true}
+      className="toggle toggle-lg"
+      {...register(label, { validate, onChange })}
+    />
+  )
+}
+
+/**
+ * @param label      - the label for the value that this will contain.
+ * @param register   - the register function returned by `useForm`.
+ * @param error      - any errors that have occured during validation of this
+ *                     input.
+ * @param validation - a list of functions that, when given the current value
+ *                     of this field, return true if the value is valid and an
+ *                     error message otherwise.
+ */
+export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
+  label,
+  register,
+  error,
+  validation,
+  onChange,
+  defaultValue,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  onChange?: ChangeEventHandler<HTMLInputElement>
+  defaultValue?: string
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+  return (
+    <input
+      type="number"
+      defaultValue={defaultValue}
+      className={'input input-bordered' + (error ? ' input-error' : '')}
+      {...register(label, { validate, onChange })}
+    />
+  )
+}
+
+/**
+ * @param label      - the label for the value that this will contain.
+ * @param register   - the register function returned by `useForm`.
+ * @param error      - any errors that have occured during validation of this
+ *                     input.
+ * @param validation - a list of functions that, when given the current value
+ *                     of this field, return true if the value is valid and an
+ *                     error message otherwise.
+ */
+export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
+  label,
+  register,
+  error,
+  validation,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+  return (
+    <input
+      type="text"
+      className={'input input-bordered' + (error ? ' input-error' : '')}
+      {...register(label, { validate })}
+    />
+  )
+}
+
+export function InputErrorMessage({ error }: { error: FieldError }) {
+  if (error && error.message) {
+    return <span className="text-xs text-error mt-1 ml-1">{error.message}</span>
+  }
+  return null
 }

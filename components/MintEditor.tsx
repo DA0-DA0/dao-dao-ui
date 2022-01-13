@@ -13,19 +13,15 @@ import { makeMintMessage } from 'util/messagehelpers'
 
 export default function MintEditor({
   dispatch,
-  initialRecipientAddress,
   mintMsg,
+  denom,
 }: {
   dispatch: (action: ProposalAction) => void
   mintMsg?: MessageMapEntry
-  initialRecipientAddress: string
+  denom: string
 }) {
-  const [address, setAddress] = useState(initialRecipientAddress)
-  const [validAddress, setValidAddress] = useState(
-    isValidAddress(initialRecipientAddress)
-  )
-
-  let recipientAddress = getMintRecipient(mintMsg) || initialRecipientAddress
+  const [address, setAddress] = useState(getMintRecipient(mintMsg) || '')
+  const [validAddress, setValidAddress] = useState(true)
 
   let amount = getMintAmount(mintMsg) ?? ''
 
@@ -34,12 +30,12 @@ export default function MintEditor({
     updateMint()
   }
 
-  function updateMint(e?: FormEvent, options?: { recipientAddress?: string }) {
+  function updateMint(e?: FormEvent) {
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
-    const recipient = options?.recipientAddress ?? recipientAddress
+    const recipient = isValidAddress(address) ? address : ''
 
     try {
       const id = mintMsg?.id ?? ''
@@ -47,6 +43,8 @@ export default function MintEditor({
       let action: ProposalAction
 
       const message = makeMintMessage(amount, recipient)
+      console.log('update')
+      console.log(message)
 
       if (id) {
         action = {
@@ -67,7 +65,7 @@ export default function MintEditor({
 
   function handleRecipientAddress(e: React.FormEvent<HTMLInputElement>) {
     const valid = !!(address && isValidAddress(address))
-    updateMint(e, { recipientAddress: address })
+    updateMint(e)
     setValidAddress(valid)
   }
 
@@ -77,30 +75,25 @@ export default function MintEditor({
   }
 
   return (
-    <div>
-      <div className="form-control">
-        <label htmlFor="amount" className="label">
-          <span className="label-text font-bold">Amount</span>
-        </label>
-        <input
-          type="number"
-          id="amount"
-          value={amount}
-          className="input input-bordered rounded box-border p-3 w-full text-xl"
-          name="amount"
-          onChange={handleAmount}
-        />
-      </div>
-      <div className="form-control">
+    <div className="grid grid-cols-3 gap-2">
+      <div className="form-control col-span-2">
         <label htmlFor="recipientAddress" className="label">
-          <span className="label-text font-bold">Recipient Address</span>
+          <span className="label-text text-secondary text-medium ">
+            Recipient address
+          </span>
         </label>
         <input
+          required
           type="text"
           id="recipientAddress"
-          className={validAddress ? 'dao-input' : 'dao-input-error'}
+          className={
+            'input input-bordered' + (!validAddress ? ' input-error' : '')
+          }
           name="recipientAddress"
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={(e) => {
+            setAddress(e.target.value)
+            setValidAddress(isValidAddress(address))
+          }}
           onBlur={handleRecipientAddress}
           value={address}
         />
@@ -109,6 +102,26 @@ export default function MintEditor({
             <span className="label-text-alt text-error">Invalid address</span>
           </label>
         )}
+      </div>
+
+      <div className="form-control">
+        <label htmlFor="recipientAddress" className="label">
+          <span className="label-text text-secondary text-medium ">Amount</span>
+        </label>
+        <input
+          required
+          type="number"
+          id="mintAmount"
+          className="input input-bordered"
+          name="amount"
+          onChange={handleAmount}
+          value={amount}
+        />
+        <label className="label">
+          <span className="label-text-alt w-full text-right mr-1">
+            ${denom}
+          </span>
+        </label>
       </div>
     </div>
   )

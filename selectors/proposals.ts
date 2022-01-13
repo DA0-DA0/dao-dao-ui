@@ -1,8 +1,10 @@
-import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import {
+  ProposalResponse,
+  ProposalTallyResponse,
+  VoteInfo,
+} from '@dao-dao/types/contracts/cw3-dao'
 import { proposalsRequestIdAtom } from 'atoms/proposals'
-import { selectorFamily } from 'recoil'
-import { defaultExecuteFee } from 'util/fee'
+import { atomFamily, selectorFamily } from 'recoil'
 import { cosmWasmClient } from './cosm'
 
 export type ProposalIdInput = string | number
@@ -64,57 +66,89 @@ export const onChainProposalsSelector = selectorFamily<
       return proposals
     },
 })
-const queryProposal =
-  <T>(key: string, keyedResult?: string) =>
-  ({
-    contractAddress,
-    proposalId,
-  }: ProposalSelectorParams): ((params: any) => Promise<T>) => {
-    return async ({ get }) => {
-      const client = get(cosmWasmClient)
-      const result = await client.queryContractSmart(
-        contractAddress,
-        proposalParam(key, proposalId)
-      )
-      if (keyedResult) {
-        return result[keyedResult]
-      }
-      return result
-    }
-  }
 
-export const vote = (
-  signingClient: SigningCosmWasmClient,
-  { contractAddress, proposalId, walletAddress }: ProposalExecuteParams
-): ((vote: 'yes' | 'no') => Promise<ExecuteResult>) => {
-  return (vote: string) =>
-    signingClient.execute(
-      walletAddress,
-      contractAddress,
-      { vote: { proposal_id: parsedProposalId(proposalId), vote } },
-      defaultExecuteFee
-    )
-}
-
-export const voteSelector = selectorFamily<any, any>({
-  key: 'vote',
-  get: queryProposal('query_vote', 'vote'),
+// Indicates how many times a given proposal has been updated via the
+// UI. For example, voting on a proposal ought to increment the update
+// count for the proposal.
+//
+// This is used by proposal selectors so that they might update when a
+// UI action triggers the database to change.
+export const proposalUpdateCountAtom = atomFamily<
+  number,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalUpdateCountAtom',
+  default: 0,
 })
 
 export const proposalSelector = selectorFamily<
   ProposalResponse,
-  ProposalSelectorParams
+  { contractAddress: string; proposalId: number }
 >({
-  key: 'proposal',
-  get: queryProposal<ProposalResponse>('proposal'),
+  key: 'proposalSelector',
+  get:
+    ({
+      contractAddress,
+      proposalId,
+    }: {
+      contractAddress: string
+      proposalId: number
+    }) =>
+    async ({ get }) => {
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const client = get(cosmWasmClient)
+      const proposal = await client.queryContractSmart(contractAddress, {
+        proposal: { proposal_id: proposalId },
+      })
+      return proposal
+    },
 })
 
-export const votesSelector = selectorFamily<any, ProposalSelectorParams>({
-  key: 'listVotes',
-  get: queryProposal('list_votes', 'votes'),
+export const proposalVotesSelector = selectorFamily<
+  VoteInfo[],
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalVotesSelector',
+  get:
+    ({
+      contractAddress,
+      proposalId,
+    }: {
+      contractAddress: string
+      proposalId: number
+    }) =>
+    async ({ get }) => {
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const client = get(cosmWasmClient)
+      const votes = await client.queryContractSmart(contractAddress, {
+        list_votes: { proposal_id: proposalId },
+      })
+      return votes.votes
+    },
 })
 
-export const tallySelector = selectorFamily<any, ProposalSelectorParams>({
-  key: 'tally',
-  get: queryProposal('tally'),
+export const proposalTallySelector = selectorFamily<
+  ProposalTallyResponse,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalTallySelector',
+  get:
+    ({
+      contractAddress,
+      proposalId,
+    }: {
+      contractAddress: string
+      proposalId: number
+    }) =>
+    async ({ get }) => {
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const client = get(cosmWasmClient)
+      const tally = await client.queryContractSmart(contractAddress, {
+        tally: { proposal_id: proposalId },
+      })
+      return tally
+    },
 })

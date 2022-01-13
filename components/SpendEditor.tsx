@@ -8,26 +8,26 @@ import {
   getSpendRecipient,
 } from 'models/proposal/proposalSelectors'
 import { FormEvent, useState } from 'react'
+import {
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenom,
+} from 'util/conversion'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeSpendMessage } from '../util/messagehelpers'
 
 export default function SpendEditor({
   dispatch,
   contractAddress,
-  initialRecipientAddress,
   spendMsg,
 }: {
   dispatch: (action: ProposalAction) => void
   spendMsg?: MessageMapEntry
   contractAddress: string
-  initialRecipientAddress: string
 }) {
-  const [address, setAddress] = useState(initialRecipientAddress)
-  const [validAddress, setValidAddress] = useState(
-    isValidAddress(initialRecipientAddress)
-  )
+  const [address, setAddress] = useState('')
+  const [validAddress, setValidAddress] = useState(true)
 
-  let recipientAddress = getSpendRecipient(spendMsg) || initialRecipientAddress
+  let recipientAddress = getSpendRecipient(spendMsg) || ''
 
   let amount = getSpendAmount(spendMsg) ?? ''
 
@@ -78,28 +78,19 @@ export default function SpendEditor({
   }
 
   return (
-    <div>
-      <div className="form-control">
-        <label htmlFor="amount" className="label">
-          <span className="label-text font-bold">Amount</span>
-        </label>
-        <input
-          type="number"
-          id="amount"
-          value={amount}
-          className="input input-bordered rounded box-border p-3 w-full text-xl"
-          name="amount"
-          onChange={handleAmount}
-        />
-      </div>
-      <div className="form-control">
+    <div className="grid grid-cols-3 gap-2">
+      <div className="form-control col-span-2">
         <label htmlFor="recipientAddress" className="label">
-          <span className="label-text font-bold">Recipient Address</span>
+          <span className="label-text text-secondary text-medium ">
+            Recipient address
+          </span>
         </label>
         <input
           type="text"
           id="recipientAddress"
-          className={validAddress ? 'dao-input' : 'dao-input-error'}
+          className={
+            'input input-bordered' + (!validAddress ? ' input-error' : '')
+          }
           name="recipientAddress"
           onChange={(e) => setAddress(e.target.value)}
           onBlur={handleRecipientAddress}
@@ -110,6 +101,27 @@ export default function SpendEditor({
             <span className="label-text-alt text-error">Invalid address</span>
           </label>
         )}
+      </div>
+
+      <div className="form-control">
+        <label htmlFor="recipientAddress" className="label">
+          <span className="label-text text-secondary text-medium ">Amount</span>
+        </label>
+        <input
+          type="number"
+          id="recipientAddress"
+          className="input input-bordered"
+          name="amount"
+          onChange={handleAmount}
+          value={amount}
+        />
+        <label className="label">
+          <span className="label-text-alt w-full text-right mr-1">
+            {convertDenomToHumanReadableDenom(
+              process.env.NEXT_PUBLIC_STAKING_DENOM as string
+            )}
+          </span>
+        </label>
       </div>
     </div>
   )
