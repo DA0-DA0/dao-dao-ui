@@ -1,5 +1,6 @@
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import ProposalVotes from 'components/ProposalVotes'
+import Address from 'components/Address'
 import ProposalStatus from './ProposalStatus'
 import {
   atom,
@@ -325,7 +326,9 @@ export function ProposalDetailsSidebar({
           // https://github.com/DA0-DA0/dao-contracts/issues/136
           <>
             <p className="text-secondary">Proposer</p>
-            <p className="col-span-2 overflow-x-auto">{proposal.proposer}</p>
+            <p className="col-span-2">
+              <Address address={proposal.proposer} />
+            </p>
           </>
         )}
         {proposal.status === 'open' && (
