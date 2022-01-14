@@ -51,11 +51,11 @@ function MysteryMultisigCard() {
       <a>
         <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200">
           <div className="mt-6">
-            <Logo height={70} width={70} alt="mystery multisig" />
+            <PlusIcon className="w-10 h-10 ml-1" />
           </div>
-          <h3 className="text-lg font-semibold mt-3">???</h3>
+          <h3 className="text-lg font-semibold mt-3">Create a multisig</h3>
           <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
-            not part of any multisigs - what will you build?
+            You are not a member of any multisigs. Why not create one?
           </p>
         </div>
       </a>
