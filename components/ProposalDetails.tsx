@@ -133,7 +133,7 @@ function ProposalVoteButtons({
   const ready = walletAddress && signingClient && member && !voted
   const tooltip =
     ((!walletAddress || !signingClient) && 'Connect your wallet to vote') ||
-    (!member && 'You must be a member to vote') ||
+    (!member && 'You must have voting power to vote. Consider staking some tokens.') ||
     (voted && 'You already voted') ||
     'Something went wrong'
 
@@ -202,7 +202,7 @@ function ProposalExecuteButton({
   const tooltip =
     ((!walletAddress || !signingClient) &&
       'Please connect your wallet to vote') ||
-    (!member && 'You must be a member to vote') ||
+    (!member && 'You must have voting power to vote. Consider staking some tokens.') ||
     'Something went wrong'
 
   const VoteButton = ({ children }: { children: ReactNode }) => (
