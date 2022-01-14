@@ -314,9 +314,8 @@ const CreateDao: NextPage = () => {
         />
 
         <form className="mb-8" onSubmit={handleSubmit<DaoCreateData>(onSubmit)}>
-          <h2 className="mt-10 text-lg">
-            <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Basic config
+          <h2 className="pl-4 mt-10 text-lg">
+            Name and description
           </h2>
           <div className="px-3">
             <div className="form-control">
@@ -509,7 +508,7 @@ const CreateDao: NextPage = () => {
 
           <h2 className="mt-8 text-lg">
             <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Voting Config
+            Voting configuration
           </h2>
           <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
             <div className="form-control">
