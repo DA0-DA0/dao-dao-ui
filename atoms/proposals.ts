@@ -69,14 +69,14 @@ export const proposalsRequestStartBeforeAtom = atom<number>({
   default: 0,
 })
 
-export const proposalListAtom = atom<ProposalResponse[]>({
+export const proposalListAtom = atomFamily<ProposalResponse[], string>({
   key: 'proposalList',
   default: [],
 })
 
 // The number of proposals that have been created since we updated the
 // proposal listing.
-export const proposalsCreatedAtom = atom<number>({
+export const proposalsCreatedAtom = atomFamily<number, string>({
   key: 'proposalsCreatedAtom',
   default: 0,
 })

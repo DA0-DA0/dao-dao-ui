@@ -73,7 +73,6 @@ const ProposalCreate: NextPage = () => {
   return (
     <>
       <div className="flex flex-col w-full">
-        <Link href={`/dao/${contractAddress}/proposals`}>Proposals</Link>
         <ProposalEditor
           onProposal={handleProposal}
           proposalId={proposalId}

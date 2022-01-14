@@ -1,4 +1,4 @@
-import { CosmosMsgFor_Empty, Proposal } from '@dao-dao/types/contracts/cw3-dao'
+import { CosmosMsgFor_Empty, Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
   draftProposalAtom,
@@ -84,7 +84,7 @@ export default function ProposalEditor({
   const [nextProposalRequestId, setNextProposalRequestId] = useRecoilState(
     proposalsRequestIdAtom
   )
-  const resetProposals = useResetRecoilState(proposalListAtom)
+  // const resetProposals = useResetRecoilState(proposalsState)
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState(
     nextDraftProposalIdAtom
   )
@@ -195,7 +195,7 @@ export default function ProposalEditor({
       if (isProposalValid(proposal)) {
         await createProposal(proposal)
         setNextProposalRequestId(nextProposalRequestId + 1)
-        resetProposals()
+        // resetProposals()
         deleteDraftProposal()
       }
     }
