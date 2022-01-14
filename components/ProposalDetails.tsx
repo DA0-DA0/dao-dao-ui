@@ -1,5 +1,6 @@
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import ProposalVotes from 'components/ProposalVotes'
+import Address from 'components/Address'
 import ProposalStatus from './ProposalStatus'
 import {
   atom,
@@ -15,11 +16,7 @@ import {
   proposalVotesSelector,
 } from 'selectors/proposals'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  SparklesIcon,
-} from '@heroicons/react/outline'
+import { CheckIcon, XIcon, SparklesIcon } from '@heroicons/react/outline'
 import { getEnd } from './ProposalList'
 import { isMemberSelector } from 'selectors/daos'
 import { convertMicroDenomToDenom } from 'util/conversion'
@@ -156,6 +153,7 @@ function ProposalVoteButtons({
     <button
       className={
         'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
+        (position === 'yes' ? ' hover:bg-green-500' : ' hover:bg-red-500') +
         (ready ? '' : ' btn-disabled bg-base-300')
       }
       onClick={() =>
@@ -177,13 +175,13 @@ function ProposalVoteButtons({
     <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
       <div className="flex gap-3">
         <VoteButton position="yes">
-          <ChevronUpIcon className="w-4 h-4 inline mr-2" />
-          Approve
+          <CheckIcon className="w-4 h-4 inline mr-2" />
+          Yes
           <p className="text-secondary ml-2">{yesCount}</p>
         </VoteButton>
         <VoteButton position="no">
-          <ChevronDownIcon className="w-4 h-4 inline mr-2" />
-          Reject
+          <XIcon className="w-4 h-4 inline mr-2" />
+          No
           <p className="text-secondary ml-2">{noCount}</p>
         </VoteButton>
       </div>
@@ -324,7 +322,9 @@ export function ProposalDetailsSidebar({
           // https://github.com/DA0-DA0/dao-contracts/issues/136
           <>
             <p className="text-secondary">Proposer</p>
-            <p className="col-span-2 overflow-x-auto">{proposal.proposer}</p>
+            <p className="col-span-2">
+              <Address address={proposal.proposer} />
+            </p>
           </>
         )}
         {proposal.status === 'open' && (
@@ -344,15 +344,15 @@ export function ProposalDetailsSidebar({
         <div className="col-span-2">
           {noVotes} <p className="text-secondary inline">({noPercent}%)</p>
         </div>
-        <p className="text-secondary">Turnout</p>
-        <div className="col-span-2">{turnoutPercent}%</div>
-      </div>
-
-      <div className="grid grid-cols-3 mt-6">
         <p className="text-secondary">Threshold</p>
         <div className="col-span-2">
           {thresholdString(proposal.threshold, !!multisig)}
         </div>
+      </div>
+
+      <div className="grid grid-cols-3 mt-6">
+        <p className="text-secondary">Turnout</p>
+        <div className="col-span-2">{turnoutPercent}%</div>
       </div>
     </div>
   )
@@ -446,10 +446,13 @@ export function ProposalDetails({
         </div>
       )}
       <p className="text-medium mt-6">{proposal.description}</p>
-      <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
-        {JSON.stringify(proposal.msgs, undefined, 2)}
-      </pre>
-
+      {proposal.msgs.length > 0 ? (
+        <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
+          {JSON.stringify(proposal.msgs, undefined, 2)}
+        </pre>
+      ) : (
+        <pre></pre>
+      )}
       <div className="mt-6">
         <ProposalVotes votes={proposalVotes} />
       </div>
