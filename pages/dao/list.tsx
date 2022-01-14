@@ -54,11 +54,11 @@ function MysteryDaoCard() {
       <a>
         <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200">
           <div className="mt-6">
-            <Logo height={70} width={70} alt="mystery dao" />
+            <PlusIcon className="w-10 h-10 ml-1" />
           </div>
-          <h3 className="text-lg font-semibold mt-3">???</h3>
+          <h3 className="text-lg font-semibold mt-3">Create a DAO</h3>
           <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
-            not part of any daos - what will you build?
+            You are not staking with any DAOs. Why not create one?
           </p>
         </div>
       </a>
@@ -146,7 +146,7 @@ const DaoList: NextPage = () => {
             </li>
             <li>
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {totalVotes} vote{totalVotes > 1 && 's'} total
+              {totalVotes} voting weight
             </li>
           </ul>
         </div>
