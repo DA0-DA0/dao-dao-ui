@@ -314,9 +314,7 @@ const CreateDao: NextPage = () => {
         />
 
         <form className="mb-8" onSubmit={handleSubmit<DaoCreateData>(onSubmit)}>
-          <h2 className="pl-4 mt-10 text-lg">
-            Name and description
-          </h2>
+          <h2 className="pl-4 mt-10 text-lg">Name and description</h2>
           <div className="px-3">
             <div className="form-control">
               <InputLabel name="Name" />

@@ -301,9 +301,7 @@ export function ProposalEditor({
               className="text-left container mx-auto"
               onSubmit={handleSubmit<any>(onSubmit)}
             >
-              <h2 className="pl-4 mt-10 text-lg">
-                Name and description
-              </h2>
+              <h2 className="pl-4 mt-10 text-lg">Name and description</h2>
               <div className="px-3">
                 <InputField
                   fieldName="label"
