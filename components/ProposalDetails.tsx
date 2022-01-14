@@ -28,7 +28,7 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { defaultExecuteFee } from 'util/fee'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { cleanChainError } from 'util/cleanChainError'
-import { walletAddress } from 'selectors/treasury'
+import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -104,6 +104,14 @@ function ExecutingButton() {
   return (
     <button className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px1 bg-base-300 btn-disabled loading">
       Executing
+    </button>
+  )
+}
+
+function LoadingButton() {
+  return (
+    <button className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px1 bg-base-300 btn-disabled loading">
+      Loading
     </button>
   )
 }
@@ -387,37 +395,52 @@ export function ProposalDetails({
   const visitorAddress = useRecoilValue(walletAddress)
   const voted = proposalVotes.some((v) => v.voter === visitorAddress)
 
-  const [loading, setLoading] = useRecoilState(proposalActionLoading)
+  const [actionLoading, setActionLoading] = useRecoilState(
+    proposalActionLoading
+  )
+
+  const wallet = useRecoilValue(walletAddress)
+  // If token balances are loading we don't know if the user is a
+  // member or not.
+  const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
 
   return (
     <div className="p-6">
       <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
-      {loading && (
+      {actionLoading && (
         <div className="mt-3">
           <ExecutingButton />
         </div>
       )}
-      {!loading && proposal.status === 'open' && (
+      {!actionLoading && proposal.status === 'open' && (
         <div className="mt-3">
-          <ProposalVoteButtons
-            yesCount={yesVotes.toString()}
-            noCount={noVotes.toString()}
-            proposalId={proposalId}
-            contractAddress={contractAddress}
-            member={member.member}
-            voted={voted}
-            setLoading={setLoading}
-          />
+          {tokenBalancesLoading ? (
+            <LoadingButton />
+          ) : (
+            <ProposalVoteButtons
+              yesCount={yesVotes.toString()}
+              noCount={noVotes.toString()}
+              proposalId={proposalId}
+              contractAddress={contractAddress}
+              member={member.member}
+              voted={voted}
+              setLoading={setActionLoading}
+            />
+          )}
         </div>
       )}
-      {!loading && proposal.status === 'passed' && member.member && (
+      {!actionLoading && proposal.status === 'passed' && member.member && (
         <div className="mt-3">
-          <ProposalExecuteButton
-            proposalId={proposalId}
-            contractAddress={contractAddress}
-            member={member.member}
-            setLoading={setLoading}
-          />
+          {tokenBalancesLoading ? (
+            <LoadingButton />
+          ) : (
+            <ProposalExecuteButton
+              proposalId={proposalId}
+              contractAddress={contractAddress}
+              member={member.member}
+              setLoading={setActionLoading}
+            />
+          )}
         </div>
       )}
       <p className="text-medium mt-6">{proposal.description}</p>

@@ -1,14 +1,10 @@
-import {
-  cosmWasmClient,
-  walletAddressSelector,
-  voterInfoSelector,
-} from 'selectors/cosm'
+import { cosmWasmClient, voterInfoSelector } from 'selectors/cosm'
 import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
 import { ConfigResponse, Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { walletTokenBalanceUpdateCountAtom } from './treasury'
+import { walletAddress } from './treasury'
 
 export interface MemberStatus {
   member: boolean
@@ -26,56 +22,55 @@ export const tokenConfig = selectorFamily<TokenInfoResponse, string>({
   key: 'govTokenConfig',
   get:
     (contractAddress) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClient)
-        const response = await client.queryContractSmart(contractAddress, {
-          token_info: {},
-        })
-        return response
-      },
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        token_info: {},
+      })
+      return response
+    },
 })
 
 export const totalStaked = selectorFamily<number, string>({
   key: 'totalStaked',
   get:
     (contractAddress) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClient)
-        const response = await client.queryContractSmart(contractAddress, {
-          total_staked_at_height: {},
-        })
-        return Number(response.total)
-      },
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        total_staked_at_height: {},
+      })
+      return Number(response.total)
+    },
 })
 
 export const proposalCount = selectorFamily<number, string>({
   key: 'daoProposalCount',
   get:
     (contractAddress) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClient)
-        const response = await client.queryContractSmart(contractAddress, {
-          proposal_count: {},
-        })
-        return response
-      },
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(contractAddress, {
+        proposal_count: {},
+      })
+      return response
+    },
 })
 
 export const isMemberSelector = selectorFamily<MemberStatus, string>({
   key: 'isMember',
   get:
     (contractAddress) =>
-      async ({ get }) => {
-        const walletAddress = get(walletAddressSelector)
-        get(walletTokenBalanceUpdateCountAtom(walletAddress))
-        const voterInfo = get(
-          voterInfoSelector({ contractAddress, walletAddress })
-        )
-        return {
-          member: voterInfo.weight && voterInfo.weight !== '0',
-          weight: voterInfo.weight,
-        }
-      },
+    async ({ get }) => {
+      const wallet = get(walletAddress)
+      const voterInfo = get(
+        voterInfoSelector({ contractAddress, walletAddress: wallet })
+      )
+      return {
+        member: voterInfo.weight && voterInfo.weight !== '0',
+        weight: voterInfo.weight,
+      }
+    },
 })
 
 export const daosSelector = selector<DaoListType[]>({
@@ -99,25 +94,25 @@ export const daoSelector = selectorFamily<ConfigResponse, string>({
   key: 'dao',
   get:
     (address: string) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClient)
-        const response = await client.queryContractSmart(address, {
-          get_config: {},
-        })
-        return response
-      },
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(address, {
+        get_config: {},
+      })
+      return response
+    },
 })
 
 export const unstakingDuration = selectorFamily<Duration, string>({
   key: 'govTokenUnstakingDuration',
   get:
     (address: string) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClient)
-        const response = await client.queryContractSmart(address, {
-          unstaking_duration: {},
-        })
-        // Returns null of there is no unstaking duration.
-        return response.duration || { time: 0 }
-      },
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const response = await client.queryContractSmart(address, {
+        unstaking_duration: {},
+      })
+      // Returns null of there is no unstaking duration.
+      return response.duration || { time: 0 }
+    },
 })
