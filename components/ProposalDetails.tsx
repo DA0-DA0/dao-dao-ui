@@ -348,15 +348,15 @@ export function ProposalDetailsSidebar({
         <div className="col-span-2">
           {noVotes} <p className="text-secondary inline">({noPercent}%)</p>
         </div>
-        <p className="text-secondary">Turnout</p>
-        <div className="col-span-2">{turnoutPercent}%</div>
-      </div>
-
-      <div className="grid grid-cols-3 mt-6">
         <p className="text-secondary">Threshold</p>
         <div className="col-span-2">
           {thresholdString(proposal.threshold, !!multisig)}
         </div>
+      </div>
+
+      <div className="grid grid-cols-3 mt-6">
+        <p className="text-secondary">Turnout</p>
+        <div className="col-span-2">{turnoutPercent}%</div>
       </div>
     </div>
   )
