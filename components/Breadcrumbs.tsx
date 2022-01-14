@@ -8,7 +8,11 @@ export function Breadcrumbs({ crumbs }: { crumbs: Array<[string, string]> }) {
   return (
     <ul className="text-md font-medium text-secondary-focus list-none flex">
       <li key="icon">
-        <ArrowNarrowLeftIcon className="inline w-5 h-5 mb-1" />
+        <Link href={crumbs[crumbs.length - 2][0]}>
+          <a>
+            <ArrowNarrowLeftIcon className="inline w-5 h-5 mb-1" />
+          </a>
+        </Link>
       </li>
       {crumbs.map(([link, name], idx) => (
         <li key={name}>
