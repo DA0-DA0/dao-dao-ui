@@ -1,13 +1,10 @@
-import {
-  cosmWasmClient,
-  walletAddressSelector,
-  voterInfoSelector,
-} from 'selectors/cosm'
+import { cosmWasmClient, voterInfoSelector } from 'selectors/cosm'
 import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
 import { ConfigResponse, Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { walletAddress } from './treasury'
 
 export interface MemberStatus {
   member: boolean
@@ -65,9 +62,9 @@ export const isMemberSelector = selectorFamily<MemberStatus, string>({
   get:
     (contractAddress) =>
     async ({ get }) => {
-      const walletAddress = get(walletAddressSelector)
+      const wallet = get(walletAddress)
       const voterInfo = get(
-        voterInfoSelector({ contractAddress, walletAddress })
+        voterInfoSelector({ contractAddress, walletAddress: wallet })
       )
       return {
         member: voterInfo.weight && voterInfo.weight !== '0',

@@ -5,6 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 import { connectKeplr } from 'services/keplr'
+import { walletTokenBalanceUpdateCountAtom } from './treasury'
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
@@ -57,15 +58,6 @@ export const cosmWasmSigningClient = selector({
   dangerouslyAllowMutability: true,
 })
 
-export const walletAddressSelector = selector({
-  key: 'walletAddress',
-  get: async ({ get }) => {
-    const client = get(kelprOfflineSigner)
-    const [{ address }] = await client.getAccounts()
-    return address
-  },
-})
-
 export const voterInfoSelector = selectorFamily({
   key: 'voterInfo',
   get:
@@ -77,7 +69,7 @@ export const voterInfoSelector = selectorFamily({
       walletAddress: string
     }) =>
     async ({ get }) => {
-      // const client = get(cosmWasmSigningClient)
+      get(walletTokenBalanceUpdateCountAtom(walletAddress))
       const client = get(cosmWasmClient)
       return client?.queryContractSmart(contractAddress, {
         voter: {

@@ -10,7 +10,7 @@ import {
   convertFromMicroDenom,
   convertMicroDenomToDenom,
 } from 'util/conversion'
-import { Logo } from './Logo'
+import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {
@@ -147,19 +147,27 @@ export function BalanceCard({
   amount,
   onPlus,
   onMinus,
+  loading,
 }: {
   denom: string
   title: string
   amount: string
   onPlus: MouseEventHandler<HTMLButtonElement>
   onMinus: MouseEventHandler<HTMLButtonElement>
+  loading: boolean
 }) {
   return (
-    <div className="shadow p-6 rounded-lg w-full border border-base-300 h-28 mt-2">
+    <div className="shadow p-6 rounded-lg w-full border border-base-300 mt-2">
       <h2 className="text-sm font-mono text-secondary">{title}</h2>
-      <p className="mt-2 font-bold">
-        {amount} ${denom}
-      </p>
+      {loading ? (
+        <div className="animate-spin-medium inline-block mt-2">
+          <LogoNoBorder />
+        </div>
+      ) : (
+        <p className="mt-2 font-bold">
+          {amount} ${denom}
+        </p>
+      )}
       <div className="flex justify-end">
         <div className="btn-group">
           <button

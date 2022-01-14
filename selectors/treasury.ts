@@ -67,7 +67,7 @@ export const walletAddress = selector({
   get: async ({ get }) => {
     const client = get(kelprOfflineSigner)
     const [{ address }] = await client.getAccounts()
-    return address
+    return address as string
   },
 })
 
@@ -76,6 +76,13 @@ export const walletAddress = selector({
 export const walletTokenBalanceUpdateCountAtom = atomFamily<number, string>({
   key: 'walletTokenBalanceUpdateCount',
   default: 0,
+})
+
+// Tracks if the token balance for a wallet is loading. This will be
+// true when we are staking / unstaking tokens.
+export const walletTokenBalanceLoading = atomFamily<boolean, string>({
+  key: 'walletTokenBalanceLoading',
+  default: false,
 })
 
 export const walletTokenBalance = selectorFamily({
@@ -87,6 +94,7 @@ export const walletTokenBalance = selectorFamily({
 
       const wallet = get(walletAddress)
       get(walletTokenBalanceUpdateCountAtom(wallet))
+
       const response = (await client.queryContractSmart(tokenAddress, {
         balance: { address: wallet },
       })) as any
@@ -106,9 +114,11 @@ export const walletStakedTokenBalance = selectorFamily({
 
       const wallet = get(walletAddress)
       get(walletTokenBalanceUpdateCountAtom(wallet))
+
       const response = (await client.queryContractSmart(tokenAddress, {
         staked_balance_at_height: { address: wallet },
       })) as any
+
       return {
         amount: response.balance,
         address: tokenAddress,
