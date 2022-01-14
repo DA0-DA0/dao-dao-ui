@@ -120,8 +120,13 @@ function PercentSelector({
   const getClassName = (p: number) =>
     'btn btn-sm rounded-md bg-base-300 border-none text-primary hover:bg-base-200 font-normal' +
     (active(p) ? '' : ' bg-transparent')
-  const getOnClick = (p: number) => () =>
-    setAmount((p * max).toLocaleString(undefined, { maximumFractionDigits: 6 }))
+  const getOnClick = (p: number) => () => {
+    setAmount(
+      (p * max)
+        .toLocaleString(undefined, { maximumFractionDigits: 6 })
+        .replace(',', '')
+    )
+  }
 
   return (
     <div className="grid grid-cols-5 gap-1">
