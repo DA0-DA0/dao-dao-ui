@@ -15,11 +15,7 @@ import {
 import { errorNotify, successNotify } from 'util/toast'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
 import { cleanChainError } from 'util/cleanChainError'
-import {
-  InformationCircleIcon,
-  PaperClipIcon,
-  ScaleIcon,
-} from '@heroicons/react/outline'
+import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
@@ -31,6 +27,7 @@ import {
 } from 'components/InputField'
 import {
   validateAddress,
+  validateNonNegative,
   validatePercent,
   validatePositive,
   validateRequired,
@@ -397,7 +394,7 @@ const CreateDao: NextPage = () => {
                       label="daoInitialBalance"
                       register={register}
                       error={errors.daoInitialBalance}
-                      validation={[validateRequired, validatePositive]}
+                      validation={[validateRequired, validateNonNegative]}
                       defaultValue="0"
                       onChange={(e) => {
                         const val = e?.target?.value
