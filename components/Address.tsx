@@ -11,13 +11,7 @@ function concatAddress(address: string) {
   return first + '...' + last
 }
 
-export default function Address({
-  address,
-  description,
-}: {
-  address: string
-  description: string
-}) {
+export default function Address({ address }: { address: string }) {
   const [clicked, setClicked] = useState(false)
 
   return (
