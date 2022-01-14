@@ -447,10 +447,13 @@ export function ProposalDetails({
         </div>
       )}
       <p className="text-medium mt-6">{proposal.description}</p>
-      <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
-        {JSON.stringify(proposal.msgs, undefined, 2)}
-      </pre>
-
+      {(proposal.msgs.length > 0) ? (
+          <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
+            {JSON.stringify(proposal.msgs, undefined, 2)}
+          </pre>
+        ) : (
+        <pre></pre>
+      )}
       <div className="mt-6">
         <ProposalVotes votes={proposalVotes} />
       </div>
