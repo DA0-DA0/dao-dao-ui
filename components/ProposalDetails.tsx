@@ -16,8 +16,8 @@ import {
 } from 'selectors/proposals'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import {
-  ChevronDownIcon,
-  ChevronUpIcon,
+  CheckIcon,
+  XIcon,
   SparklesIcon,
 } from '@heroicons/react/outline'
 import { getEnd } from './ProposalList'
@@ -156,6 +156,7 @@ function ProposalVoteButtons({
     <button
       className={
         'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
+        ((position === 'yes') ? ' hover:bg-green-500' : ' hover:bg-red-500' ) +
         (ready ? '' : ' btn-disabled bg-base-300')
       }
       onClick={() =>
@@ -177,13 +178,13 @@ function ProposalVoteButtons({
     <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
       <div className="flex gap-3">
         <VoteButton position="yes">
-          <ChevronUpIcon className="w-4 h-4 inline mr-2" />
-          Approve
+          <CheckIcon className="w-4 h-4 inline mr-2" />
+          Yes
           <p className="text-secondary ml-2">{yesCount}</p>
         </VoteButton>
         <VoteButton position="no">
-          <ChevronDownIcon className="w-4 h-4 inline mr-2" />
-          Reject
+          <XIcon className="w-4 h-4 inline mr-2" />
+          No
           <p className="text-secondary ml-2">{noCount}</p>
         </VoteButton>
       </div>
