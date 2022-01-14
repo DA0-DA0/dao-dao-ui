@@ -8,7 +8,7 @@ import {
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   daoSelector,
   isMemberSelector,
@@ -16,7 +16,12 @@ import {
   tokenConfig,
   totalStaked,
 } from 'selectors/daos'
-import { cw20Balances, nativeBalance } from 'selectors/treasury'
+import {
+  cw20Balances,
+  nativeBalance,
+  walletAddress,
+  walletTokenBalanceLoading,
+} from 'selectors/treasury'
 import { convertMicroDenomToDenom } from 'util/conversion'
 import {
   walletStakedTokenBalance,
@@ -51,6 +56,11 @@ const DaoHome: NextPage = () => {
   const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
   const stakedGovTokenBalance = useRecoilValue(
     walletStakedTokenBalance(daoInfo?.staking_contract)
+  )
+
+  const wallet = useRecoilValue(walletAddress)
+  const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
+    walletTokenBalanceLoading(wallet)
   )
 
   const [showStaking, setShowStaking] = useState(false)
@@ -125,6 +135,7 @@ const DaoHome: NextPage = () => {
                 setShowStaking(true)
                 setStakingDefault(StakingMode.Stake)
               }}
+              loading={tokenBalanceLoading}
             />
           </li>
           <li>
@@ -142,6 +153,7 @@ const DaoHome: NextPage = () => {
                 setShowStaking(true)
                 setStakingDefault(StakingMode.Unstake)
               }}
+              loading={tokenBalanceLoading}
             />
           </li>
         </ul>
@@ -187,6 +199,8 @@ const DaoHome: NextPage = () => {
             contractAddress={contractAddress}
             tokenSymbol={tokenInfo.symbol}
             onClose={() => setShowStaking(false)}
+            beforeExecute={() => setTokenBalancesLoading(true)}
+            afterExecute={() => setTokenBalancesLoading(false)}
           />
         )}
       </div>

@@ -39,7 +39,7 @@ export function Logo({
   )
 }
 
-export function LogoNoborder({
+export function LogoNoBorder({
   width = 28,
   height = 28,
   alt = '',

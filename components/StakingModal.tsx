@@ -88,7 +88,6 @@ function AmountSelector({
         </button>
         <input
           type="number"
-          defaultValue="0"
           className="appearance-none w-full pr-16 pl-16 input input-primary input-bordered bg-base-300 border-none"
           value={amount}
           onChange={onChange}
@@ -192,7 +191,7 @@ function executeUnstakeAction(
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Staked ${denomAmount} tokens`)
+      toast.success(`Unstaked ${denomAmount} tokens`)
       onDone()
     })
 }
@@ -230,7 +229,7 @@ function executeStakeAction(
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Unstaked ${denomAmount} tokens`)
+      toast.success(`Staked ${denomAmount} tokens`)
       onDone()
     })
 }
@@ -240,14 +239,18 @@ export function StakingModal({
   contractAddress,
   tokenSymbol,
   onClose,
+  beforeExecute,
+  afterExecute,
 }: {
   defaultMode: StakingMode
   contractAddress: string
   tokenSymbol: string
   onClose: MouseEventHandler<HTMLButtonElement>
+  beforeExecute: Function
+  afterExecute: Function
 }) {
   const [mode, setMode] = useState(defaultMode)
-  const [amount, setAmount] = useState('')
+  const [amount, setAmount] = useState('0')
 
   const { signingClient, walletAddress } = useSigningClient()
   const [loading, setLoading] = useState(false)
@@ -298,6 +301,7 @@ export function StakingModal({
           (loading ? ' loading' : '')
         }
         onClick={() => {
+          beforeExecute()
           if (mode === StakingMode.Stake) {
             executeStakeAction(
               amount,
@@ -308,7 +312,11 @@ export function StakingModal({
               setLoading,
               () => {
                 setAmount('0')
-                setWalletTokenBalanceUpdateCount((p) => p + 1)
+                // New staking balances will not appear until the next block has been added.
+                setTimeout(() => {
+                  setWalletTokenBalanceUpdateCount((p) => p + 1)
+                  afterExecute()
+                }, 6000)
               }
             )
           } else if (mode === StakingMode.Unstake) {
@@ -320,7 +328,11 @@ export function StakingModal({
               setLoading,
               () => {
                 setAmount('0')
-                setWalletTokenBalanceUpdateCount((p) => p + 1)
+                // New staking balances will not appear until the next block has been added.
+                setTimeout(() => {
+                  setWalletTokenBalanceUpdateCount((p) => p + 1)
+                  afterExecute()
+                }, 6500)
               }
             )
           }
