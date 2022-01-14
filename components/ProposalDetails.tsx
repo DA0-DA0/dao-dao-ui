@@ -16,11 +16,7 @@ import {
   proposalVotesSelector,
 } from 'selectors/proposals'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import {
-  CheckIcon,
-  XIcon,
-  SparklesIcon,
-} from '@heroicons/react/outline'
+import { CheckIcon, XIcon, SparklesIcon } from '@heroicons/react/outline'
 import { getEnd } from './ProposalList'
 import { isMemberSelector } from 'selectors/daos'
 import { convertMicroDenomToDenom } from 'util/conversion'
@@ -157,7 +153,7 @@ function ProposalVoteButtons({
     <button
       className={
         'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
-        ((position === 'yes') ? ' hover:bg-green-500' : ' hover:bg-red-500' ) +
+        (position === 'yes' ? ' hover:bg-green-500' : ' hover:bg-red-500') +
         (ready ? '' : ' btn-disabled bg-base-300')
       }
       onClick={() =>
@@ -450,11 +446,11 @@ export function ProposalDetails({
         </div>
       )}
       <p className="text-medium mt-6">{proposal.description}</p>
-      {(proposal.msgs.length > 0) ? (
-          <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
-            {JSON.stringify(proposal.msgs, undefined, 2)}
-          </pre>
-        ) : (
+      {proposal.msgs.length > 0 ? (
+        <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
+          {JSON.stringify(proposal.msgs, undefined, 2)}
+        </pre>
+      ) : (
         <pre></pre>
       )}
       <div className="mt-6">
