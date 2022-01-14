@@ -146,7 +146,7 @@ const DaoList: NextPage = () => {
             </li>
             <li>
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {totalVotes} vote{totalVotes > 1 && 's'} total
+              {totalVotes} voting weight
             </li>
           </ul>
         </div>
