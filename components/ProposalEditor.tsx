@@ -369,7 +369,7 @@ export default function ProposalEditor({
       ...proposalMapItem,
       messages,
     }
-    updateDraftProposal(updatedProposal)
+    setProposalMapItem(updatedProposal)
   }
 
   const addWasmMessage = () => {
