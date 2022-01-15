@@ -41,7 +41,7 @@ function InfoCard({
   children: ReactNode
 }) {
   return (
-    <div className="bg-base-300 rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around">
+    <div className="bg-base-300 rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-60">
       <div className="bg-accent-content rounded-lg h-fit w-fit p-1 w-9 h-8 flex items-center justify-center">
         {children}
       </div>
@@ -56,19 +56,18 @@ function InfoCard({
 // <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
 function GradientWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden flex flex-col items-center">
       {CSS.supports('backdrop-filter', 'blur(5px)') && (
         <div
-          className="fixed top-1/4 left-1/2 -mt-[100px] -ml-[250px] animate-spin-slow -z-20"
+          className="fixed top-1/4 left-1/2 -mt-[100px] -ml-[250px] animate-spin-slow -z-30"
           style={{ transform: 'rotate(270)' }}
         >
           <LogoNoBorder width={500} height={500} />
         </div>
       )}
-      <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full -z-10"></div>
-      <div className="bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-60 w-screen h-screen flex flex-col justify-between">
-        {children}
-      </div>
+      <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full -z-20"></div>
+      <div className="fixed bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-60 w-screen h-screen -z-10"></div>
+      {children}
     </div>
   )
 }
@@ -97,7 +96,7 @@ const Home: NextPage = () => {
             </a>
           </Link>
           <div className="flex gap-4 items-center">
-            <div>
+            <div className="hidden md:block">
               <ThemeToggle />
             </div>
             <a href="https://docs.daodao.zone" className="flex items-center">
@@ -107,41 +106,41 @@ const Home: NextPage = () => {
                 style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
               />
             </a>
-            <EnterAppButton small />
+            <div className="hidden md:block">
+              <EnterAppButton small />
+            </div>
           </div>
         </div>
       </nav>
-      <div className="flex flex-col items-center justify-center">
-        <h1 className="text-7xl text-center font-medium mt-12">
-          DAOs for everyone.
-        </h1>
-        <p className="text-lg text-center max-w-lg my-5 text-secondary">
-          We provide tooling for creating, deploying, managing, and joining
-          DAOs. Built with love on Juno.
-        </p>
-        <div className="mb-12">
-          <EnterAppButton />
-        </div>
-        <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">
-          <InfoCard
-            title="Create DAOs"
-            body="Make DAOs with a visual interface. No command line required."
-          >
-            <PlusSmIcon />
-          </InfoCard>
-          <InfoCard
-            title="Propose and vote"
-            body="Create and vote on proposals without writing code."
-          >
-            <ScaleIcon />
-          </InfoCard>
-          <InfoCard
-            title="Launch tokens"
-            body="Launch your token. Share them across any chain that supports IBC."
-          >
-            <StarIcon />
-          </InfoCard>
-        </div>
+      <h1 className="text-7xl text-center font-medium mt-[33vh]">
+        DAOs for everyone.
+      </h1>
+      <p className="text-lg text-center max-w-lg my-5 text-secondary mix-blend-difference px-2">
+        We provide tooling for creating, deploying, managing, and joining DAOs.
+        Built with love on Juno.
+      </p>
+      <div className="mb-12">
+        <EnterAppButton />
+      </div>
+      <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">
+        <InfoCard
+          title="Create DAOs"
+          body="Make DAOs with a visual interface. No command line required."
+        >
+          <PlusSmIcon />
+        </InfoCard>
+        <InfoCard
+          title="Propose and vote"
+          body="Create and vote on proposals without writing code."
+        >
+          <ScaleIcon />
+        </InfoCard>
+        <InfoCard
+          title="Launch tokens"
+          body="Launch your token. Share them across any chain that supports IBC."
+        >
+          <StarIcon />
+        </InfoCard>
       </div>
     </GradientWrapper>
   )
