@@ -9,6 +9,7 @@ import ThemeToggle from 'components/ThemeToggle'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import { GradientWrapper } from 'components/GradientWrapper'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
@@ -48,26 +49,6 @@ function InfoCard({
       <div>
         <h3 className="text-xl font-medium">{title}</h3>
         <p className="text-base text-secondary mt-1">{body}</p>
-      </div>
-    </div>
-  )
-}
-
-// <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
-function GradientWrapper({ children }: { children: ReactNode }) {
-  return (
-    <div className="overflow-x-hidden">
-      {CSS.supports('backdrop-filter', 'blur(5px)') && (
-        <div
-          className="fixed top-1/4 left-1/2 -mt-[100px] -ml-[250px] animate-spin-slow -z-20"
-          style={{ transform: 'rotate(270)' }}
-        >
-          <LogoNoBorder width={500} height={500} />
-        </div>
-      )}
-      <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full -z-10"></div>
-      <div className="bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-60 w-screen h-screen flex flex-col justify-between">
-        {children}
       </div>
     </div>
   )
