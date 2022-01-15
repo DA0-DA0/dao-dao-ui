@@ -12,6 +12,7 @@ import {
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
   useResetRecoilState,
+  useSetRecoilState,
 } from 'recoil'
 import {
   nextDraftProposalIdAtom,
@@ -45,19 +46,19 @@ const ProposalCreate: NextPage = () => {
     createDraftProposalTransaction(contractAddress, draftProposals),
     [contractAddress]
   )
-  const [transactionHash, setTransactionHash] = useRecoilState(transactionHashAtom)
+  const setTransactionHash = useSetRecoilState(transactionHashAtom)
 
 
   useEffect(() => {
     if (proposalId < 0) {
       const nextId = nextDraftProposalId + 1
-      // setNextDraftProposalId(nextId)
       createDraftProposal(contractAddress, {
         draftProposal: { ...EmptyProposal } as any,
       })
       setProposalId(nextId)
+      setNextDraftProposalId(nextId)
     }
-  }, [contractAddress, createDraftProposal, nextDraftProposalId, proposalId])
+  }, [contractAddress, createDraftProposal, nextDraftProposalId, setNextDraftProposalId, proposalId])
 
   const handleProposal = createProposal({
     contractAddress,

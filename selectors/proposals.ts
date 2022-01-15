@@ -3,10 +3,11 @@ import {
   ProposalTallyResponse,
   VoteInfo
 } from '@dao-dao/types/contracts/cw3-dao'
-import { proposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
+import { draftProposalAtom, makeProposalKeyString, proposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
 import { ProposalMap } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
+import { EmptyProposalResponse, EmptyThresholdResponse } from 'models/proposal/proposal'
 
 export type ProposalIdInput = string | number
 
@@ -96,6 +97,10 @@ export const proposalSelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
+      const draftProposal = get(draftProposalAtom({contractAddress, proposalId}))
+      if (draftProposal?.proposal) {
+        return draftProposal?.proposal
+      }
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
       const client = get(cosmWasmClient)
@@ -178,7 +183,22 @@ export const proposalsSelector = selectorFamily<
       const onChainProposalList = get(
         onChainProposalsSelector({ contractAddress, startBefore, limit })
       )
+      let draftProposalItems: ProposalResponse[] = []
       // TODO(gavin.doughtie): add in draft proposals
-      return onChainProposalList
+      const draftProposals = get(draftProposalsSelector(contractAddress))
+      if (draftProposals) {
+        draftProposalItems = (Object.values(draftProposals)).map(draft => {
+          const proposalResponse: ProposalResponse = {
+            ...EmptyProposalResponse,
+            ...draft.proposal,
+            id: draft.id,
+            threshold: {...EmptyThresholdResponse},
+            total_weight: 0
+          }
+          return proposalResponse
+        })
+      }
+
+      return (draftProposalItems ?? []).concat(onChainProposalList)
     },
 })

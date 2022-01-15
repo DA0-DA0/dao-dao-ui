@@ -2,12 +2,15 @@
 import {
   CosmosMsgFor_Empty,
   ExecuteMsg,
+  ProposalResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as DAOExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   Proposal,
+  ProposalTallyResponse,
   Status,
   Threshold,
+  ThresholdResponse,
   Vote,
   Votes,
 } from '@dao-dao/types/contracts/cw3-dao'
@@ -65,7 +68,33 @@ export const EmptyProposal: Proposal = {
 export const EmptyProposalItem: ProposalMapItem = {
   proposal: EmptyProposal,
   id: -1,
-  draft: true
+  draft: true,
+}
+
+export const EmptyThresholdResponse: ThresholdResponse = {
+  absolute_percentage: {
+    percentage: '0',
+    total_weight: '0',
+  },
+}
+
+export const EmptyProposalTallyResponse: ProposalTallyResponse = {
+  votes: [] as any,
+  total_votes: '',
+  threshold: EmptyThresholdResponse,
+  status: 'pending',
+  quorum: '',
+  total_weight: '0',
+}
+
+export const EmptyProposalResponse: ProposalResponse = {
+  ...EmptyProposal,
+  id: -1,
+  deposit_amount: '0',
+  proposer: '',
+  status: 'Draft' as Status,
+  threshold: {...EmptyThresholdResponse},
+  total_weight: '0'
 }
 
 export function memoForProposal(proposal: Proposal): string {

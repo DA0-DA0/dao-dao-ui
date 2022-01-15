@@ -101,18 +101,21 @@ export default function ProposalEditor({
     [walletAddress, signingClient, contractAddress, draftProposals]
   )
 
-  proposalId = proposalId ?? nextDraftProposalId
+  if (!proposalId || proposalId < 0) {
+    proposalId = nextDraftProposalId
+  }
 
   const proposalsListRoute = `/dao/${contractAddress}/proposals`
 
+  const isExistingDraftProposal = !!proposalMapItem?.proposal
   const proposal: Proposal =
-    proposalMapItem?.proposal && isProposal(proposalMapItem?.proposal)
+    isExistingDraftProposal && isProposal(proposalMapItem?.proposal)
       ? proposalMapItem.proposal
       : ({ ...EmptyProposal } as any as Proposal)
 
   console.log({ proposal })
 
-  if (!proposalMapItem?.proposal) {
+  if (!isExistingDraftProposal) {
     // We're creating a new proposal, so bump the draft ID:
     setNextDraftProposalId(proposalId)
   }
@@ -140,6 +143,10 @@ export default function ProposalEditor({
     const updatedMap = {
       ...contractProposalMap,
       [contractAddress]: updatedProposals,
+    }
+    // Clear the map entry if no data
+    if (Object.keys(updatedProposals).length === 0) {
+      delete updatedMap[contractAddress]
     }
     setContractProposalMap(updatedMap)
   }
@@ -416,7 +423,11 @@ export default function ProposalEditor({
             <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
-              onSubmit={handleSubmit<any>(onSubmit)}
+              onSubmit={e => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleSubmit<any>(onSubmit)
+              }}
             >
               <h2 className="text-lg">
                 <PaperClipIcon className="inline w-5 h-5 mr-2 mb-1" />
