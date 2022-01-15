@@ -31,7 +31,6 @@ import {
   draftProposalsSelector,
   proposalsSelector,
   draftProposalSelector,
-  draftProposalMessageSelector,
 } from 'selectors/proposals'
 import {
   isBankMsg,
@@ -299,7 +298,7 @@ export default function ProposalEditor({
         //   modeEditor = <h1>BURN MESSAGE NOT IMPLEMENTED</h1>
         // }
       } else if (value.messageType === ProposalMessageType.Mint) {
-        modeEditor = <MintEditor mintMsg={value} denom="junox" />
+        modeEditor = <MintEditor mintMsg={value} denom="junox" contractAddress={contractAddress} proposalId={proposalId}/>
       }
       // switch (mapEntry?.messageType) {
       //   case ProposalMessageType.Spend:

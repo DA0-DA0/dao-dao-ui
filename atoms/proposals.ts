@@ -102,16 +102,17 @@ export const contractProposalMapAtom = atom<ContractProposalMap>({
   ],
 })
 
-export const proposalMapAtom = atomFamily({
-  key: 'proposalMap',
-  default: selectorFamily({
-    key: 'ProposalMapDefault',
-    get:
-      (contractAddress: string) =>
-      ({ get }) => {
-        const proposals = get(contractProposalMapAtom)
-        return proposals[contractAddress]
-      },
-  }),
-  effects_UNSTABLE: [localStorageEffect<ProposalMap>('proposalMap')],
-})
+// export const proposalMapAtom = atomFamily({
+//   key: 'proposalMap',
+//   default: selectorFamily({
+//     key: 'ProposalMapDefault',
+//     get:
+//       (contractAddress: string) =>
+//       ({ get }) => {
+//         const proposals = get(contractProposalMapAtom)
+//         return proposals[contractAddress]
+//       },
+//   }),
+//   effects_UNSTABLE: [localStorageEffect<ProposalMap>('proposalMap')],
+// })
+

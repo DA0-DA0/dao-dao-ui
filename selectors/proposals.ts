@@ -3,12 +3,9 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  proposalMapAtom,
-  proposalsRequestIdAtom,
-} from 'atoms/proposals'
+import { contractProposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
-import { ProposalMap } from 'types/proposals'
+import { ContractProposalMap, ProposalMap } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
 import {
   EmptyProposalResponse,
@@ -19,7 +16,7 @@ import {
   ProposalKey,
   ProposalMessageKey,
 } from 'types/proposals'
-import { MessageMapEntry } from 'models/proposal/messageMap'
+import { MessageMap, MessageMapEntry } from 'models/proposal/messageMap'
 
 export type ProposalIdInput = string | number
 
@@ -178,7 +175,7 @@ export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
   get:
     (contractAddress) =>
     ({ get }) => {
-      return get(proposalMapAtom(contractAddress))
+      return get(proposalMapSelector(contractAddress))
     },
 })
 
@@ -218,6 +215,22 @@ export const proposalsSelector = selectorFamily<
     },
 })
 
+export const proposalMapSelector = selectorFamily<ProposalMap, string>({
+  key: 'proposalMap',
+  get: contractAddress => ({get}) => {
+    const contractProposalMap = get(contractProposalMapAtom)
+    return contractProposalMap[contractAddress]
+  },
+  set: contractAddress => ({get, set}, newValue) => {
+    const contractProposalMap = get(contractProposalMapAtom)
+    const updatedMap: ContractProposalMap = {
+      ...contractProposalMap,
+      [contractAddress]: newValue
+    } as any // TODO(gavin.doughtie): Wrong type?
+    set(contractProposalMapAtom, updatedMap)
+  }
+})
+
 export const draftProposalSelector = selectorFamily<
   ProposalMapItem | undefined,
   ProposalKey
@@ -226,17 +239,19 @@ export const draftProposalSelector = selectorFamily<
   get:
     ({ contractAddress, proposalId }) =>
     ({ get }) => {
-      const draftProposals = get(proposalMapAtom(contractAddress))
+      const draftProposals = get(proposalMapSelector(contractAddress))
       return draftProposals ? draftProposals[proposalId] : undefined
     },
-  set: ({ contractAddress, proposalId }) => ({set, get}, newValue) => {
-    const draftProposals = get(proposalMapAtom(contractAddress))
-    const updatedDraftProposals = {
-      ...draftProposals,
-      [proposalId]: newValue
-    }
-    set(proposalMapAtom(contractAddress), updatedDraftProposals)
-  }
+  set:
+    ({ contractAddress, proposalId }) =>
+    ({ set, get }, newValue) => {
+      const draftProposals = get(proposalMapSelector(contractAddress))
+      const updatedDraftProposals = {
+        ...draftProposals,
+        [proposalId]: newValue,
+      }
+      set(proposalMapSelector(contractAddress), updatedDraftProposals)
+    },
 })
 
 export const draftProposalMessageSelector = selectorFamily<
@@ -253,5 +268,23 @@ export const draftProposalMessageSelector = selectorFamily<
       return draftProposal?.messages
         ? draftProposal.messages[messageId]
         : undefined
+    },
+  set:
+    ({ contractAddress, proposalId, messageId }) =>
+    ({ set, get }, newValue) => {
+      if (!newValue) {
+        return
+      }
+      const draftProposal = get(
+        draftProposalSelector({ contractAddress, proposalId })
+      )
+      if (draftProposal) {
+        const messages: MessageMap = { ...draftProposal?.messages, [messageId]: newValue } as any
+        const updatedProposal: ProposalMapItem = {
+          ...draftProposal,
+          messages,
+        }
+        set(draftProposalSelector({ contractAddress, proposalId }), updatedProposal)
+      }
     },
 })
