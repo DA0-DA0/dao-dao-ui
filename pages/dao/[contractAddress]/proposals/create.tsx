@@ -1,100 +1,88 @@
-import LineAlert from 'components/LineAlert'
-import { ProposalEditor } from 'components/ProposalEditor'
-import { useSigningClient } from 'contexts/cosmwasm'
+import ProposalEditor from 'components/ProposalEditor'
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
-import { memoForProposal, Proposal } from 'models/proposal/proposal'
-import { messageForProposal } from 'models/proposal/proposalSelectors'
+import { NextRouter, useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { EmptyProposal, memoForProposal } from 'models/proposal/proposal'
 import { defaultExecuteFee } from 'util/fee'
-import { successNotify } from 'util/toast'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { proposalsCreatedAtom } from 'atoms/proposals'
-import { cleanChainError } from 'util/cleanChainError'
-import { daoSelector } from 'selectors/daos'
-import { Breadcrumbs } from 'components/Breadcrumbs'
+import Link from 'next/link'
+import { Proposal } from '@dao-dao/types/contracts/cw3-dao'
+import { createDraftProposalTransaction, createProposal } from 'util/proposal'
+import {
+  useRecoilState,
+  useRecoilTransaction_UNSTABLE,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from 'recoil'
+import {
+  nextDraftProposalIdAtom,
+} from 'atoms/proposals'
+import { draftProposalsSelector } from 'selectors/proposals'
+
+import {
+  cosmWasmSigningClient,
+  walletAddressSelector
+} from 'selectors/cosm'
+
+import {
+  transactionHashAtom,
+  loadingAtom,
+  errorAtom,
+} from 'atoms/status'
 
 const ProposalCreate: NextPage = () => {
-  const router = useRouter()
+  const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { walletAddress, signingClient } = useSigningClient()
-
-  // Used to notify the proposal list that it needs to update to
-  // include the newly created proposal.
-  const [_pca, setProposalsCreatedAtom] = useRecoilState(
-    proposalsCreatedAtom(contractAddress)
+  const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState<number>(
+    nextDraftProposalIdAtom
   )
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const [error, setError] = useRecoilState(errorAtom)
+  const [loading, setLoading] = useRecoilState(loadingAtom)
+  const [proposalId, setProposalId] = useState<number>(-1)
+  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
+  const createDraftProposal = useRecoilTransaction_UNSTABLE(
+    createDraftProposalTransaction(contractAddress, draftProposals),
+    [contractAddress]
+  )
+  const setTransactionHash = useSetRecoilState(transactionHashAtom)
 
-  const handleProposal = async (
-    proposal: Proposal,
-    contractAddress: string,
-    govTokenAddress?: string
-  ) => {
-    setLoading(true)
-    setError('')
-    if (!signingClient || !walletAddress) {
-      setError('Wallet is not connected')
+
+  useEffect(() => {
+    if (proposalId < 0) {
+      const nextId = nextDraftProposalId + 1
+      createDraftProposal(contractAddress, {
+        draftProposal: { ...EmptyProposal } as any,
+      })
+      setProposalId(nextId)
+      setNextDraftProposalId(nextId)
     }
-    const propose = messageForProposal(proposal, govTokenAddress)
-    const memo = memoForProposal(proposal)
-    try {
-      const response = await signingClient?.execute(
-        walletAddress,
-        contractAddress,
-        { propose },
-        defaultExecuteFee,
-        memo
-      )
-      setLoading(false)
-      if (response) {
-        const [{ events }] = response.logs
-        const [wasm] = events.filter((e) => e.type === 'wasm')
-        const [{ value }] = wasm.attributes.filter(
-          (w) => w.key === 'proposal_id'
-        )
-        successNotify('New Proposal Created')
-        setProposalsCreatedAtom((n) => n + 1)
-        router.push(`/dao/${contractAddress}/proposals/${value}`)
-      }
-    } catch (e: any) {
-      console.error(
-        `Error submitting proposal ${JSON.stringify(proposal, undefined, 2)}`
-      )
-      console.dir(e)
-      console.error(e.message)
-      setLoading(false)
-      setError(e.message)
-    }
-  }
+  }, [contractAddress, createDraftProposal, nextDraftProposalId, setNextDraftProposalId, proposalId])
+
+  // const handleProposal = createProposal({
+  //   contractAddress,
+  //   router,
+  //   walletAddress,
+  //   signingClient,
+  //   setTransactionHash,
+  //   setError,
+  //   setLoading,
+  //   // resetOnChainProposals
+  // })
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
-        <Breadcrumbs
-          crumbs={[
-            ['/dao/list', 'DAOs'],
-            [`/dao/${contractAddress}`, daoInfo.config.name],
-            [router.asPath, 'Create proposal'],
-          ]}
-        />
-
+    <>
+      <div className="flex flex-col w-full">
         <ProposalEditor
-          onProposal={handleProposal}
+          proposalId={proposalId}
+          error={error}
           loading={loading}
           contractAddress={contractAddress}
           recipientAddress={walletAddress}
         />
-        {error && (
-          <div className="mt-8">
-            <LineAlert variant="error" msg={cleanChainError(error)} />
-          </div>
-        )}
       </div>
-    </div>
+    </>
   )
 }
 

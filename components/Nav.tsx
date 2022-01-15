@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
 import { daosSelector } from 'selectors/daos'
-import { sigsSelector } from 'selectors/multisigs'
+import { sigsSelector, MultisigListType } from 'selectors/multisigs'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
@@ -54,7 +54,7 @@ function Nav() {
   const daos = useRecoilValue(daosSelector)
   const memberDaos = daos.filter((dao) => dao.member)
 
-  const sigs = useRecoilValue(sigsSelector)
+  const sigs: MultisigListType[] = [] // useRecoilValue(sigsSelector)
   const memberSigs = sigs.filter((sig) => sig.member)
 
   return (

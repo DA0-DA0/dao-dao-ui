@@ -16,7 +16,7 @@ export default function MintEditor({
   mintMsg,
   denom,
 }: {
-  dispatch: (action: ProposalAction) => void
+  dispatch?: (action: ProposalAction) => void
   mintMsg?: MessageMapEntry
   denom: string
 }) {

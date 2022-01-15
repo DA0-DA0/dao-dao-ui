@@ -1,11 +1,13 @@
 import {
   ProposalResponse,
   ProposalTallyResponse,
-  VoteInfo,
+  VoteInfo
 } from '@dao-dao/types/contracts/cw3-dao'
-import { proposalsRequestIdAtom } from 'atoms/proposals'
+import { draftProposalAtom, makeProposalKeyString, proposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
+import { ProposalMap } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
+import { EmptyProposalResponse, EmptyThresholdResponse } from 'models/proposal/proposal'
 
 export type ProposalIdInput = string | number
 
@@ -95,6 +97,10 @@ export const proposalSelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
+      const draftProposal = get(draftProposalAtom({contractAddress, proposalId}))
+      if (draftProposal?.proposal) {
+        return draftProposal?.proposal
+      }
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
       const client = get(cosmWasmClient)
@@ -150,5 +156,50 @@ export const proposalTallySelector = selectorFamily<
         tally: { proposal_id: proposalId },
       })
       return tally
+    },
+})
+
+export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
+  key: 'draftProposals',
+  get:
+    (contractAddress) =>
+    ({ get }) => {
+      return get(proposalMapAtom(contractAddress))
+    },
+})
+
+export const proposalsSelector = selectorFamily<
+  ProposalResponse[],
+  {
+    contractAddress: string
+    startBefore: number
+    limit: number
+  }
+>({
+  key: 'proposals',
+  get:
+    ({ contractAddress, startBefore, limit }) =>
+    async ({ get }) => {
+      const onChainProposalList = get(
+        onChainProposalsSelector({ contractAddress, startBefore, limit })
+      )
+      let draftProposalItems: ProposalResponse[] = []
+      // Add in draft proposals:
+      const draftProposals = get(draftProposalsSelector(contractAddress))
+      if (draftProposals) {
+        draftProposalItems = (Object.values(draftProposals)).map(draft => {
+          const proposalResponse: ProposalResponse = {
+            ...EmptyProposalResponse,
+            ...draft.proposal,
+            status: 'draft' as any,
+            id: draft.id,
+            threshold: {...EmptyThresholdResponse},
+            total_weight: 0
+          }
+          return proposalResponse
+        })
+      }
+
+      return (draftProposalItems ?? []).concat(onChainProposalList)
     },
 })
