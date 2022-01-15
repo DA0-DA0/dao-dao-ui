@@ -142,17 +142,17 @@ export function ProposalList({
   //   return p
   // })
   // We've now handled all the newly created proposals.
-  setPropsCreated(0)
+  // setPropsCreated(0)
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
-  const existingProps = useRecoilValue(
-    onChainProposalsSelector({
-      contractAddress,
-      startBefore,
-      limit: PROP_LOAD_LIMIT,
-    })
-  )
+  // const existingProps = useRecoilValue(
+  //   onChainProposalsSelector({
+  //     contractAddress,
+  //     startBefore,
+  //     limit: PROP_LOAD_LIMIT,
+  //   })
+  // )
 
   // We query proposals in reverse showing the most recent (highest
   // ID) ones first. If a new query starts with a proposal with an ID

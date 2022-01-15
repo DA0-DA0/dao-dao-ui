@@ -184,13 +184,14 @@ export const proposalsSelector = selectorFamily<
         onChainProposalsSelector({ contractAddress, startBefore, limit })
       )
       let draftProposalItems: ProposalResponse[] = []
-      // TODO(gavin.doughtie): add in draft proposals
+      // Add in draft proposals:
       const draftProposals = get(draftProposalsSelector(contractAddress))
       if (draftProposals) {
         draftProposalItems = (Object.values(draftProposals)).map(draft => {
           const proposalResponse: ProposalResponse = {
             ...EmptyProposalResponse,
             ...draft.proposal,
+            status: 'draft' as any,
             id: draft.id,
             threshold: {...EmptyThresholdResponse},
             total_weight: 0

@@ -1,10 +1,11 @@
-import { draftProposalAtom } from "atoms/proposals"
-import { useRecoilValue } from "recoil"
-import ProposalStatus from "./ProposalStatus"
+import { draftProposalAtom } from 'atoms/proposals'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import ProposalStatus from './ProposalStatus'
+import { loadingAtom } from 'atoms/status'
 
 export function ProposalDraftSidebar({
   contractAddress,
-  proposalId
+  proposalId,
 }: {
   contractAddress: string
   proposalId: number
@@ -12,6 +13,21 @@ export function ProposalDraftSidebar({
   const draftProposal = useRecoilValue(
     draftProposalAtom({ contractAddress, proposalId })
   )
+  const [loading, setLoading] = useRecoilState(loadingAtom)
+  const deleteDraftProposal = () => {
+    // this should be a transaction
+    // const updatedProposals = { ...draftProposals }
+    // delete updatedProposals[proposalId + '']
+    // const updatedMap = {
+    //   ...contractProposalMap,
+    //   [contractAddress]: updatedProposals,
+    // }
+    // // Clear the map entry if no data
+    // if (Object.keys(updatedProposals).length === 0) {
+    //   delete updatedMap[contractAddress]
+    // }
+    // setContractProposalMap(updatedMap)
+  }
 
   return draftProposal ? (
     <div>
@@ -28,7 +44,23 @@ export function ProposalDraftSidebar({
       <div className="mt-6">
         <p className="text-secondary">This is a draft proposal</p>
       </div>
-
+      <button
+        key="delete_draft"
+        className={`btn btn-secondary text-lg mt-8 ml-auto ${
+          loading ? 'loading' : ''
+        }`}
+        style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+        disabled={loading}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          deleteDraftProposal()
+        }}
+      >
+        Delete Draft
+      </button>
     </div>
-  ) : <div>Error: Draft Proposal Not found</div>
+  ) : (
+    <div>Error: Draft Proposal Not found</div>
+  )
 }
