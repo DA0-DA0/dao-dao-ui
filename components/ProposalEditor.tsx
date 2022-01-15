@@ -407,14 +407,20 @@ export default function ProposalEditor({
   }
 
   const removeMessage = (messageIndex: number) => {
-    const msgs = [...proposal.msgs]
-    const removed = msgs.splice(messageIndex, 1)
-    if (removed) {
-      updateProposal({
-        ...proposal,
-        msgs,
-      })
-      // setActiveMessage(-1)
+    if (!proposalMapItem?.messages) {
+      return
+    }
+    const existing: MessageMapEntry = proposalMapItem.messages[`${messageIndex}`]
+    if (existing) {
+      const messages = {
+        ...proposalMapItem.messages
+      }
+      delete messages[existing.id]
+      const updated: ProposalMapItem = {
+        ...proposalMapItem,
+        messages
+      }
+      setProposalMapItem(updated)
     } else {
       console.warn(`no message at ${messageIndex}`)
     }
