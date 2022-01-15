@@ -1,4 +1,8 @@
-import { CosmosMsgFor_Empty, Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import {
+  CosmosMsgFor_Empty,
+  Proposal,
+  ProposalResponse,
+} from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
   draftProposalAtom,
@@ -19,6 +23,7 @@ import {
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
   useResetRecoilState,
+  useSetRecoilState,
 } from 'recoil'
 import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
 import { draftProposalsSelector, proposalsSelector } from 'selectors/proposals'
@@ -43,27 +48,36 @@ import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 
+import { transactionHashAtom, loadingAtom, errorAtom } from 'atoms/status'
+import { createDraftProposalTransaction, createProposal } from 'util/proposal'
+import {
+  MessageMapEntry,
+  ProposalMessageType,
+} from 'models/proposal/messageMap'
+
+
 export default function ProposalEditor({
   proposalId,
   loading,
   error,
-  onProposal,
   contractAddress,
   recipientAddress,
 }: {
   proposalId: number
   loading?: boolean
   error?: string
-  onProposal?: (proposal: Proposal) => void
   contractAddress: string
   recipientAddress: string
 }) {
+  const router: NextRouter = useRouter()
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletAddress = useRecoilValue(walletAddressSelector)
+
   const proposalsState = proposalsSelector({
     contractAddress,
     startBefore: 0,
     limit: 10,
   })
-  const proposals = useRecoilValue(proposalsState)
   const [editProposalJson, setEditProposalJson] = useState(false)
   const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
     useState('')
@@ -73,7 +87,7 @@ export default function ProposalEditor({
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const router: NextRouter = useRouter()
+
   const [contractProposalMap, setContractProposalMap] = useRecoilState(
     contractProposalMapAtom
   )
@@ -88,8 +102,7 @@ export default function ProposalEditor({
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState(
     nextDraftProposalIdAtom
   )
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
+
   const createProposalFunction = useRecoilTransaction_UNSTABLE(
     createProposalTransaction({
       walletAddress,
@@ -194,7 +207,7 @@ export default function ProposalEditor({
     return true
   }
 
-  async function onSubmit(_formData: any) {
+  async function onSubmitProposal(_formData: any) {
     // We don't actually care about what the form processor returned in this
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
@@ -247,30 +260,35 @@ export default function ProposalEditor({
 
   let messages = (proposal?.msgs ?? []).map((msg, messageIndex) => {
     const label = labelForMessage(msg)
-    const modeEditor = <div>TODO: editor for {label}</div>
-    /*
-    let modeEditor = null
+
+
+    let modeEditor = <h1>Not implemented</h1>
     if (isBankMsg(msg)) {
-      if (isSendMsg(msg.bank) && proposalId !== undefined) {
-        modeEditor = (
-          <SpendEditor
-            spendMsg={msg.bank as any}
-            contractAddress={contractAddress}
-            initialRecipientAddress={recipientAddress}
-            proposalId={proposalId as any}
-            updateProposal={updateProposal}
-            msgIndex={messageIndex}
-          />
-        )
-      } else if (isBurnMsg(msg.bank)) {
-        modeEditor = <h1>BURN MESSAGE NOT IMPLEMENTED</h1>
-      }
+      // if (isSendMsg(msg.bank) && proposalId !== undefined) {
+      //   modeEditor = (
+      //     <SpendEditor
+      //       spendMsg={msg.bank as any}
+      //       contractAddress={contractAddress}
+      //       initialRecipientAddress={recipientAddress}
+      //       proposalId={proposalId as any}
+      //       updateProposal={updateProposal}
+      //       msgIndex={messageIndex}
+      //     />
+      //   )
+      // } else if (isBurnMsg(msg.bank)) {
+      //   modeEditor = <h1>BURN MESSAGE NOT IMPLEMENTED</h1>
+      // }
     } else if (isMintMsg(msg)) {
+      const entry: MessageMapEntry = {
+        id: 'mint',
+        order: 0,
+        messageType: ProposalMessageType.Mint,
+        message: msg
+      }
       modeEditor = (
-        <MintEditor mintMsg={msg} initialRecipientAddress={recipientAddress} />
+        <MintEditor mintMsg={entry} denom="junox" />
       )
     }
-    */
     // switch (mapEntry?.messageType) {
     //   case ProposalMessageType.Spend:
     //     modeEditor = (
@@ -423,10 +441,14 @@ export default function ProposalEditor({
             <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
-              onSubmit={e => {
+              onSubmit={
+              (e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                handleSubmit<any>(onSubmit)
+                handleSubmit(onSubmitProposal, x => {
+                  console.error('bad submit:')
+                console.dir(x)
+                })(e)
               }}
             >
               <h2 className="text-lg">
@@ -453,11 +475,9 @@ export default function ProposalEditor({
                 />
                 <textarea
                   className={editorClassName}
-                  // onChange={handleDescriptionChange}
                   onChange={handleDescriptionTextChange}
                   defaultValue={proposal.description}
                   readOnly={complete}
-                  // dark={themeContext.theme === 'junoDark'}
                   onBlur={handleDescriptionBlur}
                   id="description"
                 ></textarea>
@@ -481,38 +501,14 @@ export default function ProposalEditor({
                       style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
                       type="submit"
                       disabled={loading}
+                      // onClick={e => {
+                      //   handleSubmit(onSubmitProposal, x => {
+                      //     console.error('bad submit:')
+                      //   console.dir(x)
+                      //   })
+                      // }}
                     >
                       Create Proposal
-                    </button>
-                    <button
-                      key="save_draft"
-                      className={`btn btn-secondary text-lg mt-8 ml-auto ${
-                        loading ? 'loading' : ''
-                      }`}
-                      style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                      disabled={loading}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        saveDraftProposal(proposal)
-                      }}
-                    >
-                      Save Draft
-                    </button>
-                    <button
-                      key="delete_draft"
-                      className={`btn btn-secondary text-lg mt-8 ml-auto ${
-                        loading ? 'loading' : ''
-                      }`}
-                      style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-                      disabled={loading}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        deleteDraftProposal()
-                      }}
-                    >
-                      Delete Draft
                     </button>
                   </div>
                 )}

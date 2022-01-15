@@ -157,7 +157,6 @@ export const createDraftProposalTransaction =
         memo
       )
       setLoading(false)
-      debugger
       if (response) {
         setTransactionHash(response.transactionHash)
         const [{ events }] = response.logs
@@ -168,7 +167,7 @@ export const createDraftProposalTransaction =
         const initialMessage = `Saved Proposal "${proposal.title}"`
         const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
 
-        router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
+        // router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
       }
     } catch (e: any) {
       console.error(

@@ -60,22 +60,21 @@ const ProposalCreate: NextPage = () => {
     }
   }, [contractAddress, createDraftProposal, nextDraftProposalId, setNextDraftProposalId, proposalId])
 
-  const handleProposal = createProposal({
-    contractAddress,
-    router,
-    walletAddress,
-    signingClient,
-    setTransactionHash,
-    setError,
-    setLoading,
-    // resetOnChainProposals
-  })
+  // const handleProposal = createProposal({
+  //   contractAddress,
+  //   router,
+  //   walletAddress,
+  //   signingClient,
+  //   setTransactionHash,
+  //   setError,
+  //   setLoading,
+  //   // resetOnChainProposals
+  // })
 
   return (
     <>
       <div className="flex flex-col w-full">
         <ProposalEditor
-          onProposal={handleProposal}
           proposalId={proposalId}
           error={error}
           loading={loading}
