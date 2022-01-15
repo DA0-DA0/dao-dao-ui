@@ -1,4 +1,4 @@
-import { draftProposalAtom } from 'atoms/proposals'
+import { draftProposalSelector } from 'selectors/proposals'
 import { errorAtom, loadingAtom, transactionHashAtom } from 'atoms/status'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
@@ -9,7 +9,8 @@ import ProposalEditor from 'components/ProposalEditor'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
+import { cosmWasmSigningClient} from 'selectors/cosm'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { daoSelector } from 'selectors/daos'
 import { createProposal } from 'util/proposal'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
@@ -20,30 +21,18 @@ const Proposal: NextPage = () => {
   const contractAddress = router.query.contractAddress as string
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
   const draftProposal = useRecoilValue(
-    draftProposalAtom({ contractAddress, proposalId })
+    draftProposalSelector({ contractAddress, proposalId })
   )
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
-  const [error, setError] = useRecoilState(errorAtom)
-  const [loading, setLoading] = useRecoilState(loadingAtom)
-  const setTransactionHash = useSetRecoilState(transactionHashAtom)
+  const error = useRecoilValue(errorAtom)
+  const loading = useRecoilValue(loadingAtom)
 
   let content
   let sidebar
 
   if (draftProposal) {
-    const handleProposal = createProposal({
-      contractAddress,
-      router,
-      walletAddress,
-      signingClient,
-      setTransactionHash,
-      setError,
-      setLoading,
-    })
     content = (
       <ProposalEditor
-        onProposal={handleProposal}
         proposalId={proposalId}
         error={error}
         loading={loading}

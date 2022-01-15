@@ -21,8 +21,9 @@ import { draftProposalsSelector } from 'selectors/proposals'
 
 import {
   cosmWasmSigningClient,
-  walletAddressSelector
 } from 'selectors/cosm'
+
+import { walletAddress as walletAddressSelector} from 'selectors/treasury'
 
 import {
   transactionHashAtom,

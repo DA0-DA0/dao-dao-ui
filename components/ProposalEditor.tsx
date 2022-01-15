@@ -2,10 +2,10 @@ import {
   CosmosMsgFor_Empty,
   Proposal,
   ProposalResponse,
+  WasmMsg,
 } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
-  draftProposalAtom,
   draftProposalItem,
   nextDraftProposalIdAtom,
   proposalListAtom,
@@ -25,8 +25,14 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from 'recoil'
-import { cosmWasmSigningClient, walletAddressSelector } from 'selectors/cosm'
-import { draftProposalsSelector, proposalsSelector } from 'selectors/proposals'
+import { cosmWasmSigningClient } from 'selectors/cosm'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import {
+  draftProposalsSelector,
+  proposalsSelector,
+  draftProposalSelector,
+  draftProposalMessageSelector,
+} from 'selectors/proposals'
 import {
   isBankMsg,
   isBurnMsg,
@@ -54,7 +60,7 @@ import {
   MessageMapEntry,
   ProposalMessageType,
 } from 'models/proposal/messageMap'
-
+import { ProposalMapItem } from 'types/proposals'
 
 export default function ProposalEditor({
   proposalId,
@@ -93,7 +99,7 @@ export default function ProposalEditor({
   )
   const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
   const [proposalMapItem, setProposalMapItem] = useRecoilState(
-    draftProposalAtom({ contractAddress, proposalId })
+    draftProposalSelector({ contractAddress, proposalId })
   )
   const [nextProposalRequestId, setNextProposalRequestId] = useRecoilState(
     proposalsRequestIdAtom
@@ -102,6 +108,8 @@ export default function ProposalEditor({
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState(
     nextDraftProposalIdAtom
   )
+
+  const messageMap = proposalMapItem?.messages ?? {}
 
   const createProposalFunction = useRecoilTransaction_UNSTABLE(
     createProposalTransaction({
@@ -239,6 +247,17 @@ export default function ProposalEditor({
     })
   }
 
+  function updateDraftProposal(updatedProposalItem: ProposalMapItem) {
+    const proposalIdKey = `${proposalId}`
+    setContractProposalMap({
+      ...contractProposalMap,
+      [contractAddress]: {
+        ...draftProposals,
+        [proposalIdKey]: updatedProposalItem,
+      },
+    })
+  }
+
   function setProposalTitle(title: string) {
     updateProposal({
       ...proposal,
@@ -258,129 +277,134 @@ export default function ProposalEditor({
     }
   }
 
-  let messages = (proposal?.msgs ?? []).map((msg, messageIndex) => {
-    const label = labelForMessage(msg)
+  let messages = Object.entries(proposalMapItem?.messages ?? {}).map(
+    ([key, value], messageIndex) => {
+      const msg = value.message
+      const label = labelForMessage(value.message)
 
-
-    let modeEditor = <h1>Not implemented</h1>
-    if (isBankMsg(msg)) {
-      // if (isSendMsg(msg.bank) && proposalId !== undefined) {
-      //   modeEditor = (
-      //     <SpendEditor
-      //       spendMsg={msg.bank as any}
-      //       contractAddress={contractAddress}
-      //       initialRecipientAddress={recipientAddress}
-      //       proposalId={proposalId as any}
-      //       updateProposal={updateProposal}
-      //       msgIndex={messageIndex}
-      //     />
-      //   )
-      // } else if (isBurnMsg(msg.bank)) {
-      //   modeEditor = <h1>BURN MESSAGE NOT IMPLEMENTED</h1>
-      // }
-    } else if (isMintMsg(msg)) {
-      const entry: MessageMapEntry = {
-        id: 'mint',
-        order: 0,
-        messageType: ProposalMessageType.Mint,
-        message: msg
+      let modeEditor = <h1>Not implemented</h1>
+      if (value.messageType === ProposalMessageType.Spend) {
+        // if (isSendMsg(msg.bank) && proposalId !== undefined) {
+        //   modeEditor = (
+        //     <SpendEditor
+        //       spendMsg={msg.bank as any}
+        //       contractAddress={contractAddress}
+        //       initialRecipientAddress={recipientAddress}
+        //       proposalId={proposalId as any}
+        //       updateProposal={updateProposal}
+        //       msgIndex={messageIndex}
+        //     />
+        //   )
+        // } else if (isBurnMsg(msg.bank)) {
+        //   modeEditor = <h1>BURN MESSAGE NOT IMPLEMENTED</h1>
+        // }
+      } else if (value.messageType === ProposalMessageType.Mint) {
+        modeEditor = <MintEditor mintMsg={value} denom="junox" />
       }
-      modeEditor = (
-        <MintEditor mintMsg={entry} denom="junox" />
+      // switch (mapEntry?.messageType) {
+      //   case ProposalMessageType.Spend:
+      //     modeEditor = (
+      //       <SpendEditor
+      //         spendMsg={msg}
+      //         contractAddress={contractAddress}
+      //         initialRecipientAddress={recipientAddress}
+      //       ></SpendEditor>
+      //     )
+      //     break
+      //   case ProposalMessageType.Mint: {
+      //     modeEditor = (
+      //       <MintEditor
+      //         mintMsg={msg}
+      //         initialRecipientAddress={recipientAddress}
+      //       ></MintEditor>
+      //     )
+      //     break
+      //   }
+      //   case ProposalMessageType.Custom:
+      //     modeEditor = <CustomEditor customMsg={msg} />
+      //     break
+      //   case ProposalMessageType.Wasm:
+      //     modeEditor = <CustomEditor customMsg={msg} />
+      //     break
+      // }
+
+      return (
+        <li
+          className="my-4 px-4 py-2 border-l-2 rounded-lg border-accent"
+          key={`msg_${messageIndex}`}
+          onClick={() => setActiveMessage(messageIndex)}
+        >
+          <div title={label} className="flex justify-between">
+            <h5 className="text-lg font-bold">
+              {label}{' '}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  removeMessage(messageIndex)
+                }}
+                title="Delete message"
+                className="btn btn-circle btn-xs float-right"
+              >
+                <XIcon />
+              </button>
+            </h5>
+          </div>
+          {modeEditor}
+        </li>
       )
     }
-    // switch (mapEntry?.messageType) {
-    //   case ProposalMessageType.Spend:
-    //     modeEditor = (
-    //       <SpendEditor
-    //         spendMsg={msg}
-    //         contractAddress={contractAddress}
-    //         initialRecipientAddress={recipientAddress}
-    //       ></SpendEditor>
-    //     )
-    //     break
-    //   case ProposalMessageType.Mint: {
-    //     modeEditor = (
-    //       <MintEditor
-    //         mintMsg={msg}
-    //         initialRecipientAddress={recipientAddress}
-    //       ></MintEditor>
-    //     )
-    //     break
-    //   }
-    //   case ProposalMessageType.Custom:
-    //     modeEditor = <CustomEditor customMsg={msg} />
-    //     break
-    //   case ProposalMessageType.Wasm:
-    //     modeEditor = <CustomEditor customMsg={msg} />
-    //     break
-    // }
+  )
 
-    return (
-      <li
-        className="my-4 px-4 py-2 border-l-2 rounded-lg border-accent"
-        key={`msg_${messageIndex}`}
-        onClick={() => setActiveMessage(messageIndex)}
-      >
-        <div title={label} className="flex justify-between">
-          <h5 className="text-lg font-bold">
-            {label}{' '}
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                removeMessage(messageIndex)
-              }}
-              title="Delete message"
-              className="btn btn-circle btn-xs float-right"
-            >
-              <XIcon />
-            </button>
-          </h5>
-        </div>
-        {modeEditor}
-      </li>
-    )
-  })
-
-  const addMessage = (message: CosmosMsgFor_Empty) => {
-    updateProposal({
-      ...proposal,
-      msgs: [...proposal.msgs, message],
-    })
+  const addMessage = (message: MessageMapEntry) => {
+    if (!proposalMapItem?.proposal) {
+      return
+    }
+    const key = `${Object.keys(proposalMapItem?.messages ?? {}).length}`
+    if (!message.id) {
+      message.id = key
+    }
+    const messages = { ...proposalMapItem?.messages, [key]: message }
+    const updatedProposal: ProposalMapItem = {
+      ...proposalMapItem,
+      messages,
+    }
+    updateDraftProposal(updatedProposal)
   }
 
   const addWasmMessage = () => {
-    addMessage({ wasm: {} } as any)
+    // addMessage({ wasm: {} } as any)
   }
 
   const addCustomMessage = () => {
-    addMessage({ custom: {} } as CosmosMsgFor_Empty)
+    // addMessage({ custom: {} } as CosmosMsgFor_Empty)
   }
 
   const addSpendMessage = () => {
-    try {
-      const message: CosmosMsgFor_Empty = makeSpendMessage(
-        '',
-        recipientAddress,
-        contractAddress
-      )
-      addMessage(message)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const addMintMessage = () => {
-    // TODO(gavin.doughtie): fix
     // try {
-    //   const msg: CosmosMsgFor_Empty = {
-    //     wasm: makeMintMessage('', recipientAddress)
-    //   }
-    //   addMessage(msg)
+    //   const message: CosmosMsgFor_Empty = makeSpendMessage(
+    //     '',
+    //     recipientAddress,
+    //     contractAddress
+    //   )
+    //   addMessage(message)
     // } catch (e) {
     //   console.error(e)
     // }
+  }
+
+  const addMintMessage = () => {
+    try {
+      const msg: MessageMapEntry = {
+        id: '',
+        messageType: ProposalMessageType.Mint,
+        order: 0,
+        message: makeMintMessage('', recipientAddress),
+      }
+      addMessage(msg)
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const removeMessage = (messageIndex: number) => {
@@ -441,13 +465,12 @@ export default function ProposalEditor({
             <h1 className="text-4xl my-8 text-bold">Create Proposal</h1>
             <form
               className="text-left container mx-auto"
-              onSubmit={
-              (e) => {
+              onSubmit={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                handleSubmit(onSubmitProposal, x => {
+                handleSubmit(onSubmitProposal, (x) => {
                   console.error('bad submit:')
-                console.dir(x)
+                  console.dir(x)
                 })(e)
               }}
             >

@@ -1,13 +1,25 @@
 import {
   ProposalResponse,
   ProposalTallyResponse,
-  VoteInfo
+  VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { draftProposalAtom, makeProposalKeyString, proposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
+import {
+  proposalMapAtom,
+  proposalsRequestIdAtom,
+} from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
 import { ProposalMap } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
-import { EmptyProposalResponse, EmptyThresholdResponse } from 'models/proposal/proposal'
+import {
+  EmptyProposalResponse,
+  EmptyThresholdResponse,
+} from 'models/proposal/proposal'
+import {
+  ProposalMapItem,
+  ProposalKey,
+  ProposalMessageKey,
+} from 'types/proposals'
+import { MessageMapEntry } from 'models/proposal/messageMap'
 
 export type ProposalIdInput = string | number
 
@@ -97,7 +109,9 @@ export const proposalSelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
-      const draftProposal = get(draftProposalAtom({contractAddress, proposalId}))
+      const draftProposal = get(
+        draftProposalSelector({ contractAddress, proposalId })
+      )
       if (draftProposal?.proposal) {
         return draftProposal?.proposal
       }
@@ -187,19 +201,57 @@ export const proposalsSelector = selectorFamily<
       // Add in draft proposals:
       const draftProposals = get(draftProposalsSelector(contractAddress))
       if (draftProposals) {
-        draftProposalItems = (Object.values(draftProposals)).map(draft => {
+        draftProposalItems = Object.values(draftProposals).map((draft) => {
           const proposalResponse: ProposalResponse = {
             ...EmptyProposalResponse,
             ...draft.proposal,
             status: 'draft' as any,
             id: draft.id,
-            threshold: {...EmptyThresholdResponse},
-            total_weight: 0
+            threshold: { ...EmptyThresholdResponse },
+            total_weight: 0,
           }
           return proposalResponse
         })
       }
 
       return (draftProposalItems ?? []).concat(onChainProposalList)
+    },
+})
+
+export const draftProposalSelector = selectorFamily<
+  ProposalMapItem | undefined,
+  ProposalKey
+>({
+  key: 'draftProposal',
+  get:
+    ({ contractAddress, proposalId }) =>
+    ({ get }) => {
+      const draftProposals = get(proposalMapAtom(contractAddress))
+      return draftProposals ? draftProposals[proposalId] : undefined
+    },
+  set: ({ contractAddress, proposalId }) => ({set, get}, newValue) => {
+    const draftProposals = get(proposalMapAtom(contractAddress))
+    const updatedDraftProposals = {
+      ...draftProposals,
+      [proposalId]: newValue
+    }
+    set(proposalMapAtom(contractAddress), updatedDraftProposals)
+  }
+})
+
+export const draftProposalMessageSelector = selectorFamily<
+  MessageMapEntry | undefined,
+  ProposalMessageKey
+>({
+  key: 'draftProposalMessage',
+  get:
+    ({ contractAddress, proposalId, messageId }) =>
+    ({ get }) => {
+      const draftProposal = get(
+        draftProposalSelector({ contractAddress, proposalId })
+      )
+      return draftProposal?.messages
+        ? draftProposal.messages[messageId]
+        : undefined
     },
 })

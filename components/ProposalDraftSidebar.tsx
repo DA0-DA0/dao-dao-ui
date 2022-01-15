@@ -1,4 +1,4 @@
-import { draftProposalAtom } from 'atoms/proposals'
+import { draftProposalSelector } from 'selectors/proposals'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import ProposalStatus from './ProposalStatus'
 import { loadingAtom } from 'atoms/status'
@@ -11,7 +11,7 @@ export function ProposalDraftSidebar({
   proposalId: number
 }) {
   const draftProposal = useRecoilValue(
-    draftProposalAtom({ contractAddress, proposalId })
+    draftProposalSelector({ contractAddress, proposalId })
   )
   const [loading, setLoading] = useRecoilState(loadingAtom)
   const deleteDraftProposal = () => {

@@ -1,15 +1,23 @@
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { MessageMap } from 'models/proposal/messageMap'
 
 export type ProposalKey = {
   contractAddress: string
   proposalId: number
 }
 
+export type ProposalMessageKey = {
+  contractAddress: string
+  proposalId: number
+  messageId: string
+}
+
 export interface ProposalMapItem {
   proposal: Proposal | ProposalResponse
   id: number
   activeMessageIndex?: number
-  draft: boolean
+  draft: boolean,
+  messages?: MessageMap
 }
 
 // Maps from a proposal id (a stringified number)
@@ -23,4 +31,3 @@ export type ProposalMap = {
 export type ContractProposalMap = {
   [key: string]: ProposalMap
 }
-

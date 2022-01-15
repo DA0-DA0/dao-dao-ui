@@ -1,6 +1,13 @@
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { MessageMapEntry } from 'models/proposal/messageMap'
 import { atom, atomFamily, selectorFamily, AtomEffect } from 'recoil'
-import { ContractProposalMap, ProposalKey, ProposalMap, ProposalMapItem } from 'types/proposals'
+import {
+  ContractProposalMap,
+  ProposalKey,
+  ProposalMessageKey,
+  ProposalMap,
+  ProposalMapItem,
+} from 'types/proposals'
 
 export function makeProposalKeyString({
   contractAddress,
@@ -108,17 +115,3 @@ export const proposalMapAtom = atomFamily({
   }),
   effects_UNSTABLE: [localStorageEffect<ProposalMap>('proposalMap')],
 })
-
-export const draftProposalAtom = atomFamily<ProposalMapItem | undefined, ProposalKey>({
-  key: 'draftProposal',
-  default: selectorFamily({
-    key: 'draftProposalDefault',
-    get:
-      ({contractAddress, proposalId}) =>
-      ({ get }) => {
-        const draftProposals = get(proposalMapAtom(contractAddress))
-        return draftProposals ? draftProposals[proposalId] : undefined
-      },
-  }),
-})
-
