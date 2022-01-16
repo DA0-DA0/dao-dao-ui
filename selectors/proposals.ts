@@ -3,9 +3,24 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { proposalsRequestIdAtom } from 'atoms/proposals'
+import {
+  contractProposalMapAtom,
+  proposalsRequestIdAtom,
+} from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
+import { ContractProposalMap, ProposalMap } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
+import {
+  EmptyProposalResponse,
+  EmptyProposalTallyResponse,
+  EmptyThresholdResponse,
+} from 'models/proposal/proposal'
+import {
+  ProposalMapItem,
+  ProposalKey,
+  ProposalMessageKey,
+} from 'types/proposals'
+import { MessageMap, MessageMapEntry } from 'models/proposal/messageMap'
 
 export type ProposalIdInput = string | number
 
@@ -82,7 +97,7 @@ export const proposalUpdateCountAtom = atomFamily<
 })
 
 export const proposalSelector = selectorFamily<
-  ProposalResponse,
+  ProposalResponse | undefined,
   { contractAddress: string; proposalId: number }
 >({
   key: 'proposalSelector',
@@ -95,13 +110,24 @@ export const proposalSelector = selectorFamily<
       proposalId: number
     }) =>
     async ({ get }) => {
+      const draftProposal = get(
+        draftProposalSelector({ contractAddress, proposalId })
+      )
+      if (draftProposal?.proposal) {
+        return draftProposal?.proposal
+      }
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
       const client = get(cosmWasmClient)
-      const proposal = await client.queryContractSmart(contractAddress, {
-        proposal: { proposal_id: proposalId },
-      })
-      return proposal
+      try {
+        const proposal = await client.queryContractSmart(contractAddress, {
+          proposal: { proposal_id: proposalId },
+        })
+        return proposal
+      } catch (e) {
+        console.error(e)
+        return undefined
+      }
     },
 })
 
@@ -120,12 +146,16 @@ export const proposalVotesSelector = selectorFamily<
     }) =>
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
-
-      const client = get(cosmWasmClient)
-      const votes = await client.queryContractSmart(contractAddress, {
-        list_votes: { proposal_id: proposalId },
-      })
-      return votes.votes
+      try {
+        const client = get(cosmWasmClient)
+        const votes = await client.queryContractSmart(contractAddress, {
+          list_votes: { proposal_id: proposalId },
+        })
+        return votes.votes
+      } catch (e) {
+        console.error(e)
+        return []
+      }
     },
 })
 
@@ -144,11 +174,151 @@ export const proposalTallySelector = selectorFamily<
     }) =>
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+      try {
+        const client = get(cosmWasmClient)
+        const tally = await client.queryContractSmart(contractAddress, {
+          tally: { proposal_id: proposalId },
+        })
+        return tally
+      } catch (e) {
+        console.error(e)
+        return {
+          ...EmptyProposalTallyResponse,
+        }
+      }
+    },
+})
 
-      const client = get(cosmWasmClient)
-      const tally = await client.queryContractSmart(contractAddress, {
-        tally: { proposal_id: proposalId },
-      })
-      return tally
+export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
+  key: 'draftProposals',
+  get:
+    (contractAddress) =>
+    ({ get }) => {
+      return get(proposalMapSelector(contractAddress))
+    },
+  set:
+    (contractAddress) =>
+    ({ set }, newValue) => {
+      set(proposalMapSelector(contractAddress), newValue)
+    },
+})
+
+export const proposalsSelector = selectorFamily<
+  ProposalResponse[],
+  {
+    contractAddress: string
+    startBefore: number
+    limit: number
+  }
+>({
+  key: 'proposals',
+  get:
+    ({ contractAddress, startBefore, limit }) =>
+    async ({ get }) => {
+      const onChainProposalList = get(
+        onChainProposalsSelector({ contractAddress, startBefore, limit })
+      )
+      let draftProposalItems: ProposalResponse[] = []
+      // Add in draft proposals:
+      const draftProposals = get(draftProposalsSelector(contractAddress))
+      if (draftProposals) {
+        draftProposalItems = Object.values(draftProposals).map((draft) => {
+          const proposalResponse: ProposalResponse = {
+            ...EmptyProposalResponse,
+            ...draft.proposal,
+            status: 'draft' as any,
+            id: draft.id,
+            threshold: { ...EmptyThresholdResponse },
+            total_weight: 0,
+          }
+          return proposalResponse
+        })
+      }
+
+      return (draftProposalItems ?? []).concat(onChainProposalList)
+    },
+})
+
+export const proposalMapSelector = selectorFamily<ProposalMap, string>({
+  key: 'proposalMap',
+  get:
+    (contractAddress) =>
+    ({ get }) => {
+      const contractProposalMap = get(contractProposalMapAtom)
+      return contractProposalMap[contractAddress]
+    },
+  set:
+    (contractAddress) =>
+    ({ get, set }, newValue) => {
+      const contractProposalMap = get(contractProposalMapAtom)
+      const updatedMap: ContractProposalMap = {
+        ...contractProposalMap,
+        [contractAddress]: newValue,
+      } as any // TODO(gavin.doughtie): Wrong type?
+      set(contractProposalMapAtom, updatedMap)
+    },
+})
+
+export const draftProposalSelector = selectorFamily<
+  ProposalMapItem | undefined,
+  ProposalKey
+>({
+  key: 'draftProposal',
+  get:
+    ({ contractAddress, proposalId }) =>
+    ({ get }) => {
+      const draftProposals = get(proposalMapSelector(contractAddress))
+      return draftProposals ? draftProposals[proposalId] : undefined
+    },
+  set:
+    ({ contractAddress, proposalId }) =>
+    ({ set, get }, newValue) => {
+      const draftProposals = get(proposalMapSelector(contractAddress))
+      const updatedDraftProposals = {
+        ...draftProposals,
+        [proposalId]: newValue,
+      }
+      set(proposalMapSelector(contractAddress), updatedDraftProposals)
+    },
+})
+
+export const draftProposalMessageSelector = selectorFamily<
+  MessageMapEntry | undefined,
+  ProposalMessageKey
+>({
+  key: 'draftProposalMessage',
+  get:
+    ({ contractAddress, proposalId, messageId }) =>
+    ({ get }) => {
+      const draftProposal = get(
+        draftProposalSelector({ contractAddress, proposalId })
+      )
+      return draftProposal?.messages
+        ? draftProposal.messages[messageId]
+        : undefined
+    },
+  set:
+    ({ contractAddress, proposalId, messageId }) =>
+    ({ set, get }, newValue) => {
+      if (!newValue) {
+        return
+      }
+      const draftProposal = get(
+        draftProposalSelector({ contractAddress, proposalId })
+      )
+      if (draftProposal) {
+        const messages: MessageMap = {
+          ...draftProposal?.messages,
+          [messageId]: newValue,
+        } as any
+        const updatedProposal: ProposalMapItem = {
+          ...draftProposal,
+          messages,
+        }
+        set(
+          draftProposalSelector({ contractAddress, proposalId }),
+          updatedProposal
+        )
+      }
     },
 })

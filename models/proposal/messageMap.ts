@@ -18,7 +18,7 @@ export type MessageMapEntry = {
   id: string
   messageType: ProposalMessageType
   order: number
-  message: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg
+  message: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg | any
 }
 
 export type MessageMap = { [key: string]: MessageMapEntry }

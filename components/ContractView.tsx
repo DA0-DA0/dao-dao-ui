@@ -51,12 +51,14 @@ export function HeroContractHeader({
   description,
   pinned,
   onPin,
+  contractAddress
 }: {
   name: string
   member: boolean
   description: string
   pinned: boolean
   onPin: Function
+  contractAddress?: string
 }) {
   return (
     <div className="flex items-center flex-col my-3">
@@ -88,7 +90,8 @@ export function HeroContractHeader({
             </div>
           </div>
         </div>
-        <p className="mt-2 font-mono mb-3">{description}</p>
+        {contractAddress && <p className="mt-2 font-mono">{contractAddress}</p>}
+        <p className="mt-2 font-mono">{description}</p>
       </div>
     </div>
   )

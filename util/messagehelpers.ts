@@ -8,10 +8,9 @@ import {
   InstantiateMsg as DaoInstantiateMsg,
   Cw20Coin,
   Duration,
-  ProposalResponse,
   WasmMsg,
   Uint128,
-  Proposal,
+  ProposalResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
@@ -20,6 +19,19 @@ import {
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
 import { isAminoMsgWithdrawValidatorCommission } from '@cosmjs/stargate'
+import { MintMsg } from 'types/messages'
+import {
+  MessageMap,
+  MessageMapEntry,
+  ProposalMessageType,
+  messageSort,
+} from 'models/proposal/messageMap'
+import { ProposalMapItem } from 'types/proposals'
+import {
+  convertDenomToContractReadableDenom,
+  convertDenomToMicroDenom,
+} from './conversion'
+import { memoForProposal } from 'models/proposal/proposal'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -389,4 +401,117 @@ export function decodeMessages(
 export function decodedMessagesString(proposal: ProposalResponse): string {
   const decodedMessageArray = decodeMessages(proposal)
   return JSON.stringify(decodedMessageArray, undefined, 2)
+}
+
+export function isBankMsg(msg?: CosmosMsgFor_Empty): msg is { bank: BankMsg } {
+  return (msg as any).bank !== undefined
+}
+
+export function isBurnMsg(msg?: BankMsg): msg is {
+  burn: {
+    amount: Coin[]
+    [k: string]: unknown
+  }
+} {
+  return (msg as any)?.burn !== undefined
+}
+
+export function isSendMsg(msg?: BankMsg): msg is {
+  send: {
+    amount: Coin[]
+    to_address: string
+    [k: string]: unknown
+  }
+} {
+  return (msg as any)?.send !== undefined
+}
+
+export function isExecuteMsg(msg?: any): msg is {
+  execute: {
+    contract_addr: string
+    funds: Coin[]
+    msg: any
+  }
+} {
+  return (msg as any)?.execute !== undefined
+}
+
+export function isMintMsg(msg: any): msg is MintMsg {
+  if (isExecuteMsg(msg)) {
+    return msg.execute?.msg?.mint !== undefined
+  }
+  return false
+}
+
+export function messageForDraftProposal(
+  draftProposal: ProposalMapItem,
+  govTokenAddress?: string
+) {
+  const msgs = draftProposal.messages
+    ? Object.values(draftProposal.messages).map((mapEntry) => {
+        // Spend proposals are inputted in human readable form (ex:
+        // junox). Contracts expect things in the micro form (ex: ujunox)
+        // so we, painfully, do some conversions:
+        if (mapEntry.messageType === ProposalMessageType.Spend) {
+          // Without doing a deep copy here we run the risk of modifying
+          // fields of the message which are displayed in the UI.
+          let microMessage = JSON.parse(JSON.stringify(mapEntry.message))
+          const bank = (microMessage as any).bank as BankMsg
+          if (!bank) {
+            return
+          }
+
+          let amounts: Coin[]
+          let variant: string
+          if ('send' in bank) {
+            amounts = (bank as any).send.amount
+            variant = 'send'
+          } else if ('burn' in bank) {
+            amounts = (bank as any).burn.amount
+            variant = 'burn'
+          } else {
+            console.error(`unexpected bank message: (${JSON.stringify(bank)})`)
+            return
+          }
+
+          const microAmounts = amounts.map((coin) => {
+            const microCoin = coin
+            microCoin.amount = convertDenomToMicroDenom(coin.amount)
+            microCoin.denom = convertDenomToContractReadableDenom(coin.denom)
+            return microCoin
+          }) as Coin[]
+
+          ;(((microMessage as any).bank as any)[variant] as any).amount =
+            microAmounts
+
+          return microMessage
+        }
+        if (mapEntry.messageType === ProposalMessageType.Mint) {
+          const mintMessage = JSON.parse(JSON.stringify(mapEntry.message))
+          console.log(mintMessage)
+          if (mintMessage?.mint?.amount) {
+            mintMessage.mint.amount = convertDenomToMicroDenom(
+              mintMessage.mint.amount
+            )
+          }
+          return makeExecutableMintMessage(
+            mintMessage,
+            govTokenAddress as string
+          )
+        }
+        return mapEntry.message
+      })
+    : []
+  const proposal = draftProposal.proposal
+
+  const msg: Record<string, unknown> = {
+    title: proposal.title,
+    description: proposal.description,
+    msgs,
+  }
+  return msg as any
+}
+
+export const getMintRecipient = (mintMsg?: MessageMapEntry) => {
+  return mintMsg?.message?.mint?.recipient
 }

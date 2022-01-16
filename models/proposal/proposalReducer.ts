@@ -1,8 +1,9 @@
 import { MessageMapEntry, ProposalMessageType } from './messageMap'
-import { Proposal } from './proposal'
 import { ProposalAction } from './proposalActions'
 import { proposalForMessage } from './proposalForMessage'
 import { getActiveMessageId, sortedMessages } from './proposalSelectors'
+
+type Proposal = any
 
 function checkUpdated(updated: Proposal) {
   if (
