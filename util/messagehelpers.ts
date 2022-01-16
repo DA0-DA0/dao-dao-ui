@@ -348,7 +348,9 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export function decodeMessages(proposal: ProposalResponse): {[key: string]: any}[] {
+export function decodeMessages(
+  proposal: ProposalResponse
+): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(proposal.msgs)
   for (const msgObj of proposalMsgs) {
