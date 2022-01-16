@@ -4,7 +4,7 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 import { ScaleIcon } from '@heroicons/react/outline'
-import { Logo, LogoNoBorder } from 'components/Logo'
+import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 import type { NextPage } from 'next'
 import Link from 'next/link'
@@ -15,7 +15,7 @@ const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
-    <Link href="/dao/list" passHref>
+    <Link href="/pinned" passHref>
       <a
         className={
           'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
@@ -53,25 +53,6 @@ function InfoCard({
     </div>
   )
 }
-
-function GradientWrapper({ children }: { children: ReactNode }) {
-  return (
-    <div className="overflow-x-hidden flex flex-col items-center">
-      {CSS.supports('backdrop-filter', 'blur(5px)') && (
-        <div
-          className="fixed top-1/4 left-1/2 -mt-[100px] -ml-[250px] animate-spin-slow -z-30"
-          style={{ transform: 'rotate(270)' }}
-        >
-          <LogoNoBorder width={500} height={500} />
-        </div>
-      )}
-      <div className="fixed bg-gradient-radial-t-wide from-slate-500/80 via-transparent w-full h-full -z-20"></div>
-      <div className="fixed bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-60 w-screen h-screen -z-10"></div>
-      {children}
-    </div>
-  )
-}
-
 
 const Home: NextPage = () => {
   return (
@@ -116,11 +97,11 @@ const Home: NextPage = () => {
       <h1 className="text-7xl text-center font-medium mt-[33vh]">
         DAOs for everyone.
       </h1>
-      <p className="text-lg text-center max-w-lg my-5 text-secondary mix-blend-difference px-2">
+      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary mix-blend-difference px-2">
         We provide tooling for creating, deploying, managing, and joining DAOs.
         Built with love on Juno.
       </p>
-      <div className="mb-12">
+      <div className="mb-12 mx-auto">
         <EnterAppButton />
       </div>
       <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">
