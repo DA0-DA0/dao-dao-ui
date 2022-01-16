@@ -41,7 +41,9 @@ function ProposalVotes({ votes }: { votes: VoteInfo[] }) {
             }
             return (
               <tr key={voter}>
-                <td><Address address={voter} /></td>
+                <td>
+                  <Address address={voter} />
+                </td>
                 <td>{weight}</td>
                 <td>{vote}</td>
               </tr>
