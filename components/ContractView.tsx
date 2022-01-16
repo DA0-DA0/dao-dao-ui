@@ -4,7 +4,12 @@ import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { Children, MouseEventHandler, ReactNode } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
-import { cw20TokenInfo } from 'selectors/treasury'
+import { isMemberSelector } from 'selectors/daos'
+import {
+  cw20TokenInfo,
+  walletAddress,
+  walletTokenBalanceLoading,
+} from 'selectors/treasury'
 import {
   convertDenomToHumanReadableDenom,
   convertFromMicroDenom,
@@ -62,6 +67,14 @@ export function HeroContractFooter({ children }: { children: ReactNode }) {
   )
 }
 
+function LoadingButton() {
+  return (
+    <a className="btn btn-sm btn-outline normal-case text-left loading">
+      Loading
+    </a>
+  )
+}
+
 export function ContractProposalsDispaly({
   contractAddress,
   proposalCreateLink,
@@ -71,15 +84,38 @@ export function ContractProposalsDispaly({
   proposalCreateLink: string
   multisig?: boolean
 }) {
+  const wallet = useRecoilValue(walletAddress)
+  const loading = useRecoilValue(walletTokenBalanceLoading(wallet))
+
+  const member = useRecoilValue(isMemberSelector(contractAddress)).member
+  const tooltip =
+    (!member &&
+      `You must have voting power to create a proposal.${
+        multisig ? '' : ' Consider staking some tokens.'
+      }`) ||
+    'Something went wrong'
+
   return (
     <>
       <div className="flex justify-between items-center">
         <h2 className="font-medium text-lg">Proposals</h2>
-        <Link href={proposalCreateLink} passHref>
-          <button className="btn btn-sm btn-outline normal-case text-left">
-            New proposal <PlusIcon className="inline w-5 h-5 ml-1" />
-          </button>
-        </Link>
+        {loading ? (
+          <LoadingButton />
+        ) : (
+          <div className={!member ? 'tooltip' : ''} data-tip={tooltip}>
+            <Link href={proposalCreateLink} passHref>
+              <a
+                className={
+                  'btn btn-sm btn-outline normal-case text-left' +
+                  (!member ? ' btn-disabled' : '')
+                }
+              >
+                New proposal
+                <PlusIcon className="inline w-5 h-5 ml-1" />
+              </a>
+            </Link>
+          </div>
+        )}
       </div>
       <div className="px-4 mt-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />

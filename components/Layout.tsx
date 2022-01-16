@@ -1,14 +1,12 @@
 import { ReactNode, useState, useEffect } from 'react'
-import Nav from 'components/Nav'
-import Footer from 'components/Footer'
 import LoadingScreen from 'components/LoadingScreen'
-import WalletLoader from 'components/WalletLoader'
 import Head from 'next/head'
 import { useRecoilRefresher_UNSTABLE } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import { Keplr } from '@keplr-wallet/types'
 import { kelprOfflineSigner } from 'selectors/cosm'
 import { SidebarLayout } from 'components/SidebarLayout'
+import { InstallKeplr } from './InstallKeplr'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -57,7 +55,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
         <link rel="icon" href="/yin_yang.png" />
       </Head>
-      {error && <WalletLoader>Install Kelpr</WalletLoader>}
+      {error && <InstallKeplr />}
       {!keplrInstance && !error && <LoadingScreen />}
 
       {loaded && <SidebarLayout>{children}</SidebarLayout>}

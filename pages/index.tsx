@@ -9,6 +9,7 @@ import ThemeToggle from 'components/ThemeToggle'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import { GradientWrapper } from 'components/GradientWrapper'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
@@ -53,7 +54,6 @@ function InfoCard({
   )
 }
 
-// <div className="fixed left-1/2 -ml-[250px] animate-spin-slow">
 function GradientWrapper({ children }: { children: ReactNode }) {
   return (
     <div className="overflow-x-hidden flex flex-col items-center">
@@ -71,6 +71,7 @@ function GradientWrapper({ children }: { children: ReactNode }) {
     </div>
   )
 }
+
 
 const Home: NextPage = () => {
   return (
