@@ -1,6 +1,11 @@
 import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
-import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
+import {
+  StarIcon as StarOutline,
+  PlusIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
+import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { Children, MouseEventHandler, ReactNode } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
@@ -20,10 +25,22 @@ import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {
   return (
-    <div className="h-2/5 bg-gradient-radial-t from-accent via-base-100">
-      <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
-        {children}
-      </div>
+    <div className="min-h-[40%] bg-gradient-radial-t from-accent via-base-100 p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 flex flex-col justify-between">
+      {children}
+    </div>
+  )
+}
+
+export function TooltipWrapper({
+  tip,
+  children,
+}: {
+  tip: string
+  children: ReactNode
+}) {
+  return (
+    <div className="tooltip" data-tip={tip}>
+      {children}
     </div>
   )
 }
@@ -32,23 +49,46 @@ export function HeroContractHeader({
   name,
   member,
   description,
+  pinned,
+  onPin,
 }: {
   name: string
   member: boolean
   description: string
+  pinned: boolean
+  onPin: Function
 }) {
   return (
-    <div className="flex items-center flex-col">
+    <div className="flex items-center flex-col my-3">
       <Logo width={85} height={85} alt="DAO DAO logo" />
       <div className="flex flex-col items-center">
         <div>
-          <h1 className="text-2xl font-medium mt-3">
-            {name}
-            <LinkIcon className="inline w-5 h-5 mb-1 ml-2" />
-            {member && <UserIcon className="inline w-5 h-5 mb-1 ml-1" />}
-          </h1>
+          <div className="mt-3">
+            <h1 className="inline text-2xl font-medium">{name}</h1>
+            <div className="inline ml-2">
+              {member && (
+                <TooltipWrapper tip="You have voting power">
+                  {' '}
+                  <UserIcon className="inline w-5 h-5 mb-1" />{' '}
+                </TooltipWrapper>
+              )}
+              <TooltipWrapper
+                tip={`This is ${
+                  pinned ? '' : 'not '
+                } one of your favorite contracts`}
+              >
+                <button onClick={(_e) => onPin()}>
+                  {pinned ? (
+                    <StarSolid className="inline w-5 h-5 mb-1" />
+                  ) : (
+                    <StarOutline className="inline w-5 h-5 mb-1" />
+                  )}
+                </button>
+              </TooltipWrapper>
+            </div>
+          </div>
         </div>
-        <p className="mt-2 font-mono">{description}</p>
+        <p className="mt-2 font-mono mb-3">{description}</p>
       </div>
     </div>
   )

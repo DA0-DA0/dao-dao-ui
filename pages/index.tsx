@@ -4,7 +4,7 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 import { ScaleIcon } from '@heroicons/react/outline'
-import { Logo, LogoNoBorder } from 'components/Logo'
+import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 import type { NextPage } from 'next'
 import Link from 'next/link'
@@ -15,7 +15,7 @@ const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
-    <Link href="/dao/list" passHref>
+    <Link href="/pinned" passHref>
       <a
         className={
           'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
@@ -97,11 +97,11 @@ const Home: NextPage = () => {
       <h1 className="text-7xl text-center font-medium mt-[33vh]">
         DAOs for everyone.
       </h1>
-      <p className="text-lg text-center max-w-lg my-5 text-secondary mix-blend-difference px-2">
+      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary mix-blend-difference px-2">
         We provide tooling for creating, deploying, managing, and joining DAOs.
         Built with love on Juno.
       </p>
-      <div className="mb-12">
+      <div className="mb-12 mx-auto">
         <EnterAppButton />
       </div>
       <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">

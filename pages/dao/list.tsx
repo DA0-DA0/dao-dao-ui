@@ -6,15 +6,16 @@ import {
   UserGroupIcon,
   UserIcon,
 } from '@heroicons/react/outline'
-import { Logo } from 'components/Logo'
+import { pinnedDaosAtom } from 'atoms/pinned'
+import { ContractCard, MysteryContractCard } from 'components/ContractCard'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { DaoListType, daosSelector } from 'selectors/daos'
 import { convertMicroDenomToDenom } from 'util/conversion'
 
-function DaoCard({
+export function DaoCard({
   dao,
   address,
   weight,
@@ -23,46 +24,34 @@ function DaoCard({
   address: string
   weight: number
 }) {
+  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
+  const pinned = pinnedDaos.includes(address)
+
   return (
-    <Link href={`/dao/${address}`}>
-      <a>
-        <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200 justify-between">
-          <div className="flex flex-col items-center">
-            <div className="mt-6">
-              <Logo height={70} width={70} alt={dao.name} />
-            </div>
-            <h3 className="text-lg font-semibold mt-3">{dao.name}</h3>
-            <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
-              {dao.description}
-            </p>
-          </div>
-          {weight != 0 && (
-            <p className="text-success text-sm mt-3">
-              <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {convertMicroDenomToDenom(weight)} vote{weight > 1 && 's'}
-            </p>
-          )}
-        </div>
-      </a>
-    </Link>
+    <ContractCard
+      name={dao.name}
+      description={dao.description}
+      href={`/dao/${address}`}
+      weight={convertMicroDenomToDenom(weight)}
+      pinned={pinned}
+      onPin={() => {
+        if (pinned) {
+          setPinnedDaos((p) => p.filter((a) => a !== address))
+        } else {
+          setPinnedDaos((p) => p.concat([address]))
+        }
+      }}
+    />
   )
 }
 
-function MysteryDaoCard() {
+export function MysteryDaoCard() {
   return (
-    <Link href="/dao/create">
-      <a>
-        <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200">
-          <div className="mt-6">
-            <PlusIcon className="w-10 h-10 ml-1" />
-          </div>
-          <h3 className="text-lg font-semibold mt-3">Create a DAO</h3>
-          <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
-            You are not staking with any DAOs. Why not create one?
-          </p>
-        </div>
-      </a>
-    </Link>
+    <MysteryContractCard
+      title="Create a DAO"
+      body="You are not staking with any DAOs. Why not create one?"
+      href="/dao/create"
+    />
   )
 }
 
@@ -99,7 +88,7 @@ const DaoList: NextPage = () => {
             <UserIcon className="inline w-5 h-5 mr-2 mb-1" />
             Your DAOs
           </h2>
-          <div className="flex flex-wrap">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {memberDaos.length ? (
               memberDaos.map((dao, idx) => (
                 <DaoCard
@@ -119,7 +108,7 @@ const DaoList: NextPage = () => {
             <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
             Community DAOs
           </h2>
-          <div className="flex flex-wrap">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {nonMemberDaos.map((dao, idx) => (
               <DaoCard
                 dao={dao.dao}

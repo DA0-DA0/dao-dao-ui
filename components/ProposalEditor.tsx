@@ -23,8 +23,6 @@ import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
-import { daoSelector } from 'selectors/daos'
-import { sigSelector } from 'selectors/multisigs'
 import {
   contractConfigSelector,
   ContractConfigWrapper,

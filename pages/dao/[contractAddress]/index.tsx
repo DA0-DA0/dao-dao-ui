@@ -1,5 +1,4 @@
 import {
-  CurrencyDollarIcon,
   KeyIcon,
   LibraryIcon,
   PencilIcon,
@@ -37,6 +36,7 @@ import {
 } from 'components/ContractView'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { StakingModal, StakingMode } from 'components/StakingModal'
+import { pinnedDaosAtom } from 'atoms/pinned'
 
 const DaoHome: NextPage = () => {
   const router = useRouter()
@@ -66,6 +66,9 @@ const DaoHome: NextPage = () => {
   const [showStaking, setShowStaking] = useState(false)
   const [stakingDefault, setStakingDefault] = useState(StakingMode.Stake)
 
+  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
+  const pinned = pinnedDaos.includes(contractAddress)
+
   const stakedPercent = (
     (100 * stakedTotal) /
     Number(tokenInfo?.total_supply)
@@ -77,7 +80,7 @@ const DaoHome: NextPage = () => {
         <GradientHero>
           <Breadcrumbs
             crumbs={[
-              ['/dao/list', 'DAOs'],
+              ['/pinned', 'Home'],
               [router.asPath, daoInfo.config.name],
             ]}
           />
@@ -86,6 +89,14 @@ const DaoHome: NextPage = () => {
             name={daoInfo.config.name}
             description={daoInfo.config.description}
             member={member}
+            pinned={pinned}
+            onPin={() => {
+              if (pinned) {
+                setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+              } else {
+                setPinnedDaos((p) => p.concat([contractAddress]))
+              }
+            }}
           />
 
           <HeroContractFooter>

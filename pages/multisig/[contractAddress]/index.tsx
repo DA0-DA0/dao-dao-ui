@@ -4,6 +4,7 @@ import {
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
+import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ContractBalances,
@@ -14,7 +15,7 @@ import {
 } from 'components/ContractView'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { isMemberSelector } from 'selectors/daos'
 import {
   listMembers,
@@ -81,13 +82,16 @@ const Home: NextPage = () => {
   const visitorAddress = useRecoilValue(walletAddress)
   const memberList = useRecoilValue(listMembers(contractAddress))
 
+  const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
+  const pinned = pinnedSigs.includes(contractAddress)
+
   return (
     <div className="grid grid-cols-6">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <Breadcrumbs
             crumbs={[
-              ['/multisig/list', 'Multisigs'],
+              ['/pinned', 'Home'],
               [`/multisig/${contractAddress}`, sigInfo.config.name],
             ]}
           />
@@ -96,6 +100,13 @@ const Home: NextPage = () => {
             name={sigInfo.config.name}
             member={memberInfo.member}
             description={sigInfo.config.description}
+            pinned={pinned}
+            onPin={() => {
+              if (pinned) {
+                setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+              }
+              setPinnedSigs((p) => p.concat([contractAddress]))
+            }}
           />
 
           <HeroContractFooter>

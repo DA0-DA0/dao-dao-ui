@@ -9,57 +9,46 @@ import {
 import React from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { Logo } from 'components/Logo'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { sigsSelector, MultisigListType } from 'selectors/multisigs'
+import { ContractCard, MysteryContractCard } from 'components/ContractCard'
+import { pinnedMultisigsAtom } from 'atoms/pinned'
 
-function MultisigCard({
+export function MultisigCard({
   multisig,
   address,
 }: {
   multisig: MultisigListType
   address: string
 }) {
+  const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
+  const pinned = pinnedSigs.includes(address)
+
   return (
-    <Link href={`/multisig/${address}`}>
-      <a>
-        <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200 justify-between">
-          <div className="flex flex-col items-center">
-            <div className="mt-6">
-              <Logo height={70} width={70} alt={multisig.name} />
-            </div>
-            <h3 className="text-lg font-semibold mt-3">{multisig.name}</h3>
-            <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
-              {multisig.description}
-            </p>
-          </div>
-          {multisig.weight != 0 && (
-            <p className="text-success text-sm mt-3">
-              <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {multisig.weight} vote{multisig.weight > 1 && 's'}
-            </p>
-          )}
-        </div>
-      </a>
-    </Link>
+    <ContractCard
+      name={multisig.name}
+      description={multisig.description}
+      href={`/multisig/${address}`}
+      weight={multisig.weight}
+      pinned={pinned}
+      onPin={() => {
+        if (pinned) {
+          setPinnedSigs((p) => p.filter((a) => a !== address))
+        } else {
+          setPinnedSigs((p) => p.concat([address]))
+        }
+      }}
+    />
   )
 }
 
-function MysteryMultisigCard() {
+export function MysteryMultisigCard() {
   return (
-    <Link href="/multisig/create">
-      <a>
-        <div className="shadow hover:shadow-sm p-6 rounded-lg flex flex-col items-center w-60 h-72 m-2 bg-gradient-to-b from-base-300 to-base-200">
-          <div className="mt-6">
-            <PlusIcon className="w-10 h-10 ml-1" />
-          </div>
-          <h3 className="text-lg font-semibold mt-3">Create a multisig</h3>
-          <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
-            You are not a member of any multisigs. Why not create one?
-          </p>
-        </div>
-      </a>
-    </Link>
+    <MysteryContractCard
+      title="Create a multisig"
+      body="You are not a member of any multisigs. Why not create one?"
+      href="/multisig/create"
+    />
   )
 }
 
@@ -94,7 +83,7 @@ const MultisigList: NextPage = () => {
             <UserIcon className="inline w-5 h-5 mr-2 mb-1" />
             Your multisigs
           </h2>
-          <div className="flex flex-wrap">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {memberSigs.length ? (
               memberSigs.map((sig, idx) => (
                 <MultisigCard multisig={sig} address={sig.address} key={idx} />
@@ -109,7 +98,7 @@ const MultisigList: NextPage = () => {
             <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
             Community multisigs
           </h2>
-          <div className="flex flex-wrap">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {nonMemberSigs.map((sig, idx) => (
               <MultisigCard multisig={sig} address={sig.address} key={idx} />
             ))}
