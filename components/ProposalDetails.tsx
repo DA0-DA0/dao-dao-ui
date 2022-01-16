@@ -12,10 +12,9 @@ import {
 import {
   proposalSelector,
   proposalTallySelector,
-  proposalUpdateCountAtom,
   proposalVotesSelector,
 } from 'selectors/proposals'
-import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { ReactNode } from 'react'
 import { CheckIcon, XIcon, SparklesIcon } from '@heroicons/react/outline'
 import { getEnd } from './ProposalList'
 import { isMemberSelector } from 'selectors/daos'
@@ -23,10 +22,11 @@ import { convertMicroDenomToDenom } from 'util/conversion'
 import toast from 'react-hot-toast'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { defaultExecuteFee } from 'util/fee'
-import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
+import { decodedMessagesString } from 'util/messagehelpers'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { cleanChainError } from 'util/cleanChainError'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
+import { proposalsUpdated, proposalUpdateCountAtom } from 'atoms/proposals'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -34,13 +34,14 @@ function executeProposalVote(
   contractAddress: string,
   signingClient: SigningCosmWasmClient | null,
   walletAddress: string,
-  setProposalUpdates: SetterOrUpdater<number>,
+  onDone: Function,
   setLoading: SetterOrUpdater<boolean>
 ) {
   if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
     return
   }
+  console.log('loading')
   setLoading(true)
   signingClient
     .execute(
@@ -58,8 +59,9 @@ function executeProposalVote(
       toast.error(cleanChainError(err.message))
     })
     .finally(() => {
+      console.log('done')
       setLoading(false)
-      setProposalUpdates((n) => n + 1)
+      onDone()
     })
 }
 
@@ -68,13 +70,14 @@ function executeProposalExecute(
   contractAddress: string,
   signingClient: SigningCosmWasmClient | null,
   walletAddress: string,
-  setProposalUpdates: SetterOrUpdater<number>,
+  onDone: Function,
   setLoading: SetterOrUpdater<boolean>
 ) {
   if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
     return
   }
+  console.log('loading')
   setLoading(true)
   signingClient
     .execute(
@@ -92,8 +95,9 @@ function executeProposalExecute(
       toast.error(cleanChainError(err.message))
     })
     .finally(() => {
+      console.log('done')
       setLoading(false)
-      setProposalUpdates((n) => n + 1)
+      onDone()
     })
 }
 
@@ -135,6 +139,9 @@ function ProposalVoteButtons({
   const setProposalUpdates = useSetRecoilState(
     proposalUpdateCountAtom({ contractAddress, proposalId })
   )
+  const setProposalsUpdated = useSetRecoilState(
+    proposalsUpdated(contractAddress)
+  )
 
   const ready = walletAddress && signingClient && member && !voted
   const tooltip =
@@ -164,7 +171,12 @@ function ProposalVoteButtons({
           contractAddress,
           signingClient,
           walletAddress,
-          setProposalUpdates,
+          () => {
+            setProposalUpdates((n) => n + 1)
+            setProposalsUpdated((p) =>
+              p.includes(proposalId) ? p : p.concat([proposalId])
+            )
+          },
           setLoading
         )
       }
@@ -205,6 +217,9 @@ function ProposalExecuteButton({
   const setProposalUpdates = useSetRecoilState(
     proposalUpdateCountAtom({ contractAddress, proposalId })
   )
+  const setProposalsUpdated = useSetRecoilState(
+    proposalsUpdated(contractAddress)
+  )
 
   const ready = walletAddress && signingClient && member
   const tooltip =
@@ -226,7 +241,12 @@ function ProposalExecuteButton({
           contractAddress,
           signingClient,
           walletAddress,
-          setProposalUpdates,
+          () => {
+            setProposalUpdates((n) => n + 1)
+            setProposalsUpdated((p) =>
+              p.includes(proposalId) ? p : p.concat([proposalId])
+            )
+          },
           setLoading
         )
       }
@@ -401,6 +421,8 @@ export function ProposalDetails({
   const [actionLoading, setActionLoading] = useRecoilState(
     proposalActionLoading
   )
+  console.log('actionLoading:')
+  console.log(actionLoading)
 
   const wallet = useRecoilValue(walletAddress)
   // If token balances are loading we don't know if the user is a

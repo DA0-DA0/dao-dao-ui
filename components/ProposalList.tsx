@@ -4,12 +4,13 @@ import {
   proposalListAtom,
   proposalsCreatedAtom,
   proposalsRequestStartBeforeAtom,
+  proposalsUpdated,
 } from 'atoms/proposals'
 import Link from 'next/link'
 import { useEffect } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
-import { onChainProposalsSelector } from 'selectors/proposals'
+import { onChainProposalsSelector, proposalSelector } from 'selectors/proposals'
 import ProposalStatus from './ProposalStatus'
 
 const PROP_LOAD_LIMIT = 10
@@ -140,7 +141,7 @@ export function ProposalList({
     })
     // We've now handled all the newly created proposals.
     setPropsCreated(0)
-  }, [getOldestLoadedProposal(newProps), getNewestLoadedProposal(propList)])
+  }, [newProps, setPropList, setPropsCreated, propList])
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
@@ -171,6 +172,33 @@ export function ProposalList({
       })
     }
   })
+
+  // Update the proposals in our list that need updating
+  const [needUpdating, setNeedsUpdating] = useRecoilState(
+    proposalsUpdated(contractAddress)
+  )
+  const updatedProposals = useRecoilValue(
+    waitForAll(
+      needUpdating.map((proposalId) =>
+        proposalSelector({ contractAddress, proposalId })
+      )
+    )
+  )
+
+  if (updatedProposals.length) {
+    updatedProposals.sort((l, r) => l.id - r.id).reverse()
+
+    setPropList((p) =>
+      p.map((item) => {
+        if (item.id == updatedProposals[0].id) {
+          return updatedProposals[0]
+        }
+        return item
+      })
+    )
+  }
+
+  useEffect(() => setNeedsUpdating([]))
 
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal
