@@ -7,10 +7,12 @@ import {
   CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
+  StarIcon,
 } from '@heroicons/react/outline'
-import { useRecoilValue } from 'recoil'
-import { daosSelector } from 'selectors/daos'
-import { sigsSelector } from 'selectors/multisigs'
+import { useRecoilValue, waitForAll } from 'recoil'
+import { daoSelector, daosSelector } from 'selectors/daos'
+import { sigSelector, sigsSelector } from 'selectors/multisigs'
+import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
@@ -51,17 +53,25 @@ function MemberDisplay({ name }: { name: string }) {
 }
 
 function Nav() {
-  const daos = useRecoilValue(daosSelector)
-  const memberDaos = daos.filter((dao) => dao.member)
+  const pinnedDaos = useRecoilValue(pinnedDaosAtom)
+  const daos = useRecoilValue(waitForAll(pinnedDaos.map((a) => daoSelector(a))))
+  const daoAddresses = daos.map((d, idx) => ({
+    dao: d,
+    address: pinnedDaos[idx],
+  }))
 
-  const sigs = useRecoilValue(sigsSelector)
-  const memberSigs = sigs.filter((sig) => sig.member)
+  const pinnedSigs = useRecoilValue(pinnedMultisigsAtom)
+  const sigs = useRecoilValue(waitForAll(pinnedSigs.map((a) => sigSelector(a))))
+  const sigAddresses = sigs.map((s, idx) => ({
+    sig: s,
+    address: pinnedSigs[idx],
+  }))
 
   return (
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
         <div className="flex items-center">
-          <Link href="/dao/list">
+          <Link href="/pinned">
             <a>
               <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
             </a>
@@ -73,18 +83,18 @@ function Nav() {
             <h3 className="text-secondary font-mono mb-1">DAOs</h3>
 
             <ul className="list-none ml-2">
-              {memberDaos.map((dao) => (
-                <li key={dao.dao.name} className="mt-1">
-                  <Link href={`/dao/${dao.address}`}>
+              {daoAddresses.map(({ dao, address }) => (
+                <li key={dao.config.name} className="mt-1">
+                  <Link href={`/dao/${address}`}>
                     <a>
-                      <MemberDisplay name={dao.dao.name} />
+                      <MemberDisplay name={dao.config.name} />
                     </a>
                   </Link>
                 </li>
               ))}
             </ul>
 
-            <ul className="list-none ml-2">
+            <ul className="list-none ml-2 mt-2">
               <li className="mt-1">
                 <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
                 <Link href="/dao/list">
@@ -97,11 +107,11 @@ function Nav() {
             <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
 
             <ul className="list-none ml-2">
-              {memberSigs.map((sig) => (
-                <li key={sig.name} className="mt-1">
-                  <Link href={`/multisig/${sig.address}`}>
+              {sigAddresses.map(({ sig, address }) => (
+                <li key={sig.config.name} className="mt-1">
+                  <Link href={`/multisig/${address}`}>
                     <a>
-                      <MemberDisplay name={sig.name} />
+                      <MemberDisplay name={sig.config.name} />
                     </a>
                   </Link>
                 </li>
