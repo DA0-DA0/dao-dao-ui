@@ -91,7 +91,7 @@ const Home: NextPage = () => {
         <GradientHero>
           <Breadcrumbs
             crumbs={[
-              ['/multisig/list', 'Multisigs'],
+              ['/pinned', 'Home'],
               [`/multisig/${contractAddress}`, sigInfo.config.name],
             ]}
           />

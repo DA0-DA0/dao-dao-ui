@@ -9,9 +9,10 @@ import {
 import React from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { sigsSelector, MultisigListType } from 'selectors/multisigs'
 import { ContractCard, MysteryContractCard } from 'components/ContractCard'
+import { pinnedMultisigsAtom } from 'atoms/pinned'
 
 export function MultisigCard({
   multisig,
@@ -20,12 +21,23 @@ export function MultisigCard({
   multisig: MultisigListType
   address: string
 }) {
+  const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
+  const pinned = pinnedSigs.includes(address)
+
   return (
     <ContractCard
       name={multisig.name}
       description={multisig.description}
       href={`/multisig/${address}`}
       weight={multisig.weight}
+      pinned={pinned}
+      onPin={() => {
+        if (pinned) {
+          setPinnedSigs((p) => p.filter((a) => a !== address))
+        } else {
+          setPinnedSigs((p) => p.concat([address]))
+        }
+      }}
     />
   )
 }

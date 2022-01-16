@@ -25,10 +25,8 @@ import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {
   return (
-    <div className="h-2/5 bg-gradient-radial-t from-accent via-base-100">
-      <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
-        {children}
-      </div>
+    <div className="min-h-[40%] bg-gradient-radial-t from-accent via-base-100 p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 flex flex-col justify-between">
+      {children}
     </div>
   )
 }
@@ -61,12 +59,12 @@ export function HeroContractHeader({
   onPin: Function
 }) {
   return (
-    <div className="flex items-center flex-col">
+    <div className="flex items-center flex-col my-3">
       <Logo width={85} height={85} alt="DAO DAO logo" />
       <div className="flex flex-col items-center">
         <div>
-          <h1 className="text-2xl font-medium mt-3">
-            {name}
+          <div className="mt-3">
+            <h1 className="inline text-2xl font-medium">{name}</h1>
             <div className="inline ml-2">
               {member && (
                 <TooltipWrapper tip="You have voting power">
@@ -88,9 +86,9 @@ export function HeroContractHeader({
                 </button>
               </TooltipWrapper>
             </div>
-          </h1>
+          </div>
         </div>
-        <p className="mt-2 font-mono">{description}</p>
+        <p className="mt-2 font-mono mb-3">{description}</p>
       </div>
     </div>
   )
