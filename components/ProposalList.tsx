@@ -6,6 +6,7 @@ import {
   proposalsRequestStartBeforeAtom,
 } from 'atoms/proposals'
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { proposalCount } from 'selectors/daos'
 import { onChainProposalsSelector } from 'selectors/proposals'
@@ -126,17 +127,20 @@ export function ProposalList({
       limit: propsCreated,
     })
   )
-  setPropList((p) => {
-    // Need to check this condition here instead of outside as
-    // `setPropsCreated` will race against the next reflow of this
-    // page which may cause a duplicate to be appended.
-    if (getOldestLoadedProposal(newProps) > getNewestLoadedProposal(p)) {
-      return newProps.concat(p)
-    }
-    return p
-  })
-  // We've now handled all the newly created proposals.
-  setPropsCreated(0)
+
+  useEffect(() => {
+    setPropList((p) => {
+      // Need to check this condition here instead of outside as
+      // `setPropsCreated` will race against the next reflow of this
+      // page which may cause a duplicate to be appended.
+      if (getOldestLoadedProposal(newProps) > getNewestLoadedProposal(p)) {
+        return newProps.concat(p)
+      }
+      return p
+    })
+    // We've now handled all the newly created proposals.
+    setPropsCreated(0)
+  }, [getOldestLoadedProposal(newProps), getNewestLoadedProposal(propList)])
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
@@ -148,23 +152,25 @@ export function ProposalList({
     })
   )
 
-  // We query proposals in reverse showing the most recent (highest
-  // ID) ones first. If a new query starts with a proposal with an ID
-  // that is smaller than the smallest one that we have seen we can
-  // safely add the new proposals to our list without worrying about
-  // duplicates.
-  if (existingProps.length) {
-    setPropList((p) => {
-      // Can't check this condition in the enclosing if statement
-      // becasue setState operations don't happen
-      // syncronously. Doing in above if can result in a race
-      // condition where a reflow occurs before setting completes.
-      if (existingProps[0].id < getOldestLoadedProposal(p)) {
-        return p.concat(existingProps)
-      }
-      return p
-    })
-  }
+  useEffect(() => {
+    // We query proposals in reverse showing the most recent (highest
+    // ID) ones first. If a new query starts with a proposal with an ID
+    // that is smaller than the smallest one that we have seen we can
+    // safely add the new proposals to our list without worrying about
+    // duplicates.
+    if (existingProps.length) {
+      setPropList((p) => {
+        // Can't check this condition in the enclosing if statement
+        // becasue setState operations don't happen
+        // syncronously. Doing in above if can result in a race
+        // condition where a reflow occurs before setting completes.
+        if (existingProps[0].id < getOldestLoadedProposal(p)) {
+          return p.concat(existingProps)
+        }
+        return p
+      })
+    }
+  })
 
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal
