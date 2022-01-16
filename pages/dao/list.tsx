@@ -6,11 +6,12 @@ import {
   UserGroupIcon,
   UserIcon,
 } from '@heroicons/react/outline'
+import { pinnedDaosAtom } from 'atoms/pinned'
 import { ContractCard, MysteryContractCard } from 'components/ContractCard'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { DaoListType, daosSelector } from 'selectors/daos'
 import { convertMicroDenomToDenom } from 'util/conversion'
 
@@ -23,12 +24,23 @@ export function DaoCard({
   address: string
   weight: number
 }) {
+  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
+  const pinned = pinnedDaos.includes(address)
+
   return (
     <ContractCard
       name={dao.name}
       description={dao.description}
       href={`/dao/${address}`}
       weight={convertMicroDenomToDenom(weight)}
+      pinned={pinned}
+      onPin={() => {
+        if (pinned) {
+          setPinnedDaos((p) => p.filter((a) => a !== address))
+        } else {
+          setPinnedDaos((p) => p.concat([address]))
+        }
+      }}
     />
   )
 }

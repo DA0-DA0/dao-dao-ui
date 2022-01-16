@@ -1,4 +1,9 @@
-import { PlusIcon, ScaleIcon } from '@heroicons/react/outline'
+import {
+  PlusIcon,
+  ScaleIcon,
+  StarIcon as StarIconOutline,
+} from '@heroicons/react/outline'
+import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { Logo } from './Logo'
@@ -20,10 +25,12 @@ function DIYLogo({
     <Link href={href}>
       <a>
         <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center m-2 bg-gradient-to-b from-base-300 justify-between border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center max-w-full">
             <div className="mt-6">{children}</div>
-            <h3 className="text-lg font-semibold mt-3">{title}</h3>
-            <p className="text-secondary text-sm font-mono text-center mt-1 break-words">
+            <h3 className="text-lg font-semibold mt-3 truncate max-w-full">
+              {title}
+            </h3>
+            <p className="text-secondary text-sm font-mono text-center mt-1 break-words line-clamp-3">
               {body}
             </p>
           </div>
@@ -44,16 +51,29 @@ export function ContractCard({
   description,
   href,
   weight,
+  pinned,
+  onPin,
 }: {
   name: string
   description: string
   href: string
   weight: number
+  pinned: boolean
+  onPin: Function
 }) {
   return (
-    <DIYLogo title={name} body={description} href={href} weight={weight}>
-      <Logo height={70} width={70} alt={name} />
-    </DIYLogo>
+    <div className="relative">
+      <DIYLogo title={name} body={description} href={href} weight={weight}>
+        <Logo height={70} width={70} alt={name} />
+      </DIYLogo>
+      <button className="absolute top-6 right-6" onClick={(_e) => onPin()}>
+        {pinned ? (
+          <StarIconSolid className="w-5 h-5" />
+        ) : (
+          <StarIconOutline className="w-5 h-5" />
+        )}
+      </button>
+    </div>
   )
 }
 

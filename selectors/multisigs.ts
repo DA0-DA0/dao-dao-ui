@@ -43,10 +43,9 @@ export const sigSelector = selectorFamily<ConfigResponse, string>({
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
-      const config = await client.queryContractSmart(
-        address,
-        'get_config' as unknown as Record<string, unknown>
-      )
+      const config = await client.queryContractSmart(address, {
+        get_config: {},
+      })
       return config
     },
 })

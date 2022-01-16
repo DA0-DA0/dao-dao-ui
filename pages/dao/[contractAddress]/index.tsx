@@ -80,7 +80,7 @@ const DaoHome: NextPage = () => {
         <GradientHero>
           <Breadcrumbs
             crumbs={[
-              ['/dao/list', 'DAOs'],
+              ['/pinned', 'Home'],
               [router.asPath, daoInfo.config.name],
             ]}
           />
