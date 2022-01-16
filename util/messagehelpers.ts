@@ -11,6 +11,7 @@ import {
   ProposalResponse,
   WasmMsg,
   Uint128,
+  Proposal,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
@@ -18,6 +19,7 @@ import {
   InstantiateMsg as MultisigInstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
+import { isAminoMsgWithdrawValidatorCommission } from '@cosmjs/stargate'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -302,31 +304,87 @@ export function parseEncodedMessage(base64String?: string) {
   return undefined
 }
 
-export function decodeMessages(proposal: ProposalResponse): string {
+export type WasmMsgType =
+  | 'execute'
+  | 'instantiate'
+  | 'migrate'
+  | 'update_admin'
+  | 'clear_admin'
+
+const WASM_TYPES: WasmMsgType[] = [
+  'execute',
+  'instantiate',
+  'migrate',
+  'update_admin',
+  'clear_admin',
+]
+
+const BINARY_WASM_TYPES: { [key: string]: boolean } = {
+  execute: true,
+  instantiate: true,
+  migrate: true,
+}
+
+export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
+  if (msg) {
+    return (msg as any).wasm !== undefined
+  }
+  return false
+}
+
+function getWasmMsgType(wasm: WasmMsg): WasmMsgType | undefined {
+  for (const wasmType of WASM_TYPES) {
+    if (!!(wasm as any)[wasmType]) {
+      return wasmType
+    }
+  }
+  return undefined
+}
+
+function isBinaryType(msgType?: WasmMsgType): boolean {
+  if (msgType) {
+    return !!BINARY_WASM_TYPES[msgType]
+  }
+  return false
+}
+
+export function decodeMessages(proposal: ProposalResponse): {[key: string]: any}[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(proposal.msgs)
   for (const msgObj of proposalMsgs) {
-    const execute = (msgObj as any)?.wasm?.execute
-    const base64Msg = execute?.msg
-    if (base64Msg) {
-      const msg = parseEncodedMessage(base64Msg)
-      if (msg) {
-        decodedMessageArray.push({
-          ...msgObj,
-          wasm: {
-            execute: {
-              ...execute,
-              msg,
-            },
-          },
-        })
+    if (isWasmMsg(msgObj)) {
+      const msgType = getWasmMsgType(msgObj.wasm)
+      if (msgType && isBinaryType(msgType)) {
+        const base64Msg = (msgObj.wasm as any)[msgType]
+        if (base64Msg) {
+          const msg = parseEncodedMessage(base64Msg.msg)
+          if (msg) {
+            decodedMessageArray.push({
+              ...msgObj,
+              wasm: {
+                ...msgObj.wasm,
+                [msgType]: {
+                  ...base64Msg,
+                  msg,
+                },
+              },
+            })
+          }
+        }
       }
     } else {
       decodedMessageArray.push(msgObj)
     }
   }
+
   const decodedMessages = decodedMessageArray.length
     ? decodedMessageArray
     : proposalMsgs
-  return JSON.stringify(decodedMessages, undefined, 2)
+
+  return decodedMessages
+}
+
+export function decodedMessagesString(proposal: ProposalResponse): string {
+  const decodedMessageArray = decodeMessages(proposal)
+  return JSON.stringify(decodedMessageArray, undefined, 2)
 }
