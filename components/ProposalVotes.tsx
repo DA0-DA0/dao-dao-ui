@@ -1,5 +1,6 @@
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
 import { UserIcon } from '@heroicons/react/outline'
+import Address from 'components/Address'
 import { useRecoilValue } from 'recoil'
 import { walletAddress as selectWalletAddress } from 'selectors/treasury'
 
@@ -40,7 +41,7 @@ function ProposalVotes({ votes }: { votes: VoteInfo[] }) {
             }
             return (
               <tr key={voter}>
-                <td>{voter}</td>
+                <td><Address address={voter} /></td>
                 <td>{weight}</td>
                 <td>{vote}</td>
               </tr>
