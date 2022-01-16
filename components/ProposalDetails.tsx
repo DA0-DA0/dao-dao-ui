@@ -26,6 +26,8 @@ import { defaultExecuteFee } from 'util/fee'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { cleanChainError } from 'util/cleanChainError'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
+import { useRouter } from 'next/router'
+import { decodeMessages, parseEncodedMessage } from 'util/messagehelpers'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -88,6 +90,8 @@ function executeProposalExecute(
       toast.success(`Success. Transaction hash: (${response.transactionHash})`)
     })
     .catch((err) => {
+      console.error(err)
+      console.error(err.message)
       toast.error(cleanChainError(err.message))
     })
     .finally(() => {
@@ -308,6 +312,10 @@ export function ProposalDetailsSidebar({
     localeOptions
   )
 
+  if (!proposal) {
+    return <div>Error, no proposal</div>
+  }
+
   return (
     <div>
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
@@ -372,6 +380,7 @@ export function ProposalDetails({
   proposalId: number
   multisig?: boolean
 }) {
+  const router = useRouter()
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
   )
@@ -380,17 +389,6 @@ export function ProposalDetails({
   )
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
-  )
-
-  const yesVotes = Number(
-    multisig
-      ? proposalTally.votes.yes
-      : convertMicroDenomToDenom(proposalTally.votes.yes)
-  )
-  const noVotes = Number(
-    multisig
-      ? proposalTally.votes.no
-      : convertMicroDenomToDenom(proposalTally.votes.no)
   )
 
   const member = useRecoilValue(isMemberSelector(contractAddress))
@@ -405,6 +403,24 @@ export function ProposalDetails({
   // If token balances are loading we don't know if the user is a
   // member or not.
   const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
+
+  if (!proposal) {
+    router.replace(`/dao/${contractAddress}`)
+    return <div>Error</div>
+  }
+
+  const yesVotes = Number(
+    multisig
+      ? proposalTally?.votes.yes
+      : convertMicroDenomToDenom(proposalTally?.votes.yes ?? '0')
+  )
+  const noVotes = Number(
+    multisig
+      ? proposalTally?.votes.no
+      : convertMicroDenomToDenom(proposalTally?.votes.no ?? 0)
+  )
+
+  const decodedMessages = decodeMessages(proposal)
 
   return (
     <div className="p-6">
@@ -446,9 +462,9 @@ export function ProposalDetails({
         </div>
       )}
       <p className="text-medium mt-6">{proposal.description}</p>
-      {proposal.msgs.length > 0 ? (
+      {proposal.msgs.length > 0 || decodedMessages ? (
         <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
-          {JSON.stringify(proposal.msgs, undefined, 2)}
+          {decodedMessages || JSON.stringify(proposal.msgs, undefined, 2)}
         </pre>
       ) : (
         <pre></pre>

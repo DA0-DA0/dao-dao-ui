@@ -40,6 +40,7 @@ import {
   labelForMessage,
   makeMintMessage,
   makeSpendMessage,
+  messageForDraftProposal,
 } from 'util/messagehelpers'
 import { createProposalTransaction, isProposal } from 'util/proposal'
 import InputField, {
@@ -96,7 +97,7 @@ export default function ProposalEditor({
   const [contractProposalMap, setContractProposalMap] = useRecoilState(
     contractProposalMapAtom
   )
-  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
+  const [draftProposals, setDraftProposals] = useRecoilState(draftProposalsSelector(contractAddress))
   const [proposalMapItem, setProposalMapItem] = useRecoilState(
     draftProposalSelector({ contractAddress, proposalId })
   )
@@ -133,42 +134,20 @@ export default function ProposalEditor({
       ? proposalMapItem.proposal
       : ({ ...EmptyProposal } as any as Proposal)
 
-  console.log({ proposal })
-
   if (!isExistingDraftProposal) {
     // We're creating a new proposal, so bump the draft ID:
     setNextDraftProposalId(proposalId)
   }
 
-  const createProposal = (proposal: Proposal) => {
+  const createProposal = (proposalMapItem: ProposalMapItem) => {
+    const proposal = messageForDraftProposal(proposalMapItem, contractAddress)
     return createProposalFunction(proposalId, proposal)
-  }
-
-  const saveDraftProposal = (draftProposal: Proposal) => {
-    setContractProposalMap({
-      ...contractProposalMap,
-      [contractAddress]: {
-        ...draftProposals,
-        [proposalId + '']: {
-          ...(proposalMapItem ?? draftProposalItem(draftProposal, proposalId)),
-          proposal: draftProposal,
-        },
-      },
-    })
   }
 
   const deleteDraftProposal = () => {
     const updatedProposals = { ...draftProposals }
     delete updatedProposals[proposalId + '']
-    const updatedMap = {
-      ...contractProposalMap,
-      [contractAddress]: updatedProposals,
-    }
-    // Clear the map entry if no data
-    if (Object.keys(updatedProposals).length === 0) {
-      delete updatedMap[contractAddress]
-    }
-    setContractProposalMap(updatedMap)
+    setDraftProposals(updatedProposals)
   }
 
   const messageActions = [
@@ -218,43 +197,23 @@ export default function ProposalEditor({
     // We don't actually care about what the form processor returned in this
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
-    if (isProposal(proposal)) {
-      if (isProposalValid(proposal)) {
-        await createProposal(proposal)
+    // if (isProposal(proposalMapItem)) {
+      if (isProposalValid(proposalMapItem.proposal)) {
+        await createProposal(proposalMapItem)
         setNextProposalRequestId(nextProposalRequestId + 1)
         // resetProposals()
         deleteDraftProposal()
       }
-    }
+    // }
   }
 
   function updateProposal(updatedProposal: Proposal) {
-    console.log(`updateProposal for ${proposalId}`)
     const updatedProposalItem = {
       ...(proposalMapItem ?? EmptyProposalItem),
       id: proposalId,
       proposal: updatedProposal,
     }
     setProposalMapItem(updatedProposalItem)
-    const proposalIdKey = `${proposalId}`
-    setContractProposalMap({
-      ...contractProposalMap,
-      [contractAddress]: {
-        ...draftProposals,
-        [proposalIdKey]: updatedProposalItem,
-      },
-    })
-  }
-
-  function updateDraftProposal(updatedProposalItem: ProposalMapItem) {
-    const proposalIdKey = `${proposalId}`
-    setContractProposalMap({
-      ...contractProposalMap,
-      [contractAddress]: {
-        ...draftProposals,
-        [proposalIdKey]: updatedProposalItem,
-      },
-    })
   }
 
   function setProposalTitle(title: string) {
@@ -526,12 +485,6 @@ export default function ProposalEditor({
                       style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
                       type="submit"
                       disabled={loading}
-                      // onClick={e => {
-                      //   handleSubmit(onSubmitProposal, x => {
-                      //     console.error('bad submit:')
-                      //   console.dir(x)
-                      //   })
-                      // }}
                     >
                       Create Proposal
                     </button>

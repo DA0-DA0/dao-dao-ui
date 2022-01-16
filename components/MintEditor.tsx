@@ -5,11 +5,10 @@ import {
 import { ProposalAction } from 'models/proposal/proposalActions'
 import {
   getMintAmount,
-  getMintRecipient,
 } from 'models/proposal/proposalSelectors'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeMintMessage } from 'util/messagehelpers'
+import { makeMintMessage, getMintRecipient } from 'util/messagehelpers'
 import { draftProposalMessageSelector } from 'selectors/proposals'
 import { useRecoilState } from 'recoil'
 

@@ -1,4 +1,4 @@
-import { draftProposalSelector } from 'selectors/proposals'
+import { draftProposalSelector, draftProposalsSelector } from 'selectors/proposals'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import ProposalStatus from './ProposalStatus'
 import { loadingAtom } from 'atoms/status'
@@ -14,19 +14,11 @@ export function ProposalDraftSidebar({
     draftProposalSelector({ contractAddress, proposalId })
   )
   const [loading, setLoading] = useRecoilState(loadingAtom)
+  const [draftProposals, setDraftProposals] = useRecoilState(draftProposalsSelector(contractAddress))
   const deleteDraftProposal = () => {
-    // this should be a transaction
-    // const updatedProposals = { ...draftProposals }
-    // delete updatedProposals[proposalId + '']
-    // const updatedMap = {
-    //   ...contractProposalMap,
-    //   [contractAddress]: updatedProposals,
-    // }
-    // // Clear the map entry if no data
-    // if (Object.keys(updatedProposals).length === 0) {
-    //   delete updatedMap[contractAddress]
-    // }
-    // setContractProposalMap(updatedMap)
+    const updatedProposals = { ...draftProposals }
+    delete updatedProposals[proposalId + '']
+    setDraftProposals(updatedProposals)
   }
 
   return draftProposal ? (

@@ -13,7 +13,7 @@ export type ProposalMessageKey = {
 }
 
 export interface ProposalMapItem {
-  proposal: Proposal | ProposalResponse
+  proposal: Proposal
   id: number
   activeMessageIndex?: number
   draft: boolean,

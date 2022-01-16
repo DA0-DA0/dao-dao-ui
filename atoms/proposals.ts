@@ -38,16 +38,6 @@ export function draftProposalItem(
   }
 }
 
-export function nondraftProposalItem(
-  proposal: ProposalResponse
-): ProposalMapItem {
-  return {
-    proposal,
-    id: proposal.id,
-    draft: false,
-  }
-}
-
 const localStorageEffect: <T>(key: string) => AtomEffect<T> =
   (key) =>
   ({ setSelf, onSet, node }) => {
@@ -101,18 +91,3 @@ export const contractProposalMapAtom = atom<ContractProposalMap>({
     localStorageEffect<ContractProposalMap>('contractProposalMap'),
   ],
 })
-
-// export const proposalMapAtom = atomFamily({
-//   key: 'proposalMap',
-//   default: selectorFamily({
-//     key: 'ProposalMapDefault',
-//     get:
-//       (contractAddress: string) =>
-//       ({ get }) => {
-//         const proposals = get(contractProposalMapAtom)
-//         return proposals[contractAddress]
-//       },
-//   }),
-//   effects_UNSTABLE: [localStorageEffect<ProposalMap>('proposalMap')],
-// })
-

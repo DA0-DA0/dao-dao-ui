@@ -98,9 +98,9 @@ export const EmptyProposalResponse: ProposalResponse = {
 }
 
 export function memoForProposal(proposal: Proposal): string {
-  const messagesMemo = proposal.msgs
+  const messagesMemo = proposal.msgs ? proposal.msgs
     .map((msg) => labelForMessage(msg))
-    .join(', ')
+    .join(', ') : ''
   return `${proposal.title}\n${proposal.description}\n\n${messagesMemo}`.slice(
     0,
     MEMO_MAX_LEN

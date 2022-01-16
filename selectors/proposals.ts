@@ -3,12 +3,16 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { contractProposalMapAtom, proposalsRequestIdAtom } from 'atoms/proposals'
+import {
+  contractProposalMapAtom,
+  proposalsRequestIdAtom,
+} from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
 import { ContractProposalMap, ProposalMap } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
 import {
   EmptyProposalResponse,
+  EmptyProposalTallyResponse,
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
 import {
@@ -93,7 +97,7 @@ export const proposalUpdateCountAtom = atomFamily<
 })
 
 export const proposalSelector = selectorFamily<
-  ProposalResponse,
+  ProposalResponse | undefined,
   { contractAddress: string; proposalId: number }
 >({
   key: 'proposalSelector',
@@ -115,10 +119,15 @@ export const proposalSelector = selectorFamily<
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
       const client = get(cosmWasmClient)
-      const proposal = await client.queryContractSmart(contractAddress, {
-        proposal: { proposal_id: proposalId },
-      })
-      return proposal
+      try {
+        const proposal = await client.queryContractSmart(contractAddress, {
+          proposal: { proposal_id: proposalId },
+        })
+        return proposal
+      } catch (e) {
+        console.error(e)
+        return undefined
+      }
     },
 })
 
@@ -137,12 +146,16 @@ export const proposalVotesSelector = selectorFamily<
     }) =>
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
-
-      const client = get(cosmWasmClient)
-      const votes = await client.queryContractSmart(contractAddress, {
-        list_votes: { proposal_id: proposalId },
-      })
-      return votes.votes
+      try {
+        const client = get(cosmWasmClient)
+        const votes = await client.queryContractSmart(contractAddress, {
+          list_votes: { proposal_id: proposalId },
+        })
+        return votes.votes
+      } catch (e) {
+        console.error(e)
+        return []
+      }
     },
 })
 
@@ -161,12 +174,18 @@ export const proposalTallySelector = selectorFamily<
     }) =>
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
-
-      const client = get(cosmWasmClient)
-      const tally = await client.queryContractSmart(contractAddress, {
-        tally: { proposal_id: proposalId },
-      })
-      return tally
+      try {
+        const client = get(cosmWasmClient)
+        const tally = await client.queryContractSmart(contractAddress, {
+          tally: { proposal_id: proposalId },
+        })
+        return tally
+      } catch (e) {
+        console.error(e)
+        return {
+          ...EmptyProposalTallyResponse,
+        }
+      }
     },
 })
 
@@ -176,6 +195,11 @@ export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
     (contractAddress) =>
     ({ get }) => {
       return get(proposalMapSelector(contractAddress))
+    },
+  set:
+    (contractAddress) =>
+    ({ set }, newValue) => {
+      set(proposalMapSelector(contractAddress), newValue)
     },
 })
 
@@ -217,18 +241,22 @@ export const proposalsSelector = selectorFamily<
 
 export const proposalMapSelector = selectorFamily<ProposalMap, string>({
   key: 'proposalMap',
-  get: contractAddress => ({get}) => {
-    const contractProposalMap = get(contractProposalMapAtom)
-    return contractProposalMap[contractAddress]
-  },
-  set: contractAddress => ({get, set}, newValue) => {
-    const contractProposalMap = get(contractProposalMapAtom)
-    const updatedMap: ContractProposalMap = {
-      ...contractProposalMap,
-      [contractAddress]: newValue
-    } as any // TODO(gavin.doughtie): Wrong type?
-    set(contractProposalMapAtom, updatedMap)
-  }
+  get:
+    (contractAddress) =>
+    ({ get }) => {
+      const contractProposalMap = get(contractProposalMapAtom)
+      return contractProposalMap[contractAddress]
+    },
+  set:
+    (contractAddress) =>
+    ({ get, set }, newValue) => {
+      const contractProposalMap = get(contractProposalMapAtom)
+      const updatedMap: ContractProposalMap = {
+        ...contractProposalMap,
+        [contractAddress]: newValue,
+      } as any // TODO(gavin.doughtie): Wrong type?
+      set(contractProposalMapAtom, updatedMap)
+    },
 })
 
 export const draftProposalSelector = selectorFamily<
@@ -279,12 +307,18 @@ export const draftProposalMessageSelector = selectorFamily<
         draftProposalSelector({ contractAddress, proposalId })
       )
       if (draftProposal) {
-        const messages: MessageMap = { ...draftProposal?.messages, [messageId]: newValue } as any
+        const messages: MessageMap = {
+          ...draftProposal?.messages,
+          [messageId]: newValue,
+        } as any
         const updatedProposal: ProposalMapItem = {
           ...draftProposal,
           messages,
         }
-        set(draftProposalSelector({ contractAddress, proposalId }), updatedProposal)
+        set(
+          draftProposalSelector({ contractAddress, proposalId }),
+          updatedProposal
+        )
       }
     },
 })
