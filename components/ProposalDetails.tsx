@@ -23,6 +23,7 @@ import { convertMicroDenomToDenom } from 'util/conversion'
 import toast from 'react-hot-toast'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { defaultExecuteFee } from 'util/fee'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { cleanChainError } from 'util/cleanChainError'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
@@ -448,7 +449,7 @@ export function ProposalDetails({
       <p className="text-medium mt-6">{proposal.description}</p>
       {proposal.msgs.length > 0 ? (
         <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
-          {JSON.stringify(proposal.msgs, undefined, 2)}
+          {decodedMessagesString(proposal)}
         </pre>
       ) : (
         <pre></pre>
