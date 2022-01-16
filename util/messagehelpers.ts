@@ -306,7 +306,8 @@ export function decodeMessages(proposal: ProposalResponse): string {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(proposal.msgs)
   for (const msgObj of proposalMsgs) {
-    const base64Msg = (msgObj as any)?.wasm?.execute?.msg
+    const execute = (msgObj as any)?.wasm?.execute
+    const base64Msg = execute?.msg
     if (base64Msg) {
       const msg = parseEncodedMessage(base64Msg)
       if (msg) {
@@ -314,6 +315,7 @@ export function decodeMessages(proposal: ProposalResponse): string {
           ...msgObj,
           wasm: {
             execute: {
+              ...execute,
               msg,
             },
           },
