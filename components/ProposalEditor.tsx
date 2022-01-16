@@ -79,24 +79,16 @@ export default function ProposalEditor({
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const proposalsState = proposalsSelector({
-    contractAddress,
-    startBefore: 0,
-    limit: 10,
-  })
   const [editProposalJson, setEditProposalJson] = useState(false)
   const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
     useState('')
-  const themeContext = useThemeContext()
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
 
-  const [contractProposalMap, setContractProposalMap] = useRecoilState(
-    contractProposalMapAtom
-  )
   const [draftProposals, setDraftProposals] = useRecoilState(draftProposalsSelector(contractAddress))
   const [proposalMapItem, setProposalMapItem] = useRecoilState(
     draftProposalSelector({ contractAddress, proposalId })
@@ -104,7 +96,7 @@ export default function ProposalEditor({
   const [nextProposalRequestId, setNextProposalRequestId] = useRecoilState(
     proposalsRequestIdAtom
   )
-  // const resetProposals = useResetRecoilState(proposalsState)
+
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState(
     nextDraftProposalIdAtom
   )
@@ -126,18 +118,16 @@ export default function ProposalEditor({
     proposalId = nextDraftProposalId
   }
 
-  const proposalsListRoute = `/dao/${contractAddress}/proposals`
-
   const isExistingDraftProposal = !!proposalMapItem?.proposal
   const proposal: Proposal =
     isExistingDraftProposal && isProposal(proposalMapItem?.proposal)
       ? proposalMapItem.proposal
       : ({ ...EmptyProposal } as any as Proposal)
 
-  if (!isExistingDraftProposal) {
-    // We're creating a new proposal, so bump the draft ID:
-    setNextDraftProposalId(proposalId)
-  }
+  // if (!isExistingDraftProposal) {
+  //   // We're creating a new proposal, so bump the draft ID:
+  //   setNextDraftProposalId(proposalId)
+  // }
 
   const createProposal = (proposalMapItem: ProposalMapItem) => {
     const proposal = messageForDraftProposal(proposalMapItem, contractAddress)
@@ -198,7 +188,7 @@ export default function ProposalEditor({
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
     // if (isProposal(proposalMapItem)) {
-      if (isProposalValid(proposalMapItem.proposal)) {
+      if (proposalMapItem && isProposalValid(proposalMapItem.proposal)) {
         await createProposal(proposalMapItem)
         setNextProposalRequestId(nextProposalRequestId + 1)
         // resetProposals()
@@ -235,7 +225,7 @@ export default function ProposalEditor({
     }
   }
 
-  let messages = Object.entries(proposalMapItem?.messages ?? {}).map(
+  let messages = Object.entries(messageMap ?? {}).map(
     ([key, value], messageIndex) => {
       const msg = value.message
       const label = labelForMessage(value.message)
@@ -318,11 +308,11 @@ export default function ProposalEditor({
     if (!proposalMapItem?.proposal) {
       return
     }
-    const key = `${Object.keys(proposalMapItem?.messages ?? {}).length}`
+    const key = `${Object.keys(messageMap ?? {}).length}`
     if (!message.id) {
       message.id = key
     }
-    const messages = { ...proposalMapItem?.messages, [key]: message }
+    const messages = { ...messageMap, [key]: message }
     const updatedProposal: ProposalMapItem = {
       ...proposalMapItem,
       messages,

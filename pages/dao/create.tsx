@@ -33,6 +33,7 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import { pinnedDaosAtom } from 'atoms/pinned'
 
 interface DaoCreateData {
   deposit: string
@@ -197,6 +198,8 @@ const CreateDao: NextPage = () => {
   // distributions.
   const setDaoInitialBalance = useSetRecoilState(daoInitialBalanceAtom)
 
+  const setPinnedDaos = useSetRecoilState(pinnedDaosAtom)
+
   const {
     register,
     handleSubmit,
@@ -286,6 +289,12 @@ const CreateDao: NextPage = () => {
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
+          setPinnedDaos((p) => {
+            const daos = p.concat([response.contractAddress])
+            console.log(`setting pinned DAOS: (${daos})`)
+            console.log(daos)
+            return daos
+          })
           router.push(`/dao/${encodeURIComponent(response.contractAddress)}`)
         }
 

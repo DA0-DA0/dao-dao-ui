@@ -1,33 +1,36 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
-import ProposalVotes from 'components/ProposalVotes'
+import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import Address from 'components/Address'
-import ProposalStatus from './ProposalStatus'
+import ProposalVotes from 'components/ProposalVotes'
+import { useSigningClient } from 'contexts/cosmwasm'
+import { useRouter } from 'next/router'
+import { ReactNode } from 'react'
+import toast from 'react-hot-toast'
 import {
   atom,
   SetterOrUpdater,
   useRecoilState,
   useRecoilValue,
-  useSetRecoilState,
+  useSetRecoilState
 } from 'recoil'
+import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
   proposalUpdateCountAtom,
-  proposalVotesSelector,
+  proposalVotesSelector
 } from 'selectors/proposals'
-import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { CheckIcon, XIcon, SparklesIcon } from '@heroicons/react/outline'
-import { getEnd } from './ProposalList'
-import { isMemberSelector } from 'selectors/daos'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import toast from 'react-hot-toast'
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { defaultExecuteFee } from 'util/fee'
-import { useSigningClient } from 'contexts/cosmwasm'
-import { cleanChainError } from 'util/cleanChainError'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
-import { useRouter } from 'next/router'
-import { decodeMessages, parseEncodedMessage } from 'util/messagehelpers'
+import { cleanChainError } from 'util/cleanChainError'
+import { convertMicroDenomToDenom } from 'util/conversion'
+import { defaultExecuteFee } from 'util/fee'
+import {
+  decodedMessagesString,
+  decodeMessages
+} from 'util/messagehelpers'
+import { getEnd } from './ProposalList'
+import ProposalStatus from './ProposalStatus'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -464,7 +467,7 @@ export function ProposalDetails({
       <p className="text-medium mt-6">{proposal.description}</p>
       {proposal.msgs.length > 0 || decodedMessages ? (
         <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
-          {decodedMessages || JSON.stringify(proposal.msgs, undefined, 2)}
+          {decodedMessagesString(proposal)}
         </pre>
       ) : (
         <pre></pre>

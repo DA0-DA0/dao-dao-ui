@@ -1,10 +1,20 @@
 import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
-import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
+import {
+  StarIcon as StarOutline,
+  PlusIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
+import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { Children, MouseEventHandler, ReactNode } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
-import { cw20TokenInfo } from 'selectors/treasury'
+import { isMemberSelector } from 'selectors/daos'
+import {
+  cw20TokenInfo,
+  walletAddress,
+  walletTokenBalanceLoading,
+} from 'selectors/treasury'
 import {
   convertDenomToHumanReadableDenom,
   convertFromMicroDenom,
@@ -23,14 +33,34 @@ export function GradientHero({ children }: { children: ReactNode }) {
   )
 }
 
+export function TooltipWrapper({
+  tip,
+  children,
+}: {
+  tip: string
+  children: ReactNode
+}) {
+  return (
+    <div className="tooltip" data-tip={tip}>
+      {children}
+    </div>
+  )
+}
+
 export function HeroContractHeader({
   name,
   member,
   description,
+  pinned,
+  onPin,
+  contractAddress
 }: {
   name: string
   member: boolean
   description: string
+  pinned: boolean
+  onPin: Function
+  contractAddress?: string
 }) {
   return (
     <div className="flex items-center flex-col">
@@ -39,10 +69,30 @@ export function HeroContractHeader({
         <div>
           <h1 className="text-2xl font-medium mt-3">
             {name}
-            <LinkIcon className="inline w-5 h-5 mb-1 ml-2" />
-            {member && <UserIcon className="inline w-5 h-5 mb-1 ml-1" />}
+            <div className="inline ml-2">
+              {member && (
+                <TooltipWrapper tip="You have voting power">
+                  {' '}
+                  <UserIcon className="inline w-5 h-5 mb-1" />{' '}
+                </TooltipWrapper>
+              )}
+              <TooltipWrapper
+                tip={`This is ${
+                  pinned ? '' : 'not '
+                } one of your favorite contracts`}
+              >
+                <button onClick={(_e) => onPin()}>
+                  {pinned ? (
+                    <StarSolid className="inline w-5 h-5 mb-1" />
+                  ) : (
+                    <StarOutline className="inline w-5 h-5 mb-1" />
+                  )}
+                </button>
+              </TooltipWrapper>
+            </div>
           </h1>
         </div>
+        {contractAddress && <p className="mt-2 font-mono">{contractAddress}</p>}
         <p className="mt-2 font-mono">{description}</p>
       </div>
     </div>
@@ -62,6 +112,14 @@ export function HeroContractFooter({ children }: { children: ReactNode }) {
   )
 }
 
+function LoadingButton() {
+  return (
+    <a className="btn btn-sm btn-outline normal-case text-left loading">
+      Loading
+    </a>
+  )
+}
+
 export function ContractProposalsDispaly({
   contractAddress,
   proposalCreateLink,
@@ -71,15 +129,38 @@ export function ContractProposalsDispaly({
   proposalCreateLink: string
   multisig?: boolean
 }) {
+  const wallet = useRecoilValue(walletAddress)
+  const loading = useRecoilValue(walletTokenBalanceLoading(wallet))
+
+  const member = useRecoilValue(isMemberSelector(contractAddress)).member
+  const tooltip =
+    (!member &&
+      `You must have voting power to create a proposal.${
+        multisig ? '' : ' Consider staking some tokens.'
+      }`) ||
+    'Something went wrong'
+
   return (
     <>
       <div className="flex justify-between items-center">
         <h2 className="font-medium text-lg">Proposals</h2>
-        <Link href={proposalCreateLink} passHref>
-          <button className="btn btn-sm btn-outline normal-case text-left">
-            New proposal <PlusIcon className="inline w-5 h-5 ml-1" />
-          </button>
-        </Link>
+        {loading ? (
+          <LoadingButton />
+        ) : (
+          <div className={!member ? 'tooltip' : ''} data-tip={tooltip}>
+            <Link href={proposalCreateLink} passHref>
+              <a
+                className={
+                  'btn btn-sm btn-outline normal-case text-left' +
+                  (!member ? ' btn-disabled' : '')
+                }
+              >
+                New proposal
+                <PlusIcon className="inline w-5 h-5 ml-1" />
+              </a>
+            </Link>
+          </div>
+        )}
       </div>
       <div className="px-4 mt-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />
