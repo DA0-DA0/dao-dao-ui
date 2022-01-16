@@ -1,4 +1,4 @@
-import { toBase64, toAscii } from '@cosmjs/encoding'
+import { fromBase64, toBase64, fromAscii, toAscii } from '@cosmjs/encoding'
 import { convertDenomToHumanReadableDenom } from './conversion'
 import {
   BankMsg,
@@ -8,6 +8,7 @@ import {
   InstantiateMsg as DaoInstantiateMsg,
   Cw20Coin,
   Duration,
+  ProposalResponse,
   WasmMsg,
   Uint128,
 } from '@dao-dao/types/contracts/cw3-dao'
@@ -288,4 +289,42 @@ export function labelForMessage(
     messageString = messageString.slice(0, MAX_LABEL_LEN) || ''
   }
   return messageString
+}
+
+export function parseEncodedMessage(base64String?: string) {
+  if (base64String) {
+    const stringMessage = fromBase64(base64String)
+    const jsonMessage = fromAscii(stringMessage)
+    if (jsonMessage) {
+      return JSON.parse(jsonMessage)
+    }
+  }
+  return undefined
+}
+
+export function decodeMessages(proposal: ProposalResponse): string {
+  const decodedMessageArray: any[] = []
+  const proposalMsgs = Object.values(proposal.msgs)
+  for (const msgObj of proposalMsgs) {
+    const base64Msg = (msgObj as any)?.wasm?.execute?.msg
+    if (base64Msg) {
+      const msg = parseEncodedMessage(base64Msg)
+      if (msg) {
+        decodedMessageArray.push({
+          ...msgObj,
+          wasm: {
+            execute: {
+              msg,
+            },
+          },
+        })
+      }
+    } else {
+      decodedMessageArray.push(msgObj)
+    }
+  }
+  const decodedMessages = decodedMessageArray.length
+    ? decodedMessageArray
+    : proposalMsgs
+  return JSON.stringify(decodedMessages, undefined, 2)
 }
