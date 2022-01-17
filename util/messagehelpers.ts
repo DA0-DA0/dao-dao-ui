@@ -97,6 +97,14 @@ export function makeSpendMessage(
   }
 }
 
+export function getDenom(message: {bank: any}): string {
+  const amounts = message?.bank?.send?.amount
+  if (amounts?.length) {
+    return amounts[0]?.denom ?? DENOM
+  }
+  return DENOM
+}
+
 export function makeExecutableMintMessage(
   msg: MintExecuteMsg,
   contract_addr: string

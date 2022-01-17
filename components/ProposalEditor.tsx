@@ -49,7 +49,11 @@ import {
   makeSpendMessage,
   messageForDraftProposal,
 } from 'util/messagehelpers'
-import { createProposalTransaction, draftProposalKey, isProposal } from 'util/proposal'
+import {
+  createProposalTransaction,
+  draftProposalKey,
+  isProposal,
+} from 'util/proposal'
 import InputField, {
   InputFieldLabel,
   makeFieldErrorMessage,
@@ -287,23 +291,16 @@ export default function ProposalEditor({
       let modeEditor = <h1>Not implemented</h1>
       switch (mapEntry.messageType) {
         case ProposalMessageType.Spend:
-          modeEditor = <h2>Spend Editor Goes Here</h2>
-          if (true) {
-            //isSendMsg(msg.bank) && proposalId !== undefined) {
             modeEditor = (
               <SpendEditor
-                spendMsg={msg.bank as any}
+                spendMsgId={mapEntry.id}
                 contractAddress={contractAddress}
                 initialRecipientAddress={recipientAddress}
-                proposalId={proposalId as any}
-                updateProposal={updateProposal}
+                proposalId={proposalId}
                 msgIndex={messageIndex}
               />
             )
             label = 'Spend'
-          } else if (isBurnMsg(msg.bank)) {
-            modeEditor = <h1>BURN MESSAGE NOT IMPLEMENTED</h1>
-          }
           break
         case ProposalMessageType.Mint:
           modeEditor = (
@@ -351,15 +348,14 @@ export default function ProposalEditor({
     }
   )
 
+  const currentMessageCount = () => Object.keys(messageMap ?? {}).length
+  const nextMessageKey = () => `${currentMessageCount()}`
+
   const addMessage = (message: MessageMapEntry) => {
     if (!proposalMapItem?.proposal) {
       return
     }
-    const key = `${Object.keys(messageMap ?? {}).length}`
-    if (!message.id) {
-      message.id = key
-    }
-    const messages = { ...messageMap, [key]: message }
+    const messages = { ...messageMap, [message.id]: message }
     const updatedProposal: ProposalMapItem = {
       ...proposalMapItem,
       messages,
@@ -375,20 +371,31 @@ export default function ProposalEditor({
     // addMessage({ custom: {} } as CosmosMsgFor_Empty)
   }
 
+  const makeMessageMapEntry = (
+    messageType: ProposalMessageType,
+    message: any
+  ) => {
+    return {
+      id: nextMessageKey(),
+      messageType,
+      order: currentMessageCount(),
+      message,
+    }
+  }
+
   const addSpendMessage = () => {
     try {
-      const msg: MessageMapEntry = {
-        id: '',
-        messageType: ProposalMessageType.Spend,
-        order: 0,
-        message: makeSpendMessage(
-          '',
-          recipientAddress,
-          contractAddress,
-          govTokenSymbol
-        ),
-      }
-      addMessage(msg)
+      addMessage(
+        makeMessageMapEntry(
+          ProposalMessageType.Spend,
+          makeSpendMessage(
+            '0', // amount
+            recipientAddress,
+            contractAddress,
+            govTokenSymbol
+          )
+        )
+      )
     } catch (e) {
       console.error(e)
     }
@@ -396,13 +403,12 @@ export default function ProposalEditor({
 
   const addMintMessage = () => {
     try {
-      const msg: MessageMapEntry = {
-        id: '',
-        messageType: ProposalMessageType.Mint,
-        order: 0,
-        message: makeMintMessage('', recipientAddress),
-      }
-      addMessage(msg)
+      addMessage(
+        makeMessageMapEntry(
+          ProposalMessageType.Mint,
+          makeMintMessage('0', recipientAddress)
+        )
+      )
     } catch (e) {
       console.error(e)
     }
