@@ -11,7 +11,7 @@ import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
 import { onChainProposalsSelector, proposalSelector } from 'selectors/proposals'
-import ProposalStatus from './ProposalStatus'
+import { ProposalStatus } from '@components'
 
 const PROP_LOAD_LIMIT = 10
 
