@@ -7,7 +7,7 @@ import {
   messageSort,
 } from './messageMap'
 import { makeExecutableMintMessage } from '../../util/messagehelpers'
-import { Proposal } from './proposal'
+import { ProposalMapItem } from 'types/proposals'
 import {
   convertDenomToContractReadableDenom,
   convertDenomToMicroDenom,
@@ -15,10 +15,10 @@ import {
 
 /// Returns the outgoing message for COSMOS
 export function messageForProposal(
-  proposal: Proposal,
+  proposal: ProposalMapItem,
   govTokenAddress?: string
 ) {
-  const msgs = Object.values(proposal.messageMap).map((mapEntry) => {
+  const msgs = proposal.messages ? Object.values(proposal.messages).map((mapEntry) => {
     // Spend proposals are inputted in human readable form (ex:
     // junox). Contracts expect things in the micro form (ex: ujunox)
     // so we, painfully, do some conversions:
@@ -67,7 +67,7 @@ export function messageForProposal(
       return makeExecutableMintMessage(mintMessage, govTokenAddress as string)
     }
     return mapEntry.message
-  })
+  }) : undefined
   const msg: Record<string, unknown> = {
     title: proposal.title,
     description: proposal.description,

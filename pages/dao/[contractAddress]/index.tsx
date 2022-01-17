@@ -90,6 +90,7 @@ const DaoHome: NextPage = () => {
             description={daoInfo.config.description}
             member={member}
             pinned={pinned}
+            contractAddress={contractAddress}
             onPin={() => {
               if (pinned) {
                 setPinnedDaos((p) => p.filter((a) => a !== contractAddress))

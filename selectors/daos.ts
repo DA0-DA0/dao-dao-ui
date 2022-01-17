@@ -37,6 +37,9 @@ export const totalStaked = selectorFamily<number, string>({
     (contractAddress) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
+      if (!client) {
+        return 0
+      }
       const response = await client.queryContractSmart(contractAddress, {
         total_staked_at_height: {},
       })

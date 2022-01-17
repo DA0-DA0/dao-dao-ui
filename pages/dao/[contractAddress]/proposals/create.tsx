@@ -1,75 +1,63 @@
-import LineAlert from 'components/LineAlert'
-import { ProposalEditor } from 'components/ProposalEditor'
-import { useSigningClient } from 'contexts/cosmwasm'
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
-import { memoForProposal, Proposal } from 'models/proposal/proposal'
-import { messageForProposal } from 'models/proposal/proposalSelectors'
-import { defaultExecuteFee } from 'util/fee'
-import { successNotify } from 'util/toast'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { proposalsCreatedAtom } from 'atoms/proposals'
-import { cleanChainError } from 'util/cleanChainError'
-import { daoSelector } from 'selectors/daos'
+import { nextDraftProposalIdAtom } from 'atoms/proposals'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import Loader from 'components/Loader'
+import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
+import { EmptyProposal } from 'models/proposal/proposal'
+import type { NextPage } from 'next'
+import { NextRouter, useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import {
+  useRecoilState,
+  useRecoilTransaction_UNSTABLE,
+  useRecoilValue,
+} from 'recoil'
+import { daoSelector } from 'selectors/daos'
+import { draftProposalsSelector } from 'selectors/proposals'
+import { createDraftProposalTransaction, draftProposalKey } from 'util/proposal'
 
 const ProposalCreate: NextPage = () => {
-  const router = useRouter()
+  const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { walletAddress, signingClient } = useSigningClient()
-
-  // Used to notify the proposal list that it needs to update to
-  // include the newly created proposal.
-  const [_pca, setProposalsCreatedAtom] = useRecoilState(
-    proposalsCreatedAtom(contractAddress)
+  const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState<number>(
+    nextDraftProposalIdAtom
   )
+  const [proposalId, setProposalId] = useState<string>('')
+  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
+  const createDraftProposal = useRecoilTransaction_UNSTABLE(
+    createDraftProposalTransaction(contractAddress, draftProposals),
+    [contractAddress]
+  )
+  const sigInfo = useRecoilValue(daoSelector(contractAddress))
 
-  const handleProposal = async (
-    proposal: Proposal,
-    contractAddress: string,
-    govTokenAddress?: string
-  ) => {
-    setLoading(true)
-    setError('')
-    if (!signingClient || !walletAddress) {
-      setError('Wallet is not connected')
+  useEffect(() => {
+    if (!proposalId) {
+      const draftKey = draftProposalKey(nextDraftProposalId)
+      const nextId = nextDraftProposalId + 1
+      setNextDraftProposalId(nextId)
+      console.log(`initializing proposal ${draftKey}`)
+      createDraftProposal(contractAddress, {
+        draftProposal: { ...EmptyProposal } as any,
+      })
+      setProposalId(draftKey)
+      // router.replace(
+      //   `/dao/${contractAddress}/proposals/${draftKey}`
+      // )
     }
-    const propose = messageForProposal(proposal, govTokenAddress)
-    const memo = memoForProposal(proposal)
-    try {
-      const response = await signingClient?.execute(
-        walletAddress,
-        contractAddress,
-        { propose },
-        defaultExecuteFee,
-        memo
-      )
-      setLoading(false)
-      if (response) {
-        const [{ events }] = response.logs
-        const [wasm] = events.filter((e) => e.type === 'wasm')
-        const [{ value }] = wasm.attributes.filter(
-          (w) => w.key === 'proposal_id'
-        )
-        successNotify('New Proposal Created')
-        setProposalsCreatedAtom((n) => n + 1)
-        router.push(`/dao/${contractAddress}/proposals/${value}`)
-      }
-    } catch (e: any) {
-      console.error(
-        `Error submitting proposal ${JSON.stringify(proposal, undefined, 2)}`
-      )
-      console.dir(e)
-      console.error(e.message)
-      setLoading(false)
-      setError(e.message)
-    }
-  }
+  }, [
+    contractAddress,
+    createDraftProposal,
+    nextDraftProposalId,
+    setNextDraftProposalId,
+    proposalId,
+    router,
+  ])
+
+  const sidebar = (
+    <ProposalDraftSidebar
+      contractAddress={contractAddress}
+      proposalId={proposalId}
+    />
+  )
 
   return (
     <div className="grid grid-cols-6">
@@ -77,23 +65,13 @@ const ProposalCreate: NextPage = () => {
         <Breadcrumbs
           crumbs={[
             ['/dao/list', 'DAOs'],
-            [`/dao/${contractAddress}`, daoInfo.config.name],
-            [router.asPath, 'Create proposal'],
+            [`/dao/${contractAddress}`, sigInfo.config.name],
+            [router.asPath, `Creating a Draft Proposal...`],
           ]}
         />
-
-        <ProposalEditor
-          onProposal={handleProposal}
-          loading={loading}
-          contractAddress={contractAddress}
-          recipientAddress={walletAddress}
-        />
-        {error && (
-          <div className="mt-8">
-            <LineAlert variant="error" msg={cleanChainError(error)} />
-          </div>
-        )}
+        <Loader />
       </div>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
     </div>
   )
 }

@@ -1,19 +1,66 @@
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-
+import { draftProposalSelector } from 'selectors/proposals'
+import { errorAtom, loadingAtom, transactionHashAtom } from 'atoms/status'
+import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
   ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
-import { useRecoilValue } from 'recoil'
+import ProposalEditor from 'components/ProposalEditor'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { cosmWasmSigningClient} from 'selectors/cosm'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { daoSelector } from 'selectors/daos'
-import { Breadcrumbs } from 'components/Breadcrumbs'
+import { createProposal, isDraftProposalKey } from 'util/proposal'
+import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
-  const proposalId = router.query.proposalId as string
+  const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
+  const draftProposal = useRecoilValue(
+    draftProposalSelector({ contractAddress, proposalId: proposalKey })
+  )
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const error = useRecoilValue(errorAtom)
+  const loading = useRecoilValue(loadingAtom)
+
+  let content
+  let sidebar
+
+  if (draftProposal) {
+    content = (
+      <ProposalEditor
+        proposalId={proposalKey}
+        error={error}
+        loading={loading}
+        contractAddress={contractAddress}
+        recipientAddress={walletAddress}
+        multisig={false}
+      />
+    )
+    sidebar = (
+      <ProposalDraftSidebar
+        contractAddress={contractAddress}
+        proposalId={proposalKey}
+      />
+    )
+  } else {
+    content = (
+      <ProposalDetails
+        contractAddress={contractAddress}
+        proposalId={Number(proposalKey)}
+      />
+    )
+    sidebar = (
+      <ProposalDetailsSidebar
+        contractAddress={contractAddress}
+        proposalId={Number(proposalKey)}
+      />
+    )
+  }
 
   return (
     <div className="grid grid-cols-6">
@@ -22,20 +69,12 @@ const Proposal: NextPage = () => {
           crumbs={[
             ['/dao/list', 'DAOs'],
             [`/dao/${contractAddress}`, sigInfo.config.name],
-            [router.asPath, `Proposal ${proposalId}`],
+            [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
-        <ProposalDetails
-          contractAddress={contractAddress}
-          proposalId={Number(proposalId)}
-        />
+        {content}
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">
-        <ProposalDetailsSidebar
-          contractAddress={contractAddress}
-          proposalId={Number(proposalId)}
-        />
-      </div>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
     </div>
   )
 }
