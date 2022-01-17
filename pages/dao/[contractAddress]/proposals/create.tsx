@@ -39,9 +39,9 @@ const ProposalCreate: NextPage = () => {
         draftProposal: { ...EmptyProposal } as any,
       })
       setProposalId(draftKey)
-      // router.replace(
-      //   `/dao/${contractAddress}/proposals/${draftKey}`
-      // )
+      router.replace(
+        `/dao/${contractAddress}/proposals/${draftKey}`
+      )
     }
   }, [
     contractAddress,

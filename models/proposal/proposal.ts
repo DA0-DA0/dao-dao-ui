@@ -67,7 +67,7 @@ export const EmptyProposal: Proposal = {
 
 export const EmptyProposalItem: ProposalMapItem = {
   proposal: EmptyProposal,
-  id: -1,
+  id: '',
   draft: true,
 }
 

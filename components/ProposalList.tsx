@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
-import { onChainProposalsSelector, proposalsSelector } from 'selectors/proposals'
+import { proposalSelector, proposalsSelector } from 'selectors/proposals'
 import ProposalStatus from './ProposalStatus'
 import { ExtendedProposalResponse } from 'types/proposals'
 
@@ -114,15 +114,15 @@ export function ProposalList({
     proposalsRequestStartBeforeAtom
   )
 
-  const propList = useRecoilValue(proposalsSelector({
-    contractAddress,
-    startBefore,
-    limit: 10
-  }))
-  // // The proposals that we have loaded.
-  // const [propList, setPropList] = useRecoilState(
-  //   proposalListAtom(contractAddress)
-  // )
+  // const propList = useRecoilValue(proposalsSelector({
+  //   contractAddress,
+  //   startBefore,
+  //   limit: 10
+  // }))
+  // The proposals that we have loaded.
+  const [propList, setPropList] = useRecoilState(
+    proposalListAtom(contractAddress)
+  )
   // The number of proposals that have been created by the visitor and not added to the propList
   const [propsCreated, setPropsCreated] = useRecoilState(
     proposalsCreatedAtom(contractAddress)
@@ -131,7 +131,7 @@ export function ProposalList({
   // Update the proposal list with any proposals that were created
   // since we were last here.
   const newProps = useRecoilValue(
-    onChainProposalsSelector({
+    proposalsSelector({
       contractAddress,
       startBefore: getNewestLoadedProposal(propList) + propsCreated + 1,
       limit: propsCreated,
@@ -154,13 +154,13 @@ export function ProposalList({
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
-  // const existingProps = useRecoilValue(
-  //   onChainProposalsSelector({
-  //     contractAddress,
-  //     startBefore,
-  //     limit: PROP_LOAD_LIMIT,
-  //   })
-  // )
+  const existingProps = useRecoilValue(
+    proposalsSelector({
+      contractAddress,
+      startBefore,
+      limit: PROP_LOAD_LIMIT,
+    })
+  )
 
   useEffect(() => {
     // We query proposals in reverse showing the most recent (highest
@@ -195,11 +195,11 @@ export function ProposalList({
   )
 
   if (updatedProposals.length) {
-    updatedProposals.sort((l, r) => l.id - r.id).reverse()
+    updatedProposals.sort((l, r) => l?.id ?? 0 - (r?.id ?? 0)).reverse()
 
     setPropList((p) =>
       p.map((item) => {
-        if (item.id == updatedProposals[0].id) {
+        if (item?.id == updatedProposals[0]?.id) {
           return updatedProposals[0]
         }
         return item
@@ -221,7 +221,7 @@ export function ProposalList({
         {propList.map((prop, idx) => (
           <ProposalLine
             prop={prop}
-            key={prop.draftId ?? prop.id}
+            key={prop.draftId ?? prop.id ?? `prop_${idx}`}
             border={idx !== propList.length - 1 || showLoadMore}
             contractAddress={contractAddress}
             multisig={multisig}

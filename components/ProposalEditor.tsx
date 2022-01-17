@@ -22,7 +22,6 @@ import {
 import HelpTooltip from 'components/HelpTooltip'
 import { useThemeContext } from 'contexts/theme'
 import { EmptyProposal, EmptyProposalItem } from 'models/proposal/proposal'
-import { proposalMessages } from 'models/proposal/proposalSelectors'
 import { NextRouter, useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import {
@@ -78,7 +77,7 @@ import {
 } from 'util/contractConfigWrapper'
 import CustomEditor from './CustomEditor'
 
-export default function ProposalEditor({
+export function ProposalEditor({
   proposalId,
   loading,
   error,
@@ -391,8 +390,7 @@ export default function ProposalEditor({
           makeSpendMessage(
             '0', // amount
             recipientAddress,
-            contractAddress,
-            govTokenSymbol
+            contractAddress
           )
         )
       )
@@ -551,3 +549,5 @@ export default function ProposalEditor({
     </div>
   )
 }
+
+export default ProposalEditor

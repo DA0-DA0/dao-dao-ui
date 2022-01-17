@@ -4,29 +4,26 @@ import {
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
 import {
+  contractProposalMapAtom,
   proposalsRequestIdAtom,
   proposalUpdateCountAtom,
 } from 'atoms/proposals'
-import {
-  contractProposalMapAtom,
-  proposalsRequestIdAtom,
-} from 'atoms/proposals'
-import { atomFamily, selectorFamily } from 'recoil'
-import { ContractProposalMap, ProposalMap } from 'types/proposals'
-import { cosmWasmClient } from './cosm'
+import { MessageMap, MessageMapEntry } from 'models/proposal/messageMap'
 import {
   EmptyProposalResponse,
   EmptyProposalTallyResponse,
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
+import { selectorFamily } from 'recoil'
 import {
+  ContractProposalMap,
   ExtendedProposalResponse,
-  ProposalMapItem,
   ProposalKey,
+  ProposalMap,
+  ProposalMapItem,
   ProposalMessageKey,
 } from 'types/proposals'
-import { MessageMap, MessageMapEntry } from 'models/proposal/messageMap'
-import { draftProposalKeyNumber } from 'util/proposal'
+import { cosmWasmClient } from './cosm'
 
 export type ProposalIdInput = string | number
 

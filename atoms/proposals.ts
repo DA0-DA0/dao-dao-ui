@@ -7,6 +7,7 @@ import {
   ProposalMessageKey,
   ProposalMap,
   ProposalMapItem,
+  ExtendedProposalResponse,
 } from 'types/proposals'
 
 export function draftProposalItem(
@@ -48,7 +49,7 @@ export const proposalsRequestStartBeforeAtom = atom<number>({
   default: 0,
 })
 
-export const proposalListAtom = atomFamily<ProposalResponse[], string>({
+export const proposalListAtom = atomFamily<ExtendedProposalResponse[], string>({
   key: 'proposalList',
   default: [],
 })

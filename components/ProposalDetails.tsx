@@ -1,6 +1,7 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
+import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import Address from 'components/Address'
 import ProposalVotes from 'components/ProposalVotes'
 import { useSigningClient } from 'contexts/cosmwasm'
@@ -18,29 +19,13 @@ import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
-  proposalUpdateCountAtom,
   proposalVotesSelector
 } from 'selectors/proposals'
-import { ReactNode } from 'react'
-import { CheckIcon, XIcon, SparklesIcon } from '@heroicons/react/outline'
-import { getEnd } from './ProposalList'
-import { isMemberSelector } from 'selectors/daos'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import toast from 'react-hot-toast'
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { defaultExecuteFee } from 'util/fee'
-import { decodedMessagesString } from 'util/messagehelpers'
-import { useSigningClient } from 'contexts/cosmwasm'
-import { cleanChainError } from 'util/cleanChainError'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
-import { proposalsUpdated, proposalUpdateCountAtom } from 'atoms/proposals'
 import { cleanChainError } from 'util/cleanChainError'
 import { convertMicroDenomToDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
-import {
-  decodedMessagesString,
-  decodeMessages
-} from 'util/messagehelpers'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { getEnd } from './ProposalList'
 import ProposalStatus from './ProposalStatus'
 

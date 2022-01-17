@@ -3,12 +3,9 @@ import {
   ProposalMessageType,
 } from 'models/proposal/messageMap'
 import { ProposalAction } from 'models/proposal/proposalActions'
-import {
-  getMintAmount,
-} from 'models/proposal/proposalSelectors'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeMintMessage, getMintRecipient } from 'util/messagehelpers'
+import { makeMintMessage, getMintRecipient, getMintAmount } from 'util/messagehelpers'
 import { draftProposalMessageSelector } from 'selectors/proposals'
 import { useRecoilState } from 'recoil'
 

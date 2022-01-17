@@ -133,6 +133,40 @@ export function makeMintMessage(
   return msg
 }
 
+export function getMintAmount(
+  mintMessage?: MessageMapEntry
+): Uint128 | undefined {
+  if (mintMessage?.messageType === ProposalMessageType.Mint) {
+    const amount = (mintMessage.message as any)?.mint.amount
+    return amount
+  }
+  return undefined
+}
+
+export function getSpendAmount(
+  spendMsg?: MessageMapEntry
+): Uint128 | undefined {
+  if (spendMsg?.messageType === ProposalMessageType.Spend) {
+    const coins = (spendMsg.message as any)?.bank?.send?.amount as Coin[]
+    if (coins?.length) {
+      return coins[0]?.amount
+    }
+  }
+  return undefined
+}
+
+export function getSpendRecipient(
+  spendMsg?: MessageMapEntry
+): string | undefined {
+  if (spendMsg?.messageType === ProposalMessageType.Spend) {
+    const send = (spendMsg.message as any)?.bank?.send
+    if (send) {
+      return send?.to_address
+    }
+  }
+  return undefined
+}
+
 export function validDaoInstantiateMessageParams(
   name?: string,
   description?: string,

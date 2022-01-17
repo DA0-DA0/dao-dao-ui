@@ -1,16 +1,12 @@
-import { BankMsg, Proposal } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  MessageMapEntry,
-  ProposalMessageType,
-} from 'models/proposal/messageMap'
-import { ProposalAction } from 'models/proposal/proposalActions'
-import {
-  getSpendAmount,
-  getSpendRecipient,
-} from 'models/proposal/proposalSelectors'
+import { MessageMapEntry } from 'models/proposal/messageMap'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
-import { getDenom, makeSpendMessage } from '../util/messagehelpers'
+import {
+  getDenom,
+  makeSpendMessage,
+  getSpendAmount,
+  getSpendRecipient,
+} from '../util/messagehelpers'
 import { useRecoilState } from 'recoil'
 import { draftProposalMessageSelector } from 'selectors/proposals'
 

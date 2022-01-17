@@ -1,7 +1,7 @@
 import { ProposalEditor } from 'components/ProposalEditor'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { memoForProposal, Proposal } from 'models/proposal/proposal'
+import { memoForProposal } from 'models/proposal/proposal'
 import { successNotify } from 'util/toast'
 import LineAlert from 'components/LineAlert'
 import { cleanChainError } from 'util/cleanChainError'
@@ -11,7 +11,7 @@ import { sigSelector } from 'selectors/multisigs'
 import { useState } from 'react'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { proposalsCreatedAtom } from 'atoms/proposals'
-import { messageForProposal } from 'models/proposal/proposalSelectors'
+// import { messageForProposal } from 'models/proposal/proposalSelectors'
 import { defaultExecuteFee } from 'util/fee'
 
 const ProposalCreate: NextPage = () => {
@@ -83,11 +83,11 @@ const ProposalCreate: NextPage = () => {
         />
 
         <ProposalEditor
-          onProposal={handleProposal}
           loading={loading}
           contractAddress={contractAddress}
           recipientAddress={walletAddress}
-          multisig
+          proposalId={proposalId}
+          multisig={true}
         />
         {error && (
           <div className="mt-8">
