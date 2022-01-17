@@ -81,7 +81,6 @@ function Nav() {
         <div className="ml-1">
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">DAOs</h3>
-
             <ul className="list-none ml-2">
               {daoAddresses.map(({ dao, address }) => (
                 <li key={dao.config.name} className="mt-1">
@@ -93,17 +92,14 @@ function Nav() {
                 </li>
               ))}
             </ul>
-
-            {!daoAddresses.length && (
-              <ul className="list-none ml-2 mt-2">
-                <li className="mt-1">
-                  <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
-                  <Link href="/dao/list">
-                    <a>All DAOs</a>
-                  </Link>
-                </li>
-              </ul>
-            )}
+            <ul className="list-none ml-2 mt-2">
+              <li className="mt-1">
+                <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <Link href="/dao/list">
+                  <a>All DAOs</a>
+                </Link>
+              </li>
+            </ul>
           </div>
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
@@ -120,16 +116,14 @@ function Nav() {
               ))}
             </ul>
 
-            {!sigAddresses.length && (
-              <ul className="list-none ml-2">
-                <li className="mt-1">
-                  <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
-                  <Link href="/multisig/list">
-                    <a>All Multisigs</a>
-                  </Link>
-                </li>
-              </ul>
-            )}
+            <ul className="list-none ml-2">
+              <li className="mt-1">
+                <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <Link href="/multisig/list">
+                  <a>All Multisigs</a>
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
