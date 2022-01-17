@@ -10,6 +10,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { proposalCount } from 'selectors/daos'
 import { onChainProposalsSelector, proposalsSelector } from 'selectors/proposals'
 import ProposalStatus from './ProposalStatus'
+import { ExtendedProposalResponse } from 'types/proposals'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -68,15 +69,17 @@ function ProposalLine({
   contractAddress,
   multisig,
 }: {
-  prop: ProposalResponse
+  prop: ExtendedProposalResponse
   border: boolean
   contractAddress: string
   multisig?: boolean
 }) {
+  const proposalKey = prop.draftId ?? prop.id
+  const displayKey = prop.draftId ? prop.draftId : zeroPad(prop.id ?? 0, 6)
   return (
     <Link
       href={`/${multisig ? 'multisig' : 'dao'}/${contractAddress}/proposals/${
-        prop.id
+        proposalKey
       }`}
     >
       <a>
@@ -86,7 +89,7 @@ function ProposalLine({
           }
         >
           <p className="font-mono text-sm text-secondary">
-            # {zeroPad(prop.id ?? 0, 6)}
+            # {displayKey}
           </p>
           <ProposalStatus status={prop.status} />
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
@@ -184,7 +187,7 @@ export function ProposalList({
         {propList.map((prop, idx) => (
           <ProposalLine
             prop={prop}
-            key={prop.id}
+            key={prop.draftId ?? prop.id}
             border={idx !== propList.length - 1 || showLoadMore}
             contractAddress={contractAddress}
             multisig={multisig}

@@ -16,11 +16,13 @@ import {
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
 import {
+  ExtendedProposalResponse,
   ProposalMapItem,
   ProposalKey,
   ProposalMessageKey,
 } from 'types/proposals'
 import { MessageMap, MessageMapEntry } from 'models/proposal/messageMap'
+import { draftProposalKeyNumber } from 'util/proposal'
 
 export type ProposalIdInput = string | number
 
@@ -98,7 +100,7 @@ export const proposalUpdateCountAtom = atomFamily<
 
 export const proposalSelector = selectorFamily<
   ProposalResponse | undefined,
-  { contractAddress: string; proposalId: number }
+  { contractAddress: string; proposalId: string | number }
 >({
   key: 'proposalSelector',
   get:
@@ -107,16 +109,20 @@ export const proposalSelector = selectorFamily<
       proposalId,
     }: {
       contractAddress: string
-      proposalId: number
+      proposalId: string | number
     }) =>
     async ({ get }) => {
-      const draftProposal = get(
-        draftProposalSelector({ contractAddress, proposalId })
-      )
-      if (draftProposal?.proposal) {
-        return draftProposal?.proposal
+      if (typeof proposalId === 'string') {
+        const draftProposal = get(
+          draftProposalSelector({ contractAddress, proposalId })
+        )
+        if (draftProposal?.proposal) {
+          return draftProposal?.proposal
+        }
       }
-      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+      if (typeof proposalId === 'number') {
+        get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+      }
 
       const client = get(cosmWasmClient)
       try {
@@ -204,7 +210,7 @@ export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
 })
 
 export const proposalsSelector = selectorFamily<
-  ProposalResponse[],
+  ExtendedProposalResponse[],
   {
     contractAddress: string
     startBefore: number
@@ -218,16 +224,16 @@ export const proposalsSelector = selectorFamily<
       const onChainProposalList = get(
         onChainProposalsSelector({ contractAddress, startBefore, limit })
       )
-      let draftProposalItems: ProposalResponse[] = []
+      let draftProposalItems: ExtendedProposalResponse[] = []
       // Add in draft proposals:
       const draftProposals = get(draftProposalsSelector(contractAddress))
       if (draftProposals) {
         draftProposalItems = Object.values(draftProposals).map((draft) => {
-          const proposalResponse: ProposalResponse = {
+          const proposalResponse: ExtendedProposalResponse = {
             ...EmptyProposalResponse,
             ...draft.proposal,
             status: 'draft' as any,
-            id: draft.id,
+            draftId: draft.id,
             threshold: { ...EmptyThresholdResponse },
             total_weight: 0,
           }
@@ -273,12 +279,14 @@ export const draftProposalSelector = selectorFamily<
   set:
     ({ contractAddress, proposalId }) =>
     ({ set, get }, newValue) => {
-      const draftProposals = get(proposalMapSelector(contractAddress))
-      const updatedDraftProposals = {
-        ...draftProposals,
-        [proposalId]: newValue,
+      if (newValue) {
+        const draftProposals = get(proposalMapSelector(contractAddress))
+        const updatedDraftProposals: ProposalMap = {
+          ...draftProposals,
+          [proposalId]: newValue as any,
+        }
+        set(proposalMapSelector(contractAddress), updatedDraftProposals)
       }
-      set(proposalMapSelector(contractAddress), updatedDraftProposals)
     },
 })
 

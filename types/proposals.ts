@@ -3,18 +3,18 @@ import { MessageMap } from 'models/proposal/messageMap'
 
 export type ProposalKey = {
   contractAddress: string
-  proposalId: number
+  proposalId: string
 }
 
 export type ProposalMessageKey = {
   contractAddress: string
-  proposalId: number
+  proposalId: string
   messageId: string
 }
 
 export interface ProposalMapItem {
   proposal: Proposal
-  id: number
+  id: string
   activeMessageIndex?: number
   draft: boolean,
   messages?: MessageMap
@@ -30,4 +30,8 @@ export type ProposalMap = {
 // proposals
 export type ContractProposalMap = {
   [key: string]: ProposalMap
+}
+
+export interface ExtendedProposalResponse extends ProposalResponse {
+  draftId?: string
 }

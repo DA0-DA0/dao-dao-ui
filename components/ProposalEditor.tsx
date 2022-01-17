@@ -49,7 +49,7 @@ import {
   makeSpendMessage,
   messageForDraftProposal,
 } from 'util/messagehelpers'
-import { createProposalTransaction, isProposal } from 'util/proposal'
+import { createProposalTransaction, draftProposalKey, isProposal } from 'util/proposal'
 import InputField, {
   InputFieldLabel,
   makeFieldErrorMessage,
@@ -82,7 +82,7 @@ export default function ProposalEditor({
   recipientAddress,
   multisig,
 }: {
-  proposalId: number
+  proposalId: string
   loading?: boolean
   error?: string
   contractAddress: string
@@ -136,8 +136,8 @@ export default function ProposalEditor({
     [walletAddress, signingClient, contractAddress, draftProposals]
   )
 
-  if (!proposalId || proposalId < 0) {
-    proposalId = nextDraftProposalId
+  if (!proposalId) {
+    proposalId = draftProposalKey(nextDraftProposalId)
   }
 
   const isExistingDraftProposal = !!proposalMapItem?.proposal
@@ -248,7 +248,7 @@ export default function ProposalEditor({
   }
 
   function updateProposal(updatedProposal: Proposal) {
-    const updatedProposalItem = {
+    const updatedProposalItem: ProposalMapItem = {
       ...(proposalMapItem ?? EmptyProposalItem),
       id: proposalId,
       proposal: updatedProposal,

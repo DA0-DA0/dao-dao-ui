@@ -19,7 +19,7 @@ export default function MintEditor({
   denom,
 }: {
   contractAddress: string,
-  proposalId: number,
+  proposalId: string,
   mintMsg?: MessageMapEntry
   denom: string
 }) {

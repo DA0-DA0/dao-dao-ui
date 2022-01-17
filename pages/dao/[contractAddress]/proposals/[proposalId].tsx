@@ -12,16 +12,16 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { cosmWasmSigningClient} from 'selectors/cosm'
 import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { daoSelector } from 'selectors/daos'
-import { createProposal } from 'util/proposal'
+import { createProposal, isDraftProposalKey } from 'util/proposal'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
-  const proposalId = parseInt(router.query.proposalId as string)
+  const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
   const draftProposal = useRecoilValue(
-    draftProposalSelector({ contractAddress, proposalId })
+    draftProposalSelector({ contractAddress, proposalId: proposalKey })
   )
   const walletAddress = useRecoilValue(walletAddressSelector)
   const error = useRecoilValue(errorAtom)
@@ -33,31 +33,31 @@ const Proposal: NextPage = () => {
   if (draftProposal) {
     content = (
       <ProposalEditor
-        proposalId={proposalId}
+        proposalId={proposalKey}
         error={error}
         loading={loading}
         contractAddress={contractAddress}
         recipientAddress={walletAddress}
-        multisig={true}
+        multisig={false}
       />
     )
     sidebar = (
       <ProposalDraftSidebar
         contractAddress={contractAddress}
-        proposalId={proposalId}
+        proposalId={proposalKey}
       />
     )
   } else {
     content = (
       <ProposalDetails
         contractAddress={contractAddress}
-        proposalId={Number(proposalId)}
+        proposalId={Number(proposalKey)}
       />
     )
     sidebar = (
       <ProposalDetailsSidebar
         contractAddress={contractAddress}
-        proposalId={Number(proposalId)}
+        proposalId={Number(proposalKey)}
       />
     )
   }
@@ -69,7 +69,7 @@ const Proposal: NextPage = () => {
           crumbs={[
             ['/dao/list', 'DAOs'],
             [`/dao/${contractAddress}`, sigInfo.config.name],
-            [router.asPath, `Proposal ${proposalId}`],
+            [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
         {content}

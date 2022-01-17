@@ -8,7 +8,7 @@ export function ProposalDraftSidebar({
   proposalId,
 }: {
   contractAddress: string
-  proposalId: number
+  proposalId: string
 }) {
   const draftProposal = useRecoilValue(
     draftProposalSelector({ contractAddress, proposalId })

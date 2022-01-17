@@ -9,27 +9,9 @@ import {
   ProposalMapItem,
 } from 'types/proposals'
 
-export function makeProposalKeyString({
-  contractAddress,
-  proposalId,
-}: ProposalKey): string {
-  return `${contractAddress},${proposalId}`
-}
-
-export function parseProposalKeyString(
-  keyString: string
-): ProposalKey | undefined {
-  const [contractAddress, proposalIdString] = keyString.split(',')
-  const proposalId = parseInt(proposalIdString ?? '-1', 10)
-  return {
-    contractAddress,
-    proposalId,
-  }
-}
-
 export function draftProposalItem(
   proposal: Proposal,
-  id: number
+  id: string
 ): ProposalMapItem {
   return {
     proposal,

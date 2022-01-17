@@ -1,38 +1,19 @@
-import ProposalEditor from 'components/ProposalEditor'
+import { nextDraftProposalIdAtom } from 'atoms/proposals'
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import Loader from 'components/Loader'
+import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
+import { EmptyProposal } from 'models/proposal/proposal'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { EmptyProposal, memoForProposal } from 'models/proposal/proposal'
-import { defaultExecuteFee } from 'util/fee'
-import Link from 'next/link'
-import { Proposal } from '@dao-dao/types/contracts/cw3-dao'
-import { createDraftProposalTransaction, createProposal } from 'util/proposal'
 import {
   useRecoilState,
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
-  useResetRecoilState,
-  useSetRecoilState,
 } from 'recoil'
-import {
-  nextDraftProposalIdAtom,
-} from 'atoms/proposals'
-import { draftProposalsSelector } from 'selectors/proposals'
 import { daoSelector } from 'selectors/daos'
-import {
-  cosmWasmSigningClient,
-} from 'selectors/cosm'
-
-import { walletAddress as walletAddressSelector} from 'selectors/treasury'
-
-import {
-  transactionHashAtom,
-  loadingAtom,
-  errorAtom,
-} from 'atoms/status'
-
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
+import { draftProposalsSelector } from 'selectors/proposals'
+import { createDraftProposalTransaction, draftProposalKey } from 'util/proposal'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -40,11 +21,7 @@ const ProposalCreate: NextPage = () => {
   const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState<number>(
     nextDraftProposalIdAtom
   )
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const [error, setError] = useRecoilState(errorAtom)
-  const [loading, setLoading] = useRecoilState(loadingAtom)
-  const [proposalId, setProposalId] = useState<number>(-1)
+  const [proposalId, setProposalId] = useState<string>('')
   const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
   const createDraftProposal = useRecoilTransaction_UNSTABLE(
     createDraftProposalTransaction(contractAddress, draftProposals),
@@ -53,18 +30,34 @@ const ProposalCreate: NextPage = () => {
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
 
   useEffect(() => {
-    if (proposalId < 0) {
+    if (!proposalId) {
+      const draftKey = draftProposalKey(nextDraftProposalId)
       const nextId = nextDraftProposalId + 1
       createDraftProposal(contractAddress, {
         draftProposal: { ...EmptyProposal } as any,
       })
-      setProposalId(nextId)
+      setProposalId(draftKey)
       setNextDraftProposalId(nextId)
+      router.replace(
+        `/dao/${contractAddress}/proposals/${draftKey}`
+      )
     }
-  }, [contractAddress, createDraftProposal, nextDraftProposalId, setNextDraftProposalId, proposalId])
+  }, [
+    contractAddress,
+    createDraftProposal,
+    nextDraftProposalId,
+    setNextDraftProposalId,
+    proposalId,
+    router,
+  ])
 
-  const sidebar = <ProposalDraftSidebar contractAddress={contractAddress} proposalId={proposalId} />
-  
+  const sidebar = (
+    <ProposalDraftSidebar
+      contractAddress={contractAddress}
+      proposalId={proposalId}
+    />
+  )
+
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
@@ -72,17 +65,10 @@ const ProposalCreate: NextPage = () => {
           crumbs={[
             ['/dao/list', 'DAOs'],
             [`/dao/${contractAddress}`, sigInfo.config.name],
-            [router.asPath, `Create Proposal`],
+            [router.asPath, `Creating a Draft Proposal...`],
           ]}
         />
-        <ProposalEditor
-          proposalId={proposalId}
-          error={error}
-          loading={loading}
-          contractAddress={contractAddress}
-          recipientAddress={walletAddress}
-          multisig={false}
-        />
+        <Loader />
       </div>
       <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
     </div>

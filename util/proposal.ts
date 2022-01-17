@@ -20,6 +20,27 @@ export function isProposal(
   return (proposal as Proposal).proposer !== undefined
 }
 
+export function draftProposalKey(proposalId: number): string {
+  return `draft:${proposalId}`
+}
+
+export function isDraftProposalKey(proposalKey: string): boolean {
+  return proposalKey.startsWith('draft:')
+}
+
+export function draftProposalKeyNumber(proposalKey: string): number {
+  if (isDraftProposalKey(proposalKey)) {
+    const str = proposalKey.substring(proposalKey.indexOf('draft:'))
+    try {
+      const num = parseInt(str)
+      return num
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  return -1
+}
+
 export const createDraftProposalTransaction =
   (contractAddress: string, draftProposals: ProposalMap) =>
   ({ get, set }: TransactionInterface_UNSTABLE) => {
@@ -38,13 +59,14 @@ export const createDraftProposalTransaction =
         draftProposal: Proposal
       }
     ) => {
+      const proposalKey = draftProposalKey(nextDraftProposalId)
       setContractProposalMap({
         ...contractProposalMap,
         [contractAddress]: {
           ...draftProposals,
-          [nextDraftProposalId + '']: draftProposalItem(
+          [proposalKey]: draftProposalItem(
             draftProposal,
-            nextDraftProposalId
+            proposalKey
           ),
         },
       })
@@ -75,7 +97,7 @@ export const createDraftProposalTransaction =
     const setContractProposalMap = (contractProposalMap: ContractProposalMap) =>
       set(contractProposalMapAtom, contractProposalMap)
 
-    const deleteDraftProposal = (proposalId: number) => {
+    const deleteDraftProposal = (proposalId: string) => {
       // delete the draft
       console.log(`deleteDraftProposal ${contractAddress}:${proposalId}`)
       const updatedProposals = { ...draftProposals }
@@ -87,7 +109,7 @@ export const createDraftProposalTransaction =
       setContractProposalMap(updatedMap)
     }
 
-    return async (proposalId: number, propose: Proposal) => {
+    return async (proposalId: string, propose: Proposal) => {
       setLoading(true)
       setError('')
       const memo = memoForProposal(propose as any)
