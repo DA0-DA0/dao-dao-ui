@@ -1,9 +1,9 @@
 import { STATUS_COLORS } from 'util/constants'
-import StatusIcons from './StatusIcons'
+import { StatusIcons } from '../StatusIcons'
 
 type ProposalStatusProps = { status: string }
 
-function ProposalStatus({ status }: ProposalStatusProps) {
+export function ProposalStatus({ status }: ProposalStatusProps) {
   return (
     <div style={{ color: STATUS_COLORS[status] }}>
       {StatusIcons[status]}
@@ -11,5 +11,3 @@ function ProposalStatus({ status }: ProposalStatusProps) {
     </div>
   )
 }
-
-export default ProposalStatus
