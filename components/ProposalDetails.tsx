@@ -41,7 +41,6 @@ function executeProposalVote(
     toast.error('Please connect your wallet')
     return
   }
-  console.log('loading')
   setLoading(true)
   signingClient
     .execute(
@@ -59,7 +58,6 @@ function executeProposalVote(
       toast.error(cleanChainError(err.message))
     })
     .finally(() => {
-      console.log('done')
       setLoading(false)
       onDone()
     })
@@ -77,7 +75,6 @@ function executeProposalExecute(
     toast.error('Please connect your wallet')
     return
   }
-  console.log('loading')
   setLoading(true)
   signingClient
     .execute(
@@ -95,7 +92,6 @@ function executeProposalExecute(
       toast.error(cleanChainError(err.message))
     })
     .finally(() => {
-      console.log('done')
       setLoading(false)
       onDone()
     })
@@ -421,8 +417,6 @@ export function ProposalDetails({
   const [actionLoading, setActionLoading] = useRecoilState(
     proposalActionLoading
   )
-  console.log('actionLoading:')
-  console.log(actionLoading)
 
   const wallet = useRecoilValue(walletAddress)
   // If token balances are loading we don't know if the user is a
