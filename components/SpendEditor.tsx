@@ -11,6 +11,8 @@ import {
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeSpendMessage } from '../util/messagehelpers'
+import { useRecoilState } from 'recoil'
+import { draftProposalMessageSelector } from 'selectors/proposals'
 
 export default function SpendEditor({
   contractAddress,
@@ -21,19 +23,24 @@ export default function SpendEditor({
   updateProposal
 }: {
   contractAddress: string,
-  proposalId: number,
+  proposalId: string,
   msgIndex: number,
-  spendMsg?: BankMsg
+  spendMsg?: MessageMapEntry
   initialRecipientAddress: string
   updateProposal: (proposal: Proposal) => void
 }) {
   const [validAddress, setValidAddress] = useState(
     isValidAddress(initialRecipientAddress)
   )
+  const [spendMessage, setSpendMessage] = useRecoilState(draftProposalMessageSelector({
+    contractAddress,
+    proposalId,
+    messageId: spendMsg?.id ?? ''
+  }))
 
   let recipientAddress = getSpendRecipient(spendMsg) || initialRecipientAddress
 
-  let amount = getSpendAmount(spendMsg) ?? ''
+  let amount = getSpendAmount(spendMessage) ?? ''
 
   function setAmount(newAmount: string) {
     amount = newAmount
@@ -48,27 +55,19 @@ export default function SpendEditor({
     const recipient = options?.recipientAddress ?? recipientAddress
 
     try {
-      // const id = spendMsg?.id ?? ''
-      // const messageType = spendMsg?.messageType ?? ProposalMessageType.Spend
-      // let action: ProposalAction
+      const id = spendMsg?.id ?? `${msgIndex}`
+      const messageType = spendMsg?.messageType ?? ProposalMessageType.Spend
+      const order = msgIndex
 
-      const message = makeSpendMessage(amount, recipient, contractAddress)
-      console.dir(message)
-      // if (id) {
-      //   action = {
-      //     type: 'updateMessage',
-      //     id,
-      //     message,
-      //   }
-      // } else {
-      //   action = {
-      //     type: 'addMessage',
-      //     message,
-      //     messageType,
-      //   }
-      // }
-      // // dispatch(action)
-      // console.dir(action)
+      const message = makeSpendMessage(amount, recipient, contractAddress, spendMsg?.message?.denom)
+      const updatedSpendMessage: MessageMapEntry = {
+        ...spendMsg,
+        id,
+        messageType,
+        order,
+        message
+      }
+      setSpendMessage(updatedSpendMessage)
     } catch (e) {}
   }
 
@@ -98,12 +97,12 @@ export default function SpendEditor({
       </label>
       <input
         type="number"
-        id="amount"
-        value={amount}
+        id="amount"       
         className="input input-bordered rounded box-border p-3 w-full text-xl"
         name="amount"
         readOnly={false}
         onChange={handleAmount}
+        defaultValue={amount}
       />
       <label htmlFor="recipientAddress" className="block mt-4">
         Recipient Address{validAddress ? '' : ' (Invalid Address)'}
