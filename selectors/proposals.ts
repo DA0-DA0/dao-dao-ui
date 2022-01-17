@@ -3,7 +3,10 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { proposalsRequestIdAtom } from 'atoms/proposals'
+import {
+  proposalsRequestIdAtom,
+  proposalUpdateCountAtom,
+} from 'atoms/proposals'
 import { atomFamily, selectorFamily } from 'recoil'
 import { cosmWasmClient } from './cosm'
 
@@ -65,20 +68,6 @@ export const onChainProposalsSelector = selectorFamily<
       })
       return proposals
     },
-})
-
-// Indicates how many times a given proposal has been updated via the
-// UI. For example, voting on a proposal ought to increment the update
-// count for the proposal.
-//
-// This is used by proposal selectors so that they might update when a
-// UI action triggers the database to change.
-export const proposalUpdateCountAtom = atomFamily<
-  number,
-  { contractAddress: string; proposalId: number }
->({
-  key: 'proposalUpdateCountAtom',
-  default: 0,
 })
 
 export const proposalSelector = selectorFamily<
