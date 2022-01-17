@@ -38,6 +38,7 @@ const Proposal: NextPage = () => {
         loading={loading}
         contractAddress={contractAddress}
         recipientAddress={walletAddress}
+        multisig={true}
       />
     )
     sidebar = (

@@ -1,3 +1,4 @@
+import { BankMsg, Proposal } from '@dao-dao/types/contracts/cw3-dao'
 import {
   MessageMapEntry,
   ProposalMessageType,
@@ -8,26 +9,29 @@ import {
   getSpendRecipient,
 } from 'models/proposal/proposalSelectors'
 import { FormEvent, useState } from 'react'
-import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenom,
-} from 'util/conversion'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeSpendMessage } from '../util/messagehelpers'
 
 export default function SpendEditor({
-  dispatch,
   contractAddress,
+  proposalId,
+  msgIndex,
+  initialRecipientAddress,
   spendMsg,
+  updateProposal
 }: {
-  dispatch: (action: ProposalAction) => void
-  spendMsg?: MessageMapEntry
-  contractAddress: string
+  contractAddress: string,
+  proposalId: number,
+  msgIndex: number,
+  spendMsg?: BankMsg
+  initialRecipientAddress: string
+  updateProposal: (proposal: Proposal) => void
 }) {
-  const [address, setAddress] = useState('')
-  const [validAddress, setValidAddress] = useState(true)
+  const [validAddress, setValidAddress] = useState(
+    isValidAddress(initialRecipientAddress)
+  )
 
-  let recipientAddress = getSpendRecipient(spendMsg) || ''
+  let recipientAddress = getSpendRecipient(spendMsg) || initialRecipientAddress
 
   let amount = getSpendAmount(spendMsg) ?? ''
 
@@ -44,31 +48,34 @@ export default function SpendEditor({
     const recipient = options?.recipientAddress ?? recipientAddress
 
     try {
-      const id = spendMsg?.id ?? ''
-      const messageType = spendMsg?.messageType ?? ProposalMessageType.Spend
-      let action: ProposalAction
+      // const id = spendMsg?.id ?? ''
+      // const messageType = spendMsg?.messageType ?? ProposalMessageType.Spend
+      // let action: ProposalAction
 
       const message = makeSpendMessage(amount, recipient, contractAddress)
-      if (id) {
-        action = {
-          type: 'updateMessage',
-          id,
-          message,
-        }
-      } else {
-        action = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-      }
-      dispatch(action)
+      console.dir(message)
+      // if (id) {
+      //   action = {
+      //     type: 'updateMessage',
+      //     id,
+      //     message,
+      //   }
+      // } else {
+      //   action = {
+      //     type: 'addMessage',
+      //     message,
+      //     messageType,
+      //   }
+      // }
+      // // dispatch(action)
+      // console.dir(action)
     } catch (e) {}
   }
 
   function handleRecipientAddress(e: React.FormEvent<HTMLInputElement>) {
+    const address = e.currentTarget?.value
     const valid = !!(address && isValidAddress(address))
-    updateSpend(e, { recipientAddress: address })
+    updateSpend(undefined, { recipientAddress: address })
     setValidAddress(valid)
   }
 
@@ -77,52 +84,39 @@ export default function SpendEditor({
     setAmount(amount)
   }
 
-  return (
-    <div className="grid grid-cols-3 gap-2">
-      <div className="form-control col-span-2">
-        <label htmlFor="recipientAddress" className="label">
-          <span className="label-text text-secondary text-medium ">
-            Recipient address
-          </span>
-        </label>
-        <input
-          type="text"
-          id="recipientAddress"
-          className={
-            'input input-bordered' + (!validAddress ? ' input-error' : '')
-          }
-          name="recipientAddress"
-          onChange={(e) => setAddress(e.target.value)}
-          onBlur={handleRecipientAddress}
-          value={address}
-        />
-        {!validAddress && (
-          <label className="label">
-            <span className="label-text-alt text-error">Invalid address</span>
-          </label>
-        )}
-      </div>
+  let inputBaseClass =
+    'input input-bordered rounded box-border p-3 w-full text-xl'
+  let inputErrorClass =
+    'input input-bordered rounded box-border p-3 w-full text-xl bg-error'
 
-      <div className="form-control">
-        <label htmlFor="recipientAddress" className="label">
-          <span className="label-text text-secondary text-medium ">Amount</span>
-        </label>
-        <input
-          type="number"
-          id="recipientAddress"
-          className="input input-bordered"
-          name="amount"
-          onChange={handleAmount}
-          value={amount}
-        />
-        <label className="label">
-          <span className="label-text-alt w-full text-right mr-1">
-            {convertDenomToHumanReadableDenom(
-              process.env.NEXT_PUBLIC_STAKING_DENOM as string
-            )}
-          </span>
-        </label>
-      </div>
+  let addressClass = validAddress ? inputBaseClass : inputErrorClass
+
+  return (
+    <div>
+      <label htmlFor="amount" className="block mt-4">
+        Amount
+      </label>
+      <input
+        type="number"
+        id="amount"
+        value={amount}
+        className="input input-bordered rounded box-border p-3 w-full text-xl"
+        name="amount"
+        readOnly={false}
+        onChange={handleAmount}
+      />
+      <label htmlFor="recipientAddress" className="block mt-4">
+        Recipient Address{validAddress ? '' : ' (Invalid Address)'}
+      </label>
+      <input
+        type="text"
+        id="recipientAddress"
+        className={addressClass}
+        name="recipientAddress"
+        readOnly={false}
+        onChange={handleRecipientAddress}
+        value={recipientAddress}
+      />
     </div>
   )
 }

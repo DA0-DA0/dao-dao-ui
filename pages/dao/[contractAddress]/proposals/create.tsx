@@ -18,7 +18,7 @@ import {
   nextDraftProposalIdAtom,
 } from 'atoms/proposals'
 import { draftProposalsSelector } from 'selectors/proposals'
-
+import { daoSelector } from 'selectors/daos'
 import {
   cosmWasmSigningClient,
 } from 'selectors/cosm'
@@ -30,6 +30,9 @@ import {
   loadingAtom,
   errorAtom,
 } from 'atoms/status'
+
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -47,8 +50,7 @@ const ProposalCreate: NextPage = () => {
     createDraftProposalTransaction(contractAddress, draftProposals),
     [contractAddress]
   )
-  const setTransactionHash = useSetRecoilState(transactionHashAtom)
-
+  const sigInfo = useRecoilValue(daoSelector(contractAddress))
 
   useEffect(() => {
     if (proposalId < 0) {
@@ -61,29 +63,29 @@ const ProposalCreate: NextPage = () => {
     }
   }, [contractAddress, createDraftProposal, nextDraftProposalId, setNextDraftProposalId, proposalId])
 
-  // const handleProposal = createProposal({
-  //   contractAddress,
-  //   router,
-  //   walletAddress,
-  //   signingClient,
-  //   setTransactionHash,
-  //   setError,
-  //   setLoading,
-  //   // resetOnChainProposals
-  // })
-
+  const sidebar = <ProposalDraftSidebar contractAddress={contractAddress} proposalId={proposalId} />
+  
   return (
-    <>
-      <div className="flex flex-col w-full">
+    <div className="grid grid-cols-6">
+      <div className="w-full col-span-4 p-6">
+        <Breadcrumbs
+          crumbs={[
+            ['/dao/list', 'DAOs'],
+            [`/dao/${contractAddress}`, sigInfo.config.name],
+            [router.asPath, `Create Proposal`],
+          ]}
+        />
         <ProposalEditor
           proposalId={proposalId}
           error={error}
           loading={loading}
           contractAddress={contractAddress}
           recipientAddress={walletAddress}
+          multisig={false}
         />
       </div>
-    </>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+    </div>
   )
 }
 
