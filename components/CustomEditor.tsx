@@ -4,12 +4,13 @@ import {
   ProposalMessageType,
 } from 'models/proposal/messageMap'
 import { ProposalAction } from 'models/proposal/proposalActions'
-import React, { useState } from 'react'
-import JSONInput from 'react-json-editor-ajrm'
-// @ts-ignore
-import locale from 'react-json-editor-ajrm/locale/en'
-import { useThemeContext } from '../contexts/theme'
+import React, { useState, useEffect } from 'react'
 import { makeWasmMessage } from 'util/messagehelpers'
+
+import { UnControlled as CodeMirror } from 'react-codemirror2'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/theme/xq-light.css';
+import 'codemirror/lib/codemirror.css';
 
 type JSONError = {
   line?: number
@@ -31,7 +32,16 @@ export default function CustomEditor({
 }) {
   const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
-  const themeContext = useThemeContext()
+
+  const cmOptions = {
+    mode: 'application/json',
+    lineNumbers: true,
+    lineWrapping: true,
+    autoCloseBrackets: true,
+    tabSize: 2,
+    gutters: ['CodeMirror-lint-markers'],
+    lint: true,
+  }
 
   function updateCustom(message: any) {
     try {
@@ -57,17 +67,6 @@ export default function CustomEditor({
       dispatch(action)
     } catch (err) {
       console.error(err)
-    }
-  }
-
-  // Handles values from react-json-editor-ajrm
-  function handleMessage(msg: any) {
-    if (!msg.error) {
-      setLastInputJson(msg.jsObject)
-      setError(undefined)
-      updateCustom(msg.jsObject)
-    } else {
-      setError(msg.error)
     }
   }
 
@@ -103,19 +102,16 @@ export default function CustomEditor({
   return (
     <div className="mt-4 border box-border rounded">
       {status}
-      <JSONInput
-        id="json_editor"
-        locale={locale}
-        height="100%"
-        width="100%"
-        waitAfterKeyPress={200}
-        onChange={handleMessage}
-        onBlur={handleMessage}
-        reset={false}
-        confirmGood={false}
-        style={style}
-        placeholder={lastInputJson ? undefined : customMsg.message}
-        theme={getEditorTheme(themeContext.theme)}
+      <CodeMirror
+        value={JSON.stringify(customMsg.message)}
+        options={cmOptions}
+        autoCursor={false}
+        onBeforeChange={(editor: any, data: any, value: any) => {
+          setLastInputJson({ value })
+        }}
+        onChange={(editor: any, data: any, value: any) =>
+          setLastInputJson({ value })
+        }
       />
     </div>
   )

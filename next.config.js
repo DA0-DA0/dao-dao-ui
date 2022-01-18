@@ -5,7 +5,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 let config = {
   distDir: 'dist',
-  reactStrictMode: true,
+  reactStrictMode: false,
   productionBrowserSourceMaps: true,
   react: {
     useSuspense: false,
