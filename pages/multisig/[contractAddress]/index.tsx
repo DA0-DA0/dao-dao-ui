@@ -99,14 +99,14 @@ const Home: NextPage = () => {
 
           <PinnedButton
             pinned={pinned}
-            pinned={pinned}
             onPin={() => {
               if (pinned) {
                 setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
               } else {
                 setPinnedSigs((p) => p.concat([contractAddress]))
               }
-            }} />
+            }}
+          />
 
           <HeroContractHeader
             name={sigInfo.config.name}

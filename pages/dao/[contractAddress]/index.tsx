@@ -88,14 +88,14 @@ const DaoHome: NextPage = () => {
 
           <PinnedButton
             pinned={pinned}
-            pinned={pinned}
             onPin={() => {
               if (pinned) {
                 setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
               } else {
                 setPinnedDaos((p) => p.concat([contractAddress]))
               }
-            }} />
+            }}
+          />
 
           <HeroContractHeader
             name={daoInfo.config.name}

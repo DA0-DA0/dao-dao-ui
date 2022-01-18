@@ -49,16 +49,16 @@ export function PinnedButton({
   pinned,
   onPin,
 }: {
-  pinned: boolean,
+  pinned: boolean
   onPin: Function
 }) {
   return (
     <div className="flow-root">
-        <button onClick={(_e) => onPin()} className="float-right">
+      <button onClick={(_e) => onPin()} className="float-right">
         <TooltipWrapper
           tip={`This is ${pinned ? '' : 'not '} one of your pinned contracts`}
-      >
-          <a className='btn btn-sm normal-case text-left' >
+        >
+          <a className="btn btn-sm normal-case text-left">
             {pinned ? (
               <span>
                 <StarSolid className="inline w-5 h-5 mr-1" />
@@ -71,8 +71,8 @@ export function PinnedButton({
               </span>
             )}
           </a>
-      </TooltipWrapper>
-        </button>
+        </TooltipWrapper>
+      </button>
     </div>
   )
 }
@@ -81,8 +81,6 @@ export function HeroContractHeader({
   name,
   member,
   description,
-  pinned,
-  onPin,
 }: {
   name: string
   member: boolean
