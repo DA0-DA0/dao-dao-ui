@@ -72,22 +72,20 @@ export function HeroContractHeader({
                   <UserIcon className="inline w-5 h-5 mb-1" />{' '}
                 </TooltipWrapper>
               )}
-              <TooltipWrapper
-                tip={`This is ${
-                  pinned ? '' : 'not '
-                } one of your favorite contracts`}
-              >
-                <button onClick={(_e) => onPin()}>
-                  {pinned ? (
-                    <StarSolid className="inline w-5 h-5 mb-1" />
-                  ) : (
-                    <StarOutline className="inline w-5 h-5 mb-1" />
-                  )}
-                </button>
-              </TooltipWrapper>
             </div>
           </div>
         </div>
+        <TooltipWrapper
+          tip={`This is ${pinned ? '' : 'not '} one of your pinned contracts`}
+        >
+          <button onClick={(_e) => onPin()}>
+            {pinned ? (
+              <StarSolid className="inline w-10 h-10 mb-1" />
+            ) : (
+              <StarOutline className="inline w-10 h-10 mb-1" />
+            )}
+          </button>
+        </TooltipWrapper>
         <p className="mt-2 font-mono mb-3">{description}</p>
       </div>
     </div>
