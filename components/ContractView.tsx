@@ -45,6 +45,38 @@ export function TooltipWrapper({
   )
 }
 
+export function PinnedButton({
+  pinned,
+  onPin,
+}: {
+  pinned: boolean,
+  onPin: Function
+}) {
+  return (
+    <div className="flow-root">
+        <button onClick={(_e) => onPin()} className="float-right">
+        <TooltipWrapper
+          tip={`This is ${pinned ? '' : 'not '} one of your pinned contracts`}
+      >
+          <a className='btn btn-sm normal-case text-left' >
+            {pinned ? (
+              <span>
+                <StarSolid className="inline w-5 h-5 mr-1" />
+                Starred
+              </span>
+            ) : (
+              <span>
+                <StarOutline className="inline w-5 h-5 mr-1" />
+                Star
+              </span>
+            )}
+          </a>
+      </TooltipWrapper>
+        </button>
+    </div>
+  )
+}
+
 export function HeroContractHeader({
   name,
   member,
@@ -55,8 +87,6 @@ export function HeroContractHeader({
   name: string
   member: boolean
   description: string
-  pinned: boolean
-  onPin: Function
 }) {
   return (
     <div className="flex items-center flex-col my-3">
@@ -75,17 +105,6 @@ export function HeroContractHeader({
             </div>
           </div>
         </div>
-        <TooltipWrapper
-          tip={`This is ${pinned ? '' : 'not '} one of your pinned contracts`}
-        >
-          <button onClick={(_e) => onPin()}>
-            {pinned ? (
-              <StarSolid className="inline w-10 h-10 mb-1" />
-            ) : (
-              <StarOutline className="inline w-10 h-10 mb-1" />
-            )}
-          </button>
-        </TooltipWrapper>
         <p className="mt-2 font-mono mb-3">{description}</p>
       </div>
     </div>

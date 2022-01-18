@@ -33,6 +33,7 @@ import {
   GradientHero,
   HeroContractFooter,
   HeroContractHeader,
+  PinnedButton,
 } from 'components/ContractView'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { StakingModal, StakingMode } from 'components/StakingModal'
@@ -85,10 +86,8 @@ const DaoHome: NextPage = () => {
             ]}
           />
 
-          <HeroContractHeader
-            name={daoInfo.config.name}
-            description={daoInfo.config.description}
-            member={member}
+          <PinnedButton
+            pinned={pinned}
             pinned={pinned}
             onPin={() => {
               if (pinned) {
@@ -96,7 +95,12 @@ const DaoHome: NextPage = () => {
               } else {
                 setPinnedDaos((p) => p.concat([contractAddress]))
               }
-            }}
+            }} />
+
+          <HeroContractHeader
+            name={daoInfo.config.name}
+            description={daoInfo.config.description}
+            member={member}
           />
 
           <HeroContractFooter>

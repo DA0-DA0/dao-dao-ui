@@ -10,6 +10,7 @@ import {
   ContractBalances,
   ContractProposalsDispaly,
   GradientHero,
+  PinnedButton,
   HeroContractFooter,
   HeroContractHeader,
 } from 'components/ContractView'
@@ -96,17 +97,21 @@ const Home: NextPage = () => {
             ]}
           />
 
-          <HeroContractHeader
-            name={sigInfo.config.name}
-            member={memberInfo.member}
-            description={sigInfo.config.description}
+          <PinnedButton
+            pinned={pinned}
             pinned={pinned}
             onPin={() => {
               if (pinned) {
                 setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+              } else {
+                setPinnedSigs((p) => p.concat([contractAddress]))
               }
-              setPinnedSigs((p) => p.concat([contractAddress]))
-            }}
+            }} />
+
+          <HeroContractHeader
+            name={sigInfo.config.name}
+            member={memberInfo.member}
+            description={sigInfo.config.description}
           />
 
           <HeroContractFooter>
