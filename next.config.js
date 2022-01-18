@@ -5,13 +5,19 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 let config = {
   distDir: 'dist',
-  reactStrictMode: true,
+  reactStrictMode: false,
   productionBrowserSourceMaps: true,
   react: {
     useSuspense: false,
     wait: true,
   },
 }
+
+config.plugins?.push(
+  new options.webpack.DefinePlugin({
+    PREVENT_CODEMIRROR_RENDER: true,
+  })
+)
 
 // Only need rewrites for local development
 if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {

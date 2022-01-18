@@ -4,12 +4,12 @@ import {
   ProposalMessageType,
 } from 'models/proposal/messageMap'
 import { ProposalAction } from 'models/proposal/proposalActions'
-import React, { useState } from 'react'
-import JSONInput from 'react-json-editor-ajrm'
-// @ts-ignore
-import locale from 'react-json-editor-ajrm/locale/en'
-import { useThemeContext } from '../contexts/theme'
+import React, { useState, useEffect } from 'react'
+import JSON5 from 'json5'
 import { makeWasmMessage } from 'util/messagehelpers'
+
+import { Controlled as CodeMirror } from 'react-codemirror2'
+import 'codemirror/lib/codemirror.css'
 
 type JSONError = {
   line?: number
@@ -29,9 +29,18 @@ export default function CustomEditor({
   dispatch: (action: ProposalAction) => void
   customMsg: MessageMapEntry
 }) {
-  const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
-  const themeContext = useThemeContext()
+  const [isValidJson, setIsValidJson] = useState<boolean>(true)
+
+  const cmOptions = {
+    mode: 'application/json',
+    lineNumbers: true,
+    lineWrapping: true,
+    autoCloseBrackets: true,
+    tabSize: 2,
+    gutters: ['CodeMirror-lint-markers'],
+    lint: true,
+  }
 
   function updateCustom(message: any) {
     try {
@@ -60,62 +69,42 @@ export default function CustomEditor({
     }
   }
 
-  // Handles values from react-json-editor-ajrm
-  function handleMessage(msg: any) {
-    if (!msg.error) {
-      setLastInputJson(msg.jsObject)
-      setError(undefined)
-      updateCustom(msg.jsObject)
-    } else {
-      setError(msg.error)
-    }
-  }
-
-  let errorMessage = ''
-  let saveDisabled = false
-  if (error) {
-    saveDisabled = true
-    errorMessage = `${error.reason} at line ${error.line}`
-  }
-  if (!lastInputJson || isEqual(lastInputJson, customMsg.message)) {
-    saveDisabled = true
-  }
-  // Hide the default JSON editor warning UI
-  const style = {
-    warningBox: {
-      display: 'none',
-    },
-    body: {
-      fontFamily: 'JetBrainsMono',
-      fontSize: '14px',
-    },
-  }
   let status = (
     <div
       className={
-        error ? 'h-10 text-red-500 p-2' : 'flex h-10 text-green-500 p-2'
+        isValidJson ? 'flex h-10 text-green-500 p-2' : 'h-10 text-red-500 p-2'
       }
     >
-      {errorMessage || 'JSON is valid'}
+      {isValidJson ? 'JSON is valid' : 'JSON is invalid'}
     </div>
   )
+
+  function isJsonString(str: string) {
+    try {
+      JSON5.parse(str)
+    } catch (e) {
+      return false
+    }
+    return true
+  }
 
   return (
     <div className="mt-4 border box-border rounded">
       {status}
-      <JSONInput
-        id="json_editor"
-        locale={locale}
-        height="100%"
-        width="100%"
-        waitAfterKeyPress={200}
-        onChange={handleMessage}
-        onBlur={handleMessage}
-        reset={false}
-        confirmGood={false}
-        style={style}
-        placeholder={lastInputJson ? undefined : customMsg.message}
-        theme={getEditorTheme(themeContext.theme)}
+      <CodeMirror
+        value={
+          lastInputJson ? lastInputJson : JSON5.stringify(customMsg.message)
+        }
+        options={cmOptions}
+        onBeforeChange={(editor: any, data: any, value: any) => {
+          if (isJsonString(value)) {
+            setLastInputJson(value)
+            setIsValidJson(true)
+          } else {
+            setLastInputJson(value)
+            setIsValidJson(false)
+          }
+        }}
       />
     </div>
   )
