@@ -15,7 +15,7 @@ import { HomepageLayout } from 'components/HomepageLayout'
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
-  const [theme, setTheme] = useState('junoDark')
+  const [theme, setTheme] = useState('junoLight')
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => setLoaded(true), [])

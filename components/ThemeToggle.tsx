@@ -1,11 +1,12 @@
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import daisyuiThemes from 'styles/daisyui-themes.json'
 import { themeChange } from 'theme-change'
 import { useThemeContext } from '../contexts/theme'
 
-const themes = Object.keys(daisyuiThemes) || ['']
-export const defaultTheme = themes[0]
+const [junoLight, junoDark] = Object.keys(daisyuiThemes) || ['']
+
+export const defaultTheme = junoLight
 
 function ThemeToggle() {
   const themeContext = useThemeContext()
@@ -14,16 +15,16 @@ function ThemeToggle() {
     themeChange(false)
   })
 
-  const updatedTheme =
-    themeContext.theme !== defaultTheme ? defaultTheme : themes[1]
+  const updatedTheme = themeContext.theme !== junoLight ? junoLight : junoDark
 
   const icon =
-    themeContext.theme === themes[0] ? (
+    themeContext.theme === junoLight ? (
       <MoonIcon className="inline w-5 h-5 mr-2" />
     ) : (
       <SunIcon className="inline w-5 h-5 mr-2" />
     )
-  const text = themeContext.theme === themes[0] ? 'Dark theme' : 'Light theme'
+
+  const text = themeContext.theme === junoLight ? 'Dark theme' : 'Light theme'
 
   return (
     <button
