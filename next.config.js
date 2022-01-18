@@ -13,6 +13,12 @@ let config = {
   },
 }
 
+config.plugins?.push(
+  new options.webpack.DefinePlugin({
+    PREVENT_CODEMIRROR_RENDER: true,
+  })
+)
+
 // Only need rewrites for local development
 if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
   config.rewrites = async () => {
