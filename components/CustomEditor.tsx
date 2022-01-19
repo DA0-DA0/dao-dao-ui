@@ -25,7 +25,7 @@ export default function CustomEditor({
   const cmOptions = {
     mode: {
       name: 'javascript',
-      json: true
+      json: true,
     },
     lineNumbers: true,
     lineWrapping: true,
