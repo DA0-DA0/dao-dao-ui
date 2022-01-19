@@ -1,6 +1,6 @@
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import ProposalVotes from 'components/ProposalVotes'
-import Address from 'components/Address'
+import { Address } from 'components/Address'
 import ProposalStatus from './ProposalStatus'
 import {
   atom,

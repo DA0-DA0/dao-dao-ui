@@ -20,7 +20,7 @@ const Proposal: NextPage = () => {
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
-            ['/multisig/list', 'Multisigs'],
+            ['/starred', 'Home'],
             [`/multisig/${contractAddress}`, sigInfo.config.name],
             [router.asPath, `Proposal ${proposalId}`],
           ]}

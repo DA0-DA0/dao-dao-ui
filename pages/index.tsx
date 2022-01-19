@@ -15,7 +15,7 @@ const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
-    <Link href="/pinned" passHref>
+    <Link href="/starred" passHref>
       <a
         className={
           'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
