@@ -33,10 +33,12 @@ import {
   GradientHero,
   HeroContractFooter,
   HeroContractHeader,
+  StarButton,
 } from 'components/ContractView'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import { pinnedDaosAtom } from 'atoms/pinned'
+import { AddressSmall } from 'components/Address'
 
 const DaoHome: NextPage = () => {
   const router = useRouter()
@@ -78,25 +80,37 @@ const DaoHome: NextPage = () => {
     <div className="grid grid-cols-6 overflow-auto mb-3">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <Breadcrumbs
-            crumbs={[
-              ['/pinned', 'Home'],
-              [router.asPath, daoInfo.config.name],
-            ]}
-          />
+          <div className="flex justify-between items-center">
+            <Breadcrumbs
+              crumbs={[
+                ['/pinned', 'Home'],
+                [router.asPath, daoInfo.config.name],
+              ]}
+            />
+            <StarButton
+              pinned={pinned}
+              onPin={() => {
+                if (pinned) {
+                  setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+                } else {
+                  setPinnedDaos((p) => p.concat([contractAddress]))
+                }
+              }}
+            />
+          </div>
 
           <HeroContractHeader
             name={daoInfo.config.name}
-            description={daoInfo.config.description}
             member={member}
-            pinned={pinned}
-            onPin={() => {
-              if (pinned) {
-                setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-              } else {
-                setPinnedDaos((p) => p.concat([contractAddress]))
-              }
-            }}
+            address={contractAddress}
+          />
+
+          <ContractBalances
+            description={daoInfo.config.description}
+            gov_token={daoInfo.gov_token}
+            staking_contract={daoInfo.staking_contract}
+            native={nativeBalances}
+            cw20={cw20balances}
           />
 
           <HeroContractFooter>
@@ -123,12 +137,6 @@ const DaoHome: NextPage = () => {
         </div>
       </div>
       <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <ContractBalances
-          contractType="DAO"
-          native={nativeBalances}
-          cw20={cw20balances}
-        />
-        <hr className="mt-8 mb-6" />
         <h2 className="font-medium text-md">Your shares</h2>
         <ul className="list-none mt-3">
           <li>

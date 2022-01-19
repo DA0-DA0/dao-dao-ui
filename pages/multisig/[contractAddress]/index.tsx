@@ -12,6 +12,7 @@ import {
   GradientHero,
   HeroContractFooter,
   HeroContractHeader,
+  StarButton,
 } from 'components/ContractView'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -89,24 +90,37 @@ const Home: NextPage = () => {
     <div className="grid grid-cols-6">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <Breadcrumbs
-            crumbs={[
-              ['/pinned', 'Home'],
-              [`/multisig/${contractAddress}`, sigInfo.config.name],
-            ]}
-          />
+          <div className="flex justify-between items-center">
+            <Breadcrumbs
+              crumbs={[
+                ['/pinned', 'Home'],
+                [router.asPath, sigInfo.config.name],
+              ]}
+            />
+            <StarButton
+              pinned={pinned}
+              onPin={() => {
+                if (pinned) {
+                  setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+                } else {
+                  setPinnedSigs((p) => p.concat([contractAddress]))
+                }
+              }}
+            />
+          </div>
 
           <HeroContractHeader
             name={sigInfo.config.name}
             member={memberInfo.member}
+            address={contractAddress}
+          />
+
+          <ContractBalances
             description={sigInfo.config.description}
-            pinned={pinned}
-            onPin={() => {
-              if (pinned) {
-                setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
-              }
-              setPinnedSigs((p) => p.concat([contractAddress]))
-            }}
+            gov_token={''}
+            staking_contract={''}
+            native={nativeBalances}
+            cw20={[]}
           />
 
           <HeroContractFooter>
@@ -133,7 +147,6 @@ const Home: NextPage = () => {
         </div>
       </div>
       <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <ContractBalances contractType="Multisig" native={nativeBalances} />
         <hr className="mt-8 mb-6" />
         {visitorWeight && (
           <>
