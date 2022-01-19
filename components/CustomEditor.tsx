@@ -10,17 +10,7 @@ import { makeWasmMessage } from 'util/messagehelpers'
 
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
-
-type JSONError = {
-  line?: number
-  reason?: string
-}
-
-function getEditorTheme(appTheme: string): string {
-  return appTheme !== 'junoDark'
-    ? 'dark_vscode_tribute'
-    : 'light_mitsuketa_tribute'
-}
+import 'codemirror/mode/javascript/javascript.js'
 
 export default function CustomEditor({
   dispatch,
@@ -33,7 +23,10 @@ export default function CustomEditor({
   const [isValidJson, setIsValidJson] = useState<boolean>(true)
 
   const cmOptions = {
-    mode: 'application/json',
+    mode: {
+      name: 'javascript',
+      json: true
+    },
     lineNumbers: true,
     lineWrapping: true,
     autoCloseBrackets: true,
@@ -100,6 +93,7 @@ export default function CustomEditor({
           if (isJsonString(value)) {
             setLastInputJson(value)
             setIsValidJson(true)
+            updateCustom(JSON5.parse(value))
           } else {
             setLastInputJson(value)
             setIsValidJson(false)
