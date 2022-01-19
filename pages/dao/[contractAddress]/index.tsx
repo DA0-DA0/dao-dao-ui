@@ -83,7 +83,7 @@ const DaoHome: NextPage = () => {
           <div className="flex justify-between items-center">
             <Breadcrumbs
               crumbs={[
-                ['/pinned', 'Home'],
+                ['/starred', 'Home'],
                 [router.asPath, daoInfo.config.name],
               ]}
             />

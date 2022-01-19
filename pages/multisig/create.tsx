@@ -130,7 +130,7 @@ const CreateMultisig: NextPage = () => {
       <div className="p-6 w-full col-span-4">
         <Breadcrumbs
           crumbs={[
-            ['/multisig/list', 'Multisigs'],
+            ['/starred', 'Home'],
             [router.asPath, 'Create multisig'],
           ]}
         />
