@@ -7,7 +7,7 @@
     "build": "next build",
     "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint && ./node_modules/.bin/prettier --check .",
+    "lint": "next lint && prettier --check .",
     "prettier:write": "prettier --write .",
     "test": "jest",
     "test:watch": "jest --watch",
