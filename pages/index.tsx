@@ -97,7 +97,7 @@ const Home: NextPage = () => {
       <h1 className="text-7xl text-center font-medium mt-[33vh]">
         DAOs for everyone.
       </h1>
-      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary mix-blend-difference px-2">
+      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary px-2">
         We provide tooling for creating, deploying, managing, and joining DAOs.
         Built with love on Juno.
       </p>
