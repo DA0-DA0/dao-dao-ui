@@ -1,4 +1,3 @@
-import isEqual from 'lodash.isequal'
 import {
   MessageMapEntry,
   ProposalMessageType,
@@ -7,10 +6,11 @@ import { ProposalAction } from 'models/proposal/proposalActions'
 import React, { useState, useEffect } from 'react'
 import JSON5 from 'json5'
 import { makeWasmMessage } from 'util/messagehelpers'
-
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/mode/javascript/javascript.js'
+if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+  require('codemirror/mode/javascript/javascript.js')
+}
 
 export default function CustomEditor({
   dispatch,
