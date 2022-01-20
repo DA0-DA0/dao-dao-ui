@@ -3,13 +3,21 @@ import {
   ProposalMessageType,
 } from 'models/proposal/messageMap'
 import { ProposalAction } from 'models/proposal/proposalActions'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useThemeContext } from '../contexts/theme'
 import JSON5 from 'json5'
 import { makeWasmMessage } from 'util/messagehelpers'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/material.css'
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
+}
+
+function getEditorTheme(appTheme: string): string {
+  return appTheme !== 'junoDark'
+    ? 'default'
+    : 'material'
 }
 
 export default function CustomEditor({
@@ -21,12 +29,14 @@ export default function CustomEditor({
 }) {
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
   const [isValidJson, setIsValidJson] = useState<boolean>(true)
+  const themeContext = useThemeContext()
 
   const cmOptions = {
     mode: {
       name: 'javascript',
       json: true,
     },
+    theme: getEditorTheme(themeContext.theme),
     lineNumbers: true,
     lineWrapping: true,
     autoCloseBrackets: true,
