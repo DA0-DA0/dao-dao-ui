@@ -71,7 +71,7 @@ function Nav() {
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
         <div className="flex items-center">
-          <Link href="/pinned">
+          <Link href="/starred">
             <a>
               <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
             </a>

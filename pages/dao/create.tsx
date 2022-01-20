@@ -314,7 +314,7 @@ const CreateDao: NextPage = () => {
       <div className="p-6 w-full col-span-4">
         <Breadcrumbs
           crumbs={[
-            ['/dao/list', 'DAOs'],
+            ['/starred', 'Home'],
             [router.asPath, 'Create DAO'],
           ]}
         />

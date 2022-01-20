@@ -76,7 +76,7 @@ const ProposalCreate: NextPage = () => {
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
-            ['/dao/list', 'DAOs'],
+            ['/starred', 'Home'],
             [`/dao/${contractAddress}`, daoInfo.config.name],
             [router.asPath, 'Create proposal'],
           ]}
