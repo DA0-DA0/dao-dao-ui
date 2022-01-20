@@ -4,7 +4,7 @@ import { selector, selectorFamily, waitForNone, Loadable } from 'recoil'
 import { MULTISIG_CODE_ID } from 'util/constants'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-flex-multisig'
 import { walletAddress } from './treasury'
-import { voterInfoSelector } from './cosm'
+import { isMemberSelector } from './daos'
 
 export interface MultisigListType {
   address: string
@@ -18,23 +18,6 @@ export interface MultisigMemberInfo {
   addr: string
   weight: number
 }
-
-// TODO: merge w/ isMemberSelector from selectors/dao
-export const isMemberSelector = selectorFamily<MemberStatus, string>({
-  key: 'isMember',
-  get:
-    (contractAddress) =>
-    async ({ get }) => {
-      const wallet = get(walletAddress)
-      const voterInfo = get(
-        voterInfoSelector({ contractAddress, walletAddress: wallet })
-      )
-      return {
-        member: voterInfo.weight && voterInfo.weight != '0',
-        weight: voterInfo.weight,
-      }
-    },
-})
 
 export const sigMemberSelector = selectorFamily<MultisigListType, string>({
   key: 'multisigWithMember',
@@ -109,7 +92,6 @@ export const listMembers = selectorFamily<MultisigMemberInfo[], string>({
       const members = await client.queryContractSmart(sigInfo.group_address, {
         list_members: {},
       })
-      console.log(members)
       return members.members
     },
 })

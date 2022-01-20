@@ -67,8 +67,8 @@ export const isMemberSelector = selectorFamily<MemberStatus, string>({
         voterInfoSelector({ contractAddress, walletAddress: wallet })
       )
       return {
-        member: voterInfo.weight && voterInfo.weight != '0',
-        weight: parseInt(voterInfo.weight as string),
+        member: voterInfo.weight !== 0,
+        weight: voterInfo.weight,
       }
     },
 })

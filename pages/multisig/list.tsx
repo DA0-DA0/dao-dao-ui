@@ -114,20 +114,23 @@ const MultisigList: NextPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {sigs.state == 'hasValue' ? (
-              sigs.contents.map(
-                (sig, idx) =>
-                  sig.member && (
-                    <MultisigCard
-                      multisig={sig}
-                      address={sig.address}
-                      key={idx}
-                    />
-                  )
+              sigs.contents.length > 0 ? (
+                sigs.contents.map(
+                  (sig, idx) =>
+                    sig.member && (
+                      <MultisigCard
+                        multisig={sig}
+                        address={sig.address}
+                        key={idx}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryMultisigCard />
               )
             ) : (
               <LoadingContractCard />
             )}
-            <MysteryMultisigCard />
           </div>
         </div>
         <div className="mt-6">
@@ -137,20 +140,24 @@ const MultisigList: NextPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {sigs.state == 'hasValue' ? (
-              sigs.contents.map(
-                (sig, idx) =>
-                  !sig.member && (
-                    <MultisigCard
-                      multisig={sig}
-                      address={sig.address}
-                      key={idx}
-                    />
-                  )
+              sigs.contents.length > 0 ? (
+                sigs.contents.map(
+                  (sig, idx) =>
+                    !sig.member && (
+                      <MultisigCard
+                        multisig={sig}
+                        address={sig.address}
+                        key={idx}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryMultisigCard />
               )
             ) : (
               <LoadingContractCard />
             )}
-            <MysteryMultisigCard />
+            {sigAddresses.length === 0 && <MysteryMultisigCard />}
           </div>
         </div>
       </div>

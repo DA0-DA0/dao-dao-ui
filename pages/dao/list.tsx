@@ -116,21 +116,24 @@ const DaoList: NextPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {daos.state == 'hasValue' ? (
-              daos.contents.map(
-                (dao, idx) =>
-                  dao.member && (
-                    <DaoCard
-                      dao={dao.dao}
-                      address={dao.address}
-                      key={idx}
-                      weight={dao.weight}
-                    />
-                  )
+              membership.count > 0 ? (
+                daos.contents.map(
+                  (dao, idx) =>
+                    dao.member && (
+                      <DaoCard
+                        dao={dao.dao}
+                        address={dao.address}
+                        key={idx}
+                        weight={dao.weight}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryDaoCard />
               )
             ) : (
               <LoadingContractCard />
             )}
-            <MysteryDaoCard />
           </div>
         </div>
         <div className="mt-6">
@@ -140,21 +143,24 @@ const DaoList: NextPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {daos.state == 'hasValue' ? (
-              daos.contents.map(
-                (dao, idx) =>
-                  !dao.member && (
-                    <DaoCard
-                      dao={dao.dao}
-                      address={dao.address}
-                      key={idx}
-                      weight={dao.weight}
-                    />
-                  )
+              daos.contents.length > 0 ? (
+                daos.contents.map(
+                  (dao, idx) =>
+                    !dao.member && (
+                      <DaoCard
+                        dao={dao.dao}
+                        address={dao.address}
+                        key={idx}
+                        weight={dao.weight}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryDaoCard />
               )
             ) : (
               <LoadingContractCard />
             )}
-            <MysteryDaoCard />
           </div>
         </div>
       </div>
