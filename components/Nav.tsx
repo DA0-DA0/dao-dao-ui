@@ -7,7 +7,6 @@ import {
   CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
-  StarIcon,
 } from '@heroicons/react/outline'
 import { useRecoilValue, waitForAll } from 'recoil'
 import { daoSelector } from 'selectors/daos'

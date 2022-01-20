@@ -67,17 +67,17 @@ export const isMemberSelector = selectorFamily<MemberStatus, string>({
         voterInfoSelector({ contractAddress, walletAddress: wallet })
       )
       return {
-        member: voterInfo.weight && voterInfo.weight !== '0',
-        weight: voterInfo.weight,
+        member: voterInfo.weight && voterInfo.weight != '0',
+        weight: parseInt(voterInfo.weight as string),
       }
     },
 })
 
-export const daosSelector = selector<DaoListType[]>({
-  key: 'daos',
-  get: async ({ get }) => {
-    const daoAddresses = get(contractsByCodeId(DAO_CODE_ID))
-    return daoAddresses.map((contractAddress) => {
+export const memberDaoSelector = selectorFamily<DaoListType, string>({
+  key: 'memberDaosSelector',
+  get:
+    (contractAddress: string) =>
+    async ({ get }) => {
       const daoResponse = get(daoSelector(contractAddress))
       const { member, weight } = get(isMemberSelector(contractAddress))
       return {
@@ -86,9 +86,10 @@ export const daosSelector = selector<DaoListType[]>({
         member,
         weight,
       }
-    })
-  },
+    },
 })
+
+export const daoAddressesSelector = contractsByCodeId(DAO_CODE_ID)
 
 export const daoSelector = selectorFamily<ConfigResponse, string>({
   key: 'dao',

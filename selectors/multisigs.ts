@@ -1,10 +1,10 @@
 import { cosmWasmClient } from 'selectors/cosm'
 import { contractsByCodeId } from 'selectors/contracts'
-import { selector, selectorFamily } from 'recoil'
+import { selector, selectorFamily, waitForNone, Loadable } from 'recoil'
 import { MULTISIG_CODE_ID } from 'util/constants'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-flex-multisig'
-import { isMemberSelector } from './daos'
 import { walletAddress } from './treasury'
+import { voterInfoSelector } from './cosm'
 
 export interface MultisigListType {
   address: string
@@ -19,11 +19,28 @@ export interface MultisigMemberInfo {
   weight: number
 }
 
-export const sigsSelector = selector<MultisigListType[]>({
-  key: 'multisigs',
-  get: async ({ get }) => {
-    const addresses = get(contractsByCodeId(MULTISIG_CODE_ID))
-    return addresses.map((address) => {
+// TODO: merge w/ isMemberSelector from selectors/dao
+export const isMemberSelector = selectorFamily<MemberStatus, string>({
+  key: 'isMember',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const wallet = get(walletAddress)
+      const voterInfo = get(
+        voterInfoSelector({ contractAddress, walletAddress: wallet })
+      )
+      return {
+        member: voterInfo.weight && voterInfo.weight != '0',
+        weight: voterInfo.weight,
+      }
+    },
+})
+
+export const sigMemberSelector = selectorFamily<MultisigListType, string>({
+  key: 'multisigWithMember',
+  get:
+    (address: string) =>
+    async ({ get }) => {
       const config = get(sigSelector(address))
       const { member, weight } = get(isMemberSelector(address))
       return {
@@ -33,9 +50,10 @@ export const sigsSelector = selector<MultisigListType[]>({
         member,
         weight,
       }
-    })
-  },
+    },
 })
+
+export const sigAddressesSelector = contractsByCodeId(MULTISIG_CODE_ID)
 
 export const sigSelector = selectorFamily<ConfigResponse, string>({
   key: 'multisig',
@@ -43,9 +61,10 @@ export const sigSelector = selectorFamily<ConfigResponse, string>({
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
-      const config = await client.queryContractSmart(address, {
-        get_config: {},
-      })
+      const config = await client.queryContractSmart(
+        address,
+        'get_config' as unknown as Record<string, unknown>
+      )
       return config
     },
 })
