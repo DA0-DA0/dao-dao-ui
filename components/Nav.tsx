@@ -7,14 +7,13 @@ import {
   CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
-  StarIcon,
 } from '@heroicons/react/outline'
 import { useRecoilValue, waitForAll } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
+const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 function WalletConnect() {
   const { walletAddress, connectWallet, disconnect } = useSigningClient()
@@ -128,7 +127,9 @@ function Nav() {
         </div>
       </div>
       <div className="ml-1">
-        <h3 className="text-secondary font-mono mb-1">dao dao v0.2</h3>
+        <h3 className="text-secondary font-mono mb-1">
+          dao dao v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}
+        </h3>
         <ul className="ml-2 list-none">
           <li>
             <ThemeToggle />
