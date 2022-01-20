@@ -14,10 +14,13 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
+type JSONError = {
+  lineNumber?: number
+  message?: string
+}
+
 function getEditorTheme(appTheme: string): string {
-  return appTheme !== 'junoDark'
-    ? 'default'
-    : 'material'
+  return appTheme !== 'junoDark' ? 'default' : 'material'
 }
 
 export default function CustomEditor({
@@ -27,6 +30,7 @@ export default function CustomEditor({
   dispatch: (action: ProposalAction) => void
   customMsg: MessageMapEntry
 }) {
+  const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
   const [isValidJson, setIsValidJson] = useState<boolean>(true)
   const themeContext = useThemeContext()
@@ -72,20 +76,34 @@ export default function CustomEditor({
     }
   }
 
+  const placeholder =
+    lastInputJson?.length !== 0
+      ? lastInputJson
+        ? lastInputJson
+        : JSON5.stringify(customMsg.message)
+      : ''
+
+  let errorMessage = ''
+  if (error) {
+    errorMessage = `${error?.message} at line ${error?.lineNumber}`
+  }
+
   let status = (
     <div
       className={
         isValidJson ? 'flex h-10 text-green-500 p-2' : 'h-10 text-red-500 p-2'
       }
     >
-      {isValidJson ? 'JSON is valid' : 'JSON is invalid'}
+      {isValidJson ? 'JSON is valid' : errorMessage}
     </div>
   )
 
   function isJsonString(str: string) {
     try {
       JSON5.parse(str)
-    } catch (e) {
+      setError(undefined)
+    } catch (e: any) {
+      setError(e)
       return false
     }
     return true
@@ -95,13 +113,7 @@ export default function CustomEditor({
     <div className="mt-4 border box-border rounded">
       {status}
       <CodeMirror
-        value={
-          lastInputJson?.length !== 0
-            ? lastInputJson
-              ? lastInputJson
-              : JSON5.stringify(customMsg.message)
-            : ''
-        }
+        value={placeholder}
         options={cmOptions}
         onBeforeChange={(editor: any, data: any, value: any) => {
           if (isJsonString(value)) {
