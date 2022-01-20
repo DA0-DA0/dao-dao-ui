@@ -86,7 +86,11 @@ export default function CustomEditor({
       {status}
       <CodeMirror
         value={
-          lastInputJson ? lastInputJson : JSON5.stringify(customMsg.message)
+          lastInputJson?.length !== 0
+            ? lastInputJson
+              ? lastInputJson
+              : JSON5.stringify(customMsg.message)
+            : ''
         }
         options={cmOptions}
         onBeforeChange={(editor: any, data: any, value: any) => {
