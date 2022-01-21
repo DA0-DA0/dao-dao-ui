@@ -88,6 +88,7 @@ export default function InputField<
   register,
   fieldErrorMessage,
   autoComplete = 'false',
+  multiline = false,
 }: {
   fieldName: TFieldName
   label?: string
@@ -109,6 +110,7 @@ export default function InputField<
   register: UseFormRegister<TFieldValues>
   fieldErrorMessage(a: any, b: any): string
   autoComplete?: string
+  multiline?: boolean
 }) {
   const options = { required, validate }
   const errorText = fieldErrorMessage(fieldName, errorMessage)
@@ -121,7 +123,26 @@ export default function InputField<
       showErrorMessage={showErrorMessage}
     />
   )
-  const inputComponent = (
+  const inputComponent = multiline ? (
+    <textarea
+      {...register(fieldName, options)}
+      className={
+          `block box-border m-0 w-full rounded-lg input input-bordered h-full`
+      }
+      defaultValue={defaultValue}
+      defaultChecked={
+        type === 'checkbox' && defaultValue === 1 ? true : undefined
+      }
+      placeholder={placeholder}
+      readOnly={readOnly}
+      onChange={onChange}
+      size={size}
+      min={min}
+      max={max}
+    rows="5"
+      autoComplete={autoComplete}
+    />
+  ) : (
     <input
       {...register(fieldName, options)}
       className={

@@ -304,7 +304,7 @@ export function ProposalEditor({
                 <InputField
                   fieldName="label"
                   label="Title"
-                  toolTip="The title of the Proposal"
+                  toolTip="The title of your proposal"
                   errorMessage="Proposal title required"
                   register={register}
                   fieldErrorMessage={fieldErrorMessage}
@@ -315,13 +315,13 @@ export function ProposalEditor({
                   errorMessage={proposalDescriptionErrorMessage}
                   fieldErrorMessage={fieldErrorMessage}
                   register={register}
-                  label="Description"
-                  toolTip="Your proposal description"
-                  type="textarea"
+                  label="Proposal text"
+                  toolTip="The body of your proposal"
                   onChange={(e) =>
                     handleDescriptionChange(() => e.target.value)
                   }
                   defaultValue={proposal.description}
+                  multiline={true}
                 />
               </div>
               <h2 className="text-lg mt-6 mb-3">
