@@ -22,3 +22,24 @@ export const proposalsCreatedAtom = atomFamily<number, string>({
   key: 'proposalsCreatedAtom',
   default: 0,
 })
+
+// Indicates how many times a given proposal has been updated via the
+// UI. For example, voting on a proposal ought to increment the update
+// count for the proposal.
+//
+// This is used by proposal selectors so that they might update when a
+// UI action triggers the database to change.
+export const proposalUpdateCountAtom = atomFamily<
+  number,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalUpdateCountAtom',
+  default: 0,
+})
+
+// A list of the proposals that have been updated and have not had their update
+// reflected in the proposal list view for a given contract.
+export const proposalsUpdated = atomFamily<number[], string>({
+  key: 'proposalsUpdatedAtom',
+  default: [],
+})

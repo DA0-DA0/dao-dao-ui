@@ -4,6 +4,7 @@ import {
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
+import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ContractBalances,
@@ -11,10 +12,11 @@ import {
   GradientHero,
   HeroContractFooter,
   HeroContractHeader,
+  StarButton,
 } from 'components/ContractView'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { isMemberSelector } from 'selectors/daos'
 import {
   listMembers,
@@ -81,21 +83,44 @@ const Home: NextPage = () => {
   const visitorAddress = useRecoilValue(walletAddress)
   const memberList = useRecoilValue(listMembers(contractAddress))
 
+  const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
+  const pinned = pinnedSigs.includes(contractAddress)
+
   return (
     <div className="grid grid-cols-6">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <Breadcrumbs
-            crumbs={[
-              ['/multisig/list', 'Multisigs'],
-              [`/multisig/${contractAddress}`, sigInfo.config.name],
-            ]}
-          />
+          <div className="flex justify-between items-center">
+            <Breadcrumbs
+              crumbs={[
+                ['/starred', 'Home'],
+                [router.asPath, sigInfo.config.name],
+              ]}
+            />
+            <StarButton
+              pinned={pinned}
+              onPin={() => {
+                if (pinned) {
+                  setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+                } else {
+                  setPinnedSigs((p) => p.concat([contractAddress]))
+                }
+              }}
+            />
+          </div>
 
           <HeroContractHeader
             name={sigInfo.config.name}
             member={memberInfo.member}
+            address={contractAddress}
+          />
+
+          <ContractBalances
             description={sigInfo.config.description}
+            gov_token={''}
+            staking_contract={''}
+            native={nativeBalances}
+            cw20={[]}
           />
 
           <HeroContractFooter>
@@ -122,7 +147,6 @@ const Home: NextPage = () => {
         </div>
       </div>
       <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <ContractBalances contractType="Multisig" native={nativeBalances} />
         <hr className="mt-8 mb-6" />
         {visitorWeight && (
           <>

@@ -1,6 +1,11 @@
 import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
-import { LinkIcon, PlusIcon, UserIcon } from '@heroicons/react/outline'
+import {
+  StarIcon as StarOutline,
+  PlusIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
+import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { Children, MouseEventHandler, ReactNode } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
@@ -15,40 +20,83 @@ import {
   convertFromMicroDenom,
   convertMicroDenomToDenom,
 } from 'util/conversion'
+import { AddressSmall } from './Address'
 import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {
   return (
-    <div className="h-2/5 bg-gradient-radial-t from-accent via-base-100">
-      <div className="p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 h-full flex flex-col justify-between">
-        {children}
-      </div>
+    <div className="min-h-[40%] bg-gradient-radial-t from-accent via-base-100 p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 flex flex-col justify-between">
+      {children}
     </div>
+  )
+}
+
+export function TooltipWrapper({
+  tip,
+  children,
+}: {
+  tip: string
+  children: ReactNode
+}) {
+  return (
+    <div className="tooltip" data-tip={tip}>
+      {children}
+    </div>
+  )
+}
+
+export function StarButton({
+  pinned,
+  onPin,
+}: {
+  pinned: boolean
+  onPin: Function
+}) {
+  return (
+    <button
+      className={'text-left w-20' + (pinned ? ' text-accent' : '')}
+      onClick={(_e) => onPin()}
+    >
+      {pinned ? (
+        <StarSolid className="inline w-5 h-5 mr-1" />
+      ) : (
+        <StarOutline className="inline w-5 h-5 mr-1" />
+      )}
+      {pinned ? 'Starred' : 'Star'}
+    </button>
   )
 }
 
 export function HeroContractHeader({
   name,
   member,
-  description,
+  address,
 }: {
   name: string
   member: boolean
-  description: string
+  address: string
 }) {
   return (
-    <div className="flex items-center flex-col">
+    <div className="flex items-center flex-col my-3">
       <Logo width={85} height={85} alt="DAO DAO logo" />
       <div className="flex flex-col items-center">
         <div>
-          <h1 className="text-2xl font-medium mt-3">
-            {name}
-            <LinkIcon className="inline w-5 h-5 mb-1 ml-2" />
-            {member && <UserIcon className="inline w-5 h-5 mb-1 ml-1" />}
-          </h1>
+          <div className="mt-3">
+            <h1 className="inline text-2xl font-medium mb-2">{name}</h1>
+            <div className="inline ml-2 text-success">
+              {member && (
+                <TooltipWrapper tip="You have voting power">
+                  {' '}
+                  <UserIcon className="inline w-5 h-5 mb-2" />{' '}
+                </TooltipWrapper>
+              )}
+            </div>
+          </div>
         </div>
-        <p className="mt-2 font-mono">{description}</p>
+        <div className="mt-2 font-mono mb-3">
+          <AddressSmall address={address} />
+        </div>
       </div>
     </div>
   )
@@ -125,11 +173,15 @@ export function ContractProposalsDispaly({
 }
 
 export function ContractBalances({
-  contractType,
+  description,
+  gov_token,
+  staking_contract,
   native,
   cw20,
 }: {
-  contractType: 'DAO' | 'Multisig'
+  description: string
+  gov_token?: string
+  staking_contract?: string
   native: Coin[]
   cw20?: Cw20Coin[]
 }) {
@@ -143,37 +195,66 @@ export function ContractBalances({
   }))
 
   return (
-    <>
-      <h2 className="font-medium text-lg">Treasury</h2>
-      <h3 className="font-mono text-sm mt-6 text-secondary">
-        {contractType} Balances
-      </h3>
-      <ul className="list-none mt-1 text-medium font-semibold ml-1">
-        {native.map((coin, idx) => {
-          const symbol = convertFromMicroDenom(coin.denom)
-          return (
-            <li key={idx}>
-              {convertMicroDenomToDenom(coin.amount).toLocaleString()} ${symbol}
-            </li>
-          )
-        })}
-        {!native.length && (
-          <li key="nobalance" className="text-uppercase">
-            0 $
-            {convertDenomToHumanReadableDenom(
-              process.env.NEXT_PUBLIC_STAKING_DENOM as string
-            ).toUpperCase()}
-          </li>
-        )}
-        {cw20InfoBalance.map(({ info, amount }) => {
-          return (
-            <li key={info.name}>
-              {convertMicroDenomToDenom(amount).toLocaleString()} ${info.symbol}
-            </li>
-          )
-        })}
-      </ul>
-    </>
+    <div className="py-5 border-t border-neutral grid grid-cols-5 mb-1 gap-4">
+      <div className="col-span-3">
+        <h2 className="font-medium text-lg">Treasury</h2>
+        <p className="mt-1 mb-3 overflow-y-auto max-h-40">{description}</p>
+        <div className="grid grid-cols-3">
+          {gov_token && (
+            <>
+              <p className="col-span-1 font-sm text-secondary gap-y-2 truncate">
+                Gov token address
+              </p>{' '}
+              <div className="col-span-2">
+                <AddressSmall address={gov_token} />
+              </div>
+            </>
+          )}
+          {staking_contract && (
+            <>
+              <p className="col-span-1 font-sm text-secondary truncate">
+                Staking address
+              </p>{' '}
+              <div className="col-span-2">
+                <AddressSmall address={staking_contract} />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="col-start-4 col-span-2">
+        <div className="col-span-2 col-start-4">
+          <h2 className="font-medium text-lg">Balances</h2>
+          <ul className="list-none mt-1 text-medium ml-1 gap-y-2">
+            {native.map((coin, idx) => {
+              const symbol = convertFromMicroDenom(coin.denom)
+              return (
+                <li className="mb-1" key={idx}>
+                  {convertMicroDenomToDenom(coin.amount).toLocaleString()} $
+                  {symbol}
+                </li>
+              )
+            })}
+            {!native.length && (
+              <li key="nobalance" className="text-uppercase mb-1">
+                0 $
+                {convertDenomToHumanReadableDenom(
+                  process.env.NEXT_PUBLIC_STAKING_DENOM as string
+                ).toUpperCase()}
+              </li>
+            )}
+            {cw20InfoBalance.map(({ info, amount }) => {
+              return (
+                <li key={info.name} className="mb-1">
+                  {convertMicroDenomToDenom(amount).toLocaleString()} $
+                  {info.symbol}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
+    </div>
   )
 }
 

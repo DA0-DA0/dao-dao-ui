@@ -9,7 +9,7 @@ import { errorNotify, successNotify } from 'util/toast'
 import { cleanChainError } from 'util/cleanChainError'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { useForm } from 'react-hook-form'
-import { PaperClipIcon, ScaleIcon, UsersIcon } from '@heroicons/react/outline'
+import { ScaleIcon, UsersIcon } from '@heroicons/react/outline'
 import {
   InputErrorMessage,
   InputLabel,
@@ -24,6 +24,8 @@ import {
 } from 'util/formValidation'
 import { secondsToHms } from 'pages/dao/create'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
+import { useSetRecoilState } from 'recoil'
+import { pinnedMultisigsAtom } from 'atoms/pinned'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -58,6 +60,8 @@ const CreateMultisig: NextPage = () => {
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
   }, [error])
+
+  const setPinnedMultisigs = useSetRecoilState(pinnedMultisigsAtom)
 
   const onSubmit = (data: MultisigCreateData) => {
     setError('')
@@ -106,6 +110,7 @@ const CreateMultisig: NextPage = () => {
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
+          setPinnedMultisigs((p) => p.concat([response.contractAddress]))
           router.push(
             `/multisig/${encodeURIComponent(response.contractAddress)}`
           )
@@ -125,7 +130,7 @@ const CreateMultisig: NextPage = () => {
       <div className="p-6 w-full col-span-4">
         <Breadcrumbs
           crumbs={[
-            ['/multisig/list', 'Multisigs'],
+            ['/starred', 'Home'],
             [router.asPath, 'Create multisig'],
           ]}
         />

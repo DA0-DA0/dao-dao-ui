@@ -4,18 +4,20 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 import { ScaleIcon } from '@heroicons/react/outline'
-import { Logo, LogoNoBorder } from 'components/Logo'
+import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { GradientWrapper } from 'components/GradientWrapper'
+import SvgGithub from 'components/icons/Github'
+import SvgTwitter from 'components/icons/Twitter'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
-    <Link href="/dao/list" passHref>
+    <Link href="/starred" passHref>
       <a
         className={
           'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
@@ -42,7 +44,7 @@ function InfoCard({
   children: ReactNode
 }) {
   return (
-    <div className="bg-base-300 rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around">
+    <div className="bg-base-300 rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-60">
       <div className="bg-accent-content rounded-lg h-fit w-fit p-1 w-9 h-8 flex items-center justify-center">
         {children}
       </div>
@@ -78,7 +80,7 @@ const Home: NextPage = () => {
             </a>
           </Link>
           <div className="flex gap-4 items-center">
-            <div>
+            <div className="hidden md:block">
               <ThemeToggle />
             </div>
             <a href="https://docs.daodao.zone" className="flex items-center">
@@ -88,22 +90,24 @@ const Home: NextPage = () => {
                 style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
               />
             </a>
-            <EnterAppButton small />
+            <div className="hidden md:block">
+              <EnterAppButton small />
+            </div>
           </div>
         </div>
       </nav>
-      <div className="flex flex-col items-center justify-center">
-        <h1 className="text-7xl text-center font-medium mt-12">
-          DAOs for everyone.
-        </h1>
-        <p className="text-lg text-center max-w-lg my-5 text-secondary">
-          We provide tooling for creating, deploying, managing, and joining
-          DAOs. Built with love on Juno.
-        </p>
-        <div className="mb-12">
-          <EnterAppButton />
-        </div>
-        <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">
+      <h1 className="text-7xl text-center font-medium mt-[33vh]">
+        DAOs for everyone.
+      </h1>
+      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary px-2">
+        We provide tooling for creating, deploying, managing, and joining DAOs.
+        Built with love on Juno.
+      </p>
+      <div className="mb-12 mx-auto">
+        <EnterAppButton />
+      </div>
+      <div className="mx-3">
+        <div className="flex flex-row gap-3 flex-wrap justify-center">
           <InfoCard
             title="Create DAOs"
             body="Make DAOs with a visual interface. No command line required."
@@ -122,6 +126,43 @@ const Home: NextPage = () => {
           >
             <StarIcon />
           </InfoCard>
+        </div>
+        <div className="text-secondary grid grid-cols-1 md:grid-cols-3 my-10 gap-2">
+          <div className="flex flex-wrap gap-6 text-sm justify-center md:justify-left items-center">
+            <p className="font-mono font-light">
+              DAO DAO v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}
+            </p>
+            <a
+              href="https://www.junonetwork.io/"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              Powered by Juno
+              <ArrowNarrowRightIcon
+                className="w-6 h-4 inline mb-0.5 font-light"
+                style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
+              />
+            </a>
+          </div>
+          <div className="flex gap-4 justify-center items-center">
+            <a
+              href="https://github.com/DA0-DA0"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              <SvgGithub fill="currentColor" width="20px" height="20px" />
+            </a>
+            <a
+              href="https://twitter.com/da0_da0"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              <SvgTwitter fill="currentColor" width="20px" height="20px" />
+            </a>
+          </div>
         </div>
       </div>
     </GradientWrapper>
