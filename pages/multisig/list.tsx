@@ -6,13 +6,31 @@ import {
   UserGroupIcon,
   UserIcon,
 } from '@heroicons/react/outline'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { sigsSelector, MultisigListType } from 'selectors/multisigs'
-import { ContractCard, MysteryContractCard } from 'components/ContractCard'
+import {
+  ContractCard,
+  MysteryContractCard,
+  LoadingContractCard,
+} from 'components/ContractCard'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
+import {
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
+import {
+  MultisigListType,
+  sigAddressesSelector,
+  sigMemberSelector,
+} from 'selectors/multisigs'
+
+interface IMembershipTotal {
+  count: number
+  votes: number
+}
 
 export function MultisigCard({
   multisig,
@@ -53,19 +71,33 @@ export function MysteryMultisigCard() {
 }
 
 const MultisigList: NextPage = () => {
-  const multisigs = useRecoilValue(sigsSelector)
-  let memberSigs = []
-  let nonMemberSigs = []
+  const sigAddresses = useRecoilValue(sigAddressesSelector)
+  const sigs = useRecoilValueLoadable(
+    waitForAll(sigAddresses.map((addr) => sigMemberSelector(addr)))
+  )
 
-  for (const sig of multisigs) {
-    if (sig?.member === true) {
-      memberSigs.push(sig)
-    } else {
-      nonMemberSigs.push(sig)
+  const [membership, setMembership] = useState<IMembershipTotal>({
+    count: 0,
+    votes: 0,
+  })
+
+  useEffect(() => {
+    if (sigs.state != 'hasValue') {
+      return
     }
-  }
-
-  const totalVotes = memberSigs.reduce((p, n) => p + n.weight, 0)
+    setMembership(
+      sigs.contents.reduce(
+        (
+          { count, votes }: IMembershipTotal,
+          { member, weight }: MultisigListType
+        ) => ({
+          count: count + (member === true ? 1 : 0),
+          votes: votes + weight,
+        }),
+        { count: 0, votes: 0 }
+      )
+    )
+  }, [sigs])
 
   return (
     <div className="grid grid-cols-6">
@@ -84,12 +116,23 @@ const MultisigList: NextPage = () => {
             Your multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {memberSigs.length ? (
-              memberSigs.map((sig, idx) => (
-                <MultisigCard multisig={sig} address={sig.address} key={idx} />
-              ))
+            {sigs.state == 'hasValue' ? (
+              membership.count > 0 ? (
+                sigs.contents.map(
+                  (sig, idx) =>
+                    sig.member && (
+                      <MultisigCard
+                        multisig={sig}
+                        address={sig.address}
+                        key={idx}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryMultisigCard />
+              )
             ) : (
-              <MysteryMultisigCard />
+              <LoadingContractCard />
             )}
           </div>
         </div>
@@ -99,9 +142,25 @@ const MultisigList: NextPage = () => {
             Community multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {nonMemberSigs.map((sig, idx) => (
-              <MultisigCard multisig={sig} address={sig.address} key={idx} />
-            ))}
+            {sigs.state == 'hasValue' ? (
+              sigs.contents.length > 0 ? (
+                sigs.contents.map(
+                  (sig, idx) =>
+                    !sig.member && (
+                      <MultisigCard
+                        multisig={sig}
+                        address={sig.address}
+                        key={idx}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryMultisigCard />
+              )
+            ) : (
+              <LoadingContractCard />
+            )}
+            {sigAddresses.length === 0 && <MysteryMultisigCard />}
           </div>
         </div>
       </div>
@@ -111,16 +170,17 @@ const MultisigList: NextPage = () => {
           <ul className="list-none ml-2 leading-relaxed">
             <li>
               <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {multisigs.length} active multisig{multisigs.length > 1 && 's'}
+              {sigAddresses.length} active multisig
+              {sigAddresses.length > 1 && 's'}
             </li>
             <li>
               <UserGroupIcon className="inline w-5 h-5 mr-2 mb-1" />
-              Part of {memberSigs.length} multisig
-              {memberSigs.length != 1 && 's'}
+              Part of {membership.count} multisig
+              {membership.count != 1 && 's'}
             </li>
             <li>
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {totalVotes} vote{totalVotes > 1 && 's'} total
+              {membership.votes} vote{membership.votes != 1 && 's'} total
             </li>
           </ul>
         </div>

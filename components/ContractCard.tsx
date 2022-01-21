@@ -94,3 +94,15 @@ export function MysteryContractCard({
     </DIYLogo>
   )
 }
+
+export function LoadingContractCard() {
+  return (
+    <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center justify-center m-2 bg-gradient-to-b from-base-300 border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
+      <div className="w-[70px] h-[70px] flex justify-center items-center">
+        <div className="animate-spin inline-block">
+          <Logo height={72} width={72} />
+        </div>
+      </div>
+    </div>
+  )
+}
