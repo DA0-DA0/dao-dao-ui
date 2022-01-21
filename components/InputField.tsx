@@ -89,6 +89,7 @@ export default function InputField<
   fieldErrorMessage,
   autoComplete = 'false',
   multiline = false,
+  rows = 5,
 }: {
   fieldName: TFieldName
   label?: string
@@ -103,7 +104,7 @@ export default function InputField<
   min?: number
   max?: number
   showErrorMessage?: boolean
-  onChange?: ChangeEventHandler<HTMLInputElement>
+  onChange?: ChangeEventHandler<any>
   validate?:
     | Validate<FieldPathValue<TFieldValues, TFieldName>>
     | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>
@@ -111,6 +112,7 @@ export default function InputField<
   fieldErrorMessage(a: any, b: any): string
   autoComplete?: string
   multiline?: boolean
+  rows?: number
 }) {
   const options = { required, validate }
   const errorText = fieldErrorMessage(fieldName, errorMessage)
@@ -126,9 +128,7 @@ export default function InputField<
   const inputComponent = multiline ? (
     <textarea
       {...register(fieldName, options)}
-      className={
-          `block box-border m-0 w-full rounded-lg input input-bordered h-full`
-      }
+      className={`block box-border m-0 w-full rounded-lg input input-bordered h-full`}
       defaultValue={defaultValue}
       defaultChecked={
         type === 'checkbox' && defaultValue === 1 ? true : undefined
@@ -136,10 +136,7 @@ export default function InputField<
       placeholder={placeholder}
       readOnly={readOnly}
       onChange={onChange}
-      size={size}
-      min={min}
-      max={max}
-    rows="5"
+      rows={rows}
       autoComplete={autoComplete}
     />
   ) : (
