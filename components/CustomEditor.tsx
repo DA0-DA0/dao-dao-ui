@@ -10,6 +10,8 @@ import { makeWasmMessage } from 'util/messagehelpers'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
+
+// This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
@@ -109,6 +111,17 @@ export default function CustomEditor({
     return true
   }
 
+  function handleMessage(value: string) {
+    if (isJsonString(value)) {
+      setLastInputJson(value)
+      setIsValidJson(true)
+      updateCustom(JSON5.parse(value))
+    } else {
+      setLastInputJson(value)
+      setIsValidJson(false)
+    }
+  }
+
   return (
     <div className="mt-4 border box-border rounded">
       {status}
@@ -116,14 +129,7 @@ export default function CustomEditor({
         value={placeholder}
         options={cmOptions}
         onBeforeChange={(editor: any, data: any, value: any) => {
-          if (isJsonString(value)) {
-            setLastInputJson(value)
-            setIsValidJson(true)
-            updateCustom(JSON5.parse(value))
-          } else {
-            setLastInputJson(value)
-            setIsValidJson(false)
-          }
+          handleMessage(value)
         }}
       />
     </div>
