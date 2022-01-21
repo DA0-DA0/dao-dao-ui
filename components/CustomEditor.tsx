@@ -1,25 +1,28 @@
-import isEqual from 'lodash.isequal'
 import {
   MessageMapEntry,
   ProposalMessageType,
 } from 'models/proposal/messageMap'
 import { ProposalAction } from 'models/proposal/proposalActions'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useThemeContext } from '../contexts/theme'
 import JSON5 from 'json5'
 import { makeWasmMessage } from 'util/messagehelpers'
-
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/material.css'
+
+// This check is to prevent this import to be server side rendered.
+if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+  require('codemirror/mode/javascript/javascript.js')
+}
 
 type JSONError = {
-  line?: number
-  reason?: string
+  lineNumber?: number
+  message?: string
 }
 
 function getEditorTheme(appTheme: string): string {
-  return appTheme !== 'junoDark'
-    ? 'dark_vscode_tribute'
-    : 'light_mitsuketa_tribute'
+  return appTheme !== 'junoDark' ? 'default' : 'material'
 }
 
 export default function CustomEditor({
@@ -29,11 +32,17 @@ export default function CustomEditor({
   dispatch: (action: ProposalAction) => void
   customMsg: MessageMapEntry
 }) {
+  const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
   const [isValidJson, setIsValidJson] = useState<boolean>(true)
+  const themeContext = useThemeContext()
 
   const cmOptions = {
-    mode: 'application/json',
+    mode: {
+      name: 'javascript',
+      json: true,
+    },
+    theme: getEditorTheme(themeContext.theme),
     lineNumbers: true,
     lineWrapping: true,
     autoCloseBrackets: true,
@@ -69,41 +78,58 @@ export default function CustomEditor({
     }
   }
 
+  const placeholder =
+    lastInputJson?.length !== 0
+      ? lastInputJson
+        ? lastInputJson
+        : JSON5.stringify(customMsg.message)
+      : ''
+
+  let errorMessage = ''
+  if (error) {
+    errorMessage = `${error?.message} at line ${error?.lineNumber}`
+  }
+
   let status = (
     <div
       className={
         isValidJson ? 'flex h-10 text-green-500 p-2' : 'h-10 text-red-500 p-2'
       }
     >
-      {isValidJson ? 'JSON is valid' : 'JSON is invalid'}
+      {isValidJson ? 'JSON is valid' : errorMessage}
     </div>
   )
 
   function isJsonString(str: string) {
     try {
       JSON5.parse(str)
-    } catch (e) {
+      setError(undefined)
+    } catch (e: any) {
+      setError(e)
       return false
     }
     return true
+  }
+
+  function handleMessage(value: string) {
+    if (isJsonString(value)) {
+      setLastInputJson(value)
+      setIsValidJson(true)
+      updateCustom(JSON5.parse(value))
+    } else {
+      setLastInputJson(value)
+      setIsValidJson(false)
+    }
   }
 
   return (
     <div className="mt-4 border box-border rounded">
       {status}
       <CodeMirror
-        value={
-          lastInputJson ? lastInputJson : JSON5.stringify(customMsg.message)
-        }
+        value={placeholder}
         options={cmOptions}
         onBeforeChange={(editor: any, data: any, value: any) => {
-          if (isJsonString(value)) {
-            setLastInputJson(value)
-            setIsValidJson(true)
-          } else {
-            setLastInputJson(value)
-            setIsValidJson(false)
-          }
+          handleMessage(value)
         }}
       />
     </div>

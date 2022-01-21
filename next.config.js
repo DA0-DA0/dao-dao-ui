@@ -5,6 +5,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 let config = {
   distDir: 'dist',
+  /*
+    The reactStrictMode flag is set to false
+    to allow for the proposal JSON editor to show.
+  */
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
   react: {
@@ -12,12 +16,6 @@ let config = {
     wait: true,
   },
 }
-
-config.plugins?.push(
-  new options.webpack.DefinePlugin({
-    PREVENT_CODEMIRROR_RENDER: true,
-  })
-)
 
 // Only need rewrites for local development
 if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
