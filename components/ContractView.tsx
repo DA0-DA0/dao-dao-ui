@@ -262,15 +262,13 @@ export function BalanceCard({
   denom,
   title,
   amount,
-  onPlus,
-  onMinus,
+  onManage,
   loading,
 }: {
   denom: string
   title: string
   amount: string
-  onPlus: MouseEventHandler<HTMLButtonElement>
-  onMinus: MouseEventHandler<HTMLButtonElement>
+  onManage: MouseEventHandler<HTMLButtonElement>
   loading: boolean
 }) {
   return (
@@ -286,20 +284,12 @@ export function BalanceCard({
         </p>
       )}
       <div className="flex justify-end">
-        <div className="btn-group">
-          <button
-            className="btn-outline btn btn-xs btn-square border-secondary"
-            onClick={onPlus}
-          >
-            +
-          </button>
-          <button
-            className="btn-outline btn btn-xs btn-square border-secondary"
-            onClick={onMinus}
-          >
-            -
-          </button>
-        </div>
+        <button
+          className="btn btn-xs normal-case font-normal rounded-md"
+          onClick={onManage}
+        >
+          Manage
+        </button>
       </div>
     </div>
   )

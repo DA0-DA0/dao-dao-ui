@@ -17,8 +17,10 @@ import {
 } from 'selectors/daos'
 import {
   cw20Balances,
+  getBlockHeight,
   nativeBalance,
   walletAddress,
+  walletClaims,
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
 import { convertMicroDenomToDenom } from 'util/conversion'
@@ -38,7 +40,11 @@ import {
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { AddressSmall } from 'components/Address'
+import {
+  claimAvaliable,
+  ClaimAvaliableCard,
+  ClaimsPendingList,
+} from '@components/Claims'
 
 const DaoHome: NextPage = () => {
   const router = useRouter()
@@ -59,6 +65,10 @@ const DaoHome: NextPage = () => {
   const stakedGovTokenBalance = useRecoilValue(
     walletStakedTokenBalance(daoInfo?.staking_contract)
   )
+  const blockHeight = useRecoilValue(getBlockHeight)
+  const claimsAvaliable = useRecoilValue(walletClaims(daoInfo.staking_contract))
+    .claims.filter((c) => claimAvaliable(c, blockHeight))
+    .reduce((p, n) => p + Number(n.amount), 0)
 
   const wallet = useRecoilValue(walletAddress)
   const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
@@ -146,13 +156,9 @@ const DaoHome: NextPage = () => {
                 govTokenBalance?.amount
               ).toLocaleString()}
               denom={tokenInfo?.symbol}
-              onPlus={() => {
+              onManage={() => {
                 setShowStaking(true)
                 setStakingDefault(StakingMode.Unstake)
-              }}
-              onMinus={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
               }}
               loading={tokenBalanceLoading}
             />
@@ -164,17 +170,29 @@ const DaoHome: NextPage = () => {
                 stakedGovTokenBalance.amount
               ).toLocaleString()}
               denom={tokenInfo?.symbol}
-              onPlus={() => {
+              onManage={() => {
                 setShowStaking(true)
                 setStakingDefault(StakingMode.Stake)
-              }}
-              onMinus={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
               }}
               loading={tokenBalanceLoading}
             />
           </li>
+          {claimsAvaliable ? (
+            <li>
+              <BalanceCard
+                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+                amount={convertMicroDenomToDenom(
+                  claimsAvaliable
+                ).toLocaleString()}
+                denom={tokenInfo?.symbol}
+                onManage={() => {
+                  setShowStaking(true)
+                  setStakingDefault(StakingMode.Claim)
+                }}
+                loading={tokenBalanceLoading}
+              />
+            </li>
+          ) : null}
         </ul>
         {govTokenBalance?.amount ? (
           <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
@@ -212,11 +230,16 @@ const DaoHome: NextPage = () => {
             </div>
           </div>
         ) : null}
+        <ClaimsPendingList
+          stakingAddress={daoInfo.staking_contract}
+          tokenSymbol={tokenInfo.symbol}
+        />
         {showStaking && (
           <StakingModal
             defaultMode={stakingDefault}
             contractAddress={contractAddress}
             tokenSymbol={tokenInfo.symbol}
+            claimAmount={claimsAvaliable}
             onClose={() => setShowStaking(false)}
             beforeExecute={() => setTokenBalancesLoading(true)}
             afterExecute={() => setTokenBalancesLoading(false)}
