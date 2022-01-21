@@ -1618,10 +1618,10 @@
   resolved "https://registry.npmjs.org/@cosmjs/utils/-/utils-0.24.1.tgz"
   integrity sha512-VA3WFx1lMFb7esp9BqHWkDgMvHoA3D9w+uDRvWhVRpUpDc7RYHxMbWExASjz+gNblTCg556WJGzF64tXnf9tdQ==
 
-"@dao-dao/types@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.npmjs.org/@dao-dao/types/-/types-0.0.7.tgz"
-  integrity sha512-YXR5hnv0VkWCmZf2l7Wb7HnntR0Hg2So5JiNeHwt5CHM+Fh/QTDF1GFQRvwMSoZbfKD8TES1rCmQrNO02R4O0A==
+"@dao-dao/types@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@dao-dao/types/-/types-0.0.8.tgz#da65222a4a627604aebf99aa81be84f7ab36e628"
+  integrity sha512-iiLq520SmWbmx46GQ/Gy/wHBbN60Hdm6k4gWFRODdLLOdsVGd2c/Mk6pEOaguZvl/4Xu9IIH0bq4H8JB4zWmoA==
   dependencies:
     dotenv "^10.0.0"
     json-schema-to-typescript "^10.1.5"
