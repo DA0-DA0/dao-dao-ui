@@ -335,15 +335,10 @@ export function ProposalDetailsSidebar({
         <div className="col-span-2">
           <ProposalStatus status={proposal.status} />
         </div>
-        {!multisig && (
-          // https://github.com/DA0-DA0/dao-contracts/issues/136
-          <>
-            <p className="text-secondary">Proposer</p>
-            <p className="col-span-2">
-              <Address address={proposal.proposer} />
-            </p>
-          </>
-        )}
+        <p className="text-secondary">Proposer</p>
+        <p className="col-span-2">
+          <Address address={proposal.proposer} />
+        </p>
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>
