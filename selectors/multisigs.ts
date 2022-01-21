@@ -38,17 +38,15 @@ export const sigMemberSelector = selectorFamily<MultisigListType, string>({
 
 export const sigAddressesSelector = contractsByCodeId(MULTISIG_CODE_ID)
 
-export const sigSelector = selectorFamily<ConfigResponse, string>({
+export const sigSelector = selectorFamily<any, string>({
   key: 'multisig',
   get:
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
-      const config = await client.queryContractSmart(
-        address,
-        'get_config' as unknown as Record<string, unknown>
-      )
-      return config
+      return await client?.queryContractSmart(address, {
+        get_config: {},
+      })
     },
 })
 

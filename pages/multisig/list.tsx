@@ -87,9 +87,12 @@ const MultisigList: NextPage = () => {
     }
     setMembership(
       sigs.contents.reduce(
-        ({ count, votes }: IMembershipTotal, sig: MultisigListType) => ({
-          count: count + (sig.member === true ? 1 : 0),
-          votes: votes + sig.weight,
+        (
+          { count, votes }: IMembershipTotal,
+          { member, weight }: MultisigListType
+        ) => ({
+          count: count + (member === true ? 1 : 0),
+          votes: votes + weight,
         }),
         { count: 0, votes: 0 }
       )
@@ -114,7 +117,7 @@ const MultisigList: NextPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {sigs.state == 'hasValue' ? (
-              sigs.contents.length > 0 ? (
+              membership.count > 0 ? (
                 sigs.contents.map(
                   (sig, idx) =>
                     sig.member && (
