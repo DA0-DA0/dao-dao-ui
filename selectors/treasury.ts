@@ -11,6 +11,7 @@ import {
   kelprOfflineSigner,
 } from 'selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
 
 export const nativeBalance = selectorFamily({
   key: 'NativeBalance',
@@ -124,4 +125,32 @@ export const walletStakedTokenBalance = selectorFamily({
         address: tokenAddress,
       }
     },
+})
+
+export const walletClaims = selectorFamily({
+  key: 'WalletClaims',
+  get:
+    (stakingAddress: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const wallet = get(walletAddress)
+      get(walletTokenBalanceUpdateCountAtom(wallet))
+
+      const response = (await client.queryContractSmart(stakingAddress, {
+        claims: { address: wallet },
+      })) as ClaimsResponse
+
+      return response
+    },
+})
+
+export const getBlockHeight = selector({
+  key: 'ChainBlockHeight',
+  get: async ({ get }) => {
+    const wallet = get(walletAddress)
+    get(walletTokenBalanceUpdateCountAtom(wallet))
+
+    const client = get(cosmWasmClient)
+    return await client.getHeight()
+  },
 })
