@@ -104,7 +104,7 @@ export default function InputField<
   min?: number
   max?: number
   showErrorMessage?: boolean
-  onChange?: ChangeEventHandler<any>
+  onChange?: ChangeEventHandler<HTMLInputElement|HTMLTextAreaElement>
   validate?:
     | Validate<FieldPathValue<TFieldValues, TFieldName>>
     | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>
@@ -128,7 +128,7 @@ export default function InputField<
   const inputComponent = multiline ? (
     <textarea
       {...register(fieldName, options)}
-      className={`block box-border m-0 w-full rounded-lg input input-bordered h-full`}
+      className='block box-border m-0 w-full rounded-lg input input-bordered h-full'
       defaultValue={defaultValue}
       defaultChecked={
         type === 'checkbox' && defaultValue === 1 ? true : undefined
