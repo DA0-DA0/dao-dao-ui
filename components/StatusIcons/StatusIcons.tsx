@@ -5,7 +5,7 @@ import SvgOpen from '../icons/Open'
 import SvgRejected from '../icons/Rejected'
 import SvgDraft from '../icons/Draft'
 
-const StatusIcons: { [key: string]: JSX.Element } = {
+export const StatusIcons: { [key: string]: JSX.Element } = {
   draft: (
     <SvgDraft color={STATUS_COLORS.draft} style={{ display: 'inline' }} />
   ),

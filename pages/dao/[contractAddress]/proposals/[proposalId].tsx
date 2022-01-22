@@ -1,19 +1,17 @@
-import { draftProposalSelector } from 'selectors/proposals'
-import { errorAtom, loadingAtom, transactionHashAtom } from 'atoms/status'
+import { errorAtom, loadingAtom } from 'atoms/status'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
-  ProposalDetailsSidebar,
+  ProposalDetailsSidebar
 } from 'components/ProposalDetails'
+import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 import ProposalEditor from 'components/ProposalEditor'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { cosmWasmSigningClient} from 'selectors/cosm'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { useRecoilValue } from 'recoil'
 import { daoSelector } from 'selectors/daos'
-import { createProposal, isDraftProposalKey } from 'util/proposal'
-import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
+import { draftProposalSelector } from 'selectors/proposals'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -30,7 +28,7 @@ const Proposal: NextPage = () => {
   let content
   let sidebar
 
-  if (draftProposal) {
+  if (draftProposal || proposalKey.startsWith('draft:')) {
     content = (
       <ProposalEditor
         proposalId={proposalKey}

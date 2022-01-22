@@ -2,7 +2,6 @@ import {
   MessageMapEntry,
   ProposalMessageType,
 } from 'models/proposal/messageMap'
-import { ProposalAction } from 'models/proposal/proposalActions'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
 import { makeMintMessage, getMintRecipient, getMintAmount } from 'util/messagehelpers'

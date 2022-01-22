@@ -10,9 +10,15 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
-import { proposalSelector, proposalsSelector } from 'selectors/proposals'
+import {
+  draftProposalsSelector,
+  onChainProposalsSelector,
+  proposalSelector,
+  proposalsSelector,
+} from 'selectors/proposals'
 import { ProposalStatus } from '@components'
 import { ExtendedProposalResponse } from 'types/proposals'
+import { draftProposalsToExtendedResponses } from 'util/proposal'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -80,9 +86,9 @@ function ProposalLine({
   const displayKey = prop.draftId ? prop.draftId : zeroPad(prop.id ?? 0, 6)
   return (
     <Link
-      href={`/${multisig ? 'multisig' : 'dao'}/${contractAddress}/proposals/${
-        proposalKey
-      }`}
+      href={`/${
+        multisig ? 'multisig' : 'dao'
+      }/${contractAddress}/proposals/${proposalKey}`}
     >
       <a>
         <div
@@ -90,9 +96,7 @@ function ProposalLine({
             'grid grid-cols-6 items-center py-2' + (border ? ' border-b' : '')
           }
         >
-          <p className="font-mono text-sm text-secondary">
-            # {displayKey}
-          </p>
+          <p className="font-mono text-sm text-secondary"># {displayKey}</p>
           <ProposalStatus status={prop.status} />
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
           <p className="text-neutral text-sm">{getEnd(prop.expires)}</p>
@@ -113,7 +117,7 @@ export function ProposalList({
   const [startBefore, setStartBefore] = useRecoilState(
     proposalsRequestStartBeforeAtom
   )
-
+  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
   // const propList = useRecoilValue(proposalsSelector({
   //   contractAddress,
   //   startBefore,
@@ -131,7 +135,7 @@ export function ProposalList({
   // Update the proposal list with any proposals that were created
   // since we were last here.
   const newProps = useRecoilValue(
-    proposalsSelector({
+    onChainProposalsSelector({
       contractAddress,
       startBefore: getNewestLoadedProposal(propList) + propsCreated + 1,
       limit: propsCreated,
@@ -155,7 +159,7 @@ export function ProposalList({
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
   const existingProps = useRecoilValue(
-    proposalsSelector({
+    onChainProposalsSelector({
       contractAddress,
       startBefore,
       limit: PROP_LOAD_LIMIT,
@@ -215,18 +219,36 @@ export function ProposalList({
   if (!propList.length) {
     return <p>no proposals</p>
   }
+  const allProposals = (
+    draftProposalsToExtendedResponses(draftProposals) ?? []
+  ).concat(propList)
+  const seenKeys: any = {}
+
   return (
     <div>
       <ul>
-        {propList.map((prop, idx) => (
-          <ProposalLine
-            prop={prop}
-            key={prop.draftId ?? prop.id ?? `prop_${idx}`}
-            border={idx !== propList.length - 1 || showLoadMore}
-            contractAddress={contractAddress}
-            multisig={multisig}
-          />
-        ))}
+        {allProposals.map((prop, idx) => {
+          const key = `prop_${prop.draftId ?? prop.id ?? idx}`
+          if (seenKeys[key]) {
+            seenKeys[key].push(prop)
+            console.log(JSON.stringify(seenKeys, undefined, 2))
+            if (seenKeys[key].length > 10) {
+              debugger
+            }
+            return null
+          } else {
+            seenKeys[key] = [prop]
+          }
+          return (
+            <ProposalLine
+              prop={prop}
+              key={key}
+              border={idx !== propList.length - 1 || showLoadMore}
+              contractAddress={contractAddress}
+              multisig={multisig}
+            />
+          )
+        })}
       </ul>
       {showLoadMore && (
         <button

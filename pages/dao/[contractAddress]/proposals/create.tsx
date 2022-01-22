@@ -1,5 +1,4 @@
 import { nextDraftProposalIdAtom } from 'atoms/proposals'
-import { Breadcrumbs } from 'components/Breadcrumbs'
 import Loader from 'components/Loader'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 import { EmptyProposal } from 'models/proposal/proposal'
@@ -15,6 +14,7 @@ import { daoSelector } from 'selectors/daos'
 import { draftProposalsSelector } from 'selectors/proposals'
 import { createDraftProposalTransaction, draftProposalKey } from 'util/proposal'
 
+
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
@@ -25,7 +25,7 @@ const ProposalCreate: NextPage = () => {
   const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
   const createDraftProposal = useRecoilTransaction_UNSTABLE(
     createDraftProposalTransaction(contractAddress, draftProposals),
-    [contractAddress]
+    // [contractAddress]
   )
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
 
@@ -35,12 +35,13 @@ const ProposalCreate: NextPage = () => {
       const nextId = nextDraftProposalId + 1
       setNextDraftProposalId(nextId)
       console.log(`initializing proposal ${draftKey}`)
-      createDraftProposal(contractAddress, {
-        draftProposal: { ...EmptyProposal } as any,
-      })
+      // createDraftProposal({
+      //   draftProposal: { ...EmptyProposal } as any,
+      // })
       setProposalId(draftKey)
+    } else {
       router.replace(
-        `/dao/${contractAddress}/proposals/${draftKey}`
+        `/dao/${contractAddress}/proposals/${proposalId}`
       )
     }
   }, [
@@ -62,7 +63,8 @@ const ProposalCreate: NextPage = () => {
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
-        <Breadcrumbs
+        <Loader />
+        {/* <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
             [`/dao/${contractAddress}`, daoInfo.config.name],
@@ -79,7 +81,7 @@ const ProposalCreate: NextPage = () => {
           <div className="mt-8">
             <LineAlert variant="error" msg={cleanChainError(error)} />
           </div>
-        )}
+        )} */}
       </div>
       <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
     </div>

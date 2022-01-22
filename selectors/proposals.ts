@@ -5,6 +5,7 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
+  draftProposalItem,
   proposalsRequestIdAtom,
   proposalUpdateCountAtom,
 } from 'atoms/proposals'
@@ -208,9 +209,7 @@ export const proposalsSelector = selectorFamily<
   get:
     ({ contractAddress, startBefore, limit }) =>
     async ({ get }) => {
-      const onChainProposalList = get(
-        onChainProposalsSelector({ contractAddress, startBefore, limit })
-      )
+      console.log(`proposalsSelector startBefore:${startBefore}`)
       let draftProposalItems: ExtendedProposalResponse[] = []
       // Add in draft proposals:
       const draftProposals = get(draftProposalsSelector(contractAddress))
@@ -227,6 +226,16 @@ export const proposalsSelector = selectorFamily<
           return proposalResponse
         })
       }
+
+      const onChainProposalList = get(
+        onChainProposalsSelector({
+          contractAddress,
+          startBefore,
+          limit,
+        })
+      )
+
+     console.log(`proposalsSelector, draftProposalItems: ${draftProposalItems?.length}, onChainProposalsList: ${onChainProposalList?.length}`)
 
       return (draftProposalItems ?? []).concat(onChainProposalList)
     },
@@ -247,7 +256,7 @@ export const proposalMapSelector = selectorFamily<ProposalMap, string>({
       const updatedMap: ContractProposalMap = {
         ...contractProposalMap,
         [contractAddress]: newValue,
-      } as any // TODO(gavin.doughtie): Wrong type?
+      } as unknown as ContractProposalMap
       set(contractProposalMapAtom, updatedMap)
     },
 })

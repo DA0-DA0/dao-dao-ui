@@ -1,6 +1,6 @@
 import { draftProposalSelector, draftProposalsSelector } from 'selectors/proposals'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import ProposalStatus from './ProposalStatus'
+import { ProposalStatus } from './ProposalStatus'
 import { loadingAtom } from 'atoms/status'
 
 export function ProposalDraftSidebar({
@@ -21,10 +21,9 @@ export function ProposalDraftSidebar({
     setDraftProposals(updatedProposals)
   }
 
-  return draftProposal ? (
-    <div>
+  return (<div>
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
-        Proposal {draftProposal.id}
+        Proposal {draftProposal?.id || proposalId}
       </h2>
       <div className="grid grid-cols-3">
         <p className="text-secondary">Status</p>
@@ -52,7 +51,5 @@ export function ProposalDraftSidebar({
         Delete Draft
       </button>
     </div>
-  ) : (
-    <div>Error: Draft Proposal Not found</div>
   )
 }

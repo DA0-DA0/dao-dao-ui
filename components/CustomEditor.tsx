@@ -10,6 +10,8 @@ import { makeWasmMessage } from 'util/messagehelpers'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
+import { draftProposalMessageSelector } from 'selectors/proposals'
+import { useRecoilState } from 'recoil'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -26,15 +28,24 @@ function getEditorTheme(appTheme: string): string {
 }
 
 export default function CustomEditor({
-  dispatch,
+  contractAddress,
+  proposalId,
   customMsg,
 }: {
-  dispatch: (action: ProposalAction) => void
-  customMsg: MessageMapEntry
+  contractAddress: string
+  proposalId: string
+  customMsg?: MessageMapEntry
 }) {
   const [error, setError] = useState<JSONError | undefined>(undefined)
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
   const [isValidJson, setIsValidJson] = useState<boolean>(true)
+  const [customMessage, setCustomMessage] = useRecoilState(
+    draftProposalMessageSelector({
+      contractAddress,
+      proposalId,
+      messageId: customMsg?.id ?? '',
+    })
+  )
   const themeContext = useThemeContext()
 
   const cmOptions = {
@@ -52,37 +63,23 @@ export default function CustomEditor({
   }
 
   function updateCustom(message: any) {
-    try {
-      const id = customMsg?.id ?? ''
-      const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
-      let action: ProposalAction
-      // If it is a WasmMsg, make sure it's properly encoded
-      if (message.wasm) message = makeWasmMessage(message)
-
-      if (id) {
-        action = {
-          type: 'updateMessage',
-          id,
-          message,
-        }
-      } else {
-        action = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-      }
-      dispatch(action)
-    } catch (err) {
-      console.error(err)
-    }
+    // If it is a WasmMsg, make sure it's properly encoded
+    if (message.wasm) message = makeWasmMessage(message)
+    setCustomMessage({
+      ...customMessage,
+      message,
+    } as any)
   }
 
   const placeholder =
     lastInputJson?.length !== 0
       ? lastInputJson
         ? lastInputJson
-        : JSON5.stringify(customMsg.message)
+        : JSON5.stringify(
+            customMessage?.message ?? customMsg?.message ?? {},
+            undefined,
+            2
+          )
       : ''
 
   let errorMessage = ''

@@ -1,48 +1,35 @@
-import React, {
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react'
+import { Proposal } from '@dao-dao/types/contracts/cw3-dao'
+import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 import {
-  CosmosMsgFor_Empty,
-  Proposal,
-  ProposalResponse,
-  WasmMsg,
-} from '@dao-dao/types/contracts/cw3-dao'
-import { useCw20IncreaseAllowance } from 'hooks/cw20'
-import {
-  contractProposalMapAtom,
-  draftProposalItem,
   nextDraftProposalIdAtom,
-  proposalListAtom,
   proposalsRequestIdAtom,
 } from 'atoms/proposals'
-import HelpTooltip from 'components/HelpTooltip'
-import { useThemeContext } from 'contexts/theme'
+import { useCw20IncreaseAllowance } from 'hooks/cw20'
+import {
+  MessageMapEntry,
+  ProposalMessageType,
+} from 'models/proposal/messageMap'
 import { EmptyProposal, EmptyProposalItem } from 'models/proposal/proposal'
 import { NextRouter, useRouter } from 'next/router'
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   useRecoilState,
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
-  useResetRecoilState,
-  useSetRecoilState,
 } from 'recoil'
 import { cosmWasmSigningClient } from 'selectors/cosm'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import {
-  draftProposalsSelector,
-  proposalsSelector,
   draftProposalSelector,
+  draftProposalsSelector,
 } from 'selectors/proposals'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { ProposalMapItem } from 'types/proposals'
 import {
-  isBankMsg,
-  isBurnMsg,
-  isMintMsg,
-  isSendMsg,
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
+import {
   labelForMessage,
   makeMintMessage,
   makeSpendMessage,
@@ -53,6 +40,7 @@ import {
   draftProposalKey,
   isProposal,
 } from 'util/proposal'
+import CustomEditor from './CustomEditor'
 import InputField, {
   InputFieldLabel,
   makeFieldErrorMessage,
@@ -62,20 +50,6 @@ import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
 import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
-import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
-
-import { transactionHashAtom, loadingAtom, errorAtom } from 'atoms/status'
-import { createDraftProposalTransaction, createProposal } from 'util/proposal'
-import {
-  MessageMapEntry,
-  ProposalMessageType,
-} from 'models/proposal/messageMap'
-import { ProposalMapItem } from 'types/proposals'
-import {
-  contractConfigSelector,
-  ContractConfigWrapper,
-} from 'util/contractConfigWrapper'
-import CustomEditor from './CustomEditor'
 
 export function ProposalEditor({
   proposalId,
@@ -148,11 +122,6 @@ export function ProposalEditor({
     isExistingDraftProposal && isProposal(proposalMapItem?.proposal)
       ? proposalMapItem.proposal
       : ({ ...EmptyProposal } as any as Proposal)
-
-  // if (!isExistingDraftProposal) {
-  //   // We're creating a new proposal, so bump the draft ID:
-  //   setNextDraftProposalId(proposalId)
-  // }
 
   const createProposal = (proposalMapItem: ProposalMapItem) => {
     const proposal = messageForDraftProposal(
@@ -244,8 +213,6 @@ export function ProposalEditor({
     if (proposalMapItem && isProposalValid(proposalMapItem.proposal)) {
       await createProposal(proposalMapItem)
       setNextProposalRequestId(nextProposalRequestId + 1)
-      // resetProposals()
-      deleteDraftProposal()
     }
     // }
   }
@@ -260,10 +227,13 @@ export function ProposalEditor({
   }
 
   function setProposalTitle(title: string) {
-    updateProposal({
-      ...proposal,
-      title,
-    })
+    title = title.trim()
+    if (proposal.title !== title) {
+      updateProposal({
+        ...proposal,
+        title,
+      })
+    }
   }
 
   function setProposalDescription(description: string) {
@@ -271,10 +241,12 @@ export function ProposalEditor({
     if (description == '\\') {
       description = ''
     }
-    updateProposal({
-      ...proposal,
-      description,
-    })
+    if (proposal.description !== description) {
+      updateProposal({
+        ...proposal,
+        description,
+      })
+    }
     if (description) {
       setProposalDescriptionErrorMessage('')
     } else {
@@ -290,16 +262,16 @@ export function ProposalEditor({
       let modeEditor = <h1>Not implemented</h1>
       switch (mapEntry.messageType) {
         case ProposalMessageType.Spend:
-            modeEditor = (
-              <SpendEditor
-                spendMsgId={mapEntry.id}
-                contractAddress={contractAddress}
-                initialRecipientAddress={recipientAddress}
-                proposalId={proposalId}
-                msgIndex={messageIndex}
-              />
-            )
-            label = 'Spend'
+          modeEditor = (
+            <SpendEditor
+              spendMsgId={mapEntry.id}
+              contractAddress={contractAddress}
+              initialRecipientAddress={recipientAddress}
+              proposalId={proposalId}
+              msgIndex={messageIndex}
+            />
+          )
+          label = 'Spend'
           break
         case ProposalMessageType.Mint:
           modeEditor = (
@@ -313,7 +285,13 @@ export function ProposalEditor({
           label = 'Mint'
           break
         case ProposalMessageType.Custom:
-          modeEditor = <CustomEditor dispatch={() => {}} customMsg={msg} />
+          modeEditor = (
+            <CustomEditor
+              contractAddress={contractAddress}
+              proposalId={proposalId}
+              customMsg={mapEntry}
+            />
+          )
           label = 'Custom'
           break
       }
@@ -363,11 +341,15 @@ export function ProposalEditor({
   }
 
   const addWasmMessage = () => {
-    // addMessage({ wasm: {} } as any)
+    const wasmMessageEntry = makeMessageMapEntry(ProposalMessageType.Custom, {})
+    addMessage(wasmMessageEntry)
   }
 
   const addCustomMessage = () => {
-    // addMessage({ custom: {} } as CosmosMsgFor_Empty)
+    const wasmMessageEntry = makeMessageMapEntry(ProposalMessageType.Custom, {
+      custom: {},
+    })
+    addMessage(wasmMessageEntry)
   }
 
   const makeMessageMapEntry = (

@@ -2,13 +2,13 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
-import Address from 'components/Address'
+import { Address } from './Address'
 import ProposalVotes from 'components/ProposalVotes'
 import { useSigningClient } from 'contexts/cosmwasm'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
 import toast from 'react-hot-toast'
-import { ProposalStatus } from '@components
+import { ProposalStatus } from '@components'
 import {
   atom,
   SetterOrUpdater,
@@ -28,7 +28,7 @@ import { convertMicroDenomToDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { getEnd } from './ProposalList'
-import ProposalStatus from './ProposalStatus'
+
 
 function executeProposalVote(
   vote: 'yes' | 'no',

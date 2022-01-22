@@ -1,12 +1,36 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { Proposal, ProposalResponse, CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { activeStatusAtom, errorAtom, loadingAtom, Status, transactionHashAtom } from 'atoms/status'
-import { memoForProposal } from 'models/proposal/proposal'
+import {
+  Proposal,
+  ProposalResponse,
+  CosmosMsgFor_Empty,
+} from '@dao-dao/types/contracts/cw3-dao'
+import {
+  activeStatusAtom,
+  errorAtom,
+  loadingAtom,
+  Status,
+  transactionHashAtom,
+} from 'atoms/status'
+import {
+  EmptyProposalResponse,
+  EmptyThresholdResponse,
+  memoForProposal,
+} from 'models/proposal/proposal'
 import { TransactionInterface_UNSTABLE } from 'recoil'
-import { ContractProposalMap, ProposalMap, ProposalMapItem } from 'types/proposals'
-import { contractProposalMapAtom, draftProposalItem, nextDraftProposalIdAtom } from 'atoms/proposals'
+import {
+  ContractProposalMap,
+  ExtendedProposalResponse,
+  ProposalMap,
+  ProposalMapItem,
+} from 'types/proposals'
+import {
+  contractProposalMapAtom,
+  draftProposalItem,
+  nextDraftProposalIdAtom,
+} from 'atoms/proposals'
 import { defaultExecuteFee } from './fee'
 import { NextRouter } from 'next/router'
+import { draftProposalsSelector } from 'selectors/proposals'
 
 export function isProposal(
   proposal: Proposal | ProposalResponse | ProposalMapItem | undefined
@@ -45,47 +69,59 @@ export const createDraftProposalTransaction =
   (contractAddress: string, draftProposals: ProposalMap) =>
   ({ get, set }: TransactionInterface_UNSTABLE) => {
     const contractProposalMap = get(contractProposalMapAtom)
-    const setContractProposalMap = (contractProposalMap: ContractProposalMap) =>
+    const setContractProposalMap = (
+      contractProposalMap: ContractProposalMap
+    ) => {
+      debugger
       set(contractProposalMapAtom, contractProposalMap)
+    }
     const nextDraftProposalId = get(nextDraftProposalIdAtom)
     const incrementDraftProposalId = () =>
       set(nextDraftProposalIdAtom, nextDraftProposalId + 1)
 
-    return (
-      contractAddress: string,
-      {
-        draftProposal,
-      }: {
-        draftProposal: Proposal
-      }
-    ) => {
+    return ({ draftProposal }: { draftProposal: Proposal }) => {
       const proposalKey = draftProposalKey(nextDraftProposalId)
       setContractProposalMap({
         ...contractProposalMap,
         [contractAddress]: {
           ...draftProposals,
-          [proposalKey]: draftProposalItem(
-            draftProposal,
-            proposalKey
-          ),
+          [proposalKey]: draftProposalItem(draftProposal, proposalKey),
         },
       })
       incrementDraftProposalId()
     }
   }
 
-  export const createProposalTransaction =
+export const deleteDraftProposalTransaction =
+  ({
+    contractAddress,
+    proposalId,
+  }: {
+    contractAddress: string
+    proposalId: string
+  }) =>
+  ({ get, set }: TransactionInterface_UNSTABLE) => {
+    const draftProposals = get(draftProposalsSelector(contractAddress))
+
+    return () => {
+      const updatedProposals = { ...draftProposals }
+      delete updatedProposals[proposalId + '']
+      set(draftProposalsSelector(contractAddress), updatedProposals)
+    }
+  }
+
+export const createProposalTransaction =
   ({
     walletAddress,
     signingClient,
     contractAddress,
     draftProposals,
-    router
+    router,
   }: {
     walletAddress: string
     signingClient: SigningCosmWasmClient
     contractAddress: string
-    draftProposals: ProposalMap,
+    draftProposals: ProposalMap
     router: NextRouter
   }) =>
   ({ get, set }: TransactionInterface_UNSTABLE) => {
@@ -134,7 +170,7 @@ export const createDraftProposalTransaction =
           setActiveStatus({ status: 'success', title })
           const initialMessage = `Saved Proposal "${propose.title}"`
           const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
-          router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`) 
+          router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
         }
       } catch (e: any) {
         console.error(
@@ -144,11 +180,12 @@ export const createDraftProposalTransaction =
         console.error(e.message)
         setLoading(false)
         setError(e.message)
+        throw e
       }
     }
   }
 
-  export const createProposal =
+export const createProposal =
   ({
     setLoading,
     setError,
@@ -202,12 +239,24 @@ export const createDraftProposalTransaction =
     }
   }
 
-export const updateProposalMessage =
-  ({
-    proposalMapItem,
-    setProposalMapItem,
-  }: {
-    proposalMapItem: any
-    setProposalMapItem: any
-  }) =>
-  (messageIndex: number, msg: CosmosMsgFor_Empty) => {}
+export const draftProposalToExtendedResponse = (draft: ProposalMapItem) => {
+  const proposalResponse: ExtendedProposalResponse = {
+    ...EmptyProposalResponse,
+    ...draft.proposal,
+    status: 'draft' as any,
+    draftId: draft.id,
+    threshold: { ...EmptyThresholdResponse },
+    total_weight: 0,
+  }
+  return proposalResponse
+}
+
+export const draftProposalsToExtendedResponses = (
+  draftProposals: ProposalMap
+) => {
+  return draftProposals
+    ? Object.values(draftProposals).map((draft) =>
+        draftProposalToExtendedResponse(draft)
+      )
+    : []
+}
