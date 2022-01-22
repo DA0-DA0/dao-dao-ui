@@ -25,6 +25,7 @@ export const C4_GROUP_CODE_ID = parseInt(
 
 export const STATUS_COLORS: { [key: string]: string } = {
   open: '#00BAFF',
+  draft: '#00F',
   executed: '#53D0C9',
   passed: '#6A78FF',
   rejected: '#ED5276',
