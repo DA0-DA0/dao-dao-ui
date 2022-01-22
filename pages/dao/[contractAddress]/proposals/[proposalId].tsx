@@ -2,7 +2,7 @@ import { errorAtom, loadingAtom } from 'atoms/status'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
-  ProposalDetailsSidebar
+  ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 import ProposalEditor from 'components/ProposalEditor'

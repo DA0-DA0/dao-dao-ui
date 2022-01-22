@@ -14,13 +14,13 @@ import {
   SetterOrUpdater,
   useRecoilState,
   useRecoilValue,
-  useSetRecoilState
+  useSetRecoilState,
 } from 'recoil'
 import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
-  proposalVotesSelector
+  proposalVotesSelector,
 } from 'selectors/proposals'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
@@ -28,7 +28,6 @@ import { convertMicroDenomToDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { getEnd } from './ProposalList'
-
 
 function executeProposalVote(
   vote: 'yes' | 'no',

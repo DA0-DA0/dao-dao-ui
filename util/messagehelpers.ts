@@ -97,7 +97,7 @@ export function makeSpendMessage(
   }
 }
 
-export function getDenom(message: {bank: any}): string {
+export function getDenom(message: { bank: any }): string {
   const amounts = message?.bank?.send?.amount
   if (amounts?.length) {
     return amounts[0]?.denom ?? DENOM

@@ -235,7 +235,9 @@ export const proposalsSelector = selectorFamily<
         })
       )
 
-     console.log(`proposalsSelector, draftProposalItems: ${draftProposalItems?.length}, onChainProposalsList: ${onChainProposalList?.length}`)
+      console.log(
+        `proposalsSelector, draftProposalItems: ${draftProposalItems?.length}, onChainProposalsList: ${onChainProposalList?.length}`
+      )
 
       return (draftProposalItems ?? []).concat(onChainProposalList)
     },

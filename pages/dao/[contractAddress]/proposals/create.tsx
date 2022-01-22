@@ -14,7 +14,6 @@ import { daoSelector } from 'selectors/daos'
 import { draftProposalsSelector } from 'selectors/proposals'
 import { createDraftProposalTransaction, draftProposalKey } from 'util/proposal'
 
-
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
@@ -24,7 +23,7 @@ const ProposalCreate: NextPage = () => {
   const [proposalId, setProposalId] = useState<string>('')
   const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
   const createDraftProposal = useRecoilTransaction_UNSTABLE(
-    createDraftProposalTransaction(contractAddress, draftProposals),
+    createDraftProposalTransaction(contractAddress, draftProposals)
     // [contractAddress]
   )
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
@@ -40,9 +39,7 @@ const ProposalCreate: NextPage = () => {
       // })
       setProposalId(draftKey)
     } else {
-      router.replace(
-        `/dao/${contractAddress}/proposals/${proposalId}`
-      )
+      router.replace(`/dao/${contractAddress}/proposals/${proposalId}`)
     }
   }, [
     contractAddress,

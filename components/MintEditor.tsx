@@ -4,7 +4,11 @@ import {
 } from 'models/proposal/messageMap'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeMintMessage, getMintRecipient, getMintAmount } from 'util/messagehelpers'
+import {
+  makeMintMessage,
+  getMintRecipient,
+  getMintAmount,
+} from 'util/messagehelpers'
 import { draftProposalMessageSelector } from 'selectors/proposals'
 import { useRecoilState } from 'recoil'
 
@@ -14,18 +18,20 @@ export default function MintEditor({
   mintMsg,
   denom,
 }: {
-  contractAddress: string,
-  proposalId: string,
+  contractAddress: string
+  proposalId: string
   mintMsg?: MessageMapEntry
   denom: string
 }) {
   const [address, setAddress] = useState(getMintRecipient(mintMsg) || '')
   const [validAddress, setValidAddress] = useState(true)
-  const [mintMessage, setMintMessage] = useRecoilState(draftProposalMessageSelector({
-    contractAddress,
-    proposalId,
-    messageId: mintMsg?.id ?? ''
-  }))
+  const [mintMessage, setMintMessage] = useRecoilState(
+    draftProposalMessageSelector({
+      contractAddress,
+      proposalId,
+      messageId: mintMsg?.id ?? '',
+    })
+  )
 
   let amount = getMintAmount(mintMessage) ?? ''
 
@@ -52,7 +58,7 @@ export default function MintEditor({
         messageType,
         ...mintMessage,
         order,
-        message
+        message,
       }
       setMintMessage(updatedMintMessage)
     } catch (e) {}

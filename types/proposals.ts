@@ -16,7 +16,7 @@ export interface ProposalMapItem {
   proposal: Proposal
   id: string
   activeMessageIndex?: number
-  draft: boolean,
+  draft: boolean
   messages?: MessageMap
 }
 

@@ -93,14 +93,14 @@ export const EmptyProposalResponse: ProposalResponse = {
   deposit_amount: '0',
   proposer: '',
   status: 'Draft' as Status,
-  threshold: {...EmptyThresholdResponse},
-  total_weight: '0'
+  threshold: { ...EmptyThresholdResponse },
+  total_weight: '0',
 }
 
 export function memoForProposal(proposal: Proposal): string {
-  const messagesMemo = proposal.msgs ? proposal.msgs
-    .map((msg) => labelForMessage(msg))
-    .join(', ') : ''
+  const messagesMemo = proposal.msgs
+    ? proposal.msgs.map((msg) => labelForMessage(msg)).join(', ')
+    : ''
   return `${proposal.title}\n${proposal.description}\n\n${messagesMemo}`.slice(
     0,
     MEMO_MAX_LEN
