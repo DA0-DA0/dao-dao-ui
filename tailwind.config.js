@@ -2,6 +2,7 @@ module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
+    './atoms/**/*.{js,ts,jsx,tsx}',
   ],
   options: {
     safelist: [/data-theme$/],
@@ -22,7 +23,11 @@ module.exports = {
       },
     },
   },
-  plugins: [require('daisyui'), require('@tailwindcss/line-clamp')],
+  plugins: [
+    require('daisyui'),
+    require('@tailwindcss/line-clamp'),
+    require('./tailwind/button'),
+  ],
   daisyui: {
     themes: [require('./styles/daisyui-themes.json')],
   },

@@ -4,7 +4,6 @@ import ThemeToggle from 'components/ThemeToggle'
 import { Logo } from 'components/Logo'
 import {
   ArrowRightIcon,
-  CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
@@ -12,6 +11,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
+import { Button } from '@atoms'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -27,17 +27,9 @@ function WalletConnect() {
 
   return (
     <div className="flex flex-grow md:flex-grow-0 mt-4">
-      <button
-        className="block btn bg-primary text-primary-content w-full normal-case truncate p-2 text-left"
-        onClick={handleConnect}
-      >
-        {walletAddress || (
-          <>
-            <CashIcon className="inline w-6 h-6 mr-1" />
-            Connect Wallet
-          </>
-        )}
-      </button>
+      <Button full onClick={handleConnect}>
+        {walletAddress || 'Connect wallet'}
+      </Button>
     </div>
   )
 }

@@ -19,7 +19,9 @@
     "incremental": true,
     "paths": {
       "@components/*": ["components/*"],
-      "@components": ["components"]
+      "@components": ["components"],
+      "@atoms/*": ["atoms/*"],
+      "@atoms": ["atoms"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
