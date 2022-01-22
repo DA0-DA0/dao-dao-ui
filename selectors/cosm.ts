@@ -71,10 +71,14 @@ export const voterInfoSelector = selectorFamily({
     async ({ get }) => {
       get(walletTokenBalanceUpdateCountAtom(walletAddress))
       const client = get(cosmWasmClient)
-      return client?.queryContractSmart(contractAddress, {
+      const response = await client?.queryContractSmart(contractAddress, {
         voter: {
           address: walletAddress,
         },
       })
+
+      return {
+        weight: Number(response?.weight || 0),
+      }
     },
 })
