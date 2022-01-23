@@ -462,7 +462,9 @@ export function ProposalDetails({
           )}
         </div>
       )}
-      <p className="text-medium mt-6">{proposal.description}</p>
+      <pre className="text-medium mt-6 font-sans leading-5">
+        {proposal.description}
+      </pre>
       {proposal.msgs.length > 0 ? (
         <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
           {decodedMessagesString(proposal)}
