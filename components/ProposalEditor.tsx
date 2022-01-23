@@ -315,22 +315,19 @@ export function ProposalEditor({
   const nextMessageKey = () => `${currentMessageCount()}`
 
   const addMessage = (message: MessageMapEntry) => {
-    if (!proposalMapItem?.proposal) {
-      return
-    }
     const messages = { ...messageMap, [message.id]: message }
     const updatedProposal: ProposalMapItem = {
-      ...proposalMapItem,
+      ...(proposalMapItem || EmptyProposalItem),
       messages,
     }
     setProposalMapItem(updatedProposal)
   }
 
   const addCustomMessage = () => {
-    const wasmMessageEntry = makeMessageMapEntry(ProposalMessageType.Custom, {
+    const customMessageEntry = makeMessageMapEntry(ProposalMessageType.Custom, {
       custom: {},
     })
-    addMessage(wasmMessageEntry)
+    addMessage(customMessageEntry)
   }
 
   const makeMessageMapEntry = (
