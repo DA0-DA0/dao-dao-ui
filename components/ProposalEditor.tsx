@@ -3,12 +3,12 @@ import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 import {
   nextDraftProposalIdAtom,
   proposalListAtom,
-  proposalsRequestIdAtom,
+  proposalsRequestIdAtom
 } from 'atoms/proposals'
 import { useCw20IncreaseAllowance } from 'hooks/cw20'
 import {
   MessageMapEntry,
-  ProposalMessageType,
+  ProposalMessageType
 } from 'models/proposal/messageMap'
 import { EmptyProposal, EmptyProposalItem } from 'models/proposal/proposal'
 import { NextRouter, useRouter } from 'next/router'
@@ -18,39 +18,38 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-  useResetRecoilState,
+  useResetRecoilState
 } from 'recoil'
 import { cosmWasmSigningClient } from 'selectors/cosm'
 import {
   draftProposalSelector,
-  draftProposalsSelector,
+  draftProposalsSelector
 } from 'selectors/proposals'
 import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { ProposalMapItem } from 'types/proposals'
 import {
   contractConfigSelector,
-  ContractConfigWrapper,
+  ContractConfigWrapper
 } from 'util/contractConfigWrapper'
 import {
   labelForMessage,
   makeMintMessage,
   makeSpendMessage,
-  messageForDraftProposal,
+  messageForDraftProposal
 } from 'util/messagehelpers'
 import {
   createProposalCallback,
   draftProposalKey,
-  isProposal,
+  isProposal
 } from 'util/proposal'
 import CustomEditor from './CustomEditor'
 import InputField, {
   InputFieldLabel,
-  makeFieldErrorMessage,
+  makeFieldErrorMessage
 } from './InputField'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
-import RawEditor from './RawEditor'
 import SpendEditor from './SpendEditor'
 
 export function ProposalEditor({
@@ -78,7 +77,6 @@ export function ProposalEditor({
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const [editProposalJson, setEditProposalJson] = useState(false)
   const [proposalDescriptionErrorMessage, setProposalDescriptionErrorMessage] =
     useState('')
 
@@ -143,13 +141,6 @@ export function ProposalEditor({
       isEnabled: () => true,
     },
     {
-      label: 'Wasm',
-      id: 'wasm',
-      execute: () => addWasmMessage(),
-      href: '#',
-      isEnabled: () => true,
-    },
-    {
       label: 'Custom',
       id: 'custom',
       execute: () => addCustomMessage(),
@@ -206,12 +197,10 @@ export function ProposalEditor({
     // We don't actually care about what the form processor returned in this
     // case, just that the proposal is filled out correctly, which if
     // the submit method gets called it will be.
-    // if (isProposal(proposalMapItem)) {
     if (proposalMapItem && isProposalValid(proposalMapItem.proposal)) {
       await createProposal(proposalMapItem)
       setNextProposalRequestId(nextProposalRequestId + 1)
     }
-    // }
   }
 
   function updateProposal(updatedProposal: Proposal) {
@@ -337,11 +326,6 @@ export function ProposalEditor({
     setProposalMapItem(updatedProposal)
   }
 
-  const addWasmMessage = () => {
-    const wasmMessageEntry = makeMessageMapEntry(ProposalMessageType.Custom, {})
-    addMessage(wasmMessageEntry)
-  }
-
   const addCustomMessage = () => {
     const wasmMessageEntry = makeMessageMapEntry(ProposalMessageType.Custom, {
       custom: {},
@@ -419,21 +403,12 @@ export function ProposalEditor({
     })
   }
 
-  function handleJsonChanged(json: any) {
-    setEditProposalJson(false)
-  }
-
   function handleDescriptionBlur(e: ChangeEvent<HTMLTextAreaElement>) {
     setProposalDescription(e.target.value)
   }
 
   function handleDescriptionTextChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setProposalDescription(e.target.value)
-  }
-
-  // TODO preview mode for the whole proposal
-  if (editProposalJson) {
-    return <RawEditor json={proposal} onChange={handleJsonChanged}></RawEditor>
   }
 
   const fieldErrorMessage = makeFieldErrorMessage(errors)
