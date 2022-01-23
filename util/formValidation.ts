@@ -1,4 +1,4 @@
-import { isValidAddress } from './isValidAddress'
+import { isValidAddress, isValidContractAddress } from './isValidAddress'
 
 export const validateRequired = (v: string) =>
   v.length > 0 || 'Field is required'
@@ -16,3 +16,6 @@ export const validatePercent = (v: string) => {
 
 export const validateAddress = (v: string) =>
   isValidAddress(v) || 'Invalid address'
+
+export const validateContractAddress = (v: string) =>
+  isValidContractAddress(v) || 'Invalid contract address'

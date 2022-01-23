@@ -27,6 +27,7 @@ import {
 } from 'components/InputField'
 import {
   validateAddress,
+  validateContractAddress,
   validateNonNegative,
   validatePercent,
   validatePositive,
@@ -503,7 +504,7 @@ const CreateDao: NextPage = () => {
                   label="existingTokenAddress"
                   register={register}
                   error={errors.existingTokenAddress}
-                  validation={[validateAddress, validateRequired]}
+                  validation={[validateContractAddress, validateRequired]}
                 />
                 <InputErrorMessage error={errors.existingTokenAddress} />
               </div>
