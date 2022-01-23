@@ -3,12 +3,12 @@ import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 import {
   nextDraftProposalIdAtom,
   proposalListAtom,
-  proposalsRequestIdAtom
+  proposalsRequestIdAtom,
 } from 'atoms/proposals'
 import { useCw20IncreaseAllowance } from 'hooks/cw20'
 import {
   MessageMapEntry,
-  ProposalMessageType
+  ProposalMessageType,
 } from 'models/proposal/messageMap'
 import { EmptyProposal, EmptyProposalItem } from 'models/proposal/proposal'
 import { NextRouter, useRouter } from 'next/router'
@@ -18,34 +18,34 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-  useResetRecoilState
+  useResetRecoilState,
 } from 'recoil'
 import { cosmWasmSigningClient } from 'selectors/cosm'
 import {
   draftProposalSelector,
-  draftProposalsSelector
+  draftProposalsSelector,
 } from 'selectors/proposals'
 import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { ProposalMapItem } from 'types/proposals'
 import {
   contractConfigSelector,
-  ContractConfigWrapper
+  ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
 import {
   labelForMessage,
   makeMintMessage,
   makeSpendMessage,
-  messageForDraftProposal
+  messageForDraftProposal,
 } from 'util/messagehelpers'
 import {
   createProposalCallback,
   draftProposalKey,
-  isProposal
+  isProposal,
 } from 'util/proposal'
 import CustomEditor from './CustomEditor'
 import InputField, {
   InputFieldLabel,
-  makeFieldErrorMessage
+  makeFieldErrorMessage,
 } from './InputField'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'

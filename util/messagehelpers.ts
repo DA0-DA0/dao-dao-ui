@@ -18,20 +18,16 @@ import {
   InstantiateMsg as MultisigInstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
-import { isAminoMsgWithdrawValidatorCommission } from '@cosmjs/stargate'
 import { MintMsg } from 'types/messages'
 import {
-  MessageMap,
   MessageMapEntry,
-  ProposalMessageType,
-  messageSort,
+  ProposalMessageType
 } from 'models/proposal/messageMap'
 import { ProposalMapItem } from 'types/proposals'
 import {
   convertDenomToContractReadableDenom,
   convertDenomToMicroDenom,
 } from './conversion'
-import { memoForProposal } from 'models/proposal/proposal'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''

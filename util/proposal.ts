@@ -1,9 +1,9 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import {
-  Proposal,
-  ProposalResponse,
-  CosmosMsgFor_Empty,
-} from '@dao-dao/types/contracts/cw3-dao'
+  contractProposalMapAtom,
+  nextDraftProposalIdAtom,
+} from 'atoms/proposals'
 import {
   activeStatusAtom,
   errorAtom,
@@ -16,21 +16,19 @@ import {
   EmptyThresholdResponse,
   memoForProposal,
 } from 'models/proposal/proposal'
+import { NextRouter } from 'next/router'
 import { CallbackInterface, TransactionInterface_UNSTABLE } from 'recoil'
+import { draftProposalsSelector } from 'selectors/proposals'
 import {
   ContractProposalMap,
   ExtendedProposalResponse,
   ProposalMap,
   ProposalMapItem,
 } from 'types/proposals'
-import {
-  contractProposalMapAtom,
-  draftProposalItem,
-  nextDraftProposalIdAtom,
-} from 'atoms/proposals'
 import { defaultExecuteFee } from './fee'
-import { NextRouter } from 'next/router'
-import { draftProposalsSelector } from 'selectors/proposals'
+
+// Prefix used in IDs for draft proposals
+const DRAFT_PROPOSAL_PREFFIX = 'draft:'
 
 export function isProposal(
   proposal: Proposal | ProposalResponse | ProposalMapItem | undefined
@@ -45,16 +43,30 @@ export function isProposal(
 }
 
 export function draftProposalKey(proposalId: number): string {
-  return `draft:${proposalId}`
+  return `${DRAFT_PROPOSAL_PREFFIX}${proposalId}`
+}
+
+// Convenience function to create a draft proposal entry
+export function draftProposalItem(
+  proposal: Proposal,
+  id: string
+): ProposalMapItem {
+  return {
+    proposal,
+    id,
+    draft: true,
+  }
 }
 
 export function isDraftProposalKey(proposalKey: string): boolean {
-  return proposalKey.startsWith('draft:')
+  return proposalKey.startsWith(DRAFT_PROPOSAL_PREFFIX)
 }
 
 export function draftProposalKeyNumber(proposalKey: string): number {
   if (isDraftProposalKey(proposalKey)) {
-    const str = proposalKey.substring(proposalKey.indexOf('draft:'))
+    const str = proposalKey.substring(
+      proposalKey.indexOf(DRAFT_PROPOSAL_PREFFIX)
+    )
     try {
       const num = parseInt(str)
       return num
@@ -72,7 +84,6 @@ export const createDraftProposalTransaction =
     const setContractProposalMap = (
       contractProposalMap: ContractProposalMap
     ) => {
-      debugger
       set(contractProposalMapAtom, contractProposalMap)
     }
     const nextDraftProposalId = get(nextDraftProposalIdAtom)
@@ -92,13 +103,16 @@ export const createDraftProposalTransaction =
     }
   }
 
-  export const deleteDraftProposal = (draftProposals: ProposalMap, proposalId: string) => {
-    const updatedProposals = { ...draftProposals }
-    delete updatedProposals[proposalId + '']
-    return updatedProposals
-  }
+export const deleteDraftProposal = (
+  draftProposals: ProposalMap,
+  proposalId: string
+) => {
+  const updatedProposals = { ...draftProposals }
+  delete updatedProposals[proposalId + '']
+  return updatedProposals
+}
 
-  export const deleteDraftProposalTransaction =
+export const deleteDraftProposalTransaction =
   ({
     contractAddress,
     proposalId,
@@ -123,7 +137,7 @@ export const createProposalCallback =
     contractAddress,
     draftProposals,
     router,
-    resetProposals
+    resetProposals,
   }: {
     walletAddress: string
     signingClient: SigningCosmWasmClient
@@ -137,7 +151,8 @@ export const createProposalCallback =
     const setError = (message: string) => set(errorAtom, message)
     const setTransactionHash = (hash: string) => set(transactionHashAtom, hash)
     const setActiveStatus = (status: Status) => set(activeStatusAtom, status)
-    const setDraftProposals = (draftProposals: ProposalMap) => set(draftProposalsSelector(contractAddress), draftProposals)
+    const setDraftProposals = (draftProposals: ProposalMap) =>
+      set(draftProposalsSelector(contractAddress), draftProposals)
 
     const deleteDraftProposal = (proposalId: string) => {
       const updatedProposals = { ...draftProposals }

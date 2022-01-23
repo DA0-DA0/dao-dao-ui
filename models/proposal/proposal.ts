@@ -1,39 +1,16 @@
 // Client-side proposal representation
 import {
-  CosmosMsgFor_Empty,
-  ExecuteMsg,
-  ProposalResponse,
-} from '@dao-dao/types/contracts/cw3-dao'
-import { ExecuteMsg as DAOExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import {
-  Proposal,
-  ProposalTallyResponse,
+  Proposal, ProposalResponse, ProposalTallyResponse,
   Status,
   Threshold,
   ThresholdResponse,
-  Vote,
-  Votes,
+  Votes
 } from '@dao-dao/types/contracts/cw3-dao'
-
-import { labelForMessage } from '../../util/messagehelpers'
-import { MessageMap } from './messageMap'
 import { ProposalMapItem } from 'types/proposals'
+import { labelForMessage } from '../../util/messagehelpers'
+
 
 export const MEMO_MAX_LEN = 255
-
-// export interface DraftProposal {
-//   id: string
-//   title: string
-//   description: string
-//   messageMap: MessageMap
-//   nextId: number
-//   // Which message is currently selected
-//   activeMessageId: string
-//   status: string
-//   pendingMessages: {
-//     [key: string]: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg
-//   }
-// }
 
 const EmptyThreshold: Threshold = {
   threshold_quorum: {

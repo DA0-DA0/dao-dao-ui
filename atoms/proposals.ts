@@ -1,54 +1,27 @@
-import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { MessageMapEntry } from 'models/proposal/messageMap'
-import { atom, atomFamily, selectorFamily, AtomEffect } from 'recoil'
+import { atom, atomFamily } from 'recoil'
 import {
-  ContractProposalMap,
-  ProposalKey,
-  ProposalMessageKey,
-  ProposalMap,
-  ProposalMapItem,
-  ExtendedProposalResponse,
+  ContractProposalMap, ExtendedProposalResponse
 } from 'types/proposals'
+import { localStorageEffect } from './localStorageEffect'
 
-export function draftProposalItem(
-  proposal: Proposal,
-  id: string
-): ProposalMapItem {
-  return {
-    proposal,
-    id,
-    draft: true,
-  }
-}
-
-const localStorageEffect: <T>(key: string) => AtomEffect<T> =
-  (key) =>
-  ({ setSelf, onSet, node }) => {
-    const savedValue = localStorage.getItem(key)
-    if (savedValue != null) {
-      const json = JSON.parse(savedValue)
-      setSelf(json)
-    }
-
-    onSet((newValue: any, _: any, isReset: boolean) => {
-      if (isReset) {
-        localStorage.removeItem(key)
-      } else {
-        localStorage.setItem(key, JSON.stringify(newValue))
-      }
-    })
-  }
-
+// By depending on this atom, the selector for retrieving the list
+// of on-chain proposals can know when it's time to actually re-calculate
+// and go refetch the data from the chain (even if the selector params
+// haven't changed). Set when performing mutations like updating the
+// votes or status on a proposal.
 export const proposalsRequestIdAtom = atom<number>({
   key: 'proposalsRequestId',
   default: 0,
 })
 
+// High-water mark for where to start querying the chain for proposals.
+// Used when paging in "more items" in proposal list pages.
 export const proposalsRequestStartBeforeAtom = atom<number>({
   key: 'proposalsRequestStartBefore',
   default: 0,
 })
 
+// The loaded list of proposals.
 export const proposalListAtom = atomFamily<ExtendedProposalResponse[], string>({
   key: 'proposalList',
   default: [],
@@ -82,12 +55,16 @@ export const proposalsUpdated = atomFamily<number[], string>({
   default: [],
 })
 
+// The next numeric ID for creating draft proposals. Saved to localstorage
+// and incremented so that we don't end up with multiple draft proposals and
+// multisigs with the same ID.
 export const nextDraftProposalIdAtom = atom<number>({
   key: 'nextDraftProposalId',
   default: 10000,
   effects_UNSTABLE: [localStorageEffect<number>('nextDraftProposalId')],
 })
 
+// The map of draft proposals associated with a given contract.
 export const contractProposalMapAtom = atom<ContractProposalMap>({
   key: 'contractProposalMap',
   default: {},

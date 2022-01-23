@@ -1,17 +1,13 @@
-import {
-  MessageMapEntry,
-  ProposalMessageType,
-} from 'models/proposal/messageMap'
-import { ProposalAction } from 'models/proposal/proposalActions'
-import React, { useState } from 'react'
-import { useThemeContext } from '../contexts/theme'
-import JSON5 from 'json5'
-import { makeWasmMessage } from 'util/messagehelpers'
-import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
-import { draftProposalMessageSelector } from 'selectors/proposals'
+import JSON5 from 'json5'
+import { MessageMapEntry } from 'models/proposal/messageMap'
+import React, { useState } from 'react'
+import { Controlled as CodeMirror } from 'react-codemirror2'
 import { useRecoilState } from 'recoil'
+import { draftProposalMessageSelector } from 'selectors/proposals'
+import { makeWasmMessage } from 'util/messagehelpers'
+import { useThemeContext } from '../contexts/theme'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -90,32 +86,50 @@ export default function CustomEditor({
   let status = (
     <div
       className={
-        isValidJson ? 'flex h-10 text-green-500 p-2' : 'h-10 text-red-500 p-2'
+        isValidJson ? 'flex h-10 text-green-500 p-2' : 'flex h-10 text-red-500 p-2'
       }
     >
-      {isValidJson ? 'JSON is valid' : errorMessage}
+      <div className="flex-1">{isValidJson ? 'JSON is valid' : errorMessage}</div>
+      <button
+        disabled={!isValidJson}
+        className="btn btn-xs normal-case font-normal rounded-md flex-initial"
+        onClick={handleFormatJson}
+      >
+        Format
+      </button>
     </div>
   )
 
-  function isJsonString(str: string) {
+  function parseAsJson(str: string) {
     try {
-      JSON5.parse(str)
+      const obj = JSON5.parse(str)
       setError(undefined)
+      return obj
     } catch (e: any) {
       setError(e)
-      return false
     }
-    return true
+    return undefined
   }
 
   function handleMessage(value: string) {
-    if (isJsonString(value)) {
+    const msg = parseAsJson(value)
+    if (msg) {
       setLastInputJson(value)
       setIsValidJson(true)
-      updateCustom(JSON5.parse(value))
+      updateCustom(msg)
     } else {
       setLastInputJson(value)
       setIsValidJson(false)
+    }
+  }
+
+  function handleFormatJson(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const parsed = parseAsJson(lastInputJson)
+    if (parsed) {
+      const formatted = JSON.stringify(parsed, undefined, 2)
+      setLastInputJson(formatted)
     }
   }
 
