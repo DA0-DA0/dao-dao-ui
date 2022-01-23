@@ -11,6 +11,7 @@ import { Suspense } from 'react'
 import LoadingScreen from 'components/LoadingScreen'
 import { useRouter } from 'next/router'
 import { HomepageLayout } from 'components/HomepageLayout'
+import ErrorBoundary from 'components/ErrorBoundary'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -45,18 +46,20 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <RecoilRoot>
-      <Suspense fallback={<LoadingScreen />}>
-        <SigningCosmWasmProvider>
-          <ThemeProvider updateTheme={updateTheme} theme={theme}>
-            {loaded && (
-              <Layout>
-                <Component {...pageProps} />
-                <Notifications />
-              </Layout>
-            )}
-          </ThemeProvider>
-        </SigningCosmWasmProvider>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <SigningCosmWasmProvider>
+            <ThemeProvider updateTheme={updateTheme} theme={theme}>
+              {loaded && (
+                <Layout>
+                  <Component {...pageProps} />
+                  <Notifications />
+                </Layout>
+              )}
+            </ThemeProvider>
+          </SigningCosmWasmProvider>
+        </Suspense>
+      </ErrorBoundary>
     </RecoilRoot>
   )
 }
