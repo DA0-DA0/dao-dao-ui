@@ -1,6 +1,13 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
+import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
+import { Address } from './Address'
 import ProposalVotes from 'components/ProposalVotes'
-import { Address } from 'components/Address'
+import { useSigningClient } from 'contexts/cosmwasm'
+import { useRouter } from 'next/router'
+import { ReactNode } from 'react'
+import toast from 'react-hot-toast'
 import { ProposalStatus } from '@components'
 import {
   atom,
@@ -9,24 +16,18 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
+import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
   proposalVotesSelector,
 } from 'selectors/proposals'
-import { ReactNode } from 'react'
-import { CheckIcon, XIcon, SparklesIcon } from '@heroicons/react/outline'
-import { getEnd } from './ProposalList'
-import { isMemberSelector } from 'selectors/daos'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import toast from 'react-hot-toast'
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { defaultExecuteFee } from 'util/fee'
-import { decodedMessagesString } from 'util/messagehelpers'
-import { useSigningClient } from 'contexts/cosmwasm'
-import { cleanChainError } from 'util/cleanChainError'
 import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
-import { proposalsUpdated, proposalUpdateCountAtom } from 'atoms/proposals'
+import { cleanChainError } from 'util/cleanChainError'
+import { convertMicroDenomToDenom } from 'util/conversion'
+import { defaultExecuteFee } from 'util/fee'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
+import { getEnd } from './ProposalList'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -89,6 +90,8 @@ function executeProposalExecute(
       toast.success(`Success. Transaction hash: (${response.transactionHash})`)
     })
     .catch((err) => {
+      console.error(err)
+      console.error(err.message)
       toast.error(cleanChainError(err.message))
     })
     .finally(() => {
@@ -325,6 +328,10 @@ export function ProposalDetailsSidebar({
     localeOptions
   )
 
+  if (!proposal) {
+    return <div>Error, no proposal</div>
+  }
+
   return (
     <div>
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
@@ -389,6 +396,7 @@ export function ProposalDetails({
   proposalId: number
   multisig?: boolean
 }) {
+  const router = useRouter()
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
   )
@@ -397,17 +405,6 @@ export function ProposalDetails({
   )
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
-  )
-
-  const yesVotes = Number(
-    multisig
-      ? proposalTally.votes.yes
-      : convertMicroDenomToDenom(proposalTally.votes.yes)
-  )
-  const noVotes = Number(
-    multisig
-      ? proposalTally.votes.no
-      : convertMicroDenomToDenom(proposalTally.votes.no)
   )
 
   const member = useRecoilValue(isMemberSelector(contractAddress))
@@ -422,6 +419,24 @@ export function ProposalDetails({
   // If token balances are loading we don't know if the user is a
   // member or not.
   const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
+
+  if (!proposal) {
+    router.replace(`/dao/${contractAddress}`)
+    return <div>Error</div>
+  }
+
+  const yesVotes = Number(
+    multisig
+      ? proposalTally?.votes.yes
+      : convertMicroDenomToDenom(proposalTally?.votes.yes ?? '0')
+  )
+  const noVotes = Number(
+    multisig
+      ? proposalTally?.votes.no
+      : convertMicroDenomToDenom(proposalTally?.votes.no ?? 0)
+  )
+
+  const decodedMessages = decodeMessages(proposal)
 
   return (
     <div className="p-6">
@@ -463,7 +478,7 @@ export function ProposalDetails({
         </div>
       )}
       <p className="text-medium mt-6">{proposal.description}</p>
-      {proposal.msgs.length > 0 ? (
+      {proposal.msgs.length > 0 || decodedMessages ? (
         <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
           {decodedMessagesString(proposal)}
         </pre>
