@@ -10,6 +10,8 @@ import { makeWasmMessage } from 'util/messagehelpers'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
+import { validateCosmosMsg } from 'util/validateWasmMsg'
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -32,9 +34,10 @@ export default function CustomEditor({
   dispatch: (action: ProposalAction) => void
   customMsg: MessageMapEntry
 }) {
-  const [error, setError] = useState<JSONError | undefined>(undefined)
+  const [errorJson, setErrorJson] = useState<boolean>(false)
+  const [errorCosmosMsg, setErrorCosmosMsg] = useState<boolean>(false)
+  const [jsonErrorMessage, setJsonErrorMessage] = useState<string>('')
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
-  const [isValidJson, setIsValidJson] = useState<boolean>(true)
   const themeContext = useThemeContext()
 
   const cmOptions = {
@@ -59,6 +62,14 @@ export default function CustomEditor({
       // If it is a WasmMsg, make sure it's properly encoded
       if (message.wasm) message = makeWasmMessage(message)
 
+      const validCosmos = validateCosmosMsg(message)
+      if (!validCosmos.valid) {
+        setErrorCosmosMsg(true)
+        console.log(validCosmos.errors)
+      } else {
+        setErrorCosmosMsg(false)
+      }
+
       if (id) {
         action = {
           type: 'updateMessage',
@@ -79,59 +90,72 @@ export default function CustomEditor({
   }
 
   const placeholder =
-    lastInputJson?.length !== 0
-      ? lastInputJson
-        ? lastInputJson
-        : JSON5.stringify(customMsg.message)
-      : ''
-
-  let errorMessage = ''
-  if (error) {
-    errorMessage = `${error?.message} at line ${error?.lineNumber}`
-  }
+    lastInputJson?.length !== 0 ? (lastInputJson ? lastInputJson : '{}') : ''
 
   let status = (
-    <div
-      className={
-        isValidJson ? 'flex h-10 text-green-500 p-2' : 'h-10 text-red-500 p-2'
-      }
-    >
-      {isValidJson ? 'JSON is valid' : errorMessage}
+    <div className="text-sm p-2">
+      {errorJson && (
+        <p className="text-error">
+          <XIcon className="w-5 h-5 mr-2 inline" />
+          {jsonErrorMessage}
+        </p>
+      )}
+      {!errorJson && errorCosmosMsg && (
+        <p className="text-error">
+          <XIcon className="w-5 h-5 mr-2 inline" />
+          message is not a valid{' '}
+          <a
+            className="link"
+            rel="noreferrer"
+            target="_blank"
+            href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
+          >
+            cosmos message
+          </a>
+          .
+        </p>
+      )}
+      {!errorJson && !errorCosmosMsg && (
+        <p className="text-success">
+          <CheckIcon className="w-5 h-5" />
+        </p>
+      )}
     </div>
   )
 
-  function isJsonString(str: string) {
+  function validateJsonString(str: string) {
     try {
       JSON5.parse(str)
-      setError(undefined)
+      setErrorJson(false)
     } catch (e: any) {
-      setError(e)
+      console.log('yah no')
+      setErrorJson(true)
+      setJsonErrorMessage(`${e?.message}`)
       return false
     }
     return true
   }
 
   function handleMessage(value: string) {
-    if (isJsonString(value)) {
+    if (validateJsonString(value)) {
       setLastInputJson(value)
-      setIsValidJson(true)
+
       updateCustom(JSON5.parse(value))
     } else {
       setLastInputJson(value)
-      setIsValidJson(false)
     }
   }
 
   return (
     <div className="mt-4 border box-border rounded">
-      {status}
       <CodeMirror
         value={placeholder}
         options={cmOptions}
-        onBeforeChange={(editor: any, data: any, value: any) => {
+        onBeforeChange={(_editor: any, _data: any, value: any) => {
           handleMessage(value)
         }}
       />
+      {status}
     </div>
   )
 }
