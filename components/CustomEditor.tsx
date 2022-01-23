@@ -86,10 +86,14 @@ export default function CustomEditor({
   let status = (
     <div
       className={
-        isValidJson ? 'flex h-10 text-green-500 p-2' : 'flex h-10 text-red-500 p-2'
+        isValidJson
+          ? 'flex h-10 text-green-500 p-2'
+          : 'flex h-10 text-red-500 p-2'
       }
     >
-      <div className="flex-1">{isValidJson ? 'JSON is valid' : errorMessage}</div>
+      <div className="flex-1">
+        {isValidJson ? 'JSON is valid' : errorMessage}
+      </div>
       <button
         disabled={!isValidJson}
         className="btn btn-xs normal-case font-normal rounded-md flex-initial"

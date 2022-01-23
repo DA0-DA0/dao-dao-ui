@@ -1,7 +1,5 @@
 import { atom, atomFamily } from 'recoil'
-import {
-  ContractProposalMap, ExtendedProposalResponse
-} from 'types/proposals'
+import { ContractProposalMap, ExtendedProposalResponse } from 'types/proposals'
 import { localStorageEffect } from './localStorageEffect'
 
 // By depending on this atom, the selector for retrieving the list
