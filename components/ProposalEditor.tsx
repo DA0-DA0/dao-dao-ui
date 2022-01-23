@@ -2,6 +2,7 @@ import { Proposal } from '@dao-dao/types/contracts/cw3-dao'
 import { PaperClipIcon, XIcon } from '@heroicons/react/outline'
 import {
   nextDraftProposalIdAtom,
+  proposalListAtom,
   proposalsRequestIdAtom,
 } from 'atoms/proposals'
 import { useCw20IncreaseAllowance } from 'hooks/cw20'
@@ -14,14 +15,17 @@ import { NextRouter, useRouter } from 'next/router'
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
+  useRecoilCallback,
   useRecoilState,
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
+  useResetRecoilState,
 } from 'recoil'
 import { cosmWasmSigningClient } from 'selectors/cosm'
 import {
   draftProposalSelector,
   draftProposalsSelector,
+  onChainProposalsSelector,
 } from 'selectors/proposals'
 import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { ProposalMapItem } from 'types/proposals'
@@ -36,6 +40,7 @@ import {
   messageForDraftProposal,
 } from 'util/messagehelpers'
 import {
+  createProposalCallback,
   createProposalTransaction,
   draftProposalKey,
   isProposal,
@@ -101,14 +106,15 @@ export function ProposalEditor({
   )
 
   const messageMap = proposalMapItem?.messages ?? {}
-
-  const createProposalFunction = useRecoilTransaction_UNSTABLE(
-    createProposalTransaction({
+  const resetProposals = useResetRecoilState(proposalListAtom(contractAddress))
+  const createProposalFunction = useRecoilCallback(
+    createProposalCallback({
       walletAddress,
       signingClient,
       contractAddress,
       draftProposals,
       router,
+      resetProposals
     }),
     [walletAddress, signingClient, contractAddress, draftProposals]
   )
@@ -129,12 +135,6 @@ export function ProposalEditor({
       contractConfig?.gov_token
     )
     return createProposalFunction(proposalId, proposal)
-  }
-
-  const deleteDraftProposal = () => {
-    const updatedProposals = { ...draftProposals }
-    delete updatedProposals[proposalId + '']
-    setDraftProposals(updatedProposals)
   }
 
   const messageActions = [

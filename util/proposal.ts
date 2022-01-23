@@ -16,7 +16,7 @@ import {
   EmptyThresholdResponse,
   memoForProposal,
 } from 'models/proposal/proposal'
-import { TransactionInterface_UNSTABLE } from 'recoil'
+import { CallbackInterface, TransactionInterface_UNSTABLE } from 'recoil'
 import {
   ContractProposalMap,
   ExtendedProposalResponse,
@@ -92,7 +92,13 @@ export const createDraftProposalTransaction =
     }
   }
 
-export const deleteDraftProposalTransaction =
+  export const deleteDraftProposal = (draftProposals: ProposalMap, proposalId: string) => {
+    const updatedProposals = { ...draftProposals }
+    delete updatedProposals[proposalId + '']
+    return updatedProposals
+  }
+
+  export const deleteDraftProposalTransaction =
   ({
     contractAddress,
     proposalId,
@@ -110,39 +116,33 @@ export const deleteDraftProposalTransaction =
     }
   }
 
-export const createProposalTransaction =
+export const createProposalCallback =
   ({
     walletAddress,
     signingClient,
     contractAddress,
     draftProposals,
     router,
+    resetProposals
   }: {
     walletAddress: string
     signingClient: SigningCosmWasmClient
     contractAddress: string
     draftProposals: ProposalMap
     router: NextRouter
+    resetProposals: any
   }) =>
-  ({ get, set }: TransactionInterface_UNSTABLE) => {
+  ({ set }: CallbackInterface) => {
     const setLoading = (loading: boolean) => set(loadingAtom, loading)
     const setError = (message: string) => set(errorAtom, message)
     const setTransactionHash = (hash: string) => set(transactionHashAtom, hash)
     const setActiveStatus = (status: Status) => set(activeStatusAtom, status)
-    const contractProposalMap = get(contractProposalMapAtom)
-    const setContractProposalMap = (contractProposalMap: ContractProposalMap) =>
-      set(contractProposalMapAtom, contractProposalMap)
+    const setDraftProposals = (draftProposals: ProposalMap) => set(draftProposalsSelector(contractAddress), draftProposals)
 
     const deleteDraftProposal = (proposalId: string) => {
-      // delete the draft
-      console.log(`deleteDraftProposal ${contractAddress}:${proposalId}`)
       const updatedProposals = { ...draftProposals }
       delete updatedProposals[proposalId + '']
-      const updatedMap = {
-        ...contractProposalMap,
-        [contractAddress]: updatedProposals,
-      }
-      setContractProposalMap(updatedMap)
+      setDraftProposals(updatedProposals)
     }
 
     return async (proposalId: string, propose: Proposal) => {
@@ -159,8 +159,8 @@ export const createProposalTransaction =
         )
         setLoading(false)
         if (response) {
-          setTransactionHash(response.transactionHash)
           deleteDraftProposal(proposalId)
+          setTransactionHash(response.transactionHash)
           const [{ events }] = response.logs
           const [wasm] = events.filter((e: any) => e.type === 'wasm')
           const [{ value }] = wasm.attributes.filter(
@@ -170,6 +170,7 @@ export const createProposalTransaction =
           setActiveStatus({ status: 'success', title })
           const initialMessage = `Saved Proposal "${propose.title}"`
           const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
+          resetProposals()
           router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
         }
       } catch (e: any) {
