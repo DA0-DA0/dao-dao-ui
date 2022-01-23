@@ -14,6 +14,7 @@ import {
   HeroContractHeader,
   StarButton,
 } from 'components/ContractView'
+import ErrorBoundary from 'components/ErrorBoundary'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -70,7 +71,7 @@ function VoteBalanceCard({
   )
 }
 
-const Home: NextPage = () => {
+function MultisigHome() {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -181,4 +182,10 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+const MultisigHomePage: NextPage = () => (
+  <ErrorBoundary title="Multisig Not Found">
+    <MultisigHome />
+  </ErrorBoundary>
+)
+
+export default MultisigHomePage
