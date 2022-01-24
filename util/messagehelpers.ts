@@ -22,7 +22,7 @@ import { MintMsg } from 'types/messages'
 import {
   MessageMapEntry,
   ProposalMessageType,
-} from 'models/proposal/messageMap'
+} from '../models/proposal/messageMap'
 import { ProposalMapItem } from 'types/proposals'
 import {
   convertDenomToContractReadableDenom,
