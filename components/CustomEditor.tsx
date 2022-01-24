@@ -90,8 +90,8 @@ export default function CustomEditor({
       : ''
 
   let errorMessage = ''
-  if (error) {
-    errorMessage = `${error?.message} at line ${error?.lineNumber}`
+  if (jsonErrorMessage) {
+    errorMessage = jsonErrorMessage
   }
 
   let status = (
@@ -136,10 +136,8 @@ export default function CustomEditor({
     try {
       const obj = JSON5.parse(str)
       setErrorJson(false)
-      setError(undefined)
       return obj
     } catch (e: any) {
-      setError(e)
       setErrorJson(true)
       setJsonErrorMessage(`${e?.message}`)
     }

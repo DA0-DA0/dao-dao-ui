@@ -41,7 +41,7 @@ import {
   createProposalCallback,
   draftProposalKey,
   isProposal,
-} from 'util/proposal'
+} from '../util/proposal'
 import CustomEditor from './CustomEditor'
 import InputField, {
   InputFieldLabel,

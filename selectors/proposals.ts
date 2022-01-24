@@ -5,7 +5,6 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
-  draftProposalItem,
   proposalsRequestIdAtom,
   proposalUpdateCountAtom,
 } from 'atoms/proposals'
@@ -233,10 +232,6 @@ export const proposalsSelector = selectorFamily<
           startBefore,
           limit,
         })
-      )
-
-      console.log(
-        `proposalsSelector, draftProposalItems: ${draftProposalItems?.length}, onChainProposalsList: ${onChainProposalList?.length}`
       )
 
       return (draftProposalItems ?? []).concat(onChainProposalList)
