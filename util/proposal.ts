@@ -189,7 +189,7 @@ export const createProposalCallback =
           const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
           resetProposals()
           const route = `${
-            multisig ? 'multisig' : 'dao'
+            multisig ? '/multisig' : '/dao'
           }/${contractAddress}/proposals/${value}?${paramStr}`
           router.push(route)
         }
