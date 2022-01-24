@@ -13,18 +13,16 @@ import { draftProposalMessageSelector } from 'selectors/proposals'
 export default function SpendEditor({
   contractAddress,
   proposalId,
-  msgIndex,
   initialRecipientAddress,
   spendMsgId,
 }: {
   contractAddress: string
   proposalId: string
-  msgIndex: number
   spendMsgId: string
   initialRecipientAddress: string
 }) {
   const [validAddress, setValidAddress] = useState(
-    isValidAddress(initialRecipientAddress)
+    initialRecipientAddress ? isValidAddress(initialRecipientAddress) : true
   )
   const [spendMessage, setSpendMessage] = useRecoilState(
     draftProposalMessageSelector({
@@ -88,7 +86,7 @@ export default function SpendEditor({
   }
 
   const addressClass = `input input-bordered rounded box-border p-3 w-full text-xl ${
-    validAddress ? 'bg-error' : ''
+    validAddress ? '' : 'bg-error'
   }`
 
   return (
