@@ -102,17 +102,17 @@ function Nav() {
           </div>
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
-
             <ul className="list-none ml-2">
-              {sigAddresses.map(({ sig, address }) => (
-                <li key={sig.config.name} className="mt-1">
-                  <Link href={`/multisig/${address}`}>
-                    <a>
-                      <MemberDisplay name={sig.config.name} />
-                    </a>
-                  </Link>
-                </li>
-              ))}
+              {sigAddresses &&
+                sigAddresses.map(({ sig, address }) => (
+                  <li key={sig.config.name} className="mt-1">
+                    <Link href={`/multisig/${address}`}>
+                      <a>
+                        <MemberDisplay name={sig.config.name} />
+                      </a>
+                    </Link>
+                  </li>
+                ))}
             </ul>
 
             <ul className="list-none ml-2">
