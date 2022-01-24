@@ -10,7 +10,10 @@ import {
   useRecoilValue,
 } from 'recoil'
 import { draftProposalsSelector } from 'selectors/proposals'
-import { createDraftProposalTransaction, draftProposalKey } from 'util/proposal'
+import {
+  createDraftProposalTransaction,
+  draftProposalKey,
+} from '../../../../util/proposal'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -31,7 +34,7 @@ const MultisigProposalCreate: NextPage = () => {
       setNextDraftProposalId(nextId)
       setProposalId(draftKey)
     } else {
-      router.replace(`/dao/${contractAddress}/multisig/${proposalId}`)
+      router.replace(`/multisig/${contractAddress}/${proposalId}`)
     }
   }, [
     contractAddress,
