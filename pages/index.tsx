@@ -12,7 +12,7 @@ import { ReactNode } from 'react'
 import { GradientWrapper } from 'components/GradientWrapper'
 import SvgGithub from 'components/icons/Github'
 import SvgTwitter from 'components/icons/Twitter'
-import { Button } from '@atoms/Button'
+import { Button } from '@components'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 

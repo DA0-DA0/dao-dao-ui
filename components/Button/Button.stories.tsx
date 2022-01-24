@@ -6,7 +6,7 @@ import SvgConnect from '@components/icons/Connect'
 import SvgWallet from '@components/icons/Wallet'
 
 export default {
-  title: 'Design System / Atoms / Button',
+  title: 'Design System / Components / Button',
   component: Button,
 } as ComponentMeta<typeof Button>
 

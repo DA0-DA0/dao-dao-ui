@@ -11,7 +11,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { Button } from '@atoms'
+import { Button } from '@components'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
