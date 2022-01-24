@@ -255,7 +255,6 @@ export function ProposalEditor({
               contractAddress={contractAddress}
               initialRecipientAddress={recipientAddress}
               proposalId={proposalId}
-              msgIndex={messageIndex}
             />
           )
           label = 'Spend'
