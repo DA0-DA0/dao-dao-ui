@@ -16,7 +16,7 @@ export function ProposalDraftSidebar({
   const draftProposal = useRecoilValue(
     draftProposalSelector({ contractAddress, proposalId })
   )
-  const [loading, setLoading] = useRecoilState(loadingAtom)
+  const loading = useRecoilValue(loadingAtom)
   const [draftProposals, setDraftProposals] = useRecoilState(
     draftProposalsSelector(contractAddress)
   )
@@ -44,9 +44,8 @@ export function ProposalDraftSidebar({
       <button
         key="delete_draft"
         className={`btn btn-secondary text-lg mt-8 ml-auto ${
-          loading ? 'loading' : ''
+          loading ? 'loading cursor-not-allowed' : ''
         }`}
-        style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
         disabled={loading}
         onClick={(e) => {
           e.preventDefault()

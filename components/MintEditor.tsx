@@ -47,21 +47,19 @@ export default function MintEditor({
     }
     const recipient = isValidAddress(address) ? address : ''
 
-    try {
-      const id = mintMsg?.id ?? ''
-      const messageType = mintMsg?.messageType ?? ProposalMessageType.Mint
-      const order = mintMsg?.order ?? 0
+    const id = mintMsg?.id ?? ''
+    const messageType = mintMsg?.messageType ?? ProposalMessageType.Mint
+    const order = mintMsg?.order ?? 0
 
-      const message = makeMintMessage(amount, recipient)
-      const updatedMintMessage: MessageMapEntry = {
-        id,
-        messageType,
-        ...mintMessage,
-        order,
-        message,
-      }
-      setMintMessage(updatedMintMessage)
-    } catch (e) {}
+    const message = makeMintMessage(amount, recipient)
+    const updatedMintMessage: MessageMapEntry = {
+      id,
+      messageType,
+      ...mintMessage,
+      order,
+      message,
+    }
+    setMintMessage(updatedMintMessage)
   }
 
   function handleRecipientAddress(e: React.FormEvent<HTMLInputElement>) {
