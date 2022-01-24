@@ -480,7 +480,7 @@ export function ProposalDetails({
       <p className="text-medium mt-6 font-sans leading-5">
         {proposal.description}
       </p>
-      {proposal.msgs.length > 0 || decodedMessages ? (
+      {decodedMessages?.length ? (
         <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
           {decodedMessagesString(proposal)}
         </pre>

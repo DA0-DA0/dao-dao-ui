@@ -224,23 +224,11 @@ export function ProposalList({
     return <p>no proposals</p>
   }
 
-  const seenKeys: any = {}
-
   return (
     <div>
       <ul>
         {allProposals.map((prop, idx) => {
           const key = `prop_${prop.draftId ?? prop.id ?? idx}`
-          if (seenKeys[key]) {
-            seenKeys[key].push(prop)
-            console.log(JSON.stringify(seenKeys, undefined, 2))
-            if (seenKeys[key].length > 10) {
-              debugger
-            }
-            return null
-          } else {
-            seenKeys[key] = [prop]
-          }
           return (
             <ProposalLine
               prop={prop}

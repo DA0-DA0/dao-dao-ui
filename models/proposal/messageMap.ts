@@ -4,6 +4,9 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteMsg as DAOExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 
+// TODO(gavin.doughtie): Can we use a more specific type?
+export type CustomMsg = any
+
 export enum ProposalMessageType {
   Collect = 'collect',
   Custom = 'custom',
@@ -18,7 +21,7 @@ export type MessageMapEntry = {
   id: string
   messageType: ProposalMessageType
   order: number
-  message: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg | any
+  message: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg | CustomMsg
 }
 
 export type MessageMap = { [key: string]: MessageMapEntry }

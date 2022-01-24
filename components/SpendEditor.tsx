@@ -87,12 +87,9 @@ export default function SpendEditor({
     setAmount(amount)
   }
 
-  let inputBaseClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl'
-  let inputErrorClass =
-    'input input-bordered rounded box-border p-3 w-full text-xl bg-error'
-
-  let addressClass = validAddress ? inputBaseClass : inputErrorClass
+  const addressClass = `input input-bordered rounded box-border p-3 w-full text-xl ${
+    validAddress ? 'bg-error' : ''
+  }`
 
   return (
     <div>
