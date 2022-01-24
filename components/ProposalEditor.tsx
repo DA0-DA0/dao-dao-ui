@@ -110,6 +110,7 @@ export function ProposalEditor({
       draftProposals,
       router,
       resetProposals,
+      multisig
     }),
     [walletAddress, signingClient, contractAddress, draftProposals]
   )

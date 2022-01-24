@@ -1,4 +1,4 @@
-import { errorAtom, loadingAtom } from 'atoms/status'
+import { errorAtom, loadingAtom } from '../../../../atoms/status'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,

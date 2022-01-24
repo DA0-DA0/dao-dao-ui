@@ -18,7 +18,7 @@ import {
 } from 'selectors/proposals'
 import { ProposalStatus } from '@components'
 import { ExtendedProposalResponse } from 'types/proposals'
-import { draftProposalsToExtendedResponses } from 'util/proposal'
+import { draftProposalsToExtendedResponses } from '../util/proposal'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -216,12 +216,14 @@ export function ProposalList({
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal
 
-  if (!propList.length) {
-    return <p>no proposals</p>
-  }
   const allProposals = (
     draftProposalsToExtendedResponses(draftProposals) ?? []
   ).concat(propList)
+
+  if (!allProposals.length) {
+    return <p>no proposals</p>
+  }
+
   const seenKeys: any = {}
 
   return (

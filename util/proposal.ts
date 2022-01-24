@@ -138,6 +138,7 @@ export const createProposalCallback =
     draftProposals,
     router,
     resetProposals,
+    multisig,
   }: {
     walletAddress: string
     signingClient: SigningCosmWasmClient
@@ -145,6 +146,7 @@ export const createProposalCallback =
     draftProposals: ProposalMap
     router: NextRouter
     resetProposals: any
+    multisig: boolean
   }) =>
   ({ set }: CallbackInterface) => {
     const setLoading = (loading: boolean) => set(loadingAtom, loading)
@@ -186,7 +188,10 @@ export const createProposalCallback =
           const initialMessage = `Saved Proposal "${propose.title}"`
           const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
           resetProposals()
-          router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
+          const route = `${
+            multisig ? 'multisig' : 'dao'
+          }/${contractAddress}/proposals/${value}?${paramStr}`
+          router.push(route)
         }
       } catch (e: any) {
         console.error(
@@ -198,60 +203,6 @@ export const createProposalCallback =
         setError(e.message)
         throw e
       }
-    }
-  }
-
-export const createProposal =
-  ({
-    setLoading,
-    setError,
-    signingClient,
-    walletAddress,
-    contractAddress,
-    router,
-    setTransactionHash,
-  }: {
-    setLoading: (loading: boolean) => void
-    setError: (message: string) => void
-    signingClient: SigningCosmWasmClient
-    walletAddress: string
-    contractAddress: string
-    router: NextRouter
-    setTransactionHash: (hash: string) => void
-  }) =>
-  async (proposal: Proposal) => {
-    setLoading(true)
-    setError('')
-    const memo = memoForProposal(proposal as any)
-    try {
-      const response = await signingClient?.execute(
-        walletAddress,
-        contractAddress,
-        { propose: proposal },
-        defaultExecuteFee,
-        memo
-      )
-      setLoading(false)
-      if (response) {
-        setTransactionHash(response.transactionHash)
-        const [{ events }] = response.logs
-        const [wasm] = events.filter((e: any) => e.type === 'wasm')
-        const [{ value }] = wasm.attributes.filter(
-          (w: any) => w.key === 'proposal_id'
-        )
-        const initialMessage = `Saved Proposal "${proposal.title}"`
-        const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
-
-        // router.push(`/dao/${contractAddress}/proposals/${value}?${paramStr}`)
-      }
-    } catch (e: any) {
-      console.error(
-        `Error submitting proposal ${JSON.stringify(proposal, undefined, 2)}`
-      )
-      console.dir(e)
-      console.error(e.message)
-      setLoading(false)
-      setError(e.message)
     }
   }
 

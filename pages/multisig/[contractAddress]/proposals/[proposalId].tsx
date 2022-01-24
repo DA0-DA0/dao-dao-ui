@@ -9,7 +9,7 @@ import ProposalEditor from 'components/ProposalEditor'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
-import { daoSelector } from 'selectors/daos'
+import { sigSelector } from 'selectors/multisigs'
 import { draftProposalSelector } from 'selectors/proposals'
 import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 
@@ -17,7 +17,7 @@ const MultisigProposal: NextPage = () => {
   const router = useRouter()
   const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
-  const sigInfo = useRecoilValue(daoSelector(contractAddress))
+  const sigInfo = useRecoilValue(sigSelector(contractAddress))
   const draftProposal = useRecoilValue(
     draftProposalSelector({ contractAddress, proposalId: proposalKey })
   )
@@ -66,7 +66,7 @@ const MultisigProposal: NextPage = () => {
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
-            [`/dao/${contractAddress}`, sigInfo.config.name],
+            [`/multisig/${contractAddress}`, sigInfo.config.name],
             [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />

@@ -421,7 +421,7 @@ export function ProposalDetails({
   const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
 
   if (!proposal) {
-    router.replace(`/dao/${contractAddress}`)
+    router.replace(`/${multisig ? 'multisig' : 'dao'}/${contractAddress}`)
     return <div>Error</div>
   }
 

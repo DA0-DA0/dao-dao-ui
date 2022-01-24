@@ -34,7 +34,7 @@ const MultisigProposalCreate: NextPage = () => {
       setNextDraftProposalId(nextId)
       setProposalId(draftKey)
     } else {
-      router.replace(`/multisig/${contractAddress}/${proposalId}`)
+      router.replace(`/multisig/${contractAddress}/proposals/${proposalId}`)
     }
   }, [
     contractAddress,
