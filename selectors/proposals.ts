@@ -42,21 +42,6 @@ export type ProposalExecuteParams = {
   walletAddress: string
 }
 
-function parsedProposalId(proposalId: ProposalIdInput): number {
-  if (typeof proposalId === 'string') {
-    proposalId = parseInt(proposalId)
-  }
-  return proposalId
-}
-
-function proposalIdParam(proposalId: ProposalIdInput): ProposalIdParamType {
-  return { proposal_id: parsedProposalId(proposalId) }
-}
-
-function proposalParam(key: string, proposalId: ProposalIdInput) {
-  return { [key]: proposalIdParam(proposalId) }
-}
-
 export const onChainProposalsSelector = selectorFamily<
   ProposalResponse[],
   {
