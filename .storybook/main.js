@@ -22,6 +22,8 @@ module.exports = {
     config.resolve.alias = {
       ...config.resolve.alias,
       'util/constants': path.resolve(__dirname, '../util/constants'),
+      'contexts/theme': path.resolve(__dirname, '../contexts/theme'),
+      styles: path.resolve(__dirname, '../styles'),
       '@components': path.resolve(__dirname, '../components'),
     }
 

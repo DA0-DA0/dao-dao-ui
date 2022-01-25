@@ -1,3 +1,4 @@
+import { Button } from '@components'
 import {
   LibraryIcon,
   PlusIcon,
@@ -104,9 +105,12 @@ const DaoList: NextPage = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">DAOs</h1>
           <Link href="/dao/create" passHref>
-            <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
-              Create a Dao <PlusIcon className="inline w-5 h-5 ml-1" />
-            </button>
+            <Button
+              size="sm"
+              iconAfter={<PlusIcon className="inline h-4 w-4" />}
+            >
+              Create a DAO
+            </Button>
           </Link>
         </div>
         <div className="mt-6">

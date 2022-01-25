@@ -11,17 +11,17 @@ const Template: ComponentStory<typeof ProposalStatus> = (args) => (
   <ProposalStatus {...args} />
 )
 
-export const OpenStatus = Template.bind({})
-OpenStatus.args = { status: 'open' }
+export const Open = Template.bind({})
+Open.args = { status: 'open' }
 
-export const ExecutedStatus = Template.bind({})
-ExecutedStatus.args = { status: 'executed' }
+export const Executed = Template.bind({})
+Executed.args = { status: 'executed' }
 
-export const PassedStatus = Template.bind({})
-PassedStatus.args = { status: 'passed' }
+export const Passed = Template.bind({})
+Passed.args = { status: 'passed' }
 
-export const RejectedStatus = Template.bind({})
-RejectedStatus.args = { status: 'rejected' }
+export const Rejected = Template.bind({})
+Rejected.args = { status: 'rejected' }
 
 const params = {
   design: {
@@ -30,7 +30,7 @@ const params = {
   },
 }
 
-OpenStatus.parameters = params
-ExecutedStatus.parameters = params
-PassedStatus.parameters = params
-RejectedStatus.parameters = params
+Open.parameters = params
+Executed.parameters = params
+Passed.parameters = params
+Rejected.parameters = params

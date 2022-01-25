@@ -12,24 +12,24 @@ import { ReactNode } from 'react'
 import { GradientWrapper } from 'components/GradientWrapper'
 import SvgGithub from 'components/icons/Github'
 import SvgTwitter from 'components/icons/Twitter'
+import { Button } from '@components'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
     <Link href="/starred" passHref>
-      <a
-        className={
-          'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
-          (small ? ' btn-sm' : ' btn-lg')
+      <Button
+        size={small ? 'md' : 'xl'}
+        iconAfter={
+          <ArrowNarrowRightIcon
+            className="inline h-4 w-4"
+            style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
+          />
         }
       >
         Enter the app
-        <ArrowNarrowRightIcon
-          className="w-6 h-4 ml-2"
-          style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
-        />
-      </a>
+      </Button>
     </Link>
   )
 }

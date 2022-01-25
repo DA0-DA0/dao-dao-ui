@@ -12,6 +12,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
+import { Button } from '@components'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -27,17 +28,19 @@ function WalletConnect() {
 
   return (
     <div className="flex flex-grow md:flex-grow-0 mt-4">
-      <button
-        className="block btn bg-primary text-primary-content w-full normal-case truncate p-2 text-left"
-        onClick={handleConnect}
-      >
-        {walletAddress || (
-          <>
-            <CashIcon className="inline w-6 h-6 mr-1" />
-            Connect Wallet
-          </>
-        )}
-      </button>
+      {walletAddress ? (
+        <Button full onClick={handleConnect}>
+          {walletAddress}
+        </Button>
+      ) : (
+        <Button
+          full
+          onClick={handleConnect}
+          iconBefore={<CashIcon className="inline w-4 h-4" />}
+        >
+          Connect wallet
+        </Button>
+      )}
     </div>
   )
 }

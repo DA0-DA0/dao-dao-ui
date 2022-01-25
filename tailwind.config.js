@@ -22,7 +22,11 @@ module.exports = {
       },
     },
   },
-  plugins: [require('daisyui'), require('@tailwindcss/line-clamp')],
+  plugins: [
+    require('daisyui'),
+    require('@tailwindcss/line-clamp'),
+    require('./tailwind/button'),
+  ],
   daisyui: {
     themes: [require('./styles/daisyui-themes.json')],
   },
