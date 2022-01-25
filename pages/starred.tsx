@@ -84,7 +84,7 @@ const Starred: NextPage = () => {
         <div className="mt-6">
           <h2 className="text-lg mb-2 mt-6">
             <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Multisgs
+            Multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedMultisigs.length ? (

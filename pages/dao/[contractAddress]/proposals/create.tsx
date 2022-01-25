@@ -1,3 +1,4 @@
+import { Breadcrumbs } from '@components/Breadcrumbs'
 import { nextDraftProposalIdAtom } from 'atoms/proposals'
 import Loader from 'components/Loader'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
@@ -26,7 +27,6 @@ const ProposalCreate: NextPage = () => {
     createDraftProposalTransaction(contractAddress, draftProposals)
     // [contractAddress]
   )
-  const sigInfo = useRecoilValue(daoSelector(contractAddress))
 
   useEffect(() => {
     if (!proposalId) {
@@ -57,28 +57,18 @@ const ProposalCreate: NextPage = () => {
     />
   )
 
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
-        <Loader />
-        {/* <Breadcrumbs
+        <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
             [`/dao/${contractAddress}`, daoInfo.config.name],
-            [router.asPath, `Creating a Draft Proposal...`],
+            [router.asPath, `New proposal`],
           ]}
         />
-        <ProposalEditor
-          onProposal={handleProposal}
-          loading={loading}
-          contractAddress={contractAddress}
-          recipientAddress={walletAddress}
-        />
-        {error && (
-          <div className="mt-8">
-            <LineAlert variant="error" msg={cleanChainError(error)} />
-          </div>
-        )} */}
       </div>
       <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
     </div>
