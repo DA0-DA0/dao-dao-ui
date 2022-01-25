@@ -154,21 +154,11 @@ function Nav() {
           <li>
             <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
             <a
-              href="https://github.com/da0-da0"
+              href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
               target="_blank"
               rel="noreferrer"
             >
-              GitHub
-            </a>
-          </li>
-          <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
-            <a
-              href="https://twitter.com/da0_da0"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Twitter
+              Feedback
             </a>
           </li>
         </ul>
