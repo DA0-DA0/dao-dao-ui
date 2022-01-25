@@ -2,28 +2,38 @@ import {
   MessageMapEntry,
   ProposalMessageType,
 } from 'models/proposal/messageMap'
-import { ProposalAction } from 'models/proposal/proposalActions'
-import {
-  getMintAmount,
-  getMintRecipient,
-} from 'models/proposal/proposalSelectors'
 import { FormEvent, useState } from 'react'
 import { isValidAddress } from 'util/isValidAddress'
-import { makeMintMessage } from 'util/messagehelpers'
+import {
+  makeMintMessage,
+  getMintRecipient,
+  getMintAmount,
+} from 'util/messagehelpers'
+import { draftProposalMessageSelector } from 'selectors/proposals'
+import { useRecoilState } from 'recoil'
 
 export default function MintEditor({
-  dispatch,
+  contractAddress,
+  proposalId,
   mintMsg,
   denom,
 }: {
-  dispatch: (action: ProposalAction) => void
+  contractAddress: string
+  proposalId: string
   mintMsg?: MessageMapEntry
   denom: string
 }) {
   const [address, setAddress] = useState(getMintRecipient(mintMsg) || '')
   const [validAddress, setValidAddress] = useState(true)
+  const [mintMessage, setMintMessage] = useRecoilState(
+    draftProposalMessageSelector({
+      contractAddress,
+      proposalId,
+      messageId: mintMsg?.id ?? '',
+    })
+  )
 
-  let amount = getMintAmount(mintMsg) ?? ''
+  let amount = getMintAmount(mintMessage) ?? ''
 
   function setAmount(newAmount: string) {
     amount = newAmount
@@ -37,30 +47,19 @@ export default function MintEditor({
     }
     const recipient = isValidAddress(address) ? address : ''
 
-    try {
-      const id = mintMsg?.id ?? ''
-      const messageType = mintMsg?.messageType ?? ProposalMessageType.Mint
-      let action: ProposalAction
+    const id = mintMsg?.id ?? ''
+    const messageType = mintMsg?.messageType ?? ProposalMessageType.Mint
+    const order = mintMsg?.order ?? 0
 
-      const message = makeMintMessage(amount, recipient)
-      console.log('update')
-      console.log(message)
-
-      if (id) {
-        action = {
-          type: 'updateMessage',
-          id,
-          message,
-        }
-      } else {
-        action = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-      }
-      dispatch(action)
-    } catch (e) {}
+    const message = makeMintMessage(amount, recipient)
+    const updatedMintMessage: MessageMapEntry = {
+      id,
+      messageType,
+      ...mintMessage,
+      order,
+      message,
+    }
+    setMintMessage(updatedMintMessage)
   }
 
   function handleRecipientAddress(e: React.FormEvent<HTMLInputElement>) {

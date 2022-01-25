@@ -10,8 +10,15 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
-import { onChainProposalsSelector, proposalSelector } from 'selectors/proposals'
+import {
+  draftProposalsSelector,
+  onChainProposalsSelector,
+  proposalSelector,
+  proposalsSelector,
+} from 'selectors/proposals'
 import { ProposalStatus } from '@components'
+import { ExtendedProposalResponse } from 'types/proposals'
+import { draftProposalsToExtendedResponses } from '../util/proposal'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -49,7 +56,7 @@ const secondsToHm = (seconds: number) => {
 }
 
 export const getEnd = (exp: Expiration) => {
-  if ('at_time' in exp) {
+  if (exp && 'at_time' in exp) {
     const end = Number(exp['at_time'])
     const nowSeconds = new Date().getTime() / 1000
     const endSeconds = end / 1000000000
@@ -70,16 +77,18 @@ function ProposalLine({
   contractAddress,
   multisig,
 }: {
-  prop: ProposalResponse
+  prop: ExtendedProposalResponse
   border: boolean
   contractAddress: string
   multisig?: boolean
 }) {
+  const proposalKey = prop.draftId ?? prop.id
+  const displayKey = prop.draftId ? prop.draftId : zeroPad(prop.id ?? 0, 6)
   return (
     <Link
-      href={`/${multisig ? 'multisig' : 'dao'}/${contractAddress}/proposals/${
-        prop.id
-      }`}
+      href={`/${
+        multisig ? 'multisig' : 'dao'
+      }/${contractAddress}/proposals/${proposalKey}`}
     >
       <a>
         <div
@@ -87,9 +96,7 @@ function ProposalLine({
             'grid grid-cols-6 items-center py-2' + (border ? ' border-b' : '')
           }
         >
-          <p className="font-mono text-sm text-secondary">
-            # {zeroPad(prop.id, 6)}
-          </p>
+          <p className="font-mono text-sm text-secondary"># {displayKey}</p>
           <ProposalStatus status={prop.status} />
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
           <p className="text-neutral text-sm">{getEnd(prop.expires)}</p>
@@ -110,6 +117,12 @@ export function ProposalList({
   const [startBefore, setStartBefore] = useRecoilState(
     proposalsRequestStartBeforeAtom
   )
+  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
+  // const propList = useRecoilValue(proposalsSelector({
+  //   contractAddress,
+  //   startBefore,
+  //   limit: 10
+  // }))
   // The proposals that we have loaded.
   const [propList, setPropList] = useRecoilState(
     proposalListAtom(contractAddress)
@@ -186,11 +199,11 @@ export function ProposalList({
   )
 
   if (updatedProposals.length) {
-    updatedProposals.sort((l, r) => l.id - r.id).reverse()
+    updatedProposals.sort((l, r) => l?.id ?? 0 - (r?.id ?? 0)).reverse()
 
     setPropList((p) =>
       p.map((item) => {
-        if (item.id == updatedProposals[0].id) {
+        if (item?.id == updatedProposals[0]?.id) {
           return updatedProposals[0]
         }
         return item
@@ -203,21 +216,29 @@ export function ProposalList({
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal
 
-  if (!propList.length) {
+  const allProposals = (
+    draftProposalsToExtendedResponses(draftProposals) ?? []
+  ).concat(propList)
+
+  if (!allProposals.length) {
     return <p>no proposals</p>
   }
+
   return (
     <div>
       <ul>
-        {propList.map((prop, idx) => (
-          <ProposalLine
-            prop={prop}
-            key={prop.id}
-            border={idx !== propList.length - 1 || showLoadMore}
-            contractAddress={contractAddress}
-            multisig={multisig}
-          />
-        ))}
+        {allProposals.map((prop, idx) => {
+          const key = `prop_${prop.draftId ?? prop.id ?? idx}`
+          return (
+            <ProposalLine
+              prop={prop}
+              key={key}
+              border={idx !== propList.length - 1 || showLoadMore}
+              contractAddress={contractAddress}
+              multisig={multisig}
+            />
+          )
+        })}
       </ul>
       {showLoadMore && (
         <button

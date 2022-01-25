@@ -1,15 +1,13 @@
-import {
-  MessageMapEntry,
-  ProposalMessageType,
-} from 'models/proposal/messageMap'
-import { ProposalAction } from 'models/proposal/proposalActions'
-import React, { useState } from 'react'
-import { useThemeContext } from '../contexts/theme'
-import JSON5 from 'json5'
-import { makeWasmMessage } from 'util/messagehelpers'
-import { Controlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
+import JSON5 from 'json5'
+import { MessageMapEntry } from 'models/proposal/messageMap'
+import React, { useState } from 'react'
+import { Controlled as CodeMirror } from 'react-codemirror2'
+import { useRecoilState } from 'recoil'
+import { draftProposalMessageSelector } from 'selectors/proposals'
+import { makeWasmMessage } from 'util/messagehelpers'
+import { useThemeContext } from '../contexts/theme'
 import { validateCosmosMsg } from 'util/validateWasmMsg'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 
@@ -28,16 +26,26 @@ function getEditorTheme(appTheme: string): string {
 }
 
 export default function CustomEditor({
-  dispatch,
+  contractAddress,
+  proposalId,
   customMsg,
 }: {
-  dispatch: (action: ProposalAction) => void
-  customMsg: MessageMapEntry
+  contractAddress: string
+  proposalId: string
+  customMsg?: MessageMapEntry
 }) {
   const [errorJson, setErrorJson] = useState<boolean>(false)
   const [errorCosmosMsg, setErrorCosmosMsg] = useState<boolean>(false)
   const [jsonErrorMessage, setJsonErrorMessage] = useState<string>('')
   const [lastInputJson, setLastInputJson] = useState<any>(undefined)
+  const [isValidJson, setIsValidJson] = useState<boolean>(true)
+  const [customMessage, setCustomMessage] = useRecoilState(
+    draftProposalMessageSelector({
+      contractAddress,
+      proposalId,
+      messageId: customMsg?.id ?? '',
+    })
+  )
   const themeContext = useThemeContext()
 
   const cmOptions = {
@@ -55,42 +63,36 @@ export default function CustomEditor({
   }
 
   function updateCustom(message: any) {
-    try {
-      const id = customMsg?.id ?? ''
-      const messageType = customMsg?.messageType ?? ProposalMessageType.Custom
-      let action: ProposalAction
-      // If it is a WasmMsg, make sure it's properly encoded
-      if (message.wasm) message = makeWasmMessage(message)
-
-      const validCosmos = validateCosmosMsg(message)
-      if (!validCosmos.valid) {
-        setErrorCosmosMsg(true)
-        console.log(validCosmos.errors)
-      } else {
-        setErrorCosmosMsg(false)
-      }
-
-      if (id) {
-        action = {
-          type: 'updateMessage',
-          id,
-          message,
-        }
-      } else {
-        action = {
-          type: 'addMessage',
-          message,
-          messageType,
-        }
-      }
-      dispatch(action)
-    } catch (err) {
-      console.error(err)
+    // If it is a WasmMsg, make sure it's properly encoded
+    if (message.wasm) message = makeWasmMessage(message)
+    const validCosmos = validateCosmosMsg(message)
+    if (!validCosmos.valid) {
+      setErrorCosmosMsg(true)
+      console.log(validCosmos.errors)
+    } else {
+      setErrorCosmosMsg(false)
     }
+    setCustomMessage({
+      ...customMessage,
+      message,
+    } as any)
   }
 
   const placeholder =
-    lastInputJson?.length !== 0 ? (lastInputJson ? lastInputJson : '{}') : ''
+    lastInputJson?.length !== 0
+      ? lastInputJson
+        ? lastInputJson
+        : JSON5.stringify(
+            customMessage?.message ?? customMsg?.message ?? {},
+            undefined,
+            2
+          )
+      : ''
+
+  let errorMessage = ''
+  if (jsonErrorMessage) {
+    errorMessage = jsonErrorMessage
+  }
 
   let status = (
     <div className="text-sm p-2">
@@ -120,29 +122,46 @@ export default function CustomEditor({
           <CheckIcon className="w-5 h-5" />
         </p>
       )}
+      <button
+        disabled={!isValidJson}
+        className="btn btn-xs normal-case font-normal rounded-md flex-initial"
+        onClick={handleFormatJson}
+      >
+        Format
+      </button>
     </div>
   )
 
-  function validateJsonString(str: string) {
+  function parseAsJson(str: string) {
     try {
-      JSON5.parse(str)
+      const obj = JSON5.parse(str)
       setErrorJson(false)
+      return obj
     } catch (e: any) {
-      console.log('yah no')
       setErrorJson(true)
       setJsonErrorMessage(`${e?.message}`)
-      return false
     }
-    return true
+    return undefined
   }
 
   function handleMessage(value: string) {
-    if (validateJsonString(value)) {
+    const msg = parseAsJson(value)
+    if (msg) {
       setLastInputJson(value)
-
-      updateCustom(JSON5.parse(value))
+      setIsValidJson(true)
+      updateCustom(msg)
     } else {
       setLastInputJson(value)
+    }
+  }
+
+  function handleFormatJson(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const parsed = parseAsJson(lastInputJson)
+    if (parsed) {
+      const formatted = JSON.stringify(parsed, undefined, 2)
+      setLastInputJson(formatted)
     }
   }
 

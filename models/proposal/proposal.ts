@@ -1,40 +1,84 @@
 // Client-side proposal representation
 import {
-  CosmosMsgFor_Empty,
-  ExecuteMsg,
+  Proposal,
+  ProposalResponse,
+  ProposalTallyResponse,
+  Status,
+  Threshold,
+  ThresholdResponse,
+  Votes,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { ExecuteMsg as DAOExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-
+import { ProposalMapItem } from 'types/proposals'
 import { labelForMessage } from '../../util/messagehelpers'
-import { MessageMap } from './messageMap'
 
-export const MEMO_MAX_LEN = 245
+export const MEMO_MAX_LEN = 255
 
-export type Proposal = {
-  title: string
-  description: string
-  messageMap: MessageMap
-  nextId: number
-  // Which message is currently selected
-  activeMessageId: string
-  pendingMessages: {
-    [key: string]: CosmosMsgFor_Empty | ExecuteMsg | DAOExecuteMsg
-  }
+const EmptyThreshold: Threshold = {
+  threshold_quorum: {
+    quorum: '0',
+    threshold: '0',
+  },
+}
+
+const EmptyVotes: Votes = {
+  abstain: '',
+  yes: '',
+  no: '',
+  veto: '',
 }
 
 export const EmptyProposal: Proposal = {
   title: '',
   description: '',
-  nextId: 0,
-  messageMap: {},
-  activeMessageId: '',
-  pendingMessages: {},
+  expires: {
+    at_time: `${new Date()}`,
+  },
+  deposit: '',
+  msgs: [],
+  proposer: '',
+  start_height: 0,
+  status: 'open',
+  threshold: { ...EmptyThreshold },
+  total_weight: '',
+  votes: { ...EmptyVotes },
+}
+
+export const EmptyProposalItem: ProposalMapItem = {
+  proposal: EmptyProposal,
+  id: '',
+  draft: true,
+}
+
+export const EmptyThresholdResponse: ThresholdResponse = {
+  absolute_percentage: {
+    percentage: '0',
+    total_weight: '0',
+  },
+}
+
+export const EmptyProposalTallyResponse: ProposalTallyResponse = {
+  votes: [] as any,
+  total_votes: '',
+  threshold: EmptyThresholdResponse,
+  status: 'pending',
+  quorum: '',
+  total_weight: '0',
+}
+
+export const EmptyProposalResponse: ProposalResponse = {
+  ...EmptyProposal,
+  id: -1,
+  deposit_amount: '0',
+  proposer: '',
+  status: 'Draft' as Status,
+  threshold: { ...EmptyThresholdResponse },
+  total_weight: '0',
 }
 
 export function memoForProposal(proposal: Proposal): string {
-  const messagesMemo = Object.values(proposal.messageMap)
-    .map((msg) => labelForMessage(msg.message))
-    .join(', ')
+  const messagesMemo = proposal.msgs
+    ? proposal.msgs.map((msg) => labelForMessage(msg)).join(', ')
+    : ''
   return `${proposal.title}\n${proposal.description}\n\n${messagesMemo}`.slice(
     0,
     MEMO_MAX_LEN
