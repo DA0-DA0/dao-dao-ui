@@ -20,7 +20,7 @@ function EnterAppButton({ small }: { small?: boolean }) {
   return (
     <Link href="/starred" passHref>
       <Button
-        size={small ? 'md' : 'lg'}
+        size={small ? 'md' : 'xl'}
         iconAfter={
           <ArrowNarrowRightIcon
             className="inline h-4 w-4"

@@ -11,6 +11,9 @@ module.exports = plugin(function ({ addComponents }) {
     '.lg': {
       '@apply py-2.5': {},
     },
+    '.xl': {
+      '@apply px-6 py-5 text-lg leading-5': {},
+    },
     '.md, .lg': {
       fontSize: 13,
       '@apply px-4 leading-5 rounded-md': {},

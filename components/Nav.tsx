@@ -4,6 +4,7 @@ import ThemeToggle from 'components/ThemeToggle'
 import { Logo } from 'components/Logo'
 import {
   ArrowRightIcon,
+  CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
@@ -27,9 +28,19 @@ function WalletConnect() {
 
   return (
     <div className="flex flex-grow md:flex-grow-0 mt-4">
-      <Button full onClick={handleConnect}>
-        {walletAddress || 'Connect wallet'}
-      </Button>
+      {walletAddress ? (
+        <Button full onClick={handleConnect}>
+          {walletAddress}
+        </Button>
+      ) : (
+        <Button
+          full
+          onClick={handleConnect}
+          iconBefore={<CashIcon className="inline w-4 h-4" />}
+        >
+          Connect wallet
+        </Button>
+      )}
     </div>
   )
 }

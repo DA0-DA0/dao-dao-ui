@@ -24,13 +24,13 @@ const ButtonIcon = memo(function ButtonIcon({
 
   const padding = position === 'left' ? 'pr-1.5' : 'pl-1.5'
 
-  return <span className={`btn-icon ${padding}`}>{icon}</span>
+  return <i className={`btn-icon ${padding}`}>{icon}</i>
 })
 
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   full?: boolean
   disabled?: boolean
   iconBefore?: ReactNode
@@ -72,9 +72,7 @@ function ButtonComponent(
             <ButtonIcon icon={iconBefore} position="left" />
             <span className="align-middle">{children}</span>
           </div>
-          <div>
-            <ButtonIcon icon={iconAfter} position="right" />
-          </div>
+          <ButtonIcon icon={iconAfter} position="right" />
         </div>
       ) : (
         <>{children}</>

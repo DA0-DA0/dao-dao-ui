@@ -2,6 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { Button } from './Button'
 import { ChevronDownIcon } from '@heroicons/react/outline'
+import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
 import SvgConnect from '@components/icons/Connect'
 import SvgWallet from '@components/icons/Wallet'
 
@@ -51,6 +52,18 @@ Large.args = {
   size: 'lg',
 }
 
+export const ExtraLarge = Template.bind({})
+ExtraLarge.args = {
+  ...Primary.args,
+  size: 'xl',
+  iconAfter: (
+    <ArrowNarrowRightIcon
+      className="inline h-4 w-4"
+      style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
+    />
+  ),
+}
+
 export const IconBefore = Template.bind({})
 IconBefore.args = {
   ...Primary.args,
@@ -86,6 +99,7 @@ Ghost.parameters = params
 Small.parameters = params
 Medium.parameters = params
 Large.parameters = params
+ExtraLarge.parameters = params
 IconBefore.parameters = params
 IconAfter.parameters = params
 BothIcons.parameters = params
