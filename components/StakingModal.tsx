@@ -132,7 +132,10 @@ function PercentSelector({
   const getOnClick = (p: number) => () => {
     setAmount(
       (p * max)
-        .toLocaleString(undefined, { maximumFractionDigits: 6 })
+        // Need to specify 'en' here or otherwise different langauges
+        // (ex german) will insert '.' as seperators which will mess
+        // with our replace logic :)
+        .toLocaleString('en', { maximumFractionDigits: 6 })
         .replace(',', '')
     )
   }
