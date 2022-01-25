@@ -57,7 +57,7 @@ export const cosmWasmSigningClient = selector({
   get: async ({ get }) => {
     const offlineSigner = get(kelprOfflineSigner)
     if (!offlineSigner) {
-      return undefined
+      return null
     }
     return await SigningCosmWasmClient.connectWithSigner(
       CHAIN_RPC_ENDPOINT,
