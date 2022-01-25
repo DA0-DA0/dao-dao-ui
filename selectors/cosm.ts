@@ -1,4 +1,4 @@
-import { selector, selectorFamily } from 'recoil'
+import { selector, selectorFamily, atom } from 'recoil'
 import { StargateClient } from '@cosmjs/stargate'
 import {
   CosmWasmClient,
@@ -6,6 +6,7 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 import { connectKeplr } from 'services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
+import { localStorageEffect } from '../atoms/localStorageEffect'
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
@@ -44,10 +45,20 @@ export const kelprOfflineSigner = selector({
   get: () => getWaitKeplr(),
 })
 
+// The map of draft proposals associated with a given contract.
+export const connectedWalletAtom = atom<string>({
+  key: 'connectedWallet',
+  default: '',
+  effects_UNSTABLE: [localStorageEffect<string>('connectedWallet')],
+})
+
 export const cosmWasmSigningClient = selector({
   key: 'cosmWasmSigningClient',
   get: async ({ get }) => {
     const offlineSigner = get(kelprOfflineSigner)
+    if (!offlineSigner) {
+      return undefined
+    }
     return await SigningCosmWasmClient.connectWithSigner(
       CHAIN_RPC_ENDPOINT,
       offlineSigner

@@ -66,6 +66,12 @@ export const isMemberSelector = selectorFamily<MemberStatus, string>({
     (contractAddress) =>
     async ({ get }) => {
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          member: false,
+          weight: 0,
+        }
+      }
       const voterInfo = get(
         voterInfoSelector({ contractAddress, walletAddress: wallet })
       )

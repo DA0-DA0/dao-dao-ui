@@ -4,7 +4,6 @@ import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { Address } from './Address'
 import ProposalVotes from 'components/ProposalVotes'
-import { useSigningClient } from 'contexts/cosmwasm'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
 import toast from 'react-hot-toast'
@@ -28,6 +27,8 @@ import { convertMicroDenomToDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { getEnd } from './ProposalList'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { cosmWasmSigningClient } from 'selectors/cosm'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -134,7 +135,9 @@ function ProposalVoteButtons({
   voted: boolean
   setLoading: SetterOrUpdater<boolean>
 }) {
-  const { signingClient, walletAddress } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+
   const setProposalUpdates = useSetRecoilState(
     proposalUpdateCountAtom({ contractAddress, proposalId })
   )
@@ -212,7 +215,9 @@ function ProposalExecuteButton({
   member: boolean
   setLoading: SetterOrUpdater<boolean>
 }) {
-  const { signingClient, walletAddress } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+
   const setProposalUpdates = useSetRecoilState(
     proposalUpdateCountAtom({ contractAddress, proposalId })
   )

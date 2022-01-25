@@ -72,6 +72,9 @@ export const memberWeight = selectorFamily<number, string>({
       const sigInfo = get(sigSelector(address))
       const client = get(cosmWasmClient)
       const memberAddress = get(walletAddress)
+      if (!memberAddress) {
+        return 0
+      }
       const member = await client.queryContractSmart(sigInfo.group_address, {
         member: { addr: memberAddress },
       })

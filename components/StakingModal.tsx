@@ -5,7 +5,6 @@ import {
   ChevronRightIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { useSigningClient } from 'contexts/cosmwasm'
 import { secondsToHms } from 'pages/dao/create'
 import {
   ChangeEventHandler,
@@ -29,6 +28,8 @@ import {
   convertMicroDenomToDenom,
 } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { cosmWasmSigningClient } from 'selectors/cosm'
 
 export enum StakingMode {
   Stake,
@@ -298,7 +299,8 @@ export function StakingModal({
   const [mode, setMode] = useState(defaultMode)
   const [amount, setAmount] = useState('0')
 
-  const { signingClient, walletAddress } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
   const [loading, setLoading] = useState(false)
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))

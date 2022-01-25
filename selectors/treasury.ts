@@ -9,6 +9,7 @@ import {
   stargateClient,
   cosmWasmClient,
   kelprOfflineSigner,
+  connectedWalletAtom,
 } from 'selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
@@ -66,6 +67,10 @@ export const transactions = selectorFamily({
 export const walletAddress = selector({
   key: 'WalletAddress',
   get: async ({ get }) => {
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet !== 'keplr') {
+      return ''
+    }
     const client = get(kelprOfflineSigner)
     const [{ address }] = await client.getAccounts()
     return address as string
@@ -94,6 +99,11 @@ export const walletTokenBalance = selectorFamily({
       const client = get(cosmWasmClient)
 
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          amount: 0.0,
+        }
+      }
       get(walletTokenBalanceUpdateCountAtom(wallet))
 
       const response = (await client.queryContractSmart(tokenAddress, {
@@ -114,6 +124,11 @@ export const walletStakedTokenBalance = selectorFamily({
       const client = get(cosmWasmClient)
 
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          amount: 0.0,
+        }
+      }
       get(walletTokenBalanceUpdateCountAtom(wallet))
 
       const response = (await client.queryContractSmart(tokenAddress, {
@@ -134,6 +149,9 @@ export const walletClaims = selectorFamily({
     async ({ get }) => {
       const client = get(cosmWasmClient)
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return { claims: [] }
+      }
       get(walletTokenBalanceUpdateCountAtom(wallet))
 
       const response = (await client.queryContractSmart(stakingAddress, {

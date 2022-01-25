@@ -1,4 +1,3 @@
-import { useSigningClient } from 'contexts/cosmwasm'
 import Link from 'next/link'
 import ThemeToggle from 'components/ThemeToggle'
 import { Logo } from 'components/Logo'
@@ -8,7 +7,9 @@ import {
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilValue, useRecoilState, waitForAll } from 'recoil'
+import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { connectedWalletAtom } from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
@@ -16,12 +17,14 @@ import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 function WalletConnect() {
-  const { walletAddress, connectWallet, disconnect } = useSigningClient()
+  const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
+  const walletAddress = useRecoilValue(walletAddressSelector)
+
   const handleConnect = () => {
-    if (walletAddress.length === 0) {
-      connectWallet()
+    if (!wallet) {
+      setWallet('keplr')
     } else {
-      disconnect()
+      setWallet('')
     }
   }
 
