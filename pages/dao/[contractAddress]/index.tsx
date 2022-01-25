@@ -22,12 +22,10 @@ import {
   walletAddress,
   walletClaims,
   walletTokenBalanceLoading,
-} from 'selectors/treasury'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import {
   walletStakedTokenBalance,
   walletTokenBalance,
 } from 'selectors/treasury'
+import { convertMicroDenomToDenom } from 'util/conversion'
 import {
   ContractBalances,
   BalanceCard,
