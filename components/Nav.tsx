@@ -13,6 +13,7 @@ import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { Button } from '@components'
+import { showBetaNoticeAtom } from 'atoms/status'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -68,6 +69,8 @@ function Nav() {
     sig: s,
     address: pinnedSigs[idx],
   }))
+
+  const betaWarningShowing = useRecoilValue(showBetaNoticeAtom)
 
   return (
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
@@ -131,9 +134,14 @@ function Nav() {
       </div>
       <div className="ml-1">
         <h3 className="text-secondary font-mono mb-1">
-          dao dao v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}
+          dao dao <div className="inline text-error">beta</div> v
+          {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
         </h3>
-        <ul className="ml-2 list-none">
+        <ul
+          className={
+            'ml-2 list-none' + (betaWarningShowing ? ' text-secondary' : '')
+          }
+        >
           <li>
             <ThemeToggle />
           </li>

@@ -7,8 +7,8 @@ import { Keplr } from '@keplr-wallet/types'
 import { kelprOfflineSigner } from 'selectors/cosm'
 import { SidebarLayout } from 'components/SidebarLayout'
 import { InstallKeplr } from './InstallKeplr'
-import { BetaWarningModal } from './BetaWarning'
-import { betaWarningAcceptedAtom } from 'atoms/status'
+import { BetaNotice, BetaWarningModal } from './BetaWarning'
+import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -53,6 +53,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
+  const [showBetaNotice, setShowBetaNotice] = useRecoilState(showBetaNoticeAtom)
 
   return (
     <>
@@ -65,6 +66,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       {!keplrInstance && !error && <LoadingScreen />}
       {loaded && !betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
+      )}
+      {loaded && betaWarningAccepted && showBetaNotice && (
+        <BetaNotice onClose={() => setShowBetaNotice(false)} />
       )}
 
       {loaded && <SidebarLayout>{children}</SidebarLayout>}
