@@ -10,6 +10,9 @@ export function isValidWalletAddress(address: string): boolean {
   if (!address?.length) {
     return false
   }
+  if (!address.startsWith(CHAIN_PREFIX)) {
+    return false
+  }
   const unprefixed = address.replace(CHAIN_PREFIX, '')
   return !!unprefixed.match(bech32Regex)
 }
@@ -17,6 +20,9 @@ export function isValidWalletAddress(address: string): boolean {
 export function isValidContractAddress(address: string): boolean {
   const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{59}$/im
   if (!address?.length) {
+    return false
+  }
+  if (!address.startsWith(CHAIN_PREFIX)) {
     return false
   }
   const unprefixed = address.replace(CHAIN_PREFIX, '')
