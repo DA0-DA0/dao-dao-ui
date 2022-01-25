@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   ScaleIcon,
@@ -25,6 +26,11 @@ import {
   totalWeight,
 } from 'selectors/multisigs'
 import { nativeBalance, walletAddress } from 'selectors/treasury'
+import { useThemeContext } from 'contexts/theme'
+
+function getEditorTheme(appTheme: string): string {
+  return appTheme !== 'junoDark' ? 'black' : 'white'
+}
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -85,6 +91,41 @@ const Home: NextPage = () => {
 
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(contractAddress)
+  const [isExpanded, setIsExpanded] = useState<boolean>(true)
+  const themeContext = useThemeContext()
+  const backgroundArrowColor = getEditorTheme(themeContext.theme)
+
+  const collapsedArrowClass = isExpanded ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 5l7 7-7 7"
+      />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M15 19l-7-7 7-7"
+      />
+    </svg>
+  )
 
   return (
     <div className="grid grid-cols-6">
@@ -146,37 +187,76 @@ const Home: NextPage = () => {
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <hr className="mt-8 mb-6" />
-        {visitorWeight && (
-          <>
-            <h2 className="font-medium text-md">Your shares</h2>
-            <ul className="list-none mt-3">
-              <li>
-                <VoteBalanceCard
-                  title="voting weight"
-                  weight={visitorWeight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            </ul>
-          </>
-        )}
-        <h2 className="font-medium text-md mt-3">Member shares</h2>
-        <ul className="list-none mt-3">
-          {memberList
-            .filter((m) => m.addr != visitorAddress)
-            .map((member) => (
-              <li key={member.addr}>
-                <VoteBalanceCard
-                  title={member.addr}
-                  weight={member.weight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            ))}
-        </ul>
-      </div>
+      {isExpanded ? (
+        <div className="col-start-5 col-span-2 p-6 border-l border-base-300 min-h-screen h-full">
+          <i
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{
+              backgroundColor: backgroundArrowColor,
+              margin: '-21px 0 0 -48px',
+              padding: '10px 0 10px 0',
+              borderRadius: '15px 0 0 15px',
+              color: 'grey',
+              cursor: 'pointer',
+              fontSize: '25px',
+              lineHeight: '1',
+              position: 'absolute',
+              top: '50%',
+            }}
+          >
+            {collapsedArrowClass}
+          </i>
+          <hr className="mt-8 mb-6" />
+          {visitorWeight && (
+            <>
+              <h2 className="font-medium text-md">Your shares</h2>
+              <ul className="list-none mt-3">
+                <li>
+                  <VoteBalanceCard
+                    title="voting weight"
+                    weight={visitorWeight}
+                    weightTotal={weightTotal}
+                  />
+                </li>
+              </ul>
+            </>
+          )}
+          <h2 className="font-medium text-md mt-3">Member shares</h2>
+          <ul className="list-none mt-3">
+            {memberList
+              .filter((m) => m.addr != visitorAddress)
+              .map((member) => (
+                <li key={member.addr}>
+                  <VoteBalanceCard
+                    title={member.addr}
+                    weight={member.weight}
+                    weightTotal={weightTotal}
+                  />
+                </li>
+              ))}
+          </ul>
+        </div>
+      ) : (
+        <div className="flex items-center justify-end col-span-2">
+          <i
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{
+              backgroundColor: backgroundArrowColor,
+              margin: '-21px 0 0 -48px',
+              padding: '10px 0 10px 0',
+              borderRadius: '15px 0 0 15px',
+              color: 'grey',
+              cursor: 'pointer',
+              fontSize: '25px',
+              lineHeight: '1',
+              position: 'absolute',
+              top: '50%',
+            }}
+          >
+            {collapsedArrowClass}
+          </i>
+        </div>
+      )}
     </div>
   )
 }

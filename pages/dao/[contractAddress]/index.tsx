@@ -45,6 +45,11 @@ import {
   ClaimAvaliableCard,
   ClaimsPendingList,
 } from '@components/Claims'
+import { useThemeContext } from 'contexts/theme'
+
+function getEditorTheme(appTheme: string): string {
+  return appTheme !== 'junoDark' ? 'black' : 'white'
+}
 
 const DaoHome: NextPage = () => {
   const router = useRouter()
@@ -80,6 +85,42 @@ const DaoHome: NextPage = () => {
 
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
+
+  const [isExpanded, setIsExpanded] = useState<boolean>(true)
+  const themeContext = useThemeContext()
+  const backgroundArrowColor = getEditorTheme(themeContext.theme)
+
+  const collapsedArrowClass = isExpanded ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 5l7 7-7 7"
+      />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M15 19l-7-7 7-7"
+      />
+    </svg>
+  )
 
   const stakedPercent = (
     (100 * stakedTotal) /
@@ -146,106 +187,145 @@ const DaoHome: NextPage = () => {
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <h2 className="font-medium text-md">Your shares</h2>
-        <ul className="list-none mt-3">
-          <li>
-            <BalanceCard
-              title="Balance"
-              amount={convertMicroDenomToDenom(
-                govTokenBalance?.amount
-              ).toLocaleString()}
-              denom={tokenInfo?.symbol}
-              onManage={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
-              }}
-              loading={tokenBalanceLoading}
-            />
-          </li>
-          <li>
-            <BalanceCard
-              title={`Voting power (staked ${tokenInfo?.symbol})`}
-              amount={convertMicroDenomToDenom(
-                stakedGovTokenBalance.amount
-              ).toLocaleString()}
-              denom={tokenInfo?.symbol}
-              onManage={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
-              }}
-              loading={tokenBalanceLoading}
-            />
-          </li>
-          {claimsAvaliable ? (
+      {isExpanded ? (
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300 p-6 min-h-screen">
+          <i
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{
+              backgroundColor: backgroundArrowColor,
+              margin: '-21px 0 0 -48px',
+              padding: '10px 0 10px 0',
+              borderRadius: '15px 0 0 15px',
+              color: 'grey',
+              cursor: 'pointer',
+              fontSize: '25px',
+              lineHeight: '1',
+              position: 'absolute',
+              top: '50%',
+            }}
+          >
+            {collapsedArrowClass}
+          </i>
+          <h2 className="font-medium text-md">Your shares</h2>
+          <ul className="list-none mt-3">
             <li>
               <BalanceCard
-                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+                title="Balance"
                 amount={convertMicroDenomToDenom(
-                  claimsAvaliable
+                  govTokenBalance?.amount
                 ).toLocaleString()}
                 denom={tokenInfo?.symbol}
                 onManage={() => {
                   setShowStaking(true)
-                  setStakingDefault(StakingMode.Claim)
+                  setStakingDefault(StakingMode.Unstake)
                 }}
                 loading={tokenBalanceLoading}
               />
             </li>
-          ) : null}
-        </ul>
-        {govTokenBalance?.amount ? (
-          <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
-            <h3 className="font-mono text-sm font-semibold mb-3">
-              You have{' '}
-              {convertMicroDenomToDenom(
-                govTokenBalance?.amount
-              ).toLocaleString()}{' '}
-              unstaked {tokenInfo.symbol}
-            </h3>
-            <p className="text-sm">
-              Staking them would bring you{' '}
-              {stakedGovTokenBalance &&
-                `${(
-                  (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                  100
-                ).toLocaleString(undefined, {
-                  maximumSignificantDigits: 3,
-                })}%`}{' '}
-              more voting power and help you defend your positions for{' '}
-              {daoInfo.config.name}
-              {"'"}s direction.
-            </p>
-            <div className="text-right mt-3">
-              <button
-                className="btn btn-sm btn-ghost normal-case font-normal"
-                onClick={() => {
+            <li>
+              <BalanceCard
+                title={`Voting power (staked ${tokenInfo?.symbol})`}
+                amount={convertMicroDenomToDenom(
+                  stakedGovTokenBalance.amount
+                ).toLocaleString()}
+                denom={tokenInfo?.symbol}
+                onManage={() => {
                   setShowStaking(true)
                   setStakingDefault(StakingMode.Stake)
                 }}
-              >
-                Stake tokens
-                <PlusSmIcon className="inline w-5 h-5 ml-2" />
-              </button>
+                loading={tokenBalanceLoading}
+              />
+            </li>
+            {claimsAvaliable ? (
+              <li>
+                <BalanceCard
+                  title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+                  amount={convertMicroDenomToDenom(
+                    claimsAvaliable
+                  ).toLocaleString()}
+                  denom={tokenInfo?.symbol}
+                  onManage={() => {
+                    setShowStaking(true)
+                    setStakingDefault(StakingMode.Claim)
+                  }}
+                  loading={tokenBalanceLoading}
+                />
+              </li>
+            ) : null}
+          </ul>
+          {govTokenBalance?.amount ? (
+            <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
+              <h3 className="font-mono text-sm font-semibold mb-3">
+                You have{' '}
+                {convertMicroDenomToDenom(
+                  govTokenBalance?.amount
+                ).toLocaleString()}{' '}
+                unstaked {tokenInfo.symbol}
+              </h3>
+              <p className="text-sm">
+                Staking them would bring you{' '}
+                {stakedGovTokenBalance &&
+                  `${(
+                    (govTokenBalance.amount / stakedGovTokenBalance.amount) *
+                    100
+                  ).toLocaleString(undefined, {
+                    maximumSignificantDigits: 3,
+                  })}%`}{' '}
+                more voting power and help you defend your positions for{' '}
+                {daoInfo.config.name}
+                {"'"}s direction.
+              </p>
+              <div className="text-right mt-3">
+                <button
+                  className="btn btn-sm btn-ghost normal-case font-normal"
+                  onClick={() => {
+                    setShowStaking(true)
+                    setStakingDefault(StakingMode.Stake)
+                  }}
+                >
+                  Stake tokens
+                  <PlusSmIcon className="inline w-5 h-5 ml-2" />
+                </button>
+              </div>
             </div>
-          </div>
-        ) : null}
-        <ClaimsPendingList
-          stakingAddress={daoInfo.staking_contract}
-          tokenSymbol={tokenInfo.symbol}
-        />
-        {showStaking && (
-          <StakingModal
-            defaultMode={stakingDefault}
-            contractAddress={contractAddress}
+          ) : null}
+          <ClaimsPendingList
+            stakingAddress={daoInfo.staking_contract}
             tokenSymbol={tokenInfo.symbol}
-            claimAmount={claimsAvaliable}
-            onClose={() => setShowStaking(false)}
-            beforeExecute={() => setTokenBalancesLoading(true)}
-            afterExecute={() => setTokenBalancesLoading(false)}
           />
-        )}
-      </div>
+          {showStaking && (
+            <StakingModal
+              defaultMode={stakingDefault}
+              contractAddress={contractAddress}
+              tokenSymbol={tokenInfo.symbol}
+              claimAmount={claimsAvaliable}
+              onClose={() => setShowStaking(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              afterExecute={() => setTokenBalancesLoading(false)}
+            />
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center justify-end col-span-2">
+          <i
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{
+              backgroundColor: backgroundArrowColor,
+              margin: '-21px 0 0 -48px',
+              padding: '10px 0 10px 0',
+              borderRadius: '15px 0 0 15px',
+              color: 'grey',
+              cursor: 'pointer',
+              fontSize: '25px',
+              lineHeight: '1',
+              position: 'absolute',
+              top: '50%',
+            }}
+          >
+            {collapsedArrowClass}
+          </i>
+        </div>
+      )}
     </div>
   )
 }
