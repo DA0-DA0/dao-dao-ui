@@ -1,4 +1,5 @@
 import { atom } from 'recoil'
+import { localStorageEffect } from './localStorageEffect'
 
 export const loadingAtom = atom<boolean>({
   key: 'loading',
@@ -24,4 +25,10 @@ export interface Status {
 export const activeStatusAtom = atom<Status | undefined>({
   key: 'activeStatus',
   default: undefined,
+})
+
+export const betaWarningAcceptedAtom = atom<boolean>({
+  key: 'betaWarningAccepted',
+  default: false,
+  effects_UNSTABLE: [localStorageEffect<boolean>('betaWarningAccepted')],
 })

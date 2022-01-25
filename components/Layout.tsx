@@ -1,12 +1,14 @@
 import { ReactNode, useState, useEffect } from 'react'
 import LoadingScreen from 'components/LoadingScreen'
 import Head from 'next/head'
-import { useRecoilRefresher_UNSTABLE } from 'recoil'
+import { useRecoilRefresher_UNSTABLE, useRecoilState } from 'recoil'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 import { Keplr } from '@keplr-wallet/types'
 import { kelprOfflineSigner } from 'selectors/cosm'
 import { SidebarLayout } from 'components/SidebarLayout'
 import { InstallKeplr } from './InstallKeplr'
+import { BetaWarningModal } from './BetaWarning'
+import { betaWarningAcceptedAtom } from 'atoms/status'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -48,6 +50,10 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   }, [keplrInstance, reset])
 
+  const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
+    betaWarningAcceptedAtom
+  )
+
   return (
     <>
       <Head>
@@ -57,6 +63,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       </Head>
       {error && <InstallKeplr />}
       {!keplrInstance && !error && <LoadingScreen />}
+      {loaded && !betaWarningAccepted && (
+        <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
+      )}
 
       {loaded && <SidebarLayout>{children}</SidebarLayout>}
     </>
