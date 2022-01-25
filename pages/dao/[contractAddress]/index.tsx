@@ -45,8 +45,9 @@ import {
   ClaimAvaliableCard,
   ClaimsPendingList,
 } from '@components/Claims'
+import ErrorBoundary from 'components/ErrorBoundary'
 
-const DaoHome: NextPage = () => {
+function DaoHome() {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -250,4 +251,10 @@ const DaoHome: NextPage = () => {
   )
 }
 
-export default DaoHome
+const DaoHomePage: NextPage = () => (
+  <ErrorBoundary title="DAO Not Found">
+    <DaoHome />
+  </ErrorBoundary>
+)
+
+export default DaoHomePage
