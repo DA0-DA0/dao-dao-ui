@@ -411,8 +411,7 @@ const CreateDao: NextPage = () => {
                       error={errors.daoInitialBalance}
                       validation={[validateRequired, validateNonNegative]}
                       defaultValue="0"
-                      min={0}
-                      step={1.0}      
+                      step={0.000001}
                       onChange={(e) => {
                         const val = e?.target?.value
                         setDaoInitialBalance(Number(val))
@@ -453,8 +452,7 @@ const CreateDao: NextPage = () => {
                             error={errors[weightLabel]}
                             validation={[validateRequired, validatePositive]}
                             defaultValue="1"
-                            min={0}
-                            step={0.01}            
+                            step={0.000001}
                             onChange={(e) => {
                               const val = e?.target?.value
                               setTokenWeights((weights) => {
@@ -533,6 +531,7 @@ const CreateDao: NextPage = () => {
                 error={errors.threshold}
                 validation={[validateRequired, validatePercent]}
                 defaultValue="75"
+                step="any"
                 onChange={(e) => setPassThreshold(Number(e?.target?.value))}
               />
               <InputErrorMessage error={errors.threshold} />
@@ -568,8 +567,7 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.deposit}
                 validation={[validateRequired]}
-                min={0}
-                step={0.01}
+                step={0.000001}
                 defaultValue="0"
               />
               <InputErrorMessage error={errors.deposit} />

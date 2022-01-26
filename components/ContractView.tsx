@@ -230,8 +230,11 @@ export function ContractBalances({
               const symbol = convertFromMicroDenom(coin.denom)
               return (
                 <li className="mb-1" key={idx}>
-                  {convertMicroDenomToDenom(coin.amount).toLocaleString()} $
-                  {symbol}
+                  {convertMicroDenomToDenom(coin.amount).toLocaleString(
+                    undefined,
+                    { maximumFractionDigits: 20 }
+                  )}{' '}
+                  ${symbol}
                 </li>
               )
             })}
@@ -246,8 +249,10 @@ export function ContractBalances({
             {cw20InfoBalance.map(({ info, amount }) => {
               return (
                 <li key={info.name} className="mb-1">
-                  {convertMicroDenomToDenom(amount).toLocaleString()} $
-                  {info.symbol}
+                  {convertMicroDenomToDenom(amount).toLocaleString(undefined, {
+                    maximumFractionDigits: 20,
+                  })}{' '}
+                  ${info.symbol}
                 </li>
               )
             })}

@@ -247,6 +247,7 @@ const CreateMultisig: NextPage = () => {
                 register={register}
                 error={errors.threshold}
                 validation={[validateRequired, validatePercent]}
+                step={0.01}
                 defaultValue="1"
               />
               <InputErrorMessage error={errors.threshold} />
