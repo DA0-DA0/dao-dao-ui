@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react'
-import { useSigningClient } from 'contexts/cosmwasm'
+import { useRecoilValue } from 'recoil'
+import { cosmWasmClient } from 'selectors/cosm'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 function ContractLabel() {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const { signingClient } = useSigningClient()
+  const client = useRecoilValue(cosmWasmClient)
   const [label, setLabel] = useState('')
   const [link, setLink] = useState('')
 
   useEffect(() => {
-    if (!contractAddress || !signingClient) {
+    if (!contractAddress || !client) {
       setLabel('')
       return
     } else {
-      signingClient.getContract(contractAddress).then((response) => {
+      client.getContract(contractAddress).then((response) => {
         setLabel(response.label)
       })
 
@@ -25,7 +26,7 @@ function ContractLabel() {
         setLink(`/multisig/${contractAddress}/`)
       }
     }
-  }, [signingClient, contractAddress, router])
+  }, [client, contractAddress, router])
 
   if (label.length === 0) {
     return null

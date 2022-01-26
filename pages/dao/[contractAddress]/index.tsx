@@ -22,12 +22,10 @@ import {
   walletAddress,
   walletClaims,
   walletTokenBalanceLoading,
-} from 'selectors/treasury'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import {
   walletStakedTokenBalance,
   walletTokenBalance,
 } from 'selectors/treasury'
+import { convertMicroDenomToDenom } from 'util/conversion'
 import {
   ContractBalances,
   BalanceCard,
@@ -67,8 +65,9 @@ function DaoHome() {
     walletStakedTokenBalance(daoInfo?.staking_contract)
   )
   const blockHeight = useRecoilValue(getBlockHeight)
-  const claimsAvaliable = useRecoilValue(walletClaims(daoInfo.staking_contract))
-    .claims.filter((c) => claimAvaliable(c, blockHeight))
+  const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
+  const claimsAvaliable = stuff.claims
+    .filter((c) => claimAvaliable(c, blockHeight))
     .reduce((p, n) => p + Number(n.amount), 0)
 
   const wallet = useRecoilValue(walletAddress)

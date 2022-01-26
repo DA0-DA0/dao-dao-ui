@@ -5,13 +5,11 @@ import {
   Cw20BalancesResponse,
   // Cw20CoinVerified,
 } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  stargateClient,
-  cosmWasmClient,
-  kelprOfflineSigner,
-} from 'selectors/cosm'
+import { stargateClient, cosmWasmClient, walletAddress } from 'selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
+
+export { walletAddress }
 
 export const nativeBalance = selectorFamily({
   key: 'NativeBalance',
@@ -63,15 +61,6 @@ export const transactions = selectorFamily({
     },
 })
 
-export const walletAddress = selector({
-  key: 'WalletAddress',
-  get: async ({ get }) => {
-    const client = get(kelprOfflineSigner)
-    const [{ address }] = await client.getAccounts()
-    return address as string
-  },
-})
-
 // Counts the number of times that a wallet token balance has been
 // changed. Used to invalidate state when a staking event occurs.
 export const walletTokenBalanceUpdateCountAtom = atomFamily<number, string>({
@@ -94,6 +83,11 @@ export const walletTokenBalance = selectorFamily({
       const client = get(cosmWasmClient)
 
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          amount: 0.0,
+        }
+      }
       get(walletTokenBalanceUpdateCountAtom(wallet))
 
       const response = (await client.queryContractSmart(tokenAddress, {
@@ -114,6 +108,11 @@ export const walletStakedTokenBalance = selectorFamily({
       const client = get(cosmWasmClient)
 
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          amount: 0.0,
+        }
+      }
       get(walletTokenBalanceUpdateCountAtom(wallet))
 
       const response = (await client.queryContractSmart(tokenAddress, {
@@ -134,6 +133,9 @@ export const walletClaims = selectorFamily({
     async ({ get }) => {
       const client = get(cosmWasmClient)
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return { claims: [] }
+      }
       get(walletTokenBalanceUpdateCountAtom(wallet))
 
       const response = (await client.queryContractSmart(stakingAddress, {

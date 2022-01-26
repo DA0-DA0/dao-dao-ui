@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
-import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
@@ -35,6 +34,10 @@ import {
 } from 'util/formValidation'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { pinnedDaosAtom } from 'atoms/pinned'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 interface DaoCreateData {
   deposit: string
@@ -174,7 +177,9 @@ export function secondsToHms(seconds: string): string {
 
 const CreateDao: NextPage = () => {
   const router = useRouter()
-  const { walletAddress, signingClient } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+
   const [count, setCount] = useState(1)
   const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')

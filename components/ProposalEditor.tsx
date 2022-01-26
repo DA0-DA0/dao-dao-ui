@@ -5,7 +5,6 @@ import {
   proposalListAtom,
   proposalsRequestIdAtom,
 } from 'atoms/proposals'
-import { useCw20IncreaseAllowance } from 'hooks/cw20'
 import {
   MessageMapEntry,
   ProposalMessageType,
@@ -19,13 +18,16 @@ import {
   useRecoilState,
   useRecoilValue,
   useResetRecoilState,
+  useSetRecoilState,
 } from 'recoil'
-import { cosmWasmSigningClient } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import {
   draftProposalSelector,
   draftProposalsSelector,
 } from 'selectors/proposals'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { ProposalMapItem } from 'types/proposals'
 import {
   contractConfigSelector,
@@ -51,6 +53,8 @@ import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
 import MintEditor from './MintEditor'
 import SpendEditor from './SpendEditor'
+import { defaultExecuteFee } from 'util/fee'
+import { errorAtom } from 'atoms/status'
 
 export function ProposalEditor({
   proposalId,
@@ -69,10 +73,9 @@ export function ProposalEditor({
 }) {
   const router: NextRouter = useRouter()
 
-  // TODO(gavin.doughtie): recoil values?
-  const { execute: cw20ExecuteIncreaseAllowance } = useCw20IncreaseAllowance()
   const [deposit, setDeposit] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
+  const setError = useSetRecoilState(errorAtom)
 
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
@@ -191,9 +194,17 @@ export function ProposalEditor({
   }
 
   async function onSubmitProposal(_formData: any) {
+    if (!walletAddress) {
+      setError('Please connect your wallet')
+    }
     // If the contract needs a deposit, increase allowance
     if (deposit && deposit !== '0') {
-      await cw20ExecuteIncreaseAllowance(tokenAddress, deposit, contractAddress)
+      await signingClient?.execute(
+        walletAddress,
+        tokenAddress,
+        { increase_allowance: { amount: deposit, spender: contractAddress } },
+        defaultExecuteFee
+      )
     }
     // We don't actually care about what the form processor returned in this
     // case, just that the proposal is filled out correctly, which if
