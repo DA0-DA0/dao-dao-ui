@@ -5,14 +5,11 @@ import {
   Cw20BalancesResponse,
   // Cw20CoinVerified,
 } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  stargateClient,
-  cosmWasmClient,
-  kelprOfflineSigner,
-  connectedWalletAtom,
-} from 'selectors/cosm'
+import { stargateClient, cosmWasmClient, walletAddress } from 'selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
+
+export { walletAddress }
 
 export const nativeBalance = selectorFamily({
   key: 'NativeBalance',
@@ -62,19 +59,6 @@ export const transactions = selectorFamily({
       })) as IndexedTx[]
       return response
     },
-})
-
-export const walletAddress = selector({
-  key: 'WalletAddress',
-  get: async ({ get }) => {
-    const connectedWallet = get(connectedWalletAtom)
-    if (connectedWallet !== 'keplr') {
-      return ''
-    }
-    const client = get(kelprOfflineSigner)
-    const [{ address }] = await client.getAccounts()
-    return address as string
-  },
 })
 
 // Counts the number of times that a wallet token balance has been

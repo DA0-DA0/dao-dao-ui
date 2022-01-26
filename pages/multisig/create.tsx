@@ -25,8 +25,10 @@ import { secondsToHms } from 'pages/dao/create'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
-import { cosmWasmSigningClient } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 

@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { draftProposalSelector } from 'selectors/proposals'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { walletAddress as walletAddressSelector } from 'selectors/cosm'
 
 const Proposal: NextPage = () => {
   const router = useRouter()

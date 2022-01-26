@@ -141,7 +141,7 @@ export const createProposalCallback =
     multisig,
   }: {
     walletAddress: string
-    signingClient: SigningCosmWasmClient
+    signingClient: SigningCosmWasmClient | null
     contractAddress: string
     draftProposals: ProposalMap
     router: NextRouter

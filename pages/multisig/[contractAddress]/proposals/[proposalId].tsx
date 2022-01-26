@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { sigSelector } from 'selectors/multisigs'
 import { draftProposalSelector } from 'selectors/proposals'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
+import { walletAddress as walletAddressSelector } from 'selectors/cosm'
 
 const MultisigProposal: NextPage = () => {
   const router = useRouter()

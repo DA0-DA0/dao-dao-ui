@@ -21,14 +21,16 @@ import {
   proposalTallySelector,
   proposalVotesSelector,
 } from 'selectors/proposals'
-import { walletAddress, walletTokenBalanceLoading } from 'selectors/treasury'
+import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
 import { convertMicroDenomToDenom } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { getEnd } from './ProposalList'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
-import { cosmWasmSigningClient } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -413,14 +415,14 @@ export function ProposalDetails({
   )
 
   const member = useRecoilValue(isMemberSelector(contractAddress))
-  const visitorAddress = useRecoilValue(walletAddress)
+  const visitorAddress = useRecoilValue(walletAddressSelector)
   const voted = proposalVotes.some((v) => v.voter === visitorAddress)
 
   const [actionLoading, setActionLoading] = useRecoilState(
     proposalActionLoading
   )
 
-  const wallet = useRecoilValue(walletAddress)
+  const wallet = useRecoilValue(walletAddressSelector)
   // If token balances are loading we don't know if the user is a
   // member or not.
   const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))

@@ -28,8 +28,10 @@ import {
   convertMicroDenomToDenom,
 } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
-import { cosmWasmSigningClient } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 export enum StakingMode {
   Stake,

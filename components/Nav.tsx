@@ -8,8 +8,10 @@ import {
   LibraryIcon,
 } from '@heroicons/react/outline'
 import { useRecoilValue, useRecoilState, waitForAll } from 'recoil'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
-import { connectedWalletAtom } from 'selectors/cosm'
+import {
+  connectedWalletAtom,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'

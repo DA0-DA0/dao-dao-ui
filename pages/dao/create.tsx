@@ -34,8 +34,10 @@ import {
 } from 'util/formValidation'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
-import { cosmWasmSigningClient } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 interface DaoCreateData {
   deposit: string

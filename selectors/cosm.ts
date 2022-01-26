@@ -8,6 +8,8 @@ import { connectKeplr } from 'services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
 import { localStorageEffect } from '../atoms/localStorageEffect'
 
+export type WalletConnection = 'keplr' | ''
+
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
@@ -25,11 +27,6 @@ export const cosmWasmClient = selector({
   },
 })
 
-// export const offlineSigner = atom({
-//   key: 'offlineSigner',
-//   default: null,
-// })
-
 const getWaitKeplr = async () => {
   connectKeplr()
 
@@ -43,13 +40,6 @@ const getWaitKeplr = async () => {
 export const kelprOfflineSigner = selector({
   key: 'kelprOfflineSigner',
   get: () => getWaitKeplr(),
-})
-
-// The map of draft proposals associated with a given contract.
-export const connectedWalletAtom = atom<string>({
-  key: 'connectedWallet',
-  default: '',
-  effects_UNSTABLE: [localStorageEffect<string>('connectedWallet')],
 })
 
 export const cosmWasmSigningClient = selector({
@@ -67,6 +57,26 @@ export const cosmWasmSigningClient = selector({
   // We have to do this because of how SigningCosmWasmClient
   // will update its internal chainId
   dangerouslyAllowMutability: true,
+})
+
+//  Auto connect keplr if set as connectWallet
+export const connectedWalletAtom = atom<WalletConnection>({
+  key: 'connectedWallet',
+  default: '',
+  effects_UNSTABLE: [localStorageEffect<WalletConnection>('connectedWallet')],
+})
+
+export const walletAddress = selector({
+  key: 'WalletAddress',
+  get: async ({ get }) => {
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet !== 'keplr') {
+      return ''
+    }
+    const client = get(kelprOfflineSigner)
+    const [{ address }] = await client.getAccounts()
+    return address as string
+  },
 })
 
 export const voterInfoSelector = selectorFamily({

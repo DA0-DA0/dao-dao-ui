@@ -20,12 +20,14 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from 'recoil'
-import { cosmWasmSigningClient } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import {
   draftProposalSelector,
   draftProposalsSelector,
 } from 'selectors/proposals'
-import { walletAddress as walletAddressSelector } from 'selectors/treasury'
 import { ProposalMapItem } from 'types/proposals'
 import {
   contractConfigSelector,
@@ -71,8 +73,6 @@ export function ProposalEditor({
 }) {
   const router: NextRouter = useRouter()
 
-  // TODO(gavin.doughtie): recoil values?
-  const { execute: cw20ExecuteIncreaseAllowance } = useCw20IncreaseAllowance()
   const [deposit, setDeposit] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
   const setError = useSetRecoilState(errorAtom)
