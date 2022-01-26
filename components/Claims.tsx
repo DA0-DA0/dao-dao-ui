@@ -1,11 +1,11 @@
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
-import { Claim } from '@dao-dao/types/contracts/stake-cw20'
+import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { CheckIcon, CurrencyDollarIcon } from '@heroicons/react/outline'
 import { MouseEventHandler } from 'react'
 import { useRecoilValue } from 'recoil'
-import { unstakingDuration } from 'selectors/daos'
+import { tokenConfig, unstakingDuration } from 'selectors/daos'
 import { getBlockHeight, walletClaims } from 'selectors/treasury'
-import { convertMicroDenomToDenom } from 'util/conversion'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { LogoNoBorder } from './Logo'
 import { humanReadableDuration } from './StakingModal'
 
@@ -43,12 +43,12 @@ function ClaimListItem({
   claim,
   unstakingDuration,
   blockHeight,
-  tokenSymbol,
+  tokenInfo,
 }: {
   claim: Claim
   unstakingDuration: Duration
   blockHeight: number
-  tokenSymbol: string
+  tokenInfo: TokenInfoResponse
 }) {
   const avaliable = claimAvaliable(claim, blockHeight)
   const durationForHumans = humanReadableDuration(unstakingDuration)
@@ -69,7 +69,8 @@ function ClaimListItem({
         </div>
       )}
       <p className="mt-1">
-        {convertMicroDenomToDenom(claim.amount)} ${tokenSymbol}
+        {convertMicroDenomToDenomWithDecimals(claim.amount, tokenInfo.decimals)}
+        ${tokenInfo.symbol}
       </p>
     </div>
   )
@@ -77,10 +78,10 @@ function ClaimListItem({
 
 export function ClaimsPendingList({
   stakingAddress,
-  tokenSymbol,
+  tokenInfo,
 }: {
   stakingAddress: string
-  tokenSymbol: string
+  tokenInfo: TokenInfoResponse
 }) {
   const unstakeDuration = useRecoilValue(unstakingDuration(stakingAddress))
   const blockHeight = useRecoilValue(getBlockHeight)
@@ -101,7 +102,7 @@ export function ClaimsPendingList({
                   claim={claim}
                   blockHeight={blockHeight}
                   unstakingDuration={unstakeDuration}
-                  tokenSymbol={tokenSymbol}
+                  tokenInfo={tokenInfo}
                 />
               )
             })}
@@ -114,12 +115,12 @@ export function ClaimsPendingList({
 
 export function ClaimAvaliableCard({
   stakingAddress,
-  tokenSymbol,
+  tokenInfo,
   onClaim,
   loading,
 }: {
   stakingAddress: string
-  tokenSymbol: string
+  tokenInfo: TokenInfoResponse
   onClaim: MouseEventHandler<HTMLButtonElement>
   loading: boolean
 }) {
@@ -131,7 +132,7 @@ export function ClaimAvaliableCard({
   return (
     <div className="shadow p-6 rounded-lg w-full border border-base-300 mt-2">
       <h2 className="text-sm font-mono text-secondary">
-        Unclaimed (unstaked ${tokenSymbol})
+        Unclaimed (unstaked ${tokenInfo.symbol})
       </h2>
       {loading ? (
         <div className="animate-spin-medium inline-block mt-2">
@@ -139,7 +140,11 @@ export function ClaimAvaliableCard({
         </div>
       ) : (
         <p className="mt-2 font-bold">
-          {convertMicroDenomToDenom(claimsAvaliable)} ${tokenSymbol}
+          {convertMicroDenomToDenomWithDecimals(
+            claimsAvaliable,
+            tokenInfo.decimals
+          )}
+          ${tokenInfo.symbol}
         </p>
       )}
       <div className="flex justify-end">

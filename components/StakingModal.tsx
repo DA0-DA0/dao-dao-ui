@@ -1,4 +1,5 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   ChevronLeftIcon,
@@ -18,6 +19,7 @@ import toast from 'react-hot-toast'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 import { daoSelector, unstakingDuration } from 'selectors/daos'
 import {
+  cw20TokenInfo,
   walletStakedTokenBalance,
   walletTokenBalance,
   walletTokenBalanceUpdateCountAtom,
@@ -25,13 +27,15 @@ import {
 import { cleanChainError } from 'util/cleanChainError'
 import {
   convertDenomToMicroDenom,
-  convertMicroDenomToDenom,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import { isUndefined } from 'lodash'
 
 export enum StakingMode {
   Stake,
@@ -180,6 +184,7 @@ export function humanReadableDuration(d: Duration) {
 
 function executeUnstakeAction(
   denomAmount: string,
+  tokenInfo: TokenInfoResponse,
   stakingAddress: string,
   signingClient: SigningCosmWasmClient | null,
   walletAddress: string,
@@ -189,7 +194,10 @@ function executeUnstakeAction(
   if (!signingClient) {
     toast.error('Please connect your wallet')
   }
-  const amount = convertDenomToMicroDenom(denomAmount)
+  const amount = convertDenomToMicroDenomWithDecimals(
+    denomAmount,
+    tokenInfo.decimals
+  )
   setLoading(true)
   signingClient
     ?.execute(
@@ -215,6 +223,7 @@ function executeUnstakeAction(
 function executeStakeAction(
   denomAmount: string,
   tokenAddress: string,
+  tokenInfo: TokenInfoResponse,
   stakingAddress: string,
   signingClient: SigningCosmWasmClient | null,
   walletAddress: string,
@@ -224,7 +233,13 @@ function executeStakeAction(
   if (!signingClient) {
     toast.error('Please connect your wallet')
   }
-  const amount = convertDenomToMicroDenom(denomAmount)
+  const amount = convertDenomToMicroDenomWithDecimals(
+    denomAmount,
+    tokenInfo.decimals
+  )
+  console.log('staking amount: ' + amount)
+  console.log('denom amount: ' + denomAmount)
+  console.log('decimals: ' + tokenInfo.decimals)
   setLoading(true)
   signingClient
     ?.execute(
@@ -242,6 +257,7 @@ function executeStakeAction(
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))
+      console.log(err.message)
     })
     .finally(() => {
       setLoading(false)
@@ -306,11 +322,23 @@ export function StakingModal({
   const [loading, setLoading] = useState(false)
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const govTokenBalance = convertMicroDenomToDenom(
-    useRecoilValue(walletTokenBalance(daoInfo?.gov_token)).amount
+  const tokenInfo = useRecoilValue(cw20TokenInfo(daoInfo?.gov_token))
+  console.log('is undefined dao info')
+  console.log(isUndefined(daoInfo))
+  console.log(daoInfo)
+  console.log(
+    'wallet token balance' +
+      useRecoilValue(walletTokenBalance(daoInfo.gov_token)).amount
   )
-  const stakedGovTokenBalance = convertMicroDenomToDenom(
-    useRecoilValue(walletStakedTokenBalance(daoInfo?.staking_contract)).amount
+  const govTokenBalance = convertMicroDenomToDenomWithDecimals(
+    useRecoilValue(walletTokenBalance(daoInfo?.gov_token)).amount,
+    tokenInfo.decimals
+  )
+  console.log('decimals: ' + tokenInfo.decimals)
+
+  const stakedGovTokenBalance = convertMicroDenomToDenomWithDecimals(
+    useRecoilValue(walletStakedTokenBalance(daoInfo?.staking_contract)).amount,
+    tokenInfo.decimals
   )
   const unstakeDuration = useRecoilValue(
     unstakingDuration(daoInfo.staking_contract)
@@ -357,6 +385,7 @@ export function StakingModal({
             executeStakeAction(
               amount,
               daoInfo.gov_token,
+              tokenInfo,
               daoInfo.staking_contract,
               signingClient,
               walletAddress,
@@ -373,6 +402,7 @@ export function StakingModal({
           } else if (mode === StakingMode.Unstake) {
             executeUnstakeAction(
               amount,
+              tokenInfo,
               daoInfo.staking_contract,
               signingClient,
               walletAddress,
@@ -388,7 +418,10 @@ export function StakingModal({
             )
           } else if (mode === StakingMode.Claim) {
             executeClaimAction(
-              convertMicroDenomToDenom(claimAmount),
+              convertMicroDenomToDenomWithDecimals(
+                claimAmount,
+                tokenInfo.decimals
+              ),
               daoInfo.staking_contract,
               signingClient,
               walletAddress,
@@ -502,7 +535,11 @@ export function StakingModal({
         <>
           <div className="py-3 px-6 flex flex-col mt-3">
             <h2 className="font-medium">
-              {convertMicroDenomToDenom(claimAmount)} ${tokenSymbol} avaliable
+              {convertMicroDenomToDenomWithDecimals(
+                claimAmount,
+                tokenInfo.decimals
+              )}
+              ${tokenSymbol} avaliable
             </h2>
             <p className="text-sm mt-3 mb-3">
               Claim them to increase your voting power.

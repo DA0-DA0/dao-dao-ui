@@ -38,7 +38,6 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-
 interface DaoCreateData {
   deposit: string
   description: string

@@ -1,5 +1,8 @@
 import { fromBase64, toBase64, fromAscii, toAscii } from '@cosmjs/encoding'
-import { convertDenomToHumanReadableDenom } from './conversion'
+import {
+  convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
+} from './conversion'
 import {
   BankMsg,
   Coin,
@@ -28,6 +31,8 @@ import {
   convertDenomToContractReadableDenom,
   convertDenomToMicroDenom,
 } from './conversion'
+import { cw20TokenInfo } from 'selectors/treasury'
+import { useRecoilValue } from 'recoil'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -512,9 +517,15 @@ export function messageForDraftProposal(
             return
           }
 
+          const govTokenInfo = useRecoilValue(
+            cw20TokenInfo(govTokenAddress as string)
+          )
           const microAmounts = amounts.map((coin) => {
             const microCoin = coin
-            microCoin.amount = convertDenomToMicroDenom(coin.amount)
+            microCoin.amount = convertDenomToMicroDenomWithDecimals(
+              coin.amount,
+              govTokenInfo.decimals
+            )
             microCoin.denom = convertDenomToContractReadableDenom(coin.denom)
             return microCoin
           }) as Coin[]
