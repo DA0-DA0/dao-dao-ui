@@ -19,9 +19,10 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.27.0-rc2",
-    "@cosmjs/proto-signing": "^0.27.0-rc2",
-    "@cosmjs/stargate": "^0.27.0-rc2",
+    "@cosmjs/cosmwasm-stargate": "^0.27.1",
+    "@cosmjs/encoding": "^0.27.1",
+    "@cosmjs/proto-signing": "^0.27.1",
+    "@cosmjs/stargate": "^0.27.1",
     "@dao-dao/types": "^0.0.8",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
