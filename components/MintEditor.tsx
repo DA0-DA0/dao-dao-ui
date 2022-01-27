@@ -115,6 +115,7 @@ export default function MintEditor({
           name="amount"
           onChange={handleAmount}
           value={amount}
+          step="any"
         />
         <label className="label">
           <span className="label-text-alt w-full text-right mr-1">

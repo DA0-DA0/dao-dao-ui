@@ -154,7 +154,7 @@ function DaoHome() {
               title="Balance"
               amount={convertMicroDenomToDenom(
                 govTokenBalance?.amount
-              ).toLocaleString()}
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
               onManage={() => {
                 setShowStaking(true)
@@ -168,7 +168,7 @@ function DaoHome() {
               title={`Voting power (staked ${tokenInfo?.symbol})`}
               amount={convertMicroDenomToDenom(
                 stakedGovTokenBalance.amount
-              ).toLocaleString()}
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
               onManage={() => {
                 setShowStaking(true)
@@ -183,7 +183,9 @@ function DaoHome() {
                 title={`Pending (unclaimed ${tokenInfo?.symbol})`}
                 amount={convertMicroDenomToDenom(
                   claimsAvaliable
-                ).toLocaleString()}
+                ).toLocaleString(undefined, {
+                  maximumFractionDigits: 20,
+                })}
                 denom={tokenInfo?.symbol}
                 onManage={() => {
                   setShowStaking(true)
@@ -198,9 +200,10 @@ function DaoHome() {
           <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
             <h3 className="font-mono text-sm font-semibold mb-3">
               You have{' '}
-              {convertMicroDenomToDenom(
-                govTokenBalance?.amount
-              ).toLocaleString()}{' '}
+              {convertMicroDenomToDenom(govTokenBalance?.amount).toLocaleString(
+                undefined,
+                { maximumFractionDigits: 20 }
+              )}{' '}
               unstaked {tokenInfo.symbol}
             </h3>
             <p className="text-sm">

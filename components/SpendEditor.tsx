@@ -99,6 +99,7 @@ export default function SpendEditor({
         id="amount"
         className="input input-bordered rounded box-border p-3 w-full text-xl"
         name="amount"
+        step="any"
         readOnly={false}
         onChange={handleAmount}
         defaultValue={amount}

@@ -231,6 +231,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   validation,
   onChange,
   defaultValue,
+  step,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -238,6 +239,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   error?: FieldError
   onChange?: ChangeEventHandler<HTMLInputElement>
   defaultValue?: string
+  step?: string | number
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -246,6 +248,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <input
       type="number"
+      step={step}
       defaultValue={defaultValue}
       className={'input input-bordered' + (error ? ' input-error' : '')}
       {...register(label, { validate, onChange })}
