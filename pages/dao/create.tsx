@@ -30,7 +30,7 @@ import {
   validateNonNegative,
   validatePercent,
   validatePositive,
-  validateRequired,
+  validateRequired, validateUrl,
 } from 'util/formValidation'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { pinnedDaosAtom } from 'atoms/pinned'
@@ -59,7 +59,7 @@ interface DaoCreateData {
 
   unstakingDuration: string
   refund: string | boolean
-  image_url: string | boolean
+  imageUrl: string
   proposalDepositAmount: string
   [key: string]: string | boolean
 }
@@ -250,6 +250,8 @@ const CreateDao: NextPage = () => {
         ? getIntValue('refund') === 1
         : !!data.refund
 
+    const imgUrl = data.imageUrl !== '' ? data.imageUrl : undefined
+
     const msg: InstantiateMsg =
       tokenMode == TokenMode.Create
         ? makeDaoInstantiateWithNewTokenMessage(
@@ -263,7 +265,8 @@ const CreateDao: NextPage = () => {
             maxVotingPeriod,
             unstakingDuration,
             getIntValue('deposit') || 0,
-            refund
+            refund,
+            imgUrl
           )
         : makeDaoInstantiateWithExistingTokenMessage(
             data.name,
@@ -273,7 +276,8 @@ const CreateDao: NextPage = () => {
             maxVotingPeriod,
             unstakingDuration,
             getIntValue('deposit') || 0,
-            refund
+            refund,
+            imgUrl
           )
 
     console.log('instantiating DAO with message:')
@@ -355,10 +359,10 @@ const CreateDao: NextPage = () => {
             <div className="form-control">
               <InputLabel name="Image URL" />
               <TextInput
-                label="image-url"
+                label="imageUrl"
                 register={register}
                 error={errors.imageUrl}
-                validation={[validateRequired]}
+                validation={[validateUrl]}
               />
               <InputErrorMessage error={errors.imageUrl} />
             </div>

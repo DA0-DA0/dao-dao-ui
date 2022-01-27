@@ -1,4 +1,5 @@
 import { isValidAddress, isValidContractAddress } from './isValidAddress'
+import {isValidUrl} from "./isValidUrl";
 
 export const validateRequired = (v: string) =>
   v.length > 0 || 'Field is required'
@@ -17,21 +18,8 @@ export const validatePercent = (v: string) => {
 export const validateAddress = (v: string) =>
   isValidAddress(v) || 'Invalid address'
 
-export const validateUrl = async (v: string) => {
-  const regex = /(https:)|([/|.|\w|\s])*\.(?:jpg|gif|png)/
+export const validateUrl = (v: string) =>
+  isValidUrl(v) || 'Invalid URL link, must start with https and end with png/jpeg/gif.'
 
-  if (!regex.test(v)) {
-    return 'Invalid URL link, must start with https and end with png/jpeg/gif.'
-  } else {
-    let isImg = await checkImage(v)
-    return isImg || 'Invalid Img Url provided, not actual image'
-  }
-}
-
-async function checkImage(url: string){
-     const res = await fetch(url);
-     const buff = await res.blob();
-     return buff.type.startsWith('image/')
-}
 export const validateContractAddress = (v: string) =>
   isValidContractAddress(v) || 'Invalid contract address'
