@@ -44,6 +44,8 @@ import {
   ClaimsPendingList,
 } from '@components/Claims'
 import ErrorBoundary from 'components/ErrorBoundary'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 function DaoHome() {
   const router = useRouter()
@@ -81,14 +83,18 @@ function DaoHome() {
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
 
+  const expanded = useRecoilValue(sidebarExpandedAtom)
+
   const stakedPercent = (
     (100 * stakedTotal) /
     Number(tokenInfo?.total_supply)
   ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
 
+  const sidebarClassName = `col-span-${expanded ? 4 : 6} min-h-screen`
+
   return (
     <div className="grid grid-cols-6 overflow-auto mb-3">
-      <div className="col-span-4 min-h-screen">
+      <div className={sidebarClassName}>
         <GradientHero>
           <div className="flex justify-between items-center">
             <Breadcrumbs
@@ -146,109 +152,110 @@ function DaoHome() {
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <h2 className="font-medium text-md">Your shares</h2>
-        <ul className="list-none mt-3">
-          <li>
-            <BalanceCard
-              title="Balance"
-              amount={convertMicroDenomToDenom(
-                govTokenBalance?.amount
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-              denom={tokenInfo?.symbol}
-              onManage={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
-              }}
-              loading={tokenBalanceLoading}
-            />
-          </li>
-          <li>
-            <BalanceCard
-              title={`Voting power (staked ${tokenInfo?.symbol})`}
-              amount={convertMicroDenomToDenom(
-                stakedGovTokenBalance.amount
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-              denom={tokenInfo?.symbol}
-              onManage={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
-              }}
-              loading={tokenBalanceLoading}
-            />
-          </li>
-          {claimsAvaliable ? (
+      <Sidebar>
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+          <h2 className="font-medium text-md">Your shares</h2>
+          <ul className="list-none mt-3">
             <li>
               <BalanceCard
-                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+                title="Balance"
                 amount={convertMicroDenomToDenom(
-                  claimsAvaliable
-                ).toLocaleString(undefined, {
-                  maximumFractionDigits: 20,
-                })}
+                  govTokenBalance?.amount
+                ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
                 denom={tokenInfo?.symbol}
                 onManage={() => {
                   setShowStaking(true)
-                  setStakingDefault(StakingMode.Claim)
+                  setStakingDefault(StakingMode.Unstake)
                 }}
                 loading={tokenBalanceLoading}
               />
             </li>
-          ) : null}
-        </ul>
-        {govTokenBalance?.amount ? (
-          <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
-            <h3 className="font-mono text-sm font-semibold mb-3">
-              You have{' '}
-              {convertMicroDenomToDenom(govTokenBalance?.amount).toLocaleString(
-                undefined,
-                { maximumFractionDigits: 20 }
-              )}{' '}
-              unstaked {tokenInfo.symbol}
-            </h3>
-            <p className="text-sm">
-              Staking them would bring you{' '}
-              {stakedGovTokenBalance &&
-                `${(
-                  (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                  100
-                ).toLocaleString(undefined, {
-                  maximumSignificantDigits: 3,
-                })}%`}{' '}
-              more voting power and help you defend your positions for{' '}
-              {daoInfo.config.name}
-              {"'"}s direction.
-            </p>
-            <div className="text-right mt-3">
-              <button
-                className="btn btn-sm btn-ghost normal-case font-normal"
-                onClick={() => {
+            <li>
+              <BalanceCard
+                title={`Voting power (staked ${tokenInfo?.symbol})`}
+                amount={convertMicroDenomToDenom(
+                  stakedGovTokenBalance.amount
+                ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
+                denom={tokenInfo?.symbol}
+                onManage={() => {
                   setShowStaking(true)
                   setStakingDefault(StakingMode.Stake)
                 }}
-              >
-                Stake tokens
-                <PlusSmIcon className="inline w-5 h-5 ml-2" />
-              </button>
+                loading={tokenBalanceLoading}
+              />
+            </li>
+            {claimsAvaliable ? (
+              <li>
+                <BalanceCard
+                  title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+                  amount={convertMicroDenomToDenom(
+                    claimsAvaliable
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: 20,
+                  })}
+                  denom={tokenInfo?.symbol}
+                  onManage={() => {
+                    setShowStaking(true)
+                    setStakingDefault(StakingMode.Claim)
+                  }}
+                  loading={tokenBalanceLoading}
+                />
+              </li>
+            ) : null}
+          </ul>
+          {govTokenBalance?.amount ? (
+            <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
+              <h3 className="font-mono text-sm font-semibold mb-3">
+                You have{' '}
+                {convertMicroDenomToDenom(
+                  govTokenBalance?.amount
+                ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
+                unstaked {tokenInfo.symbol}
+              </h3>
+              <p className="text-sm">
+                Staking them would bring you{' '}
+                {stakedGovTokenBalance &&
+                  `${(
+                    (govTokenBalance.amount / stakedGovTokenBalance.amount) *
+                    100
+                  ).toLocaleString(undefined, {
+                    maximumSignificantDigits: 3,
+                  })}%`}{' '}
+                more voting power and help you defend your positions for{' '}
+                {daoInfo.config.name}
+                {"'"}s direction.
+              </p>
+              <div className="text-right mt-3">
+                <button
+                  className="btn btn-sm btn-ghost normal-case font-normal"
+                  onClick={() => {
+                    setShowStaking(true)
+                    setStakingDefault(StakingMode.Stake)
+                  }}
+                >
+                  Stake tokens
+                  <PlusSmIcon className="inline w-5 h-5 ml-2" />
+                </button>
+              </div>
             </div>
-          </div>
-        ) : null}
-        <ClaimsPendingList
-          stakingAddress={daoInfo.staking_contract}
-          tokenSymbol={tokenInfo.symbol}
-        />
-        {showStaking && (
-          <StakingModal
-            defaultMode={stakingDefault}
-            contractAddress={contractAddress}
+          ) : null}
+          <ClaimsPendingList
+            stakingAddress={daoInfo.staking_contract}
             tokenSymbol={tokenInfo.symbol}
-            claimAmount={claimsAvaliable}
-            onClose={() => setShowStaking(false)}
-            beforeExecute={() => setTokenBalancesLoading(true)}
-            afterExecute={() => setTokenBalancesLoading(false)}
           />
-        )}
-      </div>
+          {showStaking && (
+            <StakingModal
+              defaultMode={stakingDefault}
+              contractAddress={contractAddress}
+              tokenSymbol={tokenInfo.symbol}
+              claimAmount={claimsAvaliable}
+              onClose={() => setShowStaking(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              afterExecute={() => setTokenBalancesLoading(false)}
+            />
+          )}
+        </div>
+      </Sidebar>
     </div>
   )
 }

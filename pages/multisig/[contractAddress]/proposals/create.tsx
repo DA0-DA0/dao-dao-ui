@@ -14,6 +14,8 @@ import {
   createDraftProposalTransaction,
   draftProposalKey,
 } from '../../../../util/proposal'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -26,6 +28,7 @@ const MultisigProposalCreate: NextPage = () => {
   const createDraftProposal = useRecoilTransaction_UNSTABLE(
     createDraftProposalTransaction(contractAddress, draftProposals)
   )
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   useEffect(() => {
     if (!proposalId) {
@@ -52,12 +55,16 @@ const MultisigProposalCreate: NextPage = () => {
     />
   )
 
+  const sidebarClassName = `w-full col-span-${expanded ? 4 : 6} p-6`
+
   return (
     <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
+      <div className={sidebarClassName}>
         <Loader />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+      <Sidebar>
+        <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+      </Sidebar>
     </div>
   )
 }

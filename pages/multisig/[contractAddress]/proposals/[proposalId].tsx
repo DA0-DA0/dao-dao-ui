@@ -12,6 +12,8 @@ import { useRecoilValue } from 'recoil'
 import { sigSelector } from 'selectors/multisigs'
 import { draftProposalSelector } from 'selectors/proposals'
 import { walletAddress as walletAddressSelector } from 'selectors/cosm'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 const MultisigProposal: NextPage = () => {
   const router = useRouter()
@@ -24,9 +26,12 @@ const MultisigProposal: NextPage = () => {
   const walletAddress = useRecoilValue(walletAddressSelector)
   const error = useRecoilValue(errorAtom)
   const loading = useRecoilValue(loadingAtom)
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   let content
   let sidebar
+
+  const sidebarClassName = `w-full col-span-${expanded ? 4 : 6} p-6`
 
   if (draftProposal || proposalKey.startsWith('draft:')) {
     content = (
@@ -62,7 +67,7 @@ const MultisigProposal: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
+      <div className={sidebarClassName}>
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -72,7 +77,9 @@ const MultisigProposal: NextPage = () => {
         />
         {content}
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+      <Sidebar>
+        <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+      </Sidebar>
     </div>
   )
 }

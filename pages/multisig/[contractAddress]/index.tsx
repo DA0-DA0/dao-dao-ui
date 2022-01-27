@@ -26,6 +26,8 @@ import {
   totalWeight,
 } from 'selectors/multisigs'
 import { nativeBalance, walletAddress } from 'selectors/treasury'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -86,6 +88,9 @@ function MultisigHome() {
 
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(contractAddress)
+  const expanded = useRecoilValue(sidebarExpandedAtom)
+
+  const sidebarClassName = `col-span-${expanded ? 4 : 6} min-h-screen`
 
   return (
     <div className="grid grid-cols-6">
@@ -147,37 +152,39 @@ function MultisigHome() {
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <hr className="mt-8 mb-6" />
-        {visitorWeight && (
-          <>
-            <h2 className="font-medium text-md">Your shares</h2>
-            <ul className="list-none mt-3">
-              <li>
-                <VoteBalanceCard
-                  title="voting weight"
-                  weight={visitorWeight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            </ul>
-          </>
-        )}
-        <h2 className="font-medium text-md mt-3">Member shares</h2>
-        <ul className="list-none mt-3">
-          {memberList
-            .filter((m) => m.addr != visitorAddress)
-            .map((member) => (
-              <li key={member.addr}>
-                <VoteBalanceCard
-                  title={member.addr}
-                  weight={member.weight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            ))}
-        </ul>
-      </div>
+      <Sidebar>
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+          <hr className="mt-8 mb-6" />
+          {visitorWeight && (
+            <>
+              <h2 className="font-medium text-md">Your shares</h2>
+              <ul className="list-none mt-3">
+                <li>
+                  <VoteBalanceCard
+                    title="voting weight"
+                    weight={visitorWeight}
+                    weightTotal={weightTotal}
+                  />
+                </li>
+              </ul>
+            </>
+          )}
+          <h2 className="font-medium text-md mt-3">Member shares</h2>
+          <ul className="list-none mt-3">
+            {memberList
+              .filter((m) => m.addr != visitorAddress)
+              .map((member) => (
+                <li key={member.addr}>
+                  <VoteBalanceCard
+                    title={member.addr}
+                    weight={member.weight}
+                    weightTotal={weightTotal}
+                  />
+                </li>
+              ))}
+          </ul>
+        </div>
+      </Sidebar>
     </div>
   )
 }
