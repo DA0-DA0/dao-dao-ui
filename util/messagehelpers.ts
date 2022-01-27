@@ -198,6 +198,7 @@ export function makeDaoInstantiateWithExistingTokenMessage(
   const msg: DaoInstantiateMsg = {
     name,
     description,
+    image_url,
     gov_token: {
       use_existing_cw20: {
         addr: tokenAddress,
