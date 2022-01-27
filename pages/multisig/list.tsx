@@ -26,6 +26,8 @@ import {
   sigAddressesSelector,
   sigMemberSelector,
 } from 'selectors/multisigs'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 interface IMembershipTotal {
   count: number
@@ -75,6 +77,7 @@ const MultisigList: NextPage = () => {
   const sigs = useRecoilValueLoadable(
     waitForAll(sigAddresses.map((addr) => sigMemberSelector(addr)))
   )
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const [membership, setMembership] = useState<IMembershipTotal>({
     count: 0,
@@ -99,9 +102,11 @@ const MultisigList: NextPage = () => {
     )
   }, [sigs])
 
+  const sidebarClassName = `p-6 w-full col-span-${expanded ? 4 : 6}`
+
   return (
     <div className="grid grid-cols-6">
-      <div className="p-6 w-full col-span-4">
+      <div className={sidebarClassName}>
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">Multisigs</h1>
           <Link href="/multisig/create" passHref>
@@ -164,27 +169,29 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-        <h2 className="font-medium">Overview</h2>
-        <div className="mt-6">
-          <ul className="list-none ml-2 leading-relaxed">
-            <li>
-              <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {sigAddresses.length} active multisig
-              {sigAddresses.length > 1 && 's'}
-            </li>
-            <li>
-              <UserGroupIcon className="inline w-5 h-5 mr-2 mb-1" />
-              Part of {membership.count} multisig
-              {membership.count != 1 && 's'}
-            </li>
-            <li>
-              <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {membership.votes} vote{membership.votes != 1 && 's'} total
-            </li>
-          </ul>
+      <Sidebar>
+        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
+          <h2 className="font-medium">Overview</h2>
+          <div className="mt-6">
+            <ul className="list-none ml-2 leading-relaxed">
+              <li>
+                <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
+                {sigAddresses.length} active multisig
+                {sigAddresses.length > 1 && 's'}
+              </li>
+              <li>
+                <UserGroupIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Part of {membership.count} multisig
+                {membership.count != 1 && 's'}
+              </li>
+              <li>
+                <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
+                {membership.votes} vote{membership.votes != 1 && 's'} total
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </Sidebar>
     </div>
   )
 }
