@@ -37,6 +37,9 @@ export const totalStaked = selectorFamily<number, string>({
     (contractAddress) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
+      if (!client) {
+        return 0
+      }
       const response = await client.queryContractSmart(contractAddress, {
         total_staked_at_height: {},
       })
@@ -63,21 +66,27 @@ export const isMemberSelector = selectorFamily<MemberStatus, string>({
     (contractAddress) =>
     async ({ get }) => {
       const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          member: false,
+          weight: 0,
+        }
+      }
       const voterInfo = get(
         voterInfoSelector({ contractAddress, walletAddress: wallet })
       )
       return {
-        member: voterInfo.weight && voterInfo.weight !== '0',
+        member: voterInfo.weight !== 0,
         weight: voterInfo.weight,
       }
     },
 })
 
-export const daosSelector = selector<DaoListType[]>({
-  key: 'daos',
-  get: async ({ get }) => {
-    const daoAddresses = get(contractsByCodeId(DAO_CODE_ID))
-    return daoAddresses.map((contractAddress) => {
+export const memberDaoSelector = selectorFamily<DaoListType, string>({
+  key: 'memberDaosSelector',
+  get:
+    (contractAddress: string) =>
+    async ({ get }) => {
       const daoResponse = get(daoSelector(contractAddress))
       const { member, weight } = get(isMemberSelector(contractAddress))
       return {
@@ -86,9 +95,10 @@ export const daosSelector = selector<DaoListType[]>({
         member,
         weight,
       }
-    })
-  },
+    },
 })
+
+export const daoAddressesSelector = contractsByCodeId(DAO_CODE_ID)
 
 export const daoSelector = selectorFamily<ConfigResponse, string>({
   key: 'dao',

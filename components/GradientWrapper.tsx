@@ -22,7 +22,7 @@ export function GradientWrapper({ children }: { children: ReactNode }) {
       <div
         className="fixed -z-30 w-screen h-full bg-contain bg-no-repeat"
         style={{
-          backgroundImage: `url(${bg})`,
+          backgroundImage: `${bg}`,
         }}
       ></div>
       <div className="fixed bg-clip-padding backdrop-filter backdrop-blur-3xl w-screen h-screen -z-10"></div>

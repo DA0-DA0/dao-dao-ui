@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { MULTISIG_CODE_ID } from 'util/constants'
@@ -24,8 +23,12 @@ import {
 } from 'util/formValidation'
 import { secondsToHms } from 'pages/dao/create'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, useRecoilValue } from 'recoil'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -55,7 +58,8 @@ const CreateMultisig: NextPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const { walletAddress, signingClient } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
 
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
@@ -130,7 +134,7 @@ const CreateMultisig: NextPage = () => {
       <div className="p-6 w-full col-span-4">
         <Breadcrumbs
           crumbs={[
-            ['/multisig/list', 'Multisigs'],
+            ['/starred', 'Home'],
             [router.asPath, 'Create multisig'],
           ]}
         />
@@ -243,6 +247,7 @@ const CreateMultisig: NextPage = () => {
                 register={register}
                 error={errors.threshold}
                 validation={[validateRequired, validatePercent]}
+                step={0.01}
                 defaultValue="1"
               />
               <InputErrorMessage error={errors.threshold} />

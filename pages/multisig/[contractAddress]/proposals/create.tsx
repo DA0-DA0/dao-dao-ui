@@ -1,102 +1,65 @@
-import { ProposalEditor } from 'components/ProposalEditor'
+import { nextDraftProposalIdAtom } from 'atoms/proposals'
+import Loader from 'components/Loader'
+import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { memoForProposal, Proposal } from 'models/proposal/proposal'
-import { successNotify } from 'util/toast'
-import LineAlert from 'components/LineAlert'
-import { cleanChainError } from 'util/cleanChainError'
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { sigSelector } from 'selectors/multisigs'
-import { useState } from 'react'
-import { useSigningClient } from 'contexts/cosmwasm'
-import { proposalsCreatedAtom } from 'atoms/proposals'
-import { messageForProposal } from 'models/proposal/proposalSelectors'
-import { defaultExecuteFee } from 'util/fee'
+import { NextRouter, useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import {
+  useRecoilState,
+  useRecoilTransaction_UNSTABLE,
+  useRecoilValue,
+} from 'recoil'
+import { draftProposalsSelector } from 'selectors/proposals'
+import {
+  createDraftProposalTransaction,
+  draftProposalKey,
+} from '../../../../util/proposal'
 
-const ProposalCreate: NextPage = () => {
-  const router = useRouter()
+const MultisigProposalCreate: NextPage = () => {
+  const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const sigInfo = useRecoilValue(sigSelector(contractAddress))
-
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { walletAddress, signingClient } = useSigningClient()
-
-  // Used to notify the proposal list that it needs to update to
-  // include the newly created proposal.
-  const [_pca, setProposalsCreatedAtom] = useRecoilState(
-    proposalsCreatedAtom(contractAddress)
+  const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState<number>(
+    nextDraftProposalIdAtom
+  )
+  const [proposalId, setProposalId] = useState<string>('')
+  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
+  const createDraftProposal = useRecoilTransaction_UNSTABLE(
+    createDraftProposalTransaction(contractAddress, draftProposals)
   )
 
-  const handleProposal = async (
-    proposal: Proposal,
-    contractAddress: string,
-    govTokenAddress?: string
-  ) => {
-    setLoading(true)
-    setError('')
-    if (!signingClient || !walletAddress) {
-      setError('Wallet is not connected')
+  useEffect(() => {
+    if (!proposalId) {
+      const draftKey = draftProposalKey(nextDraftProposalId)
+      const nextId = nextDraftProposalId + 1
+      setNextDraftProposalId(nextId)
+      setProposalId(draftKey)
+    } else {
+      router.replace(`/multisig/${contractAddress}/proposals/${proposalId}`)
     }
-    const propose = messageForProposal(proposal, govTokenAddress)
-    const memo = memoForProposal(proposal)
-    try {
-      const response = await signingClient?.execute(
-        walletAddress,
-        contractAddress,
-        { propose },
-        defaultExecuteFee,
-        memo
-      )
-      setLoading(false)
-      if (response) {
-        const [{ events }] = response.logs
-        const [wasm] = events.filter((e) => e.type === 'wasm')
-        const [{ value }] = wasm.attributes.filter(
-          (w) => w.key === 'proposal_id'
-        )
-        successNotify('New Proposal Created')
-        setProposalsCreatedAtom((n) => n + 1)
-        router.push(`/multisig/${contractAddress}/proposals/${value}`)
-      }
-    } catch (e: any) {
-      console.error(
-        `Error submitting proposal ${JSON.stringify(proposal, undefined, 2)}`
-      )
-      console.dir(e)
-      console.error(e.message)
-      setLoading(false)
-      setError(e.message)
-    }
-  }
+  }, [
+    contractAddress,
+    createDraftProposal,
+    nextDraftProposalId,
+    setNextDraftProposalId,
+    proposalId,
+    router,
+  ])
+
+  const sidebar = (
+    <ProposalDraftSidebar
+      contractAddress={contractAddress}
+      proposalId={proposalId}
+    />
+  )
 
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
-        <Breadcrumbs
-          crumbs={[
-            ['/multisig/list', 'Multisigs'],
-            [`/multisig/${contractAddress}`, sigInfo.config.name],
-            [router.asPath, 'Create proposal'],
-          ]}
-        />
-
-        <ProposalEditor
-          onProposal={handleProposal}
-          loading={loading}
-          contractAddress={contractAddress}
-          recipientAddress={walletAddress}
-          multisig
-        />
-        {error && (
-          <div className="mt-8">
-            <LineAlert variant="error" msg={cleanChainError(error)} />
-          </div>
-        )}
+        <Loader />
       </div>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
     </div>
   )
 }
 
-export default ProposalCreate
+export default MultisigProposalCreate

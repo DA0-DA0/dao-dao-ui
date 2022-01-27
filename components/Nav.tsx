@@ -1,4 +1,3 @@
-import { useSigningClient } from 'contexts/cosmwasm'
 import Link from 'next/link'
 import ThemeToggle from 'components/ThemeToggle'
 import { Logo } from 'components/Logo'
@@ -7,38 +6,47 @@ import {
   CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
-  StarIcon,
 } from '@heroicons/react/outline'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilValue, useRecoilState, waitForAll } from 'recoil'
+import {
+  connectedWalletAtom,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
+import { Button } from '@components'
+import { showBetaNoticeAtom } from 'atoms/status'
 
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
+const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 function WalletConnect() {
-  const { walletAddress, connectWallet, disconnect } = useSigningClient()
+  const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
+  const walletAddress = useRecoilValue(walletAddressSelector)
+
   const handleConnect = () => {
-    if (walletAddress.length === 0) {
-      connectWallet()
+    if (!wallet) {
+      setWallet('keplr')
     } else {
-      disconnect()
+      setWallet('')
     }
   }
 
   return (
     <div className="flex flex-grow md:flex-grow-0 mt-4">
-      <button
-        className="block btn bg-primary text-primary-content w-full normal-case truncate p-2 text-left"
-        onClick={handleConnect}
-      >
-        {walletAddress || (
-          <>
-            <CashIcon className="inline w-6 h-6 mr-1" />
-            Connect Wallet
-          </>
-        )}
-      </button>
+      {walletAddress ? (
+        <Button full onClick={handleConnect}>
+          {walletAddress}
+        </Button>
+      ) : (
+        <Button
+          full
+          onClick={handleConnect}
+          iconBefore={<CashIcon className="inline w-4 h-4" />}
+        >
+          Connect wallet
+        </Button>
+      )}
     </div>
   )
 }
@@ -67,11 +75,13 @@ function Nav() {
     address: pinnedSigs[idx],
   }))
 
+  const betaWarningShowing = useRecoilValue(showBetaNoticeAtom)
+
   return (
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
         <div className="flex items-center">
-          <Link href="/pinned">
+          <Link href="/starred">
             <a>
               <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
             </a>
@@ -103,17 +113,17 @@ function Nav() {
           </div>
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
-
             <ul className="list-none ml-2">
-              {sigAddresses.map(({ sig, address }) => (
-                <li key={sig.config.name} className="mt-1">
-                  <Link href={`/multisig/${address}`}>
-                    <a>
-                      <MemberDisplay name={sig.config.name} />
-                    </a>
-                  </Link>
-                </li>
-              ))}
+              {sigAddresses &&
+                sigAddresses.map(({ sig, address }) => (
+                  <li key={sig.config.name} className="mt-1">
+                    <Link href={`/multisig/${address}`}>
+                      <a>
+                        <MemberDisplay name={sig.config.name} />
+                      </a>
+                    </Link>
+                  </li>
+                ))}
             </ul>
 
             <ul className="list-none ml-2">
@@ -128,8 +138,15 @@ function Nav() {
         </div>
       </div>
       <div className="ml-1">
-        <h3 className="text-secondary font-mono mb-1">dao dao v0.2</h3>
-        <ul className="ml-2 list-none">
+        <h3 className="text-secondary font-mono mb-1">
+          dao dao <div className="inline text-error">beta</div> v
+          {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
+        </h3>
+        <ul
+          className={
+            'ml-2 list-none' + (betaWarningShowing ? ' text-secondary' : '')
+          }
+        >
           <li>
             <ThemeToggle />
           </li>
@@ -142,21 +159,11 @@ function Nav() {
           <li>
             <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
             <a
-              href="https://github.com/da0-da0"
+              href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
               target="_blank"
               rel="noreferrer"
             >
-              GitHub
-            </a>
-          </li>
-          <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
-            <a
-              href="https://twitter.com/da0_da0"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Twitter
+              Feedback
             </a>
           </li>
         </ul>

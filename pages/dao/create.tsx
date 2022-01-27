@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
-import { useSigningClient } from 'contexts/cosmwasm'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
@@ -27,6 +26,7 @@ import {
 } from 'components/InputField'
 import {
   validateAddress,
+  validateContractAddress,
   validateNonNegative,
   validatePercent,
   validatePositive,
@@ -34,6 +34,10 @@ import {
 } from 'util/formValidation'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { pinnedDaosAtom } from 'atoms/pinned'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 interface DaoCreateData {
   deposit: string
@@ -174,7 +178,9 @@ export function secondsToHms(seconds: string): string {
 
 const CreateDao: NextPage = () => {
   const router = useRouter()
-  const { walletAddress, signingClient } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+
   const [count, setCount] = useState(1)
   const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
@@ -315,7 +321,7 @@ const CreateDao: NextPage = () => {
       <div className="p-6 w-full col-span-4">
         <Breadcrumbs
           crumbs={[
-            ['/dao/list', 'DAOs'],
+            ['/starred', 'Home'],
             [router.asPath, 'Create DAO'],
           ]}
         />
@@ -418,6 +424,7 @@ const CreateDao: NextPage = () => {
                       error={errors.daoInitialBalance}
                       validation={[validateRequired, validateNonNegative]}
                       defaultValue="0"
+                      step={0.000001}
                       onChange={(e) => {
                         const val = e?.target?.value
                         setDaoInitialBalance(Number(val))
@@ -458,6 +465,7 @@ const CreateDao: NextPage = () => {
                             error={errors[weightLabel]}
                             validation={[validateRequired, validatePositive]}
                             defaultValue="1"
+                            step={0.000001}
                             onChange={(e) => {
                               const val = e?.target?.value
                               setTokenWeights((weights) => {
@@ -516,7 +524,7 @@ const CreateDao: NextPage = () => {
                   label="existingTokenAddress"
                   register={register}
                   error={errors.existingTokenAddress}
-                  validation={[validateAddress, validateRequired]}
+                  validation={[validateContractAddress, validateRequired]}
                 />
                 <InputErrorMessage error={errors.existingTokenAddress} />
               </div>
@@ -536,6 +544,7 @@ const CreateDao: NextPage = () => {
                 error={errors.threshold}
                 validation={[validateRequired, validatePercent]}
                 defaultValue="75"
+                step="any"
                 onChange={(e) => setPassThreshold(Number(e?.target?.value))}
               />
               <InputErrorMessage error={errors.threshold} />
@@ -571,6 +580,7 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.deposit}
                 validation={[validateRequired]}
+                step={0.000001}
                 defaultValue="0"
               />
               <InputErrorMessage error={errors.deposit} />

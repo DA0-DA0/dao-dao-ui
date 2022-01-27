@@ -20,6 +20,7 @@ import {
   convertFromMicroDenom,
   convertMicroDenomToDenom,
 } from 'util/conversion'
+import { AddressSmall } from './Address'
 import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
 
@@ -45,18 +46,36 @@ export function TooltipWrapper({
   )
 }
 
-export function HeroContractHeader({
-  name,
-  member,
-  description,
+export function StarButton({
   pinned,
   onPin,
 }: {
-  name: string
-  member: boolean
-  description: string
   pinned: boolean
   onPin: Function
+}) {
+  return (
+    <button
+      className={'text-left w-20' + (pinned ? ' text-accent' : '')}
+      onClick={(_e) => onPin()}
+    >
+      {pinned ? (
+        <StarSolid className="inline w-5 h-5 mr-1" />
+      ) : (
+        <StarOutline className="inline w-5 h-5 mr-1" />
+      )}
+      {pinned ? 'Starred' : 'Star'}
+    </button>
+  )
+}
+
+export function HeroContractHeader({
+  name,
+  member,
+  address,
+}: {
+  name: string
+  member: boolean
+  address: string
 }) {
   return (
     <div className="flex items-center flex-col my-3">
@@ -64,31 +83,20 @@ export function HeroContractHeader({
       <div className="flex flex-col items-center">
         <div>
           <div className="mt-3">
-            <h1 className="inline text-2xl font-medium">{name}</h1>
-            <div className="inline ml-2">
+            <h1 className="inline text-2xl font-medium mb-2">{name}</h1>
+            <div className="inline ml-2 text-success">
               {member && (
                 <TooltipWrapper tip="You have voting power">
                   {' '}
-                  <UserIcon className="inline w-5 h-5 mb-1" />{' '}
+                  <UserIcon className="inline w-5 h-5 mb-2" />{' '}
                 </TooltipWrapper>
               )}
-              <TooltipWrapper
-                tip={`This is ${
-                  pinned ? '' : 'not '
-                } one of your favorite contracts`}
-              >
-                <button onClick={(_e) => onPin()}>
-                  {pinned ? (
-                    <StarSolid className="inline w-5 h-5 mb-1" />
-                  ) : (
-                    <StarOutline className="inline w-5 h-5 mb-1" />
-                  )}
-                </button>
-              </TooltipWrapper>
             </div>
           </div>
         </div>
-        <p className="mt-2 font-mono mb-3">{description}</p>
+        <div className="mt-2 font-mono mb-3">
+          <AddressSmall address={address} />
+        </div>
       </div>
     </div>
   )
@@ -165,11 +173,15 @@ export function ContractProposalsDispaly({
 }
 
 export function ContractBalances({
-  contractType,
+  description,
+  gov_token,
+  staking_contract,
   native,
   cw20,
 }: {
-  contractType: 'DAO' | 'Multisig'
+  description: string
+  gov_token?: string
+  staking_contract?: string
   native: Coin[]
   cw20?: Cw20Coin[]
 }) {
@@ -183,37 +195,71 @@ export function ContractBalances({
   }))
 
   return (
-    <>
-      <h2 className="font-medium text-lg">Treasury</h2>
-      <h3 className="font-mono text-sm mt-6 text-secondary">
-        {contractType} Balances
-      </h3>
-      <ul className="list-none mt-1 text-medium font-semibold ml-1">
-        {native.map((coin, idx) => {
-          const symbol = convertFromMicroDenom(coin.denom)
-          return (
-            <li key={idx}>
-              {convertMicroDenomToDenom(coin.amount).toLocaleString()} ${symbol}
-            </li>
-          )
-        })}
-        {!native.length && (
-          <li key="nobalance" className="text-uppercase">
-            0 $
-            {convertDenomToHumanReadableDenom(
-              process.env.NEXT_PUBLIC_STAKING_DENOM as string
-            ).toUpperCase()}
-          </li>
-        )}
-        {cw20InfoBalance.map(({ info, amount }) => {
-          return (
-            <li key={info.name}>
-              {convertMicroDenomToDenom(amount).toLocaleString()} ${info.symbol}
-            </li>
-          )
-        })}
-      </ul>
-    </>
+    <div className="py-5 border-t border-neutral grid grid-cols-5 mb-1 gap-4">
+      <div className="col-span-3">
+        <h2 className="font-medium text-lg">Treasury</h2>
+        <p className="mt-1 mb-3 overflow-y-auto max-h-40">{description}</p>
+        <div className="grid grid-cols-3">
+          {gov_token && (
+            <>
+              <p className="col-span-1 font-sm text-secondary gap-y-2 truncate">
+                Gov token address
+              </p>{' '}
+              <div className="col-span-2">
+                <AddressSmall address={gov_token} />
+              </div>
+            </>
+          )}
+          {staking_contract && (
+            <>
+              <p className="col-span-1 font-sm text-secondary truncate">
+                Staking address
+              </p>{' '}
+              <div className="col-span-2">
+                <AddressSmall address={staking_contract} />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="col-start-4 col-span-2">
+        <div className="col-span-2 col-start-4">
+          <h2 className="font-medium text-lg">Balances</h2>
+          <ul className="list-none mt-1 text-medium ml-1 gap-y-2">
+            {native.map((coin, idx) => {
+              const symbol = convertFromMicroDenom(coin.denom)
+              return (
+                <li className="mb-1" key={idx}>
+                  {convertMicroDenomToDenom(coin.amount).toLocaleString(
+                    undefined,
+                    { maximumFractionDigits: 20 }
+                  )}{' '}
+                  ${symbol}
+                </li>
+              )
+            })}
+            {!native.length && (
+              <li key="nobalance" className="text-uppercase mb-1">
+                0 $
+                {convertDenomToHumanReadableDenom(
+                  process.env.NEXT_PUBLIC_STAKING_DENOM as string
+                ).toUpperCase()}
+              </li>
+            )}
+            {cw20InfoBalance.map(({ info, amount }) => {
+              return (
+                <li key={info.name} className="mb-1">
+                  {convertMicroDenomToDenom(amount).toLocaleString(undefined, {
+                    maximumFractionDigits: 20,
+                  })}{' '}
+                  ${info.symbol}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -221,15 +267,13 @@ export function BalanceCard({
   denom,
   title,
   amount,
-  onPlus,
-  onMinus,
+  onManage,
   loading,
 }: {
   denom: string
   title: string
   amount: string
-  onPlus: MouseEventHandler<HTMLButtonElement>
-  onMinus: MouseEventHandler<HTMLButtonElement>
+  onManage: MouseEventHandler<HTMLButtonElement>
   loading: boolean
 }) {
   return (
@@ -245,20 +289,12 @@ export function BalanceCard({
         </p>
       )}
       <div className="flex justify-end">
-        <div className="btn-group">
-          <button
-            className="btn-outline btn btn-xs btn-square border-secondary"
-            onClick={onPlus}
-          >
-            +
-          </button>
-          <button
-            className="btn-outline btn btn-xs btn-square border-secondary"
-            onClick={onMinus}
-          >
-            -
-          </button>
-        </div>
+        <button
+          className="btn btn-xs normal-case font-normal rounded-md"
+          onClick={onManage}
+        >
+          Manage
+        </button>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { selector, selectorFamily } from 'recoil'
+import { selector, selectorFamily, atom } from 'recoil'
 import { StargateClient } from '@cosmjs/stargate'
 import {
   CosmWasmClient,
@@ -6,6 +6,9 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 import { connectKeplr } from 'services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
+import { localStorageEffect } from '../atoms/localStorageEffect'
+
+export type WalletConnection = 'keplr' | ''
 
 const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
@@ -23,11 +26,6 @@ export const cosmWasmClient = selector({
     return CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
   },
 })
-
-// export const offlineSigner = atom({
-//   key: 'offlineSigner',
-//   default: null,
-// })
 
 const getWaitKeplr = async () => {
   connectKeplr()
@@ -48,6 +46,9 @@ export const cosmWasmSigningClient = selector({
   key: 'cosmWasmSigningClient',
   get: async ({ get }) => {
     const offlineSigner = get(kelprOfflineSigner)
+    if (!offlineSigner) {
+      return null
+    }
     return await SigningCosmWasmClient.connectWithSigner(
       CHAIN_RPC_ENDPOINT,
       offlineSigner
@@ -56,6 +57,26 @@ export const cosmWasmSigningClient = selector({
   // We have to do this because of how SigningCosmWasmClient
   // will update its internal chainId
   dangerouslyAllowMutability: true,
+})
+
+//  Auto connect keplr if set as connectWallet
+export const connectedWalletAtom = atom<WalletConnection>({
+  key: 'connectedWallet',
+  default: '',
+  effects_UNSTABLE: [localStorageEffect<WalletConnection>('connectedWallet')],
+})
+
+export const walletAddress = selector({
+  key: 'WalletAddress',
+  get: async ({ get }) => {
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet !== 'keplr') {
+      return ''
+    }
+    const client = get(kelprOfflineSigner)
+    const [{ address }] = await client.getAccounts()
+    return address as string
+  },
 })
 
 export const voterInfoSelector = selectorFamily({
@@ -71,10 +92,14 @@ export const voterInfoSelector = selectorFamily({
     async ({ get }) => {
       get(walletTokenBalanceUpdateCountAtom(walletAddress))
       const client = get(cosmWasmClient)
-      return client?.queryContractSmart(contractAddress, {
+      const response = await client?.queryContractSmart(contractAddress, {
         voter: {
           address: walletAddress,
         },
       })
+
+      return {
+        weight: Number(response?.weight || 0),
+      }
     },
 })

@@ -1,8 +1,7 @@
-import { cosmWasmClient } from 'selectors/cosm'
+import { selectorFamily } from 'recoil'
 import { contractsByCodeId } from 'selectors/contracts'
-import { selector, selectorFamily } from 'recoil'
+import { cosmWasmClient } from 'selectors/cosm'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { ConfigResponse } from '@dao-dao/types/contracts/cw3-flex-multisig'
 import { isMemberSelector } from './daos'
 import { walletAddress } from './treasury'
 
@@ -19,11 +18,11 @@ export interface MultisigMemberInfo {
   weight: number
 }
 
-export const sigsSelector = selector<MultisigListType[]>({
-  key: 'multisigs',
-  get: async ({ get }) => {
-    const addresses = get(contractsByCodeId(MULTISIG_CODE_ID))
-    return addresses.map((address) => {
+export const sigMemberSelector = selectorFamily<MultisigListType, string>({
+  key: 'multisigWithMember',
+  get:
+    (address: string) =>
+    async ({ get }) => {
       const config = get(sigSelector(address))
       const { member, weight } = get(isMemberSelector(address))
       return {
@@ -33,20 +32,20 @@ export const sigsSelector = selector<MultisigListType[]>({
         member,
         weight,
       }
-    })
-  },
+    },
 })
 
-export const sigSelector = selectorFamily<ConfigResponse, string>({
+export const sigAddressesSelector = contractsByCodeId(MULTISIG_CODE_ID)
+
+export const sigSelector = selectorFamily<any, string>({
   key: 'multisig',
   get:
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
-      const config = await client.queryContractSmart(address, {
+      return await client?.queryContractSmart(address, {
         get_config: {},
       })
-      return config
     },
 })
 
@@ -73,6 +72,9 @@ export const memberWeight = selectorFamily<number, string>({
       const sigInfo = get(sigSelector(address))
       const client = get(cosmWasmClient)
       const memberAddress = get(walletAddress)
+      if (!memberAddress) {
+        return 0
+      }
       const member = await client.queryContractSmart(sigInfo.group_address, {
         member: { addr: memberAddress },
       })
@@ -90,7 +92,6 @@ export const listMembers = selectorFamily<MultisigMemberInfo[], string>({
       const members = await client.queryContractSmart(sigInfo.group_address, {
         list_members: {},
       })
-      console.log(members)
       return members.members
     },
 })

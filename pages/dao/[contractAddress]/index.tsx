@@ -17,15 +17,15 @@ import {
 } from 'selectors/daos'
 import {
   cw20Balances,
+  getBlockHeight,
   nativeBalance,
   walletAddress,
+  walletClaims,
   walletTokenBalanceLoading,
-} from 'selectors/treasury'
-import { convertMicroDenomToDenom } from 'util/conversion'
-import {
   walletStakedTokenBalance,
   walletTokenBalance,
 } from 'selectors/treasury'
+import { convertMicroDenomToDenom } from 'util/conversion'
 import {
   ContractBalances,
   BalanceCard,
@@ -33,12 +33,19 @@ import {
   GradientHero,
   HeroContractFooter,
   HeroContractHeader,
+  StarButton,
 } from 'components/ContractView'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import { pinnedDaosAtom } from 'atoms/pinned'
+import {
+  claimAvaliable,
+  ClaimAvaliableCard,
+  ClaimsPendingList,
+} from '@components/Claims'
+import ErrorBoundary from 'components/ErrorBoundary'
 
-const DaoHome: NextPage = () => {
+function DaoHome() {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -57,6 +64,11 @@ const DaoHome: NextPage = () => {
   const stakedGovTokenBalance = useRecoilValue(
     walletStakedTokenBalance(daoInfo?.staking_contract)
   )
+  const blockHeight = useRecoilValue(getBlockHeight)
+  const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
+  const claimsAvaliable = stuff.claims
+    .filter((c) => claimAvaliable(c, blockHeight))
+    .reduce((p, n) => p + Number(n.amount), 0)
 
   const wallet = useRecoilValue(walletAddress)
   const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
@@ -78,25 +90,37 @@ const DaoHome: NextPage = () => {
     <div className="grid grid-cols-6 overflow-auto mb-3">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <Breadcrumbs
-            crumbs={[
-              ['/pinned', 'Home'],
-              [router.asPath, daoInfo.config.name],
-            ]}
-          />
+          <div className="flex justify-between items-center">
+            <Breadcrumbs
+              crumbs={[
+                ['/starred', 'Home'],
+                [router.asPath, daoInfo.config.name],
+              ]}
+            />
+            <StarButton
+              pinned={pinned}
+              onPin={() => {
+                if (pinned) {
+                  setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+                } else {
+                  setPinnedDaos((p) => p.concat([contractAddress]))
+                }
+              }}
+            />
+          </div>
 
           <HeroContractHeader
             name={daoInfo.config.name}
-            description={daoInfo.config.description}
             member={member}
-            pinned={pinned}
-            onPin={() => {
-              if (pinned) {
-                setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-              } else {
-                setPinnedDaos((p) => p.concat([contractAddress]))
-              }
-            }}
+            address={contractAddress}
+          />
+
+          <ContractBalances
+            description={daoInfo.config.description}
+            gov_token={daoInfo.gov_token}
+            staking_contract={daoInfo.staking_contract}
+            native={nativeBalances}
+            cw20={cw20balances}
           />
 
           <HeroContractFooter>
@@ -123,12 +147,6 @@ const DaoHome: NextPage = () => {
         </div>
       </div>
       <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <ContractBalances
-          contractType="DAO"
-          native={nativeBalances}
-          cw20={cw20balances}
-        />
-        <hr className="mt-8 mb-6" />
         <h2 className="font-medium text-md">Your shares</h2>
         <ul className="list-none mt-3">
           <li>
@@ -136,15 +154,11 @@ const DaoHome: NextPage = () => {
               title="Balance"
               amount={convertMicroDenomToDenom(
                 govTokenBalance?.amount
-              ).toLocaleString()}
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
-              onPlus={() => {
+              onManage={() => {
                 setShowStaking(true)
                 setStakingDefault(StakingMode.Unstake)
-              }}
-              onMinus={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
               }}
               loading={tokenBalanceLoading}
             />
@@ -154,27 +168,42 @@ const DaoHome: NextPage = () => {
               title={`Voting power (staked ${tokenInfo?.symbol})`}
               amount={convertMicroDenomToDenom(
                 stakedGovTokenBalance.amount
-              ).toLocaleString()}
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
-              onPlus={() => {
+              onManage={() => {
                 setShowStaking(true)
                 setStakingDefault(StakingMode.Stake)
-              }}
-              onMinus={() => {
-                setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
               }}
               loading={tokenBalanceLoading}
             />
           </li>
+          {claimsAvaliable ? (
+            <li>
+              <BalanceCard
+                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+                amount={convertMicroDenomToDenom(
+                  claimsAvaliable
+                ).toLocaleString(undefined, {
+                  maximumFractionDigits: 20,
+                })}
+                denom={tokenInfo?.symbol}
+                onManage={() => {
+                  setShowStaking(true)
+                  setStakingDefault(StakingMode.Claim)
+                }}
+                loading={tokenBalanceLoading}
+              />
+            </li>
+          ) : null}
         </ul>
         {govTokenBalance?.amount ? (
           <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
             <h3 className="font-mono text-sm font-semibold mb-3">
               You have{' '}
-              {convertMicroDenomToDenom(
-                govTokenBalance?.amount
-              ).toLocaleString()}{' '}
+              {convertMicroDenomToDenom(govTokenBalance?.amount).toLocaleString(
+                undefined,
+                { maximumFractionDigits: 20 }
+              )}{' '}
               unstaked {tokenInfo.symbol}
             </h3>
             <p className="text-sm">
@@ -204,11 +233,16 @@ const DaoHome: NextPage = () => {
             </div>
           </div>
         ) : null}
+        <ClaimsPendingList
+          stakingAddress={daoInfo.staking_contract}
+          tokenSymbol={tokenInfo.symbol}
+        />
         {showStaking && (
           <StakingModal
             defaultMode={stakingDefault}
             contractAddress={contractAddress}
             tokenSymbol={tokenInfo.symbol}
+            claimAmount={claimsAvaliable}
             onClose={() => setShowStaking(false)}
             beforeExecute={() => setTokenBalancesLoading(true)}
             afterExecute={() => setTokenBalancesLoading(false)}
@@ -219,4 +253,10 @@ const DaoHome: NextPage = () => {
   )
 }
 
-export default DaoHome
+const DaoHomePage: NextPage = () => (
+  <ErrorBoundary title="DAO Not Found">
+    <DaoHome />
+  </ErrorBoundary>
+)
+
+export default DaoHomePage

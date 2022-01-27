@@ -1,3 +1,4 @@
+import { Button } from '@components'
 import {
   LibraryIcon,
   PlusIcon,
@@ -7,13 +8,31 @@ import {
   UserIcon,
 } from '@heroicons/react/outline'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { ContractCard, MysteryContractCard } from 'components/ContractCard'
+import {
+  ContractCard,
+  MysteryContractCard,
+  LoadingContractCard,
+} from 'components/ContractCard'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import React from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { DaoListType, daosSelector } from 'selectors/daos'
+import React, { useState, useEffect } from 'react'
+import {
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
+import {
+  daoAddressesSelector,
+  DaoListType,
+  memberDaoSelector,
+} from 'selectors/daos'
+
 import { convertMicroDenomToDenom } from 'util/conversion'
+interface IMembershipTotal {
+  count: number
+  votes: number
+}
 
 export function DaoCard({
   dao,
@@ -56,21 +75,29 @@ export function MysteryDaoCard() {
 }
 
 const DaoList: NextPage = () => {
-  const daos = useRecoilValue(daosSelector)
-  let memberDaos: DaoListType[] = []
-  let nonMemberDaos: DaoListType[] = []
-
-  for (const dao of daos) {
-    if (dao?.member === true) {
-      memberDaos.push(dao)
-    } else {
-      nonMemberDaos.push(dao)
-    }
-  }
-
-  const totalVotes = convertMicroDenomToDenom(
-    memberDaos.reduce((p, n) => p + n.weight, 0)
+  const daoAddresses = useRecoilValue(daoAddressesSelector)
+  const daos = useRecoilValueLoadable(
+    waitForAll(daoAddresses.map((addr) => memberDaoSelector(addr)))
   )
+  const [membership, setMembership] = useState<IMembershipTotal>({
+    count: 0,
+    votes: 0,
+  })
+
+  useEffect(() => {
+    if (daos.state != 'hasValue') {
+      return
+    }
+    setMembership(
+      daos.contents.reduce(
+        ({ count, votes }: IMembershipTotal, dao: DaoListType) => ({
+          count: count + (dao.member === true ? 1 : 0),
+          votes: votes + dao.weight,
+        }),
+        { count: 0, votes: 0 }
+      )
+    )
+  }, [daos])
 
   return (
     <div className="grid grid-cols-6">
@@ -78,9 +105,12 @@ const DaoList: NextPage = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">DAOs</h1>
           <Link href="/dao/create" passHref>
-            <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
-              Create a Dao <PlusIcon className="inline w-5 h-5 ml-1" />
-            </button>
+            <Button
+              size="sm"
+              iconAfter={<PlusIcon className="inline h-4 w-4" />}
+            >
+              Create a DAO
+            </Button>
           </Link>
         </div>
         <div className="mt-6">
@@ -89,17 +119,24 @@ const DaoList: NextPage = () => {
             Your DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {memberDaos.length ? (
-              memberDaos.map((dao, idx) => (
-                <DaoCard
-                  dao={dao.dao}
-                  address={dao.address}
-                  key={idx}
-                  weight={dao.weight}
-                />
-              ))
+            {daos.state == 'hasValue' ? (
+              membership.count > 0 ? (
+                daos.contents.map(
+                  (dao, idx) =>
+                    dao.member && (
+                      <DaoCard
+                        dao={dao.dao}
+                        address={dao.address}
+                        key={idx}
+                        weight={dao.weight}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryDaoCard />
+              )
             ) : (
-              <MysteryDaoCard />
+              <LoadingContractCard />
             )}
           </div>
         </div>
@@ -109,14 +146,25 @@ const DaoList: NextPage = () => {
             Community DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {nonMemberDaos.map((dao, idx) => (
-              <DaoCard
-                dao={dao.dao}
-                address={dao.address}
-                key={idx}
-                weight={dao.weight}
-              />
-            ))}
+            {daos.state == 'hasValue' ? (
+              daos.contents.length > 0 ? (
+                daos.contents.map(
+                  (dao, idx) =>
+                    !dao.member && (
+                      <DaoCard
+                        dao={dao.dao}
+                        address={dao.address}
+                        key={idx}
+                        weight={dao.weight}
+                      />
+                    )
+                )
+              ) : (
+                <MysteryDaoCard />
+              )
+            ) : (
+              <LoadingContractCard />
+            )}
           </div>
         </div>
       </div>
@@ -126,16 +174,16 @@ const DaoList: NextPage = () => {
           <ul className="list-none ml-2 leading-relaxed">
             <li>
               <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {daos.length} active DAOs
+              {daoAddresses.length} active DAOs
             </li>
             <li>
               <UserGroupIcon className="inline w-5 h-5 mr-2 mb-1" />
-              Part of {memberDaos.length} DAO
-              {memberDaos.length != 1 && 's'}
+              Part of {membership.count} DAO
+              {membership.count != 1 && 's'}
             </li>
             <li>
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {totalVotes} voting weight
+              {membership.votes} vote{membership.votes != 1 && 's'} total
             </li>
           </ul>
         </div>

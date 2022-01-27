@@ -1,13 +1,13 @@
-import { isValidAddress } from './isValidAddress'
+import { isValidAddress, isValidContractAddress } from './isValidAddress'
 
 export const validateRequired = (v: string) =>
   v.length > 0 || 'Field is required'
 
 export const validatePositive = (v: string) =>
-  parseInt(v) > 0 || 'Must be positive'
+  parseFloat(v) > 0.0 || 'Must be positive'
 
 export const validateNonNegative = (v: string) =>
-  parseInt(v) >= 0 || 'Must be non-negative'
+  parseFloat(v) >= 0.0 || 'Must be non-negative'
 
 export const validatePercent = (v: string) => {
   const p = Number(v)
@@ -33,3 +33,5 @@ async function checkImage(url: string){
      const buff = await res.blob();
      return buff.type.startsWith('image/')
 }
+export const validateContractAddress = (v: string) =>
+  isValidContractAddress(v) || 'Invalid contract address'

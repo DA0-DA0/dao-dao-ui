@@ -2,8 +2,7 @@ import 'styles/globals.css'
 import 'styles/app.css'
 import { useState, useEffect } from 'react'
 import type { AppProps } from 'next/app'
-import Layout from 'components/Layout'
-import { SigningCosmWasmProvider } from 'contexts/cosmwasm'
+import SidebarLayout from 'components/Layout'
 import { ThemeProvider } from 'contexts/theme'
 import Notifications from 'components/Notifications'
 import { RecoilRoot } from 'recoil'
@@ -24,38 +23,19 @@ function MyApp({ Component, pageProps }: AppProps) {
     setTheme(themeName)
   }
 
-  if (router.pathname === '/') {
-    return (
-      <RecoilRoot>
-        <Suspense fallback={<LoadingScreen />}>
-          <SigningCosmWasmProvider>
-            <ThemeProvider updateTheme={updateTheme} theme={theme}>
-              {loaded && (
-                <HomepageLayout>
-                  <Component {...pageProps} />
-                  <Notifications />
-                </HomepageLayout>
-              )}
-            </ThemeProvider>
-          </SigningCosmWasmProvider>
-        </Suspense>
-      </RecoilRoot>
-    )
-  }
+  const Layout = router.pathname === '/' ? HomepageLayout : SidebarLayout
 
   return (
     <RecoilRoot>
       <Suspense fallback={<LoadingScreen />}>
-        <SigningCosmWasmProvider>
-          <ThemeProvider updateTheme={updateTheme} theme={theme}>
-            {loaded && (
-              <Layout>
-                <Component {...pageProps} />
-                <Notifications />
-              </Layout>
-            )}
-          </ThemeProvider>
-        </SigningCosmWasmProvider>
+        <ThemeProvider updateTheme={updateTheme} theme={theme}>
+          {loaded && (
+            <Layout>
+              <Component {...pageProps} />
+              <Notifications />
+            </Layout>
+          )}
+        </ThemeProvider>
       </Suspense>
     </RecoilRoot>
   )

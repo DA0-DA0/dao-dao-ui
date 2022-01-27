@@ -10,24 +10,26 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { GradientWrapper } from 'components/GradientWrapper'
+import SvgGithub from 'components/icons/Github'
+import SvgTwitter from 'components/icons/Twitter'
+import { Button } from '@components'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
-    <Link href="/pinned" passHref>
-      <a
-        className={
-          'btn normal-case font-normal bg-primary text-primary-content hover:bg-gray-400 rounded-md' +
-          (small ? ' btn-sm' : ' btn-lg')
+    <Link href="/starred" passHref>
+      <Button
+        size={small ? 'md' : 'xl'}
+        iconAfter={
+          <ArrowNarrowRightIcon
+            className="inline h-4 w-4"
+            style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
+          />
         }
       >
         Enter the app
-        <ArrowNarrowRightIcon
-          className="w-6 h-4 ml-2"
-          style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
-        />
-      </a>
+      </Button>
     </Link>
   )
 }
@@ -97,32 +99,71 @@ const Home: NextPage = () => {
       <h1 className="text-7xl text-center font-medium mt-[33vh]">
         DAOs for everyone.
       </h1>
-      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary mix-blend-difference px-2">
+      <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary px-2">
         We provide tooling for creating, deploying, managing, and joining DAOs.
         Built with love on Juno.
       </p>
       <div className="mb-12 mx-auto">
         <EnterAppButton />
       </div>
-      <div className="flex flex-row mb-20 gap-3 flex-wrap justify-center mx-3">
-        <InfoCard
-          title="Create DAOs"
-          body="Make DAOs with a visual interface. No command line required."
-        >
-          <PlusSmIcon />
-        </InfoCard>
-        <InfoCard
-          title="Propose and vote"
-          body="Create and vote on proposals without writing code."
-        >
-          <ScaleIcon />
-        </InfoCard>
-        <InfoCard
-          title="Launch tokens"
-          body="Launch your token. Share them across any chain that supports IBC."
-        >
-          <StarIcon />
-        </InfoCard>
+      <div className="mx-3">
+        <div className="flex flex-row gap-3 flex-wrap justify-center">
+          <InfoCard
+            title="Create DAOs"
+            body="Make DAOs with a visual interface. No command line required."
+          >
+            <PlusSmIcon />
+          </InfoCard>
+          <InfoCard
+            title="Propose and vote"
+            body="Create and vote on proposals without writing code."
+          >
+            <ScaleIcon />
+          </InfoCard>
+          <InfoCard
+            title="Launch tokens"
+            body="Launch your token. Share them across any chain that supports IBC."
+          >
+            <StarIcon />
+          </InfoCard>
+        </div>
+        <div className="text-secondary grid grid-cols-1 md:grid-cols-3 my-10 gap-2">
+          <div className="flex flex-wrap gap-6 text-sm justify-center md:justify-left items-center">
+            <p className="font-mono font-light">
+              DAO DAO v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}
+            </p>
+            <a
+              href="https://www.junonetwork.io/"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              Powered by Juno
+              <ArrowNarrowRightIcon
+                className="w-6 h-4 inline mb-0.5 font-light"
+                style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
+              />
+            </a>
+          </div>
+          <div className="flex gap-4 justify-center items-center">
+            <a
+              href="https://github.com/DA0-DA0"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              <SvgGithub fill="currentColor" width="20px" height="20px" />
+            </a>
+            <a
+              href="https://twitter.com/da0_da0"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              <SvgTwitter fill="currentColor" width="20px" height="20px" />
+            </a>
+          </div>
+        </div>
       </div>
     </GradientWrapper>
   )

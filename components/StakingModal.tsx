@@ -5,7 +5,6 @@ import {
   ChevronRightIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { useSigningClient } from 'contexts/cosmwasm'
 import { secondsToHms } from 'pages/dao/create'
 import {
   ChangeEventHandler,
@@ -29,14 +28,28 @@ import {
   convertMicroDenomToDenom,
 } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 
 export enum StakingMode {
   Stake,
   Unstake,
+  Claim,
 }
 
 function stakingModeString(mode: StakingMode) {
-  return mode === StakingMode.Stake ? 'stake' : 'unstake'
+  switch (mode) {
+    case StakingMode.Stake:
+      return 'stake'
+    case StakingMode.Unstake:
+      return 'unstake'
+    case StakingMode.Claim:
+      return 'claim'
+    default:
+      return 'internal error'
+  }
 }
 
 function ModeButton({
@@ -122,7 +135,10 @@ function PercentSelector({
   const getOnClick = (p: number) => () => {
     setAmount(
       (p * max)
-        .toLocaleString(undefined, { maximumFractionDigits: 6 })
+        // Need to specify 'en' here or otherwise different langauges
+        // (ex german) will insert '.' as seperators which will mess
+        // with our replace logic :)
+        .toLocaleString('en', { maximumFractionDigits: 6 })
         .replace(',', '')
     )
   }
@@ -155,7 +171,7 @@ function durationIsNonZero(d: Duration) {
   return d.time !== 0
 }
 
-function humanReadableDuration(d: Duration) {
+export function humanReadableDuration(d: Duration) {
   if ('height' in d) {
     return `${d.height} blocks`
   }
@@ -234,10 +250,42 @@ function executeStakeAction(
     })
 }
 
+function executeClaimAction(
+  denomAmount: number,
+  stakingAddress: string,
+  signingClient: SigningCosmWasmClient | null,
+  walletAddress: string,
+  setLoading: SetterOrUpdater<boolean>,
+  onDone: Function
+) {
+  if (!signingClient) {
+    toast.error('Please connect your wallet')
+  }
+  setLoading(true)
+  signingClient
+    ?.execute(
+      walletAddress,
+      stakingAddress,
+      {
+        claim: {},
+      },
+      defaultExecuteFee
+    )
+    .catch((err) => {
+      toast.error(cleanChainError(err.message))
+    })
+    .finally(() => {
+      setLoading(false)
+      toast.success(`Claimed ${denomAmount} tokens`)
+      onDone()
+    })
+}
+
 export function StakingModal({
   defaultMode,
   contractAddress,
   tokenSymbol,
+  claimAmount,
   onClose,
   beforeExecute,
   afterExecute,
@@ -245,6 +293,7 @@ export function StakingModal({
   defaultMode: StakingMode
   contractAddress: string
   tokenSymbol: string
+  claimAmount: number
   onClose: MouseEventHandler<HTMLButtonElement>
   beforeExecute: Function
   afterExecute: Function
@@ -252,7 +301,8 @@ export function StakingModal({
   const [mode, setMode] = useState(defaultMode)
   const [amount, setAmount] = useState('0')
 
-  const { signingClient, walletAddress } = useSigningClient()
+  const walletAddress = useRecoilValue(walletAddressSelector)
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
   const [loading, setLoading] = useState(false)
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
@@ -272,6 +322,7 @@ export function StakingModal({
   const maxTx = Number(
     mode === StakingMode.Stake ? govTokenBalance : stakedGovTokenBalance
   )
+  const canClaim = claimAmount !== 0
 
   const invalidAmount = (): string => {
     if (amount === '') {
@@ -292,7 +343,7 @@ export function StakingModal({
   const error = invalidAmount() || walletDisconnected()
   const ready = !error
 
-  const ActionButton = () => {
+  const ActionButton = ({ ready }: { ready: boolean }) => {
     return (
       <button
         className={
@@ -335,6 +386,20 @@ export function StakingModal({
                 }, 6500)
               }
             )
+          } else if (mode === StakingMode.Claim) {
+            executeClaimAction(
+              convertMicroDenomToDenom(claimAmount),
+              daoInfo.staking_contract,
+              signingClient,
+              walletAddress,
+              setLoading,
+              () => {
+                setTimeout(() => {
+                  setWalletTokenBalanceUpdateCount((p) => p + 1)
+                  afterExecute()
+                }, 6500)
+              }
+            )
           }
         }}
       >
@@ -369,54 +434,90 @@ export function StakingModal({
           >
             Unstaking
           </ModeButton>
+          {canClaim && (
+            <ModeButton
+              onClick={() => setMode(StakingMode.Claim)}
+              active={mode === StakingMode.Claim}
+            >
+              Claiming
+            </ModeButton>
+          )}
         </div>
       </div>
       <hr />
-      <div className="py-3 px-6 flex flex-col mt-3">
-        <h2 className="font-medium mb-3">Choose your token amount</h2>
-        <AmountSelector
-          amount={amount}
-          onIncrease={() => setAmount((a) => (Number(a) + 1).toString())}
-          onDecrease={() => setAmount((a) => (Number(a) - 1).toString())}
-          onChange={(e) => setAmount(e?.target?.value)}
-          max={maxTx}
-        />
-        {Number(amount) > maxTx && (
-          <span className="text-xs text-error mt-1 ml-1">
-            Can{"'"}t {stakingModeString(mode)} more ${tokenSymbol} than you own
-          </span>
-        )}
-        <span className="text-xs text-secondary font-mono mt-2">
-          Max available {maxTx} ${tokenSymbol}
-        </span>
-        <div className="mt-3">
-          <PercentSelector
-            amount={Number(amount)}
-            setAmount={setAmount}
-            max={maxTx}
-          />
-        </div>
-      </div>
-      {mode === StakingMode.Unstake && durationIsNonZero(unstakeDuration) && (
+      {mode !== StakingMode.Claim && (
         <>
-          <hr />
-          <div className="py-3 px-6 mt-3">
-            <h2 className="font-medium text-md">
-              Unstaking period: {humanReadableDuration(unstakeDuration)}
-            </h2>
-            <p className="text-sm mt-3">
-              There will be {humanReadableDuration(unstakeDuration)} between the
-              time you decide to unstake your tokens and the time you can redeem
-              them.
-            </p>
+          <div className="py-3 px-6 flex flex-col mt-3">
+            <h2 className="font-medium mb-3">Choose your token amount</h2>
+            <AmountSelector
+              amount={amount}
+              onIncrease={() => setAmount((a) => (Number(a) + 1).toString())}
+              onDecrease={() => setAmount((a) => (Number(a) - 1).toString())}
+              onChange={(e) => setAmount(e?.target?.value)}
+              max={maxTx}
+            />
+            {Number(amount) > maxTx && (
+              <span className="text-xs text-error mt-1 ml-1">
+                Can{"'"}t {stakingModeString(mode)} more ${tokenSymbol} than you
+                own
+              </span>
+            )}
+            <span className="text-xs text-secondary font-mono mt-2">
+              Max available {maxTx} ${tokenSymbol}
+            </span>
+            <div className="mt-3">
+              <PercentSelector
+                amount={Number(amount)}
+                setAmount={setAmount}
+                max={maxTx}
+              />
+            </div>
+          </div>
+          {mode === StakingMode.Unstake && durationIsNonZero(unstakeDuration) && (
+            <>
+              <hr className="mt-3" />
+              <div className="py-3 px-6 mt-3">
+                <h2 className="font-medium text-md">
+                  Unstaking period: {humanReadableDuration(unstakeDuration)}
+                </h2>
+                <p className="text-sm mt-3">
+                  There will be {humanReadableDuration(unstakeDuration)} between
+                  the time you decide to unstake your tokens and the time you
+                  can redeem them.
+                </p>
+              </div>
+            </>
+          )}
+          <div className="px-3 py-6 text-right">
+            <div
+              className={!ready ? 'tooltip tooltip-left' : ''}
+              data-tip={error}
+            >
+              <ActionButton ready={ready} />
+            </div>
           </div>
         </>
       )}
-      <div className="px-3 py-6 text-right">
-        <div className={!ready ? 'tooltip tooltip-left' : ''} data-tip={error}>
-          <ActionButton />
-        </div>
-      </div>
+      {mode === StakingMode.Claim && (
+        <>
+          <div className="py-3 px-6 flex flex-col mt-3">
+            <h2 className="font-medium">
+              {convertMicroDenomToDenom(claimAmount)} ${tokenSymbol} avaliable
+            </h2>
+            <p className="text-sm mt-3 mb-3">
+              Claim them to increase your voting power.
+            </p>
+            <div className="px-3 py-6 text-right">
+              <div
+                className={walletDisconnected() ? 'tooltip tooltip-left' : ''}
+                data-tip={walletDisconnected()}
+              >
+                <ActionButton ready={!walletDisconnected()} />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

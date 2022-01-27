@@ -1,8 +1,8 @@
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
 import { UserIcon } from '@heroicons/react/outline'
-import Address from 'components/Address'
+import { Address } from 'components/Address'
 import { useRecoilValue } from 'recoil'
-import { walletAddress as selectWalletAddress } from 'selectors/treasury'
+import { walletAddress as selectWalletAddress } from 'selectors/cosm'
 
 function ProposalVotes({ votes }: { votes: VoteInfo[] }) {
   const walletAddress = useRecoilValue(selectWalletAddress)
