@@ -31,7 +31,7 @@ import {
   convertDenomToContractReadableDenom,
   convertDenomToMicroDenom,
 } from './conversion'
-import { cw20TokenInfo } from 'selectors/treasury'
+import { cw20TokenInfo } from '../selectors/treasury'
 import { useRecoilValue } from 'recoil'
 
 const DENOM = convertDenomToHumanReadableDenom(

@@ -1,4 +1,4 @@
-import { convertFromMicroDenom } from 'util/conversion'
+import { convertFromMicroDenom } from '../util/conversion'
 import { Keplr, Window as KeplrWindow } from '@keplr-wallet/types'
 
 declare global {

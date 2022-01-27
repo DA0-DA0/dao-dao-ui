@@ -4,7 +4,7 @@ import {
   CosmWasmClient,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { connectKeplr } from 'services/keplr'
+import { connectKeplr } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
 import { localStorageEffect } from '../atoms/localStorageEffect'
 
