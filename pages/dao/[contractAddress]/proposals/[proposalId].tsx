@@ -12,6 +12,8 @@ import { useRecoilValue } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { draftProposalSelector } from 'selectors/proposals'
 import { walletAddress as walletAddressSelector } from 'selectors/cosm'
+import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { cw20TokenInfo } from 'selectors/treasury'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -21,22 +23,17 @@ const Proposal: NextPage = () => {
   const draftProposal = useRecoilValue(
     draftProposalSelector({ contractAddress, proposalId: proposalKey })
   )
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const error = useRecoilValue(errorAtom)
-  const loading = useRecoilValue(loadingAtom)
+
+  const tokenInfo = useRecoilValue(cw20TokenInfo(sigInfo.gov_token))
 
   let content
   let sidebar
 
   if (draftProposal || proposalKey.startsWith('draft:')) {
     content = (
-      <ProposalEditor
-        proposalId={proposalKey}
-        error={error}
-        loading={loading}
-        contractAddress={contractAddress}
-        recipientAddress={walletAddress}
-        multisig={false}
+      <ProposalForm
+        onSubmit={(d: ProposalData) => console.log(d)}
+        govTokenDenom={tokenInfo.symbol}
       />
     )
     sidebar = (

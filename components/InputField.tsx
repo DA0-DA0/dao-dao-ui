@@ -1,5 +1,7 @@
-import { useThemeContext } from 'contexts/theme'
-import React, { ChangeEventHandler } from 'react'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/material.css'
+import { UnControlled as CodeMirror } from 'react-codemirror2'
+import React, { ChangeEventHandler, ReactNode } from 'react'
 import {
   FieldErrors,
   FieldPath,
@@ -8,8 +10,16 @@ import {
   FieldPathValue,
   UseFormRegister,
   Validate,
+  Control,
+  Controller,
 } from 'react-hook-form'
 import HelpTooltip from './HelpTooltip'
+import { useThemeContext } from 'contexts/theme'
+
+// This check is to prevent this import to be server side rendered.
+if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
+  require('codemirror/mode/javascript/javascript.js')
+}
 
 export function makeFieldErrorMessage<
   TFieldValues,
@@ -232,6 +242,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   onChange,
   defaultValue,
   step,
+  noBorder,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -240,6 +251,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   onChange?: ChangeEventHandler<HTMLInputElement>
   defaultValue?: string
   step?: string | number
+  noBorder?: boolean
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -250,7 +262,11 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
       type="number"
       step={step}
       defaultValue={defaultValue}
-      className={'input input-bordered' + (error ? ' input-error' : '')}
+      className={
+        'input' +
+        (error ? ' input-error' : '') +
+        (noBorder ? '' : ' input-bordered')
+      }
       {...register(label, { validate, onChange })}
     />
   )
@@ -270,11 +286,13 @@ export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   register,
   error,
   validation,
+  noBorder,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
+  noBorder?: boolean
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -283,9 +301,165 @@ export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <input
       type="text"
-      className={'input input-bordered' + (error ? ' input-error' : '')}
+      className={
+        'input' +
+        (error ? ' input-error' : '') +
+        (noBorder ? '' : ' input-bordered')
+      }
       {...register(label, { validate })}
     />
+  )
+}
+
+export function CodeMirrorInput<
+  FieldValues,
+  FieldName extends Path<FieldValues>
+>({
+  label,
+  control,
+  validation,
+}: {
+  label: FieldName
+  control: Control<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  noBorder?: boolean
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+
+  const themeContext = useThemeContext()
+  const editorTheme = themeContext.theme !== 'junoDark' ? 'default' : 'material'
+
+  const cmOptions = {
+    mode: {
+      name: 'javascript',
+      json: true,
+    },
+    theme: editorTheme,
+    lineNumbers: true,
+    lineWrapping: true,
+    autoCloseBrackets: true,
+    tabSize: 2,
+    gutters: ['CodeMirror-lint-markers'],
+    lint: true,
+  }
+
+  return (
+    <Controller
+      control={control}
+      name={label}
+      rules={validate}
+      shouldUnregister
+      render={({ field: { onChange, onBlur, ref } }) => {
+        return (
+          <CodeMirror
+            onChange={(_editor, _data, value) => onChange(value)}
+            onBlur={(_instance, _event) => onBlur()}
+            ref={ref}
+            options={cmOptions}
+            className="rounded"
+          />
+        )
+      }}
+    />
+  )
+}
+
+export function TextareaInput<
+  FieldValues,
+  FieldName extends Path<FieldValues>
+>({
+  label,
+  register,
+  error,
+  validation,
+  noBorder,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  noBorder?: boolean
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+  return (
+    <textarea
+      className={
+        'textarea' +
+        (error ? ' textarea-error' : '') +
+        (noBorder ? '' : ' textarea-bordered')
+      }
+      {...register(label, { validate })}
+    ></textarea>
+  )
+}
+
+export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
+  label,
+  register,
+  error,
+  validation,
+  noBorder,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  noBorder?: boolean
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+  return (
+    <input
+      type="text"
+      className={
+        'input text-sm font-mono' +
+        (error ? ' input-error' : '') +
+        (noBorder ? '' : ' input-bordered')
+      }
+      {...register(label, { validate })}
+    />
+  )
+}
+
+export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
+  label,
+  register,
+  error,
+  validation,
+  children,
+  noBorder,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  children: ReactNode
+  noBorder?: boolean
+}) {
+  const validate = validation?.reduce(
+    (a, v) => ({ ...a, [v.toString()]: v }),
+    {}
+  )
+  return (
+    <select
+      className={
+        'select font-normal' +
+        (error ? ' select-error' : '') +
+        (noBorder ? '' : ' select-bordered')
+      }
+      {...register(label, { validate })}
+    >
+      {children}
+    </select>
   )
 }
 

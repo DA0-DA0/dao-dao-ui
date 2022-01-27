@@ -47,7 +47,9 @@ import {
 import CustomEditor from './CustomEditor'
 import InputField, {
   InputFieldLabel,
+  InputLabel,
   makeFieldErrorMessage,
+  TextInput,
 } from './InputField'
 import LineAlert from './LineAlert'
 import MessageSelector from './MessageSelector'
@@ -55,6 +57,7 @@ import MintEditor from './MintEditor'
 import SpendEditor from './SpendEditor'
 import { defaultExecuteFee } from 'util/fee'
 import { errorAtom } from 'atoms/status'
+import { validateRequired } from 'util/formValidation'
 
 export function ProposalEditor({
   proposalId,
@@ -425,12 +428,6 @@ export function ProposalEditor({
     ? 'input input-error input-bordered rounded box-border py-3 px-8 h-full w-full text-xl'
     : 'input input-bordered rounded box-border py-3 px-8 h-full w-full text-xl'
 
-  const errorComponent = error ? (
-    <div className="mt-8">
-      <LineAlert variant="error" msg={error} />
-    </div>
-  ) : null
-
   return (
     <div className="flex flex-col w-full flex-row">
       <div className="grid mt-3">
@@ -495,7 +492,7 @@ export function ProposalEditor({
                 disabled={loading}
               >
                 {deposit && deposit !== '0'
-                  ? 'Deposit & create propsal'
+                  ? 'Deposit & create proposal'
                   : 'Create proposal'}
               </button>
             </form>
