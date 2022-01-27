@@ -16,3 +16,20 @@ export const validatePercent = (v: string) => {
 
 export const validateAddress = (v: string) =>
   isValidAddress(v) || 'Invalid address'
+
+export const validateUrl = async (v: string) => {
+  const regex = /(https:)|([/|.|\w|\s])*\.(?:jpg|gif|png)/
+
+  if (!regex.test(v)) {
+    return 'Invalid URL link, must start with https and end with png/jpeg/gif.'
+  } else {
+    let isImg = await checkImage(v)
+    return isImg || 'Invalid Img Url provided, not actual image'
+  }
+}
+
+async function checkImage(url: string){
+     const res = await fetch(url);
+     const buff = await res.blob();
+     return buff.type.startsWith('image/')
+}

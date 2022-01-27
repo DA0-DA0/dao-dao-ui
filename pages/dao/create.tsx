@@ -55,6 +55,7 @@ interface DaoCreateData {
 
   unstakingDuration: string
   refund: string | boolean
+  image_url: string | boolean
   proposalDepositAmount: string
   [key: string]: string | boolean
 }
@@ -342,6 +343,18 @@ const CreateDao: NextPage = () => {
                 validation={[validateRequired]}
               />
               <InputErrorMessage error={errors.description} />
+            </div>
+
+
+            <div className="form-control">
+              <InputLabel name="Image URL" />
+              <TextInput
+                label="image-url"
+                register={register}
+                error={errors.imageUrl}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.imageUrl} />
             </div>
           </div>
 
