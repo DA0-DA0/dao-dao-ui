@@ -46,9 +46,9 @@ export function Sidebar({ children }: { children: ReactNode }) {
           cursor: 'pointer',
           fontSize: '25px',
           lineHeight: '1',
-          position: 'absolute',
+          position: 'fixed',
           top: '6%',
-          right: '1%',
+          right: '0.75%',
         }}
       >
         {collapsedArrowClass}
@@ -66,9 +66,9 @@ export function Sidebar({ children }: { children: ReactNode }) {
           cursor: 'pointer',
           fontSize: '25px',
           lineHeight: '1',
-          position: 'absolute',
+          position: 'fixed',
           top: '2%',
-          right: '1%',
+          right: '0.75%',
         }}
       >
         {collapsedArrowClass}
