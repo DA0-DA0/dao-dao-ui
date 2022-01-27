@@ -94,7 +94,7 @@ function MultisigHome() {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="col-span-4 min-h-screen">
+      <div className={sidebarClassName}>
         <GradientHero>
           <div className="flex justify-between items-center">
             <Breadcrumbs

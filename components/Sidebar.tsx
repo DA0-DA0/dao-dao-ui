@@ -42,13 +42,12 @@ export function Sidebar({ children }: { children: ReactNode }) {
       <button
         onClick={() => setExpanded((e) => !e)}
         style={{
-          marginLeft: '-48px',
           color: 'grey',
           cursor: 'pointer',
           fontSize: '25px',
           lineHeight: '1',
           position: 'absolute',
-          top: '9%',
+          top: '6%',
           right: '1%',
         }}
       >
@@ -63,13 +62,12 @@ export function Sidebar({ children }: { children: ReactNode }) {
         onClick={() => setExpanded((e) => !e)}
         className="expanded"
         style={{
-          marginLeft: '-48px',
           color: 'grey',
           cursor: 'pointer',
           fontSize: '25px',
           lineHeight: '1',
           position: 'absolute',
-          top: '5%',
+          top: '2%',
           right: '1%',
         }}
       >
