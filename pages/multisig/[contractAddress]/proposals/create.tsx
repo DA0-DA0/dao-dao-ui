@@ -55,11 +55,11 @@ const MultisigProposalCreate: NextPage = () => {
     />
   )
 
-  const sidebarClassName = `w-full col-span-${expanded ? 4 : 6} p-6`
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
 
   return (
-    <div className="grid grid-cols-6">
-      <div className={sidebarClassName}>
+    <div className={gridClassName}>
+      <div className="w-full col-span-4 p-6">
         <Loader />
       </div>
       <Sidebar>

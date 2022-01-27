@@ -66,10 +66,10 @@ const Starred: NextPage = () => {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
   const expanded = useRecoilValue(sidebarExpandedAtom)
-  const sidebarClassName = `col-span-${expanded ? 2 : 1} p-6`
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
 
   return (
-    <div className="grid grid-cols-6">
+    <div className={gridClassName}>
       <div className="p-6 w-full col-span-4">
         <h1 className="text-2xl font-semibold">Starred</h1>
         <h2 className="text-lg mb-2 mt-6">
@@ -102,7 +102,7 @@ const Starred: NextPage = () => {
         </div>
       </div>
       <Sidebar>
-        <div className={sidebarClassName}>
+        <div className="col-span-2 p-6">
           <h2 className="font-medium text-lg">Actions</h2>
           <ul className="list-none ml-2 mt-1">
             <li className="mt-1">

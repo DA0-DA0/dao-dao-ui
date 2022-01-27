@@ -90,11 +90,11 @@ function MultisigHome() {
   const pinned = pinnedSigs.includes(contractAddress)
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
-  const sidebarClassName = `col-span-${expanded ? 4 : 6} min-h-screen`
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
 
   return (
-    <div className="grid grid-cols-6">
-      <div className={sidebarClassName}>
+    <div className={gridClassName}>
+      <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
             <Breadcrumbs

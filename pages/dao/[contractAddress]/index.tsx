@@ -90,11 +90,13 @@ function DaoHome() {
     Number(tokenInfo?.total_supply)
   ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
 
-  const sidebarClassName = `col-span-${expanded ? 4 : 6} min-h-screen`
+  const gridClassName = `grid grid-cols-${
+    expanded ? 6 : 1
+  } overflow-auto mb-3 min-h-screen`
 
   return (
-    <div className="grid grid-cols-6 overflow-auto mb-3">
-      <div className={sidebarClassName}>
+    <div className={gridClassName}>
+      <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
             <Breadcrumbs

@@ -102,11 +102,11 @@ const MultisigList: NextPage = () => {
     )
   }, [sigs])
 
-  const sidebarClassName = `p-6 w-full col-span-${expanded ? 4 : 6}`
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
 
   return (
-    <div className="grid grid-cols-6">
-      <div className={sidebarClassName}>
+    <div className={gridClassName}>
+      <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">Multisigs</h1>
           <Link href="/multisig/create" passHref>

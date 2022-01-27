@@ -31,7 +31,7 @@ const Proposal: NextPage = () => {
   let content
   let sidebar
 
-  const sidebarClassName = `w-full col-span-${expanded ? 4 : 6} p-6`
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
 
   if (draftProposal || proposalKey.startsWith('draft:')) {
     content = (
@@ -66,8 +66,8 @@ const Proposal: NextPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
-      <div className={sidebarClassName}>
+    <div className={gridClassName}>
+      <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
