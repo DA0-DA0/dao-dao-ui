@@ -53,18 +53,25 @@ export function ContractCard({
   weight,
   pinned,
   onPin,
+  imgUrl,
 }: {
   name: string
   description: string
   href: string
   weight: number
   pinned: boolean
-  onPin: Function
+  onPin: Function,
+  imgUrl?: string,
 }) {
   return (
     <div className="relative">
       <DIYLogo title={name} body={description} href={href} weight={weight}>
-        <Logo height={70} width={70} alt={name} />
+        { imgUrl !== undefined ? (
+          <></>
+        ): (
+          <Logo height={70} width={70} alt={name} />
+        )}
+
       </DIYLogo>
       <button className="absolute top-6 right-6" onClick={(_e) => onPin()}>
         {pinned ? (
