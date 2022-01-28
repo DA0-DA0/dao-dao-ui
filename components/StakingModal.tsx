@@ -319,13 +319,6 @@ export function StakingModal({
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const tokenInfo = useRecoilValue(cw20TokenInfo(daoInfo?.gov_token))
-  console.log('is undefined dao info')
-  console.log(isUndefined(daoInfo))
-  console.log(daoInfo)
-  console.log(
-    'wallet token balance' +
-      useRecoilValue(walletTokenBalance(daoInfo.gov_token)).amount
-  )
   const govTokenBalance = convertMicroDenomToDenomWithDecimals(
     useRecoilValue(walletTokenBalance(daoInfo?.gov_token)).amount,
     tokenInfo.decimals
