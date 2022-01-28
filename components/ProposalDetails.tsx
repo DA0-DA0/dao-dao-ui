@@ -15,15 +15,15 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
-import { isMemberSelector } from 'selectors/daos'
+import { daoSelector, isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
   proposalVotesSelector,
 } from 'selectors/proposals'
-import { walletTokenBalanceLoading } from 'selectors/treasury'
+import { cw20TokenInfo, walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
-import { convertMicroDenomToDenom } from 'util/conversion'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { getEnd } from './ProposalList'
@@ -31,6 +31,8 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
+import { NATIVE_DECIMALS } from 'util/constants'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -272,10 +274,18 @@ function ProposalExecuteButton({
   )
 }
 
-const thresholdString = (t: ThresholdResponse, multisig: boolean) => {
+const thresholdString = (
+  t: ThresholdResponse,
+  multisig: boolean,
+  tokenDecimals: number
+) => {
   if ('absolute_count' in t) {
     const count = t.absolute_count.weight
-    return `${multisig ? count : convertMicroDenomToDenom(count)} votes`
+    return `${
+      multisig
+        ? count
+        : convertMicroDenomToDenomWithDecimals(count, tokenDecimals)
+    } votes`
   } else if ('absolute_percentage' in t) {
     const threshold = t.absolute_percentage.percentage
     return `${Number(threshold) * 100}%`
@@ -304,22 +314,35 @@ export function ProposalDetailsSidebar({
     proposalTallySelector({ contractAddress, proposalId })
   )
 
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const tokenDecimals = useRecoilValue(
+    cw20TokenInfo(daoInfo.gov_token)
+  ).decimals
   const localeOptions = { maximumSignificantDigits: 3 }
 
   const yesVotes = Number(
     multisig
       ? proposalTally.votes.yes
-      : convertMicroDenomToDenom(proposalTally.votes.yes)
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally.votes.yes,
+          tokenDecimals
+        )
   )
   const noVotes = Number(
     multisig
       ? proposalTally.votes.no
-      : convertMicroDenomToDenom(proposalTally.votes.no)
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally.votes.no,
+          tokenDecimals
+        )
   )
   const totalWeight = Number(
     multisig
       ? proposalTally.total_weight
-      : convertMicroDenomToDenom(proposalTally.total_weight)
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally.total_weight,
+          tokenDecimals
+        )
   )
 
   const turnoutPercent = (
@@ -377,7 +400,7 @@ export function ProposalDetailsSidebar({
         </div>
         <p className="text-secondary">Threshold</p>
         <div className="col-span-2">
-          {thresholdString(proposal.threshold, !!multisig)}
+          {thresholdString(proposal.threshold, !!multisig, tokenDecimals)}
         </div>
       </div>
 
@@ -414,6 +437,10 @@ export function ProposalDetails({
     proposalTallySelector({ contractAddress, proposalId })
   )
 
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const tokenDecimals = useRecoilValue(
+    cw20TokenInfo(daoInfo.gov_token)
+  ).decimals
   const member = useRecoilValue(isMemberSelector(contractAddress))
   const visitorAddress = useRecoilValue(walletAddressSelector)
   const voted = proposalVotes.some((v) => v.voter === visitorAddress)
@@ -435,12 +462,18 @@ export function ProposalDetails({
   const yesVotes = Number(
     multisig
       ? proposalTally?.votes.yes
-      : convertMicroDenomToDenom(proposalTally?.votes.yes ?? '0')
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally?.votes.yes ?? '0',
+          tokenDecimals
+        )
   )
   const noVotes = Number(
     multisig
       ? proposalTally?.votes.no
-      : convertMicroDenomToDenom(proposalTally?.votes.no ?? 0)
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally?.votes.no ?? 0,
+          tokenDecimals
+        )
   )
 
   const decodedMessages = decodeMessages(proposal)

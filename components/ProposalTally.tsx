@@ -1,3 +1,4 @@
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   ProposalTallyResponse,
   ThresholdResponse,
@@ -7,7 +8,7 @@ import {
   UserGroupIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
-import { convertMicroDenomToDenom } from 'util/conversion'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 function makeStatBody(
   value: Number,
@@ -78,9 +79,11 @@ function getThresholdStats(tally: ProposalTallyResponse) {
 function ProposalTally({
   tally,
   multisig,
+  tokenInfo,
 }: {
   tally: ProposalTallyResponse
   multisig?: boolean
+  tokenInfo: TokenInfoResponse
 }) {
   return (
     <>
@@ -93,7 +96,10 @@ function ProposalTally({
           <div className="stat-value">
             {multisig
               ? tally.votes.yes
-              : convertMicroDenomToDenom(tally.votes.yes)}
+              : convertMicroDenomToDenomWithDecimals(
+                  tally.votes.yes,
+                  tokenInfo.decimals
+                )}
           </div>
         </div>
         <div className="stat">
@@ -104,7 +110,10 @@ function ProposalTally({
           <div className="stat-value">
             {multisig
               ? tally.votes.no
-              : convertMicroDenomToDenom(tally.votes.no)}
+              : convertMicroDenomToDenomWithDecimals(
+                  tally.votes.no,
+                  tokenInfo.decimals
+                )}
           </div>
         </div>
       </div>

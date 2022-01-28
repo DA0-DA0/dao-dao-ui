@@ -26,7 +26,6 @@ import {
 } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
 import {
-  convertDenomToMicroDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'

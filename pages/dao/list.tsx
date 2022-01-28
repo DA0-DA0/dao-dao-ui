@@ -25,10 +25,12 @@ import {
 import {
   daoAddressesSelector,
   DaoListType,
+  daoSelector,
   memberDaoSelector,
 } from 'selectors/daos'
+import { cw20TokenInfo } from 'selectors/treasury'
 
-import { convertMicroDenomToDenom } from 'util/conversion'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 interface IMembershipTotal {
   count: number
   votes: number
@@ -45,13 +47,15 @@ export function DaoCard({
 }) {
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(address)
+  const config = useRecoilValue(daoSelector(address))
+  const tokenInfo = useRecoilValue(cw20TokenInfo(config.gov_token))
 
   return (
     <ContractCard
       name={dao.name}
       description={dao.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenom(weight)}
+      weight={convertMicroDenomToDenomWithDecimals(weight, tokenInfo.decimals)}
       pinned={pinned}
       onPin={() => {
         if (pinned) {

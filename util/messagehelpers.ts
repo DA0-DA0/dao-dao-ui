@@ -27,10 +27,7 @@ import {
   ProposalMessageType,
 } from '../models/proposal/messageMap'
 import { ProposalMapItem } from 'types/proposals'
-import {
-  convertDenomToContractReadableDenom,
-  convertDenomToMicroDenom,
-} from './conversion'
+import { convertDenomToContractReadableDenom } from './conversion'
 import { cw20TokenInfo } from '../selectors/treasury'
 import { useRecoilValue } from 'recoil'
 
@@ -490,6 +487,7 @@ export function messageForDraftProposal(
   draftProposal: ProposalMapItem,
   govTokenAddress?: string
 ) {
+  const govTokenInfo = useRecoilValue(cw20TokenInfo(govTokenAddress as string))
   const msgs = draftProposal.messages
     ? Object.values(draftProposal.messages).map((mapEntry) => {
         // Spend proposals are inputted in human readable form (ex:
@@ -517,9 +515,6 @@ export function messageForDraftProposal(
             return
           }
 
-          const govTokenInfo = useRecoilValue(
-            cw20TokenInfo(govTokenAddress as string)
-          )
           const microAmounts = amounts.map((coin) => {
             const microCoin = coin
             microCoin.amount = convertDenomToMicroDenomWithDecimals(
@@ -539,8 +534,9 @@ export function messageForDraftProposal(
           const mintMessage = JSON.parse(JSON.stringify(mapEntry.message))
           console.log(mintMessage)
           if (mintMessage?.mint?.amount) {
-            mintMessage.mint.amount = convertDenomToMicroDenom(
-              mintMessage.mint.amount
+            mintMessage.mint.amount = convertDenomToMicroDenomWithDecimals(
+              mintMessage.mint.amount,
+              govTokenInfo.decimals
             )
           }
           return makeExecutableMintMessage(

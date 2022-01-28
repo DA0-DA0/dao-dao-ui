@@ -9,14 +9,6 @@ export function convertMicroDenomToDenomWithDecimals(
   return isNaN(amount) ? 0 : amount
 }
 
-export function convertMicroDenomToDenom(amount: number | string) {
-  if (typeof amount === 'string') {
-    amount = Number(amount)
-  }
-  amount = amount / 1000000
-  return isNaN(amount) ? 0 : amount
-}
-
 export function convertDenomToMicroDenomWithDecimals(
   amount: number | string,
   decimals: number
@@ -25,14 +17,6 @@ export function convertDenomToMicroDenomWithDecimals(
     amount = Number(amount)
   }
   amount = amount * Math.pow(10, decimals)
-  return isNaN(amount) ? '0' : String(amount)
-}
-
-export function convertDenomToMicroDenom(amount: number | string): string {
-  if (typeof amount === 'string') {
-    amount = Number(amount)
-  }
-  amount = amount * 1000000
   return isNaN(amount) ? '0' : String(amount)
 }
 
