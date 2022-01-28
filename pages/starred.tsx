@@ -6,23 +6,25 @@ import Link from 'next/link'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { daoSelector, isMemberSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
-import { convertMicroDenomToDenom } from 'util/conversion'
+import { cw20TokenInfo } from 'selectors/treasury'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { MysteryDaoCard } from './dao/list'
 import { MysteryMultisigCard } from './multisig/list'
 
 function PinnedDaoCard({ address }: { address: string }) {
-  const config = useRecoilValue(daoSelector(address)).config
+  const config = useRecoilValue(daoSelector(address))
+  const daoConfig = config.config
   const weight = useRecoilValue(isMemberSelector(address)).weight
-
+  const tokenInfo = useRecoilValue(cw20TokenInfo(config.gov_token))
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(address)
 
   return (
     <ContractCard
-      name={config.name}
-      description={config.description}
+      name={daoConfig.name}
+      description={daoConfig.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenom(weight)}
+      weight={convertMicroDenomToDenomWithDecimals(weight, tokenInfo.decimals)}
       pinned={pinned}
       onPin={() => {
         if (pinned) {

@@ -23,6 +23,8 @@ export const C4_GROUP_CODE_ID = parseInt(
   10
 )
 
+export const NATIVE_DECIMALS = 6
+
 export const STATUS_COLORS: { [key: string]: string } = {
   open: '#00BAFF',
   draft: '#00F',

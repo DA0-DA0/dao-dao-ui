@@ -15,10 +15,11 @@ import {
   walletAddress,
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
+import { NATIVE_DECIMALS } from 'util/constants'
 import {
   convertDenomToHumanReadableDenom,
   convertFromMicroDenom,
-  convertMicroDenomToDenom,
+  convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 import { AddressSmall } from './Address'
 import { Logo, LogoNoBorder } from './Logo'
@@ -230,10 +231,12 @@ export function ContractBalances({
               const symbol = convertFromMicroDenom(coin.denom)
               return (
                 <li className="mb-1" key={idx}>
-                  {convertMicroDenomToDenom(coin.amount).toLocaleString(
-                    undefined,
-                    { maximumFractionDigits: 20 }
-                  )}{' '}
+                  {convertMicroDenomToDenomWithDecimals(
+                    coin.amount,
+                    NATIVE_DECIMALS
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: 20,
+                  })}{' '}
                   ${symbol}
                 </li>
               )
@@ -249,7 +252,10 @@ export function ContractBalances({
             {cw20InfoBalance.map(({ info, amount }) => {
               return (
                 <li key={info.name} className="mb-1">
-                  {convertMicroDenomToDenom(amount).toLocaleString(undefined, {
+                  {convertMicroDenomToDenomWithDecimals(
+                    amount,
+                    info.decimals
+                  ).toLocaleString(undefined, {
                     maximumFractionDigits: 20,
                   })}{' '}
                   ${info.symbol}

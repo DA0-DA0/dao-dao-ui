@@ -21,11 +21,11 @@ import {
   nativeBalance,
   walletAddress,
   walletClaims,
-  walletTokenBalanceLoading,
   walletStakedTokenBalance,
   walletTokenBalance,
+  walletTokenBalanceLoading,
 } from 'selectors/treasury'
-import { convertMicroDenomToDenom } from 'util/conversion'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import {
   ContractBalances,
   BalanceCard,
@@ -38,11 +38,7 @@ import {
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import {
-  claimAvaliable,
-  ClaimAvaliableCard,
-  ClaimsPendingList,
-} from '@components/Claims'
+import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import ErrorBoundary from 'components/ErrorBoundary'
 
 function DaoHome() {
@@ -134,8 +130,11 @@ function DaoHome() {
             </div>
             <div>
               <KeyIcon className="w-5 h-5 mb-1 mr-1 inline" />
-              {convertMicroDenomToDenom(daoInfo?.config.proposal_deposit)} $
-              {tokenInfo.symbol} proposal deposit
+              {convertMicroDenomToDenomWithDecimals(
+                daoInfo?.config.proposal_deposit,
+                tokenInfo.decimals
+              )}
+              ${tokenInfo.symbol} proposal deposit
             </div>
           </HeroContractFooter>
         </GradientHero>
@@ -152,8 +151,9 @@ function DaoHome() {
           <li>
             <BalanceCard
               title="Balance"
-              amount={convertMicroDenomToDenom(
-                govTokenBalance?.amount
+              amount={convertMicroDenomToDenomWithDecimals(
+                govTokenBalance?.amount,
+                tokenInfo.decimals
               ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
               onManage={() => {
@@ -166,8 +166,9 @@ function DaoHome() {
           <li>
             <BalanceCard
               title={`Voting power (staked ${tokenInfo?.symbol})`}
-              amount={convertMicroDenomToDenom(
-                stakedGovTokenBalance.amount
+              amount={convertMicroDenomToDenomWithDecimals(
+                stakedGovTokenBalance.amount,
+                tokenInfo.decimals
               ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
               onManage={() => {
@@ -181,8 +182,9 @@ function DaoHome() {
             <li>
               <BalanceCard
                 title={`Pending (unclaimed ${tokenInfo?.symbol})`}
-                amount={convertMicroDenomToDenom(
-                  claimsAvaliable
+                amount={convertMicroDenomToDenomWithDecimals(
+                  claimsAvaliable,
+                  tokenInfo.decimals
                 ).toLocaleString(undefined, {
                   maximumFractionDigits: 20,
                 })}
@@ -200,10 +202,10 @@ function DaoHome() {
           <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
             <h3 className="font-mono text-sm font-semibold mb-3">
               You have{' '}
-              {convertMicroDenomToDenom(govTokenBalance?.amount).toLocaleString(
-                undefined,
-                { maximumFractionDigits: 20 }
-              )}{' '}
+              {convertMicroDenomToDenomWithDecimals(
+                govTokenBalance?.amount,
+                tokenInfo.decimals
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
               unstaked {tokenInfo.symbol}
             </h3>
             <p className="text-sm">
@@ -235,7 +237,7 @@ function DaoHome() {
         ) : null}
         <ClaimsPendingList
           stakingAddress={daoInfo.staking_contract}
-          tokenSymbol={tokenInfo.symbol}
+          tokenInfo={tokenInfo}
         />
         {showStaking && (
           <StakingModal
