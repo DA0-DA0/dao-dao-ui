@@ -15,6 +15,7 @@ import {
 } from 'react-hook-form'
 import HelpTooltip from './HelpTooltip'
 import { useThemeContext } from 'contexts/theme'
+import { validateJSON } from 'util/formValidation'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -351,7 +352,7 @@ export function CodeMirrorInput<
     <Controller
       control={control}
       name={label}
-      rules={validate}
+      rules={{ validate: validate }}
       shouldUnregister
       render={({ field: { onChange, onBlur, ref } }) => {
         return (
@@ -437,6 +438,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   validation,
   children,
   noBorder,
+  defaultValue,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -444,6 +446,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   error?: FieldError
   children: ReactNode
   noBorder?: boolean
+  defaultValue?: string
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -456,6 +459,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
         (error ? ' select-error' : '') +
         (noBorder ? '' : ' select-bordered')
       }
+      defaultValue={defaultValue}
       {...register(label, { validate })}
     >
       {children}

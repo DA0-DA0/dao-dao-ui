@@ -1,19 +1,21 @@
-import { errorAtom, loadingAtom } from '../../../../atoms/status'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
   ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
-import ProposalEditor from 'components/ProposalEditor'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { daoSelector } from 'selectors/daos'
 import { draftProposalSelector } from 'selectors/proposals'
-import { walletAddress as walletAddressSelector } from 'selectors/cosm'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { cw20TokenInfo } from 'selectors/treasury'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
+import { defaultExecuteFee } from 'util/fee'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -23,8 +25,33 @@ const Proposal: NextPage = () => {
   const draftProposal = useRecoilValue(
     draftProposalSelector({ contractAddress, proposalId: proposalKey })
   )
-
   const tokenInfo = useRecoilValue(cw20TokenInfo(sigInfo.gov_token))
+
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletAddress = useRecoilValue(walletAddressSelector)
+
+  const onProposalSubmit = (d: ProposalData) => {
+    let cosmMsgs = d.messages.map((m) =>
+      m.toCosmosMsg(m, contractAddress, sigInfo.gov_token)
+    )
+    signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          propose: {
+            title: d.title,
+            description: d.description,
+            msgs: cosmMsgs,
+          },
+        },
+        defaultExecuteFee
+      )
+      .catch((e) => {
+        console.log(e)
+      })
+      .finally(() => console.log('done'))
+  }
 
   let content
   let sidebar
@@ -32,7 +59,7 @@ const Proposal: NextPage = () => {
   if (draftProposal || proposalKey.startsWith('draft:')) {
     content = (
       <ProposalForm
-        onSubmit={(d: ProposalData) => console.log(d)}
+        onSubmit={onProposalSubmit}
         govTokenDenom={tokenInfo.symbol}
       />
     )
