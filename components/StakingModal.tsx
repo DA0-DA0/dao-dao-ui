@@ -236,9 +236,6 @@ function executeStakeAction(
     denomAmount,
     tokenInfo.decimals
   )
-  console.log('staking amount: ' + amount)
-  console.log('denom amount: ' + denomAmount)
-  console.log('decimals: ' + tokenInfo.decimals)
   setLoading(true)
   signingClient
     ?.execute(
