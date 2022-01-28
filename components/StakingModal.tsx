@@ -323,7 +323,6 @@ export function StakingModal({
     useRecoilValue(walletTokenBalance(daoInfo?.gov_token)).amount,
     tokenInfo.decimals
   )
-  console.log('decimals: ' + tokenInfo.decimals)
 
   const stakedGovTokenBalance = convertMicroDenomToDenomWithDecimals(
     useRecoilValue(walletStakedTokenBalance(daoInfo?.staking_contract)).amount,
