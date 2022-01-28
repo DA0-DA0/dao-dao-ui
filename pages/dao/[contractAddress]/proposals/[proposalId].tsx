@@ -15,7 +15,12 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import toast from 'react-hot-toast'
 import { defaultExecuteFee } from 'util/fee'
+import { useState } from 'react'
+import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -30,7 +35,10 @@ const Proposal: NextPage = () => {
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
+  const [proposalLoading, setProposalLoading] = useState(false)
+
   const onProposalSubmit = (d: ProposalData) => {
+    setProposalLoading(true)
     let cosmMsgs = d.messages.map((m) =>
       m.toCosmosMsg(m, contractAddress, sigInfo.gov_token)
     )
@@ -48,9 +56,20 @@ const Proposal: NextPage = () => {
         defaultExecuteFee
       )
       .catch((e) => {
-        console.log(e)
+        toast.error(e.message)
       })
-      .finally(() => console.log('done'))
+      .then((response: void | ExecuteResult) => {
+        if (!response) {
+          return
+        }
+        const proposalId = findAttribute(
+          response.logs,
+          'wasm',
+          'proposal_id'
+        ).value
+        router.push(`/dao/${contractAddress}/proposals/${proposalId}`)
+      })
+      .finally(() => setProposalLoading(false))
   }
 
   let content
@@ -61,6 +80,7 @@ const Proposal: NextPage = () => {
       <ProposalForm
         onSubmit={onProposalSubmit}
         govTokenDenom={tokenInfo.symbol}
+        loading={proposalLoading}
       />
     )
     sidebar = (

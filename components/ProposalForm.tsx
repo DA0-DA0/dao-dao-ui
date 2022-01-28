@@ -3,7 +3,7 @@ import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { walletAddress } from 'selectors/treasury'
 import { validateRequired } from 'util/formValidation'
-import { Button } from './Button'
+import SvgAirplane from './icons/Airplane'
 import {
   InputErrorMessage,
   InputLabel,
@@ -21,9 +21,11 @@ export interface ProposalData {
 export function ProposalForm({
   onSubmit,
   govTokenDenom,
+  loading,
 }: {
   onSubmit: (data: ProposalData) => void
   govTokenDenom: string
+  loading: boolean
 }) {
   const wallet = useRecoilValue(walletAddress)
 
@@ -120,10 +122,23 @@ export function ProposalForm({
             ))}
           </ul>
         </div>
-        <div className="mt-3">
-          <Button variant="primary" size="lg">
-            Submit
-          </Button>
+        <div className="mt-4">
+          <div
+            className={!wallet ? 'tooltip' : ''}
+            data-tip="Connect your wallet to submit"
+          >
+            <button
+              type="submit"
+              className={`btn btn-sm normal-case bg-primary text-primary-content hover:bg-primary-content hover:text-primary ${
+                loading ? 'loading' : ''
+              } ${!wallet ? 'btn-disabled' : ''}`}
+            >
+              Submit{' '}
+              {!loading && (
+                <SvgAirplane className="inline stroke-current ml-2" />
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </FormProvider>
