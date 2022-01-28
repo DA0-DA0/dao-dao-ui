@@ -81,7 +81,7 @@ export function spendTemplate(walletAddress: string, govTokenDenom: string) {
                 register={register}
                 error={errors.amount}
                 validation={[validateRequired, validatePositive]}
-                noBorder
+                border={false}
               />
               <InputErrorMessage error={errors.amount} />
             </div>
@@ -90,7 +90,7 @@ export function spendTemplate(walletAddress: string, govTokenDenom: string) {
               register={register}
               error={errors.denom}
               defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
-              noBorder
+              border={false}
             >
               <option>{process.env.NEXT_PUBLIC_FEE_DENOM}</option>
               <option>${govTokenDenom}</option>
@@ -103,7 +103,7 @@ export function spendTemplate(walletAddress: string, govTokenDenom: string) {
                   register={register}
                   error={errors.to}
                   validation={[validateRequired, validateAddress]}
-                  noBorder
+                  border={false}
                 />
                 <InputErrorMessage error={errors.to} />
               </div>
@@ -167,7 +167,7 @@ export function mintTemplate(walletAddress: string, govTokenDenom: string) {
                 register={register}
                 error={errors.amount}
                 validation={[validateRequired, validatePositive]}
-                noBorder
+                border={false}
               />
               <InputErrorMessage error={errors.amount} />
             </div>
@@ -182,7 +182,7 @@ export function mintTemplate(walletAddress: string, govTokenDenom: string) {
                   register={register}
                   error={errors.to}
                   validation={[validateRequired, validateAddress]}
-                  noBorder
+                  border={false}
                 />
                 <InputErrorMessage error={errors.to} />
               </div>
