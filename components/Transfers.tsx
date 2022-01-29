@@ -1,11 +1,12 @@
 import {
-  convertMicroDenomToDenom,
   convertFromMicroDenom,
+  convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 import { useRecoilValueLoadable } from 'recoil'
 import { transactions } from 'selectors/treasury'
 
 import { IndexedTx } from '@cosmjs/stargate'
+import { NATIVE_DECIMALS } from 'util/constants'
 
 interface TxEventAttribute {
   key: string
@@ -48,8 +49,10 @@ function TransferRow({
     groups: { uamount, udenom },
   } = amount.match(/(?<uamount>\d+)(?<udenom>[a-zA-Z]+)/)
 
-  const amountLabel = `${sign}${convertMicroDenomToDenom(
-    uamount
+  // Assume we only deal with transfers in native denominations.
+  const amountLabel = `${sign}${convertMicroDenomToDenomWithDecimals(
+    uamount,
+    NATIVE_DECIMALS
   )} ${convertFromMicroDenom(udenom)}`
 
   // TODO(@ebaker): add link to block explorer

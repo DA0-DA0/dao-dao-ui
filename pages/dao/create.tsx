@@ -4,8 +4,8 @@ import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
-import { DAO_CODE_ID } from 'util/constants'
-import { convertDenomToMicroDenom } from 'util/conversion'
+import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
+import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
 import {
   makeDaoInstantiateWithExistingTokenMessage,
@@ -38,7 +38,7 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-
+import { cw20TokenInfo } from 'selectors/treasury'
 interface DaoCreateData {
   deposit: string
   description: string
@@ -236,7 +236,10 @@ const CreateDao: NextPage = () => {
     const owners = [...Array(count)].map((_item, index) => ({
       address: getIndexedValue('address', index),
       // Convert human readable amount to micro denom amount
-      amount: convertDenomToMicroDenom(getIndexedValue('weight', index)),
+      amount: convertDenomToMicroDenomWithDecimals(
+        getIndexedValue('weight', index),
+        NATIVE_DECIMALS
+      ),
     }))
     const threshold = getIntValue('threshold')
     const maxVotingPeriod = {
@@ -260,7 +263,10 @@ const CreateDao: NextPage = () => {
             data.tokenName,
             data.tokenSymbol,
             owners,
-            convertDenomToMicroDenom(data.daoInitialBalance),
+            convertDenomToMicroDenomWithDecimals(
+              data.daoInitialBalance,
+              NATIVE_DECIMALS
+            ),
             threshold / 100, // Conversion to decimal percentage
             maxVotingPeriod,
             unstakingDuration,
