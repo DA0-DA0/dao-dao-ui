@@ -5,13 +5,23 @@ import {
   ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
 import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
-import ProposalEditor from 'components/ProposalEditor'
+import toast from 'react-hot-toast'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { sigSelector } from 'selectors/multisigs'
 import { draftProposalSelector } from 'selectors/proposals'
-import { walletAddress as walletAddressSelector } from 'selectors/cosm'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
+import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { useState } from 'react'
+import { Message } from '@components/ProposalTemplates'
+import { defaultExecuteFee } from 'util/fee'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { cleanChainError } from 'util/cleanChainError'
 
 const MultisigProposal: NextPage = () => {
   const router = useRouter()
@@ -21,22 +31,61 @@ const MultisigProposal: NextPage = () => {
   const draftProposal = useRecoilValue(
     draftProposalSelector({ contractAddress, proposalId: proposalKey })
   )
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
-  const error = useRecoilValue(errorAtom)
-  const loading = useRecoilValue(loadingAtom)
+
+  const [proposalLoading, setProposalLoading] = useState(false)
+
+  const onProposalSubmit = async (d: ProposalData) => {
+    setProposalLoading(true)
+    let cosmMsgs = d.messages.map((m: Message) =>
+      m.toCosmosMsg(m, {
+        sigAddress: contractAddress,
+        govAddress: '',
+        govDecimals: 0,
+        multisig: false,
+      })
+    )
+
+    await signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          propose: {
+            title: d.title,
+            description: d.description,
+            msgs: cosmMsgs,
+          },
+        },
+        defaultExecuteFee
+      )
+      .catch((e) => {
+        toast.error(cleanChainError(e.message))
+      })
+      .then((response: void | ExecuteResult) => {
+        if (!response) {
+          return
+        }
+        const proposalId = findAttribute(
+          response.logs,
+          'wasm',
+          'proposal_id'
+        ).value
+        router.push(`/multisig/${contractAddress}/proposals/${proposalId}`)
+      })
+      .finally(() => setProposalLoading(false))
+  }
 
   let content
   let sidebar
 
   if (draftProposal || proposalKey.startsWith('draft:')) {
     content = (
-      <ProposalEditor
-        proposalId={proposalKey}
-        error={error}
-        loading={loading}
-        contractAddress={contractAddress}
-        recipientAddress={walletAddress}
-        multisig={true}
+      <ProposalForm
+        onSubmit={onProposalSubmit}
+        loading={proposalLoading}
+        multisig
       />
     )
     sidebar = (
@@ -50,12 +99,14 @@ const MultisigProposal: NextPage = () => {
       <ProposalDetails
         contractAddress={contractAddress}
         proposalId={Number(proposalKey)}
+        multisig
       />
     )
     sidebar = (
       <ProposalDetailsSidebar
         contractAddress={contractAddress}
         proposalId={Number(proposalKey)}
+        multisig
       />
     )
   }

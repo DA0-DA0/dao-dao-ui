@@ -21,20 +21,26 @@ import {
   SelectInput,
 } from './InputField'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { useRecoilValue } from 'recoil'
-import { tokenConfig } from 'selectors/daos'
-import { convertDenomToMicroDenom } from 'util/conversion'
+import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
+import { NATIVE_DECIMALS } from 'util/constants'
 
 export const messageTemplates = [
-  { label: '💵 Spend', template: spendTemplate },
-  { label: '🍵 Mint', template: mintTemplate },
-  { label: '🤖 Custom', template: customTemplate },
+  { label: '💵 Spend', template: spendTemplate, multisigSupport: true },
+  { label: '🍵 Mint', template: mintTemplate, multisigSupport: false },
+  { label: '🤖 Custom', template: customTemplate, multisigSupport: true },
 ]
 
 interface TemplateRenderProps {
   getLabel: (field: string) => string
   onRemove: () => void
   errors: FieldErrors
+}
+
+export interface ToCosmosMsgProps {
+  sigAddress: string
+  govAddress: string
+  govDecimals: number
+  multisig: boolean
 }
 
 export interface SpendData {
@@ -54,16 +60,12 @@ export interface CustomData {
 
 export interface TemplateMessage {
   Render: React.FunctionComponent<TemplateRenderProps>
-  toCosmosMsg: (
-    self: any,
-    daoAddress: string,
-    govAddress: string
-  ) => CosmosMsgFor_Empty
+  toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
 }
 
 export type Message = (SpendData | MintData | CustomData) & TemplateMessage
 
-export function spendTemplate(walletAddress: string, govTokenDenom: string) {
+export function spendTemplate(walletAddress: string, govTokenDenom?: string) {
   return {
     to: walletAddress,
     amount: 1,
@@ -96,7 +98,7 @@ export function spendTemplate(walletAddress: string, govTokenDenom: string) {
               border={false}
             >
               <option>{process.env.NEXT_PUBLIC_FEE_DENOM}</option>
-              <option>${govTokenDenom}</option>
+              {govTokenDenom && <option>${govTokenDenom}</option>}
             </SelectInput>
             <div className="flex gap-2 items-center">
               <ArrowRightIcon className="h-4" />
@@ -120,27 +122,34 @@ export function spendTemplate(walletAddress: string, govTokenDenom: string) {
     },
     toCosmosMsg: (
       self: SpendData,
-      daoAddress: string,
-      govAddress: string
+      props: ToCosmosMsgProps
     ): CosmosMsgFor_Empty => {
       if (self.denom === process.env.NEXT_PUBLIC_FEE_DENOM) {
+        const amount = convertDenomToMicroDenomWithDecimals(
+          self.amount,
+          NATIVE_DECIMALS
+        )
         const bank = makeBankMessage(
-          self.amount.toString(),
+          amount,
           self.to,
-          daoAddress,
+          props.sigAddress,
           self.denom
         )
         return { bank }
       }
+      const amount = convertDenomToMicroDenomWithDecimals(
+        self.amount,
+        props.govDecimals
+      )
       return makeWasmMessage({
         wasm: {
           execute: {
-            contract_addr: govAddress,
+            contract_addr: props.govAddress,
             funds: [],
             msg: {
               transfer: {
                 recipient: self.to,
-                amount: self.amount.toString(),
+                amount: amount,
               },
             },
           },
@@ -150,7 +159,7 @@ export function spendTemplate(walletAddress: string, govTokenDenom: string) {
   }
 }
 
-export function mintTemplate(walletAddress: string, govTokenDenom: string) {
+export function mintTemplate(walletAddress: string, govTokenDenom?: string) {
   return {
     to: walletAddress,
     amount: 1,
@@ -174,9 +183,11 @@ export function mintTemplate(walletAddress: string, govTokenDenom: string) {
               />
               <InputErrorMessage error={errors.amount} />
             </div>
-            <p className="font-mono text-secondary text-sm uppercase">
-              ${govTokenDenom}
-            </p>
+            {govTokenDenom && (
+              <p className="font-mono text-secondary text-sm uppercase">
+                ${govTokenDenom}
+              </p>
+            )}
             <div className="flex gap-2 items-center">
               <ArrowRightIcon className="h-4" />
               <div className="flex flex-col">
@@ -199,14 +210,15 @@ export function mintTemplate(walletAddress: string, govTokenDenom: string) {
     },
     toCosmosMsg: (
       self: MintData,
-      _daoAddress: string,
-      govAddress: string
+      props: ToCosmosMsgProps
     ): CosmosMsgFor_Empty => {
-      const tokenInfo = useRecoilValue(tokenConfig(govAddress))
-      const amount = convertDenomToMicroDenom(self.amount, tokenInfo.decimals)
+      const amount = convertDenomToMicroDenomWithDecimals(
+        self.amount,
+        props.govDecimals
+      )
       return makeExecutableMintMessage(
-        makeMintMessage(self.amount.toString(), self.to),
-        govAddress
+        makeMintMessage(amount, self.to),
+        props.govAddress
       )
     },
   }
@@ -284,8 +296,7 @@ export function customTemplate() {
     },
     toCosmosMsg: (
       self: CustomData,
-      _daoAddress: string,
-      _govAddress: string
+      _props: ToCosmosMsgProps
     ): CosmosMsgFor_Empty => {
       let msg
       try {

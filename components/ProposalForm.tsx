@@ -22,10 +22,12 @@ export function ProposalForm({
   onSubmit,
   govTokenDenom,
   loading,
+  multisig,
 }: {
   onSubmit: (data: ProposalData) => void
-  govTokenDenom: string
+  govTokenDenom?: string
   loading: boolean
+  multisig?: boolean
 }) {
   const wallet = useRecoilValue(walletAddress)
 
@@ -106,20 +108,22 @@ export function ProposalForm({
             tabIndex={0}
             className="p-2 shadow menu dropdown-content rounded-md bg-base-300 border border-secondary w-40"
           >
-            {messageTemplates.map(({ label, template }, index) => (
-              <li
-                key={index}
-                className="transition hover:bg-base-200 text-lg p-1 rounded"
-              >
-                <button
-                  className="text-left"
-                  onClick={() => append(template(wallet, govTokenDenom))}
-                  type="button"
+            {messageTemplates
+              .filter(({ multisigSupport }) => multisigSupport || !multisig)
+              .map(({ label, template }, index) => (
+                <li
+                  key={index}
+                  className="transition hover:bg-base-200 text-lg p-1 rounded"
                 >
-                  {label}
-                </button>
-              </li>
-            ))}
+                  <button
+                    className="text-left"
+                    onClick={() => append(template(wallet, govTokenDenom))}
+                    type="button"
+                  >
+                    {label}
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
         <div className="mt-4">

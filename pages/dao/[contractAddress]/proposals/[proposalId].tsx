@@ -18,9 +18,10 @@ import {
 import toast from 'react-hot-toast'
 import { defaultExecuteFee } from 'util/fee'
 import { useState } from 'react'
-import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { cleanChainError } from 'util/cleanChainError'
+import { Message } from '@components/ProposalTemplates'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -39,22 +40,36 @@ const Proposal: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m) =>
-      m.toCosmosMsg(m, contractAddress, sigInfo.gov_token)
+    let cosmMsgs = d.messages.map((m: Message) =>
+      m.toCosmosMsg(m, {
+        sigAddress: contractAddress,
+        govAddress: sigInfo.gov_token,
+        govDecimals: tokenInfo.decimals,
+        multisig: false,
+      })
     )
 
     if (sigInfo.config.proposal_deposit !== '0') {
-      await signingClient?.execute(
-        walletAddress,
-        sigInfo.gov_token,
-        {
-          increase_allowance: {
-            amount: sigInfo.config.proposal_deposit,
-            spender: contractAddress,
+      try {
+        await signingClient?.execute(
+          walletAddress,
+          sigInfo.gov_token,
+          {
+            increase_allowance: {
+              amount: sigInfo.config.proposal_deposit,
+              spender: contractAddress,
+            },
           },
-        },
-        defaultExecuteFee
-      )
+          defaultExecuteFee
+        )
+      } catch (e: any) {
+        toast.error(
+          `failed to increase allowance to pay proposal deposit: (${cleanChainError(
+            e.message
+          )})`
+        )
+        return
+      }
     }
 
     await signingClient
@@ -71,7 +86,7 @@ const Proposal: NextPage = () => {
         defaultExecuteFee
       )
       .catch((e) => {
-        toast.error(e.message)
+        toast.error(cleanChainError(e.message))
       })
       .then((response: void | ExecuteResult) => {
         if (!response) {
