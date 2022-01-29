@@ -37,12 +37,27 @@ const Proposal: NextPage = () => {
 
   const [proposalLoading, setProposalLoading] = useState(false)
 
-  const onProposalSubmit = (d: ProposalData) => {
+  const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
     let cosmMsgs = d.messages.map((m) =>
       m.toCosmosMsg(m, contractAddress, sigInfo.gov_token)
     )
-    signingClient
+
+    if (sigInfo.config.proposal_deposit !== '0') {
+      await signingClient?.execute(
+        walletAddress,
+        sigInfo.gov_token,
+        {
+          increase_allowance: {
+            amount: sigInfo.config.proposal_deposit,
+            spender: contractAddress,
+          },
+        },
+        defaultExecuteFee
+      )
+    }
+
+    await signingClient
       ?.execute(
         walletAddress,
         contractAddress,

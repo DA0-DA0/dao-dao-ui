@@ -21,6 +21,9 @@ import {
   SelectInput,
 } from './InputField'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { useRecoilValue } from 'recoil'
+import { tokenConfig } from 'selectors/daos'
+import { convertDenomToMicroDenom } from 'util/conversion'
 
 export const messageTemplates = [
   { label: '💵 Spend', template: spendTemplate },
@@ -199,6 +202,8 @@ export function mintTemplate(walletAddress: string, govTokenDenom: string) {
       _daoAddress: string,
       govAddress: string
     ): CosmosMsgFor_Empty => {
+      const tokenInfo = useRecoilValue(tokenConfig(govAddress))
+      const amount = convertDenomToMicroDenom(self.amount, tokenInfo.decimals)
       return makeExecutableMintMessage(
         makeMintMessage(self.amount.toString(), self.to),
         govAddress
