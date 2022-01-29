@@ -43,7 +43,7 @@ const MultisigProposal: NextPage = () => {
         sigAddress: contractAddress,
         govAddress: '',
         govDecimals: 0,
-        multisig: false,
+        multisig: true,
       })
     )
 
