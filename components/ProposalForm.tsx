@@ -1,21 +1,19 @@
-import { PlusIcon } from '@heroicons/react/outline'
+import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { walletAddress } from 'selectors/treasury'
+import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { validateRequired } from 'util/formValidation'
 import SvgAirplane from './icons/Airplane'
-import {
-  InputErrorMessage,
-  InputLabel,
-  TextareaInput,
-  TextInput,
-} from './InputField'
-import { Message, messageTemplates } from './ProposalTemplates'
+import { InputErrorMessage } from './input/InputErrorMessage'
+import { InputLabel } from './input/InputLabel'
+import { TextareaInput } from './input/TextAreaInput'
+import { TextInput } from './input/TextInput'
 
 export interface ProposalData {
   title: string
   description: string
-  messages: Message[]
+  messages: MessageTemplate[]
 }
 
 export function ProposalForm({
@@ -78,22 +76,32 @@ export function ProposalForm({
         </div>
         <ul className="list-none">
           {fields.map((data, index) => {
-            const Render = (data as any).Render
-
-            const getRealLabel = (fieldName: string) => {
-              return `messages.${index}.${fieldName}`
-            }
-
-            return (
-              Render && (
-                <li key={data.id}>
-                  <Render
-                    getLabel={getRealLabel}
-                    onRemove={() => remove(index)}
-                    errors={(errors.messages && errors.messages[index]) || {}}
-                  />
-                </li>
+            const label = (data as any).label
+            const template = messageTemplates.find(
+              (template) => template.label === label
+            )
+            if (!template) {
+              // We guarentee by construction that this should never
+              // happen but might as well make it pretty.
+              return (
+                <div className="text-error p-2 border border-error rounded-lg my-3 flex items-center justify-between">
+                  <p>Internal error finding template for message.</p>
+                  <button onClick={() => remove(index)} type="button">
+                    <XIcon className="h-4" />
+                  </button>
+                </div>
               )
+            }
+            const Component = template.component
+            return (
+              <li key={index}>
+                <Component
+                  govTokenDenom={govTokenDenom}
+                  onRemove={() => remove(index)}
+                  getLabel={(fieldName) => `messages.${index}.${fieldName}`}
+                  errors={(errors.messages && errors.messages[index]) || {}}
+                />
+              </li>
             )
           })}
         </ul>
@@ -110,14 +118,14 @@ export function ProposalForm({
           >
             {messageTemplates
               .filter(({ multisigSupport }) => multisigSupport || !multisig)
-              .map(({ label, template }, index) => (
+              .map(({ label, getDefaults }, index) => (
                 <li
                   key={index}
                   className="transition hover:bg-base-200 text-lg p-1 rounded"
                 >
                   <button
                     className="text-left"
-                    onClick={() => append(template(wallet, govTokenDenom))}
+                    onClick={() => append({ ...getDefaults(wallet), label })}
                     type="button"
                   >
                     {label}

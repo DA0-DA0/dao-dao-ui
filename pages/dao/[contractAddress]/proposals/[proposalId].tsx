@@ -21,7 +21,7 @@ import { useState } from 'react'
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { cleanChainError } from 'util/cleanChainError'
-import { Message } from '@components/ProposalTemplates'
+import { MessageTemplate, messageTemplates } from 'templates/templateList'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -40,14 +40,21 @@ const Proposal: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m: Message) =>
-      m.toCosmosMsg(m, {
+    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
+      const toCosmosMsg = messageTemplates.find(
+        (template) => template.label === m.label
+      )?.toCosmosMsg
+
+      // Unreachable.
+      if (!toCosmosMsg) return {}
+
+      return toCosmosMsg(m as any, {
         sigAddress: contractAddress,
         govAddress: sigInfo.gov_token,
         govDecimals: tokenInfo.decimals,
         multisig: false,
       })
-    )
+    })
 
     if (sigInfo.config.proposal_deposit !== '0') {
       try {

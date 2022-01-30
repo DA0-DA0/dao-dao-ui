@@ -1,4 +1,3 @@
-import { errorAtom, loadingAtom } from 'atoms/status'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
@@ -17,11 +16,11 @@ import {
 } from 'selectors/cosm'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { useState } from 'react'
-import { Message } from '@components/ProposalTemplates'
 import { defaultExecuteFee } from 'util/fee'
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { cleanChainError } from 'util/cleanChainError'
+import { MessageTemplate, messageTemplates } from 'templates/templateList'
 
 const MultisigProposal: NextPage = () => {
   const router = useRouter()
@@ -38,14 +37,21 @@ const MultisigProposal: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m: Message) =>
-      m.toCosmosMsg(m, {
+    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
+      const toCosmosMsg = messageTemplates.find(
+        (template) => template.label === m.label
+      )?.toCosmosMsg
+
+      // Unreachable.
+      if (!toCosmosMsg) return {}
+
+      return toCosmosMsg(m as any, {
         sigAddress: contractAddress,
         govAddress: '',
         govDecimals: 0,
         multisig: true,
       })
-    )
+    })
 
     await signingClient
       ?.execute(
