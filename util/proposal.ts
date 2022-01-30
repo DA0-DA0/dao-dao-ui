@@ -1,23 +1,13 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
   nextDraftProposalIdAtom,
 } from 'atoms/proposals'
 import {
-  activeStatusAtom,
-  errorAtom,
-  loadingAtom,
-  Status,
-  transactionHashAtom,
-} from 'atoms/status'
-import {
   EmptyProposalResponse,
   EmptyThresholdResponse,
-  memoForProposal,
 } from 'models/proposal/proposal'
-import { NextRouter } from 'next/router'
-import { CallbackInterface, TransactionInterface_UNSTABLE } from 'recoil'
+import { TransactionInterface_UNSTABLE } from 'recoil'
 import { draftProposalsSelector } from 'selectors/proposals'
 import {
   ContractProposalMap,
@@ -25,7 +15,6 @@ import {
   ProposalMap,
   ProposalMapItem,
 } from 'types/proposals'
-import { defaultExecuteFee } from './fee'
 
 // Prefix used in IDs for draft proposals
 const DRAFT_PROPOSAL_PREFFIX = 'draft:'
@@ -127,82 +116,6 @@ export const deleteDraftProposalTransaction =
       const updatedProposals = { ...draftProposals }
       delete updatedProposals[proposalId + '']
       set(draftProposalsSelector(contractAddress), updatedProposals)
-    }
-  }
-
-export const createProposalCallback =
-  ({
-    walletAddress,
-    signingClient,
-    contractAddress,
-    draftProposals,
-    router,
-    resetProposals,
-    multisig,
-  }: {
-    walletAddress: string
-    signingClient: SigningCosmWasmClient | null
-    contractAddress: string
-    draftProposals: ProposalMap
-    router: NextRouter
-    resetProposals: any
-    multisig: boolean
-  }) =>
-  ({ set }: CallbackInterface) => {
-    const setLoading = (loading: boolean) => set(loadingAtom, loading)
-    const setError = (message: string) => set(errorAtom, message)
-    const setTransactionHash = (hash: string) => set(transactionHashAtom, hash)
-    const setActiveStatus = (status: Status) => set(activeStatusAtom, status)
-    const setDraftProposals = (draftProposals: ProposalMap) =>
-      set(draftProposalsSelector(contractAddress), draftProposals)
-
-    const deleteDraftProposal = (proposalId: string) => {
-      const updatedProposals = { ...draftProposals }
-      delete updatedProposals[proposalId + '']
-      setDraftProposals(updatedProposals)
-    }
-
-    return async (proposalId: string, propose: Proposal) => {
-      setLoading(true)
-      setError('')
-      const memo = memoForProposal(propose as any)
-      try {
-        const response = await signingClient?.execute(
-          walletAddress,
-          contractAddress,
-          { propose },
-          defaultExecuteFee,
-          memo
-        )
-        setLoading(false)
-        if (response) {
-          deleteDraftProposal(proposalId)
-          setTransactionHash(response.transactionHash)
-          const [{ events }] = response.logs
-          const [wasm] = events.filter((e: any) => e.type === 'wasm')
-          const [{ value }] = wasm.attributes.filter(
-            (w: any) => w.key === 'proposal_id'
-          )
-          const title = `Saved Proposal "${propose.title}"`
-          setActiveStatus({ status: 'success', title })
-          const initialMessage = `Saved Proposal "${propose.title}"`
-          const paramStr = `initialMessage=${initialMessage}&initialMessageStatus=success`
-          resetProposals()
-          const route = `${
-            multisig ? '/multisig' : '/dao'
-          }/${contractAddress}/proposals/${value}?${paramStr}`
-          router.push(route)
-        }
-      } catch (e: any) {
-        console.error(
-          `Error submitting proposal ${JSON.stringify(propose, undefined, 2)}`
-        )
-        console.dir(e)
-        console.error(e.message)
-        setLoading(false)
-        setError(e.message)
-        throw e
-      }
     }
   }
 

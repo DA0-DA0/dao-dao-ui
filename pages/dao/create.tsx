@@ -18,13 +18,6 @@ import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  InputLabel,
-  ToggleInput,
-  NumberInput,
-  TextInput,
-  InputErrorMessage,
-} from 'components/InputField'
-import {
   validateAddress,
   validateContractAddress,
   validateNonNegative,
@@ -39,6 +32,11 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cw20TokenInfo } from 'selectors/treasury'
+import { InputLabel } from '@components/input/InputLabel'
+import { TextInput } from '@components/input/TextInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
+import { ToggleInput } from '@components/input/ToggleInput'
 interface DaoCreateData {
   deposit: string
   description: string
