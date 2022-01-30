@@ -1,7 +1,9 @@
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
+import { useEffect } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { walletAddress } from 'selectors/treasury'
+import { spendDefaults } from 'templates/spend'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { validateRequired } from 'util/formValidation'
 import SvgAirplane from './icons/Airplane'
@@ -82,7 +84,7 @@ export function ProposalForm({
             )
             if (!template) {
               // We guarentee by construction that this should never
-              // happen but might as well make it pretty.
+              // happen but might as well make it pretty if it does.
               return (
                 <div className="text-error p-2 border border-error rounded-lg my-3 flex items-center justify-between">
                   <p>Internal error finding template for message.</p>

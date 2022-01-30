@@ -1,63 +1,96 @@
-import { nextDraftProposalIdAtom } from 'atoms/proposals'
-import Loader from 'components/Loader'
-import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
+import toast from 'react-hot-toast'
+import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useRecoilValue } from 'recoil'
+import { sigSelector } from 'selectors/multisigs'
 import {
-  useRecoilState,
-  useRecoilTransaction_UNSTABLE,
-  useRecoilValue,
-} from 'recoil'
-import { draftProposalsSelector } from 'selectors/proposals'
-import {
-  createDraftProposalTransaction,
-  draftProposalKey,
-} from '../../../../util/proposal'
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
+import { MessageTemplate, messageTemplates } from 'templates/templateList'
+import { defaultExecuteFee } from 'util/fee'
+import { cleanChainError } from 'util/cleanChainError'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { Breadcrumbs } from '@components/Breadcrumbs'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState<number>(
-    nextDraftProposalIdAtom
-  )
-  const [proposalId, setProposalId] = useState<string>('')
-  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
-  const createDraftProposal = useRecoilTransaction_UNSTABLE(
-    createDraftProposalTransaction(contractAddress, draftProposals)
-  )
 
-  useEffect(() => {
-    if (!proposalId) {
-      const draftKey = draftProposalKey(nextDraftProposalId)
-      const nextId = nextDraftProposalId + 1
-      setNextDraftProposalId(nextId)
-      setProposalId(draftKey)
-    } else {
-      router.replace(`/multisig/${contractAddress}/proposals/${proposalId}`)
-    }
-  }, [
-    contractAddress,
-    createDraftProposal,
-    nextDraftProposalId,
-    setNextDraftProposalId,
-    proposalId,
-    router,
-  ])
+  const sigInfo = useRecoilValue(sigSelector(contractAddress))
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const sidebar = (
-    <ProposalDraftSidebar
-      contractAddress={contractAddress}
-      proposalId={proposalId}
-    />
-  )
+  const [proposalLoading, setProposalLoading] = useState(false)
+
+  const onProposalSubmit = async (d: ProposalData) => {
+    setProposalLoading(true)
+    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
+      const toCosmosMsg = messageTemplates.find(
+        (template) => template.label === m.label
+      )?.toCosmosMsg
+
+      // Unreachable.
+      if (!toCosmosMsg) return {}
+
+      return toCosmosMsg(m as any, {
+        sigAddress: contractAddress,
+        govAddress: '',
+        govDecimals: 0,
+        multisig: true,
+      })
+    })
+
+    await signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          propose: {
+            title: d.title,
+            description: d.description,
+            msgs: cosmMsgs,
+          },
+        },
+        defaultExecuteFee
+      )
+      .catch((e) => {
+        toast.error(cleanChainError(e.message))
+      })
+      .then((response: void | ExecuteResult) => {
+        if (!response) {
+          return
+        }
+        const proposalId = findAttribute(
+          response.logs,
+          'wasm',
+          'proposal_id'
+        ).value
+        router.push(`/multisig/${contractAddress}/proposals/${proposalId}`)
+      })
+      .finally(() => setProposalLoading(false))
+  }
 
   return (
     <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
-        <Loader />
+        <Breadcrumbs
+          crumbs={[
+            ['/starred', 'Home'],
+            [`/multisig/${contractAddress}`, sigInfo.config.name],
+            [router.asPath, `New proposal`],
+          ]}
+        />
+        <ProposalForm
+          onSubmit={onProposalSubmit}
+          loading={proposalLoading}
+          multisig
+        />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
     </div>
   )
 }

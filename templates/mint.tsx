@@ -39,7 +39,7 @@ export const MintComponent = ({
 
   return (
     <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
-      <div className="flex items-center gap-x-4 gap-y-2 flex-wrap">
+      <div className="flex items-center gap-4 gap-y-2 flex-wrap">
         <div className="flex items-center flex-wrap gap-x-2 gap-y-2 w-24">
           <h2 className="text-3xl">🍵</h2>
           <h2>Mint</h2>
