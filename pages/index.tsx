@@ -13,6 +13,7 @@ import { GradientWrapper } from 'components/GradientWrapper'
 import SvgGithub from 'components/icons/Github'
 import SvgTwitter from 'components/icons/Twitter'
 import { Button } from '@components'
+import SvgDiscord from '@components/icons/Discord'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
@@ -161,6 +162,14 @@ const Home: NextPage = () => {
               className="transition hover:text-primary"
             >
               <SvgTwitter fill="currentColor" width="20px" height="20px" />
+            </a>
+            <a
+              href="https://discord.gg/sAaGuyW3D2"
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-primary"
+            >
+              <SvgDiscord fill="currentColor" width="20px" height="20px" />
             </a>
           </div>
         </div>
