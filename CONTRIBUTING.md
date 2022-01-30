@@ -1,8 +1,10 @@
 # Welcome to DAO DAO contributing guide <!-- omit in toc -->
 
-Thank you for investing your time in contributing to our project! 
+Thank you for investing your time in contributing to our project!
 
 Read our [Code of Conduct](./CODE_OF_CONDUCT.md) to keep our community approachable and respectable.
+
+All contributions will fall under our [our open-source license agreement](./LICENSE.md)
 
 In this guide you will get an overview of the contribution workflow from opening an issue, creating a PR, reviewing, and merging the PR.
 
@@ -19,7 +21,7 @@ To get an overview of the project, read the [README](README.md). Here are some r
 
 #### Create a new issue
 
-If you spot a problem, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/DA0-DA0/dao-ui/issues/new/choose). 
+If you spot a problem, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/DA0-DA0/dao-ui/issues/new/choose).
 
 #### Solve an issue
 
@@ -42,14 +44,15 @@ Commit the changes once you are happy with them. See [Atom's contributing guide]
 ### Pull Request
 
 When you're finished with the changes, create a pull request, also known as a PR.
+
 - Don't forget to [link the PR to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) if you are solving one.
-Once you submit your PR, a team member will review your proposal. We may ask questions or request for additional information.
+  Once you submit your PR, a team member will review your proposal. We may ask questions or request for additional information.
 - We may ask for changes to be made before a PR can be merged, either using [suggested changes](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/incorporating-feedback-in-your-pull-request) or pull request comments. You can apply suggested changes directly through the UI. You can make any other changes in your fork, then commit them to your branch.
 - As you update your PR and apply changes, mark each conversation as [resolved](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request#resolving-conversations).
 - If you run into any merge issues, checkout this [git tutorial](https://lab.github.com/githubtraining/managing-merge-conflicts) to help you resolve merge conflicts and other issues.
 
 ### Your PR is merged!
 
-Congratulations :tada::tada: DAO DAO thanks you :sparkles:. 
+Congratulations :tada::tada: DAO DAO thanks you :sparkles:.
 
 Once your PR is merged, your contributions will be publicly visible.
