@@ -20,4 +20,4 @@ Be kind to one another.
 > may be clever, but has gone astray.
 > There’s a deep mystery here.
 
-- Tao Te Ching (Ursula Le Guin transaltion)
+- [Tao Te Ching (Ursula Le Guin transaltion)](https://github.com/lovingawareness/tao-te-ching/blob/master/Ursula%20K%20Le%20Guin.md)
