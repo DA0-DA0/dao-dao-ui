@@ -17,6 +17,10 @@ This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/da
 
 You can find more info in our [documentation](https://docs.daodao.zone).
 
+## Contributing
+
+Interested in contributing to DAO DAO? Check out [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## Development
 
 You need to deploy the contracts to a chain running locally in order to interact with the DAO frontend.
