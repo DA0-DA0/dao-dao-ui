@@ -7,7 +7,7 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
       <div className="modal-box rounded-md">
         <h1 className="text-2xl font-medium">Before you continue...</h1>
         <p className="mt-3">
-          DAO DAO is in beta, and has not received and audit. <b>Do not</b> keep
+          DAO DAO is in beta, and has not yet been audited. <b>Do not</b> keep
           large sums of money in your DAO, and <b>do not</b> use your DAO for
           anything mission critical.
         </p>
