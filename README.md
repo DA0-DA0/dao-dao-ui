@@ -9,6 +9,10 @@ This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/da
 
 You can find more info in our [documentation](https://docs.daodao.zone). Join the [DAO DAO Discord](https://discord.gg/sAaGuyW3D2) if you're interested in becoming a contributor.
 
+## Contributing
+
+Interested in contributing to DAO DAO? Check out [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## Development
 
 ### Clone this repo and install dependencies
