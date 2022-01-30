@@ -1,11 +1,3 @@
-<!--
-## Preview
-
-<p align="center" width="100%">
-    <img alt="cw-dao UI preview" src="https://i.imgur.com/Dtk9eyO.gif">
-</p>
--->
-
 ## DAO DAO UI
 
 This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/cw3-dao) and [cw3-multisig](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/cw3-multisig) smart contracts. Enabling users to:
@@ -15,25 +7,11 @@ This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/da
 - Easily create proposals
 - Vote on proposals
 
-You can find more info in our [documentation](https://docs.daodao.zone).
+You can find more info in our [documentation](https://docs.daodao.zone). Join the [DAO DAO Discord](https://discord.gg/sAaGuyW3D2) if you're interested in becoming a contributor.
 
 ## Development
 
-You need to deploy the contracts to a chain running locally in order to interact with the DAO frontend.
-
-To do this we'll use [wasmd](https://github.com/CosmWasm/wasmd) running in a docker container.
-
-### Setup Chain
-
-First, make sure you have `docker` installed.
-
-Then, in a new terminal, clone the [dao-contracts](https://github.com/DA0-DA0/dao-contracts) repo, and follow [the instructions for running the chain in a development environment](https://github.com/DA0-DA0/cw-dao#deploying-in-a-development-environment).
-
-> Note: Assuming you follow those directions to configure it with the default wasm account, you'll also want to import that account's mnemonic into Keplr (Add account -> Import existing account -> copy mnemonic from [default account](https://github.com/DA0-DA0/dao-contracts/blob/main/default-account.txt)).
-
-### Setup Frontend
-
-#### Clone this repo and install dependencies
+### Clone this repo and install dependencies
 
 ```bash
 git clone https://github.com/DA0-DA0/dao-ui
@@ -41,12 +19,34 @@ cd dao-ui
 yarn
 ```
 
-#### Setup .env.local file
+### Setup .env.local file
 
-In the frontend repo, setup up your local environment
+In order to develop on the frontend, you'll need to setup up your local environment. For your convenience, we've included a couple of default environment configurations.
+
+You can choose which environment you want to connect to. The [Juno Testnet](#testnet) is probably easiest to get started with.
+
+#### Testnet
+
+Note: you can get Juno Testnet tokens ($JUNOX) from the #faucet channel in the main [Juno Discord](https://discord.com/invite/QcWPfK4gJ2).
 
 ```bash
-cp .env.example .env.local
+cp .env.testnet .env.local
+```
+
+#### Localhost
+
+This will be using a local development instance in Docker. See the [dao-contracts repo](https://github.com/DA0-DA0/dao-contracts#deploying-in-a-development-environment) for instructions on running a local development environment.
+
+```bash
+cp .env.localhost .env.local
+```
+
+#### Mainnet
+
+NOTE: this will be using the real Juno network and real $JUNO tokens. Use with caution. We highly recommend using the [Juno Testnet .env config](#testnet) for local development.
+
+```bash
+cp .env.mainnet .env.local
 ```
 
 Then, run the development server:
@@ -61,7 +61,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-Note: If you change `.env.local`, you'll need to re-add the chain to Keplr. If you select a different chain in Keplr (like Cosmos), you can scroll down and remove the "Wasmd Test" chain, then you can re-add it by connecting your wallet.
+Note: If you change `.env.local`, you'll sometimes need to re-add the chain to Keplr. If you [select a different chain](https://highlander-nodes.medium.com/junoswap-how-to-reset-chain-config-3e2470a9c1e1) in Keplr (like Cosmos), you can scroll down and remove the "Wasmd Test" chain, then you can re-add it by connecting your wallet.
 
 ## Requirements
 
@@ -83,8 +83,6 @@ To learn more about Next.js, CosmJS, Keplr, and Tailwind CSS - take a look at th
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Disclaimer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+DAO DAO TOOLING IS PROVIDED “AS IS”, AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contract will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.
