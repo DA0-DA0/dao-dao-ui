@@ -2,9 +2,7 @@ import { Button } from '@components'
 import {
   LibraryIcon,
   PlusIcon,
-  ScaleIcon,
   SparklesIcon,
-  UserGroupIcon,
   UserIcon,
 } from '@heroicons/react/outline'
 import { pinnedDaosAtom } from 'atoms/pinned'
@@ -22,6 +20,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   waitForAll,
+  Loadable,
 } from 'recoil'
 import {
   daoAddressesSelector,
@@ -76,13 +75,39 @@ export function MysteryDaoCard() {
   )
 }
 
+function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
+  return (
+    <>
+      {daos.state == 'hasValue' ? (
+        daos.contents.length > 0 ? (
+          daos.contents.map(
+            (dao, idx) =>
+              dao && (
+                <DaoCard
+                  dao={dao.dao}
+                  address={dao.address}
+                  key={idx}
+                  weight={dao.weight}
+                />
+              )
+          )
+        ) : (
+          <MysteryDaoCard />
+        )
+      ) : (
+        <LoadingContractCard />
+      )}
+    </>
+  )
+}
+
 const DaoList: NextPage = () => {
   const router = useRouter()
   const page = parseInt((router.query.page as string) || '1')
   const limit = parseInt((router.query.limit as string) || '100')
 
   const pinnedDaoAddresses = useRecoilValue(pinnedDaosAtom)
-  const pinnedDaoConfigs = useRecoilValueLoadable(
+  const pinnedDaos = useRecoilValueLoadable(
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
 
@@ -113,25 +138,7 @@ const DaoList: NextPage = () => {
             Your Pinned DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {pinnedDaoConfigs.state == 'hasValue' ? (
-              pinnedDaoConfigs.contents.length > 0 ? (
-                pinnedDaoConfigs.contents.map(
-                  (dao, idx) =>
-                    dao && (
-                      <DaoCard
-                        dao={dao.dao}
-                        address={dao.address}
-                        key={idx}
-                        weight={dao.weight}
-                      />
-                    )
-                )
-              ) : (
-                <MysteryDaoCard />
-              )
-            ) : (
-              <LoadingContractCard />
-            )}
+            <LoadableDaoCards daos={pinnedDaos} />
           </div>
         </div>
         <div className="mt-6">
@@ -140,25 +147,7 @@ const DaoList: NextPage = () => {
             Community DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {daos.state == 'hasValue' ? (
-              daos.contents.length > 0 ? (
-                daos.contents.map(
-                  (dao, idx) =>
-                    !dao.member && (
-                      <DaoCard
-                        dao={dao.dao}
-                        address={dao.address}
-                        key={idx}
-                        weight={dao.weight}
-                      />
-                    )
-                )
-              ) : (
-                <MysteryDaoCard />
-              )
-            ) : (
-              <LoadingContractCard />
-            )}
+            <LoadableDaoCards daos={daos} />
           </div>
           <div className="flex justify-center mt-4">
             <Paginator count={total} page={page} limit={limit} />
