@@ -410,7 +410,7 @@ const CreateDao: NextPage = () => {
 
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   <div className="form-control col-span-1">
-                    <InputLabel name="DAO initial balance" />
+                    <InputLabel name="Initial treasury balance" />
                     <NumberInput
                       label="daoInitialBalance"
                       register={register}
