@@ -83,7 +83,7 @@ export function HeroContractHeader({
   return (
     <div className="flex items-center flex-col my-3">
       { typeof imgUrl === "string" ? (
-        <img width={50} height={50} src={imgUrl}/>
+        <img width={85} height={85} src={imgUrl} alt="DAO's Custom Logo"/>
       ) :(
         <Logo width={85} height={85} alt="DAO DAO logo" />
       )}
