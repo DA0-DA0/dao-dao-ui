@@ -73,14 +73,20 @@ export function HeroContractHeader({
   name,
   member,
   address,
+  imgUrl,
 }: {
   name: string
   member: boolean
-  address: string
+  address: string,
+  imgUrl?: (string | null)
 }) {
   return (
     <div className="flex items-center flex-col my-3">
-      <Logo width={85} height={85} alt="DAO DAO logo" />
+      { typeof imgUrl === "string" ? (
+        <img width={50} height={50} src={imgUrl}/>
+      ) :(
+        <Logo width={85} height={85} alt="DAO DAO logo" />
+      )}
       <div className="flex flex-col items-center">
         <div>
           <div className="mt-3">

@@ -61,13 +61,13 @@ export function ContractCard({
   weight: number
   pinned: boolean
   onPin: Function,
-  imgUrl?: string,
+  imgUrl?: string | null,
 }) {
   return (
     <div className="relative">
       <DIYLogo title={name} body={description} href={href} weight={weight}>
-        { imgUrl !== undefined ? (
-          <></>
+        { imgUrl !== undefined && imgUrl !== null ? (
+          <img width={70} height={70} src={imgUrl} alt="Image for the DAO"/>
         ): (
           <Logo height={70} width={70} alt={name} />
         )}

@@ -114,6 +114,7 @@ function MultisigHome() {
             name={sigInfo.config.name}
             member={memberInfo.member}
             address={contractAddress}
+            imgUrl={sigInfo.config.imgUrl}
           />
 
           <ContractBalances

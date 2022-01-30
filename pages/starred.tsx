@@ -33,6 +33,7 @@ function PinnedDaoCard({ address }: { address: string }) {
           setPinnedDaos((p) => p.concat([address]))
         }
       }}
+      imgUrl={daoConfig.image_url}
     />
   )
 }

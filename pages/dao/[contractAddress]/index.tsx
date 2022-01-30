@@ -109,6 +109,7 @@ function DaoHome() {
             name={daoInfo.config.name}
             member={member}
             address={contractAddress}
+            imgUrl={daoInfo.config.image_url}
           />
 
           <ContractBalances
