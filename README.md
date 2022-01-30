@@ -7,7 +7,7 @@ This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/da
 - Easily create proposals
 - Vote on proposals
 
-You can find more info in our [documentation](https://docs.daodao.zone). Join the [DAO DAO Discord]() if you're interested in becoming a contributor.
+You can find more info in our [documentation](https://docs.daodao.zone). Join the [DAO DAO Discord](https://discord.gg/sAaGuyW3D2) if you're interested in becoming a contributor.
 
 ## Development
 
@@ -43,7 +43,7 @@ cp .env.localhost .env.local
 
 #### Mainnet
 
-Note: this will be using the real Juno network and real $JUNO tokens. Use with caution.
+NOTE: this will be using the real Juno network and real $JUNO tokens. Use with caution. We highly recommend using the [Juno Testnet .env config](#testnet) for local development.
 
 ```bash
 cp .env.mainnet .env.local
