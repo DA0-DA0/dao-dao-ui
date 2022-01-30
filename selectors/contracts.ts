@@ -1,7 +1,6 @@
 import { cosmWasmClient } from 'selectors/cosm'
 import { selectorFamily } from 'recoil'
 import { WasmExtension } from '@cosmjs/cosmwasm-stargate'
-import { toHex } from '@cosmjs/encoding'
 import { QueryClient } from '@cosmjs/stargate'
 import {
   QueryCodesResponse,
@@ -53,5 +52,35 @@ export const allContractsByCodeId = selectorFamily({
       }
 
       return all
+    },
+})
+
+interface IPagedContractsByCodeId {
+  contracts: string[]
+  total: number
+}
+
+export const pagedContractsByCodeId = selectorFamily<
+  IPagedContractsByCodeId,
+  { codeId: number; page: number; limit: number }
+>({
+  key: 'pagedContractsByCodeId',
+  get:
+    ({ codeId, page, limit }) =>
+    async ({ get }) => {
+      const allContracts = get(allContractsByCodeId(codeId))
+      const total = allContracts.length
+      const offset = (page - 1) * limit
+      let contracts: string[]
+
+      if (offset > allContracts.length) {
+        contracts = []
+      } else if (page * limit > allContracts.length) {
+        contracts = allContracts.slice(offset, allContracts.length)
+      } else {
+        contracts = allContracts.slice(offset, limit + offset)
+      }
+
+      return { contracts, total } as IPagedContractsByCodeId
     },
 })
