@@ -19,7 +19,7 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
             rel="noreferrer"
           >
             <b>Give us feedback!</b>
-          </a>{' '}
+          </a>
           Bug reports and feature requests are welcome.
         </p>
         <p className="mt-3 text-sm">
