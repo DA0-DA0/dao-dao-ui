@@ -17,6 +17,7 @@ import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { Button } from '@components'
 import { showBetaNoticeAtom } from 'atoms/status'
+import { MenuIcon } from '@heroicons/react/outline'
 
 const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
@@ -60,7 +61,11 @@ function MemberDisplay({ name }: { name: string }) {
   )
 }
 
-function Nav() {
+type NavProps = {
+  onMenuClick?: () => void
+}
+
+function Nav({ onMenuClick }: NavProps) {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
   const daos = useRecoilValue(waitForAll(pinnedDaos.map((a) => daoSelector(a))))
   const daoAddresses = daos.map((d, idx) => ({
@@ -80,12 +85,16 @@ function Nav() {
   return (
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
           <Link href="/starred">
             <a>
               <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
             </a>
           </Link>
+
+          <div className="lg:hidden" onClick={onMenuClick}>
+            <MenuIcon height={38} width={38} />
+          </div>
         </div>
         <WalletConnect />
         <div className="ml-1">
