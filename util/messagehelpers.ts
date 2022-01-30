@@ -280,7 +280,8 @@ export function makeMultisigInstantiateMessage(
   description: string,
   voters: Member[],
   threshold: number,
-  max_voting_period: number
+  max_voting_period: number,
+  image_url?: string,
 ): MultisigInstantiateMsg {
   return {
     name,
@@ -300,6 +301,7 @@ export function makeMultisigInstantiateMessage(
     max_voting_period: {
       time: max_voting_period,
     },
+    image_url,
   }
 }
 
