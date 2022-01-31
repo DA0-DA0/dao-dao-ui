@@ -7,7 +7,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { Logo } from './Logo'
-import {PUBLIC_IMAGES_ENABLED} from "../util/constants";
+import {PUBLIC_CARD_IMAGES_ENABLED} from "../util/constants";
 
 function DIYLogo({
   title,
@@ -67,7 +67,7 @@ export function ContractCard({
   return (
     <div className="relative">
       <DIYLogo title={name} body={description} href={href} weight={weight}>
-        { imgUrl !== undefined && imgUrl !== null && PUBLIC_IMAGES_ENABLED ? (
+        { imgUrl && PUBLIC_CARD_IMAGES_ENABLED ? (
           <img width={70} height={70} src={imgUrl} alt="Image for the DAO"/>
         ): (
           <Logo height={70} width={70} alt={name} />
