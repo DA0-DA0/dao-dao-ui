@@ -94,7 +94,6 @@ export const memberDaoSelector = selectorFamily<DaoListType, string>({
         address: contractAddress,
         member,
         weight,
-        gov_token: daoResponse.gov_token,
       }
     },
 })

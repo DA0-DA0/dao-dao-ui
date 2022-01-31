@@ -7,7 +7,7 @@ import { defaultExecuteFee } from 'util/fee'
 import { errorNotify, successNotify } from 'util/toast'
 import { cleanChainError } from 'util/cleanChainError'
 import { Breadcrumbs } from 'components/Breadcrumbs'
-import { useForm } from 'react-hook-form'
+import { useForm, SubmitHandler, FieldValues } from 'react-hook-form'
 import { ScaleIcon, UsersIcon } from '@heroicons/react/outline'
 import {
   validateAddress,
@@ -55,7 +55,7 @@ const CreateMultisig: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
+  } = useForm<MultisigCreateData>()
   const walletAddress = useRecoilValue(walletAddressSelector)
   const signingClient = useRecoilValue(cosmWasmSigningClient)
 

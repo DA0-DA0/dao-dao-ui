@@ -3,7 +3,7 @@ import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useForm } from 'react-hook-form'
+import { useForm, Validate } from 'react-hook-form'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
@@ -208,7 +208,7 @@ const CreateDao: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
+  } = useForm<DaoCreateData>()
 
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
@@ -217,6 +217,7 @@ const CreateDao: NextPage = () => {
   const onSubmit = (data: DaoCreateData) => {
     setError('')
     setLoading(true)
+
     function getStringValue(key: string): string {
       const val = data[key]
       if (typeof val === 'string') {
@@ -329,7 +330,7 @@ const CreateDao: NextPage = () => {
           ]}
         />
 
-        <form className="mb-8" onSubmit={handleSubmit<DaoCreateData>(onSubmit)}>
+        <form className="mb-8" onSubmit={handleSubmit(onSubmit)}>
           <h2 className="pl-4 mt-10 text-lg">Name and description</h2>
           <div className="px-3">
             <div className="form-control">
@@ -445,7 +446,10 @@ const CreateDao: NextPage = () => {
                             label={addressLabel}
                             register={register}
                             error={errors[addressLabel]}
-                            validation={[validateAddress, validateRequired]}
+                            validation={[
+                              validateAddress as Validate<string | boolean>,
+                              validateRequired,
+                            ]}
                           />
                           <InputErrorMessage error={errors[addressLabel]} />
                         </div>
@@ -454,7 +458,10 @@ const CreateDao: NextPage = () => {
                             label={weightLabel}
                             register={register}
                             error={errors[weightLabel]}
-                            validation={[validateRequired, validatePositive]}
+                            validation={[
+                              validateRequired,
+                              validatePositive as Validate<string | boolean>,
+                            ]}
                             defaultValue="1"
                             step={0.000001}
                             onChange={(e) => {
