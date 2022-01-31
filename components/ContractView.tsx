@@ -85,7 +85,14 @@ export function HeroContractHeader({
   return (
     <div className="flex items-center flex-col my-3">
       {imgUrl && HEADER_IMAGES_ENABLED ? (
-        <img width={85} height={85} src={imgUrl} alt="DAO's Custom Logo" />
+        <div
+          className="rounded-full bg-center bg-cover w-[85px] h-[85px]"
+          style={{
+            backgroundImage: `url(${imgUrl})`,
+          }}
+          role="img"
+          aria-label="DAO's Custom Logo"
+        ></div>
       ) : (
         <Logo width={85} height={85} alt="DAO DAO logo" />
       )}

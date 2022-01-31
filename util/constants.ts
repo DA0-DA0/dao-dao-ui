@@ -24,10 +24,10 @@ export const C4_GROUP_CODE_ID = parseInt(
 )
 
 export const CARD_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
+  process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
 
 export const HEADER_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
+  process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
 
 export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 

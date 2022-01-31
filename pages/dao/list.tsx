@@ -64,7 +64,7 @@ export function DaoCard({
           setPinnedDaos((p) => p.concat([address]))
         }
       }}
-      imgUrl={dao.image_url}
+      imgUrl={config.image_url}
     />
   )
 }

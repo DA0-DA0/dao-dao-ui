@@ -68,7 +68,14 @@ export function ContractCard({
     <div className="relative">
       <DIYLogo title={name} body={description} href={href} weight={weight}>
         {imgUrl && CARD_IMAGES_ENABLED ? (
-          <img width={70} height={70} src={imgUrl} alt="Image for the DAO" />
+          <div
+            className="rounded-full bg-center bg-cover w-[70px] h-[70px]"
+            style={{
+              backgroundImage: `url(${imgUrl})`,
+            }}
+            role="img"
+            aria-label="DAO's Custom Logo"
+          ></div>
         ) : (
           <Logo height={70} width={70} alt={name} />
         )}
