@@ -109,7 +109,7 @@ export function HeroContractFooter({ children }: { children: ReactNode }) {
   const childList = Children.toArray(children)
   return (
     <div className="w-full border-y border-neutral py-2">
-      <ul className="list-none flex justify-around text-sm flex-wrap">
+      <ul className="list-none flex justify-around text-sm flex-wrap gap-2">
         {Children.map(childList, (child) => (
           <li>{child}</li>
         ))}

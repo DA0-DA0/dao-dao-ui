@@ -138,13 +138,17 @@ function DaoHome() {
               )}
               ${tokenInfo.symbol} proposal deposit
             </div>
-            <div>
+            <div
+              className="tooltip"
+              data-tip="Deposits to failed proposals are refunded."
+            >
               {daoInfo.config.refund_failed_proposals ? (
                 <CheckCircleIcon className="w-5 inline mr-1 mb-1" />
               ) : (
                 <XCircleIcon className="w-5 inline mr-1 mb-1" />
               )}
-              failed proposal refunds
+              Proposal deposit refunds{' '}
+              {daoInfo.config.refund_failed_proposals ? 'on' : 'off'}
             </div>
           </HeroContractFooter>
         </GradientHero>
