@@ -10,12 +10,6 @@ import { Breadcrumbs } from 'components/Breadcrumbs'
 import { useForm } from 'react-hook-form'
 import { ScaleIcon, UsersIcon } from '@heroicons/react/outline'
 import {
-  InputErrorMessage,
-  InputLabel,
-  NumberInput,
-  TextInput,
-} from 'components/InputField'
-import {
   validateAddress,
   validatePercent,
   validatePositive,
@@ -30,6 +24,10 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import { InputLabel } from '@components/input/InputLabel'
+import { TextInput } from '@components/input/TextInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 

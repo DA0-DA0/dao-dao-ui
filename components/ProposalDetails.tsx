@@ -33,6 +33,10 @@ import {
 } from 'selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { NATIVE_DECIMALS } from 'util/constants'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -314,10 +318,12 @@ export function ProposalDetailsSidebar({
     proposalTallySelector({ contractAddress, proposalId })
   )
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenDecimals = useRecoilValue(
-    cw20TokenInfo(daoInfo.gov_token)
-  ).decimals
+  const sigConfig = useRecoilValue(
+    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  )
+  const configWrapper = new ContractConfigWrapper(sigConfig)
+  const tokenDecimals = configWrapper.gov_token_decimals
+
   const localeOptions = { maximumSignificantDigits: 3 }
 
   const yesVotes = Number(
@@ -372,15 +378,10 @@ export function ProposalDetailsSidebar({
         <div className="col-span-2">
           <ProposalStatus status={proposal.status} />
         </div>
-        {!multisig && (
-          // https://github.com/DA0-DA0/dao-contracts/issues/136
-          <>
-            <p className="text-secondary">Proposer</p>
-            <p className="col-span-2">
-              <Address address={proposal.proposer} />
-            </p>
-          </>
-        )}
+        <p className="text-secondary">Proposer</p>
+        <p className="col-span-2">
+          <Address address={proposal.proposer} />
+        </p>
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>
@@ -437,10 +438,11 @@ export function ProposalDetails({
     proposalTallySelector({ contractAddress, proposalId })
   )
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenDecimals = useRecoilValue(
-    cw20TokenInfo(daoInfo.gov_token)
-  ).decimals
+  const sigConfig = useRecoilValue(
+    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  )
+  const configWrapper = new ContractConfigWrapper(sigConfig)
+  const tokenDecimals = configWrapper.gov_token_decimals
   const member = useRecoilValue(isMemberSelector(contractAddress))
   const visitorAddress = useRecoilValue(walletAddressSelector)
   const voted = proposalVotes.some((v) => v.voter === visitorAddress)

@@ -18,13 +18,6 @@ import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  InputLabel,
-  ToggleInput,
-  NumberInput,
-  TextInput,
-  InputErrorMessage,
-} from 'components/InputField'
-import {
   validateAddress,
   validateContractAddress,
   validateNonNegative,
@@ -40,6 +33,12 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cw20TokenInfo } from 'selectors/treasury'
+import { InputLabel } from '@components/input/InputLabel'
+import { TextInput } from '@components/input/TextInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
+import { ToggleInput } from '@components/input/ToggleInput'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 interface DaoCreateData {
   deposit: string
   description: string
@@ -218,7 +217,7 @@ const CreateDao: NextPage = () => {
     if (error) errorNotify(cleanChainError(error))
   }, [error])
 
-  const onSubmit = (data: DaoCreateData) => {
+  const onSubmit = async (data: DaoCreateData) => {
     setError('')
     setLoading(true)
     function getStringValue(key: string): string {
@@ -255,6 +254,20 @@ const CreateDao: NextPage = () => {
         : !!data.refund
 
     const imgUrl = data.imageUrl !== '' ? data.imageUrl : undefined
+    let tokenDecimals = 6
+    if (tokenMode == TokenMode.UseExisting) {
+      const tokenInfo = (await signingClient?.queryContractSmart(
+        data.existingTokenAddress,
+        {
+          token_info: {},
+        }
+      )) as TokenInfoResponse
+      tokenDecimals = tokenInfo.decimals
+    }
+    const proposalDeposit = convertDenomToMicroDenomWithDecimals(
+      getIntValue('deposit') || 0,
+      tokenDecimals
+    )
 
     const msg: InstantiateMsg =
       tokenMode == TokenMode.Create
@@ -271,7 +284,7 @@ const CreateDao: NextPage = () => {
             threshold / 100, // Conversion to decimal percentage
             maxVotingPeriod,
             unstakingDuration,
-            getIntValue('deposit') || 0,
+            proposalDeposit,
             refund,
             imgUrl
           )
@@ -282,7 +295,7 @@ const CreateDao: NextPage = () => {
             threshold / 100, // Conversion to decimal percentage
             maxVotingPeriod,
             unstakingDuration,
-            getIntValue('deposit') || 0,
+            proposalDeposit,
             refund,
             imgUrl
           )
@@ -428,7 +441,7 @@ const CreateDao: NextPage = () => {
 
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   <div className="form-control col-span-1">
-                    <InputLabel name="DAO initial balance" />
+                    <InputLabel name="Initial treasury balance" />
                     <NumberInput
                       label="daoInitialBalance"
                       register={register}

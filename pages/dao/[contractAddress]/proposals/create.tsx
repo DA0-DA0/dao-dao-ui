@@ -1,63 +1,104 @@
+import toast from 'react-hot-toast'
+
 import { Breadcrumbs } from '@components/Breadcrumbs'
-import { nextDraftProposalIdAtom } from 'atoms/proposals'
-import Loader from 'components/Loader'
-import { ProposalDraftSidebar } from 'components/ProposalDraftSidebar'
-import { EmptyProposal } from 'models/proposal/proposal'
+import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useRecoilValue } from 'recoil'
 import {
-  useRecoilState,
-  useRecoilTransaction_UNSTABLE,
-  useRecoilValue,
-} from 'recoil'
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
-import { draftProposalsSelector } from 'selectors/proposals'
-import { createDraftProposalTransaction, draftProposalKey } from 'util/proposal'
+import { cw20TokenInfo } from 'selectors/treasury'
+import { MessageTemplate, messageTemplates } from 'templates/templateList'
+import { defaultExecuteFee } from 'util/fee'
+import { cleanChainError } from 'util/cleanChainError'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
-  const [nextDraftProposalId, setNextDraftProposalId] = useRecoilState<number>(
-    nextDraftProposalIdAtom
-  )
-  const [proposalId, setProposalId] = useState<string>('')
-  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
-  const createDraftProposal = useRecoilTransaction_UNSTABLE(
-    createDraftProposalTransaction(contractAddress, draftProposals)
-    // [contractAddress]
-  )
-
-  useEffect(() => {
-    if (!proposalId) {
-      const draftKey = draftProposalKey(nextDraftProposalId)
-      const nextId = nextDraftProposalId + 1
-      setNextDraftProposalId(nextId)
-      console.log(`initializing proposal ${draftKey}`)
-      // createDraftProposal({
-      //   draftProposal: { ...EmptyProposal } as any,
-      // })
-      setProposalId(draftKey)
-    } else {
-      router.replace(`/dao/${contractAddress}/proposals/${proposalId}`)
-    }
-  }, [
-    contractAddress,
-    createDraftProposal,
-    nextDraftProposalId,
-    setNextDraftProposalId,
-    proposalId,
-    router,
-  ])
-
-  const sidebar = (
-    <ProposalDraftSidebar
-      contractAddress={contractAddress}
-      proposalId={proposalId}
-    />
-  )
-
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const tokenInfo = useRecoilValue(cw20TokenInfo(daoInfo.gov_token))
+
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletAddress = useRecoilValue(walletAddressSelector)
+
+  const [proposalLoading, setProposalLoading] = useState(false)
+
+  const onProposalSubmit = async (d: ProposalData) => {
+    setProposalLoading(true)
+    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
+      const toCosmosMsg = messageTemplates.find(
+        (template) => template.label === m.label
+      )?.toCosmosMsg
+
+      // Unreachable.
+      if (!toCosmosMsg) return {}
+
+      return toCosmosMsg(m as any, {
+        sigAddress: contractAddress,
+        govAddress: daoInfo.gov_token,
+        govDecimals: tokenInfo.decimals,
+        multisig: false,
+      })
+    })
+
+    if (daoInfo.config.proposal_deposit !== '0') {
+      try {
+        await signingClient?.execute(
+          walletAddress,
+          daoInfo.gov_token,
+          {
+            increase_allowance: {
+              amount: daoInfo.config.proposal_deposit,
+              spender: contractAddress,
+            },
+          },
+          defaultExecuteFee
+        )
+      } catch (e: any) {
+        toast.error(
+          `failed to increase allowance to pay proposal deposit: (${cleanChainError(
+            e.message
+          )})`
+        )
+        return
+      }
+    }
+
+    await signingClient
+      ?.execute(
+        walletAddress,
+        contractAddress,
+        {
+          propose: {
+            title: d.title,
+            description: d.description,
+            msgs: cosmMsgs,
+          },
+        },
+        defaultExecuteFee
+      )
+      .catch((e) => {
+        toast.error(cleanChainError(e.message))
+      })
+      .then((response: void | ExecuteResult) => {
+        if (!response) {
+          return
+        }
+        const proposalId = findAttribute(
+          response.logs,
+          'wasm',
+          'proposal_id'
+        ).value
+        router.push(`/dao/${contractAddress}/proposals/${proposalId}`)
+      })
+      .finally(() => setProposalLoading(false))
+  }
 
   return (
     <div className="grid grid-cols-6">
@@ -69,8 +110,13 @@ const ProposalCreate: NextPage = () => {
             [router.asPath, `New proposal`],
           ]}
         />
+        <ProposalForm
+          onSubmit={onProposalSubmit}
+          govTokenDenom={tokenInfo.symbol}
+          loading={proposalLoading}
+        />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">{sidebar}</div>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
     </div>
   )
 }
