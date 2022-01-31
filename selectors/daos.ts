@@ -126,9 +126,9 @@ export const unstakingDuration = selectorFamily<Duration, string>({
     async ({ get }) => {
       const client = get(cosmWasmClient)
       const response = await client.queryContractSmart(address, {
-        unstaking_duration: {},
+        get_config: {},
       })
       // Returns null of there is no unstaking duration.
-      return response.duration || { time: 0 }
+      return response.unstaking_duration || { time: 0 }
     },
 })
