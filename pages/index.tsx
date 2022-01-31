@@ -14,8 +14,8 @@ import SvgGithub from 'components/icons/Github'
 import SvgTwitter from 'components/icons/Twitter'
 import { Button } from '@components'
 import SvgDiscord from '@components/icons/Discord'
+import {SITE_TITLE} from "../util/constants";
 
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TI
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (
@@ -68,7 +68,7 @@ const Home: NextPage = () => {
                 <Logo
                   height={32}
                   width={32}
-                  alt={`${PUBLIC_SITE_TITLE} Logo`}
+                  alt={`${SITE_TITLE} Logo`}
                 />
               </div>
               <p className="font-medium mr-1">DAO</p>

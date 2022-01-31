@@ -23,11 +23,13 @@ export const C4_GROUP_CODE_ID = parseInt(
   10
 )
 
-export const PUBLIC_CARD_IMAGES_ENABLED =
+export const CARD_IMAGES_ENABLED =
   process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
 
-export const PUBLIC_HEADER_IMAGES_ENABLED =
+export const HEADER_IMAGES_ENABLED =
   process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
+
+export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 export const NATIVE_DECIMALS = 6
 

@@ -18,8 +18,7 @@ import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { Button } from '@components'
 import { showBetaNoticeAtom } from 'atoms/status'
 import { MenuIcon } from '@heroicons/react/outline'
-
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
+import {SITE_TITLE} from "../util/constants";
 
 function WalletConnect() {
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
@@ -88,7 +87,7 @@ function Nav({ onMenuClick }: NavProps) {
         <div className="flex items-center justify-between">
           <Link href="/starred">
             <a>
-              <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
+              <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
             </a>
           </Link>
 
