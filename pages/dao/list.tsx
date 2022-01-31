@@ -140,7 +140,7 @@ const DaoList: NextPage = () => {
         <div className="mt-6">
           <h2 className="text-lg mb-2">
             <UserIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Your Pinned DAOs
+            Your pinned DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableDaoCards daos={pinnedDaos} />
