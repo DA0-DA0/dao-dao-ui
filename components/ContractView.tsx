@@ -17,7 +17,7 @@ import {
   walletAddress,
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
-import { NATIVE_DECIMALS, PUBLIC_HEADER_IMAGES_ENABLED } from 'util/constants'
+import { NATIVE_DECIMALS, HEADER_IMAGES_ENABLED } from 'util/constants'
 import {
   convertDenomToHumanReadableDenom,
   convertFromMicroDenom,
@@ -84,7 +84,7 @@ export function HeroContractHeader({
 }) {
   return (
     <div className="flex items-center flex-col my-3">
-      {imgUrl && PUBLIC_HEADER_IMAGES_ENABLED ? (
+      {imgUrl && HEADER_IMAGES_ENABLED ? (
         <img width={85} height={85} src={imgUrl} alt="DAO's Custom Logo" />
       ) : (
         <Logo width={85} height={85} alt="DAO DAO logo" />

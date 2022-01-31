@@ -4,15 +4,14 @@ import { useState } from 'react'
 import { Logo } from './Logo'
 import Link from 'next/link'
 import Nav from './Nav'
-
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
+import { SITE_TITLE } from '../util/constants'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
     <div className="p-2 sticky top-0 flex flex-row w-full justify-between">
       <Link href="/starred">
         <a>
-          <Logo height={38} width={38} alt={`${PUBLIC_SITE_TITLE} Logo`} />
+          <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
         </a>
       </Link>
 

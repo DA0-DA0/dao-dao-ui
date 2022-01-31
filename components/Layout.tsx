@@ -9,8 +9,7 @@ import { SidebarLayout } from 'components/SidebarLayout'
 import { InstallKeplr } from './InstallKeplr'
 import { BetaNotice, BetaWarningModal } from './BetaWarning'
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
-
-const PUBLIC_SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
+import { SITE_TITLE } from '../util/constants'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(false)
@@ -58,7 +57,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <Head>
-        <title>{PUBLIC_SITE_TITLE}</title>
+        <title>{SITE_TITLE}</title>
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
         <link rel="icon" href="/yin_yang.png" />
       </Head>
