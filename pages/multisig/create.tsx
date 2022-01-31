@@ -14,6 +14,7 @@ import {
   validatePercent,
   validatePositive,
   validateRequired,
+  validateUrl,
 } from 'util/formValidation'
 import { secondsToHms } from 'pages/dao/create'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
@@ -85,12 +86,15 @@ const CreateMultisig: NextPage = () => {
       weight: Number(getIndexedValue('weight', index)),
     }))
 
+    const imgUrl = data.imageUrl !== '' ? data.imageUrl : undefined
+
     const msg = makeMultisigInstantiateMessage(
       data.name,
       data.description,
       voters,
       Number(data.threshold),
-      Number(data.duration)
+      Number(data.duration),
+      imgUrl
     )
     console.log('instantiating multisig with message:')
     console.log(msg)
@@ -162,6 +166,16 @@ const CreateMultisig: NextPage = () => {
                 validation={[validateRequired]}
               />
               <InputErrorMessage error={errors.description} />
+            </div>
+            <div className="form-control">
+              <InputLabel name="Image URL" />
+              <TextInput
+                label="imageUrl"
+                register={register}
+                error={errors.imageUrl}
+                validation={[validateUrl]}
+              />
+              <InputErrorMessage error={errors.imageUrl} />
             </div>
           </div>
 

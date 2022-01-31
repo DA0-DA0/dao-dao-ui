@@ -11,6 +11,7 @@ export interface MultisigListType {
   description: string
   member: boolean
   weight: number
+  imgUrl?: string
 }
 
 export interface MultisigMemberInfo {
@@ -31,6 +32,7 @@ export const sigMemberSelector = selectorFamily<MultisigListType, string>({
         description: config.config.description,
         member,
         weight,
+        imgUrl: config.config.image_url,
       }
     },
 })

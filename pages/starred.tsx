@@ -33,6 +33,7 @@ function PinnedDaoCard({ address }: { address: string }) {
           setPinnedDaos((p) => p.concat([address]))
         }
       }}
+      imgUrl={daoConfig.image_url}
     />
   )
 }
@@ -58,6 +59,7 @@ function PinnedMultisigCard({ address }: { address: string }) {
           setPinnedSigs((p) => p.concat([address]))
         }
       }}
+      imgUrl={config.imgUrl}
     />
   )
 }

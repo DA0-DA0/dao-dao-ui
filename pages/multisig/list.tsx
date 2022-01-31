@@ -49,6 +49,7 @@ export function MultisigCard({
           setPinnedSigs((p) => p.concat([address]))
         }
       }}
+      imgUrl={multisig.imgUrl}
     />
   )
 }

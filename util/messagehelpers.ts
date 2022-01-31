@@ -188,7 +188,8 @@ export function makeDaoInstantiateWithExistingTokenMessage(
   max_voting_period: Duration,
   unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
-  refund_failed_proposals: boolean
+  refund_failed_proposals: boolean,
+  image_url?: string
 ): DaoInstantiateMsg {
   if (typeof percentage === 'number') {
     percentage = `${percentage}`
@@ -199,6 +200,7 @@ export function makeDaoInstantiateWithExistingTokenMessage(
   const msg: DaoInstantiateMsg = {
     name,
     description,
+    image_url,
     gov_token: {
       use_existing_cw20: {
         addr: tokenAddress,
@@ -232,7 +234,8 @@ export function makeDaoInstantiateWithNewTokenMessage(
   max_voting_period: Duration,
   unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
-  refund_failed_proposals: boolean
+  refund_failed_proposals: boolean,
+  image_url?: string
 ): DaoInstantiateMsg {
   if (typeof percentage === 'number') {
     percentage = `${percentage}`
@@ -240,9 +243,11 @@ export function makeDaoInstantiateWithNewTokenMessage(
   if (typeof proposal_deposit_amount === 'number') {
     proposal_deposit_amount = `${proposal_deposit_amount}`
   }
+
   const msg: DaoInstantiateMsg = {
     name,
     description,
+    image_url,
     gov_token: {
       instantiate_new_cw20: {
         cw20_code_id: CW20_CODE_ID,
@@ -275,7 +280,8 @@ export function makeMultisigInstantiateMessage(
   description: string,
   voters: Member[],
   threshold: number,
-  max_voting_period: number
+  max_voting_period: number,
+  image_url?: string
 ): MultisigInstantiateMsg {
   return {
     name,
@@ -295,6 +301,7 @@ export function makeMultisigInstantiateMessage(
     max_voting_period: {
       time: max_voting_period,
     },
+    image_url,
   }
 }
 
