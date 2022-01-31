@@ -168,7 +168,7 @@ const CreateMultisig: NextPage = () => {
               <InputErrorMessage error={errors.description} />
             </div>
             <div className="form-control">
-              <InputLabel name="Image URL" />
+              <InputLabel name="Image URL (optional)" />
               <TextInput
                 label="imageUrl"
                 register={register}

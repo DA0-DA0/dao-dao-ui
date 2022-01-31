@@ -377,7 +377,7 @@ const CreateDao: NextPage = () => {
             </div>
 
             <div className="form-control">
-              <InputLabel name="Image URL" />
+              <InputLabel name="Image URL (optional)" />
               <TextInput
                 label="imageUrl"
                 register={register}
