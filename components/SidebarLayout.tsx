@@ -14,6 +14,7 @@ const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
         </a>
       </Link>
+      <div className="text-error font-mono">Beta</div>
 
       <div className="lg:hidden" onClick={onMenuClick}>
         <MenuIcon className="w-8" />

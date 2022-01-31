@@ -84,12 +84,13 @@ function Nav({ onMenuClick }: NavProps) {
   return (
     <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
       <div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center">
           <Link href="/starred">
             <a>
               <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
             </a>
           </Link>
+          <div className="text-error font-mono pl-3">Beta</div>
 
           <div className="lg:hidden" onClick={onMenuClick}>
             <MenuIcon className="w-8" />
