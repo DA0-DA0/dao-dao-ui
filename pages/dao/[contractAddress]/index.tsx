@@ -1,8 +1,10 @@
 import {
+  CheckCircleIcon,
   KeyIcon,
   LibraryIcon,
   PencilIcon,
   PlusSmIcon,
+  XCircleIcon,
 } from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -135,6 +137,14 @@ function DaoHome() {
                 tokenInfo.decimals
               )}
               ${tokenInfo.symbol} proposal deposit
+            </div>
+            <div>
+              {daoInfo.config.refund_failed_proposals ? (
+                <CheckCircleIcon className="w-5 inline mr-1 mb-1" />
+              ) : (
+                <XCircleIcon className="w-5 inline mr-1 mb-1" />
+              )}
+              failed proposal refunds
             </div>
           </HeroContractFooter>
         </GradientHero>
