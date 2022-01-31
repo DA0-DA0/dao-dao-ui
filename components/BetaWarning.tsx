@@ -25,7 +25,7 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
         <p className="mt-3 text-sm">
           DAO DAO TOOLING IS PROVIDED “AS IS”, AT YOUR OWN RISK, AND WITHOUT
           WARRANTIES OF ANY KIND. No developer or entity involved in creating
-          the DAO DAO UI or smart contract will be liable for any claims or
+          the DAO DAO UI or smart contracts will be liable for any claims or
           damages whatsoever associated with your use, inability to use, or your
           interaction with other users of DAO DAO tooling, including any direct,
           indirect, incidental, special, exemplary, punitive or consequential
