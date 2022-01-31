@@ -39,6 +39,7 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { ToggleInput } from '@components/input/ToggleInput'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { addToken } from 'util/addToken'
 interface DaoCreateData {
   deposit: string
   description: string
@@ -327,7 +328,11 @@ const CreateDao: NextPage = () => {
             console.log(daos)
             return daos
           })
-          router.push(`/dao/${encodeURIComponent(response.contractAddress)}`)
+          router.push(
+            `/dao/${encodeURIComponent(
+              response.contractAddress
+            )}?add_token=true`
+          )
         }
 
         successNotify('New DAO Created')

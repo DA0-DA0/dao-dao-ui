@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   daoSelector,
@@ -42,6 +42,7 @@ import { StakingModal, StakingMode } from 'components/StakingModal'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import ErrorBoundary from 'components/ErrorBoundary'
+import { addToken } from 'util/addToken'
 
 function DaoHome() {
   const router = useRouter()
@@ -84,6 +85,13 @@ function DaoHome() {
     Number(tokenInfo?.total_supply)
   ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
 
+  const shouldAddToken = router.query.add_token
+  useEffect(() => {
+    if (shouldAddToken) {
+      addToken(daoInfo.gov_token)
+    }
+  }, [shouldAddToken, daoInfo.gov_token])
+
   return (
     <div className="grid grid-cols-6 overflow-auto mb-3">
       <div className="col-span-4 min-h-screen">
@@ -102,6 +110,7 @@ function DaoHome() {
                   setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
                 } else {
                   setPinnedDaos((p) => p.concat([contractAddress]))
+                  addToken(daoInfo.gov_token)
                 }
               }}
             />

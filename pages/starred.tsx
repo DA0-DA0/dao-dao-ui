@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { daoSelector, isMemberSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { cw20TokenInfo } from 'selectors/treasury'
+import { addToken } from 'util/addToken'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { MysteryDaoCard } from './dao/list'
 import { MysteryMultisigCard } from './multisig/list'
@@ -31,6 +32,7 @@ function PinnedDaoCard({ address }: { address: string }) {
           setPinnedDaos((p) => p.filter((a) => a !== address))
         } else {
           setPinnedDaos((p) => p.concat([address]))
+          addToken(config.gov_token)
         }
       }}
       imgUrl={daoConfig.image_url}

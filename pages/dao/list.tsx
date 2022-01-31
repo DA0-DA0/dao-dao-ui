@@ -22,16 +22,12 @@ import {
   waitForAll,
   Loadable,
 } from 'recoil'
-import {
-  daoAddressesSelector,
-  DaoListType,
-  daoSelector,
-  memberDaoSelector,
-} from 'selectors/daos'
+import { DaoListType, memberDaoSelector } from 'selectors/daos'
 // import { cw20TokenInfo } from 'selectors/treasury'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { DAO_CODE_ID } from 'util/constants'
 import { pagedContractsByCodeId } from 'selectors/contracts'
+import { addToken } from 'util/addToken'
 
 export function DaoCard({
   dao,
@@ -62,6 +58,7 @@ export function DaoCard({
           setPinnedDaos((p) => p.filter((a) => a !== address))
         } else {
           setPinnedDaos((p) => p.concat([address]))
+          addToken(dao.gov_token)
         }
       }}
       imgUrl={config.image_url}
