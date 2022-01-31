@@ -4,7 +4,7 @@ import { selector, selectorFamily } from 'recoil'
 import { DAO_CODE_ID } from 'util/constants'
 import { ConfigResponse, Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { walletAddress } from './treasury'
+import { walletAddress, walletTokenBalanceUpdateCountAtom } from './treasury'
 
 export interface MemberStatus {
   member: boolean
@@ -36,7 +36,12 @@ export const totalStaked = selectorFamily<number, string>({
   get:
     (contractAddress) =>
     async ({ get }) => {
+      const wallet = get(walletAddress)
       const client = get(cosmWasmClient)
+
+      // Refresh this value when the visitor stakes / unstakes tokens.
+      get(walletTokenBalanceUpdateCountAtom(wallet))
+
       if (!client) {
         return 0
       }

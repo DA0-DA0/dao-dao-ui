@@ -93,7 +93,7 @@ function Nav({ onMenuClick }: NavProps) {
           </Link>
 
           <div className="lg:hidden" onClick={onMenuClick}>
-            <MenuIcon height={38} width={38} />
+            <MenuIcon className="w-8" />
           </div>
         </div>
         <WalletConnect />

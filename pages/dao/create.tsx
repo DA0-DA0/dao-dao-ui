@@ -640,7 +640,7 @@ const CreateDao: NextPage = () => {
             </div>
 
             <div className="form-control">
-              <InputLabel name="Refund Proposal Deposits" />
+              <InputLabel name="Refund Failed Proposal Deposits" />
               <ToggleInput label="refund" register={register} />
               <InputErrorMessage error={errors.refund} />
             </div>
