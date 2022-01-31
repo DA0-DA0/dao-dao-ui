@@ -6,7 +6,7 @@ const goodInputs: string[] = [
   'https://static.fandomspot.com/images/06/7215/20-kaya-ghost-stories-anime-screenshot.jpg',
   'https://archives.bulbagarden.net/media/upload/thumb/0/0d/025Pikachu.png/375px-025Pikachu.png',
   'https://i.imgur.com/k3s7IUL.jpeg',
-  'https://i.imgur.com/F7gBQLy.jpeg',
+  'https://mirrors.creativecommons.org/presskit/icons/cc.svg',
 ]
 const badInputs: string[] = [
   'http://unsafehttpsite.com/bad.exe',
