@@ -30,7 +30,7 @@ function DIYLogo({
             <h3 className="text-lg font-semibold mt-3 truncate max-w-full">
               {title}
             </h3>
-            <p className="text-secondary text-sm font-mono text-center mt-1 break-all line-clamp-3">
+            <p className="text-secondary text-sm font-mono text-center mt-1 break-words line-clamp-3">
               {body}
             </p>
           </div>
