@@ -4,8 +4,7 @@ import { useState } from 'react'
 import { Logo } from './Logo'
 import Link from 'next/link'
 import Nav from './Nav'
-import {SITE_TITLE} from "../util/constants";
-
+import { SITE_TITLE } from '../util/constants'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (

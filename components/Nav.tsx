@@ -18,7 +18,7 @@ import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { Button } from '@components'
 import { showBetaNoticeAtom } from 'atoms/status'
 import { MenuIcon } from '@heroicons/react/outline'
-import {SITE_TITLE} from "../util/constants";
+import { SITE_TITLE } from '../util/constants'
 
 function WalletConnect() {
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)

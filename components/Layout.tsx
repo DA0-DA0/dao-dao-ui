@@ -9,8 +9,7 @@ import { SidebarLayout } from 'components/SidebarLayout'
 import { InstallKeplr } from './InstallKeplr'
 import { BetaNotice, BetaWarningModal } from './BetaWarning'
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
-import {SITE_TITLE} from "../util/constants";
-
+import { SITE_TITLE } from '../util/constants'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(false)

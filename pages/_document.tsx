@@ -39,7 +39,11 @@ class MyDocument extends Document {
           <meta name="theme-color" content="#ffffff" />
           <meta name="title" content={SITE_TITLE} key="title" />
           <meta name="description" content={description} key="description" />
-          <meta property="twitter:title" content={SITE_TITLE} key="twitter:title" />
+          <meta
+            property="twitter:title"
+            content={SITE_TITLE}
+            key="twitter:title"
+          />
           <meta
             property="twitter:card"
             content="summary_large_image"
