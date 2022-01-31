@@ -14,10 +14,8 @@ function Paginator({
   return (
     <div className="btn-group">
       {Array.from(Array(total), (_, i) => (
-        <Link key={i + 1} href={`?page=${i + 1}&limit=${limit}`}>
-          <button className={`btn ${page === i + 1 ? 'btn-active' : ''}`}>
-            {i + 1}
-          </button>
+        <Link key={i + 1} href={`?page=${i + 1}&limit=${limit}`} passHref>
+          <a className={`btn ${page === i + 1 ? 'btn-active' : ''}`}>{i + 1}</a>
         </Link>
       ))}
     </div>
