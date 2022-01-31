@@ -1,8 +1,9 @@
 import JSON5 from 'json5'
+import { Validate } from 'react-hook-form'
 
 import { isValidAddress, isValidContractAddress } from './isValidAddress'
 
-export const validateRequired = (v: string) => {
+export const validateRequired = (v: string | boolean) => {
   return !!v || 'Field is required'
 }
 
