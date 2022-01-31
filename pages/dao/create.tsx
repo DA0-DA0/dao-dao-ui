@@ -375,7 +375,6 @@ const CreateDao: NextPage = () => {
               <InputErrorMessage error={errors.description} />
             </div>
 
-
             <div className="form-control">
               <InputLabel name="Image URL" />
               <TextInput

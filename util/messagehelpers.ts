@@ -189,7 +189,7 @@ export function makeDaoInstantiateWithExistingTokenMessage(
   unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
   refund_failed_proposals: boolean,
-  image_url?: string,
+  image_url?: string
 ): DaoInstantiateMsg {
   if (typeof percentage === 'number') {
     percentage = `${percentage}`
@@ -235,7 +235,7 @@ export function makeDaoInstantiateWithNewTokenMessage(
   unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
   refund_failed_proposals: boolean,
-  image_url?: string,
+  image_url?: string
 ): DaoInstantiateMsg {
   if (typeof percentage === 'number') {
     percentage = `${percentage}`
@@ -281,7 +281,7 @@ export function makeMultisigInstantiateMessage(
   voters: Member[],
   threshold: number,
   max_voting_period: number,
-  image_url?: string,
+  image_url?: string
 ): MultisigInstantiateMsg {
   return {
     name,

@@ -24,11 +24,10 @@ export const C4_GROUP_CODE_ID = parseInt(
 )
 
 export const PUBLIC_CARD_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === "true"
+  process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
 
 export const PUBLIC_HEADER_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === "true"
-
+  process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
 
 export const NATIVE_DECIMALS = 6
 

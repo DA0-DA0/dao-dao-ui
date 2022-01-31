@@ -1,7 +1,7 @@
 import JSON5 from 'json5'
 
 import { isValidAddress, isValidContractAddress } from './isValidAddress'
-import {isValidUrl} from "./isValidUrl";
+import { isValidUrl } from './isValidUrl'
 
 export const validateRequired = (v: string) => {
   return !!v || 'Field is required'
@@ -22,7 +22,8 @@ export const validateAddress = (v: string) =>
   isValidAddress(v) || 'Invalid address'
 
 export const validateUrl = (v: string) =>
-  isValidUrl(v) || 'Invalid URL link, must start with https and end with png/jpeg/gif.'
+  isValidUrl(v) ||
+  'Invalid URL link, must start with https and end with png/jpeg/gif.'
 
 export const validateContractAddress = (v: string) =>
   isValidContractAddress(v) || 'Invalid contract address'

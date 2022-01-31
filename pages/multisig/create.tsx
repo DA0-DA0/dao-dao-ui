@@ -94,7 +94,7 @@ const CreateMultisig: NextPage = () => {
       voters,
       Number(data.threshold),
       Number(data.duration),
-      imgUrl,
+      imgUrl
     )
     console.log('instantiating multisig with message:')
     console.log(msg)
