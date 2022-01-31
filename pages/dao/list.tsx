@@ -28,7 +28,7 @@ import {
   daoSelector,
   memberDaoSelector,
 } from 'selectors/daos'
-import { cw20TokenInfo } from 'selectors/treasury'
+// import { cw20TokenInfo } from 'selectors/treasury'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { DAO_CODE_ID } from 'util/constants'
 import { pagedContractsByCodeId } from 'selectors/contracts'
@@ -44,15 +44,18 @@ export function DaoCard({
 }) {
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(address)
-  const config = useRecoilValue(daoSelector(address))
-  const tokenInfo = useRecoilValue(cw20TokenInfo(config.gov_token))
+  const config = dao.dao
+  // const tokenInfo = useRecoilValue(cw20TokenInfo(dao.gov_token))
+  // const weight = convertMicroDenomToDenomWithDecimals(weight, tokenInfo.decimals)
+  // TODO @ebaker: review ways to query for tokenInfo.decimals, not performant in this card
+  const DECIMALS = 6
 
   return (
     <ContractCard
-      name={dao.name}
-      description={dao.description}
+      name={config.name}
+      description={config.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenomWithDecimals(weight, tokenInfo.decimals)}
+      weight={convertMicroDenomToDenomWithDecimals(weight, DECIMALS)}
       pinned={pinned}
       onPin={() => {
         if (pinned) {
@@ -80,17 +83,19 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
     <>
       {daos.state == 'hasValue' ? (
         daos.contents.length > 0 ? (
-          daos.contents.map(
-            (dao, idx) =>
-              dao && (
+          daos.contents.map((dao, idx) => {
+            return (
+              dao?.dao &&
+              dao?.address?.length > 0 && (
                 <DaoCard
-                  dao={dao.dao}
+                  dao={dao}
                   address={dao.address}
                   key={idx}
                   weight={dao.weight}
                 />
               )
-          )
+            )
+          })
         ) : (
           <MysteryDaoCard />
         )
