@@ -1,3 +1,5 @@
+import toast from 'react-hot-toast'
+
 import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
 import {
