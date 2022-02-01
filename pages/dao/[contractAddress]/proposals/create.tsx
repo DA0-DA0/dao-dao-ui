@@ -18,6 +18,8 @@ import { cleanChainError } from 'util/cleanChainError'
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { proposalsCreatedAtom } from 'atoms/proposals'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -33,6 +35,7 @@ const ProposalCreate: NextPage = () => {
   )
 
   const [proposalLoading, setProposalLoading] = useState(false)
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
@@ -111,8 +114,10 @@ const ProposalCreate: NextPage = () => {
       .finally(() => setProposalLoading(false))
   }
 
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
+
   return (
-    <div className="grid grid-cols-6">
+    <div className={gridClassName}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -127,7 +132,9 @@ const ProposalCreate: NextPage = () => {
           loading={proposalLoading}
         />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      <Sidebar>
+        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      </Sidebar>
     </div>
   )
 }

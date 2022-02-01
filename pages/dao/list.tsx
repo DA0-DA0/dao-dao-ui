@@ -28,6 +28,8 @@ import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { DAO_CODE_ID } from 'util/constants'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { addToken } from 'util/addToken'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 export function DaoCard({
   dao,
@@ -113,6 +115,7 @@ const DaoList: NextPage = () => {
   const pinnedDaos = useRecoilValueLoadable(
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: DAO_CODE_ID, page, limit })
@@ -121,8 +124,10 @@ const DaoList: NextPage = () => {
     waitForAll(contracts.map((addr) => memberDaoSelector(addr)))
   )
 
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
+
   return (
-    <div className="grid grid-cols-6">
+    <div className={gridClassName}>
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">DAOs</h1>
@@ -157,17 +162,19 @@ const DaoList: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-        <h2 className="font-medium text-lg">Overview</h2>
-        <div className="mt-6">
-          <ul className="list-none ml-2 leading-relaxed">
-            <li>
-              <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {total} active DAOs
-            </li>
-          </ul>
+      <Sidebar>
+        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
+          <h2 className="font-medium text-lg">Overview</h2>
+          <div className="mt-6">
+            <ul className="list-none ml-2 leading-relaxed">
+              <li>
+                <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
+                {total} active DAOs
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </Sidebar>
     </div>
   )
 }

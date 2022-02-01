@@ -15,6 +15,8 @@ import { cleanChainError } from 'util/cleanChainError'
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { Breadcrumbs } from '@components/Breadcrumbs'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import { Sidebar } from 'components/Sidebar'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -23,6 +25,8 @@ const MultisigProposalCreate: NextPage = () => {
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
+
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const [proposalLoading, setProposalLoading] = useState(false)
 
@@ -74,8 +78,10 @@ const MultisigProposalCreate: NextPage = () => {
       .finally(() => setProposalLoading(false))
   }
 
+  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
+
   return (
-    <div className="grid grid-cols-6">
+    <div className={gridClassName}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -91,7 +97,9 @@ const MultisigProposalCreate: NextPage = () => {
           multisig
         />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      <Sidebar>
+        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      </Sidebar>
     </div>
   )
 }
