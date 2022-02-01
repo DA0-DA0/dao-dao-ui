@@ -6,7 +6,11 @@ import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/outline'
 export function Sidebar({ children }: { children: ReactNode }) {
   const [expanded, setExpanded] = useRecoilState(sidebarExpandedAtom)
 
-  const collapsedArrowClass = expanded ? <ChevronRightIcon className="h-5" /> : <ChevronLeftIcon className="h-5" />
+  const collapsedArrowClass = expanded ? (
+    <ChevronRightIcon className="h-5" />
+  ) : (
+    <ChevronLeftIcon className="h-5" />
+  )
 
   if (!expanded) {
     return (
