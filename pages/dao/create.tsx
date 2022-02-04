@@ -305,7 +305,7 @@ const CreateDao: NextPage = () => {
     console.log('instantiating DAO with message:')
     console.log(msg)
 
-    if (!signingClient) {
+    if (!signingClient || !walletAddress) {
       setLoading(false)
       setError('Wallet not connected')
       return
