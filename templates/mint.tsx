@@ -3,6 +3,12 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
 import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useRecoilValue } from 'recoil'
+import {
+  Config,
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import {
   validateAddress,
@@ -17,7 +23,10 @@ export interface MintData {
   amount: number
 }
 
-export const mintDefaults = (walletAddress: string) => {
+export const mintDefaults = (
+  walletAddress: string,
+  _contractConfig: Config
+) => {
   return {
     to: walletAddress,
     amount: 1,
@@ -25,17 +34,25 @@ export const mintDefaults = (walletAddress: string) => {
 }
 
 export const MintComponent = ({
-  govTokenDenom,
+  contractAddress,
   getLabel,
   onRemove,
   errors,
+  multisig,
 }: {
-  govTokenDenom?: string
+  contractAddress: string
   getLabel: (field: string) => string
   onRemove: () => void
   errors: FieldErrors
+  multisig?: boolean
 }) => {
   const { register } = useFormContext()
+
+  const info = useRecoilValue(
+    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  )
+  const config = new ContractConfigWrapper(info)
+  const govTokenDenom = config.gov_token_symbol
 
   return (
     <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
