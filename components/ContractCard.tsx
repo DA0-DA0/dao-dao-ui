@@ -38,7 +38,7 @@ function DIYLogo({
           {weight != 0 && (
             <p className="text-success text-sm mt-3">
               <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {weight} vote{weight > 1 && 's'}
+              Your voting weight: {weight}
             </p>
           )}
         </div>
