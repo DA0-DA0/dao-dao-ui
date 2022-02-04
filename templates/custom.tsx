@@ -6,27 +6,33 @@ import { validateCosmosMsg } from 'util/validateWasmMsg'
 import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
 import { FieldErrors, useFormContext } from 'react-hook-form'
 import { ToCosmosMsgProps } from './templateList'
+import { Config } from 'util/contractConfigWrapper'
 
 export interface CustomData {
   message: string
 }
 
-export const customDefaults = (_walletAddress: string) => {
+export const customDefaults = (
+  _walletAddress: string,
+  _contractConfig: Config
+) => {
   return {
     message: '{}',
   }
 }
 
 export const CustomComponent = ({
-  govTokenDenom,
+  contractAddress,
   getLabel,
   onRemove,
   errors,
+  multisig,
 }: {
-  govTokenDenom?: string
+  contractAddress: string
   getLabel: (field: string) => string
   onRemove: () => void
   errors: FieldErrors
+  multisig?: boolean
 }) => {
   const { control } = useFormContext()
 

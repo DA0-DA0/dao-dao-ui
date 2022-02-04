@@ -112,7 +112,7 @@ const ProposalCreate: NextPage = () => {
         />
         <ProposalForm
           onSubmit={onProposalSubmit}
-          govTokenDenom={tokenInfo.symbol}
+          contractAddress={contractAddress}
           loading={proposalLoading}
         />
       </div>

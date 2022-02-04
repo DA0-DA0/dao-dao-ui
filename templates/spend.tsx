@@ -4,7 +4,13 @@ import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
 import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useRecoilValue } from 'recoil'
 import { NATIVE_DECIMALS } from 'util/constants'
+import {
+  Config,
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import {
   validateAddress,
@@ -20,7 +26,10 @@ export interface SpendData {
   denom: string
 }
 
-export const spendDefaults = (walletAddress: string) => {
+export const spendDefaults = (
+  walletAddress: string,
+  _contractConfig: Config
+) => {
   return {
     to: walletAddress,
     amount: 1,
@@ -29,17 +38,25 @@ export const spendDefaults = (walletAddress: string) => {
 }
 
 export const SpendComponent = ({
-  govTokenDenom,
+  contractAddress,
   getLabel,
   onRemove,
   errors,
+  multisig,
 }: {
-  govTokenDenom?: string
+  contractAddress: string
   getLabel: (field: string) => string
   onRemove: () => void
   errors: FieldErrors
+  multisig?: boolean
 }) => {
   const { register } = useFormContext()
+
+  const info = useRecoilValue(
+    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  )
+  const config = new ContractConfigWrapper(info)
+  const govTokenDenom = config.gov_token_symbol
 
   return (
     <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
