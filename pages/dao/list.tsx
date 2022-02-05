@@ -114,12 +114,16 @@ const DaoList: NextPage = () => {
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
 
+  console.log('pinnedDaoAddresses', pinnedDaoAddresses)
+
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: DAO_CODE_ID, page, limit })
   )
   const daos = useRecoilValueLoadable(
     waitForAll(contracts.map((addr) => memberDaoSelector(addr)))
   )
+
+  console.log('contracts', contracts)
 
   return (
     <div className="grid grid-cols-6">

@@ -6,6 +6,7 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 import { connectKeplr } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
+import { walletAddress as walletAddressSelector } from './cosm'
 import { localStorageEffect } from '../atoms/localStorageEffect'
 
 export type WalletConnection = 'keplr' | ''
@@ -30,8 +31,12 @@ export const cosmWasmClient = selector({
 const getWaitKeplr = async () => {
   connectKeplr()
 
-  // enable website to access kepler
-  await (window as any).keplr.enable(CHAIN_ID)
+  try {
+    // enable website to access kepler
+    await (window as any).keplr.enable(CHAIN_ID)
+  } catch {
+    return undefined
+  }
 
   // get offline signer for signing txs
   return (window as any).keplr.getOfflineSignerAuto(CHAIN_ID)
@@ -90,6 +95,12 @@ export const voterInfoSelector = selectorFamily({
       walletAddress: string
     }) =>
     async ({ get }) => {
+      if (!walletAddress) {
+        return {
+          weight: 0,
+        }
+      }
+
       get(walletTokenBalanceUpdateCountAtom(walletAddress))
       const client = get(cosmWasmClient)
       const response = await client?.queryContractSmart(contractAddress, {

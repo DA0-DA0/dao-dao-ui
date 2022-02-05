@@ -27,8 +27,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         await (window as any).keplr.enable(CHAIN_ID)
         setKeplrInstance(myKelpr)
       } catch (error) {
-        console.error(error)
-        setError(true)
+        console.error('error', error)
+        setLoaded(true)
       }
     }
 
@@ -61,9 +61,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
         <link rel="icon" href="/yin_yang.png" />
       </Head>
-      {error && <InstallKeplr />}
-      {!keplrInstance && !error && <LoadingScreen />}
-      {loaded && !betaWarningAccepted && (
+      {!error && <LoadingScreen />}
+      {!betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}
       {loaded && betaWarningAccepted && showBetaNotice && (
