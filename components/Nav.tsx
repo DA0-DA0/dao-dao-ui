@@ -92,7 +92,7 @@ function Nav({ onMenuClick }: NavProps) {
           </Link>
           <div className="text-error font-mono pl-3">Beta</div>
 
-          <div className="lg:hidden" onClick={onMenuClick}>
+          <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
             <MenuIcon className="w-8" />
           </div>
         </div>
