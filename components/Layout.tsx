@@ -10,12 +10,16 @@ import { InstallKeplr } from './InstallKeplr'
 import { BetaNotice, BetaWarningModal } from './BetaWarning'
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
 import { SITE_TITLE } from '../util/constants'
+import { installWarningVisibleAtom } from 'selectors/cosm'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(false)
   const [keplrInstance, setKeplrInstance] = useState<Keplr | undefined>()
   const [error, setError] = useState(false)
   const reset = useRecoilRefresher_UNSTABLE(kelprOfflineSigner)
+  const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
+    installWarningVisibleAtom
+  )
 
   useEffect(() => {
     const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
@@ -61,7 +65,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
         <link rel="icon" href="/yin_yang.png" />
       </Head>
-      {!error && <LoadingScreen />}
+      {installWarningVisible && (
+        <InstallKeplr onClose={() => setInstallWarningVisible(false)} />
+      )}
+      {!loaded && !error && <LoadingScreen />}
       {!betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}

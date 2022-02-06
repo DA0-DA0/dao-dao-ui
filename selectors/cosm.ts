@@ -71,6 +71,12 @@ export const connectedWalletAtom = atom<WalletConnection>({
   effects_UNSTABLE: [localStorageEffect<WalletConnection>('connectedWallet')],
 })
 
+//  Auto connect keplr if set as connectWallet
+export const installWarningVisibleAtom = atom<boolean>({
+  key: 'installWarningVisible',
+  default: false,
+})
+
 export const walletAddress = selector({
   key: 'WalletAddress',
   get: async ({ get }) => {

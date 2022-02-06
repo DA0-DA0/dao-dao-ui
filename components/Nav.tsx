@@ -11,6 +11,7 @@ import { useRecoilValue, useRecoilState, waitForAll } from 'recoil'
 import {
   connectedWalletAtom,
   walletAddress as walletAddressSelector,
+  installWarningVisibleAtom,
 } from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
@@ -22,11 +23,19 @@ import { SITE_TITLE } from '../util/constants'
 
 function WalletConnect() {
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
+  const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
+    installWarningVisibleAtom
+  )
   const walletAddress = useRecoilValue(walletAddressSelector)
 
   const handleConnect = () => {
     if (!wallet) {
-      setWallet('keplr')
+      if (!(window as any).keplr) {
+        setInstallWarningVisible(true)
+      } else {
+        setInstallWarningVisible(false)
+        setWallet('keplr')
+      }
     } else {
       setWallet('')
     }
