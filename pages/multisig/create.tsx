@@ -7,7 +7,7 @@ import { defaultExecuteFee } from 'util/fee'
 import { errorNotify, successNotify } from 'util/toast'
 import { cleanChainError } from 'util/cleanChainError'
 import { Breadcrumbs } from 'components/Breadcrumbs'
-import { useForm, SubmitHandler, FieldValues } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { ScaleIcon, UsersIcon } from '@heroicons/react/outline'
 import {
   validateAddress,
