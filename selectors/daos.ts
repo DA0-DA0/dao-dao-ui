@@ -93,9 +93,7 @@ export const memberDaoSelector = selectorFamily<DaoListType, string>({
     (contractAddress: string) =>
     async ({ get }) => {
       const daoResponse = get(daoSelector(contractAddress))
-      // const { member, weight } = get(isMemberSelector(contractAddress))
-      const member = false
-      const weight = 0
+      const { member, weight } = get(isMemberSelector(contractAddress))
       return {
         dao: daoResponse.config,
         gov_token: daoResponse.gov_token,

@@ -31,7 +31,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         await (window as any).keplr.enable(CHAIN_ID)
         setKeplrInstance(myKelpr)
       } catch (error) {
-        console.error('error', error)
+        console.error(error)
         setLoaded(true)
       }
     }
