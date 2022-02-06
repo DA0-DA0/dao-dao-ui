@@ -186,12 +186,16 @@ const CreateDao: NextPage = () => {
   const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
-    DEFAULT_MAX_VOTING_PERIOD_SECONDS
-  )
-  const [unstakingDurationSeconds, setUnstakingDurationSeconds] = useState(
-    DEFAULT_UNSTAKING_DURATION_SECONDS
-  )
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<DaoCreateData>()
+
+  const votingPeriodSeconds = watch('duration')
+  const unstakingDurationSeconds = watch('unstakingDuration')
 
   const [tokenMode, setTokenMode] = useState(TokenMode.Create)
 
@@ -207,12 +211,6 @@ const CreateDao: NextPage = () => {
   const setDaoInitialBalance = useSetRecoilState(daoInitialBalanceAtom)
 
   const setPinnedDaos = useSetRecoilState(pinnedDaosAtom)
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<DaoCreateData>()
 
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
@@ -592,7 +590,6 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.duration}
                 validation={[validateRequired, validatePositive]}
-                onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
                 defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
               />
               <InputErrorMessage error={errors.duration} />
@@ -628,7 +625,6 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.unstakingDuration}
                 validation={[validateRequired]}
-                onChange={(e) => setUnstakingDurationSeconds(e?.target?.value)}
                 defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
               />
               <InputErrorMessage error={errors.unstakingDuration} />

@@ -45,18 +45,19 @@ const CreateMultisig: NextPage = () => {
   const router = useRouter()
 
   const [loading, setLoading] = useState(false)
-  const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
-    DEFAULT_MAX_VOTING_PERIOD_SECONDS
-  )
   // The number of addresses involved in the multisig.
   const [count, setCount] = useState(1)
   const [error, setError] = useState('')
 
   const {
+    watch,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<MultisigCreateData>()
+
+  const votingPeriodSeconds = watch('duration')
+
   const walletAddress = useRecoilValue(walletAddressSelector)
   const signingClient = useRecoilValue(cosmWasmSigningClient)
 
@@ -272,7 +273,6 @@ const CreateMultisig: NextPage = () => {
                 register={register}
                 error={errors.duration}
                 validation={[validateRequired, validatePositive]}
-                onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
                 defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
               />
               <InputErrorMessage error={errors.duration} />
