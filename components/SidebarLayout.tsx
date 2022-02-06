@@ -8,7 +8,7 @@ import { SITE_TITLE } from '../util/constants'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
-    <div className="p-2 sticky top-0 flex flex-row w-full justify-between">
+    <div className="p-6 sticky top-0 flex flex-row w-full justify-between items-center text-lg">
       <Link href="/starred">
         <a>
           <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
