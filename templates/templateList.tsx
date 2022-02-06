@@ -1,5 +1,11 @@
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
+import { Config } from 'util/contractConfigWrapper'
+import {
+  DAOConfigUpdateDefaults,
+  DAOUpdateConfigComponent,
+  transformDAOToConfigUpdateCosmos,
+} from './configUpdate'
 import {
   CustomComponent,
   customDefaults,
@@ -32,14 +38,22 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: customDefaults,
     toCosmosMsg: transformCustomToCosmos,
   },
+  {
+    label: '🎭 Update Config',
+    component: DAOUpdateConfigComponent,
+    multisigSupport: false,
+    getDefaults: DAOConfigUpdateDefaults,
+    toCosmosMsg: transformDAOToConfigUpdateCosmos,
+  },
 ]
 
 // A component which will render a template's input form.
 export type TemplateComponent = React.FunctionComponent<{
-  govTokenDenom?: string
+  contractAddress: string
   getLabel: (field: string) => string
   onRemove: () => void
   errors: FieldErrors
+  multisig?: boolean
 }>
 
 // Defines a new template.
@@ -47,7 +61,7 @@ export interface MessageTemplate {
   label: string
   component: TemplateComponent
   multisigSupport: boolean
-  getDefaults: (walletAddress: string) => any
+  getDefaults: (walletAddress: string, contractConfig: Config) => any
   toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
 }
 

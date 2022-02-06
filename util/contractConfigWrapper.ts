@@ -4,7 +4,7 @@ import { selectorFamily, useRecoilValue, waitForAll } from 'recoil'
 import { daoSelector, tokenConfig } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 
-type Config = SigConfig | DaoConfig
+export type Config = SigConfig | DaoConfig
 
 /*
  * Wrapper class for unifying some behavior between Dao and Multisig

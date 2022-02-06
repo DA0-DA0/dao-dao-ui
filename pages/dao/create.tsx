@@ -39,7 +39,7 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { ToggleInput } from '@components/input/ToggleInput'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { addToken } from 'util/addToken'
+
 interface DaoCreateData {
   deposit: string
   description: string
@@ -65,8 +65,8 @@ interface DaoCreateData {
   [key: string]: string | boolean
 }
 
-const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
-const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
+export const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
+export const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
 
 enum TokenMode {
   UseExisting,
@@ -305,7 +305,7 @@ const CreateDao: NextPage = () => {
     console.log('instantiating DAO with message:')
     console.log(msg)
 
-    if (!signingClient) {
+    if (!signingClient || !walletAddress) {
       setLoading(false)
       setError('Wallet not connected')
       return

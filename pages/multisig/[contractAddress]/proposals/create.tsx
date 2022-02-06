@@ -85,6 +85,7 @@ const MultisigProposalCreate: NextPage = () => {
           ]}
         />
         <ProposalForm
+          contractAddress={contractAddress}
           onSubmit={onProposalSubmit}
           loading={proposalLoading}
           multisig

@@ -16,7 +16,7 @@ const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
       </Link>
       <div className="text-error font-mono">Beta</div>
 
-      <div className="lg:hidden" onClick={onMenuClick}>
+      <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
         <MenuIcon className="w-8" />
       </div>
     </div>

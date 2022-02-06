@@ -1,10 +1,9 @@
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { walletAddress } from 'selectors/treasury'
-import { spendDefaults } from 'templates/spend'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
+import { contractConfigSelector } from 'util/contractConfigWrapper'
 import { validateRequired } from 'util/formValidation'
 import SvgAirplane from './icons/Airplane'
 import { InputErrorMessage } from './input/InputErrorMessage'
@@ -20,16 +19,19 @@ export interface ProposalData {
 
 export function ProposalForm({
   onSubmit,
-  govTokenDenom,
+  contractAddress,
   loading,
   multisig,
 }: {
   onSubmit: (data: ProposalData) => void
-  govTokenDenom?: string
+  contractAddress: string
   loading: boolean
   multisig?: boolean
 }) {
   const wallet = useRecoilValue(walletAddress)
+  const contractConfig = useRecoilValue(
+    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  )
 
   const formMethods = useForm()
 
@@ -98,10 +100,11 @@ export function ProposalForm({
             return (
               <li key={index}>
                 <Component
-                  govTokenDenom={govTokenDenom}
+                  contractAddress={contractAddress}
                   onRemove={() => remove(index)}
                   getLabel={(fieldName) => `messages.${index}.${fieldName}`}
                   errors={(errors.messages && errors.messages[index]) || {}}
+                  multisig={multisig}
                 />
               </li>
             )
@@ -116,7 +119,7 @@ export function ProposalForm({
           </div>
           <ul
             tabIndex={0}
-            className="p-2 shadow menu dropdown-content rounded-md bg-base-300 border border-secondary w-40"
+            className="p-2 shadow menu dropdown-content rounded-md bg-base-300 border border-secondary w-max"
           >
             {messageTemplates
               .filter(({ multisigSupport }) => multisigSupport || !multisig)
@@ -127,7 +130,9 @@ export function ProposalForm({
                 >
                   <button
                     className="text-left"
-                    onClick={() => append({ ...getDefaults(wallet), label })}
+                    onClick={() =>
+                      append({ ...getDefaults(wallet, contractConfig), label })
+                    }
                     type="button"
                   >
                     {label}
