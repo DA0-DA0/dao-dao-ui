@@ -23,19 +23,21 @@ cd dao-ui
 yarn
 ```
 
-### Setup .env.local file
-
-In order to develop on the frontend, you'll need to setup up your local environment. For your convenience, we've included a couple of default environment configurations.
-
 You can choose which environment you want to connect to. The [Juno Testnet](#testnet) is probably easiest to get started with.
 
-#### Testnet
+### Testnet
 
-Note: you can get Juno Testnet tokens ($JUNOX) from the #faucet channel in the main [Juno Discord](https://discord.com/invite/QcWPfK4gJ2).
+Note: you can get Juno Testnet tokens ($JUNOX) from the #faucet channel in the main [Juno Discord](https://discord.com/invite/QcWPfK4gJ2). Testnet environment variables are in `.env.development` and available by default when running `yarn dev` command.
 
 ```bash
-cp .env.testnet .env.local
+yarn dev # starts nextjs dev server
 ```
+
+
+### Advanced: Other environments
+
+By default `yarn dev` connects to the testnet. For developing against localhost or mainnet, copy the appropriate `.env` file to `.env.local`. Having a `.env.local` file will override the default `.env.development` file when running `yarn dev`.
+
 
 #### Localhost
 
