@@ -9,31 +9,36 @@ import {
 import { Button } from '@components'
 import { useCallback } from 'react'
 import { CashIcon } from '@heroicons/react/outline'
+import { connectKeplrWithoutAlerts } from 'services/keplr'
+const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function WalletConnect() {
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
   const setInstallWarningVisible = useSetRecoilState(installWarningVisibleAtom)
   const setChainWarningVisible = useSetRecoilState(chainWarningVisibleAtom)
-  const chainDisabled = useRecoilValue(chainDisabledAtom)
+  const setChainDisabled = useSetRecoilState(chainDisabledAtom)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const handleConnect = useCallback(() => {
+  const handleConnect = useCallback(async () => {
     if (!wallet) {
       if (!(window as any).keplr) {
         setInstallWarningVisible(true)
       } else {
-        if (chainDisabled) {
-          setChainWarningVisible(true)
-        } else {
+        try {
+          await connectKeplrWithoutAlerts()
+          await (window as any).keplr.enable(CHAIN_ID)
           setInstallWarningVisible(false)
           setWallet('keplr')
+        } catch {
+          setChainWarningVisible(true)
+          setChainDisabled(true)
         }
       }
     } else {
       setWallet('')
     }
   }, [
-    chainDisabled,
+    setChainDisabled,
     wallet,
     setChainWarningVisible,
     setInstallWarningVisible,

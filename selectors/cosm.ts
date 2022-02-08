@@ -4,9 +4,8 @@ import {
   CosmWasmClient,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { connectKeplr, connectKeplrWithoutAlerts } from '../services/keplr'
+import { connectKeplrWithoutAlerts } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
-import { walletAddress as walletAddressSelector } from './cosm'
 import { localStorageEffect } from '../atoms/localStorageEffect'
 
 export type WalletConnection = 'keplr' | ''
@@ -41,9 +40,41 @@ const getWaitKeplr = async () => {
   return (window as any).keplr.getOfflineSignerAuto(CHAIN_ID)
 }
 
+//  Auto connect keplr if set as connectWallet
+export const connectedWalletAtom = atom<WalletConnection>({
+  key: 'connectedWallet',
+  default: '',
+  effects_UNSTABLE: [localStorageEffect<WalletConnection>('connectedWallet')],
+})
+
+//  Auto connect keplr if set as connectWallet
+export const installWarningVisibleAtom = atom<boolean>({
+  key: 'installWarningVisible',
+  default: false,
+})
+
+//  Show chain warning modal when true
+export const chainWarningVisibleAtom = atom<boolean>({
+  key: 'chainWarningVisibleAtom',
+  default: false,
+})
+
+//  Ensure chain has been enabled for connecting wallet
+export const chainDisabledAtom = atom<boolean>({
+  key: 'chainDisabledAtom',
+  default: false,
+})
+
 export const kelprOfflineSigner = selector({
   key: 'kelprOfflineSigner',
-  get: () => getWaitKeplr(),
+  get: ({ get }) => {
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet === 'keplr') {
+      return getWaitKeplr()
+    } else {
+      return undefined
+    }
+  },
 })
 
 export const cosmWasmSigningClient = selector({
@@ -61,31 +92,6 @@ export const cosmWasmSigningClient = selector({
   // We have to do this because of how SigningCosmWasmClient
   // will update its internal chainId
   dangerouslyAllowMutability: true,
-})
-
-//  Auto connect keplr if set as connectWallet
-export const connectedWalletAtom = atom<WalletConnection>({
-  key: 'connectedWallet',
-  default: '',
-  effects_UNSTABLE: [localStorageEffect<WalletConnection>('connectedWallet')],
-})
-
-//  Auto connect keplr if set as connectWallet
-export const installWarningVisibleAtom = atom<boolean>({
-  key: 'installWarningVisible',
-  default: false,
-})
-
-//  Auto connect keplr if set as connectWallet
-export const chainWarningVisibleAtom = atom<boolean>({
-  key: 'chainWarningVisibleAtom',
-  default: false,
-})
-
-//  Auto connect keplr if set as connectWallet
-export const chainDisabledAtom = atom<boolean>({
-  key: 'chainDisabledAtom',
-  default: false,
 })
 
 export const walletAddress = selector({

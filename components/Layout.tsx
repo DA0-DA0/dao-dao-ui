@@ -35,38 +35,42 @@ export default function Layout({ children }: { children: ReactNode }) {
     chainWarningVisibleAtom
   )
   const setChainDisabled = useSetRecoilState(chainDisabledAtom)
-  const setWallet = useSetRecoilState(connectedWalletAtom)
+  const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
 
   useEffect(() => {
     async function loadKeplr() {
       try {
-        const myKelpr = await getKeplr()
-        await connectKeplrWithoutAlerts()
-        await (window as any).keplr.enable(CHAIN_ID)
-        setKeplrInstance(myKelpr)
-        setChainDisabled(false)
+        setKeplrInstance(await getKeplr())
+        setLoaded(true)
       } catch (error) {
         setChainDisabled(true)
         setLoaded(true)
       }
     }
 
-    if (!keplrInstance) {
-      loadKeplr()
-    }
-
-    window.addEventListener('keplr_keystorechange', () => {
+    function onKeplrKeystoreChange() {
       console.log(
         'Key store in Keplr is changed. You may need to refetch the account info.'
       )
       reset()
-
       loadKeplr()
-    })
-    if (keplrInstance) {
+    }
+
+    if (!keplrInstance) {
+      loadKeplr()
+    } else {
       setLoaded(true)
     }
-  }, [keplrInstance, reset, setChainDisabled])
+
+    if (wallet === '') {
+      window.removeEventListener('keplr_keystorechange', onKeplrKeystoreChange)
+      return
+    }
+
+    if (wallet == 'keplr') {
+      window.addEventListener('keplr_keystorechange', onKeplrKeystoreChange)
+    }
+  }, [keplrInstance, reset, setChainDisabled, wallet])
 
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
