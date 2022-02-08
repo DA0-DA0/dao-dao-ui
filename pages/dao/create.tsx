@@ -32,7 +32,6 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { cw20TokenInfo } from 'selectors/treasury'
 import { InputLabel } from '@components/input/InputLabel'
 import { TextInput } from '@components/input/TextInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
