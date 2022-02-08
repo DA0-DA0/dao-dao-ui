@@ -15,13 +15,13 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
-import { daoSelector, isMemberSelector } from 'selectors/daos'
+import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
   proposalVotesSelector,
 } from 'selectors/proposals'
-import { cw20TokenInfo, walletTokenBalanceLoading } from 'selectors/treasury'
+import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
@@ -31,12 +31,11 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
-import { NATIVE_DECIMALS } from 'util/constants'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
+import { MarkdownPreview } from './MarkdownPreview'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -482,7 +481,9 @@ export function ProposalDetails({
 
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+      <div className="max-w-prose">
+        <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+      </div>
       {actionLoading && (
         <div className="mt-3">
           <ExecutingButton />
@@ -519,11 +520,11 @@ export function ProposalDetails({
           )}
         </div>
       )}
-      <p className="text-medium mt-6 font-sans leading-5">
-        {proposal.description}
-      </p>
+      <div className="mt-6">
+        <MarkdownPreview markdown={proposal.description} />
+      </div>
       {decodedMessages?.length ? (
-        <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
+        <pre className="overflow-auto my-6 border rounded-lg p-3 text-secondary border-secondary">
           {decodedMessagesString(proposal)}
         </pre>
       ) : (

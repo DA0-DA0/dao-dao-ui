@@ -31,6 +31,7 @@ module.exports = {
     require('daisyui'),
     require('@tailwindcss/line-clamp'),
     require('./tailwind/button'),
+    require('@tailwindcss/typography'),
   ],
   daisyui: {
     themes: [require('./styles/daisyui-themes.json')],
