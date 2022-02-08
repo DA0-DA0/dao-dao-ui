@@ -66,7 +66,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     if (keplrInstance) {
       setLoaded(true)
     }
-  }, [keplrInstance, reset])
+  }, [keplrInstance, reset, setChainDisabled])
 
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
