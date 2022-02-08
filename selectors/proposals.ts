@@ -193,7 +193,6 @@ export const proposalsSelector = selectorFamily<
   get:
     ({ contractAddress, startBefore, limit }) =>
     async ({ get }) => {
-      console.log(`proposalsSelector startBefore:${startBefore}`)
       let draftProposalItems: ExtendedProposalResponse[] = []
       // Add in draft proposals:
       const draftProposals = get(draftProposalsSelector(contractAddress))

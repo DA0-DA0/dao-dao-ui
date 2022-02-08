@@ -17,6 +17,11 @@ import {
   transformCustomToCosmos,
 } from './custom'
 import { MintComponent, mintDefaults, transformMintToCosmos } from './mint'
+import {
+  RemoveTokenComponent,
+  removeTokenDefaults,
+  transformRemoveTokenToCosmos,
+} from './removeToken'
 import { SpendComponent, spendDefaults, transformSpendToCosmos } from './spend'
 
 // Adding a template to this list will cause it to be avaliable
@@ -56,6 +61,13 @@ export const messageTemplates: MessageTemplate[] = [
     multisigSupport: true,
     getDefaults: addTokenDefaults,
     toCosmosMsg: transformAddTokenToCosmos,
+  },
+  {
+    label: '⭕️ Remove Treasury Token',
+    component: RemoveTokenComponent,
+    multisigSupport: true,
+    getDefaults: removeTokenDefaults,
+    toCosmosMsg: transformRemoveTokenToCosmos,
   },
 ]
 

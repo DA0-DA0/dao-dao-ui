@@ -4,9 +4,10 @@ import { InputLabel } from '@components/input/InputLabel'
 import { LogoNoBorder } from '@components/Logo'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { XIcon } from '@heroicons/react/outline'
+import { treasuryTokenListUpdates } from 'atoms/treasury'
 import { useEffect, useState } from 'react'
 import { FieldErrors, useFormContext } from 'react-hook-form'
-import { Loadable, useRecoilValueLoadable } from 'recoil'
+import { Loadable, useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 import { tokenConfig } from 'selectors/daos'
 import { Config } from 'util/contractConfigWrapper'
 import {
@@ -31,7 +32,7 @@ export const addTokenDefaults = (
   }
 }
 
-const TokenInfoDisplay = ({
+export const TokenInfoDisplay = ({
   address,
   setError,
   clearError,
@@ -66,18 +67,18 @@ const TokenInfoDisplay = ({
   )
 }
 
-export const AddTokenComponent = ({
-  contractAddress,
+export const TokenSelector = ({
   getLabel,
   onRemove,
   errors,
-  multisig,
+  symbol,
+  title,
 }: {
-  contractAddress: string
   getLabel: (field: string) => string
   onRemove: () => void
   errors: FieldErrors
-  multisig?: boolean
+  symbol: string
+  title: string
 }) => {
   const { register, watch, setError, clearErrors } = useFormContext()
 
@@ -87,8 +88,8 @@ export const AddTokenComponent = ({
     <div className="flex flex flex-col py-2 px-3 rounded-lg my-2 bg-base-300">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-4xl">🔘</h2>
-          <h2>Add Treasury Token</h2>
+          <h2 className="text-4xl">{symbol}</h2>
+          <h2>{title}</h2>
         </div>
         <button onClick={() => onRemove()} type="button">
           <XIcon className="h-4" />
@@ -113,6 +114,30 @@ export const AddTokenComponent = ({
         clearError={() => clearErrors(getLabel('address'))}
       />
     </div>
+  )
+}
+
+export const AddTokenComponent = ({
+  contractAddress,
+  getLabel,
+  onRemove,
+  errors,
+  multisig,
+}: {
+  contractAddress: string
+  getLabel: (field: string) => string
+  onRemove: () => void
+  errors: FieldErrors
+  multisig?: boolean
+}) => {
+  return (
+    <TokenSelector
+      getLabel={getLabel}
+      onRemove={onRemove}
+      errors={errors}
+      symbol="🔘"
+      title="Add Treasury Token"
+    />
   )
 }
 

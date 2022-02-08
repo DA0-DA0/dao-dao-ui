@@ -36,6 +36,7 @@ import {
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
 import { MarkdownPreview } from './MarkdownPreview'
+import { treasuryTokenListUpdates } from 'atoms/treasury'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -231,6 +232,9 @@ function ProposalExecuteButton({
   const setProposalsUpdated = useSetRecoilState(
     proposalsUpdated(contractAddress)
   )
+  const setTreasuryTokenListUpdates = useSetRecoilState(
+    treasuryTokenListUpdates(contractAddress)
+  )
 
   const ready = walletAddress && signingClient && member
   const tooltip =
@@ -257,6 +261,7 @@ function ProposalExecuteButton({
             setProposalsUpdated((p) =>
               p.includes(proposalId) ? p : p.concat([proposalId])
             )
+            setTreasuryTokenListUpdates((n) => n + 1)
           },
           setLoading
         )
