@@ -25,7 +25,7 @@ import {
   sigSelector,
   totalWeight,
 } from 'selectors/multisigs'
-import { nativeBalance, walletAddress } from 'selectors/treasury'
+import { cw20Balances, nativeBalance, walletAddress } from 'selectors/treasury'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -77,6 +77,7 @@ function MultisigHome() {
 
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
   const nativeBalances = useRecoilValue(nativeBalance(contractAddress))
+  const cw20s = useRecoilValue(cw20Balances(contractAddress))
   const memberInfo = useRecoilValue(isMemberSelector(contractAddress))
 
   const weightTotal = useRecoilValue(totalWeight(contractAddress))
@@ -122,7 +123,7 @@ function MultisigHome() {
             gov_token={''}
             staking_contract={''}
             native={nativeBalances}
-            cw20={[]}
+            cw20={cw20s}
           />
 
           <HeroContractFooter>
