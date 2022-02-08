@@ -33,11 +33,9 @@ Note: you can get Juno Testnet tokens ($JUNOX) from the #faucet channel in the m
 yarn dev # starts nextjs dev server
 ```
 
-
 ### Advanced: Other environments
 
 By default `yarn dev` connects to the testnet. For developing against localhost or mainnet, copy the appropriate `.env` file to `.env.local`. Having a `.env.local` file will override the default `.env.development` file when running `yarn dev`.
-
 
 #### Localhost
 

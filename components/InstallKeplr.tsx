@@ -1,11 +1,12 @@
-import { ChevronRightIcon } from '@heroicons/react/outline'
+import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
 import { GradientWrapper } from './GradientWrapper'
 
-export function InstallKeplr() {
+export function InstallKeplr({ onClose }: { onClose: () => void }) {
   return (
     <GradientWrapper>
       <div className="modal modal-open">
         <div className="modal-box rounded-md">
+          <XIcon className="float-right h-6 cursor-pointer" onClick={onClose} />
           <h1 className="text-2xl font-medium">
             You{"'"}ll need a wallet to continue
           </h1>
