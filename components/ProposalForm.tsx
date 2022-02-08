@@ -1,4 +1,5 @@
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
+import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
+import { useState } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { walletAddress } from 'selectors/treasury'
@@ -10,6 +11,7 @@ import { InputErrorMessage } from './input/InputErrorMessage'
 import { InputLabel } from './input/InputLabel'
 import { TextareaInput } from './input/TextAreaInput'
 import { TextInput } from './input/TextInput'
+import { MarkdownPreview } from './MarkdownPreview'
 
 export interface ProposalData {
   title: string
@@ -41,8 +43,14 @@ export function ProposalForm({
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = formMethods
+
+  const [showPreview, setShowPreview] = useState(false)
+
+  const proposalDescription = watch('description')
+  const proposalTitle = watch('title')
 
   const { fields, append, remove } = useFieldArray({
     name: 'messages',
@@ -58,26 +66,41 @@ export function ProposalForm({
           onSubmit(d as ProposalData)
         )}
       >
-        <div className="form-control">
-          <InputLabel name="Title" />
-          <TextInput
-            label="title"
-            register={register}
-            error={errors.title}
-            validation={[validateRequired]}
-          />
-          <InputErrorMessage error={errors.title} />
-        </div>
-        <div className="form-control">
-          <InputLabel name="Description" />
-          <TextareaInput
-            label="description"
-            register={register}
-            error={errors.description}
-            validation={[validateRequired]}
-          />
-          <InputErrorMessage error={errors.description} />
-        </div>
+        {showPreview ? (
+          <>
+            <div className="max-w-prose">
+              <h1 className="text-4xl font-medium font-semibold my-6">
+                {proposalTitle}
+              </h1>
+            </div>
+            <div className="my-6">
+              <MarkdownPreview markdown={proposalDescription} />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="form-control">
+              <InputLabel name="Title" />
+              <TextInput
+                label="title"
+                register={register}
+                error={errors.title}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.title} />
+            </div>
+            <div className="form-control">
+              <InputLabel name="Description" />
+              <TextareaInput
+                label="description"
+                register={register}
+                error={errors.description}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.description} />
+            </div>
+          </>
+        )}
         <ul className="list-none">
           {fields.map((data, index) => {
             const label = (data as any).label
@@ -141,7 +164,7 @@ export function ProposalForm({
               ))}
           </ul>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex gap-2">
           <div
             className={!wallet ? 'tooltip' : ''}
             data-tip="Connect your wallet to submit"
@@ -158,6 +181,23 @@ export function ProposalForm({
               )}
             </button>
           </div>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline normal-case hover:bg-primary hover:text-primary-content"
+            onClick={() => setShowPreview((p) => !p)}
+          >
+            {showPreview ? (
+              <>
+                Hide preview
+                <EyeOffIcon className="inline h-5 stroke-current ml-2" />
+              </>
+            ) : (
+              <>
+                Preview
+                <EyeIcon className="inline h-5 stroke-current ml-2" />
+              </>
+            )}
+          </button>
         </div>
       </form>
     </FormProvider>
