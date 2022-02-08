@@ -4,7 +4,7 @@ import {
   CosmWasmClient,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-import { connectKeplr } from '../services/keplr'
+import { connectKeplr, connectKeplrWithoutAlerts } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
 import { walletAddress as walletAddressSelector } from './cosm'
 import { localStorageEffect } from '../atoms/localStorageEffect'
@@ -29,12 +29,11 @@ export const cosmWasmClient = selector({
 })
 
 const getWaitKeplr = async () => {
-  connectKeplr()
-
   try {
+    await connectKeplrWithoutAlerts()
     // enable website to access kepler
     await (window as any).keplr.enable(CHAIN_ID)
-  } catch {
+  } catch (error) {
     return undefined
   }
 
@@ -77,6 +76,18 @@ export const installWarningVisibleAtom = atom<boolean>({
   default: false,
 })
 
+//  Auto connect keplr if set as connectWallet
+export const chainWarningVisibleAtom = atom<boolean>({
+  key: 'chainWarningVisibleAtom',
+  default: false,
+})
+
+//  Auto connect keplr if set as connectWallet
+export const chainDisabledAtom = atom<boolean>({
+  key: 'chainDisabledAtom',
+  default: false,
+})
+
 export const walletAddress = selector({
   key: 'WalletAddress',
   get: async ({ get }) => {
@@ -85,6 +96,9 @@ export const walletAddress = selector({
       return ''
     }
     const client = get(kelprOfflineSigner)
+    if (!client) {
+      return ''
+    }
     const [{ address }] = await client.getAccounts()
     return address as string
   },

@@ -1,17 +1,25 @@
 import Link from 'next/link'
 import ThemeToggle from 'components/ThemeToggle'
 import { Logo } from 'components/Logo'
+import { useCallback } from 'react'
 import {
   ArrowRightIcon,
   CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
-import { useRecoilValue, useRecoilState, waitForAll } from 'recoil'
+import {
+  useRecoilValue,
+  useRecoilState,
+  waitForAll,
+  useSetRecoilState,
+} from 'recoil'
 import {
   connectedWalletAtom,
   walletAddress as walletAddressSelector,
   installWarningVisibleAtom,
+  chainWarningVisibleAtom,
+  chainDisabledAtom,
 } from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
@@ -23,23 +31,27 @@ import { SITE_TITLE } from '../util/constants'
 
 function WalletConnect() {
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
-  const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
-    installWarningVisibleAtom
-  )
+  const setInstallWarningVisible = useSetRecoilState(installWarningVisibleAtom)
+  const setChainWarningVisible = useSetRecoilState(chainWarningVisibleAtom)
+  const chainDisabled = useRecoilValue(chainDisabledAtom)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const handleConnect = () => {
+  const handleConnect = useCallback(() => {
     if (!wallet) {
       if (!(window as any).keplr) {
         setInstallWarningVisible(true)
       } else {
-        setInstallWarningVisible(false)
-        setWallet('keplr')
+        if (chainDisabled) {
+          setChainWarningVisible(true)
+        } else {
+          setInstallWarningVisible(false)
+          setWallet('keplr')
+        }
       }
     } else {
       setWallet('')
     }
-  }
+  }, [chainDisabled, wallet])
 
   return (
     <div className="flex flex-grow md:flex-grow-0 mt-4">
