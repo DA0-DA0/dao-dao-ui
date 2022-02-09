@@ -1,58 +1,79 @@
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
-import { UserIcon } from '@heroicons/react/outline'
+import { DownloadIcon, UserIcon } from '@heroicons/react/outline'
 import { Address } from 'components/Address'
-import { useRecoilValue } from 'recoil'
+import { useEffect, useState } from 'react'
+import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 import { walletAddress as selectWalletAddress } from 'selectors/cosm'
+import {
+  proposalTallySelector,
+  proposalVotesSelector,
+} from 'selectors/proposals'
 
-function ProposalVotes({ votes }: { votes: VoteInfo[] }) {
-  const walletAddress = useRecoilValue(selectWalletAddress)
+export function PaginatedProposalVotes({
+  contractAddress,
+  proposalId,
+}: {
+  contractAddress: string
+  proposalId: number
+}) {
+  const [firstLoadedVoter, setFirstLoadedVoter] = useState<undefined | string>(
+    undefined
+  )
+  const [votes, setVotes] = useState<VoteInfo[]>([])
+
+  const newVotes = useRecoilValueLoadable(
+    proposalVotesSelector({
+      contractAddress,
+      proposalId,
+      startAfter: firstLoadedVoter,
+    })
+  )
+  const voteTally = useRecoilValue(
+    proposalTallySelector({ contractAddress, proposalId })
+  )
+  const totalVotes = voteTally.total_votes
+  const showLoadMore =
+    votes.reduce((sum, vote) => sum + Number(vote.weight), 0) <
+    Number(totalVotes)
+
+  useEffect(() => {
+    const value = newVotes.valueMaybe()
+    if (value && !votes.some((v) => v.voter === value[0].voter)) {
+      setVotes((v) => v.concat(value))
+    }
+  }, [newVotes, votes])
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table w-full">
-        <thead>
-          <tr>
-            <th>Voter</th>
-            <th>Weight</th>
-            <th>Vote</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!votes ||
-            (votes.length < 1 && (
-              <tr>
-                <td className="text-center" colSpan={3}>
-                  This proposal currently has no votes
-                </td>
-              </tr>
-            ))}
-          {votes.map(({ voter, weight, vote }) => {
-            if (voter === walletAddress) {
-              return (
-                <tr key={voter}>
-                  <td>
-                    <UserIcon className="h-4 w-4 mb-1 mr-1 inline" />
-                    You
-                  </td>
-                  <td>{weight}</td>
-                  <td>{vote}</td>
-                </tr>
-              )
-            }
+    <>
+      <h3 className="font-medium text-xl my-5">Votes</h3>
+      <div className="overflow-x-auto">
+        <div className="grid grid-cols-3 text-sm text-secondary mb-2">
+          <p>Voter</p>
+          <p>Weight</p>
+          <p>Vote</p>
+        </div>
+        <ul className="list-none">
+          {votes.map((vote, idx) => {
             return (
-              <tr key={voter}>
-                <td>
-                  <Address address={voter} />
-                </td>
-                <td>{weight}</td>
-                <td>{vote}</td>
-              </tr>
+              <li className="grid grid-cols-3 items-center" key={idx}>
+                <Address address={vote.voter} />
+                <span className="font-mono text-sm">{vote.weight}</span>
+                <span>{vote.vote}</span>
+              </li>
             )
           })}
-        </tbody>
-      </table>
-    </div>
+        </ul>
+        {showLoadMore && (
+          <button
+            className="btn btn-sm btn-outline border-base-300 normal-case text-left text-sm font-mono mt-5 text-sm"
+            onClick={() => {
+              setFirstLoadedVoter(votes[votes.length - 1]?.voter)
+            }}
+          >
+            Load more <DownloadIcon className="inline w-5 h-5 ml-1" />
+          </button>
+        )}
+      </div>
+    </>
   )
 }
-
-export default ProposalVotes
