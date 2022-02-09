@@ -100,6 +100,8 @@ function DaoHome() {
     expanded ? 6 : 1
   } overflow-auto mb-3 min-h-screen`
 
+  const buttonClassName = expanded ? '' : 'mr-6'
+
   return (
     <div className={gridClassName}>
       <div className="col-span-4 min-h-screen">
@@ -111,17 +113,19 @@ function DaoHome() {
                 [router.asPath, daoInfo.config.name],
               ]}
             />
-            <StarButton
-              pinned={pinned}
-              onPin={() => {
-                if (pinned) {
-                  setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-                } else {
-                  setPinnedDaos((p) => p.concat([contractAddress]))
-                  addToken(daoInfo.gov_token)
-                }
-              }}
-            />
+            <div className={buttonClassName}>
+              <StarButton
+                pinned={pinned}
+                onPin={() => {
+                  if (pinned) {
+                    setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+                  } else {
+                    setPinnedDaos((p) => p.concat([contractAddress]))
+                    addToken(daoInfo.gov_token)
+                  }
+                }}
+              />
+            </div>
           </div>
 
           <HeroContractHeader
@@ -178,7 +182,7 @@ function DaoHome() {
         </div>
       </div>
       <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
           <h2 className="font-medium text-md">Your shares</h2>
           <ul className="list-none mt-3">
             <li>

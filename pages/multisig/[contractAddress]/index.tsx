@@ -93,6 +93,7 @@ function MultisigHome() {
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
+  const buttonClassName = expanded ? '' : 'mr-6'
 
   return (
     <div className={gridClassName}>
@@ -105,16 +106,18 @@ function MultisigHome() {
                 [router.asPath, sigInfo.config.name],
               ]}
             />
-            <StarButton
-              pinned={pinned}
-              onPin={() => {
-                if (pinned) {
-                  setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
-                } else {
-                  setPinnedSigs((p) => p.concat([contractAddress]))
-                }
-              }}
-            />
+            <div className={buttonClassName}>
+              <StarButton
+                pinned={pinned}
+                onPin={() => {
+                  if (pinned) {
+                    setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+                  } else {
+                    setPinnedSigs((p) => p.concat([contractAddress]))
+                  }
+                }}
+              />
+            </div>
           </div>
 
           <HeroContractHeader
@@ -156,7 +159,7 @@ function MultisigHome() {
         </div>
       </div>
       <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
           <hr className="mt-8 mb-6" />
           {visitorWeight && (
             <>

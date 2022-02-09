@@ -109,7 +109,7 @@ const Starred: NextPage = () => {
         </div>
       </div>
       <Sidebar>
-        <div className="col-span-2 p-6">
+        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
           <h2 className="font-medium text-lg">Actions</h2>
           <ul className="list-none ml-2 mt-1">
             <li className="mt-1">

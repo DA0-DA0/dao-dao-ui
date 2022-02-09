@@ -125,6 +125,7 @@ const DaoList: NextPage = () => {
   )
 
   const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
+  const buttonClassName = expanded ? '' : 'mr-10'
 
   return (
     <div className={gridClassName}>
@@ -132,12 +133,14 @@ const DaoList: NextPage = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">DAOs</h1>
           <Link href="/dao/create" passHref>
-            <Button
-              size="sm"
-              iconAfter={<PlusIcon className="inline h-4 w-4" />}
-            >
-              Create a DAO
-            </Button>
+            <div className={buttonClassName}>
+              <Button
+                size="sm"
+                iconAfter={<PlusIcon className="inline h-4 w-4" />}
+              >
+                Create a DAO
+              </Button>
+            </div>
           </Link>
         </div>
         <div className="mt-6">
