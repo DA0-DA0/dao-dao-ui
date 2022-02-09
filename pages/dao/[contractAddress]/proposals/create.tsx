@@ -5,7 +5,7 @@ import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 import { useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -17,6 +17,7 @@ import { defaultExecuteFee } from 'util/fee'
 import { cleanChainError } from 'util/cleanChainError'
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { proposalsCreatedAtom } from 'atoms/proposals'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -27,14 +28,21 @@ const ProposalCreate: NextPage = () => {
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
+  const setProposalsCreated = useSetRecoilState(
+    proposalsCreatedAtom(contractAddress)
+  )
+
   const [proposalLoading, setProposalLoading] = useState(false)
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
+    console.log(d)
     let cosmMsgs = d.messages.map((m: MessageTemplate) => {
-      const toCosmosMsg = messageTemplates.find(
+      const template = messageTemplates.find(
         (template) => template.label === m.label
-      )?.toCosmosMsg
+      )
+
+      const toCosmosMsg = template?.toCosmosMsg
 
       // Unreachable.
       if (!toCosmosMsg) return {}
@@ -95,6 +103,9 @@ const ProposalCreate: NextPage = () => {
           'wasm',
           'proposal_id'
         ).value
+
+        setProposalsCreated((n) => n + 1)
+
         router.push(`/dao/${contractAddress}/proposals/${proposalId}`)
       })
       .finally(() => setProposalLoading(false))
