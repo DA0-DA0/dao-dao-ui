@@ -12,6 +12,7 @@ import {
 } from '../selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
+import { treasuryTokenListUpdates } from '../atoms/treasury'
 
 export { walletAddress }
 
@@ -31,6 +32,8 @@ export const cw20Balances = selectorFamily({
   get:
     (address: string) =>
     async ({ get }) => {
+      // Invalidate state if the token list has been updated.
+      get(treasuryTokenListUpdates(address))
       const client = get(cosmWasmClient)
       const response = (await client.queryContractSmart(address, {
         cw20_balances: {},
@@ -49,6 +52,21 @@ export const cw20TokenInfo = selectorFamily({
         token_info: {},
       })) as TokenInfoResponse
       return response
+    },
+})
+
+export const cw20TokensList = selectorFamily({
+  key: 'Cw20TokensList',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const tokens: string[] = (
+        await client.queryContractSmart(address, {
+          cw20_token_list: {},
+        })
+      ).token_list
+      return tokens
     },
 })
 

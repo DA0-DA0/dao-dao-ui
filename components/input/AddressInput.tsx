@@ -1,3 +1,4 @@
+import { ChangeEventHandler } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -11,10 +12,12 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   register,
   error,
   validation,
+  onChange,
   border = true,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
+  onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   border?: boolean
@@ -29,7 +32,7 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
       className={`input text-sm font-mono
         ${error ? ' input-error' : ''}
         ${border ? ' input-bordered' : ''}`}
-      {...register(label, { validate })}
+      {...register(label, { validate, onChange })}
     />
   )
 }

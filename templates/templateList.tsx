@@ -2,6 +2,11 @@ import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
 import { Config } from 'util/contractConfigWrapper'
 import {
+  AddTokenComponent,
+  addTokenDefaults,
+  transformAddTokenToCosmos,
+} from './addToken'
+import {
   DAOConfigUpdateDefaults,
   DAOUpdateConfigComponent,
   transformDAOToConfigUpdateCosmos,
@@ -12,6 +17,11 @@ import {
   transformCustomToCosmos,
 } from './custom'
 import { MintComponent, mintDefaults, transformMintToCosmos } from './mint'
+import {
+  RemoveTokenComponent,
+  removeTokenDefaults,
+  transformRemoveTokenToCosmos,
+} from './removeToken'
 import { SpendComponent, spendDefaults, transformSpendToCosmos } from './spend'
 
 // Adding a template to this list will cause it to be avaliable
@@ -44,6 +54,20 @@ export const messageTemplates: MessageTemplate[] = [
     multisigSupport: false,
     getDefaults: DAOConfigUpdateDefaults,
     toCosmosMsg: transformDAOToConfigUpdateCosmos,
+  },
+  {
+    label: '🔘 Add Treasury Token',
+    component: AddTokenComponent,
+    multisigSupport: true,
+    getDefaults: addTokenDefaults,
+    toCosmosMsg: transformAddTokenToCosmos,
+  },
+  {
+    label: '⭕️ Remove Treasury Token',
+    component: RemoveTokenComponent,
+    multisigSupport: true,
+    getDefaults: removeTokenDefaults,
+    toCosmosMsg: transformRemoveTokenToCosmos,
   },
 ]
 

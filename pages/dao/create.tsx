@@ -16,7 +16,13 @@ import { isValidName, isValidTicker } from 'util/isValidTicker'
 import { cleanChainError } from 'util/cleanChainError'
 import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  atom,
+  selector,
+  useRecoilValue,
+  useRecoilState,
+  useSetRecoilState,
+} from 'recoil'
 import {
   validateAddress,
   validateContractAddress,
@@ -32,7 +38,6 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { cw20TokenInfo } from 'selectors/treasury'
 import { InputLabel } from '@components/input/InputLabel'
 import { TextInput } from '@components/input/TextInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
@@ -186,33 +191,39 @@ const CreateDao: NextPage = () => {
   const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
-    DEFAULT_MAX_VOTING_PERIOD_SECONDS
-  )
-  const [unstakingDurationSeconds, setUnstakingDurationSeconds] = useState(
-    DEFAULT_UNSTAKING_DURATION_SECONDS
-  )
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<DaoCreateData>()
+
+  const votingPeriodSeconds = watch('duration')
+  const unstakingDurationSeconds = watch('unstakingDuration')
 
   const [tokenMode, setTokenMode] = useState(TokenMode.Create)
 
   // Maps address rows to their token weights. Used to surface
   // warnings about minority rule.
-  const setTokenWeights = useSetRecoilState(tokenWeightsAtom)
+  const [tokenWeights, setTokenWeights] = useRecoilState(tokenWeightsAtom)
+
   // Holds the threshold for a vote to pass as the form is being
   // filled out. Used to surface warnings about minority rule.
   const setPassThreshold = useSetRecoilState(passThresholdAtom)
   // Holds the initial balance of the DAO which needs to be treated
   // different than wallet balance in detecting problematic token
   // distributions.
-  const setDaoInitialBalance = useSetRecoilState(daoInitialBalanceAtom)
+  const [daoInitialBalance, setDaoInitialBalance] = useRecoilState(
+    daoInitialBalanceAtom
+  )
+
+  // Total supply
+  const totalTokenSupply =
+    daoInitialBalance +
+    tokenWeights.reduce((accum, weight) => accum + weight, 0)
 
   const setPinnedDaos = useSetRecoilState(pinnedDaosAtom)
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<DaoCreateData>()
 
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
@@ -445,21 +456,31 @@ const CreateDao: NextPage = () => {
                 <h2 className="mt-8 mb-2 text-lg">Token distribution</h2>
 
                 <div className="grid grid-cols-3 gap-2 mt-3">
-                  <div className="form-control col-span-1">
-                    <InputLabel name="Initial treasury balance" />
-                    <NumberInput
-                      label="daoInitialBalance"
-                      register={register}
-                      error={errors.daoInitialBalance}
-                      validation={[validateRequired, validateNonNegative]}
-                      defaultValue="0"
-                      step={0.000001}
-                      onChange={(e) => {
-                        const val = e?.target?.value
-                        setDaoInitialBalance(Number(val))
-                      }}
-                    />
-                    <InputErrorMessage error={errors.daoInitialBalance} />
+                  <div className="col-span-3">
+                    <div className="flex flex-row justify-between">
+                      <div className="form-control">
+                        <InputLabel name="Initial treasury balance" />
+                        <NumberInput
+                          label="daoInitialBalance"
+                          register={register}
+                          error={errors.daoInitialBalance}
+                          validation={[validateRequired, validateNonNegative]}
+                          defaultValue="0"
+                          step={0.000001}
+                          onChange={(e) => {
+                            const val = e?.target?.value
+                            setDaoInitialBalance(Number(val))
+                          }}
+                        />
+                        <InputErrorMessage error={errors.daoInitialBalance} />
+                      </div>
+                      <div className="flex flex-col flex-end items-end">
+                        <InputLabel name="Total token supply" />
+                        <div className="w-min">
+                          {totalTokenSupply.toLocaleString(undefined)}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="col-span-2"></div>
 
@@ -592,7 +613,6 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.duration}
                 validation={[validateRequired, validatePositive]}
-                onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
                 defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
               />
               <InputErrorMessage error={errors.duration} />
@@ -628,7 +648,6 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.unstakingDuration}
                 validation={[validateRequired]}
-                onChange={(e) => setUnstakingDurationSeconds(e?.target?.value)}
                 defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
               />
               <InputErrorMessage error={errors.unstakingDuration} />

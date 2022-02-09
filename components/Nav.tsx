@@ -3,53 +3,19 @@ import ThemeToggle from 'components/ThemeToggle'
 import { Logo } from 'components/Logo'
 import {
   ArrowRightIcon,
-  CashIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
-import { useRecoilValue, useRecoilState, waitForAll } from 'recoil'
-import {
-  connectedWalletAtom,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
+import { useRecoilValue, waitForAll } from 'recoil'
+
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { Button } from '@components'
+
 import { showBetaNoticeAtom } from 'atoms/status'
 import { MenuIcon } from '@heroicons/react/outline'
 import { SITE_TITLE } from '../util/constants'
-
-function WalletConnect() {
-  const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
-  const walletAddress = useRecoilValue(walletAddressSelector)
-
-  const handleConnect = () => {
-    if (!wallet) {
-      setWallet('keplr')
-    } else {
-      setWallet('')
-    }
-  }
-
-  return (
-    <div className="flex flex-grow md:flex-grow-0 mt-4">
-      {walletAddress ? (
-        <Button full onClick={handleConnect}>
-          {walletAddress}
-        </Button>
-      ) : (
-        <Button
-          full
-          onClick={handleConnect}
-          iconBefore={<CashIcon className="inline w-4 h-4" />}
-        >
-          Connect wallet
-        </Button>
-      )}
-    </div>
-  )
-}
+import ConnectWalletButton from './ConnectWalletButton'
 
 function MemberDisplay({ name }: { name: string }) {
   return (
@@ -90,13 +56,13 @@ function Nav({ onMenuClick }: NavProps) {
               <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
             </a>
           </Link>
-          <div className="text-error font-mono pl-3">Beta</div>
+          <div className="text-error font-mono lg:pl-3">Beta</div>
 
           <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
             <MenuIcon className="w-8" />
           </div>
         </div>
-        <WalletConnect />
+        <ConnectWalletButton />
         <div className="ml-1">
           <div className="mt-3">
             <h3 className="text-secondary font-mono mb-1">DAOs</h3>

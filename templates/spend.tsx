@@ -11,7 +11,11 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
+import {
+  convertDenomToContractReadableDenom,
+  convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
+} from 'util/conversion'
 import {
   validateAddress,
   validatePositive,
@@ -33,7 +37,9 @@ export const spendDefaults = (
   return {
     to: walletAddress,
     amount: 1,
-    denom: process.env.NEXT_PUBLIC_FEE_DENOM,
+    denom: convertDenomToHumanReadableDenom(
+      process.env.NEXT_PUBLIC_FEE_DENOM as string
+    ),
   }
 }
 
@@ -71,6 +77,7 @@ export const SpendComponent = ({
             register={register}
             error={errors.amount}
             validation={[validateRequired, validatePositive]}
+            step={0.000001}
             border={false}
           />
           <InputErrorMessage error={errors.amount} />
@@ -82,7 +89,11 @@ export const SpendComponent = ({
           defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
           border={false}
         >
-          <option>{process.env.NEXT_PUBLIC_FEE_DENOM}</option>
+          <option>
+            {convertDenomToHumanReadableDenom(
+              process.env.NEXT_PUBLIC_FEE_DENOM as string
+            )}
+          </option>
           {govTokenDenom && <option>${govTokenDenom}</option>}
         </SelectInput>
         <div className="flex gap-2 items-center">
@@ -110,12 +121,18 @@ export const transformSpendToCosmos = (
   self: SpendData,
   props: ToCosmosMsgProps
 ) => {
-  if (self.denom === process.env.NEXT_PUBLIC_FEE_DENOM) {
+  if (
+    self.denom ===
+    convertDenomToHumanReadableDenom(
+      process.env.NEXT_PUBLIC_FEE_DENOM as string
+    )
+  ) {
     const amount = convertDenomToMicroDenomWithDecimals(
       self.amount,
       NATIVE_DECIMALS
     )
-    const bank = makeBankMessage(amount, self.to, props.sigAddress, self.denom)
+    const microDenom = convertDenomToContractReadableDenom(self.denom)
+    const bank = makeBankMessage(amount, self.to, props.sigAddress, microDenom)
     return { bank }
   }
   const amount = convertDenomToMicroDenomWithDecimals(

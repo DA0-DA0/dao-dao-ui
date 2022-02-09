@@ -3,7 +3,7 @@ import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { Address } from './Address'
-import ProposalVotes from 'components/ProposalVotes'
+import { PaginatedProposalVotes } from 'components/ProposalVotes'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
 import toast from 'react-hot-toast'
@@ -15,13 +15,13 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
-import { daoSelector, isMemberSelector } from 'selectors/daos'
+import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
   proposalTallySelector,
   proposalVotesSelector,
 } from 'selectors/proposals'
-import { cw20TokenInfo, walletTokenBalanceLoading } from 'selectors/treasury'
+import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 import { defaultExecuteFee } from 'util/fee'
@@ -31,12 +31,12 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
-import { NATIVE_DECIMALS } from 'util/constants'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
+import { MarkdownPreview } from 'components/MarkdownPreview'
+import { treasuryTokenListUpdates } from '../atoms/treasury'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -232,6 +232,9 @@ function ProposalExecuteButton({
   const setProposalsUpdated = useSetRecoilState(
     proposalsUpdated(contractAddress)
   )
+  const setTreasuryTokenListUpdates = useSetRecoilState(
+    treasuryTokenListUpdates(contractAddress)
+  )
 
   const ready = walletAddress && signingClient && member
   const tooltip =
@@ -258,6 +261,7 @@ function ProposalExecuteButton({
             setProposalsUpdated((p) =>
               p.includes(proposalId) ? p : p.concat([proposalId])
             )
+            setTreasuryTokenListUpdates((n) => n + 1)
           },
           setLoading
         )
@@ -445,6 +449,9 @@ export function ProposalDetails({
   const tokenDecimals = configWrapper.gov_token_decimals
   const member = useRecoilValue(isMemberSelector(contractAddress))
   const visitorAddress = useRecoilValue(walletAddressSelector)
+
+  // FIXME: We only get 30 votes from a single query. How do we determine if
+  // someone has voted in a proposal without multiple queries?
   const voted = proposalVotes.some((v) => v.voter === visitorAddress)
 
   const [actionLoading, setActionLoading] = useRecoilState(
@@ -482,7 +489,9 @@ export function ProposalDetails({
 
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+      <div className="max-w-prose">
+        <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+      </div>
       {actionLoading && (
         <div className="mt-3">
           <ExecutingButton />
@@ -519,18 +528,21 @@ export function ProposalDetails({
           )}
         </div>
       )}
-      <p className="text-medium mt-6 font-sans leading-5">
-        {proposal.description}
-      </p>
+      <div className="mt-6">
+        <MarkdownPreview markdown={proposal.description} />
+      </div>
       {decodedMessages?.length ? (
-        <pre className="overflow-auto mt-6 border rounded-lg p-3 text-secondary border-secondary">
+        <pre className="overflow-auto my-6 border rounded-lg p-3 text-secondary border-secondary">
           {decodedMessagesString(proposal)}
         </pre>
       ) : (
         <pre></pre>
       )}
       <div className="mt-6">
-        <ProposalVotes votes={proposalVotes} />
+        <PaginatedProposalVotes
+          contractAddress={contractAddress}
+          proposalId={proposalId}
+        />
       </div>
     </div>
   )

@@ -34,7 +34,6 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { isUndefined } from 'lodash'
 
 export enum StakingMode {
   Stake,

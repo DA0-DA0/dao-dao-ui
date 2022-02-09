@@ -111,23 +111,29 @@ export const proposalSelector = selectorFamily<
 
 export const proposalVotesSelector = selectorFamily<
   VoteInfo[],
-  { contractAddress: string; proposalId: number }
+  { contractAddress: string; proposalId: number; startAfter?: string }
 >({
   key: 'proposalVotesSelector',
   get:
     ({
       contractAddress,
       proposalId,
+      startAfter,
     }: {
       contractAddress: string
       proposalId: number
+      startAfter?: string
     }) =>
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
       try {
         const client = get(cosmWasmClient)
         const votes = await client.queryContractSmart(contractAddress, {
-          list_votes: { proposal_id: proposalId },
+          list_votes: {
+            proposal_id: proposalId,
+            ...(startAfter && { start_after: startAfter }),
+            limit: 30,
+          },
         })
         return votes.votes
       } catch (e) {
@@ -193,7 +199,6 @@ export const proposalsSelector = selectorFamily<
   get:
     ({ contractAddress, startBefore, limit }) =>
     async ({ get }) => {
-      console.log(`proposalsSelector startBefore:${startBefore}`)
       let draftProposalItems: ExtendedProposalResponse[] = []
       // Add in draft proposals:
       const draftProposals = get(draftProposalsSelector(contractAddress))
