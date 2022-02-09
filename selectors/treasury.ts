@@ -12,7 +12,7 @@ import {
 } from '../selectors/cosm'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
-import { treasuryTokenListUpdates } from 'atoms/treasury'
+import { treasuryTokenListUpdates } from '../atoms/treasury'
 
 export { walletAddress }
 
