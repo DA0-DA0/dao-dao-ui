@@ -3,7 +3,7 @@ import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { Address } from './Address'
-import ProposalVotes from 'components/ProposalVotes'
+import { PaginatedProposalVotes } from 'components/ProposalVotes'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
 import toast from 'react-hot-toast'
@@ -35,8 +35,8 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import { MarkdownPreview } from './MarkdownPreview'
-import { treasuryTokenListUpdates } from 'atoms/treasury'
+import { MarkdownPreview } from 'components/MarkdownPreview'
+import { treasuryTokenListUpdates } from '../atoms/treasury'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -449,6 +449,9 @@ export function ProposalDetails({
   const tokenDecimals = configWrapper.gov_token_decimals
   const member = useRecoilValue(isMemberSelector(contractAddress))
   const visitorAddress = useRecoilValue(walletAddressSelector)
+
+  // FIXME: We only get 30 votes from a single query. How do we determine if
+  // someone has voted in a proposal without multiple queries?
   const voted = proposalVotes.some((v) => v.voter === visitorAddress)
 
   const [actionLoading, setActionLoading] = useRecoilState(
@@ -536,7 +539,10 @@ export function ProposalDetails({
         <pre></pre>
       )}
       <div className="mt-6">
-        <ProposalVotes votes={proposalVotes} />
+        <PaginatedProposalVotes
+          contractAddress={contractAddress}
+          proposalId={proposalId}
+        />
       </div>
     </div>
   )
