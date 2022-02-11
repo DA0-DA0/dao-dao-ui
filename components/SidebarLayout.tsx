@@ -1,10 +1,13 @@
 import { ReactNode } from 'react'
-import { MenuIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
-import { Logo } from './Logo'
+
 import Link from 'next/link'
-import Nav from './Nav'
+
+import { MenuIcon } from '@heroicons/react/outline'
+
 import { SITE_TITLE } from '../util/constants'
+import { Logo } from './Logo'
+import Nav from './Nav'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (

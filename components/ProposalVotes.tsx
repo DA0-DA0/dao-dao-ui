@@ -1,8 +1,11 @@
+import { useEffect, useState } from 'react'
+
+import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
+
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
 import { DownloadIcon, UserIcon } from '@heroicons/react/outline'
+
 import { Address } from 'components/Address'
-import { useEffect, useState } from 'react'
-import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 import { walletAddress as selectWalletAddress } from 'selectors/cosm'
 import {
   proposalTallySelector,

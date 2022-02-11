@@ -1,13 +1,16 @@
+import { ReactNode } from 'react'
+
+import Link from 'next/link'
+
 import {
   PlusIcon,
   ScaleIcon,
   StarIcon as StarIconOutline,
 } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
-import Link from 'next/link'
-import { ReactNode } from 'react'
-import { Logo } from './Logo'
+
 import { CARD_IMAGES_ENABLED } from '../util/constants'
+import { Logo } from './Logo'
 
 function DIYLogo({
   title,

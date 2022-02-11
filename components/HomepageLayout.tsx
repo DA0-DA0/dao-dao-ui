@@ -1,5 +1,7 @@
-import Head from 'next/head'
 import { ReactNode } from 'react'
+
+import Head from 'next/head'
+
 import { SITE_TITLE } from 'util/constants'
 
 export function HomepageLayout({ children }: { children: ReactNode }) {

@@ -1,10 +1,12 @@
+import { useRecoilState, useRecoilValue } from 'recoil'
+
+import { loadingAtom } from 'atoms/status'
 import {
   draftProposalSelector,
   draftProposalsSelector,
 } from 'selectors/proposals'
-import { useRecoilState, useRecoilValue } from 'recoil'
+
 import { ProposalStatus } from './ProposalStatus'
-import { loadingAtom } from 'atoms/status'
 
 export function ProposalDraftSidebar({
   contractAddress,

@@ -1,5 +1,6 @@
-import { MessageAction } from '../util/messagehelpers'
 import { ChangeEvent } from 'react'
+
+import { MessageAction } from '../util/messagehelpers'
 
 export default function MessageSelector({
   actions,

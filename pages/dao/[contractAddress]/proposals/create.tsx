@@ -1,11 +1,17 @@
+import { useState } from 'react'
+
+import type { NextPage } from 'next'
+import { NextRouter, useRouter } from 'next/router'
+
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import type { NextPage } from 'next'
-import { NextRouter, useRouter } from 'next/router'
-import { useState } from 'react'
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+import { proposalsCreatedAtom } from 'atoms/proposals'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -13,11 +19,8 @@ import {
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
-import { defaultExecuteFee } from 'util/fee'
 import { cleanChainError } from 'util/cleanChainError'
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { proposalsCreatedAtom } from 'atoms/proposals'
+import { defaultExecuteFee } from 'util/fee'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()

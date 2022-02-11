@@ -1,20 +1,7 @@
-import { Button } from '@components'
-import {
-  LibraryIcon,
-  PlusIcon,
-  SparklesIcon,
-  UserIcon,
-} from '@heroicons/react/outline'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import {
-  ContractCard,
-  MysteryContractCard,
-  LoadingContractCard,
-} from 'components/ContractCard'
-import Paginator from 'components/Paginator'
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+
 import {
   useRecoilState,
   useRecoilValue,
@@ -22,12 +9,29 @@ import {
   waitForAll,
   Loadable,
 } from 'recoil'
+
+import {
+  LibraryIcon,
+  PlusIcon,
+  SparklesIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
+
+import { Button } from '@components'
+
+import { pinnedDaosAtom } from 'atoms/pinned'
+import {
+  ContractCard,
+  MysteryContractCard,
+  LoadingContractCard,
+} from 'components/ContractCard'
+import Paginator from 'components/Paginator'
+import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
 // import { cw20TokenInfo } from 'selectors/treasury'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-import { DAO_CODE_ID } from 'util/constants'
-import { pagedContractsByCodeId } from 'selectors/contracts'
 import { addToken } from 'util/addToken'
+import { DAO_CODE_ID } from 'util/constants'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 export function DaoCard({
   dao,
