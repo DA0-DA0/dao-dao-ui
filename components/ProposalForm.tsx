@@ -1,11 +1,15 @@
-import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+
 import { useRecoilValue } from 'recoil'
+
+import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+
 import { walletAddress } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { contractConfigSelector } from 'util/contractConfigWrapper'
 import { validateRequired } from 'util/formValidation'
+
 import SvgAirplane from './icons/Airplane'
 import { InputErrorMessage } from './input/InputErrorMessage'
 import { InputLabel } from './input/InputLabel'

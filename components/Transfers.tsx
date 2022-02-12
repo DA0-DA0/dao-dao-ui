@@ -1,12 +1,13 @@
+import { useRecoilValueLoadable } from 'recoil'
+
+import { IndexedTx } from '@cosmjs/stargate'
+
+import { transactions } from 'selectors/treasury'
+import { NATIVE_DECIMALS } from 'util/constants'
 import {
   convertFromMicroDenom,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
-import { useRecoilValueLoadable } from 'recoil'
-import { transactions } from 'selectors/treasury'
-
-import { IndexedTx } from '@cosmjs/stargate'
-import { NATIVE_DECIMALS } from 'util/constants'
 
 interface TxEventAttribute {
   key: string

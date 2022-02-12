@@ -5,8 +5,10 @@ import {
   forwardRef,
   ForwardedRef,
 } from 'react'
-import { useThemeContext } from 'contexts/theme'
+
 import { CashIcon } from '@heroicons/react/outline'
+
+import { useThemeContext } from 'contexts/theme'
 import daisyuiThemes from 'styles/daisyui-themes.json'
 
 const [junoLight, junoDark] = Object.keys(daisyuiThemes) || ['']

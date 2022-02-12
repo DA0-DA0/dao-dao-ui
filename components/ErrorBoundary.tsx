@@ -1,6 +1,7 @@
-import { NextRouter, useRouter } from 'next/router'
 import { Component, ErrorInfo, ReactNode } from 'react'
+
 import Link from 'next/link'
+import { NextRouter, useRouter } from 'next/router'
 
 type ErrorBoundaryProps = {
   children: ReactNode

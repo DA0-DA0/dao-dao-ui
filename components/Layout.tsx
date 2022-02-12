@@ -1,25 +1,30 @@
 import { ReactNode, useState, useEffect } from 'react'
-import LoadingScreen from 'components/LoadingScreen'
+
 import Head from 'next/head'
+
 import {
   useRecoilRefresher_UNSTABLE,
   useRecoilState,
   useSetRecoilState,
 } from 'recoil'
-import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
+
 import { Keplr } from '@keplr-wallet/types'
-import { kelprOfflineSigner, connectedWalletAtom } from 'selectors/cosm'
-import { SidebarLayout } from 'components/SidebarLayout'
-import { InstallKeplr } from './InstallKeplr'
-import ChainEnableModal from './ChainEnableModal'
-import { BetaNotice, BetaWarningModal } from './BetaWarning'
+
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
-import { SITE_TITLE } from '../util/constants'
+import LoadingScreen from 'components/LoadingScreen'
+import { SidebarLayout } from 'components/SidebarLayout'
+import { kelprOfflineSigner, connectedWalletAtom } from 'selectors/cosm'
 import {
   installWarningVisibleAtom,
   chainWarningVisibleAtom,
   chainDisabledAtom,
 } from 'selectors/cosm'
+import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
+
+import { SITE_TITLE } from '../util/constants'
+import { BetaNotice, BetaWarningModal } from './BetaWarning'
+import ChainEnableModal from './ChainEnableModal'
+import { InstallKeplr } from './InstallKeplr'
 
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 

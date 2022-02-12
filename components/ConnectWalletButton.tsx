@@ -1,4 +1,11 @@
+import { useCallback } from 'react'
+
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
+
+import { CashIcon } from '@heroicons/react/outline'
+
+import { Button } from '@components'
+
 import {
   connectedWalletAtom,
   walletAddress as walletAddressSelector,
@@ -6,9 +13,6 @@ import {
   chainWarningVisibleAtom,
   chainDisabledAtom,
 } from 'selectors/cosm'
-import { Button } from '@components'
-import { useCallback } from 'react'
-import { CashIcon } from '@heroicons/react/outline'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 

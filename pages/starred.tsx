@@ -1,14 +1,18 @@
-import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
-import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { ContractCard } from 'components/ContractCard'
 import { NextPage } from 'next'
 import Link from 'next/link'
+
 import { useRecoilState, useRecoilValue } from 'recoil'
+
+import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
+
+import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
+import { ContractCard } from 'components/ContractCard'
 import { daoSelector, isMemberSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
+
 import { MysteryDaoCard } from './dao/list'
 import { MysteryMultisigCard } from './multisig/list'
 
