@@ -1,5 +1,6 @@
-import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+
+import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
 
 /*
  * Breadcrumb style navivation bar. Expects arguments in the form [[link, name], ...].

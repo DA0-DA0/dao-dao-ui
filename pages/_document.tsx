@@ -1,6 +1,8 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document'
-import { defaultTheme } from 'components/ThemeToggle'
 import React from 'react'
+
+import Document, { Html, Head, Main, NextScript } from 'next/document'
+
+import { defaultTheme } from 'components/ThemeToggle'
 import { SITE_TITLE } from 'util/constants'
 
 class MyDocument extends Document {

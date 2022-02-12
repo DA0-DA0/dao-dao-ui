@@ -1,19 +1,7 @@
-import {
-  LibraryIcon,
-  PlusIcon,
-  SparklesIcon,
-  UserIcon,
-} from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import {
-  ContractCard,
-  MysteryContractCard,
-  LoadingContractCard,
-} from 'components/ContractCard'
-import Paginator from 'components/Paginator'
-import { pinnedMultisigsAtom } from 'atoms/pinned'
+
 import {
   useRecoilState,
   useRecoilValue,
@@ -21,9 +9,24 @@ import {
   waitForAll,
   Loadable,
 } from 'recoil'
+
+import {
+  LibraryIcon,
+  PlusIcon,
+  SparklesIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
+
+import { pinnedMultisigsAtom } from 'atoms/pinned'
+import {
+  ContractCard,
+  MysteryContractCard,
+  LoadingContractCard,
+} from 'components/ContractCard'
+import Paginator from 'components/Paginator'
+import { pagedContractsByCodeId } from 'selectors/contracts'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { pagedContractsByCodeId } from 'selectors/contracts'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Sidebar } from 'components/Sidebar'
 

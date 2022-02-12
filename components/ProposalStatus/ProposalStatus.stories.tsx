@@ -1,5 +1,7 @@
 import React from 'react'
+
 import { ComponentStory, ComponentMeta } from '@storybook/react'
+
 import { ProposalStatus } from './ProposalStatus'
 
 export default {

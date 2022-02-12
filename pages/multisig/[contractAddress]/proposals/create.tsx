@@ -1,20 +1,24 @@
-import toast from 'react-hot-toast'
-import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { useState } from 'react'
+
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useState } from 'react'
+
 import { useRecoilValue } from 'recoil'
-import { sigSelector } from 'selectors/multisigs'
+
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
+import toast from 'react-hot-toast'
+
+import { Breadcrumbs } from '@components/Breadcrumbs'
+import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import { sigSelector } from 'selectors/multisigs'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
-import { defaultExecuteFee } from 'util/fee'
 import { cleanChainError } from 'util/cleanChainError'
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { Breadcrumbs } from '@components/Breadcrumbs'
+import { defaultExecuteFee } from 'util/fee'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Sidebar } from 'components/Sidebar'
 

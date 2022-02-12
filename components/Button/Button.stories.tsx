@@ -1,10 +1,13 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
-import { Button } from './Button'
+
 import { ChevronDownIcon } from '@heroicons/react/outline'
 import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
+
 import SvgConnect from '@components/icons/Connect'
 import SvgWallet from '@components/icons/Wallet'
+
+import { Button } from './Button'
 
 export default {
   title: 'Design System / Components / Button',

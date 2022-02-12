@@ -1,3 +1,10 @@
+import React, { useEffect, useState } from 'react'
+
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+
+import { useRecoilState, useRecoilValue } from 'recoil'
+
 import {
   CheckCircleIcon,
   KeyIcon,
@@ -6,10 +13,21 @@ import {
   PlusSmIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+
+import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
+import { pinnedDaosAtom } from 'atoms/pinned'
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import {
+  ContractBalances,
+  BalanceCard,
+  ContractProposalsDispaly,
+  GradientHero,
+  HeroContractFooter,
+  HeroContractHeader,
+  StarButton,
+} from 'components/ContractView'
+import ErrorBoundary from 'components/ErrorBoundary'
+import { StakingModal, StakingMode } from 'components/StakingModal'
 import {
   daoSelector,
   isMemberSelector,
@@ -27,24 +45,10 @@ import {
   walletTokenBalance,
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-import {
-  ContractBalances,
-  BalanceCard,
-  ContractProposalsDispaly,
-  GradientHero,
-  HeroContractFooter,
-  HeroContractHeader,
-  StarButton,
-} from 'components/ContractView'
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import { StakingModal, StakingMode } from 'components/StakingModal'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
-import ErrorBoundary from 'components/ErrorBoundary'
 import { addToken } from 'util/addToken'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Sidebar } from 'components/Sidebar'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 function DaoHome() {
   const router = useRouter()

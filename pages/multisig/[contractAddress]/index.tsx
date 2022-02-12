@@ -1,9 +1,15 @@
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+
+import { useRecoilState, useRecoilValue } from 'recoil'
+
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   ScaleIcon,
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
+
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
@@ -15,9 +21,6 @@ import {
   StarButton,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useRecoilState, useRecoilValue } from 'recoil'
 import { isMemberSelector } from 'selectors/daos'
 import {
   listMembers,

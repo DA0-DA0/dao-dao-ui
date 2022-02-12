@@ -1,4 +1,5 @@
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
+
 import { GradientWrapper } from './GradientWrapper'
 
 export function InstallKeplr({ onClose }: { onClose: () => void }) {

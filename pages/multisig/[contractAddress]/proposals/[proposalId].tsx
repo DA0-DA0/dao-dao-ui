@@ -1,11 +1,13 @@
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+
+import { useRecoilValue } from 'recoil'
+
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
   ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useRecoilValue } from 'recoil'
 import { sigSelector } from 'selectors/multisigs'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Sidebar } from 'components/Sidebar'

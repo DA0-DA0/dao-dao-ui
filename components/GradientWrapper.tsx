@@ -1,5 +1,7 @@
-import { useThemeContext } from 'contexts/theme'
 import { ReactNode } from 'react'
+
+import { useThemeContext } from 'contexts/theme'
+
 import { LogoNoBorder } from './Logo'
 
 export function GradientWrapper({ children }: { children: ReactNode }) {

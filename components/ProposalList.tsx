@@ -1,14 +1,20 @@
+import { useEffect } from 'react'
+
+import Link from 'next/link'
+
+import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
+
 import { Expiration, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { DownloadIcon } from '@heroicons/react/outline'
+
+import { ProposalStatus } from '@components'
+
 import {
   proposalListAtom,
   proposalsCreatedAtom,
   proposalsRequestStartBeforeAtom,
   proposalsUpdated,
 } from 'atoms/proposals'
-import Link from 'next/link'
-import { useEffect } from 'react'
-import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
 import {
   draftProposalsSelector,
@@ -16,8 +22,8 @@ import {
   proposalSelector,
   proposalsSelector,
 } from 'selectors/proposals'
-import { ProposalStatus } from '@components'
 import { ExtendedProposalResponse } from 'types/proposals'
+
 import { draftProposalsToExtendedResponses } from '../util/proposal'
 
 const PROP_LOAD_LIMIT = 10
