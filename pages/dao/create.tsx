@@ -96,7 +96,7 @@ const daoInitialBalanceAtom = atom<number>({
 
 const passThresholdAtom = atom({
   key: 'proposalPassThreshold',
-  default: 75,
+  default: 51,
 })
 
 const smallestVoteCartelSelector = selector({
@@ -603,7 +603,7 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.threshold}
                 validation={[validateRequired, validatePercent]}
-                defaultValue="75"
+                defaultValue="51"
                 step="any"
                 onChange={(e) => setPassThreshold(Number(e?.target?.value))}
               />
