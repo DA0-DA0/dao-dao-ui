@@ -42,6 +42,7 @@ import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { Address } from './Address'
+import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 
 function executeProposalVote(
@@ -534,13 +535,11 @@ export function ProposalDetails({
           )}
         </div>
       )}
-      <div className="mt-6">
+      <div className="py-4">
         <MarkdownPreview markdown={proposal.description} />
       </div>
       {decodedMessages?.length ? (
-        <pre className="overflow-auto my-6 border rounded-lg p-3 text-secondary border-secondary">
-          {decodedMessagesString(proposal)}
-        </pre>
+        <CosmosMessageDisplay value={decodedMessagesString(proposal)} />
       ) : (
         <pre></pre>
       )}
