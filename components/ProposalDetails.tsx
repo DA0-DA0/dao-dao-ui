@@ -42,7 +42,7 @@ import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { Address } from './Address'
-import CosmosMessageDisplay from './CosmosMessageDisplay'
+import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 
 function executeProposalVote(
