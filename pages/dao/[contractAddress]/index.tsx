@@ -16,6 +16,7 @@ import {
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { pinnedDaosAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ContractBalances,
@@ -27,6 +28,7 @@ import {
   StarButton,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
+import Sidebar from 'components/Sidebar'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import {
   daoSelector,
@@ -46,8 +48,6 @@ import {
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 function DaoHome() {
@@ -100,14 +100,14 @@ function DaoHome() {
     }
   }, [shouldAddToken, daoInfo.gov_token])
 
-  const gridClassName = `grid grid-cols-${
-    expanded ? 6 : 1
-  } overflow-auto mb-3 min-h-screen`
-
-  const buttonClassName = expanded ? '' : 'mr-6'
-
   return (
-    <div className={gridClassName}>
+    <div
+      className={
+        expanded
+          ? 'grid grid-cols-6 overflow-auto mb-3 min-h-screen'
+          : 'grid grid-cols-1 overflow-auto mb-3 min-h-screen'
+      }
+    >
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
@@ -117,7 +117,7 @@ function DaoHome() {
                 [router.asPath, daoInfo.config.name],
               ]}
             />
-            <div className={buttonClassName}>
+            <div className={expanded ? '' : 'mr-6'}>
               <StarButton
                 pinned={pinned}
                 onPin={() => {

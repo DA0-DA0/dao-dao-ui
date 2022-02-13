@@ -6,7 +6,9 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { ContractCard } from 'components/ContractCard'
+import Sidebar from 'components/Sidebar'
 import { daoSelector, isMemberSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { cw20TokenInfo } from 'selectors/treasury'
@@ -15,8 +17,6 @@ import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 import { MysteryDaoCard } from './dao/list'
 import { MysteryMultisigCard } from './multisig/list'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 
 function PinnedDaoCard({ address }: { address: string }) {
   const config = useRecoilValue(daoSelector(address))
@@ -77,10 +77,8 @@ const Starred: NextPage = () => {
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="p-6 w-full col-span-4">
         <h1 className="text-2xl font-semibold">Starred</h1>
         <h2 className="text-lg mb-2 mt-6">

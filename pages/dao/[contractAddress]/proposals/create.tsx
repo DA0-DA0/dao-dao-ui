@@ -12,6 +12,8 @@ import toast from 'react-hot-toast'
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { proposalsCreatedAtom } from 'atoms/proposals'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -20,8 +22,6 @@ import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 import { defaultExecuteFee } from 'util/fee'
 
 const ProposalCreate: NextPage = () => {
@@ -117,10 +117,8 @@ const ProposalCreate: NextPage = () => {
       .finally(() => setProposalLoading(false))
   }
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[

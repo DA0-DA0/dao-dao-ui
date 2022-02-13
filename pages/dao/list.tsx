@@ -20,18 +20,18 @@ import {
 import { Button } from '@components'
 
 import { pinnedDaosAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import {
   ContractCard,
   MysteryContractCard,
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
+import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
 // import { cw20TokenInfo } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 import { DAO_CODE_ID } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
@@ -128,16 +128,13 @@ const DaoList: NextPage = () => {
     waitForAll(contracts.map((addr) => memberDaoSelector(addr)))
   )
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-  const buttonClassName = expanded ? '' : 'mr-10'
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">DAOs</h1>
           <Link href="/dao/create" passHref>
-            <div className={buttonClassName}>
+            <div className={expanded ? '' : 'mr-10'}>
               <Button
                 size="sm"
                 iconAfter={<PlusIcon className="inline h-4 w-4" />}

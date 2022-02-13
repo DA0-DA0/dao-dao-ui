@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/outline'
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ContractBalances,
@@ -21,6 +22,7 @@ import {
   StarButton,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
+import Sidebar from 'components/Sidebar'
 import { isMemberSelector } from 'selectors/daos'
 import {
   listMembers,
@@ -29,8 +31,6 @@ import {
   totalWeight,
 } from 'selectors/multisigs'
 import { cw20Balances, nativeBalance, walletAddress } from 'selectors/treasury'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -95,11 +95,8 @@ function MultisigHome() {
 
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-  const buttonClassName = expanded ? '' : 'mr-6'
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
@@ -109,7 +106,7 @@ function MultisigHome() {
                 [router.asPath, sigInfo.config.name],
               ]}
             />
-            <div className={buttonClassName}>
+            <div className={expanded ? '' : 'mr-6'}>
               <StarButton
                 pinned={pinned}
                 onPin={() => {

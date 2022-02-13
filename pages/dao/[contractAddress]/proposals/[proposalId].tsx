@@ -3,14 +3,14 @@ import { useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
   ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
+import Sidebar from 'components/Sidebar'
 import { daoSelector } from 'selectors/daos'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
@@ -19,10 +19,8 @@ const Proposal: NextPage = () => {
   const sigInfo = useRecoilValue(daoSelector(contractAddress))
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[

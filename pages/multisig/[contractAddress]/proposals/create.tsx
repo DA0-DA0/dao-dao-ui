@@ -11,6 +11,8 @@ import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -19,8 +21,6 @@ import { sigSelector } from 'selectors/multisigs'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
 import { defaultExecuteFee } from 'util/fee'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -82,10 +82,8 @@ const MultisigProposalCreate: NextPage = () => {
       .finally(() => setProposalLoading(false))
   }
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[

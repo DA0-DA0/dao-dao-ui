@@ -18,17 +18,17 @@ import {
 } from '@heroicons/react/outline'
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import {
   ContractCard,
   MysteryContractCard,
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
+import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import { Sidebar } from 'components/Sidebar'
 
 export function MultisigCard({
   multisig,
@@ -117,15 +117,12 @@ const MultisigList: NextPage = () => {
     waitForAll(contracts.map((addr) => sigMemberSelector(addr)))
   )
 
-  const gridClassName = `grid grid-cols-${expanded ? 6 : 1}`
-  const buttonClassName = expanded ? '' : 'mr-10'
-
   return (
-    <div className={gridClassName}>
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">Multisigs</h1>
-          <div className={buttonClassName}>
+          <div className={expanded ? '' : 'mr-10'}>
             <Link href="/multisig/create" passHref>
               <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
                 Create a multisig <PlusIcon className="inline w-5 h-5 ml-1" />
