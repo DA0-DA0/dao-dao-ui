@@ -5,11 +5,14 @@ import { useRecoilValue } from 'recoil'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 
-import { walletAddress } from 'selectors/treasury'
+import { daoSelector } from 'selectors/daos'
+import { walletAddress, cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
+import { toCosmMessage } from 'templates/templateTransform'
 import { contractConfigSelector } from 'util/contractConfigWrapper'
 import { validateRequired } from 'util/formValidation'
 
+import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import SvgAirplane from './icons/Airplane'
 import { InputErrorMessage } from './input/InputErrorMessage'
 import { InputLabel } from './input/InputLabel'
@@ -62,6 +65,10 @@ export function ProposalForm({
     shouldUnregister: true,
   })
 
+  const watchMessages = watch('messages')
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const tokenInfo = useRecoilValue(cw20TokenInfo(daoInfo.gov_token))
+
   return (
     <FormProvider {...formMethods}>
       <form
@@ -80,6 +87,14 @@ export function ProposalForm({
             <div className="my-6">
               <MarkdownPreview markdown={proposalDescription} />
             </div>
+            <CosmosMessageDisplay
+              value={toCosmMessage(
+                contractAddress,
+                watchMessages,
+                daoInfo,
+                tokenInfo
+              )}
+            />
           </>
         ) : (
           <>
@@ -106,44 +121,47 @@ export function ProposalForm({
           </>
         )}
         <ul className="list-none">
-          {fields.map((data, index) => {
-            const label = (data as any).label
-            const template = messageTemplates.find(
-              (template) => template.label === label
-            )
-            if (!template) {
-              // We guarentee by construction that this should never
-              // happen but might as well make it pretty if it does.
-              return (
-                <div className="text-error p-2 border border-error rounded-lg my-3 flex items-center justify-between">
-                  <p>Internal error finding template for message.</p>
-                  <button onClick={() => remove(index)} type="button">
-                    <XIcon className="h-4" />
-                  </button>
-                </div>
+          {showPreview ||
+            fields.map((data, index) => {
+              const label = (data as any).label
+              const template = messageTemplates.find(
+                (template) => template.label === label
               )
-            }
-            const Component = template.component
-            return (
-              <li key={index}>
-                <Component
-                  contractAddress={contractAddress}
-                  onRemove={() => remove(index)}
-                  getLabel={(fieldName) => `messages.${index}.${fieldName}`}
-                  errors={(errors.messages && errors.messages[index]) || {}}
-                  multisig={multisig}
-                />
-              </li>
-            )
-          })}
+              if (!template) {
+                // We guarentee by construction that this should never
+                // happen but might as well make it pretty if it does.
+                return (
+                  <div className="text-error p-2 border border-error rounded-lg my-3 flex items-center justify-between">
+                    <p>Internal error finding template for message.</p>
+                    <button onClick={() => remove(index)} type="button">
+                      <XIcon className="h-4" />
+                    </button>
+                  </div>
+                )
+              }
+              const Component = template.component
+              return (
+                <li key={index}>
+                  <Component
+                    contractAddress={contractAddress}
+                    onRemove={() => remove(index)}
+                    getLabel={(fieldName) => `messages.${index}.${fieldName}`}
+                    errors={(errors.messages && errors.messages[index]) || {}}
+                    multisig={multisig}
+                  />
+                </li>
+              )
+            })}
         </ul>
         <div className="dropdown dropdown-right mt-2">
-          <div
-            tabIndex={0}
-            className="m-1 btn normal-case btn-sm rounded-md bg-base-300 text-primary border-none hover:bg-base-200"
-          >
-            <PlusIcon className="h-5 inline mr-1" /> Add message
-          </div>
+          {showPreview || (
+            <div
+              tabIndex={0}
+              className="m-1 btn normal-case btn-sm rounded-md bg-base-300 text-primary border-none hover:bg-base-200"
+            >
+              <PlusIcon className="h-5 inline mr-1" /> Add message
+            </div>
+          )}
           <ul
             tabIndex={0}
             className="p-2 shadow menu dropdown-content rounded-md bg-base-300 border border-secondary w-max"

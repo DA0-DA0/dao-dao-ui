@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
@@ -18,7 +18,7 @@ import {
 } from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
-import { MessageTemplate, messageTemplates } from 'templates/templateList'
+import { toCosmMessage } from 'templates/templateTransform'
 import { cleanChainError } from 'util/cleanChainError'
 import { defaultExecuteFee } from 'util/fee'
 
@@ -40,23 +40,12 @@ const ProposalCreate: NextPage = () => {
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
     console.log(d)
-    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
-      const template = messageTemplates.find(
-        (template) => template.label === m.label
-      )
-
-      const toCosmosMsg = template?.toCosmosMsg
-
-      // Unreachable.
-      if (!toCosmosMsg) return {}
-
-      return toCosmosMsg(m as any, {
-        sigAddress: contractAddress,
-        govAddress: daoInfo.gov_token,
-        govDecimals: tokenInfo.decimals,
-        multisig: false,
-      })
-    })
+    let cosmMsgs = toCosmMessage(
+      contractAddress,
+      d.messages,
+      daoInfo,
+      tokenInfo
+    )
 
     if (daoInfo.config.proposal_deposit !== '0') {
       try {

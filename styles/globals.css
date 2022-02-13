@@ -36,6 +36,7 @@ menu {
 }
 
 .CodeMirror {
+  /* Find better solution to global CSS for CodeMirror component */
   height: auto !important;
   border-radius: 6px;
 }
