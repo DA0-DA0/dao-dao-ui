@@ -1,7 +1,4 @@
-import { useEffect, useState } from 'react'
-
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
-import { themeChange } from 'theme-change'
 
 import daisyuiThemes from 'styles/daisyui-themes.json'
 
@@ -13,10 +10,6 @@ export const defaultTheme = junoLight
 
 function ThemeToggle() {
   const themeContext = useThemeContext()
-
-  useEffect(() => {
-    themeChange(false)
-  })
 
   const updatedTheme = themeContext.theme !== junoLight ? junoLight : junoDark
 
@@ -32,7 +25,6 @@ function ThemeToggle() {
   return (
     <button
       type="button"
-      data-set-theme={updatedTheme}
       onClick={() => themeContext.updateTheme(updatedTheme)}
       className="flex items-center"
     >

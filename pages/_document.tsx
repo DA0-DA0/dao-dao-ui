@@ -2,7 +2,6 @@ import React from 'react'
 
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
-import { defaultTheme } from 'components/ThemeToggle'
 import { SITE_TITLE } from 'util/constants'
 
 class MyDocument extends Document {
@@ -17,7 +16,7 @@ class MyDocument extends Document {
     const url = process.env.NEXT_PUBLIC_SITE_URL
 
     return (
-      <Html data-theme={defaultTheme}>
+      <Html>
         <Head>
           <link
             rel="apple-touch-icon"
