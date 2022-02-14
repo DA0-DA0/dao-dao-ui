@@ -4,13 +4,14 @@ import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
 import { FieldErrors, useFormContext } from 'react-hook-form'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 import { NATIVE_DECIMALS } from 'util/constants'
 import {
   Config,
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
+import { cw20TokensList, cw20TokenInfo } from 'selectors/treasury'
 import {
   convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
@@ -58,11 +59,10 @@ export const SpendComponent = ({
 }) => {
   const { register } = useFormContext()
 
-  const info = useRecoilValue(
-    contractConfigSelector({ contractAddress, multisig: !!multisig })
+  const tokenList = useRecoilValue(cw20TokensList(contractAddress))
+  const cw20Info = useRecoilValue(
+    waitForAll(tokenList.map((address) => cw20TokenInfo(address)))
   )
-  const config = new ContractConfigWrapper(info)
-  const govTokenDenom = config.gov_token_symbol
 
   return (
     <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
@@ -94,7 +94,9 @@ export const SpendComponent = ({
               process.env.NEXT_PUBLIC_FEE_DENOM as string
             )}
           </option>
-          {govTokenDenom && <option>${govTokenDenom}</option>}
+          {cw20Info.map(({ symbol }, idx) => (
+            <option value={tokenList[idx]}>${symbol}</option>
+          ))}
         </SelectInput>
         <div className="flex gap-2 items-center">
           <ArrowRightIcon className="h-4" />
@@ -142,7 +144,7 @@ export const transformSpendToCosmos = (
   return makeWasmMessage({
     wasm: {
       execute: {
-        contract_addr: props.govAddress,
+        contract_addr: self.denom,
         funds: [],
         msg: {
           transfer: {
