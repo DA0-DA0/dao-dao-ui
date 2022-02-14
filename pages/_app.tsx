@@ -24,14 +24,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setTheme((theme) => {
       const savedTheme = localStorage.getItem('theme')
-      let themeToUse = theme
-      if (!savedTheme) {
-        themeToUse = DEFAULT_THEME_NAME
-      }
+      const themeToUse = savedTheme ? savedTheme : theme
       document.documentElement.setAttribute('data-theme', themeToUse)
       return themeToUse
     })
-  })
+  }, [])
 
   function updateTheme(themeName: string) {
     document.documentElement.setAttribute('data-theme', themeName)
