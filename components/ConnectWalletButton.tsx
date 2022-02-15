@@ -34,7 +34,7 @@ const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <div className="tooltip tooltip-bottom" data-tip="Copy wallet address">
+    <div className="tooltip tooltip-top" data-tip="Copy wallet address">
       <button
         type="button"
         onClick={() => {
@@ -55,7 +55,7 @@ function CopyButton({ text }: { text: string }) {
 
 function DisconnectButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="tooltip tooltip-bottom" data-tip="Disconnect wallet">
+    <div className="tooltip tooltip-top" data-tip="Disconnect wallet">
       <button type="button" onClick={onClick}>
         <LogoutIcon className="w-[18px]" />
       </button>
@@ -106,8 +106,8 @@ function WalletConnect() {
 
   if (walletAddress) {
     return (
-      <div className="transition w-full flex flex-wrap gap-4 items-center justify-between py-2 px-4 my-4 border border-secondary hover:border-accent rounded-lg group">
-        <div className="flex flex-wrap items-center justify-center gap-4">
+      <div className="w-full relative py-2 px-4 my-4 border border-secondary hover:border-accent rounded-lg group">
+        <div className="flex items-center justify-left gap-4 h-full w-full">
           <SvgWallet width="20px" height="20px" fill="currentColor" />
           <div className="font-mono text-sm">
             <span>{walletName}</span>
@@ -117,7 +117,7 @@ function WalletConnect() {
             </span>
           </div>
         </div>
-        <div className="flex gap-4 transition opacity-0 group-hover:opacity-100">
+        <div className="absolute right-2 top-1 flex gap-1 transition opacity-0 group-hover:opacity-100">
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
         </div>
