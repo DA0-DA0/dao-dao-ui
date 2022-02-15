@@ -32,7 +32,6 @@ import {
 import { cleanChainError } from 'util/cleanChainError'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
-import { defaultExecuteFee } from 'util/fee'
 import {
   validateAddress,
   validateContractAddress,
@@ -327,13 +326,7 @@ const CreateDao: NextPage = () => {
     }
 
     signingClient
-      .instantiate(
-        walletAddress,
-        DAO_CODE_ID,
-        msg,
-        data.name,
-        defaultExecuteFee
-      )
+      .instantiate(walletAddress, DAO_CODE_ID, msg, data.name, 'auto')
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
