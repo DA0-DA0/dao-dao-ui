@@ -34,7 +34,7 @@ const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <div className="tooltip tooltip-top" data-tip="Copy wallet address">
+    <div className="tooltip tooltip-left" data-tip="Copy wallet address">
       <button
         type="button"
         onClick={() => {
@@ -55,7 +55,7 @@ function CopyButton({ text }: { text: string }) {
 
 function DisconnectButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="tooltip tooltip-top" data-tip="Disconnect wallet">
+    <div className="tooltip tooltip-left" data-tip="Disconnect wallet">
       <button type="button" onClick={onClick}>
         <LogoutIcon className="w-[18px]" />
       </button>
