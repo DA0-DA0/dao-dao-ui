@@ -38,11 +38,9 @@ import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 export function DaoCard({
   dao,
   address,
-  weight,
 }: {
-  dao: any
+  dao: DaoListType
   address: string
-  weight: number
 }) {
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(address)
@@ -57,7 +55,9 @@ export function DaoCard({
       name={config.name}
       description={config.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenomWithDecimals(weight, DECIMALS)}
+      weight={convertMicroDenomToDenomWithDecimals(dao.weight, DECIMALS)}
+      balance={dao.balance}
+      proposals={dao.proposals}
       pinned={pinned}
       onPin={() => {
         if (pinned) {
@@ -91,12 +91,7 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
             return (
               dao?.dao &&
               dao?.address?.length > 0 && (
-                <DaoCard
-                  dao={dao}
-                  address={dao.address}
-                  key={idx}
-                  weight={dao.weight}
-                />
+                <DaoCard dao={dao} address={dao.address} key={idx} />
               )
             )
           })

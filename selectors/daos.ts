@@ -1,10 +1,18 @@
 import { cosmWasmClient, voterInfoSelector } from 'selectors/cosm'
 import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
-import { DAO_CODE_ID } from 'util/constants'
-import { ConfigResponse, Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { DAO_CODE_ID, NATIVE_DENOM } from 'util/constants'
+import {
+  Config,
+  ConfigResponse,
+  Duration,
+} from '@dao-dao/types/contracts/cw3-dao'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { walletAddress, walletTokenBalanceUpdateCountAtom } from './treasury'
+import {
+  nativeBalance,
+  walletAddress,
+  walletTokenBalanceUpdateCountAtom,
+} from './treasury'
 
 export interface MemberStatus {
   member: boolean
@@ -14,8 +22,11 @@ export interface MemberStatus {
 export interface DaoListType {
   address: string
   member: boolean
-  dao: any
+  gov_token: string
+  dao: Config
   weight: number
+  proposals: number
+  balance: string
 }
 
 export const tokenConfig = selectorFamily<TokenInfoResponse, string>({
@@ -94,12 +105,18 @@ export const memberDaoSelector = selectorFamily<DaoListType, string>({
     async ({ get }) => {
       const daoResponse = get(daoSelector(contractAddress))
       const { member, weight } = get(isMemberSelector(contractAddress))
+      const proposals = get(proposalCount(contractAddress))
+      const balance = get(nativeBalance(contractAddress))
+      const chainBalance = balance.find((coin) => coin.denom == NATIVE_DENOM)
+      const chainNativeBalance = chainBalance?.amount || '0'
       return {
         dao: daoResponse.config,
         gov_token: daoResponse.gov_token,
         address: contractAddress,
         member,
         weight,
+        proposals,
+        balance: chainNativeBalance,
       }
     },
 })

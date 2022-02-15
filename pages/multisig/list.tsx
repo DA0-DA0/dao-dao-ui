@@ -27,8 +27,10 @@ import {
 import Paginator from 'components/Paginator'
 import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
+import { proposalCount } from 'selectors/daos'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
-import { MULTISIG_CODE_ID } from 'util/constants'
+import { nativeBalance } from 'selectors/treasury'
+import { MULTISIG_CODE_ID, NATIVE_DENOM } from 'util/constants'
 
 export function MultisigCard({
   multisig,
@@ -40,12 +42,19 @@ export function MultisigCard({
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(address)
 
+  const proposals = useRecoilValue(proposalCount(address))
+  const balance = useRecoilValue(nativeBalance(address))
+  const chainBalance = balance.find((coin) => coin.denom == NATIVE_DENOM)
+  const chainNativeBalance = chainBalance?.amount || '0'
+
   return (
     <ContractCard
       name={multisig.name}
       description={multisig.description}
       href={`/multisig/${address}`}
       weight={multisig.weight}
+      proposals={proposals}
+      balance={chainNativeBalance}
       pinned={pinned}
       onPin={() => {
         if (pinned) {
