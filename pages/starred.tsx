@@ -9,39 +9,48 @@ import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { ContractCard } from 'components/ContractCard'
 import Sidebar from 'components/Sidebar'
-import { daoSelector, isMemberSelector } from 'selectors/daos'
+import {
+  isMemberSelector,
+  memberDaoSelector,
+  proposalCount,
+} from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
-import { cw20TokenInfo } from 'selectors/treasury'
+import { cw20TokenInfo, nativeBalance } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
+import { NATIVE_DENOM } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 import { MysteryDaoCard } from './dao/list'
 import { MysteryMultisigCard } from './multisig/list'
 
 function PinnedDaoCard({ address }: { address: string }) {
-  const config = useRecoilValue(daoSelector(address))
-  const daoConfig = config.config
-  const weight = useRecoilValue(isMemberSelector(address)).weight
-  const tokenInfo = useRecoilValue(cw20TokenInfo(config.gov_token))
+  const listInfo = useRecoilValue(memberDaoSelector(address))
+  const tokenInfo = useRecoilValue(cw20TokenInfo(listInfo.gov_token))
+
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(address)
 
   return (
     <ContractCard
-      name={daoConfig.name}
-      description={daoConfig.description}
+      name={listInfo.dao.name}
+      description={listInfo.dao.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenomWithDecimals(weight, tokenInfo.decimals)}
+      weight={convertMicroDenomToDenomWithDecimals(
+        listInfo.weight,
+        tokenInfo.decimals
+      )}
+      balance={listInfo.balance}
+      proposals={listInfo.proposals}
       pinned={pinned}
       onPin={() => {
         if (pinned) {
           setPinnedDaos((p) => p.filter((a) => a !== address))
         } else {
           setPinnedDaos((p) => p.concat([address]))
-          addToken(config.gov_token)
+          addToken(listInfo.gov_token)
         }
       }}
-      imgUrl={daoConfig.image_url}
+      imgUrl={listInfo.dao.image_url}
     />
   )
 }
@@ -49,6 +58,10 @@ function PinnedDaoCard({ address }: { address: string }) {
 function PinnedMultisigCard({ address }: { address: string }) {
   const config = useRecoilValue(sigSelector(address)).config
   const weight = useRecoilValue(isMemberSelector(address)).weight
+  const proposals = useRecoilValue(proposalCount(address))
+  const balance = useRecoilValue(nativeBalance(address))
+  const chainBalance = balance.find((coin) => coin.denom == NATIVE_DENOM)
+  const chainNativeBalance = chainBalance?.amount || '0'
 
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(address)
@@ -59,6 +72,8 @@ function PinnedMultisigCard({ address }: { address: string }) {
       description={config.description}
       href={`/multisig/${address}`}
       weight={weight}
+      proposals={proposals}
+      balance={chainNativeBalance}
       pinned={pinned}
       onPin={() => {
         if (pinned) {
