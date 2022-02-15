@@ -20,7 +20,6 @@ import {
 import { sigSelector } from 'selectors/multisigs'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
-import { defaultExecuteFee } from 'util/fee'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -63,7 +62,7 @@ const MultisigProposalCreate: NextPage = () => {
             msgs: cosmMsgs,
           },
         },
-        defaultExecuteFee
+        'auto'
       )
       .catch((e) => {
         toast.error(cleanChainError(e.message))

@@ -22,7 +22,6 @@ import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
-import { defaultExecuteFee } from 'util/fee'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -72,7 +71,7 @@ const ProposalCreate: NextPage = () => {
               spender: contractAddress,
             },
           },
-          defaultExecuteFee
+          'auto'
         )
       } catch (e: any) {
         toast.error(
@@ -95,7 +94,7 @@ const ProposalCreate: NextPage = () => {
             msgs: cosmMsgs,
           },
         },
-        defaultExecuteFee
+        'auto'
       )
       .catch((e) => {
         toast.error(cleanChainError(e.message))

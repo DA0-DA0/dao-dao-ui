@@ -22,7 +22,6 @@ import {
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { defaultExecuteFee } from 'util/fee'
 import {
   validateAddress,
   validatePercent,
@@ -111,13 +110,7 @@ const CreateMultisig: NextPage = () => {
     }
 
     signingClient
-      .instantiate(
-        walletAddress,
-        MULTISIG_CODE_ID,
-        msg,
-        data.name,
-        defaultExecuteFee
-      )
+      .instantiate(walletAddress, MULTISIG_CODE_ID, msg, data.name, 'auto')
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {

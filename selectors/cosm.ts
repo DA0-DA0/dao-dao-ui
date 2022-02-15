@@ -1,5 +1,5 @@
 import { selector, selectorFamily, atom } from 'recoil'
-import { StargateClient } from '@cosmjs/stargate'
+import { GasPrice, StargateClient } from '@cosmjs/stargate'
 import {
   CosmWasmClient,
   SigningCosmWasmClient,
@@ -7,7 +7,7 @@ import {
 import { connectKeplrWithoutAlerts } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
 import { localStorageEffect } from '../atoms/localStorageEffect'
-import { NATIVE_DENOM } from 'util/constants'
+import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
 export type WalletConnection = 'keplr' | ''
 
@@ -87,7 +87,10 @@ export const cosmWasmSigningClient = selector({
     }
     return await SigningCosmWasmClient.connectWithSigner(
       CHAIN_RPC_ENDPOINT,
-      offlineSigner
+      offlineSigner,
+      {
+        gasPrice: GasPrice.fromString(GAS_PRICE),
+      }
     )
   },
   // We have to do this because of how SigningCosmWasmClient

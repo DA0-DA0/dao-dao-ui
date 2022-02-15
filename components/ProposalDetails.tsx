@@ -37,7 +37,6 @@ import {
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-import { defaultExecuteFee } from 'util/fee'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
@@ -66,7 +65,7 @@ function executeProposalVote(
       {
         vote: { proposal_id: id, vote },
       },
-      defaultExecuteFee
+      'auto'
     )
     .then((response) => {
       toast.success(`Success. Transaction hash: (${response.transactionHash})`)
@@ -100,7 +99,7 @@ function executeProposalExecute(
       {
         execute: { proposal_id: id },
       },
-      defaultExecuteFee
+      'auto'
     )
     .then((response) => {
       toast.success(`Success. Transaction hash: (${response.transactionHash})`)

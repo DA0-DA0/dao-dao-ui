@@ -36,7 +36,6 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
-import { defaultExecuteFee } from 'util/fee'
 
 export enum StakingMode {
   Stake,
@@ -209,7 +208,7 @@ function executeUnstakeAction(
           amount,
         },
       },
-      defaultExecuteFee
+      'auto'
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))
@@ -251,7 +250,7 @@ function executeStakeAction(
           msg: btoa('{"stake": {}}'),
         },
       },
-      defaultExecuteFee
+      'auto'
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))
@@ -283,7 +282,7 @@ function executeClaimAction(
       {
         claim: {},
       },
-      defaultExecuteFee
+      'auto'
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))
