@@ -18,12 +18,14 @@ import {
 } from '@heroicons/react/outline'
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import {
   ContractCard,
   MysteryContractCard,
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
+import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
 import { MULTISIG_CODE_ID } from 'util/constants'
@@ -106,6 +108,8 @@ const MultisigList: NextPage = () => {
     waitForAll(pinnedSigAddresses.map((a) => sigMemberSelector(a)))
   )
 
+  const expanded = useRecoilValue(sidebarExpandedAtom)
+
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: MULTISIG_CODE_ID, page, limit })
   )
@@ -114,15 +118,17 @@ const MultisigList: NextPage = () => {
   )
 
   return (
-    <div className="grid grid-cols-6">
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">Multisigs</h1>
-          <Link href="/multisig/create" passHref>
-            <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
-              Create a multisig <PlusIcon className="inline w-5 h-5 ml-1" />
-            </button>
-          </Link>
+          <div className={expanded ? '' : 'mr-10'}>
+            <Link href="/multisig/create" passHref>
+              <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
+                Create a multisig <PlusIcon className="inline w-5 h-5 ml-1" />
+              </button>
+            </Link>
+          </div>
         </div>
         <div className="mt-6">
           <h2 className="text-lg mb-2">
@@ -146,18 +152,20 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-        <h2 className="font-medium">Overview</h2>
-        <div className="mt-6">
-          <ul className="list-none ml-2 leading-relaxed">
-            <li>
-              <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {total} active multisig
-              {total > 1 && 's'}
-            </li>
-          </ul>
+      <Sidebar>
+        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
+          <h2 className="font-medium">Overview</h2>
+          <div className="mt-6">
+            <ul className="list-none ml-2 leading-relaxed">
+              <li>
+                <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
+                {total} active multisig
+                {total > 1 && 's'}
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </Sidebar>
     </div>
   )
 }
