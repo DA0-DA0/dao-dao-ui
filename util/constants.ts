@@ -32,6 +32,7 @@ export const HEADER_IMAGES_ENABLED =
 export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE
 
 export const NATIVE_DECIMALS = 6
+export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
 
 export const STATUS_COLORS: { [key: string]: string } = {
   open: '#00BAFF',
