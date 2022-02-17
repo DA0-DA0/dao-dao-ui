@@ -46,7 +46,7 @@ function DIYLogo({
       <a>
         <div className="transition-shadow shadow p-6 h-[275px] rounded-lg flex flex-col items-center m-2 bg-gradient-to-b from-base-300 justify-between border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
           <div className="flex flex-col items-center max-w-full">
-            <div className="">{children}</div>
+            <div>{children}</div>
             <h3 className="text-lg font-semibold mt-3 truncate max-w-full">
               {title}
             </h3>
