@@ -165,7 +165,7 @@ function CommunitySection() {
 function FeaturedDaosLoadingPlaceholder() {
   return (
     <>
-      <h2 className="font-medum text-2xl mb-8 text-center">
+      <h2 className="font-medum text-2xl mb-8 text-center whitespace-normal mx-3">
         Expore featured DAOs on the platform
       </h2>
       <div className="flex flex-row justify-center">
@@ -192,7 +192,7 @@ function FeaturedDaosDisplay() {
   return (
     (daoAddresses.length > 0 || null) && (
       <>
-        <h2 className="font-medum text-2xl mb-8 text-center">
+        <h2 className="font-medum text-2xl mb-8 text-center whitespace-normal mx-3">
           Expore featured DAOs on the platform
         </h2>
         <ul className="list-none flex flex-row gap-2 overflow-auto">
@@ -314,7 +314,7 @@ const Home: NextPage = () => {
           have a fully operational DAO.
         </p>
       </InfoSection>
-      <h2 className="font-medum text-2xl mb-6 mt-20">
+      <h2 className="font-medum text-2xl mb-6 mt-20 text-center whitespace-normal mx-3">
         Never resort to the command line again
       </h2>
       <p className="text-secondary text-center max-w-[628px] mx-3 mb-12">

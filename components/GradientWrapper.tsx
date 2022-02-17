@@ -12,7 +12,7 @@ export function GradientWrapper({ children }: { children: ReactNode }) {
       : 'url(/gradients/BG-Gradient-Light@2x.png)'
 
   return (
-    <div className="overflow-hidden flex flex-col items-center max-w-screen">
+    <div className="flex flex-col items-center max-w-screen relative overflow-hidden">
       {CSS.supports('backdrop-filter', 'blur(5px)') && (
         <div
           className="absolute top-0 left-1/2 mt-[60px] -ml-[250px] animate-spin-slow -z-20 text-[#06090B]"
@@ -22,7 +22,7 @@ export function GradientWrapper({ children }: { children: ReactNode }) {
         </div>
       )}
       <div
-        className="absolute -z-30 w-screen h-full bg-contain bg-no-repeat overflow-hidden"
+        className="absolute -z-30 h-full bg-contain bg-no-repeat"
         style={{
           backgroundImage: `${bg}`,
         }}
