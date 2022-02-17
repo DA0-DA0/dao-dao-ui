@@ -44,9 +44,9 @@ function DIYLogo({
   return (
     <Link href={href}>
       <a>
-        <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center m-2 bg-gradient-to-b from-base-300 justify-between border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
+        <div className="transition-shadow shadow p-6 h-[275px] rounded-lg flex flex-col items-center m-2 bg-gradient-to-b from-base-300 justify-between border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
           <div className="flex flex-col items-center max-w-full">
-            <div className="mt-6">{children}</div>
+            <div className="">{children}</div>
             <h3 className="text-lg font-semibold mt-3 truncate max-w-full">
               {title}
             </h3>
@@ -165,8 +165,8 @@ export function MysteryContractCard({
 
 export function LoadingContractCard() {
   return (
-    <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center justify-center m-2 bg-gradient-to-b from-base-300 border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
-      <div className="w-[70px] h-[70px] flex justify-center items-center">
+    <div className="transition-shadow shadow p-6 h-[275px] rounded-lg flex flex-col items-center justify-center m-2 bg-gradient-to-b from-base-300 border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
+      <div className="flex justify-center items-center">
         <div className="animate-spin inline-block">
           <Logo height={72} width={72} />
         </div>

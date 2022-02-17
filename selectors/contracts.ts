@@ -1,11 +1,9 @@
-import { cosmWasmClient } from 'selectors/cosm'
-import { selectorFamily } from 'recoil'
+import { cosmWasmClient, stargateClient } from 'selectors/cosm'
+import { selector, selectorFamily } from 'recoil'
 import { WasmExtension } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@cosmjs/stargate'
-import {
-  QueryCodesResponse,
-  QueryContractsByCodeResponse,
-} from 'cosmjs-types/cosmwasm/wasm/v1/query'
+import { QueryContractsByCodeResponse } from 'cosmjs-types/cosmwasm/wasm/v1/query'
+import { Member } from '@dao-dao/types/contracts/cw3-multisig'
 
 export const contractsByCodeId = selectorFamily({
   key: 'contractsByCodeId',
@@ -83,4 +81,27 @@ export const pagedContractsByCodeId = selectorFamily<
 
       return { contracts, total } as IPagedContractsByCodeId
     },
+})
+
+export const featuredDaosSelector = selector<string[]>({
+  key: 'featuredDaosSelector',
+  get: async ({ get }) => {
+    const client = get(cosmWasmClient)
+    if (!client) {
+      return []
+    }
+
+    const featuredListAddress = process.env.NEXT_PUBLIC_FEATURED_CAMPAIGNS_ADDR
+    if (!featuredListAddress) {
+      return []
+    }
+
+    const contracts = (
+      await client.queryContractSmart(featuredListAddress, {
+        list_members: {},
+      })
+    ).members as Member[]
+
+    return contracts.map(({ addr }) => addr)
+  },
 })

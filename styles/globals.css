@@ -39,3 +39,7 @@ menu {
   height: auto !important;
   border-radius: 6px;
 }
+
+.mask-image {
+    mask-image:linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 0%, transparent 75%);
+}
