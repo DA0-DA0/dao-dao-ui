@@ -195,7 +195,7 @@ function FeaturedDaosDisplay() {
         <h2 className="font-medum text-2xl mb-8 text-center whitespace-normal mx-3">
           Expore featured DAOs on the platform
         </h2>
-        <ul className="list-none flex flex-row gap-2 overflow-auto">
+        <ul className="list-none flex md:flex-row flex-col gap-2 overflow-auto items-center">
           {daos.map((dao, idx) => {
             const tokenInfo = tokenInfos[idx]
             return (
@@ -214,7 +214,7 @@ function FeaturedDaosDisplay() {
                   onPin={() => 0}
                   imgUrl={dao.dao.image_url}
                 />
-                <div className="pointer-events-none mask-image">
+                <div className="pointer-events-none mask-image hidden md:block">
                   <ContractCard
                     name={dao.dao.name}
                     description={dao.dao.description}
@@ -292,7 +292,7 @@ const Home: NextPage = () => {
           href="https://nickmerrill.substack.com/p/what-are-daos"
         />
       </div>
-      <div className="-mb-12">
+      <div className="mb-6 md:-mb-12">
         <Suspense fallback={<FeaturedDaosLoadingPlaceholder />}>
           <FeaturedDaosDisplay />
         </Suspense>
