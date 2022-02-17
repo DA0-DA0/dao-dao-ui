@@ -5,19 +5,19 @@ import Link from 'next/link'
 
 import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
 
+import { AnnouncementCard } from '@components/homepage/AnnouncementCard'
+import { CommunitySection } from '@components/homepage/CommunitySection'
+import { EnterAppButton } from '@components/homepage/EnterAppButton'
+import {
+  FeaturedDaosDisplay,
+  FeaturedDaosLoadingPlaceholder,
+} from '@components/homepage/FeaturedDaosDisplay'
+import { InfoSection } from '@components/homepage/InfoSection'
 import { GradientWrapper } from 'components/GradientWrapper'
 import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 
 import { SITE_TITLE } from '../util/constants'
-import { AnnouncementCard } from '@components/homepage/AnnouncementCard'
-import { EnterAppButton } from '@components/homepage/EnterAppButton'
-import { InfoSection } from '@components/homepage/InfoSection'
-import {
-  FeaturedDaosDisplay,
-  FeaturedDaosLoadingPlaceholder,
-} from '@components/homepage/FeaturedDaosDisplay'
-import { CommunitySection } from '@components/homepage/CommunitySection'
 
 const Home: NextPage = () => {
   return (

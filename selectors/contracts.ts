@@ -4,6 +4,7 @@ import { WasmExtension } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@cosmjs/stargate'
 import { QueryContractsByCodeResponse } from 'cosmjs-types/cosmwasm/wasm/v1/query'
 import { Member } from '@dao-dao/types/contracts/cw3-multisig'
+import { FEATURED_DAOS_ADDR } from 'util/constants'
 
 export const contractsByCodeId = selectorFamily({
   key: 'contractsByCodeId',
@@ -91,7 +92,7 @@ export const featuredDaosSelector = selector<string[]>({
       return []
     }
 
-    const featuredListAddress = process.env.NEXT_PUBLIC_FEATURED_CAMPAIGNS_ADDR
+    const featuredListAddress = FEATURED_DAOS_ADDR
     if (!featuredListAddress) {
       return []
     }

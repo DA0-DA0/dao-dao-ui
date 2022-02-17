@@ -1,7 +1,8 @@
+import Link from 'next/link'
+
 import SvgDiscord from '@components/icons/Discord'
 import SvgGithub from '@components/icons/Github'
 import SvgTwitter from '@components/icons/Twitter'
-import Link from 'next/link'
 
 export function CommunitySection() {
   // Getting the sizing correct here is a nightmare..

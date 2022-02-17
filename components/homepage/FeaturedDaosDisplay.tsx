@@ -1,5 +1,6 @@
-import { ContractCard, LoadingContractCard } from '@components/ContractCard'
 import { useRecoilValue, waitForAll } from 'recoil'
+
+import { ContractCard, LoadingContractCard } from '@components/ContractCard'
 import { featuredDaosSelector } from 'selectors/contracts'
 import { memberDaoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'

@@ -1,6 +1,8 @@
-import SvgArrowTopRight from '@components/icons/ArrowTopRight'
-import Link from 'next/link'
 import { ReactNode } from 'react'
+
+import Link from 'next/link'
+
+import SvgArrowTopRight from '@components/icons/ArrowTopRight'
 
 export function InfoSection({
   titleRight,

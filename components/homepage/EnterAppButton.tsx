@@ -1,6 +1,8 @@
-import { Button } from '@components/Button'
-import { ArrowNarrowRightIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+
+import { ArrowNarrowRightIcon } from '@heroicons/react/outline'
+
+import { Button } from '@components/Button'
 
 export function EnterAppButton({ small }: { small?: boolean }) {
   return (

@@ -33,6 +33,8 @@ export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
 
 export const GAS_PRICE = process.env.NEXT_PUBLIC_GAS_PRICE as string
 
+export const FEATURED_DAOS_ADDR = process.env.NEXT_PUBLIC_FEATURED_DAOS_ADDR
+
 export const STATUS_COLORS: { [key: string]: string } = {
   open: '#00BAFF',
   draft: '#00F',
