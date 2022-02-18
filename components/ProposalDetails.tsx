@@ -395,7 +395,9 @@ export function ProposalDetailsSidebar({
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>
-            <p className="col-span-2">{getEnd(proposal.expires) || 'never'}</p>
+            <p className="col-span-2">
+              {getEnd(proposal.expires, proposal.status) || 'never'}
+            </p>
           </>
         )}
       </div>
