@@ -96,7 +96,7 @@ function MultisigHome() {
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
   return (
-    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
+    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">

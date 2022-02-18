@@ -117,7 +117,7 @@ const ProposalCreate: NextPage = () => {
   }
 
   return (
-    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
+    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[

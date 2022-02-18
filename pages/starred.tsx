@@ -93,7 +93,7 @@ const Starred: NextPage = () => {
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
   return (
-    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
+    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="p-6 w-full col-span-4">
         <h1 className="text-2xl font-semibold">Starred</h1>
         <h2 className="text-lg mb-2 mt-6">

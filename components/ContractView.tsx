@@ -62,7 +62,9 @@ export function StarButton({
 }) {
   return (
     <button
-      className={'text-left w-20 flex flex-row items-center' + (pinned ? ' text-accent' : '')}
+      className={`text-left w-20 flex flex-row items-center ${
+        pinned ? ' text-accent' : ''
+      }`}
       onClick={(_e) => onPin()}
     >
       {pinned ? (
