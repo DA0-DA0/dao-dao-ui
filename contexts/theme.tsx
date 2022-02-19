@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from 'react'
+import { createContext, ReactNode, useContext, useEffect } from 'react'
 
 export type UpdateThemeFn = (themeName: string) => void
 
@@ -7,14 +7,16 @@ export interface IThemeContext {
   updateTheme: UpdateThemeFn
 }
 
-export const INITIAL_THEME: IThemeContext = {
-  theme: 'junoLight',
+export const DEFAULT_THEME_NAME = 'junoDark'
+
+export const DEFAULT_THEME: IThemeContext = {
+  theme: DEFAULT_THEME_NAME,
   updateTheme: (themeName: string) => {
     console.error(`do-nothing update for ${themeName}`)
   },
 }
 
-export const ThemeContext = createContext<IThemeContext>(INITIAL_THEME)
+export const ThemeContext = createContext<IThemeContext>(DEFAULT_THEME)
 
 export function ThemeProvider({
   children,
@@ -25,7 +27,7 @@ export function ThemeProvider({
   theme: string
   updateTheme: UpdateThemeFn
 }) {
-  let value = { ...INITIAL_THEME, theme, updateTheme }
+  let value = { ...DEFAULT_THEME, theme, updateTheme }
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 

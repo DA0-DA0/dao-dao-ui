@@ -1,5 +1,5 @@
 import { selector, selectorFamily, atom } from 'recoil'
-import { StargateClient } from '@cosmjs/stargate'
+import { GasPrice, StargateClient } from '@cosmjs/stargate'
 import {
   CosmWasmClient,
   SigningCosmWasmClient,
@@ -7,6 +7,7 @@ import {
 import { connectKeplrWithoutAlerts } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
 import { localStorageEffect } from '../atoms/localStorageEffect'
+import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
 export type WalletConnection = 'keplr' | ''
 
@@ -86,12 +87,42 @@ export const cosmWasmSigningClient = selector({
     }
     return await SigningCosmWasmClient.connectWithSigner(
       CHAIN_RPC_ENDPOINT,
-      offlineSigner
+      offlineSigner,
+      {
+        gasPrice: GasPrice.fromString(GAS_PRICE),
+      }
     )
   },
   // We have to do this because of how SigningCosmWasmClient
   // will update its internal chainId
   dangerouslyAllowMutability: true,
+})
+
+export const walletChainBalanceSelector = selector<number>({
+  key: 'walletChainBalanceSelector',
+  get: async ({ get }) => {
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet !== 'keplr') {
+      return 0
+    }
+    const client = get(stargateClient)
+    if (!client) {
+      return 0
+    }
+    const address = get(walletAddress)
+    const balance = await client.getBalance(address, NATIVE_DENOM)
+    return Number(balance.amount)
+  },
+})
+
+export const keplrAccountNameSelector = selector<string | undefined>({
+  key: 'keplrAccoutSelector',
+  get: async ({ get }) => {
+    // Invalidate state when the keplr instance changes.
+    get(kelprOfflineSigner)
+    const info = await window.keplr?.getKey(CHAIN_ID as string)
+    return info?.name
+  },
 })
 
 export const walletAddress = selector({

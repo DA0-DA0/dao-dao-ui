@@ -1,10 +1,17 @@
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+
+import { useRecoilState, useRecoilValue } from 'recoil'
+
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   ScaleIcon,
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
+
 import { pinnedMultisigsAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ContractBalances,
@@ -15,9 +22,7 @@ import {
   StarButton,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import Sidebar from 'components/Sidebar'
 import { isMemberSelector } from 'selectors/daos'
 import {
   listMembers,
@@ -88,8 +93,10 @@ function MultisigHome() {
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(contractAddress)
 
+  const expanded = useRecoilValue(sidebarExpandedAtom)
+
   return (
-    <div className="grid grid-cols-6">
+    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
@@ -99,16 +106,18 @@ function MultisigHome() {
                 [router.asPath, sigInfo.config.name],
               ]}
             />
-            <StarButton
-              pinned={pinned}
-              onPin={() => {
-                if (pinned) {
-                  setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
-                } else {
-                  setPinnedSigs((p) => p.concat([contractAddress]))
-                }
-              }}
-            />
+            <div className={expanded ? '' : 'mr-6'}>
+              <StarButton
+                pinned={pinned}
+                onPin={() => {
+                  if (pinned) {
+                    setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+                  } else {
+                    setPinnedSigs((p) => p.concat([contractAddress]))
+                  }
+                }}
+              />
+            </div>
           </div>
 
           <HeroContractHeader
@@ -149,37 +158,39 @@ function MultisigHome() {
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <hr className="mt-8 mb-6" />
-        {visitorWeight && (
-          <>
-            <h2 className="font-medium text-md">Your shares</h2>
-            <ul className="list-none mt-3">
-              <li>
-                <VoteBalanceCard
-                  title="voting weight"
-                  weight={visitorWeight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            </ul>
-          </>
-        )}
-        <h2 className="font-medium text-md mt-3">Member shares</h2>
-        <ul className="list-none mt-3">
-          {memberList
-            .filter((m) => m.addr != visitorAddress)
-            .map((member) => (
-              <li key={member.addr}>
-                <VoteBalanceCard
-                  title={member.addr}
-                  weight={member.weight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            ))}
-        </ul>
-      </div>
+      <Sidebar>
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
+          <hr className="mt-8 mb-6" />
+          {visitorWeight && (
+            <>
+              <h2 className="font-medium text-md">Your shares</h2>
+              <ul className="list-none mt-3">
+                <li>
+                  <VoteBalanceCard
+                    title="voting weight"
+                    weight={visitorWeight}
+                    weightTotal={weightTotal}
+                  />
+                </li>
+              </ul>
+            </>
+          )}
+          <h2 className="font-medium text-md mt-3">Member shares</h2>
+          <ul className="list-none mt-3">
+            {memberList
+              .filter((m) => m.addr != visitorAddress)
+              .map((member) => (
+                <li key={member.addr}>
+                  <VoteBalanceCard
+                    title={member.addr}
+                    weight={member.weight}
+                    weightTotal={weightTotal}
+                  />
+                </li>
+              ))}
+          </ul>
+        </div>
+      </Sidebar>
     </div>
   )
 }

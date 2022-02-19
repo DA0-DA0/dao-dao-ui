@@ -1,5 +1,6 @@
-import { STATUS_COLORS } from 'util/constants'
 import { StatusIcons } from '@components'
+
+import { STATUS_COLORS } from 'util/constants'
 
 type ProposalStatusProps = { status: string }
 

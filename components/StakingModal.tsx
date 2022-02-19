@@ -1,12 +1,3 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  XIcon,
-} from '@heroicons/react/outline'
-import { secondsToHms } from 'pages/dao/create'
 import {
   ChangeEventHandler,
   Dispatch,
@@ -15,8 +6,24 @@ import {
   SetStateAction,
   useState,
 } from 'react'
-import toast from 'react-hot-toast'
+
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  XIcon,
+} from '@heroicons/react/outline'
+import toast from 'react-hot-toast'
+
+import { secondsToHms } from 'pages/dao/create'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import { daoSelector, unstakingDuration } from 'selectors/daos'
 import {
   cw20TokenInfo,
@@ -29,11 +36,6 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
-import { defaultExecuteFee } from 'util/fee'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
 
 export enum StakingMode {
   Stake,
@@ -206,7 +208,7 @@ function executeUnstakeAction(
           amount,
         },
       },
-      defaultExecuteFee
+      'auto'
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))
@@ -248,7 +250,7 @@ function executeStakeAction(
           msg: btoa('{"stake": {}}'),
         },
       },
-      defaultExecuteFee
+      'auto'
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))
@@ -280,7 +282,7 @@ function executeClaimAction(
       {
         claim: {},
       },
-      defaultExecuteFee
+      'auto'
     )
     .catch((err) => {
       toast.error(cleanChainError(err.message))

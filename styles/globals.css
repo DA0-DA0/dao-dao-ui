@@ -34,3 +34,8 @@ ul,
 menu {
   list-style: inherit;
 }
+
+.CodeMirror {
+  height: auto !important;
+  border-radius: 6px;
+}

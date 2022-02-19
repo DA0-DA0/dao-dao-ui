@@ -1,19 +1,21 @@
 import Link from 'next/link'
-import ThemeToggle from 'components/ThemeToggle'
-import { Logo } from 'components/Logo'
+
+import { useRecoilValue, waitForAll } from 'recoil'
+
 import {
   ArrowRightIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { MenuIcon } from '@heroicons/react/outline'
 
+import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
+import { showBetaNoticeAtom } from 'atoms/status'
+import { Logo } from 'components/Logo'
+import ThemeToggle from 'components/ThemeToggle'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
-import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 
-import { showBetaNoticeAtom } from 'atoms/status'
-import { MenuIcon } from '@heroicons/react/outline'
 import { SITE_TITLE } from '../util/constants'
 import ConnectWalletButton from './ConnectWalletButton'
 

@@ -1,4 +1,8 @@
-import toast from 'react-hot-toast'
+import { Children, MouseEventHandler, ReactNode } from 'react'
+
+import Link from 'next/link'
+
+import { useRecoilValue, waitForAll } from 'recoil'
 
 import { Coin } from '@cosmjs/proto-signing'
 import { Cw20Coin } from '@dao-dao/types/contracts/cw3-dao'
@@ -8,9 +12,8 @@ import {
   UserIcon,
 } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
-import Link from 'next/link'
-import { Children, MouseEventHandler, ReactNode } from 'react'
-import { useRecoilValue, waitForAll } from 'recoil'
+import toast from 'react-hot-toast'
+
 import { isMemberSelector } from 'selectors/daos'
 import {
   cw20TokenInfo,
@@ -23,6 +26,7 @@ import {
   convertFromMicroDenom,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
+
 import { AddressSmall } from './Address'
 import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
@@ -58,7 +62,9 @@ export function StarButton({
 }) {
   return (
     <button
-      className={'text-left w-20' + (pinned ? ' text-accent' : '')}
+      className={`text-left w-20 flex flex-row items-center ${
+        pinned ? ' text-accent' : ''
+      }`}
       onClick={(_e) => onPin()}
     >
       {pinned ? (

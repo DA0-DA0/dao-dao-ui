@@ -1,23 +1,32 @@
-import { Expiration, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { useEffect } from 'react'
+
+import Link from 'next/link'
+
+import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
+
+import {
+  Expiration,
+  ProposalResponse,
+  Status,
+} from '@dao-dao/types/contracts/cw3-dao'
 import { DownloadIcon } from '@heroicons/react/outline'
+
+import { ProposalStatus } from '@components'
+
 import {
   proposalListAtom,
   proposalsCreatedAtom,
   proposalsRequestStartBeforeAtom,
   proposalsUpdated,
 } from 'atoms/proposals'
-import Link from 'next/link'
-import { useEffect } from 'react'
-import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 import { proposalCount } from 'selectors/daos'
 import {
   draftProposalsSelector,
   onChainProposalsSelector,
   proposalSelector,
-  proposalsSelector,
 } from 'selectors/proposals'
-import { ProposalStatus } from '@components'
 import { ExtendedProposalResponse } from 'types/proposals'
+
 import { draftProposalsToExtendedResponses } from '../util/proposal'
 
 const PROP_LOAD_LIMIT = 10
@@ -55,7 +64,10 @@ const secondsToHm = (seconds: number) => {
   return hDisplay + mDisplay
 }
 
-export const getEnd = (exp: Expiration) => {
+export const getEnd = (exp: Expiration, status: Status) => {
+  if (status != 'open' && status != 'pending') {
+    return 'Completed'
+  }
   if (exp && 'at_time' in exp) {
     const end = Number(exp['at_time'])
     const nowSeconds = new Date().getTime() / 1000
@@ -99,7 +111,9 @@ function ProposalLine({
           <p className="font-mono text-sm text-secondary"># {displayKey}</p>
           <ProposalStatus status={prop.status} />
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
-          <p className="text-neutral text-sm">{getEnd(prop.expires)}</p>
+          <p className="text-neutral text-sm">
+            {getEnd(prop.expires, prop.status)}
+          </p>
         </div>
       </a>
     </Link>

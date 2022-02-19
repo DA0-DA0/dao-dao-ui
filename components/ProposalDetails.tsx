@@ -1,13 +1,7 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
-import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
-import { Address } from './Address'
-import { PaginatedProposalVotes } from 'components/ProposalVotes'
-import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
-import toast from 'react-hot-toast'
-import { ProposalStatus } from '@components'
+
+import { useRouter } from 'next/router'
+
 import {
   atom,
   SetterOrUpdater,
@@ -15,6 +9,21 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
+
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
+import toast from 'react-hot-toast'
+
+import { ProposalStatus } from '@components'
+
+import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
+import { MarkdownPreview } from 'components/MarkdownPreview'
+import { PaginatedProposalVotes } from 'components/ProposalVotes'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
 import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
@@ -23,20 +32,17 @@ import {
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-import { defaultExecuteFee } from 'util/fee'
-import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
-import { getEnd } from './ProposalList'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import { MarkdownPreview } from 'components/MarkdownPreview'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
+
 import { treasuryTokenListUpdates } from '../atoms/treasury'
+import { Address } from './Address'
+import { CosmosMessageDisplay } from './CosmosMessageDisplay'
+import { getEnd } from './ProposalList'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -59,7 +65,7 @@ function executeProposalVote(
       {
         vote: { proposal_id: id, vote },
       },
-      defaultExecuteFee
+      'auto'
     )
     .then((response) => {
       toast.success(`Success. Transaction hash: (${response.transactionHash})`)
@@ -93,7 +99,7 @@ function executeProposalExecute(
       {
         execute: { proposal_id: id },
       },
-      defaultExecuteFee
+      'auto'
     )
     .then((response) => {
       toast.success(`Success. Transaction hash: (${response.transactionHash})`)
@@ -389,7 +395,9 @@ export function ProposalDetailsSidebar({
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>
-            <p className="col-span-2">{getEnd(proposal.expires) || 'never'}</p>
+            <p className="col-span-2">
+              {getEnd(proposal.expires, proposal.status) || 'never'}
+            </p>
           </>
         )}
       </div>
@@ -528,13 +536,11 @@ export function ProposalDetails({
           )}
         </div>
       )}
-      <div className="mt-6">
+      <div className="py-4">
         <MarkdownPreview markdown={proposal.description} />
       </div>
       {decodedMessages?.length ? (
-        <pre className="overflow-auto my-6 border rounded-lg p-3 text-secondary border-secondary">
-          {decodedMessagesString(proposal)}
-        </pre>
+        <CosmosMessageDisplay value={decodedMessagesString(proposal)} />
       ) : (
         <pre></pre>
       )}

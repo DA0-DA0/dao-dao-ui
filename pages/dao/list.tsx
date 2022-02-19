@@ -1,20 +1,7 @@
-import { Button } from '@components'
-import {
-  LibraryIcon,
-  PlusIcon,
-  SparklesIcon,
-  UserIcon,
-} from '@heroicons/react/outline'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import {
-  ContractCard,
-  MysteryContractCard,
-  LoadingContractCard,
-} from 'components/ContractCard'
-import Paginator from 'components/Paginator'
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+
 import {
   useRecoilState,
   useRecoilValue,
@@ -22,21 +9,38 @@ import {
   waitForAll,
   Loadable,
 } from 'recoil'
+
+import {
+  LibraryIcon,
+  PlusIcon,
+  SparklesIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
+
+import { Button } from '@components'
+
+import { pinnedDaosAtom } from 'atoms/pinned'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import {
+  ContractCard,
+  MysteryContractCard,
+  LoadingContractCard,
+} from 'components/ContractCard'
+import Paginator from 'components/Paginator'
+import Sidebar from 'components/Sidebar'
+import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
 // import { cw20TokenInfo } from 'selectors/treasury'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-import { DAO_CODE_ID } from 'util/constants'
-import { pagedContractsByCodeId } from 'selectors/contracts'
 import { addToken } from 'util/addToken'
+import { DAO_CODE_ID } from 'util/constants'
+import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 export function DaoCard({
   dao,
   address,
-  weight,
 }: {
-  dao: any
+  dao: DaoListType
   address: string
-  weight: number
 }) {
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(address)
@@ -51,7 +55,9 @@ export function DaoCard({
       name={config.name}
       description={config.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenomWithDecimals(weight, DECIMALS)}
+      weight={convertMicroDenomToDenomWithDecimals(dao.weight, DECIMALS)}
+      balance={dao.balance}
+      proposals={dao.proposals}
       pinned={pinned}
       onPin={() => {
         if (pinned) {
@@ -85,12 +91,7 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
             return (
               dao?.dao &&
               dao?.address?.length > 0 && (
-                <DaoCard
-                  dao={dao}
-                  address={dao.address}
-                  key={idx}
-                  weight={dao.weight}
-                />
+                <DaoCard dao={dao} address={dao.address} key={idx} />
               )
             )
           })
@@ -113,6 +114,7 @@ const DaoList: NextPage = () => {
   const pinnedDaos = useRecoilValueLoadable(
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: DAO_CODE_ID, page, limit })
@@ -122,17 +124,19 @@ const DaoList: NextPage = () => {
   )
 
   return (
-    <div className="grid grid-cols-6">
+    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">DAOs</h1>
           <Link href="/dao/create" passHref>
-            <Button
-              size="sm"
-              iconAfter={<PlusIcon className="inline h-4 w-4" />}
-            >
-              Create a DAO
-            </Button>
+            <div className={expanded ? '' : 'mr-10'}>
+              <Button
+                size="sm"
+                iconAfter={<PlusIcon className="inline h-4 w-4" />}
+              >
+                Create a DAO
+              </Button>
+            </div>
           </Link>
         </div>
         <div className="mt-6">
@@ -157,17 +161,19 @@ const DaoList: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-        <h2 className="font-medium text-lg">Overview</h2>
-        <div className="mt-6">
-          <ul className="list-none ml-2 leading-relaxed">
-            <li>
-              <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-              {total} active DAOs
-            </li>
-          </ul>
+      <Sidebar>
+        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
+          <h2 className="font-medium text-lg">Overview</h2>
+          <div className="mt-6">
+            <ul className="list-none ml-2 leading-relaxed">
+              <li>
+                <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
+                {total} active DAOs
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </Sidebar>
     </div>
   )
 }

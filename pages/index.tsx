@@ -1,19 +1,24 @@
+import { ReactNode } from 'react'
+
+import type { NextPage } from 'next'
+import Link from 'next/link'
+
+import { ScaleIcon } from '@heroicons/react/outline'
 import {
   ArrowNarrowRightIcon,
   PlusSmIcon,
   StarIcon,
 } from '@heroicons/react/solid'
-import { ScaleIcon } from '@heroicons/react/outline'
-import { Logo } from 'components/Logo'
-import ThemeToggle from 'components/ThemeToggle'
-import type { NextPage } from 'next'
-import Link from 'next/link'
-import { ReactNode } from 'react'
+
+import { Button } from '@components'
+
+import SvgDiscord from '@components/icons/Discord'
 import { GradientWrapper } from 'components/GradientWrapper'
 import SvgGithub from 'components/icons/Github'
 import SvgTwitter from 'components/icons/Twitter'
-import { Button } from '@components'
-import SvgDiscord from '@components/icons/Discord'
+import { Logo } from 'components/Logo'
+import ThemeToggle from 'components/ThemeToggle'
+
 import { SITE_TITLE } from '../util/constants'
 
 function EnterAppButton({ small }: { small?: boolean }) {

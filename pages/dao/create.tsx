@@ -1,21 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
+
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useForm, Validate } from 'react-hook-form'
-import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
-import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
-import { defaultExecuteFee } from 'util/fee'
-import {
-  makeDaoInstantiateWithExistingTokenMessage,
-  makeDaoInstantiateWithNewTokenMessage,
-} from 'util/messagehelpers'
-import { errorNotify, successNotify } from 'util/toast'
-import { isValidName, isValidTicker } from 'util/isValidTicker'
-import { cleanChainError } from 'util/cleanChainError'
-import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+
 import {
   atom,
   selector,
@@ -23,6 +11,27 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil'
+
+import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
+import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
+import { useForm, Validate } from 'react-hook-form'
+
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { InputLabel } from '@components/input/InputLabel'
+import { NumberInput } from '@components/input/NumberInput'
+import { TextInput } from '@components/input/TextInput'
+import { ToggleInput } from '@components/input/ToggleInput'
+import { pinnedDaosAtom } from 'atoms/pinned'
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
+import { cleanChainError } from 'util/cleanChainError'
+import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
+import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import {
   validateAddress,
   validateContractAddress,
@@ -32,18 +41,12 @@ import {
   validateRequired,
   validateUrl,
 } from 'util/formValidation'
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import { pinnedDaosAtom } from 'atoms/pinned'
+import { isValidName, isValidTicker } from 'util/isValidTicker'
 import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { InputLabel } from '@components/input/InputLabel'
-import { TextInput } from '@components/input/TextInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
-import { ToggleInput } from '@components/input/ToggleInput'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+  makeDaoInstantiateWithExistingTokenMessage,
+  makeDaoInstantiateWithNewTokenMessage,
+} from 'util/messagehelpers'
+import { errorNotify, successNotify } from 'util/toast'
 
 interface DaoCreateData {
   deposit: string
@@ -92,7 +95,7 @@ const daoInitialBalanceAtom = atom<number>({
 
 const passThresholdAtom = atom({
   key: 'proposalPassThreshold',
-  default: 75,
+  default: 51,
 })
 
 const smallestVoteCartelSelector = selector({
@@ -323,13 +326,7 @@ const CreateDao: NextPage = () => {
     }
 
     signingClient
-      .instantiate(
-        walletAddress,
-        DAO_CODE_ID,
-        msg,
-        data.name,
-        defaultExecuteFee
-      )
+      .instantiate(walletAddress, DAO_CODE_ID, msg, data.name, 'auto')
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {
@@ -599,7 +596,7 @@ const CreateDao: NextPage = () => {
                 register={register}
                 error={errors.threshold}
                 validation={[validateRequired, validatePercent]}
-                defaultValue="75"
+                defaultValue="51"
                 step="any"
                 onChange={(e) => setPassThreshold(Number(e?.target?.value))}
               />

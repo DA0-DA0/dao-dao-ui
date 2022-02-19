@@ -1,11 +1,19 @@
+import { useState } from 'react'
+
+import type { NextPage } from 'next'
+import { NextRouter, useRouter } from 'next/router'
+
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import type { NextPage } from 'next'
-import { NextRouter, useRouter } from 'next/router'
-import { useState } from 'react'
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+import { proposalsCreatedAtom } from 'atoms/proposals'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -13,11 +21,7 @@ import {
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
-import { defaultExecuteFee } from 'util/fee'
 import { cleanChainError } from 'util/cleanChainError'
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { proposalsCreatedAtom } from 'atoms/proposals'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -33,6 +37,7 @@ const ProposalCreate: NextPage = () => {
   )
 
   const [proposalLoading, setProposalLoading] = useState(false)
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
@@ -66,7 +71,7 @@ const ProposalCreate: NextPage = () => {
               spender: contractAddress,
             },
           },
-          defaultExecuteFee
+          'auto'
         )
       } catch (e: any) {
         toast.error(
@@ -89,7 +94,7 @@ const ProposalCreate: NextPage = () => {
             msgs: cosmMsgs,
           },
         },
-        defaultExecuteFee
+        'auto'
       )
       .catch((e) => {
         toast.error(cleanChainError(e.message))
@@ -112,7 +117,7 @@ const ProposalCreate: NextPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
+    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -127,7 +132,9 @@ const ProposalCreate: NextPage = () => {
           loading={proposalLoading}
         />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      <Sidebar>
+        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      </Sidebar>
     </div>
   )
 }

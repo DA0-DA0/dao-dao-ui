@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { MULTISIG_CODE_ID } from 'util/constants'
-import { defaultExecuteFee } from 'util/fee'
-import { errorNotify, successNotify } from 'util/toast'
-import { cleanChainError } from 'util/cleanChainError'
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import { useForm } from 'react-hook-form'
+
+import { useSetRecoilState, useRecoilValue } from 'recoil'
+
+import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { ScaleIcon, UsersIcon } from '@heroicons/react/outline'
+import { useForm } from 'react-hook-form'
+
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { InputLabel } from '@components/input/InputLabel'
+import { NumberInput } from '@components/input/NumberInput'
+import { TextInput } from '@components/input/TextInput'
+import { pinnedMultisigsAtom } from 'atoms/pinned'
+import { Breadcrumbs } from 'components/Breadcrumbs'
+import { secondsToHms } from 'pages/dao/create'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
+import { cleanChainError } from 'util/cleanChainError'
+import { MULTISIG_CODE_ID } from 'util/constants'
 import {
   validateAddress,
   validatePercent,
@@ -16,18 +29,8 @@ import {
   validateRequired,
   validateUrl,
 } from 'util/formValidation'
-import { secondsToHms } from 'pages/dao/create'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
-import { pinnedMultisigsAtom } from 'atoms/pinned'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { InputLabel } from '@components/input/InputLabel'
-import { TextInput } from '@components/input/TextInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
+import { errorNotify, successNotify } from 'util/toast'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -107,13 +110,7 @@ const CreateMultisig: NextPage = () => {
     }
 
     signingClient
-      .instantiate(
-        walletAddress,
-        MULTISIG_CODE_ID,
-        msg,
-        data.name,
-        defaultExecuteFee
-      )
+      .instantiate(walletAddress, MULTISIG_CODE_ID, msg, data.name, 'auto')
       .then((response: InstantiateResult) => {
         setLoading(false)
         if (response.contractAddress.length > 0) {

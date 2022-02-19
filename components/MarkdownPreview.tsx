@@ -1,5 +1,6 @@
-import { useThemeContext } from 'contexts/theme'
 import ReactMarkdown from 'react-markdown'
+
+import { useThemeContext } from 'contexts/theme'
 
 export function MarkdownPreview({ markdown }: { markdown: string }) {
   const theme = useThemeContext()

@@ -1,20 +1,25 @@
-import toast from 'react-hot-toast'
-import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { useState } from 'react'
+
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useState } from 'react'
+
 import { useRecoilValue } from 'recoil'
-import { sigSelector } from 'selectors/multisigs'
+
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
+import toast from 'react-hot-toast'
+
+import { Breadcrumbs } from '@components/Breadcrumbs'
+import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { sidebarExpandedAtom } from 'atoms/sidebar'
+import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import { sigSelector } from 'selectors/multisigs'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
-import { defaultExecuteFee } from 'util/fee'
 import { cleanChainError } from 'util/cleanChainError'
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { Breadcrumbs } from '@components/Breadcrumbs'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -23,6 +28,8 @@ const MultisigProposalCreate: NextPage = () => {
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
+
+  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const [proposalLoading, setProposalLoading] = useState(false)
 
@@ -55,7 +62,7 @@ const MultisigProposalCreate: NextPage = () => {
             msgs: cosmMsgs,
           },
         },
-        defaultExecuteFee
+        'auto'
       )
       .catch((e) => {
         toast.error(cleanChainError(e.message))
@@ -75,7 +82,7 @@ const MultisigProposalCreate: NextPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
+    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -91,7 +98,9 @@ const MultisigProposalCreate: NextPage = () => {
           multisig
         />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      <Sidebar>
+        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
+      </Sidebar>
     </div>
   )
 }
