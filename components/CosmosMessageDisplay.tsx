@@ -19,7 +19,7 @@ export const CosmosMessageDisplay = ({ value }: { value: string }) => {
             name: 'javascript',
             json: true,
           },
-          readOnly: 'nocursor',
+          readOnly: true,
           lineNumbers: true,
           lineWrapping: false,
           tabSize: 2,
