@@ -5,17 +5,19 @@ import { SelectInput } from '@components/input/SelectInput'
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
 import { FieldErrors, useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
-import { NATIVE_DECIMALS } from 'util/constants'
+import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
+import { Config } from 'util/contractConfigWrapper'
 import {
-  Config,
-  contractConfigSelector,
-  ContractConfigWrapper,
-} from 'util/contractConfigWrapper'
-import { cw20TokensList, cw20TokenInfo } from 'selectors/treasury'
+  cw20TokensList,
+  cw20TokenInfo,
+  nativeBalance as nativeBalanceSelector,
+  cw20Balances as cw20BalancesSelector,
+} from 'selectors/treasury'
 import {
   convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 import {
   validateAddress,
@@ -57,12 +59,54 @@ export const SpendComponent = ({
   errors: FieldErrors
   multisig?: boolean
 }) => {
-  const { register } = useFormContext()
+  const { register, watch } = useFormContext()
 
   const tokenList = useRecoilValue(cw20TokensList(contractAddress))
   const cw20Info = useRecoilValue(
     waitForAll(tokenList.map((address) => cw20TokenInfo(address)))
   )
+
+  const nativeBalances = useRecoilValue(nativeBalanceSelector(contractAddress))
+  const cw20Balances = useRecoilValue(cw20BalancesSelector(contractAddress))
+  const cw20BalanceInfo = cw20Balances.map((balance, index) => ({
+    balance,
+    info: cw20Info[index],
+  }))
+  const spendAmount = watch(getLabel('amount'))
+
+  const validatePossibleSpend = (denom: string): string | boolean => {
+    const maybeNative = nativeBalances.find(
+      (coin) =>
+        coin.denom == denom ||
+        coin.denom == convertDenomToHumanReadableDenom(coin.denom)
+    )
+    if (maybeNative) {
+      return (
+        spendAmount <= maybeNative.amount ||
+        `Can't spend more tokens than are in the DAO tresury ${maybeNative.amount}.`
+      )
+    }
+    const maybecw20 = cw20BalanceInfo.find(
+      ({ balance, info: _info }) => balance.address == denom
+    )
+    if (maybecw20) {
+      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
+        maybecw20.balance.amount,
+        maybecw20.info.decimals
+      )
+      return (
+        spendAmount <= maybecw20.balance.amount ||
+        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${maybecw20.info.symbol}).`
+      )
+    }
+    // If there are no native tokens in the treasury the native balances query
+    // will return an empty list.
+    const nativeHumanReadable = convertDenomToHumanReadableDenom(NATIVE_DENOM)
+    if (denom === nativeHumanReadable) {
+      return `Can't spend more tokens than are in the DAO treasury (0 ${nativeHumanReadable})`
+    }
+    return 'Unrecognized denom.'
+  }
 
   return (
     <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
@@ -71,22 +115,20 @@ export const SpendComponent = ({
           <h2 className="text-4xl">💵</h2>
           <h2>Spend</h2>
         </div>
-        <div className="flex flex-col">
-          <NumberInput
-            label={getLabel('amount') as never}
-            register={register}
-            error={errors.amount}
-            validation={[validateRequired, validatePositive]}
-            step={0.000001}
-            border={false}
-          />
-          <InputErrorMessage error={errors.amount} />
-        </div>
+        <NumberInput
+          label={getLabel('amount') as never}
+          register={register}
+          error={errors.amount}
+          validation={[validateRequired, validatePositive]}
+          step={0.000001}
+          border={false}
+        />
         <SelectInput
           label={getLabel('denom') as never}
           register={register}
           error={errors.denom}
           defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
+          validation={[validatePossibleSpend]}
           border={false}
         >
           <option>
@@ -95,7 +137,9 @@ export const SpendComponent = ({
             )}
           </option>
           {cw20Info.map(({ symbol }, idx) => (
-            <option value={tokenList[idx]}>${symbol}</option>
+            <option value={tokenList[idx]} key={tokenList[idx]}>
+              ${symbol}
+            </option>
           ))}
         </SelectInput>
         <div className="flex gap-2 items-center">
@@ -108,8 +152,12 @@ export const SpendComponent = ({
               validation={[validateRequired, validateAddress]}
               border={false}
             />
-            <InputErrorMessage error={errors.to} />
           </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <InputErrorMessage error={errors.amount} />
+          <InputErrorMessage error={errors.denom} />
+          <InputErrorMessage error={errors.to} />
         </div>
       </div>
       <button onClick={onRemove} type="button">
@@ -123,12 +171,7 @@ export const transformSpendToCosmos = (
   self: SpendData,
   props: ToCosmosMsgProps
 ) => {
-  if (
-    self.denom ===
-    convertDenomToHumanReadableDenom(
-      process.env.NEXT_PUBLIC_FEE_DENOM as string
-    )
-  ) {
+  if (self.denom === convertDenomToHumanReadableDenom(NATIVE_DENOM)) {
     const amount = convertDenomToMicroDenomWithDecimals(
       self.amount,
       NATIVE_DECIMALS
