@@ -6,7 +6,7 @@ export function TooltipsDisplay({ selected }: { selected: TooltipResponse }) {
   const theme = useThemeContext()
 
   return (
-    <div className="">
+    <div>
       <h2 className="font-medium text-lg capitalize mb-2">{withSpaces}</h2>
       <p className={`prose ${theme.theme === 'junoDark' && ' prose-invert'}`}>
         {selected.content}
