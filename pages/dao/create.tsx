@@ -23,12 +23,18 @@ import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
+import { TooltipsDisplay } from '@components/TooltipsDisplay'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
+import {
+  daoCreateTooltipsGetter,
+  daoCreateTooltipsDefault,
+} from 'tooltips/daoCreate'
+import { useTooltipsRegister } from 'tooltips/useTooltipsReguster'
 import { cleanChainError } from 'util/cleanChainError'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
@@ -48,7 +54,7 @@ import {
 } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
 
-interface DaoCreateData {
+export interface DaoCreateData {
   deposit: string
   description: string
   duration: string
@@ -69,7 +75,6 @@ interface DaoCreateData {
   unstakingDuration: string
   refund: string | boolean
   imageUrl: string
-  proposalDepositAmount: string
   [key: string]: string | boolean
 }
 
@@ -197,10 +202,16 @@ const CreateDao: NextPage = () => {
 
   const {
     watch,
-    register,
+    register: formRegister,
     handleSubmit,
     formState: { errors },
   } = useForm<DaoCreateData>()
+
+  const [selectedTooltip, register] = useTooltipsRegister(
+    formRegister,
+    daoCreateTooltipsGetter,
+    daoCreateTooltipsDefault
+  )
 
   const votingPeriodSeconds = watch('duration')
   const unstakingDurationSeconds = watch('unstakingDuration')
@@ -684,6 +695,7 @@ const CreateDao: NextPage = () => {
       <div className="col-span-2">
         <div className="sticky top-0 p-6 w-full">
           <MinorityRuleWarning memberCount={count} />
+          <TooltipsDisplay selected={selectedTooltip} />
         </div>
       </div>
     </div>
