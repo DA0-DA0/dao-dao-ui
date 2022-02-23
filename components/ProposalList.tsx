@@ -85,12 +85,10 @@ export const getEnd = (exp: Expiration, status: Status) => {
 
 function ProposalLine({
   prop,
-  border,
   contractAddress,
   multisig,
 }: {
   prop: ExtendedProposalResponse
-  border: boolean
   contractAddress: string
   multisig?: boolean
 }) {
@@ -103,17 +101,13 @@ function ProposalLine({
       }/${contractAddress}/proposals/${proposalKey}`}
     >
       <a>
-        <div
-          className={
-            'grid grid-cols-6 items-center py-2' + (border ? ' border-b' : '')
-          }
-        >
-          <p className="font-mono text-sm text-secondary"># {displayKey}</p>
-          <ProposalStatus status={prop.status} />
+        <div className="grid grid-cols-6 items-center p-4 my-1 rounded-lg bg-base-300 text-sm">
+          <div className="flex flex-row flex-wrap items-center gap-4 col-span-2">
+            <p className="font-mono font-thin text-secondary"># {displayKey}</p>
+            <ProposalStatus status={prop.status} />
+          </div>
           <p className="col-span-3 text-medium truncate">{prop.title}</p>
-          <p className="text-neutral text-sm">
-            {getEnd(prop.expires, prop.status)}
-          </p>
+          <p className="text-sm">{getEnd(prop.expires, prop.status)}</p>
         </div>
       </a>
     </Link>
@@ -247,7 +241,6 @@ export function ProposalList({
             <ProposalLine
               prop={prop}
               key={key}
-              border={idx !== propList.length - 1 || showLoadMore}
               contractAddress={contractAddress}
               multisig={multisig}
             />

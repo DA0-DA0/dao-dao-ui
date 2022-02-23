@@ -36,7 +36,10 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  thresholdString,
+} from 'util/conversion'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
@@ -286,30 +289,6 @@ function ProposalExecuteButton({
       </div>
     </div>
   )
-}
-
-const thresholdString = (
-  t: ThresholdResponse,
-  multisig: boolean,
-  tokenDecimals: number
-) => {
-  if ('absolute_count' in t) {
-    const count = t.absolute_count.weight
-    return `${
-      multisig
-        ? count
-        : convertMicroDenomToDenomWithDecimals(count, tokenDecimals)
-    } votes`
-  } else if ('absolute_percentage' in t) {
-    const threshold = t.absolute_percentage.percentage
-    return `${Number(threshold) * 100}%`
-  } else if ('threshold_quorum' in t) {
-    const quorum = t.threshold_quorum.quorum
-    const threshold = t.threshold_quorum.threshold
-    return `${quorum}% quorum; ${threshold}% threshold`
-  } else {
-    return 'unknown'
-  }
 }
 
 export function ProposalDetailsSidebar({

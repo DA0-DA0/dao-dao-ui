@@ -45,3 +45,17 @@ export function AddressSmall({ address }: { address: string }) {
     </button>
   )
 }
+
+export function AddressAccent({ address }: { address: string }) {
+  return (
+    <button
+      className="transition text-sm text-accent hover:underline"
+      onClick={() => {
+        navigator.clipboard.writeText(address)
+        toast.success('Copied address to clipboard!')
+      }}
+    >
+      {concatAddressImpl(address, 12, 7)}
+    </button>
+  )
+}

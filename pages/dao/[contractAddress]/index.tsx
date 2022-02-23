@@ -5,42 +5,35 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import {
-  CheckCircleIcon,
-  KeyIcon,
-  LibraryIcon,
-  PencilIcon,
-  PlusSmIcon,
-  XCircleIcon,
-} from '@heroicons/react/outline'
+import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
+import { DaoContractInfo } from '@components/DaoContractInfo'
+import SvgMemberCheck from '@components/icons/MemberCheck'
+import SvgPencil from '@components/icons/Pencil'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
-  ContractBalances,
   BalanceCard,
   ContractProposalsDispaly,
   GradientHero,
-  HeroContractFooter,
+  HeroContractHorizontalInfo,
   HeroContractHeader,
   StarButton,
+  HeroContractHorizontalInfoSection,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import Sidebar from 'components/Sidebar'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import {
   daoSelector,
-  isMemberSelector,
   proposalCount,
   tokenConfig,
   totalStaked,
 } from 'selectors/daos'
 import {
-  cw20Balances,
   getBlockHeight,
-  nativeBalance,
   walletAddress,
   walletClaims,
   walletStakedTokenBalance,
@@ -58,11 +51,6 @@ function DaoHome() {
   const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
   const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
-  const { member } = useRecoilValue(isMemberSelector(contractAddress))
-
-  // Balances for the DAO
-  const nativeBalances = useRecoilValue(nativeBalance(contractAddress))
-  const cw20balances = useRecoilValue(cw20Balances(contractAddress))
 
   // Balances for the visitor
   const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
@@ -118,65 +106,57 @@ function DaoHome() {
               ]}
             />
             <div className={expanded ? '' : 'mr-6'}>
-              <StarButton
-                pinned={pinned}
-                onPin={() => {
-                  if (pinned) {
-                    setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-                  } else {
-                    setPinnedDaos((p) => p.concat([contractAddress]))
-                    addToken(daoInfo.gov_token)
-                  }
-                }}
-              />
+              <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-row items-center gap-2 text-secondary">
+                  <SvgMemberCheck fill="currentColor" width="15px" />
+                  <p className="text-xs">You{"'"}re a member</p>
+                </div>
+                <StarButton
+                  pinned={pinned}
+                  onPin={() => {
+                    if (pinned) {
+                      setPinnedDaos((p) =>
+                        p.filter((a) => a !== contractAddress)
+                      )
+                    } else {
+                      setPinnedDaos((p) => p.concat([contractAddress]))
+                      addToken(daoInfo.gov_token)
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
 
           <HeroContractHeader
             name={daoInfo.config.name}
-            member={member}
             address={contractAddress}
+            description={daoInfo.config.description}
             imgUrl={daoInfo.config.image_url}
           />
 
-          <ContractBalances
-            description={daoInfo.config.description}
-            gov_token={daoInfo.gov_token}
-            staking_contract={daoInfo.staking_contract}
-            native={nativeBalances}
-            cw20={cw20balances}
-          />
+          <div className="mt-2">
+            <HeroContractHorizontalInfo>
+              <HeroContractHorizontalInfoSection>
+                <UsersIcon className="w-4 inline" />
+                {convertMicroDenomToDenomWithDecimals(
+                  tokenInfo.total_supply,
+                  tokenInfo.decimals
+                ).toLocaleString()}{' '}
+                ${tokenInfo?.symbol} total supply
+              </HeroContractHorizontalInfoSection>
+              <HeroContractHorizontalInfoSection>
+                <LibraryIcon className="w-4 inline" />
+                {stakedPercent}% ${tokenInfo?.symbol} staked
+              </HeroContractHorizontalInfoSection>
+              <HeroContractHorizontalInfoSection>
+                <SvgPencil fill="currentColor" className="inline" />
+                {proposalsTotal} proposals created
+              </HeroContractHorizontalInfoSection>
+            </HeroContractHorizontalInfo>
+          </div>
 
-          <HeroContractFooter>
-            <div>
-              <LibraryIcon className="w-5 h-5 mb-1 mr-1 inline" />
-              {stakedPercent}% ${tokenInfo?.symbol} staked
-            </div>
-            <div>
-              <PencilIcon className="w-5 h-5 mb-1 mr-1 inline" />
-              {proposalsTotal} proposals
-            </div>
-            <div>
-              <KeyIcon className="w-5 h-5 mb-1 mr-1 inline" />
-              {convertMicroDenomToDenomWithDecimals(
-                daoInfo?.config.proposal_deposit,
-                tokenInfo.decimals
-              )}
-              ${tokenInfo.symbol} proposal deposit
-            </div>
-            <div
-              className="tooltip"
-              data-tip="Deposits to failed proposals are refunded."
-            >
-              {daoInfo.config.refund_failed_proposals ? (
-                <CheckCircleIcon className="w-5 inline mr-1 mb-1" />
-              ) : (
-                <XCircleIcon className="w-5 inline mr-1 mb-1" />
-              )}
-              Proposal deposit refunds{' '}
-              {daoInfo.config.refund_failed_proposals ? 'on' : 'off'}
-            </div>
-          </HeroContractFooter>
+          <DaoContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
           <ContractProposalsDispaly
@@ -187,7 +167,7 @@ function DaoHome() {
       </div>
       <Sidebar>
         <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
-          <h2 className="font-medium text-md">Your shares</h2>
+          <h2 className="font-medium text-md my-3">Your shares</h2>
           <ul className="list-none mt-3">
             <li>
               <BalanceCard

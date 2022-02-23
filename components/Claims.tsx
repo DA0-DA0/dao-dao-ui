@@ -4,14 +4,16 @@ import { useRecoilValue } from 'recoil'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
-import { CheckIcon, CurrencyDollarIcon } from '@heroicons/react/outline'
+import { CheckIcon } from '@heroicons/react/outline'
 
-import { tokenConfig, unstakingDuration } from 'selectors/daos'
+import { unstakingDuration } from 'selectors/daos'
 import { getBlockHeight, walletClaims } from 'selectors/treasury'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  humanReadableDuration,
+} from 'util/conversion'
 
 import { LogoNoBorder } from './Logo'
-import { humanReadableDuration } from './StakingModal'
 
 export function claimAvaliable(claim: Claim, blockHeight: number) {
   if ('at_height' in claim.release_at) {

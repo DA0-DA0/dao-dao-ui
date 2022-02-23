@@ -10,27 +10,27 @@ import {
   VariableIcon,
 } from '@heroicons/react/outline'
 
+import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
-  ContractBalances,
   ContractProposalsDispaly,
   GradientHero,
-  HeroContractFooter,
+  HeroContractHorizontalInfo,
   HeroContractHeader,
   StarButton,
+  BalanceIcon,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import Sidebar from 'components/Sidebar'
-import { isMemberSelector } from 'selectors/daos'
 import {
   listMembers,
   memberWeight,
   sigSelector,
   totalWeight,
 } from 'selectors/multisigs'
-import { cw20Balances, nativeBalance, walletAddress } from 'selectors/treasury'
+import { walletAddress } from 'selectors/treasury'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -62,15 +62,15 @@ function VoteBalanceCard({
       <h2 className="text-sm font-mono text-secondary overflow-auto">
         {title}
       </h2>
-      <div className="flex items-baseline gap-2">
-        <p className="mt-2 font-bold">{weight}</p>
-        <p className="text-sm text-secondary">
-          (
+      <div className="gap-2 flex flex-row items-center gap-2">
+        <BalanceIcon />
+        {weight}
+        <span className="inline text-sm text-secondary">
           {((weight / weightTotal) * 100).toLocaleString(undefined, {
             maximumSignificantDigits: 3,
           })}
-          %)
-        </p>
+          %
+        </span>
       </div>
     </div>
   )
@@ -81,9 +81,6 @@ function MultisigHome() {
   const contractAddress = router.query.contractAddress as string
 
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
-  const nativeBalances = useRecoilValue(nativeBalance(contractAddress))
-  const cw20s = useRecoilValue(cw20Balances(contractAddress))
-  const memberInfo = useRecoilValue(isMemberSelector(contractAddress))
 
   const weightTotal = useRecoilValue(totalWeight(contractAddress))
   const visitorWeight = useRecoilValue(memberWeight(contractAddress))
@@ -122,33 +119,29 @@ function MultisigHome() {
 
           <HeroContractHeader
             name={sigInfo.config.name}
-            member={memberInfo.member}
             address={contractAddress}
+            description={sigInfo.config.description}
             imgUrl={sigInfo.config.image_url}
           />
 
-          <ContractBalances
-            description={sigInfo.config.description}
-            gov_token={''}
-            staking_contract={''}
-            native={nativeBalances}
-            cw20={cw20s}
-          />
+          <div className="mt-2">
+            <HeroContractHorizontalInfo>
+              <div>
+                <ScaleIcon className="w-5 h-5 mb-1 mr-1 inline" />
+                {thresholdString(sigInfo.config.threshold)}
+              </div>
+              <div>
+                <VariableIcon className="w-5 mb-1 mr-1 inline" />
+                Total votes: {weightTotal}
+              </div>
+              <div>
+                <UserGroupIcon className="w-5 mb-1 mr-1 inline" />
+                Total members: {memberList.length}
+              </div>
+            </HeroContractHorizontalInfo>
+          </div>
 
-          <HeroContractFooter>
-            <div>
-              <ScaleIcon className="w-5 h-5 mb-1 mr-1 inline" />
-              {thresholdString(sigInfo.config.threshold)}
-            </div>
-            <div>
-              <VariableIcon className="w-5 mb-1 mr-1 inline" />
-              Total votes: {weightTotal}
-            </div>
-            <div>
-              <UserGroupIcon className="w-5 mb-1 mr-1 inline" />
-              Total members: {memberList.length}
-            </div>
-          </HeroContractFooter>
+          <MultisigContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
           <ContractProposalsDispaly
@@ -160,7 +153,6 @@ function MultisigHome() {
       </div>
       <Sidebar>
         <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
-          <hr className="mt-8 mb-6" />
           {visitorWeight && (
             <>
               <h2 className="font-medium text-md">Your shares</h2>
@@ -175,20 +167,24 @@ function MultisigHome() {
               </ul>
             </>
           )}
-          <h2 className="font-medium text-md mt-3">Member shares</h2>
-          <ul className="list-none mt-3">
-            {memberList
-              .filter((m) => m.addr != visitorAddress)
-              .map((member) => (
-                <li key={member.addr}>
-                  <VoteBalanceCard
-                    title={member.addr}
-                    weight={member.weight}
-                    weightTotal={weightTotal}
-                  />
-                </li>
-              ))}
-          </ul>
+          {memberList.length != 0 && (
+            <>
+              <h2 className="font-medium text-md mt-3">Member shares</h2>
+              <ul className="list-none mt-3">
+                {memberList
+                  .filter((m) => m.addr != visitorAddress)
+                  .map((member) => (
+                    <li key={member.addr}>
+                      <VoteBalanceCard
+                        title={member.addr}
+                        weight={member.weight}
+                        weightTotal={weightTotal}
+                      />
+                    </li>
+                  ))}
+              </ul>
+            </>
+          )}
         </div>
       </Sidebar>
     </div>

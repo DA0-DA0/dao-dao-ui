@@ -82,7 +82,7 @@ function PinnedMultisigCard({ address }: { address: string }) {
           setPinnedSigs((p) => p.concat([address]))
         }
       }}
-      imgUrl={config.imgUrl}
+      imgUrl={config.image_url}
     />
   )
 }
