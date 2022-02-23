@@ -3,10 +3,7 @@ import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
-import {
-  CosmosMsgFor_Empty,
-  Config as DAOConfig,
-} from '@dao-dao/types/contracts/cw3-dao'
+import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
 import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
 import {
   DEFAULT_MAX_VOTING_PERIOD_SECONDS,
@@ -180,29 +177,6 @@ export const DAOUpdateConfigComponent = ({
               defaultValue="0"
             />
             <InputErrorMessage error={errors.deposit} />
-          </div>
-
-          <div className="form-control">
-            <InputLabel name="Unstaking Duration (seconds)" />
-            <NumberInput
-              label={getLabel('unstaking_duration')}
-              register={register}
-              error={errors.unstakingDuration}
-              validation={[validateRequired]}
-              onChange={(e) => setUnstakingDurationSeconds(e?.target?.value)}
-              defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
-            />
-            <InputErrorMessage error={errors.unstakingDuration} />
-            <div
-              style={{
-                textAlign: 'end',
-                padding: '5px 0 0 17px',
-                fontSize: ' 12px',
-                color: 'grey',
-              }}
-            >
-              {secondsToHms(unstakingDurationSeconds)}
-            </div>
           </div>
 
           <div className="form-control">
