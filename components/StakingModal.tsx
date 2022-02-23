@@ -143,7 +143,7 @@ function PercentSelector({
         // (ex german) will insert '.' as seperators which will mess
         // with our replace logic :)
         .toLocaleString('en', { maximumFractionDigits: 6 })
-        .replace(',', '')
+        .replaceAll(',', '')
     )
   }
 
