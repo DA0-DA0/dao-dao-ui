@@ -1,3 +1,4 @@
+import { ConfigResponse } from '@dao-dao/types/contracts/cw3-multisig'
 import { selectorFamily } from 'recoil'
 import { contractsByCodeId } from 'selectors/contracts'
 import { cosmWasmClient } from 'selectors/cosm'
@@ -32,14 +33,14 @@ export const sigMemberSelector = selectorFamily<MultisigListType, string>({
         description: config.config.description,
         member,
         weight,
-        imgUrl: config.config.image_url,
+        imgUrl: config.config.image_url!,
       }
     },
 })
 
 export const sigAddressesSelector = contractsByCodeId(MULTISIG_CODE_ID)
 
-export const sigSelector = selectorFamily<any, string>({
+export const sigSelector = selectorFamily<ConfigResponse, string>({
   key: 'multisig',
   get:
     (address: string) =>

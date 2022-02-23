@@ -19,7 +19,6 @@ import {
 } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
-import { secondsToHms } from 'pages/dao/create'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -35,6 +34,7 @@ import { cleanChainError } from 'util/cleanChainError'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  humanReadableDuration,
 } from 'util/conversion'
 
 export enum StakingMode {
@@ -173,13 +173,6 @@ function durationIsNonZero(d: Duration) {
     return d.height !== 0
   }
   return d.time !== 0
-}
-
-export function humanReadableDuration(d: Duration) {
-  if ('height' in d) {
-    return `${d.height} blocks`
-  }
-  return `${secondsToHms(d.time.toString())}`
 }
 
 function executeUnstakeAction(

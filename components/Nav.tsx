@@ -70,7 +70,7 @@ function Nav({ onMenuClick }: NavProps) {
             <h3 className="text-secondary font-mono mb-1">DAOs</h3>
             <ul className="list-none ml-2">
               {daoAddresses.map(({ dao, address }) => (
-                <li key={dao.config.name} className="mt-1">
+                <li key={address} className="mt-1">
                   <Link href={`/dao/${address}`}>
                     <a>
                       <MemberDisplay name={dao.config.name} />

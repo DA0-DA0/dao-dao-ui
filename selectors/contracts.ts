@@ -2,10 +2,7 @@ import { cosmWasmClient } from 'selectors/cosm'
 import { selectorFamily } from 'recoil'
 import { WasmExtension } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@cosmjs/stargate'
-import {
-  QueryCodesResponse,
-  QueryContractsByCodeResponse,
-} from 'cosmjs-types/cosmwasm/wasm/v1/query'
+import { QueryContractsByCodeResponse } from 'cosmjs-types/cosmwasm/wasm/v1/query'
 
 export const contractsByCodeId = selectorFamily({
   key: 'contractsByCodeId',
@@ -52,6 +49,31 @@ export const allContractsByCodeId = selectorFamily({
       }
 
       return all
+    },
+})
+
+export const contractInstantiateTime = selectorFamily<Date, string>({
+  key: 'contractInstantiateTimeSelector',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      if (!client) {
+        return new Date()
+      }
+
+      const events = await client.searchTx({
+        tags: [{ key: 'instantiate._contract_address', value: address }],
+      })
+      if (events.length == 0) {
+        return new Date()
+      }
+      // The timestamp field is avaliable when running this query via the
+      // command line but is not avaliable from CosmJS so we need to run a
+      // second query to get the block info.
+      const height = events[0].height
+      const block = await client.getBlock(height)
+      return new Date(Date.parse(block.header.time))
     },
 })
 
