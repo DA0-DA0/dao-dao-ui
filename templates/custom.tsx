@@ -75,7 +75,7 @@ export const CustomComponent = ({
       />
       <div className="mt-2">
         {errors.message ? (
-          <p className="text-error text-sm">
+          <p className="text-error text-sm flex items-center gap-1">
             <XIcon className="w-5 inline" />{' '}
             {errors.message.message === 'Invalid cosmos message' ? (
               <>
@@ -92,7 +92,7 @@ export const CustomComponent = ({
             ) : null}
           </p>
         ) : (
-          <p className="text-success text-sm">
+          <p className="text-success text-sm flex items-center gap-1">
             <CheckIcon className="w-5 inline" /> json is valid
           </p>
         )}
