@@ -13,8 +13,15 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
+import TooltipsDisplay, {
+  useTooltipsRegister,
+} from '@components/TooltipsDisplay'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import {
+  multisigCreateTooltipsDefault,
+  multisigCreateTooltipsGetter,
+} from 'components/TooltipsDisplay/multisigCreate'
 import { secondsToHms } from 'pages/dao/create'
 import {
   cosmWasmSigningClient,
@@ -34,12 +41,14 @@ import { errorNotify, successNotify } from 'util/toast'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
-interface MultisigCreateData {
+export interface MultisigCreateData {
   name: string
   description: string
 
   duration: string
   threshold: string
+
+  imageUrl: string
 
   [key: string]: string
 }
@@ -54,10 +63,16 @@ const CreateMultisig: NextPage = () => {
 
   const {
     watch,
-    register,
+    register: formRegister,
     handleSubmit,
     formState: { errors },
   } = useForm<MultisigCreateData>()
+
+  const [selectedTooltip, register] = useTooltipsRegister(
+    formRegister,
+    multisigCreateTooltipsGetter,
+    multisigCreateTooltipsDefault
+  )
 
   const votingPeriodSeconds = watch('duration')
 
@@ -297,6 +312,11 @@ const CreateMultisig: NextPage = () => {
             Create multisig
           </button>
         </form>
+      </div>
+      <div className="col-span-2">
+        <div className="sticky top-0 p-6 w-full">
+          <TooltipsDisplay selected={selectedTooltip} />
+        </div>
       </div>
     </div>
   )
