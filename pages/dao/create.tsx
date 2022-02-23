@@ -23,18 +23,19 @@ import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
-import { TooltipsDisplay } from '@components/TooltipsDisplay'
+import TooltipsDisplay, {
+  useTooltipsRegister,
+} from '@components/TooltipsDisplay'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import {
+  daoCreateTooltipsGetter,
+  daoCreateTooltipsDefault,
+} from 'components/TooltipsDisplay/daoCreate'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import {
-  daoCreateTooltipsGetter,
-  daoCreateTooltipsDefault,
-} from 'tooltips/daoCreate'
-import { useTooltipsRegister } from 'tooltips/useTooltipsReguster'
 import { cleanChainError } from 'util/cleanChainError'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'

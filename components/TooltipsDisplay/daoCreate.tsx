@@ -1,6 +1,7 @@
-import { DaoCreateData } from 'pages/dao/create'
 import { ReactNode } from 'react'
-import { TooltipResponse } from './useTooltipsReguster'
+
+import { TooltipResponse } from 'components/TooltipsDisplay'
+import { DaoCreateData } from 'pages/dao/create'
 
 // A type which maps each key of DaoCreateData to a react node. Updating a field
 // name in DaoCreateData will cause type checking to fail until that field is
@@ -35,8 +36,9 @@ const daoCreateTooltips: daoCreateTooltipsType = {
   daoInitialBalance: (
     <>
       <p>
-        The number of governance to allocate to your DAO's treasury. Allocating
-        more tokens to your DAO makes it easier to onboard future members.
+        The number of governance to allocate to your DAO{"'"}s treasury.
+        Allocating more tokens to your DAO makes it easier to onboard future
+        members.
       </p>
       <p>We suggest allocating 90% of the initial token supply to your DAO.</p>
     </>

@@ -1,6 +1,7 @@
-import { MultisigCreateData } from 'pages/multisig/create'
 import { ReactNode } from 'react'
-import { TooltipResponse } from './useTooltipsReguster'
+
+import { TooltipResponse } from 'components/TooltipsDisplay'
+import { MultisigCreateData } from 'pages/multisig/create'
 
 type multisigCreateDataType = { [key in keyof MultisigCreateData]: ReactNode }
 

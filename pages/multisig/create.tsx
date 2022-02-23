@@ -13,19 +13,20 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
-import { TooltipsDisplay } from '@components/TooltipsDisplay'
+import TooltipsDisplay, {
+  useTooltipsRegister,
+} from '@components/TooltipsDisplay'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import {
+  multisigCreateTooltipsDefault,
+  multisigCreateTooltipsGetter,
+} from 'components/TooltipsDisplay/multisigCreate'
 import { secondsToHms } from 'pages/dao/create'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import {
-  multisigCreateTooltipsDefault,
-  multisigCreateTooltipsGetter,
-} from 'tooltips/multisigCreate'
-import { useTooltipsRegister } from 'tooltips/useTooltipsReguster'
 import { cleanChainError } from 'util/cleanChainError'
 import { MULTISIG_CODE_ID } from 'util/constants'
 import {

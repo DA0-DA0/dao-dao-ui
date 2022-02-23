@@ -1,10 +1,13 @@
 import { ReactNode, useState } from 'react'
+
 import {
   FieldPath,
   FieldValues,
   RegisterOptions,
   UseFormRegister,
 } from 'react-hook-form'
+
+import { TooltipsDisplay } from './TooltipsDisplay'
 
 export interface TooltipResponse {
   label: string
@@ -33,3 +36,5 @@ export function useTooltipsRegister<
 
   return [selected, newRegister as UseFormRegister<TFieldValues>]
 }
+
+export default TooltipsDisplay
