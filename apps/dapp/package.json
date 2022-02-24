@@ -1,10 +1,10 @@
 {
-  "name": "@dao-dao/dapp",
-  "version": "0.1.0",
+  "name": "dao-dao-dapp",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3000",
-    "build": "next build",
+    "dev": "next dev",
+    "build": "next build --debug",
     "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint && prettier --check .",
