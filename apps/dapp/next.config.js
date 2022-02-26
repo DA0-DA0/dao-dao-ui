@@ -4,7 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 let config = {
-  distDir: 'dist',
   /*
     The reactStrictMode flag is set to false
     to allow for the proposal JSON editor to show.
@@ -15,6 +14,7 @@ let config = {
     useSuspense: false,
     wait: true,
   },
+  experimental: {},
 }
 
 // Only need rewrites for local development
