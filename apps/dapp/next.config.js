@@ -15,6 +15,7 @@ let config = {
     useSuspense: false,
     wait: true,
   },
+  experimental: {},
 }
 
 // Only need rewrites for local development
