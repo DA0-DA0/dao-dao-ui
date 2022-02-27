@@ -5,8 +5,8 @@ import { IndexedTx } from '@cosmjs/stargate'
 import { transactions } from 'selectors/treasury'
 import { NATIVE_DECIMALS } from 'util/constants'
 import {
-  convertFromMicroDenom,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenLabel,
 } from 'util/conversion'
 
 interface TxEventAttribute {
@@ -54,7 +54,7 @@ function TransferRow({
   const amountLabel = `${sign}${convertMicroDenomToDenomWithDecimals(
     uamount,
     NATIVE_DECIMALS
-  )} ${convertFromMicroDenom(udenom)}`
+  )} ${getNativeTokenLabel(udenom)}`
 
   // TODO(@ebaker): add link to block explorer
   return (

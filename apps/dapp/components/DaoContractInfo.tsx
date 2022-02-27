@@ -14,7 +14,6 @@ import { NATIVE_DECIMALS } from 'util/constants'
 import {
   thresholdString,
   humanReadableDuration,
-  convertFromMicroDenom,
   convertMicroDenomToDenomWithDecimals,
   convertDenomToHumanReadableDenom,
 } from 'util/conversion'

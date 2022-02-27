@@ -19,8 +19,8 @@ import {
 import { NATIVE_DECIMALS, HEADER_IMAGES_ENABLED } from 'util/constants'
 import {
   convertDenomToHumanReadableDenom,
-  convertFromMicroDenom,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenLabel,
 } from 'util/conversion'
 
 import { Logo, LogoNoBorder } from './Logo'
@@ -193,7 +193,7 @@ export function TreasuryBalances({ address }: { address: string }) {
   return (
     <ul className="list-none mt-6 flex flex-col gap-2">
       {nativeBalances.map((coin, idx) => {
-        const symbol = convertFromMicroDenom(coin.denom)
+        const symbol = getNativeTokenLabel(coin.denom)
         return (
           <BalanceListItem key={idx}>
             <BalanceIcon />
