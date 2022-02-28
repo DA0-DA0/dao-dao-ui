@@ -18,6 +18,8 @@ import {
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenLabel,
+  getNativeTokenLogoURI,
 } from 'util/conversion'
 import {
   validateAddress,
@@ -59,7 +61,7 @@ export const SpendComponent = ({
   errors: FieldErrors
   multisig?: boolean
 }) => {
-  const { register, watch } = useFormContext()
+  const { register, watch, clearErrors } = useFormContext()
 
   const tokenList = useRecoilValue(cw20TokensList(contractAddress))
   const cw20Info = useRecoilValue(
@@ -73,17 +75,25 @@ export const SpendComponent = ({
     info: cw20Info[index],
   }))
   const spendAmount = watch(getLabel('amount'))
+  const spendDenom = watch(getLabel('denom'))
 
-  const validatePossibleSpend = (denom: string): string | boolean => {
-    const maybeNative = nativeBalances.find(
-      (coin) =>
-        coin.denom == denom ||
-        coin.denom == convertDenomToHumanReadableDenom(coin.denom)
-    )
+  const validatePossibleSpend = (
+    denom: string,
+    amount: string
+  ): string | boolean => {
+    const maybeNative = nativeBalances.find((coin) => coin.denom == denom)
     if (maybeNative) {
+      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
+        maybeNative.amount,
+        NATIVE_DECIMALS
+      )
+      const microAmount = convertDenomToMicroDenomWithDecimals(
+        amount,
+        NATIVE_DECIMALS
+      )
       return (
-        spendAmount <= maybeNative.amount ||
-        `Can't spend more tokens than are in the DAO tresury ${maybeNative.amount}.`
+        Number(microAmount) <= Number(maybeNative.amount) ||
+        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount}).`
       )
     }
     const maybecw20 = cw20BalanceInfo.find(
@@ -94,8 +104,12 @@ export const SpendComponent = ({
         maybecw20.balance.amount,
         maybecw20.info.decimals
       )
+      const microAmount = convertDenomToMicroDenomWithDecimals(
+        amount,
+        maybecw20.info.decimals
+      )
       return (
-        spendAmount <= maybecw20.balance.amount ||
+        Number(microAmount) <= Number(maybecw20.balance.amount) ||
         `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${maybecw20.info.symbol}).`
       )
     }
@@ -106,6 +120,17 @@ export const SpendComponent = ({
       return `Can't spend more tokens than are in the DAO treasury (0 ${nativeHumanReadable})`
     }
     return 'Unrecognized denom.'
+  }
+
+  // The amount and denom fields are dependent on eachother for validation. If
+  // one has a valid validation result, the other one as well. This wrapper ensures
+  // that react-hook-form is informed as such.
+  const validatePossibleSpendWrapper = (denom: string, amount: string) => {
+    const valid = validatePossibleSpend(denom, amount)
+    if (typeof valid == 'boolean' && valid) {
+      clearErrors([getLabel('denom'), getLabel('amount')])
+    }
+    return valid
   }
 
   return (
@@ -119,7 +144,12 @@ export const SpendComponent = ({
           label={getLabel('amount') as never}
           register={register}
           error={errors.amount}
-          validation={[validateRequired, validatePositive]}
+          validation={[
+            validateRequired,
+            validatePositive,
+            (amount: string) =>
+              validatePossibleSpendWrapper(spendDenom, amount),
+          ]}
           step={0.000001}
           border={false}
         />
@@ -128,14 +158,18 @@ export const SpendComponent = ({
           register={register}
           error={errors.denom}
           defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
-          validation={[validatePossibleSpend]}
+          validation={[
+            (denom: string) => validatePossibleSpendWrapper(denom, spendAmount),
+          ]}
           border={false}
         >
-          <option>
-            {convertDenomToHumanReadableDenom(
-              process.env.NEXT_PUBLIC_FEE_DENOM as string
-            )}
-          </option>
+          {nativeBalances.map(({ denom }, idx) => {
+            return (
+              <option value={denom} key={idx}>
+                ${getNativeTokenLabel(denom)}
+              </option>
+            )
+          })}
           {cw20Info.map(({ symbol }, idx) => (
             <option value={tokenList[idx]} key={tokenList[idx]}>
               ${symbol}
@@ -171,7 +205,10 @@ export const transformSpendToCosmos = (
   self: SpendData,
   props: ToCosmosMsgProps
 ) => {
-  if (self.denom === convertDenomToHumanReadableDenom(NATIVE_DENOM)) {
+  if (
+    self.denom === convertDenomToHumanReadableDenom(NATIVE_DENOM) ||
+    self.denom.startsWith('ibc/')
+  ) {
     const amount = convertDenomToMicroDenomWithDecimals(
       self.amount,
       NATIVE_DECIMALS
