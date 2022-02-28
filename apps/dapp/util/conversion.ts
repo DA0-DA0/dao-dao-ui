@@ -7,7 +7,7 @@ import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig
 
 import { secondsToHms } from 'pages/dao/create'
 
-import ibcAssets from "./ibc_assets.json"
+import ibcAssets from './ibc_assets.json'
 
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
@@ -105,9 +105,20 @@ export function humanReadableDuration(d: Duration) {
 export function getNativeTokenLabel(denom: string): string {
   // Search IBC asset strings (junoDenom) if denom is in IBC format.
   // Otherwise just check microdenoms.
-  const asset = denom.startsWith("ibc")
+  const asset = denom.startsWith('ibc')
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   // If no asset, assume it's already a microdenom.
   return asset?.symbol || convertFromMicroDenom(denom)
+}
+
+export function getNativeTokenLogoURI(denom: string): string | undefined {
+  if (denom === 'ujuno' || denom == 'ujunox') {
+    return '/juno-symbol.png'
+  }
+
+  const asset = denom.startsWith('ibc')
+    ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
+    : ibcAssets.tokens.find(({ denom: d }) => d === denom)
+  return asset?.logoURI
 }
