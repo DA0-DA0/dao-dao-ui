@@ -13,6 +13,7 @@ import {
 import { useState } from 'react'
 import { FieldErrors, useFormContext } from 'react-hook-form'
 import { Config } from 'util/contractConfigWrapper'
+import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import {
   validatePercent,
   validatePositive,
@@ -208,7 +209,10 @@ export const transformDAOToConfigUpdateCosmos = (
     description: self.description,
     ...(self.image_url && { image_url: self.image_url }),
     max_voting_period: { time: self.max_voting_period },
-    proposal_deposit: self.proposal_deposit.toString(),
+    proposal_deposit: convertDenomToMicroDenomWithDecimals(
+      self.proposal_deposit,
+      props.govDecimals
+    ).toString(),
     ...(self.refund_failed_proposals && {
       refund_failed_proposals: self.refund_failed_proposals,
     }),
