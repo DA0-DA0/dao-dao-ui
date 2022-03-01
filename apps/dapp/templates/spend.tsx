@@ -81,10 +81,10 @@ export const SpendComponent = ({
     denom: string,
     amount: string
   ): string | boolean => {
-    const maybeNative = nativeBalances.find((coin) => coin.denom == denom)
-    if (maybeNative) {
+    const native = nativeBalances.find((coin) => coin.denom == denom)
+    if (native) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        maybeNative.amount,
+        native.amount,
         NATIVE_DECIMALS
       )
       const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -92,25 +92,25 @@ export const SpendComponent = ({
         NATIVE_DECIMALS
       )
       return (
-        Number(microAmount) <= Number(maybeNative.amount) ||
+        Number(microAmount) <= Number(native.amount) ||
         `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount}).`
       )
     }
-    const maybecw20 = cw20BalanceInfo.find(
+    const cw20 = cw20BalanceInfo.find(
       ({ balance, info: _info }) => balance.address == denom
     )
-    if (maybecw20) {
+    if (cw20) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        maybecw20.balance.amount,
-        maybecw20.info.decimals
+        cw20.balance.amount,
+        cw20.info.decimals
       )
       const microAmount = convertDenomToMicroDenomWithDecimals(
         amount,
-        maybecw20.info.decimals
+        cw20.info.decimals
       )
       return (
-        Number(microAmount) <= Number(maybecw20.balance.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${maybecw20.info.symbol}).`
+        Number(microAmount) <= Number(cw20.balance.amount) ||
+        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${cw20.info.symbol}).`
       )
     }
     // If there are no native tokens in the treasury the native balances query
