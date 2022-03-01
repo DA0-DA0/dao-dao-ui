@@ -11,12 +11,12 @@ import {
 } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { ThresholdResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
 import { ProposalStatus } from '@components'
 
+import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import { PaginatedProposalVotes } from 'components/ProposalVotes'
@@ -29,8 +29,8 @@ import {
   proposalSelector,
   proposalStartBlockSelector,
   proposalTallySelector,
-  proposalVotesSelector,
   votingPowerAtHeightSelector,
+  walletVotedSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
@@ -219,7 +219,7 @@ function ProposalVoteButtons({
   )
   return (
     <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <VoteButton position="yes">
           <CheckIcon className="w-4 h-4 inline mr-2" />
           Yes
@@ -432,9 +432,6 @@ export function ProposalDetails({
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
   )
-  const proposalVotes = useRecoilValue(
-    proposalVotesSelector({ contractAddress, proposalId })
-  )
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
@@ -445,11 +442,10 @@ export function ProposalDetails({
   const configWrapper = new ContractConfigWrapper(sigConfig)
   const tokenDecimals = configWrapper.gov_token_decimals
   const member = useRecoilValue(isMemberSelector(contractAddress))
-  const visitorAddress = useRecoilValue(walletAddressSelector)
 
-  // FIXME: We only get 30 votes from a single query. How do we determine if
-  // someone has voted in a proposal without multiple queries?
-  const voted = proposalVotes.some((v) => v.voter === visitorAddress)
+  const voted = useRecoilValue(
+    walletVotedSelector({ contractAddress, proposalId })
+  )
 
   const [actionLoading, setActionLoading] = useRecoilState(
     proposalActionLoading
@@ -495,19 +491,25 @@ export function ProposalDetails({
         </div>
       )}
       {!actionLoading && proposal.status === 'open' && (
-        <div className="mt-3">
+        <div className="mt-3 flex flex-row flex-wrap items-center gap-3">
           {tokenBalancesLoading ? (
             <LoadingButton />
           ) : (
-            <ProposalVoteButtons
-              yesCount={yesVotes.toString()}
-              noCount={noVotes.toString()}
-              proposalId={proposalId}
-              contractAddress={contractAddress}
-              voted={voted}
-              setLoading={setActionLoading}
-              multisig={!!multisig}
-            />
+            <>
+              <ProposalVoteButtons
+                yesCount={yesVotes.toString()}
+                noCount={noVotes.toString()}
+                proposalId={proposalId}
+                contractAddress={contractAddress}
+                voted={voted}
+                setLoading={setActionLoading}
+                multisig={!!multisig}
+              />
+              <ProposalVoteStatus
+                contractAddress={contractAddress}
+                proposalId={proposalId}
+              />
+            </>
           )}
         </div>
       )}
