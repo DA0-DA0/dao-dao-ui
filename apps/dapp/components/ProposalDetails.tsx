@@ -122,7 +122,7 @@ function executeProposalExecute(
 function ExecutingButton() {
   return (
     <button className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px1 bg-base-300 btn-disabled loading">
-      Executing
+      Executing transaction
     </button>
   )
 }
