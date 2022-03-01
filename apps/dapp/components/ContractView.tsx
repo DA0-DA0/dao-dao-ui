@@ -19,8 +19,9 @@ import {
 import { NATIVE_DECIMALS, HEADER_IMAGES_ENABLED } from 'util/constants'
 import {
   convertDenomToHumanReadableDenom,
-  convertFromMicroDenom,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenLabel,
+  getNativeTokenLogoURI,
 } from 'util/conversion'
 
 import { Logo, LogoNoBorder } from './Logo'
@@ -166,8 +167,15 @@ export function GovInfoListItem({
   )
 }
 
-export function BalanceIcon() {
-  return <div className="w-4 h-4 rounded-full bg-accent"></div>
+export function BalanceIcon({ iconURI }: { iconURI?: string }) {
+  return (
+    <div
+      className="w-5 h-5 rounded-full bg-accent bg-center bg-cover"
+      style={{
+        backgroundImage: iconURI ? `url(${iconURI})` : '',
+      }}
+    ></div>
+  )
 }
 
 export function BalanceListItem({ children }: { children: ReactNode }) {
@@ -193,10 +201,11 @@ export function TreasuryBalances({ address }: { address: string }) {
   return (
     <ul className="list-none mt-6 flex flex-col gap-2">
       {nativeBalances.map((coin, idx) => {
-        const symbol = convertFromMicroDenom(coin.denom)
+        const symbol = getNativeTokenLabel(coin.denom)
+        const icon = getNativeTokenLogoURI(coin.denom)
         return (
           <BalanceListItem key={idx}>
-            <BalanceIcon />
+            <BalanceIcon iconURI={icon} />
             {convertMicroDenomToDenomWithDecimals(
               coin.amount,
               NATIVE_DECIMALS
