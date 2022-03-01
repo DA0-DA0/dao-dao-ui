@@ -22,6 +22,7 @@ import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
+import { expirationExpired } from 'util/expiration'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -41,7 +42,6 @@ const ProposalCreate: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    console.log(d)
     let cosmMsgs = d.messages.map((m: MessageTemplate) => {
       const template = messageTemplates.find(
         (template) => template.label === m.label
@@ -60,19 +60,40 @@ const ProposalCreate: NextPage = () => {
       })
     })
 
+    if (signingClient == null) {
+      toast.error('No signing client. Is your wallet connected?')
+    }
+
     if (daoInfo.config.proposal_deposit !== '0') {
       try {
-        await signingClient?.execute(
-          walletAddress,
+        // Request to increase the contract's allowance if needed.
+        const currentAllowance = await signingClient?.queryContractSmart(
           daoInfo.gov_token,
           {
-            increase_allowance: {
-              amount: daoInfo.config.proposal_deposit,
+            allowance: {
+              owner: walletAddress,
               spender: contractAddress,
             },
-          },
-          'auto'
+          }
         )
+        const blockHeight = (await signingClient?.getHeight()) as number
+        if (
+          !expirationExpired(currentAllowance.expires, blockHeight) &&
+          Number(currentAllowance.allowance) <
+            Number(daoInfo.config.proposal_deposit)
+        ) {
+          await signingClient?.execute(
+            walletAddress,
+            daoInfo.gov_token,
+            {
+              increase_allowance: {
+                amount: daoInfo.config.proposal_deposit,
+                spender: contractAddress,
+              },
+            },
+            'auto'
+          )
+        }
       } catch (e: any) {
         toast.error(
           `failed to increase allowance to pay proposal deposit: (${cleanChainError(
