@@ -79,7 +79,7 @@ export function ProposalForm({
             {proposalTitle}
           </h1>
         </div>
-        <div className="my-6">
+        <div className={`my-6 ${!showPreview && 'hidden'}`}>
           <MarkdownPreview markdown={proposalDescription} />
         </div>
         <div className={`${showPreview && 'hidden'}`}>
