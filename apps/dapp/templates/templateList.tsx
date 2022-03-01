@@ -7,6 +7,11 @@ import {
   transformAddTokenToCosmos,
 } from './addToken'
 import {
+  ChangeMembersComponent,
+  changeMembersDefaults,
+  transformChangeMembersToCosmos,
+} from './changeMembers'
+import {
   DAOConfigUpdateDefaults,
   DAOUpdateConfigComponent,
   transformDAOToConfigUpdateCosmos,
@@ -24,50 +29,63 @@ import {
 } from './removeToken'
 import { SpendComponent, spendDefaults, transformSpendToCosmos } from './spend'
 
+export enum ContractSupport {
+  Multisig,
+  DAO,
+  Both,
+}
+
 // Adding a template to this list will cause it to be avaliable
 // across the UI.
 export const messageTemplates: MessageTemplate[] = [
   {
     label: '💵 Spend',
     component: SpendComponent,
-    multisigSupport: true,
+    contractSupport: ContractSupport.Both,
     getDefaults: spendDefaults,
     toCosmosMsg: transformSpendToCosmos,
   },
   {
     label: '🍵 Mint',
     component: MintComponent,
-    multisigSupport: false,
+    contractSupport: ContractSupport.DAO,
     getDefaults: mintDefaults,
     toCosmosMsg: transformMintToCosmos,
   },
   {
     label: '🤖 Custom',
     component: CustomComponent,
-    multisigSupport: true,
+    contractSupport: ContractSupport.Both,
     getDefaults: customDefaults,
     toCosmosMsg: transformCustomToCosmos,
   },
   {
     label: '🎭 Update Config',
     component: DAOUpdateConfigComponent,
-    multisigSupport: false,
+    contractSupport: ContractSupport.DAO,
     getDefaults: DAOConfigUpdateDefaults,
     toCosmosMsg: transformDAOToConfigUpdateCosmos,
   },
   {
     label: '🔘 Add Treasury Token',
     component: AddTokenComponent,
-    multisigSupport: true,
+    contractSupport: ContractSupport.Both,
     getDefaults: addTokenDefaults,
     toCosmosMsg: transformAddTokenToCosmos,
   },
   {
     label: '⭕️ Remove Treasury Token',
     component: RemoveTokenComponent,
-    multisigSupport: true,
+    contractSupport: ContractSupport.Both,
     getDefaults: removeTokenDefaults,
     toCosmosMsg: transformRemoveTokenToCosmos,
+  },
+  {
+    label: '🖋 Manage Members',
+    component: ChangeMembersComponent,
+    contractSupport: ContractSupport.Multisig,
+    getDefaults: changeMembersDefaults,
+    toCosmosMsg: transformChangeMembersToCosmos,
   },
 ]
 
@@ -84,7 +102,7 @@ export type TemplateComponent = React.FunctionComponent<{
 export interface MessageTemplate {
   label: string
   component: TemplateComponent
-  multisigSupport: boolean
+  contractSupport: ContractSupport
   getDefaults: (walletAddress: string, contractConfig: Config) => any
   toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
 }

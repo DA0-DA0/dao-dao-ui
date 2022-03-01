@@ -18,6 +18,7 @@ import TooltipsDisplay, {
 } from '@components/TooltipsDisplay'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import { PlusMinusButton } from 'components/PlusMinusButton'
 import {
   multisigCreateTooltipsDefault,
   multisigCreateTooltipsGetter,
@@ -235,29 +236,15 @@ const CreateMultisig: NextPage = () => {
                 )
               })}
             </ul>
-            <div className="btn-group">
-              <button
-                className="btn btn-outline btn-sm text-md normal-case"
-                onClick={(e) => {
-                  e.preventDefault()
-                  setCount(count + 1)
-                }}
-              >
-                +
-              </button>
-              <button
-                className={
-                  'btn btn-outline btn-primary btn-sm text-md normal-case' +
-                  (count <= 1 ? ' btn-disabled btn-secondary' : '')
-                }
-                onClick={(e) => {
-                  e.preventDefault()
-                  setCount(count - 1)
-                }}
-              >
-                -
-              </button>
-            </div>
+            <PlusMinusButton
+              onPlus={() => {
+                setCount(count + 1)
+              }}
+              onMinus={() => {
+                setCount(count - 1)
+              }}
+              disableMinus={count <= 1}
+            />
           </div>
 
           <h2 className="mt-8 text-lg">

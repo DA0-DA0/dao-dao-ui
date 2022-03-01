@@ -45,7 +45,7 @@ const MultisigProposalCreate: NextPage = () => {
 
       return toCosmosMsg(m as any, {
         sigAddress: contractAddress,
-        govAddress: '',
+        govAddress: sigInfo.group_address,
         govDecimals: 0,
         multisig: true,
       })
