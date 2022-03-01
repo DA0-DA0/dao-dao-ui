@@ -22,7 +22,7 @@ import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
-import { expirationExpired } from 'util/expirationHelper'
+import { expirationExpired } from 'util/expiration'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
