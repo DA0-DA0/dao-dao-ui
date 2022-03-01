@@ -2,20 +2,13 @@ import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { LogoNoBorder } from '@components/Logo'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { XIcon } from '@heroicons/react/outline'
-import { treasuryTokenListUpdates } from 'atoms/treasury'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { FieldErrors, useFormContext } from 'react-hook-form'
-import { Loadable, useRecoilValueLoadable, useSetRecoilState } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 import { tokenConfig } from 'selectors/daos'
 import { Config } from 'util/contractConfigWrapper'
-import {
-  validateAddress,
-  validateContractAddress,
-  validateRequired,
-} from 'util/formValidation'
-import { isValidContractAddress } from 'util/isValidAddress'
+import { validateContractAddress, validateRequired } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
 import { ToCosmosMsgProps } from './templateList'
 
@@ -104,7 +97,7 @@ export const TokenSelector = ({
           validation={[validateRequired, validateContractAddress]}
           border={false}
         />
-        <InputErrorMessage error={errors.address} />
+        <InputErrorMessage error={errors.to} />
       </div>
       <TokenInfoDisplay
         address={tokenAddress}

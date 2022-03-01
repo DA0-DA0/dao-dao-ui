@@ -6,7 +6,11 @@ import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 
 import { walletAddress } from 'selectors/treasury'
-import { MessageTemplate, messageTemplates } from 'templates/templateList'
+import {
+  MessageTemplate,
+  messageTemplates,
+  ContractSupport,
+} from 'templates/templateList'
 import { contractConfigSelector } from 'util/contractConfigWrapper'
 import { validateRequired } from 'util/formValidation'
 
@@ -149,7 +153,16 @@ export function ProposalForm({
             className="p-2 shadow menu dropdown-content rounded-md bg-base-300 border border-secondary w-max"
           >
             {messageTemplates
-              .filter(({ multisigSupport }) => multisigSupport || !multisig)
+              .filter(({ contractSupport }) => {
+                switch (contractSupport) {
+                  case ContractSupport.Both:
+                    return true
+                  case ContractSupport.Multisig:
+                    return multisig
+                  case ContractSupport.DAO:
+                    return !multisig
+                }
+              })
               .map(({ label, getDefaults }, index) => (
                 <li
                   key={index}

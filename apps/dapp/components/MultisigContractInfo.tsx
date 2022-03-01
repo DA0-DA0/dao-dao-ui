@@ -35,6 +35,9 @@ export function MultisigContractInfo({ address }: { address: string }) {
           <li>
             Multisig address <AddressAccent address={address} />
           </li>
+          <li>
+            cw4-group address <AddressAccent address={sigInfo.group_address} />
+          </li>
         </ul>
       </div>
       <div>

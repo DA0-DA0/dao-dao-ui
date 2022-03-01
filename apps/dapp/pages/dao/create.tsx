@@ -23,6 +23,7 @@ import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
+import { PlusMinusButton } from '@components/PlusMinusButton'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
@@ -549,38 +550,24 @@ const CreateDao: NextPage = () => {
                     )
                   })}
                 </ul>
-                <div className="btn-group">
-                  <button
-                    className="btn btn-outline btn-sm text-md normal-case"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setCount(count + 1)
-                      setTokenWeights((weights) => {
-                        const newWeights = [...weights, 1]
-                        return newWeights
-                      })
-                    }}
-                  >
-                    +
-                  </button>
-                  <button
-                    className={
-                      'btn btn-outline btn-primary btn-sm text-md normal-case' +
-                      (count <= 1 ? ' btn-disabled btn-secondary' : '')
-                    }
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setCount(count - 1)
-                      setTokenWeights((weights) => {
-                        const newWeights = [...weights]
-                        newWeights.pop()
-                        return newWeights
-                      })
-                    }}
-                  >
-                    -
-                  </button>
-                </div>
+                <PlusMinusButton
+                  onPlus={() => {
+                    setCount(count + 1)
+                    setTokenWeights((weights) => {
+                      const newWeights = [...weights, 1]
+                      return newWeights
+                    })
+                  }}
+                  onMinus={() => {
+                    setCount(count - 1)
+                    setTokenWeights((weights) => {
+                      const newWeights = [...weights]
+                      newWeights.pop()
+                      return newWeights
+                    })
+                  }}
+                  disableMinus={count <= 1}
+                />
               </>
             ) : (
               <div className="form-control">
