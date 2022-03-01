@@ -14,7 +14,7 @@ export function cleanChainError(error: string): string {
     return 'You have a different transaction pending. Please wait a little and then try again.'
   }
   if (errorLine.toLowerCase().includes('unauthorized')) {
-    return 'Unauthorized. Double check that you have staked governance tokens.'
+    return 'Unauthorized. You must have staked governance tokens at the time of proposal creation to vote.'
   }
 
   return errorLine

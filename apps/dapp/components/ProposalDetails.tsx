@@ -27,8 +27,10 @@ import {
 import { isMemberSelector } from 'selectors/daos'
 import {
   proposalSelector,
+  proposalStartBlockSelector,
   proposalTallySelector,
   proposalVotesSelector,
+  votingPowerAtHeightSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
@@ -140,17 +142,17 @@ function ProposalVoteButtons({
   noCount,
   proposalId,
   contractAddress,
-  member,
   voted,
   setLoading,
+  multisig,
 }: {
   yesCount: string
   noCount: string
   proposalId: number
   contractAddress: string
-  member: boolean
   voted: boolean
   setLoading: SetterOrUpdater<boolean>
+  multisig?: boolean
 }) {
   const walletAddress = useRecoilValue(walletAddressSelector)
   const signingClient = useRecoilValue(cosmWasmSigningClient)
@@ -162,13 +164,25 @@ function ProposalVoteButtons({
     proposalsUpdated(contractAddress)
   )
 
-  const ready = walletAddress && signingClient && member && !voted
+  const proposalStartHeight = useRecoilValue(
+    proposalStartBlockSelector({ contractAddress, proposalId })
+  )
+  const stakedBalanceAtStart = useRecoilValue(
+    votingPowerAtHeightSelector({
+      contractAddress,
+      height: proposalStartHeight,
+      multisig: multisig as boolean,
+    })
+  )
+
+  const ready =
+    walletAddress && signingClient && !voted && stakedBalanceAtStart != 0
   const tooltip =
     ((!walletAddress || !signingClient) && 'Connect your wallet to vote') ||
-    (!member &&
-      'You must have voting power to vote. Consider staking some tokens.') ||
-    (voted && 'You already voted') ||
-    'Something went wrong'
+    (stakedBalanceAtStart == 0 &&
+      'You must have staked balance at the time of proposal creation to vote.') ||
+    (voted && 'You already voted.') ||
+    'Something went wrong.'
 
   const VoteButton = ({
     position,
@@ -224,7 +238,6 @@ function ProposalVoteButtons({
 function ProposalExecuteButton({
   proposalId,
   contractAddress,
-  member,
   setLoading,
 }: {
   proposalId: number
@@ -245,12 +258,9 @@ function ProposalExecuteButton({
     treasuryTokenListUpdates(contractAddress)
   )
 
-  const ready = walletAddress && signingClient && member
+  const ready = walletAddress && signingClient
   const tooltip =
-    ((!walletAddress || !signingClient) &&
-      'Please connect your wallet to vote') ||
-    (!member &&
-      'You must have voting power to vote. Consider staking some tokens.') ||
+    ((!walletAddress || !signingClient) && 'Please connect your wallet.') ||
     'Something went wrong'
 
   const VoteButton = ({ children }: { children: ReactNode }) => (
@@ -494,14 +504,14 @@ export function ProposalDetails({
               noCount={noVotes.toString()}
               proposalId={proposalId}
               contractAddress={contractAddress}
-              member={member.member}
               voted={voted}
               setLoading={setActionLoading}
+              multisig={multisig}
             />
           )}
         </div>
       )}
-      {!actionLoading && proposal.status === 'passed' && member.member && (
+      {!actionLoading && proposal.status === 'passed' && (
         <div className="mt-3">
           {tokenBalancesLoading ? (
             <LoadingButton />

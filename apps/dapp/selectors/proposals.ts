@@ -24,6 +24,12 @@ import {
   ProposalMessageKey,
 } from 'types/proposals'
 import { cosmWasmClient } from './cosm'
+import { daoSelector } from './daos'
+import { sigSelector } from './multisigs'
+import {
+  walletAddress,
+  walletStakedTokenBalanceAtHeightSelector,
+} from './treasury'
 
 export type ProposalIdInput = string | number
 
@@ -109,6 +115,36 @@ export const proposalSelector = selectorFamily<
     },
 })
 
+export const proposalStartBlockSelector = selectorFamily<
+  number,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalStartBlockSelector',
+  get:
+    ({ contractAddress, proposalId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      if (!client) {
+        return 0
+      }
+
+      const events = await client.searchTx({
+        tags: [
+          { key: 'wasm._contract_address', value: contractAddress },
+          { key: 'wasm.proposal_id', value: proposalId.toString() },
+          { key: 'wasm.action', value: 'propose' },
+        ],
+      })
+
+      if (events.length != 1) {
+        return 0
+      }
+
+      const propose = events[0]
+      return propose.height
+    },
+})
+
 export const proposalVotesSelector = selectorFamily<
   VoteInfo[],
   { contractAddress: string; proposalId: number; startAfter?: string }
@@ -170,6 +206,47 @@ export const proposalTallySelector = selectorFamily<
           ...EmptyProposalTallyResponse,
         }
       }
+    },
+})
+
+export const votingPowerAtHeightSelector = selectorFamily<
+  number,
+  { contractAddress: string; height: number; multisig: boolean }
+>({
+  key: 'votingPowerAtHeightSelector',
+  get:
+    ({ contractAddress, height, multisig }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const wallet = get(walletAddress)
+
+      if (!client || !wallet) {
+        return 0
+      }
+
+      if (multisig) {
+        const config = get(sigSelector(contractAddress))
+        const group = config.group_address
+        const member = await client.queryContractSmart(group, {
+          member: {
+            addr: wallet,
+            at_height: height,
+          },
+        })
+        if ('weight' in member) {
+          return member.weight
+        }
+        return 0
+      }
+      const config = get(daoSelector(contractAddress))
+      const staking = config.staking_contract
+      const balance = get(
+        walletStakedTokenBalanceAtHeightSelector({
+          stakingAddress: staking,
+          height,
+        })
+      )
+      return balance
     },
 })
 
