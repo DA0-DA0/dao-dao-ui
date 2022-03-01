@@ -8,7 +8,7 @@ export function cleanChainError(error: string): string {
   const errorLine = lines[lines.length - 1]
 
   if (errorLine.startsWith('Account does not exist on chain')) {
-    return 'One of the accounts in this transaction does not exist on chain. Double check that they all have received tokens in the past.'
+    return 'One of the accounts in this transaction does not exist on chain. Try sending some Juno to the address.'
   }
   if (errorLine.includes('account sequence mismatch')) {
     return 'You have a different transaction pending. Please wait a little and then try again.'
