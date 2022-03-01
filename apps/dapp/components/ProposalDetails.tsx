@@ -144,7 +144,7 @@ function ProposalVoteButtons({
   contractAddress,
   voted,
   setLoading,
-  multisig,
+  multisig = false,
 }: {
   yesCount: string
   noCount: string
@@ -152,7 +152,7 @@ function ProposalVoteButtons({
   contractAddress: string
   voted: boolean
   setLoading: SetterOrUpdater<boolean>
-  multisig?: boolean
+  multisig: boolean
 }) {
   const walletAddress = useRecoilValue(walletAddressSelector)
   const signingClient = useRecoilValue(cosmWasmSigningClient)
@@ -164,14 +164,14 @@ function ProposalVoteButtons({
     proposalsUpdated(contractAddress)
   )
 
-  const proposalStartHeight = useRecoilValue(
+  const height = useRecoilValue(
     proposalStartBlockSelector({ contractAddress, proposalId })
   )
   const stakedBalanceAtStart = useRecoilValue(
     votingPowerAtHeightSelector({
       contractAddress,
-      height: proposalStartHeight,
-      multisig: multisig as boolean,
+      height,
+      multisig,
     })
   )
 
@@ -506,7 +506,7 @@ export function ProposalDetails({
               contractAddress={contractAddress}
               voted={voted}
               setLoading={setActionLoading}
-              multisig={multisig}
+              multisig={!!multisig}
             />
           )}
         </div>

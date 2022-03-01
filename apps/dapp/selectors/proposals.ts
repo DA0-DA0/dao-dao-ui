@@ -239,10 +239,10 @@ export const votingPowerAtHeightSelector = selectorFamily<
         return 0
       }
       const config = get(daoSelector(contractAddress))
-      const staking = config.staking_contract
+      const stakingAddress = config.staking_contract
       const balance = get(
         walletStakedTokenBalanceAtHeightSelector({
-          stakingAddress: staking,
+          stakingAddress,
           height,
         })
       )
