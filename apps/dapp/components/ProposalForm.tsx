@@ -74,41 +74,36 @@ export function ProposalForm({
           onSubmit(d as ProposalData)
         )}
       >
-        {showPreview ? (
-          <>
-            <div className="max-w-prose">
-              <h1 className="text-4xl font-medium font-semibold my-6">
-                {proposalTitle}
-              </h1>
-            </div>
-            <div className="my-6">
-              <MarkdownPreview markdown={proposalDescription} />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="form-control">
-              <InputLabel name="Title" />
-              <TextInput
-                label="title"
-                register={register}
-                error={errors.title}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.title} />
-            </div>
-            <div className="form-control">
-              <InputLabel name="Description" />
-              <TextareaInput
-                label="description"
-                register={register}
-                error={errors.description}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-          </>
-        )}
+        <div className={`max-w-prose ${!showPreview && 'hidden'}`}>
+          <h1 className="text-4xl font-medium font-semibold my-6">
+            {proposalTitle}
+          </h1>
+        </div>
+        <div className="my-6">
+          <MarkdownPreview markdown={proposalDescription} />
+        </div>
+        <div className={`${showPreview && 'hidden'}`}>
+          <div className="form-control">
+            <InputLabel name="Title" />
+            <TextInput
+              label="title"
+              register={register}
+              error={errors.title}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors.title} />
+          </div>
+          <div className="form-control">
+            <InputLabel name="Description" />
+            <TextareaInput
+              label="description"
+              register={register}
+              error={errors.description}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors.description} />
+          </div>
+        </div>
         <ul className="list-none">
           {fields.map((data, index) => {
             const label = (data as any).label
