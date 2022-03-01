@@ -18,6 +18,7 @@ import {
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenDecimals,
   getNativeTokenLabel,
   getNativeTokenLogoURI,
 } from 'util/conversion'
@@ -205,16 +206,10 @@ export const transformSpendToCosmos = (
   self: SpendData,
   props: ToCosmosMsgProps
 ) => {
-  if (
-    self.denom === convertDenomToHumanReadableDenom(NATIVE_DENOM) ||
-    self.denom.startsWith('ibc/')
-  ) {
-    const amount = convertDenomToMicroDenomWithDecimals(
-      self.amount,
-      NATIVE_DECIMALS
-    )
-    const microDenom = convertDenomToContractReadableDenom(self.denom)
-    const bank = makeBankMessage(amount, self.to, props.sigAddress, microDenom)
+  if (self.denom === NATIVE_DENOM || self.denom.startsWith('ibc/')) {
+    const decimals = getNativeTokenDecimals(self.denom)!
+    const amount = convertDenomToMicroDenomWithDecimals(self.amount, decimals)
+    const bank = makeBankMessage(amount, self.to, props.sigAddress, self.denom)
     return { bank }
   }
   const amount = convertDenomToMicroDenomWithDecimals(

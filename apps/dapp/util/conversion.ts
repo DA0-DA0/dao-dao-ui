@@ -6,6 +6,7 @@ import {
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
 
 import { secondsToHms } from 'pages/dao/create'
+import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
 
 import ibcAssets from './ibc_assets.json'
 
@@ -121,4 +122,14 @@ export function getNativeTokenLogoURI(denom: string): string | undefined {
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   return asset?.logoURI
+}
+
+export function getNativeTokenDecimals(denom: string): number | undefined {
+  if (denom === NATIVE_DENOM) {
+    return NATIVE_DECIMALS
+  }
+  const asset = denom.startsWith('ibc')
+    ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
+    : ibcAssets.tokens.find(({ denom: d }) => d === denom)
+  return asset?.decimals
 }
