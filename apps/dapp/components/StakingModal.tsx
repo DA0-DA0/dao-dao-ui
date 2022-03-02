@@ -68,8 +68,8 @@ function ModeButton({
   return (
     <button
       className={
-        'btn btn-sm rounded-md bg-base-300 text-primary normal-case border-none font-normal' +
-        (!active ? ' bg-transparent hover:bg-base-300' : ' hover:bg-base-200')
+        'btn btn-sm rounded-md text-primary bg-transparent normal-case border-none font-normal' +
+        (!active ? ' hover:bg-base-100' : ' bg-base-100 hover:bg-base-100')
       }
       onClick={onClick}
     >
@@ -96,7 +96,7 @@ function AmountSelector({
       <div className="relative">
         <button
           className={
-            'absolute top-0 left-0 rounded-r-none btn btn-primary bg-base-300 hover:bg-base-200 border-none text-primary' +
+            'absolute top-0 left-0 rounded-r-none btn btn-primary bg-base-100 hover:bg-base-200 border-none text-primary' +
             (Number(amount) <= 1 ? ' btn-disabled' : '')
           }
           onClick={onDecrease}
@@ -105,13 +105,13 @@ function AmountSelector({
         </button>
         <input
           type="number"
-          className="appearance-none w-full pr-16 pl-16 input input-primary input-bordered bg-base-300 border-none"
+          className="appearance-none w-full pr-16 pl-16 input input-primary input-bordered bg-base-100 border-none"
           value={amount}
           onChange={onChange}
         />
         <button
           className={
-            'absolute top-0 right-0 rounded-l-none btn btn-primary bg-base-300 hover:bg-base-200 border-none text-primary' +
+            'absolute top-0 right-0 rounded-l-none btn btn-primary bg-base-100 hover:bg-base-200 border-none text-primary' +
             (Number(amount) + 1 >= max ? ' btn-disabled' : '')
           }
           onClick={onIncrease}
@@ -134,7 +134,7 @@ function PercentSelector({
 }) {
   const active = (p: number) => max * p == amount
   const getClassName = (p: number) =>
-    'btn btn-sm rounded-md bg-base-300 border-none text-primary hover:bg-base-200 font-normal' +
+    'btn btn-sm rounded-md bg-base-100 border-none text-primary hover:bg-base-200 font-normal' +
     (active(p) ? '' : ' bg-transparent')
   const getOnClick = (p: number) => () => {
     setAmount(
@@ -425,12 +425,12 @@ export function StakingModal({
   }
 
   return (
-    <div className="bg-base-100 fixed bottom-0 right-0 m-3 border border-base-300 rounded-lg shadow max-w-sm">
+    <div className="bg-base-300 fixed bottom-0 right-0 m-3 border border-base-300 rounded-lg shadow max-w-sm">
       <div className="py-3 px-6 mt-3">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-medium">Manage staking</h1>
           <button
-            className="hover:bg-base-300 rounded-full p-1"
+            className="hover:bg-base-100 rounded-full p-1"
             onClick={onClose}
           >
             <XIcon className="h-4 w-4" />
@@ -459,7 +459,7 @@ export function StakingModal({
           )}
         </div>
       </div>
-      <hr />
+      <hr className="border-primary" />
       {mode !== StakingMode.Claim && (
         <>
           <div className="py-3 px-6 flex flex-col mt-3">
