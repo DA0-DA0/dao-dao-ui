@@ -39,7 +39,10 @@ import {
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
-import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  secondsToHms,
+} from 'util/conversion'
 import {
   validateAddress,
   validateContractAddress,
@@ -176,20 +179,6 @@ function MinorityRuleWarning({ memberCount }: { memberCount: number }) {
     )
   }
   return null
-}
-
-export function secondsToHms(seconds: string): string {
-  const secondsInt = Number(seconds)
-  const h = Math.floor(secondsInt / 3600)
-  const m = Math.floor((secondsInt % 3600) / 60)
-  const s = Math.floor((secondsInt % 3600) % 60)
-
-  const hDisplay =
-    h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
-  const mDisplay =
-    m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
-  const sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
-  return hDisplay + mDisplay + sDisplay
 }
 
 const CreateDao: NextPage = () => {

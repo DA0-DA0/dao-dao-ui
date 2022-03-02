@@ -6,7 +6,7 @@ import { transactions } from 'selectors/treasury'
 import { NATIVE_DECIMALS } from 'util/constants'
 import {
   convertMicroDenomToDenomWithDecimals,
-  getNativeTokenLabel,
+  nativeTokenLabel,
 } from 'util/conversion'
 
 interface TxEventAttribute {
@@ -54,7 +54,7 @@ function TransferRow({
   const amountLabel = `${sign}${convertMicroDenomToDenomWithDecimals(
     uamount,
     NATIVE_DECIMALS
-  )} ${getNativeTokenLabel(udenom)}`
+  )} ${nativeTokenLabel(udenom)}`
 
   // TODO(@ebaker): add link to block explorer
   return (

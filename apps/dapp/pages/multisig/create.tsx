@@ -23,13 +23,13 @@ import {
   multisigCreateTooltipsDefault,
   multisigCreateTooltipsGetter,
 } from 'components/TooltipsDisplay/multisigCreate'
-import { secondsToHms } from 'pages/dao/create'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
 import { MULTISIG_CODE_ID } from 'util/constants'
+import { secondsToHms } from 'util/conversion'
 import {
   validateAddress,
   validatePercent,

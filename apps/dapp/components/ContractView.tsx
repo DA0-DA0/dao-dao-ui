@@ -20,8 +20,8 @@ import { NATIVE_DECIMALS, HEADER_IMAGES_ENABLED } from 'util/constants'
 import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
-  getNativeTokenLabel,
-  getNativeTokenLogoURI,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
 } from 'util/conversion'
 
 import { Logo, LogoNoBorder } from './Logo'
@@ -201,8 +201,8 @@ export function TreasuryBalances({ address }: { address: string }) {
   return (
     <ul className="list-none mt-6 flex flex-col gap-2">
       {nativeBalances.map((coin, idx) => {
-        const symbol = getNativeTokenLabel(coin.denom)
-        const icon = getNativeTokenLogoURI(coin.denom)
+        const symbol = nativeTokenLabel(coin.denom)
+        const icon = nativeTokenLogoURI(coin.denom)
         return (
           <BalanceListItem key={idx}>
             <BalanceIcon iconURI={icon} />
