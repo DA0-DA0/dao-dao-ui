@@ -37,9 +37,12 @@ export const TokenInfoDisplay = ({
   const tokenInfo = useRecoilValueLoadable(tokenConfig(address))
 
   useEffect(() => {
-    if (tokenInfo.state === 'hasError') setError('Failed to get token info')
-    else if (tokenInfo.state !== 'loading') clearError()
-  }, [tokenInfo.state])
+    if (tokenInfo.state === 'hasError') {
+      setError('Failed to get token info')
+    } else {
+      clearError()
+    }
+  }, [tokenInfo])
 
   return (
     <div>
@@ -102,9 +105,9 @@ export const TokenSelector = ({
       <TokenInfoDisplay
         address={tokenAddress}
         setError={(message) =>
-          setError(getLabel('address'), { type: 'manual', message })
+          setError(getLabel('to'), { type: 'manual', message })
         }
-        clearError={() => clearErrors(getLabel('address'))}
+        clearError={() => clearErrors(getLabel('to'))}
       />
     </div>
   )
