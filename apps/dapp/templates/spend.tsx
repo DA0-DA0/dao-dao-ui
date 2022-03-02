@@ -18,9 +18,9 @@ import {
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  getNativeTokenDecimals,
-  getNativeTokenLabel,
-  getNativeTokenLogoURI,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
 } from 'util/conversion'
 import {
   validateAddress,
@@ -167,7 +167,7 @@ export const SpendComponent = ({
           {nativeBalances.map(({ denom }, idx) => {
             return (
               <option value={denom} key={idx}>
-                ${getNativeTokenLabel(denom)}
+                ${nativeTokenLabel(denom)}
               </option>
             )
           })}
@@ -207,7 +207,7 @@ export const transformSpendToCosmos = (
   props: ToCosmosMsgProps
 ) => {
   if (self.denom === NATIVE_DENOM || self.denom.startsWith('ibc/')) {
-    const decimals = getNativeTokenDecimals(self.denom)!
+    const decimals = nativeTokenDecimals(self.denom)!
     const amount = convertDenomToMicroDenomWithDecimals(self.amount, decimals)
     const bank = makeBankMessage(amount, self.to, props.sigAddress, self.denom)
     return { bank }

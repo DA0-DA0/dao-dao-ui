@@ -8,12 +8,14 @@ import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
 import {
   DEFAULT_MAX_VOTING_PERIOD_SECONDS,
   DEFAULT_UNSTAKING_DURATION_SECONDS,
-  secondsToHms,
 } from 'pages/dao/create'
 import { useState } from 'react'
 import { FieldErrors, useFormContext } from 'react-hook-form'
 import { Config } from 'util/contractConfigWrapper'
-import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
+import {
+  secondsToHms,
+  convertDenomToMicroDenomWithDecimals,
+} from 'util/conversion'
 import {
   validatePercent,
   validatePositive,

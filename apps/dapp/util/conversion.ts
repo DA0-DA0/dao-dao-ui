@@ -5,7 +5,6 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
 
-import { secondsToHms } from 'pages/dao/create'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
 
 import ibcAssets from './ibc_assets.json'
@@ -103,7 +102,21 @@ export function humanReadableDuration(d: Duration) {
   return `${secondsToHms(d.time.toString())}`
 }
 
-export function getNativeTokenLabel(denom: string): string {
+export function secondsToHms(seconds: string): string {
+  const secondsInt = Number(seconds)
+  const h = Math.floor(secondsInt / 3600)
+  const m = Math.floor((secondsInt % 3600) / 60)
+  const s = Math.floor((secondsInt % 3600) % 60)
+
+  const hDisplay =
+    h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
+  const mDisplay =
+    m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
+  const sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
+  return hDisplay + mDisplay + sDisplay
+}
+
+export function nativeTokenLabel(denom: string): string {
   // Search IBC asset strings (junoDenom) if denom is in IBC format.
   // Otherwise just check microdenoms.
   const asset = denom.startsWith('ibc')
@@ -113,7 +126,7 @@ export function getNativeTokenLabel(denom: string): string {
   return asset?.symbol || convertFromMicroDenom(denom)
 }
 
-export function getNativeTokenLogoURI(denom: string): string | undefined {
+export function nativeTokenLogoURI(denom: string): string | undefined {
   if (denom === 'ujuno' || denom == 'ujunox') {
     return '/juno-symbol.png'
   }
@@ -124,7 +137,7 @@ export function getNativeTokenLogoURI(denom: string): string | undefined {
   return asset?.logoURI
 }
 
-export function getNativeTokenDecimals(denom: string): number | undefined {
+export function nativeTokenDecimals(denom: string): number | undefined {
   if (denom === NATIVE_DENOM) {
     return NATIVE_DECIMALS
   }
