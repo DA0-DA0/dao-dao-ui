@@ -29,7 +29,7 @@ const ButtonIcon = memo(function ButtonIcon({
   return <i className={`btn-icon ${padding}`}>{icon}</i>
 })
 
-interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'ghost'
   size?: 'sm' | 'md' | 'lg' | 'xl'
