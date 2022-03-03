@@ -59,8 +59,11 @@ export function DaoContractInfo({ address }: { address: string }) {
           <li className="flex flex-row items-center text-sm">
             <span className="text-secondary flex items-center gap-1">
               <SvgVotes fill="currentColor" width="16px" />{' '}
-              {daoInfo.config.proposal_deposit} ${govTokenInfo.symbol} proposal
-              deposit
+              {convertMicroDenomToDenomWithDecimals(
+                daoInfo.config.proposal_deposit,
+                govTokenInfo.decimals
+              )}{' '}
+              ${govTokenInfo.symbol} proposal deposit
             </span>
           </li>
         </ul>
