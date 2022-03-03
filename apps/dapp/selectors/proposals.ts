@@ -145,6 +145,33 @@ export const proposalStartBlockSelector = selectorFamily<
     },
 })
 
+export const walletVotedSelector = selectorFamily<
+  boolean,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'walletHasVotedOnProposalStatusSelector',
+  get:
+    ({ contractAddress, proposalId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClient)
+      const wallet = get(walletAddress)
+      if (!client || !wallet) {
+        return false
+      }
+
+      const events = await client.searchTx({
+        tags: [
+          { key: 'wasm._contract_address', value: contractAddress },
+          { key: 'wasm.proposal_id', value: proposalId.toString() },
+          { key: 'wasm.action', value: 'vote' },
+          { key: 'wasm.sender', value: wallet },
+        ],
+      })
+
+      return events.length != 0
+    },
+})
+
 export const proposalVotesSelector = selectorFamily<
   VoteInfo[],
   { contractAddress: string; proposalId: number; startAfter?: string }
