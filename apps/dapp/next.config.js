@@ -1,4 +1,5 @@
-/** @type {import('next').NextConfig} */
+const withTM = require('next-transpile-modules')(['ui'])
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -29,4 +30,4 @@ if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
   }
 }
 
-module.exports = withBundleAnalyzer(config)
+module.exports = withBundleAnalyzer(withTM(config))
