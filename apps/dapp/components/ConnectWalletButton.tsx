@@ -64,9 +64,17 @@ function DisconnectButton({ onClick }: { onClick: () => void }) {
 function NetworkText({ chainId }: { chainId: string }) {
   switch (chainId) {
     case 'juno-1':
-      return <span className="text-xs text-center align-baseline font-bold">Mainnet</span>
+      return (
+        <span className="text-xs text-center align-baseline font-bold">
+          Mainnet
+        </span>
+      )
     case 'uni-2':
-      return <span className="text-xs text-center align-baseline font-bold">Testnet</span>
+      return (
+        <span className="text-xs text-center align-baseline font-bold">
+          Testnet
+        </span>
+      )
     default:
       return null
   }
