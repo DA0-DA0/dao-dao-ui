@@ -130,7 +130,7 @@ function WalletConnect() {
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
         </div>
-        <div className="absolute right-3 bottom-2.5 flex gap-1">
+        <div className="absolute right-3 bottom-2.5 flex gap-1 transition opacity-0 group-hover:opacity-100">
           <NetworkText chainId={CHAIN_ID} />
         </div>
       </div>
