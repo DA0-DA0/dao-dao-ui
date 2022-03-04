@@ -21,15 +21,13 @@ import {
   walletChainBalanceSelector,
 } from 'selectors/cosm'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
-import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
+import { CHAIN_ID, NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 
 import SvgWallet from './icons/Wallet'
-
-const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
@@ -61,6 +59,17 @@ function DisconnectButton({ onClick }: { onClick: () => void }) {
       </button>
     </div>
   )
+}
+
+function NetworkText({ chainId }: { chainId: string }) {
+  switch (chainId) {
+    case 'juno-1':
+      return <span className="text-xs text-center align-baseline font-bold">Mainnet</span>
+    case 'uni-2':
+      return <span className="text-xs text-center align-baseline font-bold">Testnet</span>
+    default:
+      return null
+  }
 }
 
 function WalletConnect() {
@@ -120,6 +129,9 @@ function WalletConnect() {
         <div className="absolute right-2 top-1 flex gap-1 transition opacity-0 group-hover:opacity-100">
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
+        </div>
+        <div className="absolute right-3 bottom-2.5 flex gap-1">
+          <NetworkText chainId={CHAIN_ID} />
         </div>
       </div>
     )
