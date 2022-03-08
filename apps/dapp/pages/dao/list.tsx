@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 import {
   useRecoilState,
@@ -105,6 +106,17 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
   )
 }
 
+type DaoVersion = {
+  name: string
+  codeId: number
+}
+
+// Change version Code ID to environment variables when shipping
+const DAO_VERSIONS = [
+  { name: 'Latest', codeId: DAO_CODE_ID },
+  { name: 'Legacy', codeId: DAO_CODE_ID },
+]
+
 const DaoList: NextPage = () => {
   const router = useRouter()
   const page = parseInt((router.query.page as string) || '1')
@@ -115,9 +127,9 @@ const DaoList: NextPage = () => {
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
   const expanded = useRecoilValue(sidebarExpandedAtom)
-
+  const [version, setDaosVersion] = useState<DaoVersion>(DAO_VERSIONS[0])
   const { contracts, total } = useRecoilValue(
-    pagedContractsByCodeId({ codeId: DAO_CODE_ID, page, limit })
+    pagedContractsByCodeId({ codeId: version.codeId, page, limit })
   )
   const daos = useRecoilValueLoadable(
     waitForAll(contracts.map((addr) => memberDaoSelector(addr)))
@@ -153,6 +165,25 @@ const DaoList: NextPage = () => {
             <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
             Community DAOs
           </h2>
+          <div className="dropdown">
+            <label tabIndex={0} className="btn m-1">
+              {version.name}
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              {DAO_VERSIONS.map((v, i) => (
+                <li
+                  key={i}
+                  className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
+                  onClick={() => setDaosVersion(v)}
+                >
+                  {v.name}
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableDaoCards daos={daos} />
           </div>
