@@ -1,18 +1,26 @@
 {
   "extends": "tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "tools"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "tools"
+  ],
   "compilerOptions": {
-    "target": "es2017",
-    "strict": true,
-    "moduleResolution": "node",
-    "outDir": "out",
+    "outDir": "dist",
     "baseUrl": ".",
     "sourceMap": true,
-    "incremental": true,
     "paths": {
-      "@components/*": ["components/*"],
-      "@components": ["components"]
-    }
+      "@components/*": [
+        "components/*"
+      ],
+      "@components": [
+        "components"
+      ]
+    },
+    "moduleResolution": "node"
   }
 }
