@@ -1,5 +1,6 @@
-import { TooltipResponse } from 'components/TooltipsDisplay'
 import { useThemeContext } from 'ui'
+
+import { TooltipResponse } from 'components/TooltipsDisplay'
 
 export function TooltipsDisplay({ selected }: { selected: TooltipResponse }) {
   const withSpaces = selected.label.replace(/([A-Z])/g, ' $1')
