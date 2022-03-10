@@ -62,7 +62,7 @@ function DisconnectButton({ onClick }: { onClick: () => void }) {
 }
 
 function NetworkText({ chainId }: { chainId: string }) {
-  let networkText;
+  let networkText
   switch (chainId) {
     case 'juno-1':
       networkText = 'Mainnet'
@@ -75,10 +75,8 @@ function NetworkText({ chainId }: { chainId: string }) {
   }
 
   return (
-    <span className="text-xs text-center align-baseline">
-      {networkText}
-    </span>
-  );
+    <span className="text-xs text-center align-baseline">{networkText}</span>
+  )
 }
 
 function WalletConnect() {
