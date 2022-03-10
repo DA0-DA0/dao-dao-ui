@@ -33,7 +33,7 @@ export const connectKeplrWithoutAlerts = async () => {
     // The name of the chain to be displayed to the user.
     chainName: process.env.NEXT_PUBLIC_CHAIN_NAME as string,
     // RPC endpoint of the chain.
-    rpc: process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT as string,
+    rpc: (process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINTS || '').split(',')[0],
     // REST endpoint of the chain.
     rest: process.env.NEXT_PUBLIC_CHAIN_REST_ENDPOINT as string,
     // Staking coin information

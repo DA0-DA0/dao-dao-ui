@@ -11,20 +11,42 @@ import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
 export type WalletConnection = 'keplr' | ''
 
-const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
+const CHAIN_RPC_ENDPOINTS = (process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINTS || '').split(',')
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
 export const stargateClient = selector({
   key: 'stargateClient',
-  get: () => {
-    return StargateClient.connect(CHAIN_RPC_ENDPOINT)
+  get: async () => {
+    let rpcIndex = 0
+    while (rpcIndex < CHAIN_RPC_ENDPOINTS.length - 1) {
+      try {
+        return await StargateClient.connect(CHAIN_RPC_ENDPOINTS[rpcIndex])
+      } catch (err) {
+        console.error(err)
+        rpcIndex++
+      }
+    }
+
+    // Attempt last connection separately in case it throws an error we want to be able to capture, like a client-side network error.
+    return await StargateClient.connect(CHAIN_RPC_ENDPOINTS[rpcIndex])
   },
 })
 
 export const cosmWasmClient = selector({
   key: 'cosmWasmClient',
-  get: () => {
-    return CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+  get: async () => {
+    let rpcIndex = 0
+    while (rpcIndex < CHAIN_RPC_ENDPOINTS.length - 1) {
+      try {
+        return await CosmWasmClient.connect(CHAIN_RPC_ENDPOINTS[rpcIndex])
+      } catch (err) {
+        console.error(err)
+        rpcIndex++
+      }
+    }
+
+    // Attempt last connection separately in case it throws an error we want to be able to capture, like a client-side network error.
+    return await CosmWasmClient.connect(CHAIN_RPC_ENDPOINTS[rpcIndex])
   },
 })
 
@@ -85,12 +107,28 @@ export const cosmWasmSigningClient = selector({
     if (!offlineSigner) {
       return null
     }
-    return await SigningCosmWasmClient.connectWithSigner(
-      CHAIN_RPC_ENDPOINT,
-      offlineSigner,
-      {
-        gasPrice: GasPrice.fromString(GAS_PRICE),
+
+    const gasPrice = GasPrice.fromString(GAS_PRICE)
+
+    let rpcIndex = 0
+    while (rpcIndex < CHAIN_RPC_ENDPOINTS.length - 1) {
+      try {
+        return await SigningCosmWasmClient.connectWithSigner(
+          CHAIN_RPC_ENDPOINTS[rpcIndex],
+          offlineSigner,
+          { gasPrice }
+        )
+      } catch (err) {
+        console.error(err)
+        rpcIndex++
       }
+    }
+
+    // Attempt last connection separately in case it throws an error we want to be able to capture, like a client-side network error.
+    return await SigningCosmWasmClient.connectWithSigner(
+      CHAIN_RPC_ENDPOINTS[rpcIndex],
+      offlineSigner,
+      { gasPrice }
     )
   },
   // We have to do this because of how SigningCosmWasmClient
