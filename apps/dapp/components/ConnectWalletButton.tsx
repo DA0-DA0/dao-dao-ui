@@ -62,22 +62,23 @@ function DisconnectButton({ onClick }: { onClick: () => void }) {
 }
 
 function NetworkText({ chainId }: { chainId: string }) {
+  let networkText;
   switch (chainId) {
     case 'juno-1':
-      return (
-        <span className="text-xs text-center align-baseline font-bold">
-          Mainnet
-        </span>
-      )
+      networkText = 'Mainnet'
+      break
     case 'uni-2':
-      return (
-        <span className="text-xs text-center align-baseline font-bold">
-          Testnet
-        </span>
-      )
+      networkText = 'Testnet'
+      break
     default:
-      return null
+      networkText = chainId
   }
+
+  return (
+    <span className="text-xs text-center align-baseline">
+      {networkText}
+    </span>
+  );
 }
 
 function WalletConnect() {
@@ -138,7 +139,7 @@ function WalletConnect() {
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
         </div>
-        <div className="absolute right-3 bottom-2.5 flex gap-1 transition opacity-0 group-hover:opacity-100">
+        <div className="absolute right-2 bottom-2.5 flex gap-1 transition opacity-0 group-hover:opacity-100">
           <NetworkText chainId={CHAIN_ID} />
         </div>
       </div>
