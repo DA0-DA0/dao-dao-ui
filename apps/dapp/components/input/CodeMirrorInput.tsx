@@ -10,7 +10,7 @@ import {
   Controller,
 } from 'react-hook-form'
 
-import { useThemeContext } from 'contexts/theme'
+import { useThemeContext } from 'ui'
 
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'

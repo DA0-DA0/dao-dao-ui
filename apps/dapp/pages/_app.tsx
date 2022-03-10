@@ -1,4 +1,4 @@
-import 'styles/globals.css'
+import 'ui/globals.css'
 import 'styles/app.css'
 import { useState, useEffect } from 'react'
 import { Suspense } from 'react'
@@ -13,7 +13,7 @@ import { HomepageLayout } from 'components/HomepageLayout'
 import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
-import { DEFAULT_THEME_NAME, ThemeProvider } from 'contexts/theme'
+import { DEFAULT_THEME_NAME, ThemeProvider } from 'ui'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
