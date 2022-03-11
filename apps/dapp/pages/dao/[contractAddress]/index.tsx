@@ -28,6 +28,7 @@ import Sidebar from 'components/Sidebar'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import {
   daoSelector,
+  isMemberSelector,
   proposalCount,
   tokenConfig,
   totalStaked,
@@ -51,6 +52,7 @@ function DaoHome() {
   const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
   const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
 
   // Balances for the visitor
   const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
@@ -107,10 +109,12 @@ function DaoHome() {
             />
             <div className={expanded ? '' : 'mr-6'}>
               <div className="flex flex-row items-center gap-4">
-                <div className="flex flex-row items-center gap-2 text-secondary">
-                  <SvgMemberCheck fill="currentColor" width="15px" />
-                  <p className="text-xs">You{"'"}re a member</p>
-                </div>
+                {member && (
+                  <div className="flex flex-row items-center gap-2 text-secondary">
+                    <SvgMemberCheck fill="currentColor" width="15px" />
+                    <p className="text-xs">You{"'"}re a member</p>
+                  </div>
+                )}
                 <StarButton
                   pinned={pinned}
                   onPin={() => {
