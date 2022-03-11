@@ -40,3 +40,5 @@ export const STATUS_COLORS: { [key: string]: string } = {
   passed: '#6A78FF',
   rejected: '#ED5276',
 }
+
+export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
