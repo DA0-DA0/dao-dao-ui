@@ -15,6 +15,7 @@ import { Config } from 'util/contractConfigWrapper'
 import {
   secondsToHms,
   convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 import {
   validatePercent,
@@ -41,7 +42,8 @@ export interface DAOConfigUpdateData {
 
 export const DAOConfigUpdateDefaults = (
   _walletAddress: string,
-  contractConfig: Config
+  contractConfig: Config,
+  govTokenDecimals: number
 ): DAOConfigUpdateData => {
   const config = contractConfig.config as DAOConfig
 
@@ -59,7 +61,10 @@ export const DAOConfigUpdateDefaults = (
     description: config.description,
     image_url: config.image_url as string,
     max_voting_period,
-    proposal_deposit: Number(config.proposal_deposit),
+    proposal_deposit: convertMicroDenomToDenomWithDecimals(
+      config.proposal_deposit,
+      govTokenDecimals
+    ),
     threshold,
     refund_failed_proposals: !!config.refund_failed_proposals,
   }

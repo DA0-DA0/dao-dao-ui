@@ -103,7 +103,11 @@ export interface MessageTemplate {
   label: string
   component: TemplateComponent
   contractSupport: ContractSupport
-  getDefaults: (walletAddress: string, contractConfig: Config) => any
+  getDefaults: (
+    walletAddress: string,
+    contractConfig: Config,
+    govTokenDecimals: number
+  ) => any
   toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
 }
 

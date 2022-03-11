@@ -209,6 +209,11 @@ export const transformChangeMembersToCosmos = (
   self: ChangeMembersData,
   props: ToCosmosMsgProps
 ) => {
+  // Need to convert weights to number values as cw4-group takes u64.
+  const add = self.toAdd.map((member) => ({
+    addr: member.addr,
+    weight: Number(member.weight),
+  }))
   return makeWasmMessage({
     wasm: {
       execute: {
@@ -217,7 +222,7 @@ export const transformChangeMembersToCosmos = (
         msg: {
           update_members: {
             remove: self.toRemove,
-            add: self.toAdd,
+            add,
           },
         },
       },
