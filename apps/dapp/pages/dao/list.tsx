@@ -1,7 +1,8 @@
+import { useState } from 'react'
+
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
 
 import {
   useRecoilState,
@@ -33,7 +34,7 @@ import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
 // import { cw20TokenInfo } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
-import { DAO_CODE_ID } from 'util/constants'
+import { DAO_CODE_ID, LEGACY_DAO_CODE_ID } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 export function DaoCard({
@@ -114,7 +115,7 @@ type DaoVersion = {
 // Change version Code ID to environment variables when shipping
 const DAO_VERSIONS = [
   { name: 'Latest', codeId: DAO_CODE_ID },
-  { name: 'Legacy', codeId: DAO_CODE_ID },
+  { name: 'Legacy', codeId: LEGACY_DAO_CODE_ID },
 ]
 
 const DaoList: NextPage = () => {
@@ -161,28 +162,34 @@ const DaoList: NextPage = () => {
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2">
-            <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Community DAOs
-          </h2>
-          <div className="dropdown">
-            <label tabIndex={0} className="btn m-1">
-              {version.name}
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              {DAO_VERSIONS.map((v, i) => (
-                <li
-                  key={i}
-                  className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
-                  onClick={() => setDaosVersion(v)}
+          {/* Community DAO header */}
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg mb-2">
+              <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
+              Community DAOs
+            </h2>
+            <div>
+              <span className="font-medium px-2">Contract Version</span>
+              <div className="dropdown dropdown-end">
+                <label tabIndex={0} className="btn btn-sm">
+                  {version.name}
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-box w-52"
                 >
-                  {v.name}
-                </li>
-              ))}
-            </ul>
+                  {DAO_VERSIONS.map(v => (
+                    <li
+                      key={v.name}
+                      className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
+                      onClick={() => setDaosVersion(v)}
+                    >
+                      {v.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableDaoCards daos={daos} />

@@ -3,6 +3,10 @@ export const DAO_CODE_ID = parseInt(
   10
 )
 
+export const LEGACY_DAO_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_LEGACY_DAO_CONTRACT_CODE_ID as string
+)
+
 export const CW20_CODE_ID = parseInt(process.env.NEXT_PUBLIC_CW20_CODE_ID!, 10)
 
 export const STAKE_CODE_ID = parseInt(
