@@ -178,7 +178,7 @@ const DaoList: NextPage = () => {
                   tabIndex={0}
                   className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-box w-52"
                 >
-                  {DAO_VERSIONS.map(v => (
+                  {DAO_VERSIONS.map((v) => (
                     <li
                       key={v.name}
                       className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
