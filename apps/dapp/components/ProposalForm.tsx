@@ -11,7 +11,10 @@ import {
   messageTemplates,
   ContractSupport,
 } from 'templates/templateList'
-import { contractConfigSelector } from 'util/contractConfigWrapper'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
 import { validateRequired } from 'util/formValidation'
 
 import SvgAirplane from './icons/Airplane'
@@ -42,6 +45,8 @@ export function ProposalForm({
   const contractConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
+  const wrapper = new ContractConfigWrapper(contractConfig)
+  const govTokenDecimals = wrapper.gov_token_decimals
 
   const formMethods = useForm()
 
@@ -166,7 +171,14 @@ export function ProposalForm({
                   <button
                     className="text-left"
                     onClick={() =>
-                      append({ ...getDefaults(wallet, contractConfig), label })
+                      append({
+                        ...getDefaults(
+                          wallet,
+                          contractConfig,
+                          govTokenDecimals
+                        ),
+                        label,
+                      })
                     }
                     type="button"
                   >
