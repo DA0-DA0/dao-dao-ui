@@ -28,6 +28,7 @@ import {
   transformRemoveTokenToCosmos,
 } from './removeToken'
 import { SpendComponent, spendDefaults, transformSpendToCosmos } from './spend'
+import { StakeComponent, stakeDefaults, transformStakeToCosmos } from './stake'
 
 export enum ContractSupport {
   Multisig,
@@ -51,6 +52,13 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.DAO,
     getDefaults: mintDefaults,
     toCosmosMsg: transformMintToCosmos,
+  },
+  {
+    label: '📤 Staking',
+    component: StakeComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: stakeDefaults,
+    toCosmosMsg: transformStakeToCosmos,
   },
   {
     label: '🤖 Custom',

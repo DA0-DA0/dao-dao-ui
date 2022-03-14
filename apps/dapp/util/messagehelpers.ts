@@ -5,6 +5,7 @@ import {
 } from './conversion'
 import {
   BankMsg,
+  StakeMsg,
   Coin,
   CosmosMsgFor_Empty,
   ExecuteMsg,
@@ -60,6 +61,35 @@ export function makeBankMessage(
   }
 }
 
+export function makeStakingMessage(
+  type: string,
+  amount: string,
+  denom = DENOM,
+  validator: string,
+  from_validator?: string,
+): StakeMsg {
+  let validator_info = {}
+  if (type === 'redelegate') {
+    validator_info = {
+      src_validator: from_validator,
+      dst_validator: validator,
+    }
+  } else validator_info = { validator }
+  return {
+    staking: {
+      [type]: {
+        ...validator_info,
+        amount: [
+          {
+            amount,
+            denom,
+          },
+        ],
+      },
+    },
+  }
+}
+
 // This function mutates its input message
 export function makeWasmMessage(message: { wasm: any }): {
   wasm: WasmMsg
@@ -92,6 +122,16 @@ export function makeSpendMessage(
   const bank: BankMsg = makeBankMessage(amount, to_address, from_address, denom)
   return {
     bank,
+  }
+}
+
+export function makeDistributeMessage(validator: string): CosmosMsgFor_Empty {
+  return {
+    distribution: {
+      withdraw_delegator_reward: {
+        validator,
+      },
+    },
   }
 }
 
