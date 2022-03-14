@@ -35,23 +35,38 @@ class ErrorBoundaryHelper extends Component<
   render() {
     const { router, title, children } = this.props
     if (this.state.hasError) {
-      return (
-        <div className="max-w-prose break-words p-6">
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="mt-3">
-            We couldn{"'"}t find the contract with address
-            <br />
-            <code>{router.query.contractAddress}</code>.
-            <br />
-            Consider returning{' '}
-            <Link href="/">
-              <a className="link">home</a>
-            </Link>
-          </p>
-        </div>
-      )
+      if (
+        router.pathname.startsWith('/dao') ||
+        router.pathname.startsWith('/multisig')
+      ) {
+        return (
+          <div className="max-w-prose break-words p-6">
+            <h1 className="text-3xl font-bold">{title}</h1>
+            <p className="mt-3">
+              We couldn{"'"}t find the contract with address
+              <br />
+              <code>{router.query.contractAddress}</code>.
+              <br />
+              Consider returning{' '}
+              <Link href="/">
+                <a className="link">home</a>
+              </Link>
+            </p>
+          </div>
+        )
+      } else {
+        return (
+          <div className="max-w-prose break-words p-6 mx-auto">
+            <h1 className="text-3xl font-bold">{title}</h1>
+            <p className="mt-3">
+              This could happen because the RPC node DAO DAO uses is down.
+              Please try again later.
+            </p>
+          </div>
+        )
+      }
+      // Can add more errors with different paths here
     }
-    // Can add more errors with different paths here
 
     return children
   }

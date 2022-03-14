@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
+import ErrorBoundary from 'components/ErrorBoundary'
 import { HomepageLayout } from 'components/HomepageLayout'
 import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
@@ -40,16 +41,18 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <RecoilRoot>
-      <Suspense fallback={<LoadingScreen />}>
-        <ThemeProvider updateTheme={updateTheme} theme={theme}>
-          {loaded && (
-            <Layout>
-              <Component {...pageProps} />
-              <Notifications />
-            </Layout>
-          )}
-        </ThemeProvider>
-      </Suspense>
+      <ErrorBoundary title="An unexpected error occured.">
+        <Suspense fallback={<LoadingScreen />}>
+          <ThemeProvider updateTheme={updateTheme} theme={theme}>
+            {loaded && (
+              <Layout>
+                <Component {...pageProps} />
+                <Notifications />
+              </Layout>
+            )}
+          </ThemeProvider>
+        </Suspense>
+      </ErrorBoundary>
     </RecoilRoot>
   )
 }
