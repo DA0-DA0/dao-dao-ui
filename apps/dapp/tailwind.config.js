@@ -7,7 +7,7 @@ const tailwindConfig = {
   presets: [require('@dao-dao/ui/tailwind/config')],
   theme: {
     //
-  },
+  }, 
 }
 
 module.exports = tailwindConfig
