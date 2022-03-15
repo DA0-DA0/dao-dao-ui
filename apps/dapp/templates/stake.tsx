@@ -8,10 +8,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import {
-  cw20TokensList,
-  cw20TokenInfo,
   nativeBalance as nativeBalanceSelector,
-  cw20Balances as cw20BalancesSelector,
 } from 'selectors/treasury'
 import {
   convertDenomToContractReadableDenom,
@@ -54,6 +51,7 @@ export const stakeActions = [
 ]
 
 export interface StakeData {
+  stakeType: string
   validator: string
   fromValidator?: string
   amount: number
@@ -90,28 +88,12 @@ export const StakeComponent = ({
 }) => {
   const { register, watch, clearErrors } = useFormContext()
 
-  const tokenList = useRecoilValue(cw20TokensList(contractAddress))
-  const cw20Info = useRecoilValue(
-    waitForAll(tokenList.map((address) => cw20TokenInfo(address)))
-  )
-
   const nativeBalances = useRecoilValue(nativeBalanceSelector(contractAddress))
-  console.log('nativeBalances', nativeBalances);
-  
-  const cw20Balances = useRecoilValue(cw20BalancesSelector(contractAddress))
-  const cw20BalanceInfo = cw20Balances.map((balance, index) => ({
-    balance,
-    info: cw20Info[index],
-  }))
   const stakeType = watch(getLabel('stakeType'))
-  console.log('stakeType', stakeType);
   const validator = watch(getLabel('validator'))
-  console.log('validator', validator);
   const fromValidator = watch(getLabel('fromValidator'))
-  console.log('fromValidator', fromValidator);
   const stakeAmount = watch(getLabel('amount'))
   const stakeDenom = watch(getLabel('denom'))
-  console.log('amount', stakeAmount, stakeDenom);
 
   const validatePossibleSpend = (
     denom: string,
@@ -129,24 +111,7 @@ export const StakeComponent = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount}).`
-      )
-    }
-    const cw20 = cw20BalanceInfo.find(
-      ({ balance, info: _info }) => balance.address == denom
-    )
-    if (cw20) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        cw20.balance.amount,
-        cw20.info.decimals
-      )
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        cw20.info.decimals
-      )
-      return (
-        Number(microAmount) <= Number(cw20.balance.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${cw20.info.symbol}).`
+        `Can't stake more tokens than are in the DAO tresury (${humanReadableAmount}).`
       )
     }
     // If there are no native tokens in the treasury the native balances query
@@ -232,11 +197,6 @@ export const StakeComponent = ({
                     </option>
                   )
                 })}
-                {cw20Info.map(({ symbol }, idx) => (
-                  <option value={tokenList[idx]} key={tokenList[idx]}>
-                    ${symbol}
-                  </option>
-                ))}
               </SelectInput>
             </>
           )}
@@ -288,6 +248,8 @@ export const transformStakeToCosmos = (
   self: StakeData,
   props: ToCosmosMsgProps
 ) => {
+  console.log('self', self);
+  
   if (self.stakeType === 'withdraw_delegator_reward') {
     const distribution = makeStakingMessage(self.validator)
     return { distribution }

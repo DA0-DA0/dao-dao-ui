@@ -15,6 +15,7 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   validation,
   onChange,
   border = true,
+  className,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -22,6 +23,7 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   border?: boolean
+  className?: string
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -32,7 +34,8 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
       type="text"
       className={`input text-sm font-mono
         ${error ? ' input-error' : ''}
-        ${border ? ' input-bordered' : ''}`}
+        ${border ? ' input-bordered' : ''}
+        ${className ? ' ' + className : ''}`}
       {...register(label, { validate, onChange })}
     />
   )
