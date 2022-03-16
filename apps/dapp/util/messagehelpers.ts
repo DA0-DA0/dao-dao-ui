@@ -77,14 +77,14 @@ export function makeStakingMessage(
     }
   } else validator_info = { validator }
   const staking: StakingMsg = {
-    [type as string]: {
+    [type]: {
       ...validator_info,
       amount: {
         amount,
         denom,
       },
     }
-  }
+  } as any
   return { staking }
 }
 
