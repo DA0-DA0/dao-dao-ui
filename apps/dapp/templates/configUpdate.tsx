@@ -154,7 +154,7 @@ export const DAOUpdateConfigComponent = ({
           <div className="form-control">
             <InputLabel name="Voting Duration (seconds)" />
             <NumberInput
-              label={getLabel('duration')}
+              label={getLabel('max_voting_period')}
               register={register}
               error={errors.duration}
               validation={[validateRequired, validatePositive]}
@@ -215,7 +215,7 @@ export const transformDAOToConfigUpdateCosmos = (
     name: self.name,
     description: self.description,
     ...(self.image_url && { image_url: self.image_url }),
-    max_voting_period: { time: self.max_voting_period },
+    max_voting_period: { time: Number(self.max_voting_period) },
     proposal_deposit: convertDenomToMicroDenomWithDecimals(
       self.proposal_deposit,
       props.govDecimals
