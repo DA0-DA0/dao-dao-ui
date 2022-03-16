@@ -83,7 +83,7 @@ export function makeStakingMessage(
         amount,
         denom,
       },
-    }
+    },
   } as any
   return { staking }
 }
