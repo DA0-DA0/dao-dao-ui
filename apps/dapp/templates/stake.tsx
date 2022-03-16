@@ -27,22 +27,18 @@ import { ToCosmosMsgProps } from './templateList'
 
 export const stakeActions = [
   {
-    model: 'staking',
     type: 'delegate',
     name: 'Delegate',
   },
   {
-    model: 'staking',
     type: 'undelegate',
     name: 'Undelegate',
   },
   {
-    model: 'staking',
     type: 'redelegate',
     name: 'Redelegate',
   },
   {
-    model: 'distribution',
     type: 'withdraw_delegator_reward',
     name: 'Claim Rewards',
   },
@@ -253,19 +249,17 @@ export const transformStakeToCosmos = (
   props: ToCosmosMsgProps
 ) => {
   if (self.stakeType === 'withdraw_delegator_reward') {
-    const distribution = makeDistributeMessage(self.validator)
-    return { distribution }
+    return makeDistributeMessage(self.validator)
   }
 
   // NOTE: Does not support TOKEN staking at this point, hwoever it could be implemented here!
   const decimals = nativeTokenDecimals(self.denom)!
   const amount = convertDenomToMicroDenomWithDecimals(self.amount, decimals)
-  const staking = makeStakingMessage(
+  return makeStakingMessage(
     self.stakeType,
     amount,
     self.denom,
     self.validator,
     self.fromValidator
   )
-  return { staking }
 }
