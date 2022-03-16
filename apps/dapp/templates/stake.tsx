@@ -20,7 +20,7 @@ import {
   nativeTokenLogoURI,
 } from 'util/conversion'
 import {
-  validateAddress,
+  validateValidatorAddress,
   validatePositive,
   validateRequired,
 } from 'util/formValidation'
@@ -59,17 +59,16 @@ export interface StakeData {
 }
 
 export const stakeDefaults = (
-  validatorAddress: string,
+  walletAddress: string,
   _contractConfig: Config
 ) => {
+  const denom = convertDenomToHumanReadableDenom(process.env.NEXT_PUBLIC_FEE_DENOM as string)
+  
   return {
     stakeType: stakeActions[0].type,
-    // validator: validatorAddress,
     validator: '',
     amount: 1,
-    denom: convertDenomToHumanReadableDenom(
-      process.env.NEXT_PUBLIC_FEE_DENOM as string
-    ),
+    denom,
   }
 }
 
@@ -92,8 +91,8 @@ export const StakeComponent = ({
   const stakeType = watch(getLabel('stakeType'))
   const validator = watch(getLabel('validator'))
   const fromValidator = watch(getLabel('fromValidator'))
-  const stakeAmount = watch(getLabel('amount'))
-  const stakeDenom = watch(getLabel('denom'))
+  const amount = watch(getLabel('amount'))
+  const denom = watch(getLabel('denom'))
 
   const validatePossibleSpend = (
     denom: string,
@@ -117,6 +116,7 @@ export const StakeComponent = ({
     // If there are no native tokens in the treasury the native balances query
     // will return an empty list.
     const nativeHumanReadable = convertDenomToHumanReadableDenom(NATIVE_DENOM)
+    
     if (denom === nativeHumanReadable) {
       return `Can't stake more tokens than are in the DAO treasury (0 ${nativeHumanReadable})`
     }
@@ -174,7 +174,7 @@ export const StakeComponent = ({
                   validateRequired,
                   validatePositive,
                   (amount: string) =>
-                    validatePossibleSpendWrapper(stakeDenom, amount),
+                    validatePossibleSpendWrapper(denom, amount),
                 ]}
                 step={0.000001}
                 border={false}
@@ -184,9 +184,9 @@ export const StakeComponent = ({
                 label={getLabel('denom') as never}
                 register={register}
                 error={errors.denom}
-                defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
+                // defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
                 validation={[
-                  (denom: string) => validatePossibleSpendWrapper(denom, stakeAmount),
+                  (denom: string) => validatePossibleSpendWrapper(denom, amount),
                 ]}
                 border={false}
               >
@@ -202,42 +202,43 @@ export const StakeComponent = ({
           )}
         </div>
 
+        <div className="flex flex-col gap-2">
+          {/* <InputErrorMessage error={errors.amount} /> */}
+          <InputErrorMessage error={errors.denom} />
+        </div>
+
         {stakeType == 'redelegate' && (
           <>
             <h3 className="mb-1 mt-4">From Validator</h3>
-            <div className="flex gap-2 items-center mb-4">
-              <div className="flex w-full">
-                <AddressInput
-                  label={getLabel('fromValidator') as never}
-                  register={register}
-                  error={errors.fromValidator}
-                  validation={[validateRequired, validateAddress]}
-                  border={false}
-                  className="w-full"
-                />
-              </div>
+            <div className="form-control">
+              <AddressInput
+                label={getLabel('fromValidator') as never}
+                register={register}
+                error={errors.fromValidator}
+                validation={[validateValidatorAddress]}
+                border={false}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <InputErrorMessage error={errors.fromValidator} />
             </div>
           </>
         )}
 
         <h3 className="mb-1 mt-4">{stakeType == 'redelegate' ? 'To Validator' : 'Validator'}</h3>
-        <div className="flex gap-2 items-center">
-          <div className="flex w-full">
-            <AddressInput
-              label={getLabel('validator') as never}
-              register={register}
-              error={errors.validator}
-              validation={[validateRequired, validateAddress]}
-              border={false}
-              className="w-full"
-            />
-          </div>
+        <div className="form-control">
+          <AddressInput
+            label={getLabel('validator') as never}
+            register={register}
+            error={errors.validator}
+            validation={[validateRequired, validateValidatorAddress]}
+            border={false}
+          />
         </div>
 
         <div className="flex flex-col gap-2">
-          <InputErrorMessage error={errors.amount} />
-          <InputErrorMessage error={errors.denom} />
-          <InputErrorMessage error={errors.to} />
+          <InputErrorMessage error={errors.validator} />
         </div>
       </div>
     </div>
@@ -248,16 +249,14 @@ export const transformStakeToCosmos = (
   self: StakeData,
   props: ToCosmosMsgProps
 ) => {
-  console.log('self', self);
-  
   if (self.stakeType === 'withdraw_delegator_reward') {
-    const distribution = makeStakingMessage(self.validator)
+    const distribution = makeDistributeMessage(self.validator)
     return { distribution }
   }
 
   // NOTE: Does not support TOKEN staking at this point, hwoever it could be implemented here!
   const decimals = nativeTokenDecimals(self.denom)!
   const amount = convertDenomToMicroDenomWithDecimals(self.amount, decimals)
-  const staking = makeDistributeMessage(self.stakeType, amount, self.denom, self.validator, self.fromValidator)
+  const staking = makeStakingMessage(self.stakeType, amount, self.denom, self.validator, self.fromValidator)
   return { staking }
 }
