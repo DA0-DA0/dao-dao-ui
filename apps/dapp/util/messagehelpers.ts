@@ -66,7 +66,7 @@ export function makeStakingMessage(
   amount: string,
   denom = DENOM,
   validator: string,
-  from_validator?: string,
+  from_validator?: string
 ): StakeMsg {
   let validator_info = {}
   if (type === 'redelegate') {

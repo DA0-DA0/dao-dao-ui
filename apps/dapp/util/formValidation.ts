@@ -4,7 +4,7 @@ import { Validate } from 'react-hook-form'
 import {
   isValidAddress,
   isValidContractAddress,
-  isValidValidatorAddress
+  isValidValidatorAddress,
 } from './isValidAddress'
 import { isValidUrl } from './isValidUrl'
 

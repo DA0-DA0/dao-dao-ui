@@ -7,9 +7,7 @@ import { FieldErrors, useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
-import {
-  nativeBalance as nativeBalanceSelector,
-} from 'selectors/treasury'
+import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 import {
   convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
@@ -31,22 +29,22 @@ export const stakeActions = [
   {
     model: 'staking',
     type: 'delegate',
-    name: 'Delegate'
+    name: 'Delegate',
   },
   {
     model: 'staking',
     type: 'undelegate',
-    name: 'Undelegate'
+    name: 'Undelegate',
   },
   {
     model: 'staking',
     type: 'redelegate',
-    name: 'Redelegate'
+    name: 'Redelegate',
   },
   {
     model: 'distribution',
     type: 'withdraw_delegator_reward',
-    name: 'Claim Rewards'
+    name: 'Claim Rewards',
   },
 ]
 
@@ -62,8 +60,10 @@ export const stakeDefaults = (
   walletAddress: string,
   _contractConfig: Config
 ) => {
-  const denom = convertDenomToHumanReadableDenom(process.env.NEXT_PUBLIC_FEE_DENOM as string)
-  
+  const denom = convertDenomToHumanReadableDenom(
+    process.env.NEXT_PUBLIC_FEE_DENOM as string
+  )
+
   return {
     stakeType: stakeActions[0].type,
     validator: '',
@@ -116,7 +116,7 @@ export const StakeComponent = ({
     // If there are no native tokens in the treasury the native balances query
     // will return an empty list.
     const nativeHumanReadable = convertDenomToHumanReadableDenom(NATIVE_DENOM)
-    
+
     if (denom === nativeHumanReadable) {
       return `Can't stake more tokens than are in the DAO treasury (0 ${nativeHumanReadable})`
     }
@@ -163,7 +163,7 @@ export const StakeComponent = ({
               )
             })}
           </SelectInput>
-          
+
           {stakeType != 'withdraw_delegator_reward' && (
             <>
               <NumberInput
@@ -186,7 +186,8 @@ export const StakeComponent = ({
                 error={errors.denom}
                 // defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
                 validation={[
-                  (denom: string) => validatePossibleSpendWrapper(denom, amount),
+                  (denom: string) =>
+                    validatePossibleSpendWrapper(denom, amount),
                 ]}
                 border={false}
               >
@@ -226,7 +227,9 @@ export const StakeComponent = ({
           </>
         )}
 
-        <h3 className="mb-1 mt-4">{stakeType == 'redelegate' ? 'To Validator' : 'Validator'}</h3>
+        <h3 className="mb-1 mt-4">
+          {stakeType == 'redelegate' ? 'To Validator' : 'Validator'}
+        </h3>
         <div className="form-control">
           <AddressInput
             label={getLabel('validator') as never}
@@ -257,6 +260,12 @@ export const transformStakeToCosmos = (
   // NOTE: Does not support TOKEN staking at this point, hwoever it could be implemented here!
   const decimals = nativeTokenDecimals(self.denom)!
   const amount = convertDenomToMicroDenomWithDecimals(self.amount, decimals)
-  const staking = makeStakingMessage(self.stakeType, amount, self.denom, self.validator, self.fromValidator)
+  const staking = makeStakingMessage(
+    self.stakeType,
+    amount,
+    self.denom,
+    self.validator,
+    self.fromValidator
+  )
   return { staking }
 }
