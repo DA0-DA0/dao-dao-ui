@@ -15,6 +15,9 @@
     },
     "test": {
       "outputs": []
+    },
+    "storybook": {
+      "cache": false
     }
   }
 }

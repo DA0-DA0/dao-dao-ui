@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { useThemeContext } from 'contexts/theme'
+import { useThemeContext } from 'ui'
 
 import { LogoNoBorder } from './Logo'
 

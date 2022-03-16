@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect } from 'react'
+import { createContext, ReactNode, useContext } from 'react'
 
 export type UpdateThemeFn = (themeName: string) => void
 
