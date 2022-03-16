@@ -1,4 +1,7 @@
-export function isValidWalletAddress(address: string, CHAIN_PREFIX: string): boolean {
+export function isValidWalletAddress(
+  address: string,
+  CHAIN_PREFIX: string
+): boolean {
   const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{39}$/im
   if (!address?.length) {
     return false
@@ -10,7 +13,10 @@ export function isValidWalletAddress(address: string, CHAIN_PREFIX: string): boo
   return !!unprefixed.match(bech32Regex)
 }
 
-export function isValidContractAddress(address: string, CHAIN_PREFIX: string): boolean {
+export function isValidContractAddress(
+  address: string,
+  CHAIN_PREFIX: string
+): boolean {
   const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{59}$/im
   if (!address?.length) {
     return false
@@ -24,5 +30,8 @@ export function isValidContractAddress(address: string, CHAIN_PREFIX: string): b
 
 // Validates a bech32 address.
 export function isValidAddress(address: string, CHAIN_PREFIX: string): boolean {
-  return isValidWalletAddress(address, CHAIN_PREFIX) || isValidContractAddress(address, CHAIN_PREFIX)
+  return (
+    isValidWalletAddress(address, CHAIN_PREFIX) ||
+    isValidContractAddress(address, CHAIN_PREFIX)
+  )
 }
