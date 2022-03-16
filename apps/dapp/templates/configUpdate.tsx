@@ -154,7 +154,7 @@ export const DAOUpdateConfigComponent = ({
           <div className="form-control">
             <InputLabel name="Voting Duration (seconds)" />
             <NumberInput
-              label={getLabel('duration')}
+              label={getLabel('max_voting_period')}
               register={register}
               error={errors.duration}
               validation={[validateRequired, validatePositive]}
