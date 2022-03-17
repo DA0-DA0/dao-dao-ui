@@ -3,7 +3,7 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
+import { FieldErrors, useFormContext, useWatch } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
@@ -180,7 +180,6 @@ export const StakeComponent = ({
                 label={getLabel('denom') as never}
                 register={register}
                 error={errors.denom}
-                // defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
                 validation={[
                   (denom: string) =>
                     validatePossibleSpendWrapper(denom, amount),
@@ -200,7 +199,6 @@ export const StakeComponent = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          {/* <InputErrorMessage error={errors.amount} /> */}
           <InputErrorMessage error={errors.denom} />
         </div>
 
