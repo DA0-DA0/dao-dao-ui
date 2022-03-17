@@ -17,6 +17,18 @@ export function isValidWalletAddress(address: string): boolean {
   return !!unprefixed.match(bech32Regex)
 }
 
+export function isValidValidatorAddress(address: string): boolean {
+  const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{46}$/im
+  if (!address?.length) {
+    return false
+  }
+  if (address.search('valoper') < 0) {
+    return false
+  }
+  const unprefixed = address.replace(CHAIN_PREFIX, '')
+  return !!unprefixed.match(bech32Regex)
+}
+
 export function isValidContractAddress(address: string): boolean {
   const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{59}$/im
   if (!address?.length) {

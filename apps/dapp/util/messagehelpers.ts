@@ -6,6 +6,8 @@ import {
 import {
   BankMsg,
   Coin,
+  StakingMsg,
+  DistributionMsg,
   CosmosMsgFor_Empty,
   ExecuteMsg,
   InstantiateMsg as DaoInstantiateMsg,
@@ -60,6 +62,32 @@ export function makeBankMessage(
   }
 }
 
+export function makeStakingMessage(
+  type: string,
+  amount: string,
+  denom = DENOM,
+  validator: string,
+  from_validator?: string
+): CosmosMsgFor_Empty {
+  let validator_info = {}
+  if (type === 'redelegate') {
+    validator_info = {
+      src_validator: from_validator,
+      dst_validator: validator,
+    }
+  } else validator_info = { validator }
+  const staking: StakingMsg = {
+    [type]: {
+      ...validator_info,
+      amount: {
+        amount,
+        denom,
+      },
+    },
+  } as any
+  return { staking }
+}
+
 // This function mutates its input message
 export function makeWasmMessage(message: { wasm: any }): {
   wasm: WasmMsg
@@ -93,6 +121,15 @@ export function makeSpendMessage(
   return {
     bank,
   }
+}
+
+export function makeDistributeMessage(validator: string): CosmosMsgFor_Empty {
+  const distribution: DistributionMsg = {
+    withdraw_delegator_reward: {
+      validator,
+    },
+  }
+  return { distribution }
 }
 
 export function getDenom(message: { bank: any }): string {
