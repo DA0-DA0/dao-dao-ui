@@ -27,7 +27,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 
-import SvgWallet from './icons/Wallet'
+import { Wallet as SvgWallet } from '@dao-dao/icons'
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
