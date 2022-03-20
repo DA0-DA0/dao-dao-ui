@@ -68,6 +68,49 @@ export const zeroStakingCoin = {
   denom: process.env.NEXT_PUBLIC_STAKING_DENOM || 'ujuno',
 }
 
+export const getThresholdAndQuorum = (
+  t: ThresholdResponse | DaoThreshold | SigThreshold
+) => {
+  if ('absolute_count' in t) {
+    const count = t.absolute_count.weight
+    return [count.toString(), undefined]
+  } else if ('absolute_percentage' in t) {
+    const threshold = t.absolute_percentage.percentage
+    return [threshold, undefined]
+  } else if ('threshold_quorum' in t) {
+    const quorum = t.threshold_quorum.quorum
+    const threshold = t.threshold_quorum.threshold
+    return [threshold, quorum]
+  }
+  return ['unknown', 'unknown']
+}
+
+export const getThresholdAndQuorumDisplay = (
+  t: ThresholdResponse | DaoThreshold | SigThreshold,
+  multisig: boolean,
+  tokenDecimals: number
+) => {
+  if ('absolute_count' in t) {
+    const count = t.absolute_count.weight
+    return [
+      `${
+        multisig
+          ? count
+          : convertMicroDenomToDenomWithDecimals(count, tokenDecimals)
+      } vote${count != 1 ? 's' : ''}`,
+      undefined,
+    ]
+  } else if ('absolute_percentage' in t) {
+    const threshold = t.absolute_percentage.percentage
+    return [`${Number(threshold) * 100}%`, undefined]
+  } else if ('threshold_quorum' in t) {
+    const quorum = t.threshold_quorum.quorum
+    const threshold = t.threshold_quorum.threshold
+    return [`${Number(threshold) * 100}%`, `${Number(quorum) * 100}%`]
+  }
+  return ['unknown', 'unknown']
+}
+
 export const thresholdString = (
   t: ThresholdResponse | DaoThreshold | SigThreshold,
   multisig: boolean,

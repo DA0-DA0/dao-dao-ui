@@ -9,6 +9,10 @@ import {
 import { isValidUrl } from './isValidUrl'
 
 export const validateRequired = (v: string | boolean) => {
+  if (v == '0') {
+    // Javascript is truly one of the greatest mysteries of our times.
+    return true
+  }
   return !!v || 'Field is required'
 }
 

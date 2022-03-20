@@ -21,6 +21,26 @@ const daoCreateTooltips: daoCreateTooltipsType = {
   ),
   name: <p>The name of your DAO.</p>,
   threshold: <p>The percentage of yes votes needed for a proposal to pass.</p>,
+  quorum: (
+    <>
+      <p>
+        The percentage of total voting power that must turn out in order for a
+        proposal to pass.
+      </p>
+      <p>
+        If the quorum is met and a proposal expires then the threshold is
+        compared to the number of total voters that voted instead of the total
+        outstanding voting power. For example, with a 33% quorum and a 50%
+        passing threshold if 20% voted yes and 13% voted no the proposal would
+        pass once it has expired and no longer accepts votes.
+      </p>
+      <p>
+        With that same turnout but no quorum the proposal would fail because
+        less than 50% of the total voters have voted yes. We recommend using a
+        quorum if you are worried about low voter participation.
+      </p>
+    </>
+  ),
   tokenName: <p>The name of your DAO{"'"}s governance token.</p>,
   tokenSymbol: (
     <>

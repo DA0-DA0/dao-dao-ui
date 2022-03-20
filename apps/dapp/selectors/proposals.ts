@@ -153,6 +153,8 @@ export const walletVotedSelector = selectorFamily<
   get:
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
+      // Refresh when new updates occur.
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
       const client = get(cosmWasmClient)
       const wallet = get(walletAddress)
       if (!client || !wallet) {

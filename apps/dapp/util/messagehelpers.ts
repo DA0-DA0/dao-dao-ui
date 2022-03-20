@@ -202,38 +202,36 @@ export function getSpendRecipient(
   return undefined
 }
 
-export function validDaoInstantiateMessageParams(
-  name?: string,
-  description?: string,
-  tokenName?: string,
-  tokenSymbol?: string,
-  owners?: Cw20Coin[],
-  percentage?: string | number,
-  max_voting_period?: Duration,
-  proposal_deposit_amount?: string | number
-): boolean {
-  return false
-}
-
 // Instantiate message for a DAO that is using an existing cw20 token
 // as its governance token.
 export function makeDaoInstantiateWithExistingTokenMessage(
   name: string,
   description: string,
   tokenAddress: string,
-  percentage: string | number,
+  threshold: number,
+  quorum: number | undefined,
   max_voting_period: Duration,
   unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
   refund_failed_proposals: boolean,
   image_url?: string
 ): DaoInstantiateMsg {
-  if (typeof percentage === 'number') {
-    percentage = `${percentage}`
-  }
+  const decimalThreshold = `${threshold}`
+  const decimalQuorum = `${quorum}`
+
   if (typeof proposal_deposit_amount === 'number') {
     proposal_deposit_amount = `${proposal_deposit_amount}`
   }
+
+  const thresholdObj = quorum
+    ? {
+        threshold_quorum: {
+          threshold: decimalThreshold,
+          quorum: decimalQuorum,
+        },
+      }
+    : { absolute_percentage: { percentage: decimalThreshold } }
+
   const msg: DaoInstantiateMsg = {
     name,
     description,
@@ -246,11 +244,7 @@ export function makeDaoInstantiateWithExistingTokenMessage(
         unstaking_duration,
       },
     },
-    threshold: {
-      absolute_percentage: {
-        percentage,
-      },
-    },
+    threshold: thresholdObj,
     max_voting_period,
     proposal_deposit_amount,
     refund_failed_proposals,
@@ -267,19 +261,28 @@ export function makeDaoInstantiateWithNewTokenMessage(
   tokenSymbol: string,
   owners: Cw20Coin[],
   dao_initial_balance: Uint128,
-  percentage: string | number,
+  threshold: number,
+  quorum: number | undefined,
   max_voting_period: Duration,
   unstaking_duration: Duration,
   proposal_deposit_amount: string | number,
   refund_failed_proposals: boolean,
   image_url?: string
 ): DaoInstantiateMsg {
-  if (typeof percentage === 'number') {
-    percentage = `${percentage}`
-  }
+  const decimalThreshold = `${threshold}`
+  const decimalQuorum = `${quorum}`
   if (typeof proposal_deposit_amount === 'number') {
     proposal_deposit_amount = `${proposal_deposit_amount}`
   }
+
+  const thresholdObj = quorum
+    ? {
+        threshold_quorum: {
+          threshold: decimalThreshold,
+          quorum: decimalQuorum,
+        },
+      }
+    : { absolute_percentage: { percentage: decimalThreshold } }
 
   const msg: DaoInstantiateMsg = {
     name,
@@ -300,11 +303,7 @@ export function makeDaoInstantiateWithNewTokenMessage(
         unstaking_duration,
       },
     },
-    threshold: {
-      absolute_percentage: {
-        percentage,
-      },
-    },
+    threshold: thresholdObj,
     max_voting_period,
     proposal_deposit_amount,
     refund_failed_proposals,
