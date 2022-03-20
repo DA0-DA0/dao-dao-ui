@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -30,7 +32,11 @@ import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
 import { nativeBalance } from 'selectors/treasury'
-import { MULTISIG_CODE_ID, NATIVE_DENOM } from 'util/constants'
+import {
+  LEGACY_MULTISIG_CODE_ID,
+  MULTISIG_CODE_ID,
+  NATIVE_DENOM,
+} from 'util/constants'
 
 export function MultisigCard({
   multisig,
@@ -107,6 +113,16 @@ function LoadableCards({
   )
 }
 
+type MultisigVersion = {
+  name: string
+  codeId: number
+}
+
+const MULTISIG_VERSIONS = [
+  { name: 'Latest', codeId: MULTISIG_CODE_ID },
+  { name: 'Legacy', codeId: LEGACY_MULTISIG_CODE_ID },
+]
+
 const MultisigList: NextPage = () => {
   const router = useRouter()
   const page = parseInt((router.query.page as string) || '1')
@@ -119,6 +135,9 @@ const MultisigList: NextPage = () => {
 
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
+  const [version, setMultisigVersion] = useState<MultisigVersion>(
+    MULTISIG_VERSIONS[0]
+  )
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: MULTISIG_CODE_ID, page, limit })
   )
@@ -149,10 +168,37 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2">
-            <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Community multisigs
-          </h2>
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg mb-2">
+              <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
+              Community multisigs
+            </h2>
+            {LEGACY_MULTISIG_CODE_ID ? (
+              <div>
+                <span className="font-medium px-2">Contract Version</span>
+                <div className="dropdown dropdown-end">
+                  <label tabIndex={0} className="btn btn-sm">
+                    {version.name}
+                  </label>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-box w-52"
+                  >
+                    {MULTISIG_VERSIONS.map((v) => (
+                      <li
+                        key={v.name}
+                        className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
+                        onClick={() => setMultisigVersion(v)}
+                      >
+                        {v.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : undefined}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableCards loadable={sigs} />
           </div>
