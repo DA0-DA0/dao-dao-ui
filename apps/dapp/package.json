@@ -7,7 +7,6 @@
     "build": "next build --debug",
     "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
-    "prettier:write": "prettier --write .",
     "lint": "next lint",
     "format": "next lint --fix",
     "test": "jest",
