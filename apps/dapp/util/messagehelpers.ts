@@ -295,10 +295,17 @@ export function makeDaoInstantiateWithNewTokenMessage(
           decimals: 6,
           initial_balances: owners,
         },
-        stake_contract_code_id: STAKE_CODE_ID,
+        stake_contract_code_id: STAKE_CODE_ID, // TODO(gavindoughtie): deprecated, remove
         initial_dao_balance: dao_initial_balance,
         unstaking_duration,
       },
+    },
+    automatically_add_cw20s: true,
+    staking_contract: {
+      instantiate_new_staking_contract: {
+        staking_contract_code_id: STAKE_CODE_ID,
+        unstaking_duration: unstaking_duration,
+      }
     },
     threshold: {
       absolute_percentage: {
@@ -308,6 +315,7 @@ export function makeDaoInstantiateWithNewTokenMessage(
     max_voting_period,
     proposal_deposit_amount,
     refund_failed_proposals,
+    only_members_execute: true
   }
   return msg
 }
