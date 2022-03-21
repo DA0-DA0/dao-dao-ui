@@ -40,6 +40,7 @@ import {
 } from 'util/contractConfigWrapper'
 import {
   convertMicroDenomToDenomWithDecimals,
+  getThresholdAndQuorumDisplay,
   thresholdString,
 } from 'util/conversion'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
@@ -118,15 +119,6 @@ function executeProposalExecute(
       setLoading(false)
       onDone()
     })
-}
-
-// Fake button which shows an loader while we are executing proposal actions.
-function ExecutingButton() {
-  return (
-    <button className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px1 bg-base-300 btn-disabled loading">
-      Executing transaction
-    </button>
-  )
 }
 
 function LoadingButton() {
@@ -367,6 +359,12 @@ export function ProposalDetailsSidebar({
     return <div>Error, no proposal</div>
   }
 
+  const [threshold, quorum] = getThresholdAndQuorumDisplay(
+    proposal.threshold,
+    !!multisig,
+    tokenDecimals
+  )
+
   return (
     <div>
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
@@ -401,9 +399,13 @@ export function ProposalDetailsSidebar({
           {noVotes} <p className="text-secondary inline">({noPercent}%)</p>
         </div>
         <p className="text-secondary">Threshold</p>
-        <div className="col-span-2">
-          {thresholdString(proposal.threshold, !!multisig, tokenDecimals)}
-        </div>
+        <div className="col-span-2">{threshold}</div>
+        {quorum && (
+          <>
+            <p className="text-secondary">Quorum</p>
+            <div className="col-span-2">{quorum}</div>
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-3 mt-6">
@@ -487,7 +489,7 @@ export function ProposalDetails({
       </div>
       {actionLoading && (
         <div className="mt-3">
-          <ExecutingButton />
+          <LoadingButton />
         </div>
       )}
       {!actionLoading && proposal.status === 'open' && (

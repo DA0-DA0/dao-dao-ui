@@ -69,7 +69,12 @@ export interface DaoCreateData {
 
   // Fields for creating a DAO with a new token.
   name: string
+
   threshold: string
+  // Quorum if the threshold quorum passing threshold type is selected. Consult
+  // `ThresholdMode` to determine if this type is selected.
+  quorum: string
+
   tokenName: string
   tokenSymbol: string
   daoInitialBalance: string
@@ -89,6 +94,11 @@ export const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
 enum TokenMode {
   UseExisting,
   Create,
+}
+
+enum ThresholdMode {
+  Threshold,
+  ThresholdQuorum,
 }
 
 // Atoms for keeping track of token distrbution so that we can warn
@@ -208,6 +218,9 @@ const CreateDao: NextPage = () => {
   const unstakingDurationSeconds = watch('unstakingDuration')
 
   const [tokenMode, setTokenMode] = useState(TokenMode.Create)
+  const [thresholdMode, setThresholdMode] = useState(
+    ThresholdMode.ThresholdQuorum
+  )
 
   // Maps address rows to their token weights. Used to surface
   // warnings about minority rule.
@@ -260,6 +273,7 @@ const CreateDao: NextPage = () => {
       ),
     }))
     const threshold = getIntValue('threshold')
+    const quorum = getIntValue('quorum')
     const maxVotingPeriod = {
       time: getIntValue('duration'),
     }
@@ -300,6 +314,9 @@ const CreateDao: NextPage = () => {
               NATIVE_DECIMALS
             ),
             threshold / 100, // Conversion to decimal percentage
+            thresholdMode === ThresholdMode.ThresholdQuorum
+              ? quorum / 100
+              : undefined,
             maxVotingPeriod,
             unstakingDuration,
             proposalDeposit,
@@ -311,6 +328,9 @@ const CreateDao: NextPage = () => {
             data.description,
             data.existingTokenAddress,
             threshold / 100, // Conversion to decimal percentage
+            thresholdMode === ThresholdMode.ThresholdQuorum
+              ? quorum / 100
+              : undefined,
             maxVotingPeriod,
             unstakingDuration,
             proposalDeposit,
@@ -576,21 +596,82 @@ const CreateDao: NextPage = () => {
             <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
             Voting configuration
           </h2>
-          <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
-            <div className="form-control">
-              <InputLabel name="Passing Threshold (%)" />
-              <NumberInput
-                label="threshold"
-                register={register}
-                error={errors.threshold}
-                validation={[validateRequired, validatePercent]}
-                defaultValue="51"
-                step="any"
-                onChange={(e) => setPassThreshold(Number(e?.target?.value))}
-              />
-              <InputErrorMessage error={errors.threshold} />
-            </div>
 
+          <div className="tabs mt-8 mx-3">
+            <button
+              className={
+                'tab tab-lifted tab-lg' +
+                (thresholdMode == ThresholdMode.ThresholdQuorum
+                  ? ' tab-active'
+                  : '')
+              }
+              onClick={() => setThresholdMode(ThresholdMode.ThresholdQuorum)}
+              type="button"
+            >
+              Threshold and quorum
+            </button>
+            <button
+              className={
+                'tab tab-lifted tab-lg' +
+                (thresholdMode == ThresholdMode.Threshold ? ' tab-active' : '')
+              }
+              onClick={() => setThresholdMode(ThresholdMode.Threshold)}
+              type="button"
+            >
+              Absolute threshold
+            </button>
+            <div className="flex-1 cursor-default tab tab-lifted"></div>
+          </div>
+
+          <div className="mx-3 border-r border-b border-l border-solid p-3 border-base-300 rounded-b-lg">
+            {thresholdMode == ThresholdMode.ThresholdQuorum ? (
+              <div className="grid grid-cols-2 gap-x-3">
+                <div className="form-control">
+                  <InputLabel name="Passing Threshold (%)" />
+                  <NumberInput
+                    label="threshold"
+                    register={register}
+                    error={errors.threshold}
+                    validation={[validateRequired, validatePercent]}
+                    defaultValue="51"
+                    step="any"
+                    onChange={(e) => setPassThreshold(Number(e?.target?.value))}
+                  />
+                  <InputErrorMessage error={errors.threshold} />
+                </div>
+                <div className="form-control">
+                  <InputLabel name="Quorum (%)" />
+                  <NumberInput
+                    label="quorum"
+                    register={register}
+                    error={errors.quorum}
+                    validation={[validateRequired, validatePercent]}
+                    defaultValue="33"
+                    step="any"
+                  />
+                  <InputErrorMessage error={errors.quorum} />
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-x-3">
+                <div className="form-control">
+                  <InputLabel name="Passing Threshold (%)" />
+                  <NumberInput
+                    label="threshold"
+                    register={register}
+                    error={errors.threshold}
+                    validation={[validateRequired, validatePercent]}
+                    defaultValue="51"
+                    step="any"
+                    onChange={(e) => setPassThreshold(Number(e?.target?.value))}
+                  />
+                  <InputErrorMessage error={errors.threshold} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
             <div className="form-control">
               <InputLabel name="Voting Duration (seconds)" />
               <NumberInput
