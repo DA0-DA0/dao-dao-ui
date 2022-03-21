@@ -19,6 +19,11 @@ export const MULTISIG_CODE_ID = parseInt(
   10
 )
 
+export const LEGACY_MULTISIG_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_LEGACY_MULTISIG_CODE_ID as string,
+  10
+)
+
 export const C4_GROUP_CODE_ID = parseInt(
   process.env.NEXT_PUBLIC_C4_GROUP_CODE_ID as string,
   10

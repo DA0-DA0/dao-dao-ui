@@ -23,6 +23,7 @@ import { Button } from '@components'
 
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
+import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
   MysteryContractCard,
@@ -168,28 +169,13 @@ const DaoList: NextPage = () => {
               <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
               Community DAOs
             </h2>
-            <div>
-              <span className="font-medium px-2">Contract Version</span>
-              <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-sm">
-                  {version.name}
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-box w-52"
-                >
-                  {DAO_VERSIONS.map((v) => (
-                    <li
-                      key={v.name}
-                      className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
-                      onClick={() => setDaosVersion(v)}
-                    >
-                      {v.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            {!!LEGACY_DAO_CODE_ID && (
+              <CodeIdSelect
+                versions={DAO_VERSIONS}
+                currentVersion={version}
+                onSelect={(v) => setDaosVersion(v)}
+              />
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableDaoCards daos={daos} />
