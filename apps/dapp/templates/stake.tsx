@@ -2,20 +2,18 @@ import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
-import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext, useWatch } from 'react-hook-form'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useRecoilValue } from 'recoil'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 import {
-  convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
-  nativeTokenLogoURI,
 } from 'util/conversion'
 import {
   validateValidatorAddress,
@@ -83,7 +81,7 @@ export const StakeComponent = ({
 }) => {
   const { register, watch, clearErrors } = useFormContext()
 
-  const nativeBalances = useRecoilValue(nativeBalanceSelector(contractAddress))
+  let nativeBalances = useRecoilValue(nativeBalanceSelector(contractAddress))
   const stakeType = watch(getLabel('stakeType'))
   const validator = watch(getLabel('validator'))
   const fromValidator = watch(getLabel('fromValidator'))
@@ -186,13 +184,19 @@ export const StakeComponent = ({
                 ]}
                 border={false}
               >
-                {nativeBalances.map(({ denom }, idx) => {
-                  return (
-                    <option value={denom} key={idx}>
-                      ${nativeTokenLabel(denom)}
-                    </option>
-                  )
-                })}
+                {nativeBalances.length !== 0 ? (
+                  nativeBalances.map(({ denom }, idx) => {
+                    return (
+                      <option value={denom} key={idx}>
+                        ${nativeTokenLabel(denom)}
+                      </option>
+                    )
+                  })
+                ) : (
+                  <option value={NATIVE_DENOM} key="native-filler">
+                    ${nativeTokenLabel(NATIVE_DENOM)}
+                  </option>
+                )}
               </SelectInput>
             </>
           )}
