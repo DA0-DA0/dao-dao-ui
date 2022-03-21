@@ -21,6 +21,7 @@ import {
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
+import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
   MysteryContractCard,
@@ -173,30 +174,13 @@ const MultisigList: NextPage = () => {
               <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
               Community multisigs
             </h2>
-            {LEGACY_MULTISIG_CODE_ID ? (
-              <div>
-                <span className="font-medium px-2">Contract Version</span>
-                <div className="dropdown dropdown-end">
-                  <label tabIndex={0} className="btn btn-sm">
-                    {version.name}
-                  </label>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-box w-52"
-                  >
-                    {MULTISIG_VERSIONS.map((v) => (
-                      <li
-                        key={v.name}
-                        className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
-                        onClick={() => setMultisigVersion(v)}
-                      >
-                        {v.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ) : undefined}
+            {!!LEGACY_MULTISIG_CODE_ID && (
+              <CodeIdSelect
+                versions={MULTISIG_VERSIONS}
+                currentVersion={version}
+                onSelect={(v) => setMultisigVersion(v)}
+              />
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
