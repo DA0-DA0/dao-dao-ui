@@ -5,21 +5,20 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
-import toast from 'react-hot-toast'
+import { cleanChainError } from 'util/cleanChainError'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import Sidebar from 'components/Sidebar'
+import toast from 'react-hot-toast'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { sigSelector } from 'selectors/multisigs'
-import { MessageTemplate, messageTemplates } from 'templates/templateList'
-import { cleanChainError } from 'util/cleanChainError'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()
@@ -35,21 +34,6 @@ const MultisigProposalCreate: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
-      const toCosmosMsg = messageTemplates.find(
-        (template) => template.label === m.label
-      )?.toCosmosMsg
-
-      // Unreachable.
-      if (!toCosmosMsg) return {}
-
-      return toCosmosMsg(m as any, {
-        sigAddress: contractAddress,
-        govAddress: sigInfo.group_address,
-        govDecimals: 0,
-        multisig: true,
-      })
-    })
 
     await signingClient
       ?.execute(
@@ -59,7 +43,7 @@ const MultisigProposalCreate: NextPage = () => {
           propose: {
             title: d.title,
             description: d.description,
-            msgs: cosmMsgs,
+            msgs: d.messages,
           },
         },
         'auto'
@@ -95,6 +79,12 @@ const MultisigProposalCreate: NextPage = () => {
           contractAddress={contractAddress}
           onSubmit={onProposalSubmit}
           loading={proposalLoading}
+          cosmosMsgProps={{
+            sigAddress: contractAddress,
+            govAddress: sigInfo.group_address,
+            govDecimals: 0,
+            multisig: true,
+          }}
           multisig
         />
       </div>

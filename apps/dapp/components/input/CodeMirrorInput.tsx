@@ -1,5 +1,6 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
+
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 import {
   FieldError,
@@ -8,27 +9,23 @@ import {
   Validate,
   Control,
   Controller,
+  FieldValues,
 } from 'react-hook-form'
 import { useThemeContext } from 'ui'
 
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material.css'
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
-export function CodeMirrorInput<
-  FieldValues,
-  FieldName extends Path<FieldValues>
->({
+export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   label,
   control,
   validation,
 }: {
-  label: FieldName
-  control: Control<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  label: U
+  control?: Control<T>
+  validation?: Validate<FieldPathValue<T, U>>[]
   error?: FieldError
 }) {
   const validate = validation?.reduce(

@@ -10,16 +10,24 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
-import toast from 'react-hot-toast'
-
-import { ProposalStatus } from '@components'
+import { cleanChainError } from 'util/cleanChainError'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  getThresholdAndQuorumDisplay,
+} from 'util/conversion'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import ProposalVoteStatus from '@components/ProposalVoteStatus'
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import { PaginatedProposalVotes } from 'components/ProposalVotes'
+import toast from 'react-hot-toast'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -33,17 +41,8 @@ import {
   walletVotedSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
-import { cleanChainError } from 'util/cleanChainError'
-import {
-  contractConfigSelector,
-  ContractConfigWrapper,
-} from 'util/contractConfigWrapper'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  getThresholdAndQuorumDisplay,
-  thresholdString,
-} from 'util/conversion'
-import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
+
+import { ProposalStatus } from '@components'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { Address } from './Address'
@@ -480,12 +479,12 @@ export function ProposalDetails({
         )
   )
 
-  const decodedMessages = decodeMessages(proposal)
+  const decodedMessages = decodeMessages(proposal.msgs)
 
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+        <h1 className="text-4xl font-semibold">{proposal.title}</h1>
       </div>
       {actionLoading && (
         <div className="mt-3">
@@ -533,7 +532,7 @@ export function ProposalDetails({
         <MarkdownPreview markdown={proposal.description} />
       </div>
       {decodedMessages?.length ? (
-        <CosmosMessageDisplay value={decodedMessagesString(proposal)} />
+        <CosmosMessageDisplay value={decodedMessagesString(proposal.msgs)} />
       ) : (
         <pre></pre>
       )}

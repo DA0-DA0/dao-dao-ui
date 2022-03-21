@@ -1,6 +1,8 @@
+import { Config } from 'util/contractConfigWrapper'
+
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
-import { Config } from 'util/contractConfigWrapper'
+
 import {
   AddTokenComponent,
   addTokenDefaults,
@@ -96,6 +98,14 @@ export const messageTemplates: MessageTemplate[] = [
     toCosmosMsg: transformChangeMembersToCosmos,
   },
 ]
+
+export const messageTemplateToCosmosMsg = (
+  m: MessageTemplate,
+  props: ToCosmosMsgProps
+): CosmosMsgFor_Empty | undefined =>
+  messageTemplates
+    .find((template) => template.label === m.label)
+    ?.toCosmosMsg?.(m as any, props)
 
 // A component which will render a template's input form.
 export type TemplateComponent = React.FunctionComponent<{
