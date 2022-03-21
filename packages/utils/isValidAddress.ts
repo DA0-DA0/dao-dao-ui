@@ -45,7 +45,6 @@ export function isValidContractAddress(
 
 // Validates a bech32 address.
 export function isValidAddress(address: string, chainPrefix: string): boolean {
-  console.log(111, address, chainPrefix)
   return (
     isValidWalletAddress(address, chainPrefix) ||
     isValidContractAddress(address, chainPrefix)
