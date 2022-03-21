@@ -1,4 +1,4 @@
-const withTM = require('next-transpile-modules')(['ui','utils'])
+const withTM = require('next-transpile-modules')(['ui','@dao-dao/utils'])
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
