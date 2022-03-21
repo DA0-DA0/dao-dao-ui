@@ -28,16 +28,21 @@ const daoCreateTooltips: daoCreateTooltipsType = {
         proposal to pass.
       </p>
       <p>
-        If the quorum is met and a proposal expires then the threshold is
-        compared to the number of total voters that voted instead of the total
-        outstanding voting power. For example, with a 33% quorum and a 50%
-        passing threshold if 20% voted yes and 13% voted no the proposal would
-        pass once it has expired and no longer accepts votes.
+        When a proposal{"'"}s voting period is up and the quorum is met, the
+        proposal passes if the percentage of yes votes to all those who voted is
+        at least the threshold. For example, with a 33% quorum and a 50% passing
+        threshold, if 20% of all possible voters voted yes and 13% of all
+        possible voters voted no, the proposal would pass once the voting period
+        ends. This is because 33% of all possible voters voted, and at least 50%
+        were yes.
       </p>
       <p>
-        With that same turnout but no quorum the proposal would fail because
-        less than 50% of the total voters have voted yes. We recommend using a
-        quorum if you are worried about low voter participation.
+        With that same turnout but no quorum, the proposal would fail because
+        less than 50% of all possible voters voted yes. We recommend using
+        quorum mode if you are worried about low voter participation.
+        Additionally, quorum mode with a quorum of 0% and threshold of 51% will
+        enable plurality voting, where the proposal will pass if more voters
+        vote yes.
       </p>
     </>
   ),
