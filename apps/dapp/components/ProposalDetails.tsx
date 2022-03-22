@@ -416,10 +416,7 @@ export function ProposalDetailsSidebar({
               <p className="text-secondary">TX</p>
             )}
             <p className="col-span-2">
-              <CopyToClipboard
-                value={proposalExecutionTXHash}
-                success="Copied transaction hash to clipboard!"
-              />
+              <CopyToClipboard value={proposalExecutionTXHash} />
             </p>
           </>
         ) : null}

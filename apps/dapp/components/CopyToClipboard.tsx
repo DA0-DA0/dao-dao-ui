@@ -24,7 +24,7 @@ interface CopyToClipboardProps {
 
 export function CopyToClipboard({
   value,
-  success = 'Copied address to clipboard!',
+  success = 'Copied to clipboard!',
 }: CopyToClipboardProps) {
   return (
     <button
@@ -41,7 +41,7 @@ export function CopyToClipboard({
 
 export function CopyToClipboardSmall({
   value,
-  success = 'Copied address to clipboard!',
+  success = 'Copied to clipboard!',
 }: CopyToClipboardProps) {
   return (
     <button
@@ -59,7 +59,7 @@ export function CopyToClipboardSmall({
 
 export function CopyToClipboardAccent({
   value,
-  success = 'Copied address to clipboard!',
+  success = 'Copied to clipboard!',
 }: CopyToClipboardProps) {
   return (
     <button
