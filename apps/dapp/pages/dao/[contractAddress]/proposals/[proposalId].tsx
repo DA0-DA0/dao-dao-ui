@@ -11,12 +11,14 @@ import {
 } from 'components/ProposalDetails'
 import Sidebar from 'components/Sidebar'
 import { daoSelector } from 'selectors/daos'
+import { cw20TokenInfo } from 'selectors/treasury'
 
 const Proposal: NextPage = () => {
   const router = useRouter()
   const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
-  const sigInfo = useRecoilValue(daoSelector(contractAddress))
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const govTokenInfo = useRecoilValue(cw20TokenInfo(daoInfo.gov_token))
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
   return (
@@ -25,13 +27,16 @@ const Proposal: NextPage = () => {
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
-            [`/dao/${contractAddress}`, sigInfo.config.name],
+            [`/dao/${contractAddress}`, daoInfo.config.name],
             [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
         <ProposalDetails
           contractAddress={contractAddress}
           proposalId={Number(proposalKey)}
+          cosmosMsgProps={{
+            govDecimals: govTokenInfo.decimals,
+          }}
         />
       </div>
       <Sidebar>

@@ -18,16 +18,20 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
-export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
-  label,
-  control,
-  validation,
-}: {
+interface CodeMirrorInputProps<T extends FieldValues, U extends Path<T>> {
   label: U
   control?: Control<T>
   validation?: Validate<FieldPathValue<T, U>>[]
   error?: FieldError
-}) {
+  readOnly?: boolean
+}
+
+export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
+  label,
+  control,
+  validation,
+  readOnly = false,
+}: CodeMirrorInputProps<T, U>) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -48,6 +52,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
     tabSize: 2,
     gutters: ['CodeMirror-lint-markers'],
     lint: true,
+    readOnly,
   }
 
   return (
@@ -56,17 +61,16 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
       name={label}
       rules={{ validate: validate }}
       shouldUnregister
-      render={({ field: { onChange, onBlur, ref } }) => {
-        return (
-          <CodeMirror
-            onChange={(_editor, _data, value) => onChange(value)}
-            onBlur={(_instance, _event) => onBlur()}
-            ref={ref}
-            options={cmOptions}
-            className="rounded"
-          />
-        )
-      }}
+      render={({ field: { onChange, onBlur, ref, value } }) => (
+        <CodeMirror
+          onChange={(_editor, _data, value) => onChange(value)}
+          onBlur={(_instance, _event) => onBlur()}
+          ref={ref}
+          options={cmOptions}
+          className="rounded"
+          value={value}
+        />
+      )}
     />
   )
 }

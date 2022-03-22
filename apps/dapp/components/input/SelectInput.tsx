@@ -16,6 +16,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   children,
   border = true,
   defaultValue,
+  disabled = false,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -24,6 +25,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   children: ReactNode
   border?: boolean
   defaultValue?: string
+  disabled?: boolean
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -35,6 +37,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
         ${error ? ' select-error' : ''}
         ${border ? ' select-bordered' : ''}`}
       defaultValue={defaultValue}
+      disabled={disabled}
       {...register(label, { validate })}
     >
       {children}

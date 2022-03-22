@@ -26,6 +26,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   defaultValue,
   step,
   border = true,
+  disabled = false,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -35,6 +36,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   defaultValue?: string
   step?: string | number
   border?: boolean
+  disabled?: boolean
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -48,6 +50,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
       className={`input
         ${error ? ' input-error' : ''}
         ${border ? ' input-bordered' : ''}`}
+      disabled={disabled}
       {...register(label, { validate, onChange })}
     />
   )
