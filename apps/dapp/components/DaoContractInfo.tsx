@@ -1,17 +1,17 @@
 import { useRecoilValue } from 'recoil'
 
-import {
-  humanReadableDuration,
-  convertMicroDenomToDenomWithDecimals,
-  getThresholdAndQuorumDisplay,
-} from 'util/conversion'
-
 import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
+
 import {
   daoSelector,
   tokenConfig,
   unstakingDuration as unstakingDurationSelector,
 } from 'selectors/daos'
+import {
+  humanReadableDuration,
+  convertMicroDenomToDenomWithDecimals,
+  getThresholdAndQuorumDisplay,
+} from 'util/conversion'
 
 import { GovInfoListItem, TreasuryBalances } from './ContractView'
 import { CopyToClipboardAccent } from './CopyToClipboard'

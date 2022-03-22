@@ -11,19 +11,6 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { cleanChainError } from 'util/cleanChainError'
-import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
-import {
-  contractConfigSelector,
-  ContractConfigWrapper,
-} from 'util/contractConfigWrapper'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  getThresholdAndQuorumDisplay,
-} from 'util/conversion'
-import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
-
-import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import {
   CheckIcon,
@@ -31,10 +18,14 @@ import {
   SparklesIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import toast from 'react-hot-toast'
+
+import { ProposalStatus } from '@components'
+
+import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import { PaginatedProposalVotes } from 'components/ProposalVotes'
-import toast from 'react-hot-toast'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -49,8 +40,17 @@ import {
   walletVotedSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
-
-import { ProposalStatus } from '@components'
+import { cleanChainError } from 'util/cleanChainError'
+import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  getThresholdAndQuorumDisplay,
+} from 'util/conversion'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { CopyToClipboard } from './CopyToClipboard'

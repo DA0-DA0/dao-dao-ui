@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
-import { CopyToClipboard } from '@components/CopyToClipboard'
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
 import { DownloadIcon } from '@heroicons/react/outline'
+
+import { CopyToClipboard } from '@components/CopyToClipboard'
 import {
   proposalTallySelector,
   proposalVotesSelector,

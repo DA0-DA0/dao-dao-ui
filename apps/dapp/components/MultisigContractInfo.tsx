@@ -1,9 +1,9 @@
 import { useRecoilValue } from 'recoil'
 
-import { humanReadableDuration, thresholdString } from 'util/conversion'
-
 import { ClockIcon } from '@heroicons/react/outline'
+
 import { sigSelector } from 'selectors/multisigs'
+import { humanReadableDuration, thresholdString } from 'util/conversion'
 
 import { GovInfoListItem, TreasuryBalances } from './ContractView'
 import { CopyToClipboardAccent } from './CopyToClipboard'
