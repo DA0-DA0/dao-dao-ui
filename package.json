@@ -2,15 +2,21 @@
   "name": "dao-dao",
   "version": "0.3.0",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint && prettier --check \"**/*.{ts,tsx,md}\"",
     "format": "turbo run format && prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "prepare": "husky install"
   },
   "devDependencies": {
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
     "prettier": "^2.5.1",
     "turbo": "latest"
   },
@@ -18,5 +24,8 @@
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
   },
-  "packageManager": "yarn@1.22.11"
+  "packageManager": "yarn@1.22.11",
+  "lint-staged": {
+    "*.{ts,tsx,md}": "npm run format"
+  }
 }
