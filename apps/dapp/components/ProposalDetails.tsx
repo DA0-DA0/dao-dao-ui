@@ -114,7 +114,7 @@ function executeProposalExecute(
       'auto'
     )
     .then((response) => {
-      toast.success(`Success. Transaction hash: (${response.transactionHash})`)
+      toast.success(`Success. Transaction hash (${response.transactionHash}) can be found in the sidebar.`)
     })
     .catch((err) => {
       console.error(err)
@@ -400,7 +400,7 @@ export function ProposalDetailsSidebar({
               <ExternalLinkIcon width={16} />
             </a>
             <p className="col-span-2">
-              <CopyToClipboard value={proposalExecutionTXHash} />
+              <CopyToClipboard value={proposalExecutionTXHash} success="Copied transaction hash to clipboard!" />
             </p>
           </>
         )}
