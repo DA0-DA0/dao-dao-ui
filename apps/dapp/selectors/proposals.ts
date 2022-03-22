@@ -1,3 +1,5 @@
+import { selectorFamily } from 'recoil'
+
 import {
   ProposalResponse,
   ProposalTallyResponse,
@@ -14,7 +16,6 @@ import {
   EmptyProposalTallyResponse,
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
-import { selectorFamily } from 'recoil'
 import {
   ContractProposalMap,
   ExtendedProposalResponse,
@@ -23,6 +24,7 @@ import {
   ProposalMapItem,
   ProposalMessageKey,
 } from 'types/proposals'
+
 import { cosmWasmClient } from './cosm'
 import { daoSelector } from './daos'
 import { sigSelector } from './multisigs'
@@ -171,6 +173,38 @@ export const walletVotedSelector = selectorFamily<
       })
 
       return events.length != 0
+    },
+})
+
+export const proposalExecutionTXHashSelector = selectorFamily<
+  string | null,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalTXHashSelector',
+  get:
+    ({ contractAddress, proposalId }) =>
+    async ({ get }) => {
+      // Refresh when new updates occur.
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const client = get(cosmWasmClient)
+      const proposal = get(proposalSelector({ contractAddress, proposalId }))
+      // No TX Hash if proposal not yet executed.
+      if (!client || proposal?.status !== 'executed') return null
+
+      const events = await client.searchTx({
+        tags: [
+          { key: 'wasm._contract_address', value: contractAddress },
+          { key: 'wasm.proposal_id', value: proposalId.toString() },
+          { key: 'wasm.action', value: 'execute' },
+        ],
+      })
+
+      if (events.length > 1) {
+        console.error('More than one execution', events)
+      }
+
+      return events.length > 0 ? events[0].hash : null
     },
 })
 
