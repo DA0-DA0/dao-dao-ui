@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { Wallet as SvgWallet } from '@dao-dao/icons'
 import {
   CashIcon,
   CheckCircleIcon,
@@ -26,8 +27,6 @@ import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
-
-import { Wallet as SvgWallet } from '@dao-dao/icons'
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
