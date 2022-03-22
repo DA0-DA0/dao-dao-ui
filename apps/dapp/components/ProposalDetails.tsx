@@ -11,6 +11,7 @@ import {
 } from 'recoil'
 
 import { cleanChainError } from 'util/cleanChainError'
+import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
@@ -23,7 +24,12 @@ import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  SparklesIcon,
+  XIcon,
+} from '@heroicons/react/outline'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import { PaginatedProposalVotes } from 'components/ProposalVotes'
@@ -384,7 +390,15 @@ export function ProposalDetailsSidebar({
         </p>
         {!!proposalExecutionTXHash && (
           <>
-            <p className="text-secondary">TX</p>
+            <a
+              className="text-secondary flex flex-row items-center gap-1"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+            >
+              TX
+              <ExternalLinkIcon width={16} />
+            </a>
             <p className="col-span-2">
               <CopyToClipboard value={proposalExecutionTXHash} />
             </p>
