@@ -2,12 +2,18 @@ import { ReactNode, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
-import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  SetterOrUpdater,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   CheckIcon,
+  ExternalLinkIcon,
   EyeIcon,
   EyeOffIcon,
   SparklesIcon,
@@ -28,6 +34,7 @@ import {
 } from 'selectors/cosm'
 import { isMemberSelector } from 'selectors/daos'
 import {
+  proposalExecutionTXHashSelector,
   proposalSelector,
   proposalStartBlockSelector,
   proposalTallySelector,
@@ -41,6 +48,7 @@ import {
   messageTemplateAndValuesForDecodedCosmosMsg,
 } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
+import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
@@ -52,7 +60,7 @@ import {
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { Address } from './Address'
+import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 
@@ -114,7 +122,9 @@ function executeProposalExecute(
       'auto'
     )
     .then((response) => {
-      toast.success(`Success. Transaction hash: (${response.transactionHash})`)
+      toast.success(
+        `Success. Transaction hash (${response.transactionHash}) can be found in the sidebar.`
+      )
     })
     .catch((err) => {
       console.error(err)
@@ -314,6 +324,12 @@ export function ProposalDetailsSidebar({
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
+  const { state: proposalExecutionTXHashState, contents: txHashContents } =
+    useRecoilValueLoadable(
+      proposalExecutionTXHashSelector({ contractAddress, proposalId })
+    )
+  const proposalExecutionTXHash: string | null =
+    proposalExecutionTXHashState === 'hasValue' ? txHashContents : null
 
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
@@ -376,15 +392,41 @@ export function ProposalDetailsSidebar({
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
         Proposal {proposal.id}
       </h2>
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-3 gap-1 items-center">
         <p className="text-secondary">Status</p>
         <div className="col-span-2">
           <ProposalStatus status={proposal.status} />
         </div>
         <p className="text-secondary">Proposer</p>
         <p className="col-span-2">
-          <Address address={proposal.proposer} />
+          <CopyToClipboard value={proposal.proposer} />
         </p>
+        {proposal.status === 'executed' &&
+        proposalExecutionTXHashState === 'loading' ? (
+          <>
+            <p className="text-secondary">TX</p>
+            <p className="col-span-2">Loading...</p>
+          </>
+        ) : !!proposalExecutionTXHash ? (
+          <>
+            {CHAIN_TXN_URL_PREFIX ? (
+              <a
+                className="text-secondary flex flex-row items-center gap-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+              >
+                TX
+                <ExternalLinkIcon width={16} />
+              </a>
+            ) : (
+              <p className="text-secondary">TX</p>
+            )}
+            <p className="col-span-2">
+              <CopyToClipboard value={proposalExecutionTXHash} />
+            </p>
+          </>
+        ) : null}
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>

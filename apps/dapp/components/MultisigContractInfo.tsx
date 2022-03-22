@@ -5,8 +5,8 @@ import { ClockIcon } from '@heroicons/react/outline'
 import { sigSelector } from 'selectors/multisigs'
 import { humanReadableDuration, thresholdString } from 'util/conversion'
 
-import { AddressAccent } from './Address'
 import { GovInfoListItem, TreasuryBalances } from './ContractView'
+import { CopyToClipboardAccent } from './CopyToClipboard'
 import SvgVotes from './icons/Votes'
 
 export function MultisigContractInfo({ address }: { address: string }) {
@@ -33,10 +33,11 @@ export function MultisigContractInfo({ address }: { address: string }) {
         <h2 className="font-medium text-lg mb-6">Addresses</h2>
         <ul className="list-none mt-3 flex flex-col gap-2 text-secondary text-sm">
           <li>
-            Multisig address <AddressAccent address={address} />
+            Multisig address <CopyToClipboardAccent value={address} />
           </li>
           <li>
-            cw4-group address <AddressAccent address={sigInfo.group_address} />
+            cw4-group address{' '}
+            <CopyToClipboardAccent value={sigInfo.group_address} />
           </li>
         </ul>
       </div>

@@ -1,5 +1,8 @@
 {
   "workbench.colorCustomizations": {
     "activityBar.background": "#38027e"
-  }
+  },
+  "eslint.workingDirectories": [
+    "./apps/dapp", 
+  ],
 }

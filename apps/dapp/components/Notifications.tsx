@@ -11,6 +11,7 @@ const Notifications = () => (
       },
       success: successOptions,
       error: errorOptions,
+      duration: 5000,
     }}
   />
 )

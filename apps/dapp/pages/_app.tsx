@@ -48,11 +48,12 @@ function MyApp({ Component, pageProps }: AppProps) {
             {loaded && (
               <Layout>
                 <Component {...pageProps} />
-                <Notifications />
               </Layout>
             )}
           </ThemeProvider>
         </Suspense>
+
+        <Notifications />
       </ErrorBoundary>
     </RecoilRoot>
   )

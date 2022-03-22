@@ -17,45 +17,59 @@ function concatAddress(address: string) {
   return concatAddressImpl(address, takeN, takeN)
 }
 
-export function Address({ address }: { address: string }) {
+interface CopyToClipboardProps {
+  value: string
+  success?: string
+}
+
+export function CopyToClipboard({
+  value,
+  success = 'Copied to clipboard!',
+}: CopyToClipboardProps) {
   return (
     <button
       className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1 font-mono text-xs"
       onClick={() => {
-        navigator.clipboard.writeText(address)
-        toast.success('Copied address to clipboard!')
+        navigator.clipboard.writeText(value)
+        toast.success(success)
       }}
     >
-      {concatAddress(address)}
+      {concatAddress(value)}
     </button>
   )
 }
 
-export function AddressSmall({ address }: { address: string }) {
+export function CopyToClipboardSmall({
+  value,
+  success = 'Copied to clipboard!',
+}: CopyToClipboardProps) {
   return (
     <button
       className="transition font-sm font-mono text-sm text-secondary hover:text-primary"
       onClick={() => {
-        navigator.clipboard.writeText(address)
-        toast.success('Copied address to clipboard!')
+        navigator.clipboard.writeText(value)
+        toast.success(success)
       }}
     >
       <PaperClipIcon className="w-4 h-4 inline mr-1" />
-      {concatAddressImpl(address, 12, 7)}
+      {concatAddressImpl(value, 12, 7)}
     </button>
   )
 }
 
-export function AddressAccent({ address }: { address: string }) {
+export function CopyToClipboardAccent({
+  value,
+  success = 'Copied to clipboard!',
+}: CopyToClipboardProps) {
   return (
     <button
       className="transition text-sm text-accent hover:underline"
       onClick={() => {
-        navigator.clipboard.writeText(address)
-        toast.success('Copied address to clipboard!')
+        navigator.clipboard.writeText(value)
+        toast.success(success)
       }}
     >
-      {concatAddressImpl(address, 12, 7)}
+      {concatAddressImpl(value, 12, 7)}
     </button>
   )
 }
