@@ -4,18 +4,6 @@ import { useRouter } from 'next/router'
 
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { cleanChainError } from 'util/cleanChainError'
-import {
-  contractConfigSelector,
-  ContractConfigWrapper,
-} from 'util/contractConfigWrapper'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  getThresholdAndQuorumDisplay,
-} from 'util/conversion'
-import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
-
-import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
@@ -25,11 +13,15 @@ import {
   SparklesIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import { FormProvider, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+
+import { ProposalStatus } from '@components'
+
+import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import { PaginatedProposalVotes } from 'components/ProposalVotes'
-import { FormProvider, useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -48,8 +40,16 @@ import {
   MessageTemplate,
   messageTemplateAndValuesForDecodedCosmosMsg,
 } from 'templates/templateList'
-
-import { ProposalStatus } from '@components'
+import { cleanChainError } from 'util/cleanChainError'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  getThresholdAndQuorumDisplay,
+} from 'util/conversion'
+import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { Address } from './Address'
@@ -468,7 +468,10 @@ function ProposalMessageTemplateList({
 }: ProposalMessageTemplateListProps) {
   const components: ReactNode[] = msgs.map((msg, index) => {
     const decoded = decodeMessages([msg])[0]
-    const data = messageTemplateAndValuesForDecodedCosmosMsg(decoded, cosmosMsgProps)
+    const data = messageTemplateAndValuesForDecodedCosmosMsg(
+      decoded,
+      cosmosMsgProps
+    )
 
     return data ? (
       <ProposalMessageTemplateListItem

@@ -5,20 +5,20 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
-import { cleanChainError } from 'util/cleanChainError'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
+import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import Sidebar from 'components/Sidebar'
-import toast from 'react-hot-toast'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { sigSelector } from 'selectors/multisigs'
+import { cleanChainError } from 'util/cleanChainError'
 
 const MultisigProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()

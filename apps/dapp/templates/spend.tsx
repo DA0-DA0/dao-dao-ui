@@ -14,10 +14,7 @@ import {
   validatePositive,
   validateRequired,
 } from 'util/formValidation'
-import {
-  makeBankMessage,
-  makeWasmMessage,
-} from 'util/messagehelpers'
+import { makeBankMessage, makeWasmMessage } from 'util/messagehelpers'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'

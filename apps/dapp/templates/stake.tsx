@@ -162,8 +162,7 @@ export const StakeComponent: TemplateComponent = ({
               validation={[
                 validateRequired,
                 validatePositive,
-                (amount: string) =>
-                  validatePossibleSpendWrapper(denom, amount),
+                (amount: string) => validatePossibleSpendWrapper(denom, amount),
               ]}
               step={0.000001}
               border={false}
@@ -175,8 +174,7 @@ export const StakeComponent: TemplateComponent = ({
               register={register}
               error={errors?.denom}
               validation={[
-                (denom: string) =>
-                  validatePossibleSpendWrapper(denom, amount),
+                (denom: string) => validatePossibleSpendWrapper(denom, amount),
               ]}
               border={false}
               disabled={readOnly}
@@ -242,7 +240,8 @@ export const StakeComponent: TemplateComponent = ({
       <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-base-200">
         <InformationCircleIcon className="h-4" />
         <p>
-          This template is new and in beta. Double check the generated JSON before executing.
+          This template is new and in beta. Double check the generated JSON
+          before executing.
         </p>
       </div>
     </div>

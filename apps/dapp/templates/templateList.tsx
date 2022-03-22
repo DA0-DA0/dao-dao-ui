@@ -27,15 +27,30 @@ import {
   transformCosmosToCustom,
   transformCustomToCosmos,
 } from './custom'
-import { MintComponent, mintDefaults, transformCosmosToMint, transformMintToCosmos } from './mint'
+import {
+  MintComponent,
+  mintDefaults,
+  transformCosmosToMint,
+  transformMintToCosmos,
+} from './mint'
 import {
   RemoveTokenComponent,
   removeTokenDefaults,
   transformCosmosToRemoveToken,
   transformRemoveTokenToCosmos,
 } from './removeToken'
-import { SpendComponent, spendDefaults, transformCosmosToSpend, transformSpendToCosmos } from './spend'
-import { StakeComponent, stakeDefaults, transformCosmosToStake, transformStakeToCosmos } from './stake'
+import {
+  SpendComponent,
+  spendDefaults,
+  transformCosmosToSpend,
+  transformSpendToCosmos,
+} from './spend'
+import {
+  StakeComponent,
+  stakeDefaults,
+  transformCosmosToStake,
+  transformStakeToCosmos,
+} from './stake'
 
 export enum ContractSupport {
   Multisig,

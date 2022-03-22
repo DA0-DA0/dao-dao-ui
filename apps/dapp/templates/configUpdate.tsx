@@ -173,15 +173,15 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
             }}
             type="button"
             disabled={readOnly}
-            style={readOnly ? { pointerEvents: "none" } : {}}
+            style={readOnly ? { pointerEvents: 'none' } : {}}
           >
             Threshold and quorum
           </button>
           <button
             className={
               'tab tab-lifted tab-lg' +
-              (thresholdMode === ThresholdMode.Threshold ? ' tab-active' : '')
-              + (readOnly ? ' !pointer-events-none' : '')
+              (thresholdMode === ThresholdMode.Threshold ? ' tab-active' : '') +
+              (readOnly ? ' !pointer-events-none' : '')
             }
             onClick={() => {
               setThresholdMode(ThresholdMode.Threshold)
@@ -190,7 +190,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
             }}
             type="button"
             disabled={readOnly}
-            style={readOnly ? { pointerEvents: "none" } : {}}
+            style={readOnly ? { pointerEvents: 'none' } : {}}
           >
             Absolute threshold
           </button>
@@ -295,9 +295,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
       </div>
       <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-base-200">
         <InformationCircleIcon className="h-4" />
-        <p>
-          This will change the configuration of your DAO. Take Care.
-        </p>
+        <p>This will change the configuration of your DAO. Take Care.</p>
       </div>
     </div>
   )

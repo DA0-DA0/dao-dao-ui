@@ -5,23 +5,23 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { cleanChainError } from 'util/cleanChainError'
-import { expirationExpired } from 'util/expiration'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
+import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { proposalsCreatedAtom } from 'atoms/proposals'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
 import Sidebar from 'components/Sidebar'
-import toast from 'react-hot-toast'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
+import { cleanChainError } from 'util/cleanChainError'
+import { expirationExpired } from 'util/expiration'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()

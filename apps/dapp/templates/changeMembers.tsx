@@ -233,7 +233,9 @@ export const transformChangeMembersToCosmos = (
   })
 }
 
-export const transformCosmosToChangeMembers = (msg: Record<string, any>): ChangeMembersData | null =>
+export const transformCosmosToChangeMembers = (
+  msg: Record<string, any>
+): ChangeMembersData | null =>
   'wasm' in msg &&
   'execute' in msg.wasm &&
   'update_members' in msg.wasm.execute.msg &&

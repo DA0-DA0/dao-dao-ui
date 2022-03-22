@@ -2,16 +2,10 @@ import { useState } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import {
-  contractConfigSelector,
-  ContractConfigWrapper,
-} from 'util/contractConfigWrapper'
-import { validateRequired } from 'util/formValidation'
-import { decodedMessagesString } from 'util/messagehelpers'
-
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+
 import { walletAddress } from 'selectors/treasury'
 import {
   messageTemplates,
@@ -20,6 +14,12 @@ import {
   MessageTemplate,
   messageTemplateToCosmosMsg,
 } from 'templates/templateList'
+import {
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from 'util/contractConfigWrapper'
+import { validateRequired } from 'util/formValidation'
+import { decodedMessagesString } from 'util/messagehelpers'
 
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import SvgAirplane from './icons/Airplane'
