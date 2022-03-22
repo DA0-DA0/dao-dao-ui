@@ -394,15 +394,15 @@ export function ProposalDetailsSidebar({
         <p className="col-span-2">
           <CopyToClipboard value={proposal.proposer} />
         </p>
-        {
-          proposal.status === 'executed' &&
-          proposalExecutionTXHashState === 'loading' ? (
-            <>
-              <p className="text-secondary">TX</p>
-              <p className="col-span-2">Loading...</p>
-            </>
-          ) : !!proposalExecutionTXHash ? (
-            <>
+        {proposal.status === 'executed' &&
+        proposalExecutionTXHashState === 'loading' ? (
+          <>
+            <p className="text-secondary">TX</p>
+            <p className="col-span-2">Loading...</p>
+          </>
+        ) : !!proposalExecutionTXHash ? (
+          <>
+            {CHAIN_TXN_URL_PREFIX ? (
               <a
                 className="text-secondary flex flex-row items-center gap-1"
                 target="_blank"
@@ -412,15 +412,17 @@ export function ProposalDetailsSidebar({
                 TX
                 <ExternalLinkIcon width={16} />
               </a>
-              <p className="col-span-2">
-                <CopyToClipboard
-                  value={proposalExecutionTXHash}
-                  success="Copied transaction hash to clipboard!"
-                />
-              </p>
-            </>
-          ) : null
-        }
+            ) : (
+              <p className="text-secondary">TX</p>
+            )}
+            <p className="col-span-2">
+              <CopyToClipboard
+                value={proposalExecutionTXHash}
+                success="Copied transaction hash to clipboard!"
+              />
+            </p>
+          </>
+        ) : null}
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>
