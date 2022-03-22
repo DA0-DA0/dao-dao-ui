@@ -216,7 +216,7 @@ export const DAOUpdateConfigComponent = ({
               <div className="form-control">
                 <InputLabel name="Passing Threshold (%)" />
                 <NumberInput
-                  label="threshold"
+                  label={getLabel('threshold')}
                   register={register}
                   error={errors.threshold}
                   validation={[validateRequired, validatePercent]}
