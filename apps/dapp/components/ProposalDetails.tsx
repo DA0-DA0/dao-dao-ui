@@ -7,6 +7,7 @@ import {
   SetterOrUpdater,
   useRecoilState,
   useRecoilValue,
+  useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
@@ -114,7 +115,9 @@ function executeProposalExecute(
       'auto'
     )
     .then((response) => {
-      toast.success(`Success. Transaction hash (${response.transactionHash}) can be found in the sidebar.`)
+      toast.success(
+        `Success. Transaction hash (${response.transactionHash}) can be found in the sidebar.`
+      )
     })
     .catch((err) => {
       console.error(err)
@@ -314,9 +317,12 @@ export function ProposalDetailsSidebar({
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
-  const proposalExecutionTXHash = useRecoilValue(
-    proposalExecutionTXHashSelector({ contractAddress, proposalId })
-  )
+  const { state: proposalExecutionTXHashState, contents: txHashContents } =
+    useRecoilValueLoadable(
+      proposalExecutionTXHashSelector({ contractAddress, proposalId })
+    )
+  const proposalExecutionTXHash: string | null =
+    proposalExecutionTXHashState === 'hasValue' ? txHashContents : null
 
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
@@ -379,7 +385,7 @@ export function ProposalDetailsSidebar({
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
         Proposal {proposal.id}
       </h2>
-      <div className="grid grid-cols-3 items-center">
+      <div className="grid grid-cols-3 gap-1 items-center">
         <p className="text-secondary">Status</p>
         <div className="col-span-2">
           <ProposalStatus status={proposal.status} />
@@ -388,22 +394,33 @@ export function ProposalDetailsSidebar({
         <p className="col-span-2">
           <CopyToClipboard value={proposal.proposer} />
         </p>
-        {!!proposalExecutionTXHash && (
-          <>
-            <a
-              className="text-secondary flex flex-row items-center gap-1"
-              target="_blank"
-              rel="noopener noreferrer"
-              href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
-            >
-              TX
-              <ExternalLinkIcon width={16} />
-            </a>
-            <p className="col-span-2">
-              <CopyToClipboard value={proposalExecutionTXHash} success="Copied transaction hash to clipboard!" />
-            </p>
-          </>
-        )}
+        {
+          proposal.status === 'executed' &&
+          proposalExecutionTXHashState === 'loading' ? (
+            <>
+              <p className="text-secondary">TX</p>
+              <p className="col-span-2">Loading...</p>
+            </>
+          ) : !!proposalExecutionTXHash ? (
+            <>
+              <a
+                className="text-secondary flex flex-row items-center gap-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+              >
+                TX
+                <ExternalLinkIcon width={16} />
+              </a>
+              <p className="col-span-2">
+                <CopyToClipboard
+                  value={proposalExecutionTXHash}
+                  success="Copied transaction hash to clipboard!"
+                />
+              </p>
+            </>
+          ) : null
+        }
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>
