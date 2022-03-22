@@ -3,11 +3,11 @@ import { useRecoilValueLoadable } from 'recoil'
 import { IndexedTx } from '@cosmjs/stargate'
 
 import { transactions } from 'selectors/treasury'
-import { NATIVE_DECIMALS } from 'util/constants'
 import {
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
-} from 'util/conversion'
+  NATIVE_DECIMALS,
+} from '@dao-dao/utils'
 
 interface TxEventAttribute {
   key: string

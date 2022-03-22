@@ -1,6 +1,5 @@
+import { Button } from '@dao-dao/ui'
 import { ChevronDownIcon } from '@heroicons/react/outline'
-
-import { Button } from '@components'
 
 export interface ContractVersion {
   name: string

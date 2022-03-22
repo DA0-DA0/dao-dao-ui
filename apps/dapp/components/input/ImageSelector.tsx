@@ -9,10 +9,9 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
-import { Button } from 'ui'
+import { Button, Modal } from '@dao-dao/ui'
 
 import SvgAirplane from '@components/icons/Airplane'
-import { Modal } from '@components/Modal'
 import { daoCreateTooltipsGetter } from '@components/TooltipsDisplay/daoCreate'
 
 import { InputErrorMessage } from './InputErrorMessage'

@@ -1,4 +1,4 @@
-let config = require('ui/tailwind.config')
+let config = require('@dao-dao/ui/tailwind.config')
 
 module.exports = {
   ...config,

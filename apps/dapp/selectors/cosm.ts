@@ -7,7 +7,7 @@ import {
   cosmWasmClientRouter,
   stargateClientRouter,
 } from 'util/chainClientRouter'
-import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
+import { NATIVE_DENOM, GAS_PRICE } from '@dao-dao/utils'
 
 import { localStorageEffect } from '../atoms/localStorageEffect'
 import { connectKeplrWithoutAlerts } from '../services/keplr'
@@ -125,6 +125,9 @@ export const walletChainBalanceSelector = selector<number>({
       return 0
     }
     const address = get(walletAddress)
+    if (!address) {
+      return 0
+    }
     const balance = await client.getBalance(address, NATIVE_DENOM)
     return Number(balance.amount)
   },

@@ -19,7 +19,7 @@ import {
   UserIcon,
 } from '@heroicons/react/outline'
 
-import { Button } from '@components'
+import { Button } from '@dao-dao/ui'
 
 import { EmptyDaoCard } from '@components/EmptyDaoCard'
 import { pinnedDaosAtom } from 'atoms/pinned'
@@ -29,8 +29,11 @@ import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
 import { addToken } from 'util/addToken'
-import { DAO_CODE_ID, LEGACY_DAO_CODE_ID } from 'util/constants'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
+import {
+  DAO_CODE_ID,
+  LEGACY_DAO_CODE_ID,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 
 export function DaoCard({
   dao,

@@ -4,7 +4,7 @@ import { ConfigResponse } from '@dao-dao/types/contracts/cw3-multisig'
 
 import { contractsByCodeId } from 'selectors/contracts'
 import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
-import { MULTISIG_CODE_ID } from 'util/constants'
+import { MULTISIG_CODE_ID } from '@dao-dao/utils'
 
 import { walletAddress } from './treasury'
 

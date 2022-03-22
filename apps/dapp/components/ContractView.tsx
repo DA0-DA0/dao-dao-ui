@@ -4,12 +4,18 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { useThemeContext, Button } from '@dao-dao/ui'
+import {
+  NATIVE_DECIMALS,
+  HEADER_IMAGES_ENABLED,
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
+} from '@dao-dao/utils'
 import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Tooltip from '@reach/tooltip'
-import { useThemeContext } from 'ui'
-
-import { Button } from '@components'
 
 import { contractInstantiateTime } from 'selectors/contracts'
 import { isMemberSelector } from 'selectors/cosm'
@@ -20,13 +26,6 @@ import {
   walletAddress,
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
-import { NATIVE_DECIMALS, HEADER_IMAGES_ENABLED } from 'util/constants'
-import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
-} from 'util/conversion'
 
 import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
@@ -182,7 +181,7 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
   return (
     <div
-      className="w-4 h-4 bg-brand bg-center bg-cover rounded-full"
+      className="w-4 h-4 bg-center bg-cover rounded-full bg-brand"
       style={{
         ...(!!accentColor && { backgroundColor: accentColor }),
         backgroundImage: iconURI ? `url(${iconURI})` : '',

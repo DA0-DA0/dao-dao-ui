@@ -10,7 +10,7 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 
-import { Button } from '@components'
+import { Button } from '@dao-dao/ui'
 
 import SvgArrowUpRight from '@components/icons/ArrowUpRight'
 import SvgDiscord from '@components/icons/Discord'
@@ -20,7 +20,7 @@ import SvgTwitter from 'components/icons/Twitter'
 import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 
-import { SITE_TITLE } from '../util/constants'
+import { SITE_TITLE } from '@dao-dao/utils'
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (

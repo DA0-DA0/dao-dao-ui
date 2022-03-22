@@ -14,7 +14,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getDaoThresholdAndQuorum,
-} from 'util/conversion'
+} from '@dao-dao/utils'
 import {
   validatePercent,
   validatePositive,

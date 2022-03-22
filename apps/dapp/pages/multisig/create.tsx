@@ -7,9 +7,8 @@ import { useSetRecoilState, useRecoilValue } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { PlusIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
-import { Button } from 'ui'
+import { Button, Tooltip } from '@dao-dao/ui'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
@@ -35,8 +34,7 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
-import { MULTISIG_CODE_ID } from 'util/constants'
-import { secondsToWdhms } from 'util/conversion'
+import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
 import {
   validatePercent,
   validatePositive,

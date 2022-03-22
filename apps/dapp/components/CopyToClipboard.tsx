@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
+import { useThemeContext } from '@dao-dao/ui'
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
-import { useThemeContext } from 'ui'
 
 import SvgCopy from './icons/Copy'
 
@@ -61,7 +61,7 @@ export function CopyToClipboardAccent({
 
   return (
     <button
-      className="text-sm text-brand underline hover:no-underline transition"
+      className="text-sm underline hover:no-underline transition text-brand"
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)

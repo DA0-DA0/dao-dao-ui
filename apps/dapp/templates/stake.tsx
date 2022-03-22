@@ -8,15 +8,16 @@ import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
 import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
-import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
-} from 'util/conversion'
+} from '@dao-dao/utils'
 import {
   validateValidatorAddress,
   validatePositive,

@@ -14,7 +14,7 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-} from 'util/conversion'
+} from '@dao-dao/utils'
 import {
   validateAddress,
   validatePositive,

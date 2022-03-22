@@ -1,14 +1,12 @@
+import { Button, Modal } from '@dao-dao/ui'
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
-import { Button } from 'ui/Button'
-
-import { Modal } from './Modal'
 
 export function InstallKeplr({ onClose }: { onClose: () => void }) {
   return (
     <Modal>
       <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
         <button
-          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+          className="absolute top-2 right-2 p-1 rounded-full transition hover:bg-secondary"
           onClick={onClose}
         >
           <XIcon className="w-4 h-4" />

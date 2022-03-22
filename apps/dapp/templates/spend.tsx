@@ -13,15 +13,16 @@ import {
   nativeBalance as nativeBalanceSelector,
   cw20Balances as cw20BalancesSelector,
 } from 'selectors/treasury'
-import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
-} from 'util/conversion'
+} from '@dao-dao/utils'
 import {
   validateAddress,
   validatePositive,

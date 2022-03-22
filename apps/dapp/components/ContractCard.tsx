@@ -2,19 +2,16 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
-import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
-import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
-
-import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenomWithDecimals,
-} from 'util/conversion'
-
 import {
   CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-} from '../util/constants'
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
+import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
+import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
+
 import SvgDao from './icons/Dao'
 import SvgPencil from './icons/Pencil'
 import SvgVotes from './icons/Votes'
@@ -42,8 +39,8 @@ function DIYLogo({
   return (
     <Link href={href}>
       <a>
-        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline shadow hover:shadow-md hover:shadow-brand transition-shadow">
-          <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
+        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] from-transparent rounded-lg hover:outline-1 hover:outline shadow hover:shadow-md transition-shadow bg-card hover:outline-brand hover:shadow-brand">
+          <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent rounded-lg to-dark opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="relative">
               {children}
@@ -61,7 +58,7 @@ function DIYLogo({
             <h3 className="mt-3 max-w-full font-semibold truncate text-md">
               {title}
             </h3>
-            <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
+            <p className="mt-1 font-mono text-xs text-center break-words text-secondary line-clamp-3">
               {body}
             </p>
           </div>
@@ -161,14 +158,14 @@ export function ContractCard({
 
 export function LoadingContractCard() {
   return (
-    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
-      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
+    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  from-transparent rounded-lg shadow transition-shadow bg-card">
+      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent rounded-lg to-dark opacity-[8%] "></div>
       <div className="flex justify-center items-center w-[70px] h-[70px]">
         <div className="inline-block animate-spin">
           <Logo height={72} width={72} />
         </div>
-      </div>
-    </div>
+      </a>
+    </Link>
   )
 }
 
@@ -185,7 +182,7 @@ const EmptyStateContractCard = ({
 }) => {
   return (
     <Link href={href} passHref>
-      <a className="overflow-hidden w-max max-w-[400px] rounded-md border border-inactive hover:border-brand transition">
+      <a className="overflow-hidden w-max max-w-[400px] rounded-md border transition border-inactive hover:border-brand">
         <div
           className={'h-72 bg-no-repeat bg-cover opacity-75'}
           style={{ backgroundImage: `url(${backgroundUrl})` }}

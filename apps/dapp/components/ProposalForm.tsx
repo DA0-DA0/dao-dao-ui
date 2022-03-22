@@ -3,10 +3,9 @@ import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { Button, Tooltip } from '@dao-dao/ui'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
-import { Button } from 'ui'
 
 import { walletAddress } from 'selectors/treasury'
 import {
@@ -170,7 +169,7 @@ export function ProposalForm({
                 // We guarantee by construction that this should never
                 // happen but might as well make it pretty if it does.
                 return (
-                  <div className="flex justify-between items-center p-2 my-3 text-error rounded-lg border border-error">
+                  <div className="flex justify-between items-center p-2 my-3 rounded-lg border text-error border-error">
                     <p>Internal error finding template for message.</p>
                     <button onClick={() => remove(index)} type="button">
                       <XIcon className="h-4" />

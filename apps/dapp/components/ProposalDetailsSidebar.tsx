@@ -1,7 +1,13 @@
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
+import {
+  CHAIN_TXN_URL_PREFIX,
+  convertMicroDenomToDenomWithDecimals,
+  expirationAtTimeToSecondsFromNow,
+  secondsToWdhms,
+} from '@dao-dao/utils'
 import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
+import { Tooltip } from '@dao-dao/ui'
 
 import {
   proposalSelector,
@@ -12,16 +18,10 @@ import {
   votingPowerAtHeightSelector,
   WalletVote,
 } from 'selectors/proposals'
-import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  expirationAtTimeToSecondsFromNow,
-  secondsToWdhms,
-} from 'util/conversion'
 import { useThresholdQuorum } from 'util/proposal'
 
 import { CopyToClipboard } from './CopyToClipboard'
@@ -32,7 +32,7 @@ import { ProposalStatus } from './ProposalStatus'
 
 const YouTooltip = ({ label }: { label: string }) => (
   <Tooltip label={label}>
-    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs text-tertiary rounded-full border cursor-pointer border-tertiary">
+    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
       ?
     </p>
   </Tooltip>
@@ -88,7 +88,7 @@ export const ProposalDetailsCard = ({
     <div className="rounded-md border border-light">
       <div className="flex flex-row justify-evenly items-stretch py-5">
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             Proposal
           </p>
 
@@ -100,7 +100,7 @@ export const ProposalDetailsCard = ({
         <div className="w-[1px] bg-light"></div>
 
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             Status
           </p>
 
@@ -112,7 +112,7 @@ export const ProposalDetailsCard = ({
         <div className="w-[1px] bg-light"></div>
 
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             You
           </p>
 
@@ -139,7 +139,7 @@ export const ProposalDetailsCard = ({
               <XIcon className="inline w-4" /> Veto
             </p>
           ) : walletVote ? (
-            <p className="font-mono text-sm text-secondary break-all">
+            <p className="font-mono text-sm break-all text-secondary">
               Unknown: {walletVote}
             </p>
           ) : proposal.status === 'open' ? (
@@ -271,13 +271,9 @@ export const ProposalDetailsVoteStatus = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expires)
       : undefined
 
-  // TODO: Change this wen v1 contracts launch, since the conditions
-  // will change. In v1, all abstain fails instead of passes.
   const thresholdReached =
     !!threshold &&
-    yesVotes >=
-      ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
-        (threshold.percent / 100)
+    (quorum ? turnoutYesPercent : totalYesPercent) >= threshold.percent
   const quorumMet = !!quorum && turnoutPercent >= quorum.percent
 
   const helpfulStatusText =
@@ -290,11 +286,6 @@ export const ProposalDetailsVoteStatus = ({
         ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
         : undefined
       : undefined
-
-  // When only abstain votes have been cast and there is no quorum,
-  // align the abstain progress bar to the right to line up with Abstain
-  // text.
-  const onlyAbstain = yesVotes === 0 && noVotes === 0 && abstainVotes > 0
 
   return (
     <div className="flex flex-col gap-2 items-stretch">
@@ -394,7 +385,7 @@ export const ProposalDetailsVoteStatus = ({
               />
 
               <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     Passing threshold:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -472,7 +463,7 @@ export const ProposalDetailsVoteStatus = ({
               />
 
               <Tooltip label={QUORUM_TOOLTIP}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     Quorum: <span className="font-mono">{quorum.display}</span>
                   </p>
@@ -539,7 +530,6 @@ export const ProposalDetailsVoteStatus = ({
 
             <div className="my-2">
               <Progress
-                alignEnd={onlyAbstain}
                 rows={[
                   {
                     thickness: 3,
@@ -588,7 +578,7 @@ export const ProposalDetailsVoteStatus = ({
               />
 
               <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     Passing threshold:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -653,7 +643,7 @@ export const ProposalDetailsVoteStatus = ({
           </>
         )}
 
-      {threshold?.percent === 50 && yesVotes === noVotes && yesVotes > 0 && (
+      {threshold?.percent === 50 && yesVotes === noVotes && (
         <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">Tie clarification</p>
 
@@ -661,14 +651,13 @@ export const ProposalDetailsVoteStatus = ({
         </div>
       )}
 
-      {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
+      {abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">All abstain clarification</p>
 
           <p className="mt-2 body-text">
             {/* TODO: Change this to fail wen v1 contracts. */}
-            When all abstain{quorum && ' and the quorum is met'}, a proposal
-            will pass.
+            When all abstain, a proposal will pass.
           </p>
         </div>
       )}

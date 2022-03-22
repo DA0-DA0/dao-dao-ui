@@ -1,9 +1,9 @@
 import { useRecoilValue } from 'recoil'
 
+import { humanReadableDuration, thresholdString } from '@dao-dao/utils'
 import { ClockIcon } from '@heroicons/react/outline'
 
 import { sigSelector } from 'selectors/multisigs'
-import { humanReadableDuration, thresholdString } from 'util/conversion'
 
 import { GovInfoListItem } from './ContractView'
 import { CopyToClipboardAccent } from './CopyToClipboard'
@@ -14,7 +14,7 @@ export function MultisigContractInfo({ address }: { address: string }) {
   const sigInfo = useRecoilValue(sigSelector(address))
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b border-inactive md:grid md:grid-cols-3">
+    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b md:grid md:grid-cols-3 border-inactive">
       <div>
         <h2 className="mb-6 primary-text">Governance Details</h2>
         <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">

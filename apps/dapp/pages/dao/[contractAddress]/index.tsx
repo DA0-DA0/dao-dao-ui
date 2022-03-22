@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
-import { useThemeContext } from 'ui'
+import { useThemeContext, StakingMode } from '@dao-dao/ui'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
@@ -24,7 +24,7 @@ import {
   HeroContractHorizontalInfoSection,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
-import { StakingModal, StakingMode } from 'components/StakingModal'
+import { StakingModal } from 'components/StakingModal'
 import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
 import {
   daoSelector,
@@ -43,7 +43,7 @@ import {
 import { addToken } from 'util/addToken'
 import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 function DaoHome() {
   const router = useRouter()
@@ -256,7 +256,7 @@ function DaoHome() {
           <StakingModal
             afterExecute={() => setTokenBalancesLoading(false)}
             beforeExecute={() => setTokenBalancesLoading(true)}
-            claimAmount={claimsAvaliable}
+            claimableTokens={claimsAvaliable}
             contractAddress={contractAddress}
             defaultMode={StakingMode.Stake}
             onClose={() => setShowStaking(false)}

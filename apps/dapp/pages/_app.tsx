@@ -1,4 +1,4 @@
-import 'ui/globals.css'
+import '@dao-dao/ui/globals.css'
 import 'styles/app.css'
 import { useState, useEffect } from 'react'
 import { Suspense } from 'react'
@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
-import { DEFAULT_THEME_NAME, ThemeProvider } from 'ui'
+import { DEFAULT_THEME_NAME, ThemeProvider } from '@dao-dao/ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'
 import { HomepageLayout } from 'components/HomepageLayout'

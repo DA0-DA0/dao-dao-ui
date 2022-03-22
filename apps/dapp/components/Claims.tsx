@@ -6,14 +6,14 @@ import { useRecoilValue } from 'recoil'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  humanReadableDuration,
+} from '@dao-dao/utils'
 import { CheckIcon } from '@heroicons/react/outline'
 
 import { unstakingDuration } from 'selectors/daos'
 import { getBlockHeight, walletClaims } from 'selectors/treasury'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  humanReadableDuration,
-} from 'util/conversion'
 
 import { LogoNoBorder } from './Logo'
 

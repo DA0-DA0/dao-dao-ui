@@ -11,7 +11,7 @@ import {
   Controller,
   FieldValues,
 } from 'react-hook-form'
-import { useThemeContext } from 'ui'
+import { useThemeContext } from '@dao-dao/ui'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {

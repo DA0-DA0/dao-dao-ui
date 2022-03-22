@@ -1,4 +1,4 @@
-import { StatusIcons } from '@components'
+import { StatusIcons } from '../StatusIcons'
 
 type ProposalStatusProps = { status: string }
 

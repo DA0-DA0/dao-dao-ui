@@ -6,10 +6,10 @@ import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { Button, StakingMode } from '@dao-dao/ui'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { Button } from 'ui'
 
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
@@ -35,7 +35,7 @@ import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Execute } from './Execute'
-import { StakingModal, StakingMode } from './StakingModal'
+import { StakingModal } from './StakingModal'
 import { Vote, VoteChoice } from './Vote'
 
 function executeProposalVote(
@@ -376,7 +376,7 @@ export function ProposalDetails({
             <StakingModal
               afterExecute={() => setTokenBalancesLoading(false)}
               beforeExecute={() => setTokenBalancesLoading(true)}
-              claimAmount={0}
+              claimableTokens={0}
               contractAddress={contractAddress}
               defaultMode={StakingMode.Stake}
               onClose={() => setShowStakng(false)}

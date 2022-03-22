@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import Head from 'next/head'
 
-import { SITE_TITLE } from 'util/constants'
+import { SITE_TITLE } from '@dao-dao/utils'
 
 export function HomepageLayout({ children }: { children: ReactNode }) {
   return (

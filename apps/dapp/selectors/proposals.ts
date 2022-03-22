@@ -170,6 +170,25 @@ export const walletVoteSelector = selectorFamily<
       if (!client || !wallet) {
         return undefined
       }
+      return vote.vote.vote
+    },
+})
+
+export const proposalExecutionTXHashSelector = selectorFamily<
+  string | null,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalTXHashSelector',
+  get:
+    ({ contractAddress, proposalId }) =>
+    async ({ get }) => {
+      // Refresh when new updates occur.
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const client = get(cosmWasmClient)
+      const proposal = get(proposalSelector({ contractAddress, proposalId }))
+      // No TX Hash if proposal not yet executed.
+      if (!client || proposal?.status !== 'executed') return null
 
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 

@@ -2,10 +2,15 @@ import { useCallback, useState } from 'react'
 
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { Button, Tooltip } from '@dao-dao/ui'
+import {
+  CHAIN_ID,
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
-
-import { Button } from '@components'
 
 import {
   connectedWalletAtom,
@@ -18,11 +23,6 @@ import {
   noKeplrAccountAtom,
 } from 'selectors/cosm'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
-import { CHAIN_ID, NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
-import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenomWithDecimals,
-} from 'util/conversion'
 
 import SvgCopy from './icons/Copy'
 import SvgWallet from './icons/Wallet'
@@ -80,6 +80,7 @@ function WalletConnect() {
         setInstallWarningVisible(true)
       } else {
         try {
+          console.log(CHAIN_ID)
           await connectKeplrWithoutAlerts()
           await (window as any).keplr.enable(CHAIN_ID)
           setInstallWarningVisible(false)
@@ -108,13 +109,13 @@ function WalletConnect() {
 
   if (walletAddress) {
     return (
-      <div className="group relative py-2 px-4 my-4 w-full bg-primary rounded-lg hover:outline-brand hover:outline">
+      <div className="group relative py-2 px-4 my-4 w-full rounded-lg hover:outline bg-primary hover:outline-brand">
         <div className="flex gap-4 items-center w-full h-full justify-left">
           <SvgWallet fill="currentColor" height="20px" width="20px" />
           <div className="link-text">
             <span>{walletName}</span>
             <br />
-            <span className="text-secondary capitalize">
+            <span className="capitalize text-secondary">
               {walletBalanceHuman} {chainDenomHuman}
             </span>
           </div>
@@ -129,7 +130,7 @@ function WalletConnect() {
   return (
     <div className="my-4">
       <Button
-        className="py-4 w-full hover:outline-brand hover:outline"
+        className="py-4 w-full hover:outline hover:outline-brand"
         full
         onClick={handleConnect}
       >

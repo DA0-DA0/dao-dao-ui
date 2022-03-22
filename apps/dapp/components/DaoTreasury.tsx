@@ -4,9 +4,8 @@ import { useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
+import { Button } from '@dao-dao/ui'
 import { PlusSmIcon } from '@heroicons/react/outline'
-
-import { Button } from '@components'
 
 import { daoSelector } from 'selectors/daos'
 import { addToken } from 'util/addToken'

@@ -3,9 +3,9 @@ import { useState } from 'react'
 
 import Link from 'next/link'
 
+import { SITE_TITLE } from '@dao-dao/utils'
 import { MenuIcon } from '@heroicons/react/outline'
 
-import { SITE_TITLE } from '../util/constants'
 import { Logo } from './Logo'
 import Nav from './Nav'
 

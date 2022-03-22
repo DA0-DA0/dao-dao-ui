@@ -8,6 +8,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
+import { SITE_TITLE } from '@dao-dao/utils'
 import { Keplr } from '@keplr-wallet/types'
 
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
@@ -25,7 +26,6 @@ import {
 } from 'selectors/cosm'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 
-import { SITE_TITLE } from '../util/constants'
 import { BetaNotice, BetaWarningModal } from './BetaWarning'
 import ChainEnableModal from './ChainEnableModal'
 import { InstallKeplr } from './InstallKeplr'

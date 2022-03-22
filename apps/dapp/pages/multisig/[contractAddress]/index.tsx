@@ -11,7 +11,7 @@ import {
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
-import { useThemeContext } from 'ui'
+import { useThemeContext } from '@dao-dao/ui'
 
 import { CopyToClipboard } from '@components/CopyToClipboard'
 import { MultisigContractInfo } from '@components/MultisigContractInfo'

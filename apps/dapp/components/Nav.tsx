@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { SITE_TITLE } from '@dao-dao/utils'
 import {
   ArrowRightIcon,
   ExternalLinkIcon,
@@ -16,7 +17,6 @@ import ThemeToggle from 'components/ThemeToggle'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 
-import { SITE_TITLE } from '../util/constants'
 import ConnectWalletButton from './ConnectWalletButton'
 
 function MemberDisplay({ name }: { name: string }) {
