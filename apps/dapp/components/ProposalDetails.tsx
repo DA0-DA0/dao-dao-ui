@@ -10,29 +10,6 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
-import toast from 'react-hot-toast'
-
-import { ProposalStatus } from '@components'
-
-import ProposalVoteStatus from '@components/ProposalVoteStatus'
-import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
-import { MarkdownPreview } from 'components/MarkdownPreview'
-import { PaginatedProposalVotes } from 'components/ProposalVotes'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { isMemberSelector } from 'selectors/daos'
-import {
-  proposalSelector,
-  proposalStartBlockSelector,
-  proposalTallySelector,
-  votingPowerAtHeightSelector,
-  walletVotedSelector,
-} from 'selectors/proposals'
-import { walletTokenBalanceLoading } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
 import {
   contractConfigSelector,
@@ -41,12 +18,35 @@ import {
 import {
   convertMicroDenomToDenomWithDecimals,
   getThresholdAndQuorumDisplay,
-  thresholdString,
 } from 'util/conversion'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
+import ProposalVoteStatus from '@components/ProposalVoteStatus'
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
+import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
+import { MarkdownPreview } from 'components/MarkdownPreview'
+import { PaginatedProposalVotes } from 'components/ProposalVotes'
+import toast from 'react-hot-toast'
+import {
+  cosmWasmSigningClient,
+  walletAddress as walletAddressSelector,
+} from 'selectors/cosm'
+import { isMemberSelector } from 'selectors/daos'
+import {
+  proposalExecutionTXHashSelector,
+  proposalSelector,
+  proposalStartBlockSelector,
+  proposalTallySelector,
+  votingPowerAtHeightSelector,
+  walletVotedSelector,
+} from 'selectors/proposals'
+import { walletTokenBalanceLoading } from 'selectors/treasury'
+
+import { ProposalStatus } from '@components'
+
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { Address } from './Address'
+import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 
@@ -308,6 +308,9 @@ export function ProposalDetailsSidebar({
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
+  const proposalExecutionTXHash = useRecoilValue(
+    proposalExecutionTXHashSelector({ contractAddress, proposalId })
+  )
 
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
@@ -370,15 +373,23 @@ export function ProposalDetailsSidebar({
       <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
         Proposal {proposal.id}
       </h2>
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-3 items-center">
         <p className="text-secondary">Status</p>
         <div className="col-span-2">
           <ProposalStatus status={proposal.status} />
         </div>
         <p className="text-secondary">Proposer</p>
         <p className="col-span-2">
-          <Address address={proposal.proposer} />
+          <CopyToClipboard value={proposal.proposer} />
         </p>
+        {!!proposalExecutionTXHash && (
+          <>
+            <p className="text-secondary">TX</p>
+            <p className="col-span-2">
+              <CopyToClipboard value={proposalExecutionTXHash} />
+            </p>
+          </>
+        )}
         {proposal.status === 'open' && (
           <>
             <p className="text-secondary">Expires</p>

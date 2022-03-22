@@ -1,22 +1,20 @@
-import { ReactNode } from 'react'
+import { useRecoilValue } from 'recoil'
 
-import { useRecoilValue, waitForAll } from 'recoil'
-
-import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
-
-import {
-  daoSelector,
-  tokenConfig,
-  unstakingDuration as unstakingDurationSelector,
-} from 'selectors/daos'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
   getThresholdAndQuorumDisplay,
 } from 'util/conversion'
 
-import { AddressAccent } from './Address'
+import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
+import {
+  daoSelector,
+  tokenConfig,
+  unstakingDuration as unstakingDurationSelector,
+} from 'selectors/daos'
+
 import { GovInfoListItem, TreasuryBalances } from './ContractView'
+import { CopyToClipboardAccent } from './CopyToClipboard'
 import SvgVotes from './icons/Votes'
 
 export function DaoContractInfo({ address }: { address: string }) {
@@ -76,13 +74,13 @@ export function DaoContractInfo({ address }: { address: string }) {
         <h2 className="font-medium text-lg mb-6">Addresses</h2>
         <ul className="list-none ml-2 mt-3 flex flex-col gap-2 text-secondary text-sm">
           <li>
-            DAO <AddressAccent address={address} />
+            DAO <CopyToClipboardAccent value={address} />
           </li>
           <li>
-            Gov token <AddressAccent address={daoInfo.gov_token} />
+            Gov token <CopyToClipboardAccent value={daoInfo.gov_token} />
           </li>
           <li>
-            Staking <AddressAccent address={daoInfo.staking_contract} />
+            Staking <CopyToClipboardAccent value={daoInfo.staking_contract} />
           </li>
         </ul>
       </div>

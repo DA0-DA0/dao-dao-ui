@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react'
 
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
+import { CopyToClipboard } from '@components/CopyToClipboard'
 import { VoteInfo } from '@dao-dao/types/contracts/cw3-dao'
-import { DownloadIcon, UserIcon } from '@heroicons/react/outline'
-
-import { Address } from 'components/Address'
-import { walletAddress as selectWalletAddress } from 'selectors/cosm'
+import { DownloadIcon } from '@heroicons/react/outline'
 import {
   proposalTallySelector,
   proposalVotesSelector,
@@ -59,7 +57,7 @@ export function PaginatedProposalVotes({
           {votes.map((vote, idx) => {
             return (
               <li className="grid grid-cols-3 items-center" key={idx}>
-                <Address address={vote.voter} />
+                <CopyToClipboard value={vote.voter} />
                 <span className="font-mono text-sm">{vote.weight}</span>
                 <span>{vote.vote}</span>
               </li>
