@@ -15,10 +15,8 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import {
-  BANK_SEND_TYPE,
   makeBankMessage,
   makeWasmMessage,
-  TYPE_KEY,
 } from 'util/messagehelpers'
 
 import { AddressInput } from '@components/input/AddressInput'
@@ -250,9 +248,6 @@ export const transformCosmosToSpend = (
     msg.bank.send.amount.length === 1 &&
     'amount' in msg.bank.send.amount[0] &&
     'denom' in msg.bank.send.amount[0] &&
-    TYPE_KEY in msg.bank.send &&
-    msg.bank.send[TYPE_KEY] === BANK_SEND_TYPE &&
-    'from_address' in msg.bank.send &&
     'to_address' in msg.bank.send
   ) {
     const denom = msg.bank.send.amount[0].denom

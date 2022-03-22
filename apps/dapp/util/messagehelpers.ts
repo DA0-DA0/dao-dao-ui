@@ -57,6 +57,7 @@ export function makeBankMessage(
           denom,
         },
       ],
+      // TODO: What are these type and from_address fields? They don't show up in spend messages after proposals are created.
       [TYPE_KEY]: BANK_SEND_TYPE,
       from_address,
       to_address,
