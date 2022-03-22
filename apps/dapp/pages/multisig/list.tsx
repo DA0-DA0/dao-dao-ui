@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -19,6 +21,7 @@ import {
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
+import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
   MysteryContractCard,
@@ -30,7 +33,11 @@ import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
 import { nativeBalance } from 'selectors/treasury'
-import { MULTISIG_CODE_ID, NATIVE_DENOM } from 'util/constants'
+import {
+  LEGACY_MULTISIG_CODE_ID,
+  MULTISIG_CODE_ID,
+  NATIVE_DENOM,
+} from 'util/constants'
 
 export function MultisigCard({
   multisig,
@@ -107,6 +114,16 @@ function LoadableCards({
   )
 }
 
+type MultisigVersion = {
+  name: string
+  codeId: number
+}
+
+const MULTISIG_VERSIONS = [
+  { name: 'Latest', codeId: MULTISIG_CODE_ID },
+  { name: 'Legacy', codeId: LEGACY_MULTISIG_CODE_ID },
+]
+
 const MultisigList: NextPage = () => {
   const router = useRouter()
   const page = parseInt((router.query.page as string) || '1')
@@ -119,6 +136,9 @@ const MultisigList: NextPage = () => {
 
   const expanded = useRecoilValue(sidebarExpandedAtom)
 
+  const [version, setMultisigVersion] = useState<MultisigVersion>(
+    MULTISIG_VERSIONS[0]
+  )
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: MULTISIG_CODE_ID, page, limit })
   )
@@ -149,10 +169,20 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2">
-            <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Community multisigs
-          </h2>
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg mb-2">
+              <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
+              Community multisigs
+            </h2>
+            {!!LEGACY_MULTISIG_CODE_ID && (
+              <CodeIdSelect
+                versions={MULTISIG_VERSIONS}
+                currentVersion={version}
+                onSelect={(v) => setMultisigVersion(v)}
+              />
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableCards loadable={sigs} />
           </div>

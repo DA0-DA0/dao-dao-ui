@@ -7,11 +7,17 @@
     "lint": {
       "outputs": []
     },
+    "format": {
+      "outputs": []
+    },
     "dev": {
       "cache": false
     },
     "test": {
       "outputs": []
+    },
+    "storybook": {
+      "cache": false
     }
   }
 }

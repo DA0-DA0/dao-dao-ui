@@ -6,10 +6,8 @@ import {
   ForwardedRef,
 } from 'react'
 
-import { CashIcon } from '@heroicons/react/outline'
-
-import { useThemeContext } from 'contexts/theme'
-import daisyuiThemes from 'styles/daisyui-themes.json'
+import { useThemeContext } from '../theme'
+import daisyuiThemes from '../daisyui-themes.json'
 
 const [junoLight, junoDark] = Object.keys(daisyuiThemes) || ['']
 
@@ -29,7 +27,7 @@ const ButtonIcon = memo(function ButtonIcon({
   return <i className={`btn-icon ${padding}`}>{icon}</i>
 })
 
-interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'ghost'
   size?: 'sm' | 'md' | 'lg' | 'xl'

@@ -1,8 +1,6 @@
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
-
-import daisyuiThemes from 'styles/daisyui-themes.json'
-
-import { useThemeContext } from '../contexts/theme'
+import { useThemeContext } from 'ui'
+import daisyuiThemes from 'ui/daisyui-themes.json'
 
 const [junoLight, junoDark] = Object.keys(daisyuiThemes) || ['']
 

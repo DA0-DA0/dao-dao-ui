@@ -2,8 +2,7 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/theme/lucario.css'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
-
-import { useThemeContext } from 'contexts/theme'
+import { useThemeContext } from 'ui'
 
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'

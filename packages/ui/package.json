@@ -4,9 +4,30 @@
   "main": "./index.tsx",
   "types": "./index.tsx",
   "license": "MIT",
+  "files": [
+    "globals.css",
+    "daisyui-themes.json",
+    "tailwind.config.js"
+  ],
+  "scripts": {
+    "storybook": "start-storybook --ci -p 6006 --no-manager-cache",
+    "build-storybook": "build-storybook"
+  },
   "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@storybook/addon-actions": "^6.4.19",
+    "@storybook/addon-essentials": "^6.4.19",
+    "@storybook/addon-interactions": "^6.4.19",
+    "@storybook/addon-links": "^6.4.19",
+    "@storybook/react": "^6.4.19",
+    "@storybook/testing-library": "^0.0.9",
+    "@tailwindcss/line-clamp": "^0.3.1",
+    "@tailwindcss/typography": "^0.5.1",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "babel-loader": "^8.2.3",
+    "daisyui": "^1.16.6",
+    "storybook-addon-designs": "^6.2.1",
     "tsconfig": "*",
     "config": "*",
     "typescript": "^4.5.3"

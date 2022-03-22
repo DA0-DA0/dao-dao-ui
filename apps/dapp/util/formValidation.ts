@@ -1,11 +1,18 @@
 import JSON5 from 'json5'
 import { Validate } from 'react-hook-form'
 
-import { isValidAddress, isValidContractAddress } from './isValidAddress'
+import {
+  isValidAddress,
+  isValidContractAddress,
+  isValidValidatorAddress,
+} from './isValidAddress'
 import { isValidUrl } from './isValidUrl'
 
 export const validateRequired = (v: string | boolean) => {
-  return !!v || 'Field is required'
+  if (typeof v === 'string') {
+    return v.trim().length != 0 || 'Field is required'
+  }
+  return (v !== null && v !== undefined) || 'Field is required'
 }
 
 export const validatePositive = (v: string) =>
@@ -21,6 +28,9 @@ export const validatePercent = (v: string) => {
 
 export const validateAddress = (v: string) =>
   isValidAddress(v) || 'Invalid address'
+
+export const validateValidatorAddress = (v: string) =>
+  isValidValidatorAddress(v) || 'Invalid address'
 
 export const validateUrl = (v: string) =>
   isValidUrl(v) ||

@@ -9,16 +9,13 @@ import {
   tokenConfig,
   unstakingDuration as unstakingDurationSelector,
 } from 'selectors/daos'
-import { cw20Balances, cw20TokenInfo, nativeBalance } from 'selectors/treasury'
-import { NATIVE_DECIMALS } from 'util/constants'
 import {
-  thresholdString,
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
-  convertDenomToHumanReadableDenom,
+  getThresholdAndQuorumDisplay,
 } from 'util/conversion'
 
-import { AddressAccent, AddressSmall } from './Address'
+import { AddressAccent } from './Address'
 import { GovInfoListItem, TreasuryBalances } from './ContractView'
 import SvgVotes from './icons/Votes'
 
@@ -26,7 +23,11 @@ export function DaoContractInfo({ address }: { address: string }) {
   const daoInfo = useRecoilValue(daoSelector(address))
   const govTokenInfo = useRecoilValue(tokenConfig(daoInfo.gov_token))
 
-  // Balances for the DAO
+  const [threshold, quorum] = getThresholdAndQuorumDisplay(
+    daoInfo.config.threshold,
+    false,
+    govTokenInfo.decimals
+  )
 
   const unstakingDuration = useRecoilValue(
     unstakingDurationSelector(daoInfo.staking_contract)
@@ -45,12 +46,15 @@ export function DaoContractInfo({ address }: { address: string }) {
           <GovInfoListItem
             icon={<SvgVotes fill="currentColor" width="16px" />}
             text="Passing threshold"
-            value={thresholdString(
-              daoInfo.config.threshold,
-              false,
-              govTokenInfo.decimals
-            )}
+            value={threshold as string}
           />
+          {quorum && (
+            <GovInfoListItem
+              icon={<SvgVotes fill="currentColor" width="16px" />}
+              text="Quorum"
+              value={quorum}
+            />
+          )}
           <GovInfoListItem
             icon={<CashIcon className="w-4 inline" />}
             text="Proposal deposit refund"

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -21,6 +23,7 @@ import { Button } from '@components'
 
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
+import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
   MysteryContractCard,
@@ -32,7 +35,7 @@ import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
 // import { cw20TokenInfo } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
-import { DAO_CODE_ID } from 'util/constants'
+import { DAO_CODE_ID, LEGACY_DAO_CODE_ID } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 export function DaoCard({
@@ -105,6 +108,17 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
   )
 }
 
+type DaoVersion = {
+  name: string
+  codeId: number
+}
+
+// Change version Code ID to environment variables when shipping
+const DAO_VERSIONS = [
+  { name: 'Latest', codeId: DAO_CODE_ID },
+  { name: 'Legacy', codeId: LEGACY_DAO_CODE_ID },
+]
+
 const DaoList: NextPage = () => {
   const router = useRouter()
   const page = parseInt((router.query.page as string) || '1')
@@ -115,9 +129,9 @@ const DaoList: NextPage = () => {
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
   const expanded = useRecoilValue(sidebarExpandedAtom)
-
+  const [version, setDaosVersion] = useState<DaoVersion>(DAO_VERSIONS[0])
   const { contracts, total } = useRecoilValue(
-    pagedContractsByCodeId({ codeId: DAO_CODE_ID, page, limit })
+    pagedContractsByCodeId({ codeId: version.codeId, page, limit })
   )
   const daos = useRecoilValueLoadable(
     waitForAll(contracts.map((addr) => memberDaoSelector(addr)))
@@ -149,10 +163,20 @@ const DaoList: NextPage = () => {
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2">
-            <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Community DAOs
-          </h2>
+          {/* Community DAO header */}
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg mb-2">
+              <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
+              Community DAOs
+            </h2>
+            {!!LEGACY_DAO_CODE_ID && (
+              <CodeIdSelect
+                versions={DAO_VERSIONS}
+                currentVersion={version}
+                onSelect={(v) => setDaosVersion(v)}
+              />
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <LoadableDaoCards daos={daos} />
           </div>
