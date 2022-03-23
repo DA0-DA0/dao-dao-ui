@@ -8,8 +8,8 @@
     "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "prettier:write": "prettier --write .",
-    "lint": "next lint",
-    "format": "next lint --fix",
+    "lint": "eslint",
+    "format": "eslint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "ts": "tsc --noEmit --incremental",
@@ -75,9 +75,6 @@
     "typescript": "4.5.4"
   },
   "lint-staged": {
-    "*.{ts,tsx,md}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
+    "*.{ts,tsx,md}": "yarn format"
   }
 }
