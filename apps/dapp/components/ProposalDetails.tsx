@@ -499,20 +499,20 @@ interface ProposalMessageTemplateListProps {
   msgs: CosmosMsgFor_Empty[]
   contractAddress: string
   multisig?: boolean
-  cosmosMsgProps: FromCosmosMsgProps
+  fromCosmosMsgProps: FromCosmosMsgProps
 }
 
 function ProposalMessageTemplateList({
   msgs,
   contractAddress,
   multisig,
-  cosmosMsgProps,
+  fromCosmosMsgProps,
 }: ProposalMessageTemplateListProps) {
   const components: ReactNode[] = msgs.map((msg, index) => {
     const decoded = decodeMessages([msg])[0]
     const data = messageTemplateAndValuesForDecodedCosmosMsg(
       decoded,
-      cosmosMsgProps
+      fromCosmosMsgProps
     )
 
     return data ? (
@@ -539,12 +539,12 @@ export function ProposalDetails({
   contractAddress,
   proposalId,
   multisig,
-  cosmosMsgProps,
+  fromCosmosMsgProps,
 }: {
   contractAddress: string
   proposalId: number
   multisig?: boolean
-  cosmosMsgProps: FromCosmosMsgProps
+  fromCosmosMsgProps: FromCosmosMsgProps
 }) {
   const router = useRouter()
   const proposal = useRecoilValue(
@@ -656,7 +656,7 @@ export function ProposalDetails({
             msgs={proposal.msgs}
             contractAddress={contractAddress}
             multisig={multisig}
-            cosmosMsgProps={cosmosMsgProps}
+            fromCosmosMsgProps={fromCosmosMsgProps}
           />
         )
       ) : (

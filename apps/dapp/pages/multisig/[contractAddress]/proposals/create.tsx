@@ -79,7 +79,7 @@ const MultisigProposalCreate: NextPage = () => {
           contractAddress={contractAddress}
           onSubmit={onProposalSubmit}
           loading={proposalLoading}
-          cosmosMsgProps={{
+          toCosmosMsgProps={{
             sigAddress: contractAddress,
             govAddress: sigInfo.group_address,
             govDecimals: 0,

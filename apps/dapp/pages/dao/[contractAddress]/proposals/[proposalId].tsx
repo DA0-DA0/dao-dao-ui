@@ -34,7 +34,7 @@ const Proposal: NextPage = () => {
         <ProposalDetails
           contractAddress={contractAddress}
           proposalId={Number(proposalKey)}
-          cosmosMsgProps={{
+          fromCosmosMsgProps={{
             govDecimals: govTokenInfo.decimals,
           }}
         />

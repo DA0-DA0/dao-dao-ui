@@ -1,5 +1,15 @@
 import { useState } from 'react'
 
+import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { InputLabel } from '@components/input/InputLabel'
+import { NumberInput } from '@components/input/NumberInput'
+import { TextInput } from '@components/input/TextInput'
+import { ToggleInput } from '@components/input/ToggleInput'
+import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
 import { Config } from 'util/contractConfigWrapper'
 import {
   secondsToHms,
@@ -15,15 +25,6 @@ import {
 } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
 
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { NumberInput } from '@components/input/NumberInput'
-import { TextInput } from '@components/input/TextInput'
-import { ToggleInput } from '@components/input/ToggleInput'
-import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
-import { useFormContext } from 'react-hook-form'
 
 import {
   FromCosmosMsgProps,
@@ -97,7 +98,6 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
   const { register, setValue, watch } = useFormContext()
 
   const quorum = watch(getLabel('quorum'))
-  console.log(quorum)
   const defaultQuorum = watch(getLabel('defaultQuorum'))
 
   const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(

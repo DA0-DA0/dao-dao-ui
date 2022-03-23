@@ -43,7 +43,7 @@ interface ProposalFormProps {
   onSubmit: (data: ProposalData) => void
   contractAddress: string
   loading: boolean
-  cosmosMsgProps: ToCosmosMsgProps
+  toCosmosMsgProps: ToCosmosMsgProps
   multisig?: boolean
 }
 
@@ -51,7 +51,7 @@ export function ProposalForm({
   onSubmit,
   contractAddress,
   loading,
-  cosmosMsgProps,
+  toCosmosMsgProps,
   multisig,
 }: ProposalFormProps) {
   const wallet = useRecoilValue(walletAddress)
@@ -97,7 +97,7 @@ export function ProposalForm({
           onSubmit({
             ...d,
             messages: (d.messages as MessageTemplate[])
-              .map((m) => messageTemplateToCosmosMsg(m, cosmosMsgProps))
+              .map((m) => messageTemplateToCosmosMsg(m, toCosmosMsgProps))
               // Filter out undefined messages.
               .filter(Boolean) as CosmosMsgFor_Empty[],
           })
@@ -114,7 +114,7 @@ export function ProposalForm({
             <CosmosMessageDisplay
               value={decodedMessagesString(
                 proposalMessages
-                  .map((m) => messageTemplateToCosmosMsg(m, cosmosMsgProps))
+                  .map((m) => messageTemplateToCosmosMsg(m, toCosmosMsgProps))
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
               )}

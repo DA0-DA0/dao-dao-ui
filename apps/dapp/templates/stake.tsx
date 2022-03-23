@@ -283,6 +283,7 @@ export const transformCosmosToStake = (
     return {
       stakeType: 'withdraw_delegator_reward',
       validator: msg.distribution.withdraw_delegator_reward.validator,
+      // Default values, not needed for displaying this type of message.
       amount: 1,
       denom,
     }

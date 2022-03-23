@@ -133,7 +133,7 @@ const ProposalCreate: NextPage = () => {
           onSubmit={onProposalSubmit}
           contractAddress={contractAddress}
           loading={proposalLoading}
-          cosmosMsgProps={{
+          toCosmosMsgProps={{
             sigAddress: contractAddress,
             govAddress: daoInfo.gov_token,
             govDecimals: tokenInfo.decimals,
