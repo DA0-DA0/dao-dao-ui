@@ -1,13 +1,15 @@
+import { useState } from 'react'
+
+import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
-import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
 import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
-import { useState } from 'react'
-import { FieldErrors, useFormContext } from 'react-hook-form'
 import { Config } from 'util/contractConfigWrapper'
 import {
   secondsToHms,
@@ -22,6 +24,7 @@ import {
   validateUrl,
 } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
+
 import { ToCosmosMsgProps } from './templateList'
 
 enum ThresholdMode {

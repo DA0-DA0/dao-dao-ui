@@ -1,18 +1,20 @@
+import { useRecoilValue, waitForAll } from 'recoil'
+
+import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
-import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
-import { useRecoilValue, waitForAll } from 'recoil'
-import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
-import { Config } from 'util/contractConfigWrapper'
 import {
   cw20TokensList,
   cw20TokenInfo,
   nativeBalance as nativeBalanceSelector,
   cw20Balances as cw20BalancesSelector,
 } from 'selectors/treasury'
+import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
+import { Config } from 'util/contractConfigWrapper'
 import {
   convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
@@ -28,6 +30,7 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { makeBankMessage, makeWasmMessage } from 'util/messagehelpers'
+
 import { ToCosmosMsgProps } from './templateList'
 
 export interface SpendData {

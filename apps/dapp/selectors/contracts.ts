@@ -1,8 +1,10 @@
-import { cosmWasmClient } from 'selectors/cosm'
 import { selectorFamily } from 'recoil'
+
 import { WasmExtension } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@cosmjs/stargate'
 import { QueryContractsByCodeResponse } from 'cosmjs-types/cosmwasm/wasm/v1/query'
+
+import { cosmWasmClient } from 'selectors/cosm'
 
 export const contractsByCodeId = selectorFamily({
   key: 'contractsByCodeId',

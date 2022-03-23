@@ -1,15 +1,19 @@
+import { useEffect } from 'react'
+
+import { useRecoilValueLoadable } from 'recoil'
+
+import { XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { LogoNoBorder } from '@components/Logo'
-import { XIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
-import { FieldErrors, useFormContext } from 'react-hook-form'
-import { useRecoilValueLoadable } from 'recoil'
 import { tokenConfig } from 'selectors/daos'
 import { Config } from 'util/contractConfigWrapper'
 import { validateContractAddress, validateRequired } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
+
 import { ToCosmosMsgProps } from './templateList'
 
 export interface AddTokenData {
@@ -42,7 +46,7 @@ export const TokenInfoDisplay = ({
     } else {
       clearError()
     }
-  }, [tokenInfo])
+  }, [tokenInfo, setError, clearError])
 
   return (
     <div>

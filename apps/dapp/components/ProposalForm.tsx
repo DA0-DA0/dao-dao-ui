@@ -13,7 +13,7 @@ import {
 } from 'templates/templateList'
 import {
   contractConfigSelector,
-  ContractConfigWrapper,
+  useContractConfigGovTokenDecimals,
 } from 'util/contractConfigWrapper'
 import { validateRequired } from 'util/formValidation'
 
@@ -45,8 +45,7 @@ export function ProposalForm({
   const contractConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
-  const wrapper = new ContractConfigWrapper(contractConfig)
-  const govTokenDecimals = wrapper.gov_token_decimals
+  const govTokenDecimals = useContractConfigGovTokenDecimals(contractConfig)
 
   const formMethods = useForm()
 

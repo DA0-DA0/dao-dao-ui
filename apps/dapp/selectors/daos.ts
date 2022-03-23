@@ -1,13 +1,16 @@
-import { cosmWasmClient, voterInfoSelector } from 'selectors/cosm'
-import { contractsByCodeId } from 'selectors/contracts'
 import { selector, selectorFamily } from 'recoil'
-import { DAO_CODE_ID, NATIVE_DENOM } from 'util/constants'
+
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   Config,
   ConfigResponse,
   Duration,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+
+import { contractsByCodeId } from 'selectors/contracts'
+import { cosmWasmClient, voterInfoSelector } from 'selectors/cosm'
+import { DAO_CODE_ID, NATIVE_DENOM } from 'util/constants'
+
 import {
   nativeBalance,
   walletAddress,

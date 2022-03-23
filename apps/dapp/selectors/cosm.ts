@@ -1,13 +1,16 @@
 import { selector, selectorFamily, atom } from 'recoil'
-import { GasPrice, StargateClient } from '@cosmjs/stargate'
+
 import {
   CosmWasmClient,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
+import { GasPrice, StargateClient } from '@cosmjs/stargate'
+
+import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
+
+import { localStorageEffect } from '../atoms/localStorageEffect'
 import { connectKeplrWithoutAlerts } from '../services/keplr'
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
-import { localStorageEffect } from '../atoms/localStorageEffect'
-import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
 export type WalletConnection = 'keplr' | ''
 

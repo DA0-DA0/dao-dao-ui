@@ -1,4 +1,5 @@
 import { atom, AtomEffect } from 'recoil'
+
 import { localStorageEffect } from 'atoms/localStorageEffect'
 
 // As a relic of when we were doing non-backwards compatible changes on the

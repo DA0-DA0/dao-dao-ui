@@ -44,7 +44,7 @@ import { cleanChainError } from 'util/cleanChainError'
 import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
 import {
   contractConfigSelector,
-  ContractConfigWrapper,
+  useContractConfigGovTokenDecimals,
 } from 'util/contractConfigWrapper'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -327,8 +327,7 @@ export function ProposalDetailsSidebar({
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
-  const configWrapper = new ContractConfigWrapper(sigConfig)
-  const tokenDecimals = configWrapper.gov_token_decimals
+  const tokenDecimals = useContractConfigGovTokenDecimals(sigConfig)
 
   const localeOptions = { maximumSignificantDigits: 3 }
 
@@ -482,8 +481,7 @@ export function ProposalDetails({
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
-  const configWrapper = new ContractConfigWrapper(sigConfig)
-  const tokenDecimals = configWrapper.gov_token_decimals
+  const tokenDecimals = useContractConfigGovTokenDecimals(sigConfig)
   const member = useRecoilValue(isMemberSelector(contractAddress))
 
   const voted = useRecoilValue(

@@ -6,7 +6,6 @@ import {
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
 
 import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
-
 import ibcAssets from './ibc_assets.json'
 
 export function convertMicroDenomToDenomWithDecimals(

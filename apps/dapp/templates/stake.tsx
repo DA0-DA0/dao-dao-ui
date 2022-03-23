@@ -1,13 +1,15 @@
+import { useRecoilValue } from 'recoil'
+
+import { XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
-import { XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
-import { useRecoilValue } from 'recoil'
+import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
-import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 import {
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
@@ -21,6 +23,7 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { makeStakingMessage, makeDistributeMessage } from 'util/messagehelpers'
+
 import { ToCosmosMsgProps } from './templateList'
 
 export const stakeActions = [

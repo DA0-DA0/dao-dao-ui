@@ -1,12 +1,14 @@
-import JSON5 from 'json5'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import JSON5 from 'json5'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+
+import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
 import { walletAddress } from 'selectors/cosm'
+import { Config } from 'util/contractConfigWrapper'
 import { makeWasmMessage } from 'util/messagehelpers'
 import { validateCosmosMsg } from 'util/validateWasmMsg'
-import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
-import { FieldErrors, useFormContext } from 'react-hook-form'
+
 import { ToCosmosMsgProps } from './templateList'
-import { Config } from 'util/contractConfigWrapper'
 
 export interface CustomData {
   message: string

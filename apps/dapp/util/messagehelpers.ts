@@ -1,8 +1,7 @@
+import { useRecoilValue } from 'recoil'
+
 import { fromBase64, toBase64, fromAscii, toAscii } from '@cosmjs/encoding'
-import {
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-} from './conversion'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   BankMsg,
   Coin,
@@ -17,21 +16,25 @@ import {
   Uint128,
   ProposalResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
 import {
   InstantiateMsg as MultisigInstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
+
 import { MintMsg } from 'types/messages'
+import { ProposalMapItem } from 'types/proposals'
+
 import {
   MessageMapEntry,
   ProposalMessageType,
 } from '../models/proposal/messageMap'
-import { ProposalMapItem } from 'types/proposals'
-import { convertDenomToContractReadableDenom } from './conversion'
 import { cw20TokenInfo } from '../selectors/treasury'
-import { useRecoilValue } from 'recoil'
+import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
+import { convertDenomToContractReadableDenom } from './conversion'
+import {
+  convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
+} from './conversion'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -526,7 +529,7 @@ export function isMintMsg(msg: any): msg is MintMsg {
   return false
 }
 
-export function messageForDraftProposal(
+export function useMessageForDraftProposal(
   draftProposal: ProposalMapItem,
   govTokenAddress?: string
 ) {

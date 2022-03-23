@@ -5,6 +5,7 @@ import {
   ProposalTallyResponse,
   VoteInfo,
 } from '@dao-dao/types/contracts/cw3-dao'
+
 import {
   contractProposalMapAtom,
   proposalsRequestIdAtom,

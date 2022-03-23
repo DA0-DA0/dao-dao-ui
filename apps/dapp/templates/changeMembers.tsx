@@ -1,21 +1,24 @@
+import { useRecoilValue } from 'recoil'
+
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
+
 import { AddressInput } from '@components/input/AddressInput'
-import { NumberInput } from '@components/input/NumberInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
-import { Config } from 'util/contractConfigWrapper'
-import { ToCosmosMsgProps } from './templateList'
+import { NumberInput } from '@components/input/NumberInput'
 import { PlusMinusButton } from '@components/PlusMinusButton'
+import { listMembers } from 'selectors/multisigs'
+import { Config } from 'util/contractConfigWrapper'
 import {
   validateAddress,
   validatePositive,
   validateRequired,
 } from 'util/formValidation'
-import { useRecoilValue } from 'recoil'
-import { listMembers } from 'selectors/multisigs'
 import { makeWasmMessage } from 'util/messagehelpers'
+
+import { ToCosmosMsgProps } from './templateList'
 
 export interface Member {
   addr: string
@@ -118,7 +121,10 @@ export const ChangeMembersComponent = ({
           const weightError =
             errors.toAdd && errors.toAdd[index] && errors.toAdd[index].weight
           return (
-            <div className="gap-2 grid grid-cols-5 my-2">
+            <div
+              className="gap-2 grid grid-cols-5 my-2"
+              key={newGetLabel('key')}
+            >
               <div className="form-control col-span-3">
                 <AddressInput
                   label={newGetLabel('addr')}
@@ -176,7 +182,7 @@ export const ChangeMembersComponent = ({
         const addrError =
           errors.toRemove && errors.toRemove[index] && errors.toRemove[index]
         return (
-          <div className="gap-2 grid grid-cols-5 my-2">
+          <div className="gap-2 grid grid-cols-5 my-2" key={newGetLabel()}>
             <div className="form-control col-span-3">
               <AddressInput
                 label={newGetLabel()}

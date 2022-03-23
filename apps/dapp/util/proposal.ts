@@ -1,4 +1,7 @@
+import { TransactionInterface_UNSTABLE } from 'recoil'
+
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+
 import {
   contractProposalMapAtom,
   nextDraftProposalIdAtom,
@@ -7,7 +10,6 @@ import {
   EmptyProposalResponse,
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
-import { TransactionInterface_UNSTABLE } from 'recoil'
 import { draftProposalsSelector } from 'selectors/proposals'
 import {
   ContractProposalMap,

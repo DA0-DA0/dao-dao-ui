@@ -1,13 +1,15 @@
+import { useRecoilValue } from 'recoil'
+
+import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
+import { FieldErrors, useFormContext } from 'react-hook-form'
+
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
-import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
-import { useRecoilValue } from 'recoil'
 import {
   Config,
   contractConfigSelector,
-  ContractConfigWrapper,
+  useContractConfigGovTokenSymbol,
 } from 'util/contractConfigWrapper'
 import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
 import {
@@ -16,6 +18,7 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { makeExecutableMintMessage, makeMintMessage } from 'util/messagehelpers'
+
 import { ToCosmosMsgProps } from './templateList'
 
 export interface MintData {
@@ -51,8 +54,7 @@ export const MintComponent = ({
   const info = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
-  const config = new ContractConfigWrapper(info)
-  const govTokenDenom = config.gov_token_symbol
+  const govTokenDenom = useContractConfigGovTokenSymbol(info)
 
   return (
     <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
