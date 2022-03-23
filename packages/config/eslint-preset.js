@@ -1,5 +1,9 @@
 module.exports = {
-  extends: ['next/core-web-vitals'],
+  extends: [
+    'next/core-web-vitals',
+    // configures both eslint-plugin-prettier and eslint-config-prettier
+    'plugin:prettier/recommended'
+  ],
   plugins: ['import'],
 
   settings: {
@@ -9,6 +13,7 @@ module.exports = {
   },
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
+    'prettier/prettier': 'error',
     'import/order': [
       'error',
       {
