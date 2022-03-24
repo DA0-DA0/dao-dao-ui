@@ -25,7 +25,6 @@ import {
 } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
 
-
 import {
   FromCosmosMsgProps,
   TemplateComponent,
