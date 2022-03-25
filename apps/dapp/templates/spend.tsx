@@ -1,7 +1,7 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
@@ -16,13 +16,11 @@ import {
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import {
-  convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
-  nativeTokenLogoURI,
 } from 'util/conversion'
 import {
   validateAddress,
@@ -31,7 +29,11 @@ import {
 } from 'util/formValidation'
 import { makeBankMessage, makeWasmMessage } from 'util/messagehelpers'
 
-import { ToCosmosMsgProps } from './templateList'
+import {
+  FromCosmosMsgProps,
+  TemplateComponent,
+  ToCosmosMsgProps,
+} from './templateList'
 
 export interface SpendData {
   to: string
@@ -42,28 +44,20 @@ export interface SpendData {
 export const spendDefaults = (
   walletAddress: string,
   _contractConfig: Config
-) => {
-  return {
-    to: walletAddress,
-    amount: 1,
-    denom: convertDenomToHumanReadableDenom(
-      process.env.NEXT_PUBLIC_FEE_DENOM as string
-    ),
-  }
-}
+): SpendData => ({
+  to: walletAddress,
+  amount: 1,
+  denom: convertDenomToHumanReadableDenom(
+    process.env.NEXT_PUBLIC_FEE_DENOM as string
+  ),
+})
 
-export const SpendComponent = ({
+export const SpendComponent: TemplateComponent = ({
   contractAddress,
   getLabel,
   onRemove,
   errors,
-  multisig,
-}: {
-  contractAddress: string
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  multisig?: boolean
+  readOnly,
 }) => {
   const { register, watch, clearErrors } = useFormContext()
 
@@ -138,16 +132,16 @@ export const SpendComponent = ({
   }
 
   return (
-    <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
+    <div className="flex justify-between items-center bg-base-300 p-3 rounded-lg my-2">
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center flex-wrap gap-x-2 gap-y-2 w-24">
           <h2 className="text-4xl">💵</h2>
           <h2>Spend</h2>
         </div>
         <NumberInput
-          label={getLabel('amount') as never}
+          label={getLabel('amount')}
           register={register}
-          error={errors.amount}
+          error={errors?.amount}
           validation={[
             validateRequired,
             validatePositive,
@@ -156,16 +150,18 @@ export const SpendComponent = ({
           ]}
           step={0.000001}
           border={false}
+          disabled={readOnly}
         />
         <SelectInput
-          label={getLabel('denom') as never}
+          label={getLabel('denom')}
           register={register}
-          error={errors.denom}
+          error={errors?.denom}
           defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
           validation={[
             (denom: string) => validatePossibleSpendWrapper(denom, spendAmount),
           ]}
           border={false}
+          disabled={readOnly}
         >
           {nativeBalances.map(({ denom }, idx) => {
             return (
@@ -184,23 +180,26 @@ export const SpendComponent = ({
           <ArrowRightIcon className="h-4" />
           <div className="flex flex-col">
             <AddressInput
-              label={getLabel('to') as never}
+              label={getLabel('to')}
               register={register}
-              error={errors.to}
+              error={errors?.to}
               validation={[validateRequired, validateAddress]}
               border={false}
+              disabled={readOnly}
             />
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <InputErrorMessage error={errors.amount} />
-          <InputErrorMessage error={errors.denom} />
-          <InputErrorMessage error={errors.to} />
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?.denom} />
+          <InputErrorMessage error={errors?.to} />
         </div>
       </div>
-      <button onClick={onRemove} type="button">
-        <XIcon className="h-4" />
-      </button>
+      {onRemove && (
+        <button onClick={onRemove} type="button">
+          <XIcon className="h-4" />
+        </button>
+      )}
     </div>
   )
 }
@@ -233,4 +232,51 @@ export const transformSpendToCosmos = (
       },
     },
   })
+}
+
+export const transformCosmosToSpend = (
+  msg: Record<string, any>,
+  { govDecimals }: FromCosmosMsgProps
+): SpendData | null => {
+  if (
+    'bank' in msg &&
+    'send' in msg.bank &&
+    'amount' in msg.bank.send &&
+    msg.bank.send.amount.length === 1 &&
+    'amount' in msg.bank.send.amount[0] &&
+    'denom' in msg.bank.send.amount[0] &&
+    'to_address' in msg.bank.send
+  ) {
+    const denom = msg.bank.send.amount[0].denom
+    if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
+      return {
+        to: msg.bank.send.to_address,
+        amount: convertMicroDenomToDenomWithDecimals(
+          msg.bank.send.amount[0].amount,
+          nativeTokenDecimals(denom)!
+        ),
+        denom,
+      }
+    }
+  }
+
+  if (
+    'wasm' in msg &&
+    'execute' in msg.wasm &&
+    'contract_addr' in msg.wasm.execute &&
+    'transfer' in msg.wasm.execute.msg &&
+    'recipient' in msg.wasm.execute.msg.transfer &&
+    'amount' in msg.wasm.execute.msg.transfer
+  ) {
+    return {
+      to: msg.wasm.execute.msg.transfer.recipient,
+      amount: convertMicroDenomToDenomWithDecimals(
+        msg.wasm.execute.msg.transfer.amount,
+        govDecimals
+      ),
+      denom: msg.wasm.execute.contract_addr,
+    }
+  }
+
+  return null
 }

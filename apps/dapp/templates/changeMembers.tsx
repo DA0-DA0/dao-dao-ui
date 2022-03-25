@@ -1,8 +1,7 @@
 import { useRecoilValue } from 'recoil'
 
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
@@ -18,7 +17,7 @@ import {
 } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
 
-import { ToCosmosMsgProps } from './templateList'
+import { TemplateComponent, ToCosmosMsgProps } from './templateList'
 
 export interface Member {
   addr: string
@@ -33,32 +32,22 @@ export interface ChangeMembersData {
 export const changeMembersDefaults = (
   _walletAddress: string,
   _contractConfig: Config
-): ChangeMembersData => {
-  return {
-    toAdd: [],
-    toRemove: [],
-  }
-}
+): ChangeMembersData => ({
+  toAdd: [],
+  toRemove: [],
+})
 
-const memberDefaults = (): Member => {
-  return {
-    addr: '',
-    weight: 0,
-  }
-}
+const memberDefaults = (): Member => ({
+  addr: '',
+  weight: 0,
+})
 
-export const ChangeMembersComponent = ({
+export const ChangeMembersComponent: TemplateComponent = ({
   contractAddress,
   getLabel,
   onRemove,
   errors,
-  multisig,
-}: {
-  contractAddress: string
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  multisig?: boolean
+  readOnly,
 }) => {
   const { register, control } = useFormContext()
 
@@ -91,15 +80,17 @@ export const ChangeMembersComponent = ({
     'Address is already a member of the multisig.'
 
   return (
-    <div className="flex flex flex-col py-2 px-3 rounded-lg my-2 bg-base-300">
+    <div className="flex flex-col p-3 rounded-lg my-2 bg-base-300">
       <div className="flex flex-row flex-wrap gap-2 justify-between">
         <div className="flex gap-2 flex-wrap items-center mt-2 mb-3">
           <h2 className="text-lg">🖋</h2>
           <h2 className="text-xl">Manage members</h2>
         </div>
-        <button onClick={() => onRemove()} type="button">
-          <XIcon className="h-4" />
-        </button>
+        {onRemove && (
+          <button onClick={() => onRemove()} type="button">
+            <XIcon className="h-4" />
+          </button>
+        )}
       </div>
       <h3 className="mb-1">To Add</h3>
       <ul className="list-none mb-2">
@@ -116,10 +107,8 @@ export const ChangeMembersComponent = ({
         {addFields.map((_data, index) => {
           const newGetLabel = (label: string) =>
             `${getLabel('toAdd')}.${index}.${label}`
-          const addrError =
-            errors.toAdd && errors.toAdd[index] && errors.toAdd[index].addr
-          const weightError =
-            errors.toAdd && errors.toAdd[index] && errors.toAdd[index].weight
+          const addrError = errors?.toAdd?.[index]?.addr
+          const weightError = errors?.toAdd?.[index]?.weight
           return (
             <div
               className="gap-2 grid grid-cols-5 my-2"
@@ -136,6 +125,7 @@ export const ChangeMembersComponent = ({
                     validateNotMember,
                   ]}
                   border={false}
+                  disabled={readOnly}
                 />
                 <InputErrorMessage error={addrError} />
               </div>
@@ -147,28 +137,33 @@ export const ChangeMembersComponent = ({
                     error={weightError}
                     validation={[validatePositive, validateRequired]}
                     border={false}
+                    disabled={readOnly}
                   />
                   <InputErrorMessage error={weightError} />
                 </div>
-                <button onClick={() => addRemove(index)} type="button">
-                  <XIcon className="h-4" />
-                </button>
+                {!readOnly && (
+                  <button onClick={() => addRemove(index)} type="button">
+                    <XIcon className="h-4" />
+                  </button>
+                )}
               </div>
             </div>
           )
         })}
       </ul>
-      <div className="mb-2">
-        <PlusMinusButton
-          onPlus={() => {
-            addAppend(memberDefaults())
-          }}
-          onMinus={() => {
-            addRemove(addFields.length - 1)
-          }}
-          disableMinus={addFields.length == 0}
-        />
-      </div>
+      {!readOnly && (
+        <div className="mb-2">
+          <PlusMinusButton
+            onPlus={() => {
+              addAppend(memberDefaults())
+            }}
+            onMinus={() => {
+              addRemove(addFields.length - 1)
+            }}
+            disableMinus={addFields.length == 0}
+          />
+        </div>
+      )}
       <h3 className="mb-1 mt-3">To Remove</h3>
       {removeFields.length != 0 && (
         <div className="grid grid-cols-5">
@@ -179,8 +174,7 @@ export const ChangeMembersComponent = ({
       )}
       {removeFields.map((_data, index) => {
         const newGetLabel = () => `${getLabel('toRemove')}.${index}`
-        const addrError =
-          errors.toRemove && errors.toRemove[index] && errors.toRemove[index]
+        const addrError = errors?.toRemove?.[index]
         return (
           <div className="gap-2 grid grid-cols-5 my-2" key={newGetLabel()}>
             <div className="form-control col-span-3">
@@ -190,23 +184,26 @@ export const ChangeMembersComponent = ({
                 error={addrError}
                 validation={[validateAddress, validateRequired, validateMember]}
                 border={false}
+                disabled={readOnly}
               />
               <InputErrorMessage error={addrError} />
             </div>
           </div>
         )
       })}
-      <div className="mb-2">
-        <PlusMinusButton
-          onPlus={() => {
-            removeAppend('')
-          }}
-          onMinus={() => {
-            removeRemove(addFields.length - 1)
-          }}
-          disableMinus={removeFields.length == 0}
-        />
-      </div>
+      {!readOnly && (
+        <div className="mb-2">
+          <PlusMinusButton
+            onPlus={() => {
+              removeAppend('')
+            }}
+            onMinus={() => {
+              removeRemove(addFields.length - 1)
+            }}
+            disableMinus={removeFields.length == 0}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -235,3 +232,17 @@ export const transformChangeMembersToCosmos = (
     },
   })
 }
+
+export const transformCosmosToChangeMembers = (
+  msg: Record<string, any>
+): ChangeMembersData | null =>
+  'wasm' in msg &&
+  'execute' in msg.wasm &&
+  'update_members' in msg.wasm.execute.msg &&
+  'add' in msg.wasm.execute.msg.update_members &&
+  'remove' in msg.wasm.execute.msg.update_members
+    ? {
+        toAdd: msg.wasm.execute.msg.update_members.add,
+        toRemove: msg.wasm.execute.msg.update_members.remove,
+      }
+    : null

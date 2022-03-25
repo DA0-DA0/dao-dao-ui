@@ -18,7 +18,6 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { sigSelector } from 'selectors/multisigs'
-import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
 
 const MultisigProposalCreate: NextPage = () => {
@@ -35,21 +34,6 @@ const MultisigProposalCreate: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
-      const toCosmosMsg = messageTemplates.find(
-        (template) => template.label === m.label
-      )?.toCosmosMsg
-
-      // Unreachable.
-      if (!toCosmosMsg) return {}
-
-      return toCosmosMsg(m as any, {
-        sigAddress: contractAddress,
-        govAddress: sigInfo.group_address,
-        govDecimals: 0,
-        multisig: true,
-      })
-    })
 
     await signingClient
       ?.execute(
@@ -59,7 +43,7 @@ const MultisigProposalCreate: NextPage = () => {
           propose: {
             title: d.title,
             description: d.description,
-            msgs: cosmMsgs,
+            msgs: d.messages,
           },
         },
         'auto'
@@ -95,6 +79,12 @@ const MultisigProposalCreate: NextPage = () => {
           contractAddress={contractAddress}
           onSubmit={onProposalSubmit}
           loading={proposalLoading}
+          toCosmosMsgProps={{
+            sigAddress: contractAddress,
+            govAddress: sigInfo.group_address,
+            govDecimals: 0,
+            multisig: true,
+          }}
           multisig
         />
       </div>

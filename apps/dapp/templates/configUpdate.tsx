@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
 import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
@@ -25,7 +25,11 @@ import {
 } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
 
-import { ToCosmosMsgProps } from './templateList'
+import {
+  FromCosmosMsgProps,
+  TemplateComponent,
+  ToCosmosMsgProps,
+} from './templateList'
 
 enum ThresholdMode {
   Threshold,
@@ -49,7 +53,7 @@ export interface DAOConfigUpdateData {
   defaultQuorum: string
 }
 
-export const DAOConfigUpdateDefaults = (
+export const daoConfigUpdateDefaults = (
   _walletAddress: string,
   contractConfig: Config,
   govTokenDecimals: number
@@ -84,40 +88,38 @@ export const DAOConfigUpdateDefaults = (
   }
 }
 
-export const DAOUpdateConfigComponent = ({
-  contractAddress,
+export const DAOUpdateConfigComponent: TemplateComponent = ({
   getLabel,
   onRemove,
   errors,
-  multisig,
-}: {
-  contractAddress: string
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  multisig?: boolean
+  readOnly,
 }) => {
   const { register, setValue, watch } = useFormContext()
 
+  const quorum = watch(getLabel('quorum'))
   const defaultQuorum = watch(getLabel('defaultQuorum'))
 
   const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
     DEFAULT_MAX_VOTING_PERIOD_SECONDS
   )
   const [thresholdMode, setThresholdMode] = useState(
-    ThresholdMode.ThresholdQuorum
+    quorum !== undefined
+      ? ThresholdMode.ThresholdQuorum
+      : ThresholdMode.Threshold
   )
 
   return (
-    <div className="flex flex flex-col py-2 px-3 rounded-lg my-2 bg-base-300">
+    <div className="flex flex-col p-3 rounded-lg my-2 bg-base-300">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-4xl">🎭</h2>
           <h2>Update Config</h2>
         </div>
-        <button onClick={() => onRemove()} type="button">
-          <XIcon className="h-4" />
-        </button>
+        {onRemove && (
+          <button onClick={onRemove} type="button">
+            <XIcon className="h-4" />
+          </button>
+        )}
       </div>
       <div className="px-3">
         <div className="form-control">
@@ -125,10 +127,11 @@ export const DAOUpdateConfigComponent = ({
           <TextInput
             label={getLabel('name')}
             register={register}
-            error={errors.name}
+            error={errors?.name}
             validation={[validateRequired]}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.name} />
+          <InputErrorMessage error={errors?.name} />
         </div>
 
         <div className="form-control">
@@ -136,10 +139,11 @@ export const DAOUpdateConfigComponent = ({
           <TextInput
             label={getLabel('description')}
             register={register}
-            error={errors.description}
+            error={errors?.description}
             validation={[validateRequired]}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.description} />
+          <InputErrorMessage error={errors?.description} />
         </div>
 
         <div className="form-control">
@@ -147,17 +151,18 @@ export const DAOUpdateConfigComponent = ({
           <TextInput
             label={getLabel('image_url')}
             register={register}
-            error={errors.imageUrl}
+            error={errors?.imageUrl}
             validation={[validateUrl]}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.imageUrl} />
+          <InputErrorMessage error={errors?.imageUrl} />
         </div>
 
         <div className="tabs mt-8">
           <button
             className={
               'tab tab-lifted tab-lg' +
-              (thresholdMode == ThresholdMode.ThresholdQuorum
+              (thresholdMode === ThresholdMode.ThresholdQuorum
                 ? ' tab-active'
                 : '')
             }
@@ -166,13 +171,16 @@ export const DAOUpdateConfigComponent = ({
               setValue(getLabel('quorum'), defaultQuorum)
             }}
             type="button"
+            disabled={readOnly}
+            style={readOnly ? { pointerEvents: 'none' } : {}}
           >
             Threshold and quorum
           </button>
           <button
             className={
               'tab tab-lifted tab-lg' +
-              (thresholdMode == ThresholdMode.Threshold ? ' tab-active' : '')
+              (thresholdMode === ThresholdMode.Threshold ? ' tab-active' : '') +
+              (readOnly ? ' !pointer-events-none' : '')
             }
             onClick={() => {
               setThresholdMode(ThresholdMode.Threshold)
@@ -180,6 +188,8 @@ export const DAOUpdateConfigComponent = ({
               setValue(getLabel('quorum'), undefined)
             }}
             type="button"
+            disabled={readOnly}
+            style={readOnly ? { pointerEvents: 'none' } : {}}
           >
             Absolute threshold
           </button>
@@ -194,24 +204,26 @@ export const DAOUpdateConfigComponent = ({
                 <NumberInput
                   label={getLabel('threshold')}
                   register={register}
-                  error={errors.threshold}
+                  error={errors?.threshold}
                   validation={[validateRequired, validatePercent]}
                   defaultValue="51"
                   step="any"
+                  disabled={readOnly}
                 />
-                <InputErrorMessage error={errors.threshold} />
+                <InputErrorMessage error={errors?.threshold} />
               </div>
               <div className="form-control">
                 <InputLabel name="Quorum (%)" />
                 <NumberInput
                   label={getLabel('quorum')}
                   register={register}
-                  error={errors.quorum}
+                  error={errors?.quorum}
                   validation={[validateRequired, validatePercent]}
                   defaultValue="33"
                   step="any"
+                  disabled={readOnly}
                 />
-                <InputErrorMessage error={errors.quorum} />
+                <InputErrorMessage error={errors?.quorum} />
               </div>
             </div>
           ) : (
@@ -221,12 +233,13 @@ export const DAOUpdateConfigComponent = ({
                 <NumberInput
                   label={getLabel('threshold')}
                   register={register}
-                  error={errors.threshold}
+                  error={errors?.threshold}
                   validation={[validateRequired, validatePercent]}
                   defaultValue="51"
                   step="any"
+                  disabled={readOnly}
                 />
-                <InputErrorMessage error={errors.threshold} />
+                <InputErrorMessage error={errors?.threshold} />
               </div>
             </div>
           )}
@@ -237,12 +250,13 @@ export const DAOUpdateConfigComponent = ({
           <NumberInput
             label={getLabel('max_voting_period')}
             register={register}
-            error={errors.duration}
+            error={errors?.duration}
             validation={[validateRequired, validatePositive]}
             onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
             defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.duration} />
+          <InputErrorMessage error={errors?.duration} />
           <div
             style={{
               textAlign: 'end',
@@ -260,11 +274,12 @@ export const DAOUpdateConfigComponent = ({
           <NumberInput
             label={getLabel('proposal_deposit')}
             register={register}
-            error={errors.deposit}
+            error={errors?.deposit}
             validation={[validateRequired]}
             step={0.000001}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.deposit} />
+          <InputErrorMessage error={errors?.deposit} />
         </div>
 
         <div className="form-control">
@@ -272,21 +287,20 @@ export const DAOUpdateConfigComponent = ({
           <ToggleInput
             label={getLabel('refund_failed_proposals')}
             register={register}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.refund} />
+          <InputErrorMessage error={errors?.refund} />
         </div>
       </div>
-      <div className="p-2 rounded-lg my-3 flex items-center gap-2 bg-base-200">
+      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-base-200">
         <InformationCircleIcon className="h-4" />
-        <p>
-          This message will change the configuration of your DAO. Take Care.
-        </p>
+        <p>This will change the configuration of your DAO. Take Care.</p>
       </div>
     </div>
   )
 }
 
-export const transformDAOToConfigUpdateCosmos = (
+export const transformDAOConfigUpdateToCosmos = (
   self: DAOConfigUpdateData,
   props: ToCosmosMsgProps
 ) => {
@@ -328,4 +342,50 @@ export const transformDAOToConfigUpdateCosmos = (
     },
   })
   return message
+}
+
+export const transformCosmosToDAOConfigUpdate = (
+  msg: Record<string, any>,
+  { govDecimals }: FromCosmosMsgProps
+): DAOConfigUpdateData | null => {
+  if (
+    !(
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'update_config' in msg.wasm.execute.msg &&
+      'threshold' in msg.wasm.execute.msg.update_config &&
+      ('threshold_quorum' in msg.wasm.execute.msg.update_config.threshold ||
+        'absolute_percentage' in msg.wasm.execute.msg.update_config.threshold)
+    )
+  )
+    return null
+
+  const data = msg.wasm.execute.msg.update_config
+
+  const threshold = (
+    parseFloat(
+      'threshold_quorum' in data.threshold
+        ? data.threshold.threshold_quorum.threshold
+        : data.threshold.absolute_percentage.percentage
+    ) * 100
+  ).toString()
+  const quorum =
+    'threshold_quorum' in data.threshold
+      ? (parseFloat(data.threshold.threshold_quorum.quorum) * 100).toString()
+      : undefined
+
+  return {
+    name: data.name,
+    description: data.description,
+    image_url: data.image_url,
+    max_voting_period: data.max_voting_period.time,
+    proposal_deposit: convertMicroDenomToDenomWithDecimals(
+      data.proposal_deposit,
+      govDecimals
+    ),
+    refund_failed_proposals: data.refund_failed_proposals,
+    threshold,
+    quorum,
+    defaultQuorum: quorum || '33',
+  }
 }

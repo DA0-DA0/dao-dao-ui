@@ -1,7 +1,7 @@
 import { useRecoilValue } from 'recoil'
 
 import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
@@ -11,7 +11,10 @@ import {
   contractConfigSelector,
   useContractConfigGovTokenSymbol,
 } from 'util/contractConfigWrapper'
-import { convertDenomToMicroDenomWithDecimals } from 'util/conversion'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from 'util/conversion'
 import {
   validateAddress,
   validatePositive,
@@ -19,7 +22,11 @@ import {
 } from 'util/formValidation'
 import { makeExecutableMintMessage, makeMintMessage } from 'util/messagehelpers'
 
-import { ToCosmosMsgProps } from './templateList'
+import {
+  FromCosmosMsgProps,
+  TemplateComponent,
+  ToCosmosMsgProps,
+} from './templateList'
 
 export interface MintData {
   to: string
@@ -29,25 +36,18 @@ export interface MintData {
 export const mintDefaults = (
   walletAddress: string,
   _contractConfig: Config
-) => {
-  return {
-    to: walletAddress,
-    amount: 1,
-  }
-}
+): MintData => ({
+  to: walletAddress,
+  amount: 1,
+})
 
-export const MintComponent = ({
+export const MintComponent: TemplateComponent = ({
   contractAddress,
   getLabel,
   onRemove,
   errors,
   multisig,
-}: {
-  contractAddress: string
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  multisig?: boolean
+  readOnly,
 }) => {
   const { register } = useFormContext()
 
@@ -57,7 +57,7 @@ export const MintComponent = ({
   const govTokenDenom = useContractConfigGovTokenSymbol(info)
 
   return (
-    <div className="flex justify-between items-center bg-base-300 py-2 px-3 rounded-lg my-2">
+    <div className="flex justify-between items-center bg-base-300 p-3 rounded-lg my-2">
       <div className="flex items-center gap-4 gap-y-2 flex-wrap">
         <div className="flex items-center flex-wrap gap-x-2 gap-y-2 w-24">
           <h2 className="text-3xl">🍵</h2>
@@ -65,13 +65,14 @@ export const MintComponent = ({
         </div>
         <div className="flex flex-col">
           <NumberInput
-            label={getLabel('amount') as never}
+            label={getLabel('amount')}
             register={register}
-            error={errors.amount}
+            error={errors?.amount}
             validation={[validateRequired, validatePositive]}
             border={false}
+            disabled={readOnly}
           />
-          <InputErrorMessage error={errors.amount} />
+          <InputErrorMessage error={errors?.amount} />
         </div>
         {govTokenDenom && (
           <p className="font-mono text-secondary text-sm uppercase">
@@ -82,19 +83,22 @@ export const MintComponent = ({
           <ArrowRightIcon className="h-4" />
           <div className="flex flex-col">
             <AddressInput
-              label={getLabel('to') as never}
+              label={getLabel('to')}
               register={register}
-              error={errors.to}
+              error={errors?.to}
               validation={[validateRequired, validateAddress]}
               border={false}
+              disabled={readOnly}
             />
-            <InputErrorMessage error={errors.to} />
+            <InputErrorMessage error={errors?.to} />
           </div>
         </div>
       </div>
-      <button onClick={onRemove} type="button">
-        <XIcon className="h-4" />
-      </button>
+      {onRemove && (
+        <button onClick={onRemove} type="button">
+          <XIcon className="h-4" />
+        </button>
+      )}
     </div>
   )
 }
@@ -112,3 +116,21 @@ export const transformMintToCosmos = (
     props.govAddress
   )
 }
+
+export const transformCosmosToMint = (
+  msg: Record<string, any>,
+  { govDecimals }: FromCosmosMsgProps
+): MintData | null =>
+  'wasm' in msg &&
+  'execute' in msg.wasm &&
+  'mint' in msg.wasm.execute.msg &&
+  'amount' in msg.wasm.execute.msg.mint &&
+  'recipient' in msg.wasm.execute.msg.mint
+    ? {
+        to: msg.wasm.execute.msg.mint.recipient,
+        amount: convertMicroDenomToDenomWithDecimals(
+          msg.wasm.execute.msg.mint.amount,
+          govDecimals
+        ),
+      }
+    : null

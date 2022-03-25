@@ -1,12 +1,14 @@
-import JSON5 from 'json5'
-import { Validate } from 'react-hook-form'
-
 import {
   isValidAddress,
   isValidContractAddress,
   isValidValidatorAddress,
-} from './isValidAddress'
+} from '@dao-dao/utils'
+import JSON5 from 'json5'
+import { Validate } from 'react-hook-form'
+
 import { isValidUrl } from './isValidUrl'
+
+const CHAIN_PREFIX = process.env.NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
 
 export const validateRequired = (v: string | boolean) => {
   if (typeof v === 'string') {
@@ -27,17 +29,17 @@ export const validatePercent = (v: string) => {
 }
 
 export const validateAddress = (v: string) =>
-  isValidAddress(v) || 'Invalid address'
+  isValidAddress(v, CHAIN_PREFIX) || 'Invalid address'
 
 export const validateValidatorAddress = (v: string) =>
-  isValidValidatorAddress(v) || 'Invalid address'
+  isValidValidatorAddress(v, CHAIN_PREFIX) || 'Invalid address'
 
 export const validateUrl = (v: string) =>
   isValidUrl(v) ||
   'Invalid URL link, must start with https and end with png/jpeg/gif.'
 
 export const validateContractAddress = (v: string) =>
-  isValidContractAddress(v) || 'Invalid contract address'
+  isValidContractAddress(v, CHAIN_PREFIX) || 'Invalid contract address'
 
 export const validateJSON = (v: string) => {
   try {

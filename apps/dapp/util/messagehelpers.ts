@@ -58,6 +58,7 @@ export function makeBankMessage(
           denom,
         },
       ],
+      // TODO: What are these type and from_address fields? They don't show up in spend messages after proposals are created.
       [TYPE_KEY]: BANK_SEND_TYPE,
       from_address,
       to_address,
@@ -447,10 +448,10 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 }
 
 export function decodeMessages(
-  proposal: ProposalResponse
+  msgs: ProposalResponse['msgs']
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
-  const proposalMsgs = Object.values(proposal.msgs)
+  const proposalMsgs = Object.values(msgs)
   for (const msgObj of proposalMsgs) {
     if (isWasmMsg(msgObj)) {
       const msgType = getWasmMsgType(msgObj.wasm)
@@ -484,8 +485,8 @@ export function decodeMessages(
   return decodedMessages
 }
 
-export function decodedMessagesString(proposal: ProposalResponse): string {
-  const decodedMessageArray = decodeMessages(proposal)
+export function decodedMessagesString(msgs: ProposalResponse['msgs']): string {
+  const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }
 
