@@ -24,7 +24,6 @@ import { pinnedMultisigsAtom } from 'atoms/pinned'
 import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
-  MysteryContractCard,
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
@@ -37,6 +36,7 @@ import {
   MULTISIG_CODE_ID,
   NATIVE_DENOM,
 } from 'util/constants'
+import { MysteryMultisigCard } from 'pages/dao/list'
 
 export function MultisigCard({
   multisig,
@@ -70,16 +70,6 @@ export function MultisigCard({
         }
       }}
       imgUrl={multisig.imgUrl}
-    />
-  )
-}
-
-export function MysteryMultisigCard() {
-  return (
-    <MysteryContractCard
-      title="Create a multisig"
-      body="You are not a member of any multisigs. Why not create one?"
-      href="/multisig/create"
     />
   )
 }

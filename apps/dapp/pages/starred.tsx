@@ -18,8 +18,7 @@ import { addToken } from 'util/addToken'
 import { NATIVE_DENOM } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
-import { MysteryDaoCard } from './dao/list'
-import { MysteryMultisigCard } from './multisig/list'
+import { MysteryDaoCard, MysteryMultisigCard } from './dao/list'
 
 function PinnedDaoCard({ address }: { address: string }) {
   const listInfo = useRecoilValue(memberDaoSelector(address))

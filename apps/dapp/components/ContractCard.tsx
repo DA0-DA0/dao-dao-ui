@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
-import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
+import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
 import {
@@ -156,24 +156,6 @@ export function ContractCard({
         )}
       </button>
     </div>
-  )
-}
-
-export function MysteryContractCard({
-  title,
-  body,
-  href,
-}: {
-  title: string
-  body: string
-  href: string
-}) {
-  return (
-    <DIYLogo title={title} body={body} href={href} token={false}>
-      <div className="w-[70px] h-[70px] flex justify-center items-center">
-        <PlusIcon className="w-9" />
-      </div>
-    </DIYLogo>
   )
 }
 
