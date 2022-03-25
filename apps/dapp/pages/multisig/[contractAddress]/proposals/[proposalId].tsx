@@ -32,6 +32,9 @@ const MultisigProposal: NextPage = () => {
         <ProposalDetails
           contractAddress={contractAddress}
           proposalId={Number(proposalKey)}
+          fromCosmosMsgProps={{
+            govDecimals: 0,
+          }}
           multisig
         />
       </div>

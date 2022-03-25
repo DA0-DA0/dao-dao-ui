@@ -1,12 +1,13 @@
-import JSON5 from 'json5'
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import { walletAddress } from 'selectors/cosm'
+import { Config } from 'util/contractConfigWrapper'
 import { makeWasmMessage } from 'util/messagehelpers'
 import { validateCosmosMsg } from 'util/validateWasmMsg'
+
 import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
-import { FieldErrors, useFormContext } from 'react-hook-form'
-import { ToCosmosMsgProps } from './templateList'
-import { Config } from 'util/contractConfigWrapper'
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import JSON5 from 'json5'
+import { useFormContext } from 'react-hook-form'
+
+import { TemplateComponent, ToCosmosMsgProps } from './templateList'
 
 export interface CustomData {
   message: string
@@ -15,24 +16,15 @@ export interface CustomData {
 export const customDefaults = (
   _walletAddress: string,
   _contractConfig: Config
-) => {
-  return {
-    message: '{}',
-  }
-}
+): CustomData => ({
+  message: '{}',
+})
 
-export const CustomComponent = ({
-  contractAddress,
+export const CustomComponent: TemplateComponent = ({
   getLabel,
   onRemove,
   errors,
-  multisig,
-}: {
-  contractAddress: string
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  multisig?: boolean
+  readOnly,
 }) => {
   const { control } = useFormContext()
 
@@ -41,20 +33,22 @@ export const CustomComponent = ({
   // that we are in a nested object nor wrapped nicely like we do
   // with register.
   return (
-    <div className="flex flex-col py-2 px-3 my-2 bg-base-300 rounded-lg">
+    <div className="flex flex-col p-3 my-2 bg-base-300 rounded-lg">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2 mb-2">
           <h2 className="text-3xl">🤖</h2>
           <h2>Custom</h2>
         </div>
-        <button onClick={onRemove} type="button">
-          <XIcon className="h-4" />
-        </button>
+        {onRemove && (
+          <button onClick={onRemove} type="button">
+            <XIcon className="h-4" />
+          </button>
+        )}
       </div>
       <CodeMirrorInput
-        label={getLabel('message') as never}
+        label={getLabel('message')}
         control={control}
-        error={errors.message}
+        error={errors?.message}
         validation={[
           (v: string) => {
             let msg
@@ -72,12 +66,13 @@ export const CustomComponent = ({
             }
           },
         ]}
+        readOnly={readOnly}
       />
       <div className="mt-2">
-        {errors.message ? (
+        {errors?.message ? (
           <p className="text-error text-sm flex items-center gap-1">
             <XIcon className="w-5 inline" />{' '}
-            {errors.message.message === 'Invalid cosmos message' ? (
+            {errors?.message.message === 'Invalid cosmos message' ? (
               <>
                 Invalid{' '}
                 <a
@@ -109,11 +104,16 @@ export const transformCustomToCosmos = (
   try {
     msg = JSON5.parse(self.message)
   } catch (e: any) {
-    // Should never hit this as we the message being valid JSON and
-    // a valid cosmos message is a requirement for submission.
+    // Should never hit this as a valid cosmos message is a requirement for submission.
     console.log(`internal error. unparsable message: (${self.message})`)
   }
   // Convert the wasm message component to base64
   if (msg.wasm) msg = makeWasmMessage(msg)
   return msg
 }
+
+export const transformCosmosToCustom = (
+  msg: Record<string, any>
+): CustomData => ({
+  message: JSON.stringify(msg, undefined, 2),
+})

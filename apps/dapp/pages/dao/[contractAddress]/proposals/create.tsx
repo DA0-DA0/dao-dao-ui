@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
@@ -20,7 +20,6 @@ import {
 } from 'selectors/cosm'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
-import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
 import { expirationExpired } from 'util/expiration'
 
@@ -42,23 +41,6 @@ const ProposalCreate: NextPage = () => {
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
-      const template = messageTemplates.find(
-        (template) => template.label === m.label
-      )
-
-      const toCosmosMsg = template?.toCosmosMsg
-
-      // Unreachable.
-      if (!toCosmosMsg) return {}
-
-      return toCosmosMsg(m as any, {
-        sigAddress: contractAddress,
-        govAddress: daoInfo.gov_token,
-        govDecimals: tokenInfo.decimals,
-        multisig: false,
-      })
-    })
 
     if (signingClient == null) {
       toast.error('No signing client. Is your wallet connected?')
@@ -112,7 +94,7 @@ const ProposalCreate: NextPage = () => {
           propose: {
             title: d.title,
             description: d.description,
-            msgs: cosmMsgs,
+            msgs: d.messages,
           },
         },
         'auto'
@@ -151,6 +133,12 @@ const ProposalCreate: NextPage = () => {
           onSubmit={onProposalSubmit}
           contractAddress={contractAddress}
           loading={proposalLoading}
+          toCosmosMsgProps={{
+            sigAddress: contractAddress,
+            govAddress: daoInfo.gov_token,
+            govDecimals: tokenInfo.decimals,
+            multisig: false,
+          }}
         />
       </div>
       <Sidebar>

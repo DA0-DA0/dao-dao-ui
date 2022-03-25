@@ -1,16 +1,24 @@
+import { useEffect } from 'react'
+
+import { useRecoilValueLoadable } from 'recoil'
+
+import { Config } from 'util/contractConfigWrapper'
+import { validateContractAddress, validateRequired } from 'util/formValidation'
+import { makeWasmMessage } from 'util/messagehelpers'
+
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { LogoNoBorder } from '@components/Logo'
 import { XIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
-import { FieldErrors, useFormContext } from 'react-hook-form'
-import { useRecoilValueLoadable } from 'recoil'
+import { useFormContext } from 'react-hook-form'
 import { tokenConfig } from 'selectors/daos'
-import { Config } from 'util/contractConfigWrapper'
-import { validateContractAddress, validateRequired } from 'util/formValidation'
-import { makeWasmMessage } from 'util/messagehelpers'
-import { ToCosmosMsgProps } from './templateList'
+
+import {
+  TemplateComponent,
+  TemplateComponentProps,
+  ToCosmosMsgProps,
+} from './templateList'
 
 export interface AddTokenData {
   address: string
@@ -19,11 +27,9 @@ export interface AddTokenData {
 export const addTokenDefaults = (
   _walletAddress: string,
   _contractConfig: Config
-) => {
-  return {
-    address: '',
-  }
-}
+): AddTokenData => ({
+  address: '',
+})
 
 export const TokenInfoDisplay = ({
   address,
@@ -42,7 +48,7 @@ export const TokenInfoDisplay = ({
     } else {
       clearError()
     }
-  }, [tokenInfo])
+  }, [tokenInfo, setError, clearError])
 
   return (
     <div>
@@ -63,44 +69,51 @@ export const TokenInfoDisplay = ({
   )
 }
 
+interface TokenSelectorProps
+  extends Pick<
+    TemplateComponentProps,
+    'getLabel' | 'onRemove' | 'errors' | 'readOnly'
+  > {
+  symbol: string
+  title: string
+}
+
 export const TokenSelector = ({
   getLabel,
   onRemove,
   errors,
+  readOnly,
   symbol,
   title,
-}: {
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  symbol: string
-  title: string
-}) => {
+}: TokenSelectorProps) => {
   const { register, watch, setError, clearErrors } = useFormContext()
 
   const tokenAddress = watch(getLabel('address'))
 
   return (
-    <div className="flex flex flex-col py-2 px-3 rounded-lg my-2 bg-base-300">
+    <div className="flex flex-col p-3 rounded-lg my-2 bg-base-300">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-4xl">{symbol}</h2>
           <h2>{title}</h2>
         </div>
-        <button onClick={() => onRemove()} type="button">
-          <XIcon className="h-4" />
-        </button>
+        {onRemove && (
+          <button onClick={onRemove} type="button">
+            <XIcon className="h-4" />
+          </button>
+        )}
       </div>
       <div className="flex flex-col">
         <InputLabel name="Token address" />
         <AddressInput
-          label={getLabel('address') as never}
+          label={getLabel('address')}
           register={register}
-          error={errors.to}
+          error={errors?.to}
           validation={[validateRequired, validateContractAddress]}
           border={false}
+          disabled={readOnly}
         />
-        <InputErrorMessage error={errors.to} />
+        <InputErrorMessage error={errors?.to} />
       </div>
       <TokenInfoDisplay
         address={tokenAddress}
@@ -113,29 +126,21 @@ export const TokenSelector = ({
   )
 }
 
-export const AddTokenComponent = ({
-  contractAddress,
+export const AddTokenComponent: TemplateComponent = ({
   getLabel,
   onRemove,
   errors,
-  multisig,
-}: {
-  contractAddress: string
-  getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
-  multisig?: boolean
-}) => {
-  return (
-    <TokenSelector
-      getLabel={getLabel}
-      onRemove={onRemove}
-      errors={errors}
-      symbol="🔘"
-      title="Add Treasury Token"
-    />
-  )
-}
+  readOnly,
+}) => (
+  <TokenSelector
+    getLabel={getLabel}
+    onRemove={onRemove}
+    errors={errors}
+    readOnly={readOnly}
+    symbol="🔘"
+    title="Add Treasury Token"
+  />
+)
 
 export const transformAddTokenToCosmos = (
   self: AddTokenData,
@@ -156,3 +161,18 @@ export const transformAddTokenToCosmos = (
     },
   })
 }
+
+export const transformCosmosToAddToken = (
+  msg: Record<string, any>
+): AddTokenData | null =>
+  'wasm' in msg &&
+  'execute' in msg.wasm &&
+  'update_cw20_token_list' in msg.wasm.execute.msg &&
+  'to_add' in msg.wasm.execute.msg.update_cw20_token_list &&
+  msg.wasm.execute.msg.update_cw20_token_list.to_add.length === 1 &&
+  'to_remove' in msg.wasm.execute.msg.update_cw20_token_list &&
+  msg.wasm.execute.msg.update_cw20_token_list.to_remove.length === 0
+    ? {
+        address: msg.wasm.execute.msg.update_cw20_token_list.to_add[0],
+      }
+    : null

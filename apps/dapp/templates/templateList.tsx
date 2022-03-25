@@ -1,34 +1,56 @@
+import { Config } from 'util/contractConfigWrapper'
+
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
-import { Config } from 'util/contractConfigWrapper'
+
 import {
   AddTokenComponent,
   addTokenDefaults,
   transformAddTokenToCosmos,
+  transformCosmosToAddToken,
 } from './addToken'
 import {
   ChangeMembersComponent,
   changeMembersDefaults,
   transformChangeMembersToCosmos,
+  transformCosmosToChangeMembers,
 } from './changeMembers'
 import {
-  DAOConfigUpdateDefaults,
+  daoConfigUpdateDefaults,
   DAOUpdateConfigComponent,
-  transformDAOToConfigUpdateCosmos,
+  transformCosmosToDAOConfigUpdate,
+  transformDAOConfigUpdateToCosmos,
 } from './configUpdate'
 import {
   CustomComponent,
   customDefaults,
+  transformCosmosToCustom,
   transformCustomToCosmos,
 } from './custom'
-import { MintComponent, mintDefaults, transformMintToCosmos } from './mint'
+import {
+  MintComponent,
+  mintDefaults,
+  transformCosmosToMint,
+  transformMintToCosmos,
+} from './mint'
 import {
   RemoveTokenComponent,
   removeTokenDefaults,
+  transformCosmosToRemoveToken,
   transformRemoveTokenToCosmos,
 } from './removeToken'
-import { SpendComponent, spendDefaults, transformSpendToCosmos } from './spend'
-import { StakeComponent, stakeDefaults, transformStakeToCosmos } from './stake'
+import {
+  SpendComponent,
+  spendDefaults,
+  transformCosmosToSpend,
+  transformSpendToCosmos,
+} from './spend'
+import {
+  StakeComponent,
+  stakeDefaults,
+  transformCosmosToStake,
+  transformStakeToCosmos,
+} from './stake'
 
 export enum ContractSupport {
   Multisig,
@@ -36,7 +58,7 @@ export enum ContractSupport {
   Both,
 }
 
-// Adding a template to this list will cause it to be avaliable
+// Adding a template to this list will cause it to be available
 // across the UI.
 export const messageTemplates: MessageTemplate[] = [
   {
@@ -45,6 +67,7 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.Both,
     getDefaults: spendDefaults,
     toCosmosMsg: transformSpendToCosmos,
+    fromCosmosMsg: transformCosmosToSpend,
   },
   {
     label: '🍵 Mint',
@@ -52,6 +75,7 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.DAO,
     getDefaults: mintDefaults,
     toCosmosMsg: transformMintToCosmos,
+    fromCosmosMsg: transformCosmosToMint,
   },
   {
     label: '📤 Staking',
@@ -59,6 +83,7 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.Both,
     getDefaults: stakeDefaults,
     toCosmosMsg: transformStakeToCosmos,
+    fromCosmosMsg: transformCosmosToStake,
   },
   {
     label: '🤖 Custom',
@@ -66,13 +91,15 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.Both,
     getDefaults: customDefaults,
     toCosmosMsg: transformCustomToCosmos,
+    fromCosmosMsg: transformCosmosToCustom,
   },
   {
     label: '🎭 Update Config',
     component: DAOUpdateConfigComponent,
     contractSupport: ContractSupport.DAO,
-    getDefaults: DAOConfigUpdateDefaults,
-    toCosmosMsg: transformDAOToConfigUpdateCosmos,
+    getDefaults: daoConfigUpdateDefaults,
+    toCosmosMsg: transformDAOConfigUpdateToCosmos,
+    fromCosmosMsg: transformCosmosToDAOConfigUpdate,
   },
   {
     label: '🔘 Add Treasury Token',
@@ -80,6 +107,7 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.Both,
     getDefaults: addTokenDefaults,
     toCosmosMsg: transformAddTokenToCosmos,
+    fromCosmosMsg: transformCosmosToAddToken,
   },
   {
     label: '⭕️ Remove Treasury Token',
@@ -87,6 +115,7 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.Both,
     getDefaults: removeTokenDefaults,
     toCosmosMsg: transformRemoveTokenToCosmos,
+    fromCosmosMsg: transformCosmosToRemoveToken,
   },
   {
     label: '🖋 Manage Members',
@@ -94,29 +123,72 @@ export const messageTemplates: MessageTemplate[] = [
     contractSupport: ContractSupport.Multisig,
     getDefaults: changeMembersDefaults,
     toCosmosMsg: transformChangeMembersToCosmos,
+    fromCosmosMsg: transformCosmosToChangeMembers,
   },
 ]
+// Ensure custom is always sorted last for two reasons:
+// 1. It should display last since it is a catch-all.
+// 2. It should be the last template type matched against when listing proposals in the UI since it will match any message (see messageTemplateAndValuesForDecodedCosmosMsg).
+messageTemplates.sort((a, b) => {
+  if (a.component === CustomComponent) {
+    return 1
+  } else if (b.component === CustomComponent) {
+    return -1
+  }
+  return 0
+})
+
+export const messageTemplateToCosmosMsg = (
+  m: MessageTemplate,
+  props: ToCosmosMsgProps
+): CosmosMsgFor_Empty | undefined =>
+  messageTemplates
+    .find((template) => template.label === m.label)
+    ?.toCosmosMsg?.(m as any, props)
+
+export const messageTemplateAndValuesForDecodedCosmosMsg = (
+  msg: Record<string, any>,
+  props: FromCosmosMsgProps
+) => {
+  // Ensure custom is the last message template since it will match most proposals and we return the first successful message match.
+  for (const template of messageTemplates) {
+    const values = template.fromCosmosMsg(msg, props)
+    if (values) {
+      return {
+        template,
+        values,
+      }
+    }
+  }
+  return null
+}
 
 // A component which will render a template's input form.
-export type TemplateComponent = React.FunctionComponent<{
+export interface TemplateComponentProps {
   contractAddress: string
   getLabel: (field: string) => string
-  onRemove: () => void
-  errors: FieldErrors
+  onRemove?: () => void
+  errors?: FieldErrors
   multisig?: boolean
-}>
+  readOnly?: boolean
+}
+export type TemplateComponent = React.FunctionComponent<TemplateComponentProps>
 
 // Defines a new template.
 export interface MessageTemplate {
   label: string
   component: TemplateComponent
   contractSupport: ContractSupport
+  // Get default for fields in form display.
   getDefaults: (
     walletAddress: string,
     contractConfig: Config,
     govTokenDecimals: number
   ) => any
+  // Convert MessageTemplate to CosmosMsgFor_Empty.
   toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
+  // Convert decoded msg data to fields in form display.
+  fromCosmosMsg: (msg: Record<string, any>, props: FromCosmosMsgProps) => any
 }
 
 // The contextual information provided to templates when transforming
@@ -126,6 +198,12 @@ export interface ToCosmosMsgProps {
   govAddress: string
   govDecimals: number
   multisig: boolean
+}
+
+// The contextual information provided to templates when transforming
+// from cosmos messages to values.
+export interface FromCosmosMsgProps {
+  govDecimals: number
 }
 
 // When template data is being passed around in a form it must carry

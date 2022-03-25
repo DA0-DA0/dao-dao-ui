@@ -1,23 +1,25 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
 import {
-  atom,
   SetterOrUpdater,
-  useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   CheckIcon,
   ExternalLinkIcon,
+  EyeIcon,
+  EyeOffIcon,
   SparklesIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
 import { ProposalStatus } from '@components'
@@ -40,6 +42,11 @@ import {
   walletVotedSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
+import {
+  FromCosmosMsgProps,
+  MessageTemplate,
+  messageTemplateAndValuesForDecodedCosmosMsg,
+} from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
 import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
 import {
@@ -457,19 +464,87 @@ export function ProposalDetailsSidebar({
   )
 }
 
-const proposalActionLoading = atom({
-  key: 'proposalActionLoading',
-  default: false,
-})
+interface ProposalMessageTemplateListItemProps {
+  template: MessageTemplate
+  values: any
+  contractAddress: string
+  multisig?: boolean
+}
+
+function ProposalMessageTemplateListItem({
+  template,
+  values,
+  contractAddress,
+  multisig,
+}: ProposalMessageTemplateListItemProps) {
+  const formMethods = useForm({
+    defaultValues: values,
+  })
+
+  return (
+    <FormProvider {...formMethods}>
+      <form>
+        <template.component
+          getLabel={(field) => field}
+          readOnly
+          contractAddress={contractAddress}
+          multisig={multisig}
+        />
+      </form>
+    </FormProvider>
+  )
+}
+
+interface ProposalMessageTemplateListProps {
+  msgs: CosmosMsgFor_Empty[]
+  contractAddress: string
+  multisig?: boolean
+  fromCosmosMsgProps: FromCosmosMsgProps
+}
+
+function ProposalMessageTemplateList({
+  msgs,
+  contractAddress,
+  multisig,
+  fromCosmosMsgProps,
+}: ProposalMessageTemplateListProps) {
+  const components: ReactNode[] = msgs.map((msg, index) => {
+    const decoded = decodeMessages([msg])[0]
+    const data = messageTemplateAndValuesForDecodedCosmosMsg(
+      decoded,
+      fromCosmosMsgProps
+    )
+
+    return data ? (
+      <ProposalMessageTemplateListItem
+        key={index}
+        template={data.template}
+        values={data.values}
+        contractAddress={contractAddress}
+        multisig={multisig}
+      />
+    ) : (
+      // If no message template found, render raw message.
+      <CosmosMessageDisplay
+        key={index}
+        value={JSON.stringify(decoded, undefined, 2)}
+      />
+    )
+  })
+
+  return <>{components}</>
+}
 
 export function ProposalDetails({
   contractAddress,
   proposalId,
   multisig,
+  fromCosmosMsgProps,
 }: {
   contractAddress: string
   proposalId: number
   multisig?: boolean
+  fromCosmosMsgProps: FromCosmosMsgProps
 }) {
   const router = useRouter()
   const proposal = useRecoilValue(
@@ -490,14 +565,14 @@ export function ProposalDetails({
     walletVotedSelector({ contractAddress, proposalId })
   )
 
-  const [actionLoading, setActionLoading] = useRecoilState(
-    proposalActionLoading
-  )
+  const [actionLoading, setActionLoading] = useState(false)
 
   const wallet = useRecoilValue(walletAddressSelector)
   // If token balances are loading we don't know if the user is a
   // member or not.
   const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
+
+  const [showRaw, setShowRaw] = useState(false)
 
   if (!proposal) {
     router.replace(`/${multisig ? 'multisig' : 'dao'}/${contractAddress}`)
@@ -521,12 +596,12 @@ export function ProposalDetails({
         )
   )
 
-  const decodedMessages = decodeMessages(proposal)
+  const decodedMessages = decodeMessages(proposal.msgs)
 
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+        <h1 className="text-4xl font-semibold">{proposal.title}</h1>
       </div>
       {actionLoading && (
         <div className="mt-3">
@@ -574,10 +649,36 @@ export function ProposalDetails({
         <MarkdownPreview markdown={proposal.description} />
       </div>
       {decodedMessages?.length ? (
-        <CosmosMessageDisplay value={decodedMessagesString(proposal)} />
+        showRaw ? (
+          <CosmosMessageDisplay value={decodedMessagesString(proposal.msgs)} />
+        ) : (
+          <ProposalMessageTemplateList
+            msgs={proposal.msgs}
+            contractAddress={contractAddress}
+            multisig={multisig}
+            fromCosmosMsgProps={fromCosmosMsgProps}
+          />
+        )
       ) : (
         <pre></pre>
       )}
+      <button
+        type="button"
+        className="btn btn-sm btn-outline normal-case hover:bg-primary hover:text-primary-content mt-2"
+        onClick={() => setShowRaw((s) => !s)}
+      >
+        {showRaw ? (
+          <>
+            Hide raw data
+            <EyeOffIcon className="inline h-5 stroke-current ml-2" />
+          </>
+        ) : (
+          <>
+            Show raw data
+            <EyeIcon className="inline h-5 stroke-current ml-2" />
+          </>
+        )}
+      </button>
       <div className="mt-6">
         <PaginatedProposalVotes
           contractAddress={contractAddress}
