@@ -6,7 +6,11 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { ContractCard } from 'components/ContractCard'
+import {
+  MysteryDaoCard,
+  MysteryMultisigCard,
+  ContractCard,
+} from 'components/ContractCard'
 import {
   isMemberSelector,
   memberDaoSelector,
@@ -17,8 +21,6 @@ import { cw20TokenInfo, nativeBalance } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { NATIVE_DENOM } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-
-import { MysteryDaoCard, MysteryMultisigCard } from './dao/list'
 
 function PinnedDaoCard({ address }: { address: string }) {
   const listInfo = useRecoilValue(memberDaoSelector(address))

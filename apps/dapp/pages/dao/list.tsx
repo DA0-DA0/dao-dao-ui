@@ -23,7 +23,11 @@ import { Button } from '@components'
 
 import { pinnedDaosAtom } from 'atoms/pinned'
 import CodeIdSelect from 'components/CodeIdSelect'
-import { ContractCard, LoadingContractCard } from 'components/ContractCard'
+import {
+  ContractCard,
+  LoadingContractCard,
+  MysteryDaoCard,
+} from 'components/ContractCard'
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
@@ -64,62 +68,6 @@ export function DaoCard({
         }
       }}
       imgUrl={config.image_url}
-    />
-  )
-}
-
-const EmptyStateContractCard = ({
-  title,
-  description,
-  backgroundUrl,
-  href,
-}: {
-  title: string
-  description: string
-  backgroundUrl: string
-  href: string
-}) => {
-  const router = useRouter()
-  return (
-    <Link href={href} passHref>
-      <a
-        className="border border-inactive transition hover:border-brand rounded-md w-max overflow-hidden max-w-[400px]"
-        onClick={() => router.push(href)}
-      >
-        <div
-          className={'h-72 bg-cover bg-no-repeat opacity-75'}
-          style={{ backgroundImage: `url(${backgroundUrl})` }}
-        />
-        <div className="px-6 py-4">
-          <div className="primary-text mb-2 flex items-center gap-2">
-            <PlusIcon className="w-4" />
-            {title}
-          </div>
-          <div className="body-text">{description}</div>
-        </div>
-      </a>
-    </Link>
-  )
-}
-
-export function MysteryDaoCard() {
-  return (
-    <EmptyStateContractCard
-      href="/dao/create"
-      backgroundUrl={'/empty-state-dao.jpeg'}
-      title={'Create a DAO'}
-      description={'You are not a member of any DAOs. Why not create one?'}
-    />
-  )
-}
-
-export function MysteryMultisigCard() {
-  return (
-    <EmptyStateContractCard
-      href="/multisig/create"
-      backgroundUrl={'/empty-state-multisig.jpeg'}
-      title={'Create a Multisig'}
-      description={'You are not a member of any Multisigs. Why not create one?'}
     />
   )
 }

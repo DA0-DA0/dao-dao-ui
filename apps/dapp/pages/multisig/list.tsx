@@ -25,6 +25,7 @@ import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
   LoadingContractCard,
+  MysteryMultisigCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
@@ -36,7 +37,6 @@ import {
   MULTISIG_CODE_ID,
   NATIVE_DENOM,
 } from 'util/constants'
-import { MysteryMultisigCard } from 'pages/dao/list'
 
 export function MultisigCard({
   multisig,
