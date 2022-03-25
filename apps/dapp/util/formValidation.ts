@@ -4,7 +4,6 @@ import {
   isValidValidatorAddress,
 } from '@dao-dao/utils'
 import JSON5 from 'json5'
-import { Validate } from 'react-hook-form'
 
 import { isValidUrl } from './isValidUrl'
 

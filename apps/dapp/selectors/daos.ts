@@ -1,4 +1,4 @@
-import { selector, selectorFamily } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {

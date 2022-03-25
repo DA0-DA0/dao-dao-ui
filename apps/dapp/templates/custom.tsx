@@ -3,7 +3,6 @@ import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
 import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
-import { walletAddress } from 'selectors/cosm'
 import { Config } from 'util/contractConfigWrapper'
 import { makeWasmMessage } from 'util/messagehelpers'
 import { validateCosmosMsg } from 'util/validateWasmMsg'

@@ -2,11 +2,7 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
-import {
-  PlusIcon,
-  ScaleIcon,
-  StarIcon as StarIconOutline,
-} from '@heroicons/react/outline'
+import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
 import {

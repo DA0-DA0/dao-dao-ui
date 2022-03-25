@@ -1,4 +1,4 @@
-import { atom, atomFamily } from 'recoil'
+import { atom } from 'recoil'
 
 // The expanded state of the sidebar.
 export const sidebarExpandedAtom = atom<boolean>({

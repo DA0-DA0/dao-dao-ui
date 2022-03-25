@@ -4,7 +4,7 @@ module.exports = {
     // configures both eslint-plugin-prettier and eslint-config-prettier
     'plugin:prettier/recommended'
   ],
-  plugins: ['import'],
+  plugins: ['import', 'unused-imports'],
 
   settings: {
     next: {
@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
     'prettier/prettier': 'error',
+    'unused-imports/no-unused-imports': 'error',
     'import/order': [
       'error',
       {

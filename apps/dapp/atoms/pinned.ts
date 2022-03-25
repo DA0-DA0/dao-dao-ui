@@ -1,4 +1,4 @@
-import { atom, AtomEffect } from 'recoil'
+import { atom } from 'recoil'
 
 import { localStorageEffect } from 'atoms/localStorageEffect'
 

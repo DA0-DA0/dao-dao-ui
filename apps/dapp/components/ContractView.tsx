@@ -1,4 +1,4 @@
-import { Children, MouseEventHandler, ReactNode, Suspense } from 'react'
+import { Children, MouseEventHandler, ReactNode } from 'react'
 
 import Link from 'next/link'
 
