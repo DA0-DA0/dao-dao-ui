@@ -9,8 +9,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint && prettier --check \"**/*.{ts,tsx,md}\"",
-    "format": "turbo run format && prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
     "test": "turbo run test"
   },
   "devDependencies": {
