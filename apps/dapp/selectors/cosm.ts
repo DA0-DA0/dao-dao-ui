@@ -120,6 +120,10 @@ export const keplrAccountNameSelector = selector<string | undefined>({
   get: async ({ get }) => {
     // Invalidate state when the keplr instance changes.
     get(kelprOfflineSigner)
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet !== 'keplr') {
+      return ''
+    }
     const info = await window.keplr?.getKey(CHAIN_ID as string)
     return info?.name
   },
