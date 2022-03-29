@@ -61,9 +61,13 @@ function DaoHome() {
   )
   const blockHeight = useRecoilValue(getBlockHeight)
   const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const claimsAvaliable = stuff.claims
+  const initialClaimsAvaliable = stuff.claims
     .filter((c) => claimAvaliable(c, blockHeight))
     .reduce((p, n) => p + Number(n.amount), 0)
+
+  // If a claim becomes avaliable while the page is open we need a way to update
+  // the number of claims avaliable.
+  const [claimsAvaliable, setClaimsAvaliable] = useState(initialClaimsAvaliable)
 
   const wallet = useRecoilValue(walletAddress)
   const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
@@ -263,6 +267,9 @@ function DaoHome() {
           <ClaimsPendingList
             stakingAddress={daoInfo.staking_contract}
             tokenInfo={tokenInfo}
+            incrementClaimsAvaliable={(n: number) =>
+              setClaimsAvaliable((a) => a + n)
+            }
           />
           {showStaking && (
             <StakingModal

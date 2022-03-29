@@ -1,4 +1,6 @@
 import { MouseEventHandler } from 'react'
+import { useState } from 'react'
+import { useEffect } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
@@ -37,7 +39,8 @@ function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
   } else if ('at_time' in claim.release_at) {
     const currentTimeNs = new Date().getTime() * 1000000
     return {
-      time: (Number(claim.release_at.at_time) - currentTimeNs) / 1000000000, // To seconds.
+      time:
+        (Number(claim.release_at.at_time) - currentTimeNs) / 1000000000 || 0, // To seconds.
     }
   }
 
@@ -50,16 +53,42 @@ function ClaimListItem({
   unstakingDuration,
   blockHeight,
   tokenInfo,
+  incrementClaimsAvaliable,
 }: {
   claim: Claim
   unstakingDuration: Duration
   blockHeight: number
   tokenInfo: TokenInfoResponse
+  incrementClaimsAvaliable: (n: number) => void
 }) {
   const avaliable = claimAvaliable(claim, blockHeight)
+
   const durationForHumans = humanReadableDuration(unstakingDuration)
   const durationRemaining = claimDurationRemaining(claim, blockHeight)
-  const durationRemainingForHumans = humanReadableDuration(durationRemaining)
+
+  // Once the claim expires increment claims avaliable.
+  useEffect(() => {
+    if ('time' in durationRemaining) {
+      const id = setTimeout(
+        () => incrementClaimsAvaliable(Number(claim.amount)),
+        durationRemaining.time * 1000
+      )
+      return () => clearTimeout(id)
+    }
+  }, [claim.amount, durationRemaining, incrementClaimsAvaliable])
+
+  const [durationRemainingForHumans, setDurationRemainingForHumans] = useState(
+    humanReadableDuration(durationRemaining)
+  )
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setDurationRemainingForHumans((_) =>
+        humanReadableDuration(claimDurationRemaining(claim, blockHeight))
+      )
+    }, 1000)
+    return () => clearInterval(id)
+  }, [claim, blockHeight, setDurationRemainingForHumans])
 
   return (
     <div className="my-2">
@@ -70,7 +99,7 @@ function ClaimListItem({
         </p>
       ) : (
         <div className="flex flex-wrap gap-2 text-secondary font-mono text-sm">
-          <p>{durationRemainingForHumans} left</p>
+          <p>{durationRemainingForHumans || '0'} left</p>
           <p>/ {durationForHumans}</p>
         </div>
       )}
@@ -85,9 +114,11 @@ function ClaimListItem({
 export function ClaimsPendingList({
   stakingAddress,
   tokenInfo,
+  incrementClaimsAvaliable,
 }: {
   stakingAddress: string
   tokenInfo: TokenInfoResponse
+  incrementClaimsAvaliable: (n: number) => void
 }) {
   const unstakeDuration = useRecoilValue(unstakingDuration(stakingAddress))
   const blockHeight = useRecoilValue(getBlockHeight)
@@ -109,6 +140,7 @@ export function ClaimsPendingList({
                   blockHeight={blockHeight}
                   unstakingDuration={unstakeDuration}
                   tokenInfo={tokenInfo}
+                  incrementClaimsAvaliable={incrementClaimsAvaliable}
                 />
               )
             })}
