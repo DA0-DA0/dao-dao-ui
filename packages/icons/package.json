@@ -1,0 +1,15 @@
+{
+  "name": "@dao-dao/icons",
+  "version": "0.0.0",
+  "main": "dist/index.ts",
+  "scripts": {
+    "clean": "rm -rf dist/",
+    "postinstall": "npm run build",
+    "dev": "npm run build",
+    "build": "svgr --out-dir dist --typescript --icon --replace-attr-values \"#191D20={props.color}\" -- assets"
+  },
+  "devDependencies": {
+    "@svgr/cli": "^6.1.1",
+    "config": "*"
+  }
+}
