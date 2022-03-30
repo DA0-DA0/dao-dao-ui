@@ -68,8 +68,8 @@ function ModeButton({
   return (
     <button
       className={
-        'btn btn-sm rounded-md text-primary bg-transparent normal-case border-none font-normal' +
-        (!active ? ' hover:bg-base-100' : ' bg-base-100 hover:bg-base-100')
+        'btn btn-sm rounded-md text-primary normal-case border-none font-normal' +
+        (!active ? ' bg-transparent hover:bg-base-100' : ' bg-base-100')
       }
       onClick={onClick}
     >
