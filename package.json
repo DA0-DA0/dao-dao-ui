@@ -9,12 +9,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
-    "format": "turbo run format",
+    "lint": "turbo run lint && prettier --check \"**/*.md\"",
+    "format": "turbo run format && prettier --write \"**/*.md\"",
     "test": "turbo run test"
   },
   "devDependencies": {
-    "prettier": "^2.5.1",
     "turbo": "latest"
   },
   "engines": {
