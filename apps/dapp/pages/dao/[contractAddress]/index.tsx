@@ -110,9 +110,9 @@ function DaoHome() {
             <div className={expanded ? '' : 'mr-6'}>
               <div className="flex flex-row items-center gap-4">
                 {member && (
-                  <div className="flex flex-row items-center gap-2 text-secondary">
-                    <SvgMemberCheck fill="currentColor" width="15px" />
-                    <p className="text-xs">You{"'"}re a member</p>
+                  <div className="flex flex-row items-center gap-2">
+                    <SvgMemberCheck fill="currentColor" width="16px" />
+                    <p className="text-sm text-primary">You{"'"}re a member</p>
                   </div>
                 )}
                 <StarButton
@@ -170,7 +170,7 @@ function DaoHome() {
         </div>
       </div>
       <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
           <h2 className="font-medium text-md my-3">Your shares</h2>
           <ul className="list-none mt-3">
             <li>

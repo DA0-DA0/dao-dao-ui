@@ -7,9 +7,6 @@ import {
 } from 'react'
 
 import { useThemeContext } from '../theme'
-import daisyuiThemes from '../daisyui-themes.json'
-
-const [junoLight, junoDark] = Object.keys(daisyuiThemes) || ['']
 
 type ButtonIconProps = {
   icon?: ReactNode
@@ -50,33 +47,20 @@ function ButtonComponent(
   }: ButtonProps,
   ref?: ForwardedRef<any>
 ) {
-  const themeContext = useThemeContext()
-  const theme = themeContext.theme === junoLight ? 'light' : 'dark'
-  const withIcon = iconBefore || iconAfter
-  let other = disabled ? ' disabled' : ''
-
-  if (!withIcon) other += ' truncate'
-
   return (
     <button
       ref={ref}
-      className={`btn ${theme} ${variant} ${size}${
+      className={`flex items-center gap-2 justify-center rounded-md bg-dark text-white px-2 py-1 transition ${
         full ? ' w-full' : ''
-      }${other}`}
+      } text-${size} ${
+        variant === 'secondary' ? 'text-primary bg-primary' : ''
+      }`}
       disabled={disabled}
       {...rest}
     >
-      {withIcon ? (
-        <div className="flex justify-between">
-          <div className="truncate">
-            <ButtonIcon icon={iconBefore} position="left" />
-            <span className="align-middle">{children}</span>
-          </div>
-          <ButtonIcon icon={iconAfter} position="right" />
-        </div>
-      ) : (
-        <>{children}</>
-      )}
+      {iconBefore && iconBefore}
+      {children}
+      {iconAfter && iconAfter}
     </button>
   )
 }

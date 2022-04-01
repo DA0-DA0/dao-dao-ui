@@ -109,10 +109,10 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
   )
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-base-300">
+    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-4xl">🎭</h2>
+          <h2 className="text-3xl">🎭</h2>
           <h2>Update Config</h2>
         </div>
         {onRemove && (
@@ -122,7 +122,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
         )}
       </div>
       <div className="px-3">
-        <div className="form-control">
+        <div className="flex flex-col gap-1 my-3">
           <InputLabel name="Name" />
           <TextInput
             label={getLabel('name')}
@@ -134,7 +134,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
           <InputErrorMessage error={errors?.name} />
         </div>
 
-        <div className="form-control">
+        <div className="flex flex-col gap-1 my-3">
           <InputLabel name="Description" />
           <TextInput
             label={getLabel('description')}
@@ -146,7 +146,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
           <InputErrorMessage error={errors?.description} />
         </div>
 
-        <div className="form-control">
+        <div className="flex flex-col gap-1 my-3">
           <InputLabel name="Image URL (optional)" />
           <TextInput
             label={getLabel('image_url')}
@@ -158,30 +158,42 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
           <InputErrorMessage error={errors?.imageUrl} />
         </div>
 
-        <div className="tabs mt-8">
+        <div className="mt-8 flex flex-row">
           <button
-            className={
-              'tab tab-lifted tab-lg' +
-              (thresholdMode === ThresholdMode.ThresholdQuorum
-                ? ' tab-active'
-                : '')
-            }
+            className={`${
+              thresholdMode === ThresholdMode.ThresholdQuorum
+                ? 'border-l border-r'
+                : 'border-b'
+            } border-default px-2 py-1`}
+            style={{
+              borderTopWidth:
+                thresholdMode === ThresholdMode.ThresholdQuorum ? '1px' : '0px',
+              borderTopRightRadius: '0.5rem',
+              borderTopLeftRadius: '0.5rem',
+              pointerEvents: readOnly ? 'none' : 'auto',
+            }}
             onClick={() => {
               setThresholdMode(ThresholdMode.ThresholdQuorum)
               setValue(getLabel('quorum'), defaultQuorum)
             }}
             type="button"
             disabled={readOnly}
-            style={readOnly ? { pointerEvents: 'none' } : {}}
           >
             Threshold and quorum
           </button>
           <button
-            className={
-              'tab tab-lifted tab-lg' +
-              (thresholdMode === ThresholdMode.Threshold ? ' tab-active' : '') +
-              (readOnly ? ' !pointer-events-none' : '')
-            }
+            className={`${
+              thresholdMode === ThresholdMode.Threshold
+                ? 'border-l border-r'
+                : 'border-b'
+            } border-default px-2 py-1`}
+            style={{
+              borderTopWidth:
+                thresholdMode === ThresholdMode.Threshold ? '1px' : '0px',
+              borderTopRightRadius: '0.5rem',
+              borderTopLeftRadius: '0.5rem',
+              pointerEvents: readOnly ? 'none' : 'auto',
+            }}
             onClick={() => {
               setThresholdMode(ThresholdMode.Threshold)
               // Clear the quorum value.
@@ -189,14 +201,13 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
             }}
             type="button"
             disabled={readOnly}
-            style={readOnly ? { pointerEvents: 'none' } : {}}
           >
             Absolute threshold
           </button>
-          <div className="flex-1 cursor-default tab tab-lifted"></div>
+          <div className="flex-1 cursor-default border-default border-b"></div>
         </div>
 
-        <div className="border-r border-b border-l border-solid p-3 border-base-300 rounded-b-lg bg-base-100">
+        <div className="border-r border-b border-l border-solid p-3 border-default rounded-b-lg bg-base-100">
           {thresholdMode == ThresholdMode.ThresholdQuorum ? (
             <div className="grid grid-cols-2 gap-x-3">
               <div className="form-control">
@@ -245,50 +256,45 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
           )}
         </div>
 
-        <div className="form-control">
-          <InputLabel name="Voting Duration (seconds)" />
-          <NumberInput
-            label={getLabel('max_voting_period')}
-            register={register}
-            error={errors?.duration}
-            validation={[validateRequired, validatePositive]}
-            onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
-            defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
-            disabled={readOnly}
-          />
-          <InputErrorMessage error={errors?.duration} />
-          <div
-            style={{
-              textAlign: 'end',
-              padding: '5px 0 0 17px',
-              fontSize: ' 12px',
-              color: 'grey',
-            }}
-          >
-            {secondsToHms(votingPeriodSeconds)}
+        <div className="grid grid-cols-2 gap-2 my-3">
+          <div className="flex flex-col gap-1">
+            <InputLabel name="Voting Duration (seconds)" />
+            <NumberInput
+              label={getLabel('max_voting_period')}
+              register={register}
+              error={errors?.duration}
+              validation={[validateRequired, validatePositive]}
+              onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
+              defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+              disabled={readOnly}
+            />
+            <InputErrorMessage error={errors?.duration} />
+            <div className="text-sm text-secondary">
+              {secondsToHms(votingPeriodSeconds)}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <InputLabel name="Proposal Deposit" />
+            <NumberInput
+              label={getLabel('proposal_deposit')}
+              register={register}
+              error={errors?.deposit}
+              validation={[validateRequired]}
+              step={0.000001}
+              disabled={readOnly}
+            />
+            <InputErrorMessage error={errors?.deposit} />
           </div>
         </div>
 
-        <div className="form-control">
-          <InputLabel name="Proposal Deposit" />
-          <NumberInput
-            label={getLabel('proposal_deposit')}
-            register={register}
-            error={errors?.deposit}
-            validation={[validateRequired]}
-            step={0.000001}
-            disabled={readOnly}
-          />
-          <InputErrorMessage error={errors?.deposit} />
-        </div>
-
-        <div className="form-control">
-          <InputLabel name="Refund Failed Proposal Deposits" />
+        <div className="flex gap-1">
           <ToggleInput
             label={getLabel('refund_failed_proposals')}
             register={register}
             disabled={readOnly}
           />
+          <InputLabel name="Refund Failed Proposal Deposits" />
           <InputErrorMessage error={errors?.refund} />
         </div>
       </div>

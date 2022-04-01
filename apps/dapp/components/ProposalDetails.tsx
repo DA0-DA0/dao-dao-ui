@@ -63,6 +63,8 @@ import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
+import { Progress } from './Progress'
+import { Button } from 'ui'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -389,29 +391,31 @@ export function ProposalDetailsSidebar({
 
   return (
     <div>
-      <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
-        Proposal {proposal.id}
-      </h2>
-      <div className="grid grid-cols-3 gap-1 items-center">
-        <p className="text-secondary">Status</p>
-        <div className="col-span-2">
+      <h2 className="font-medium text-medium mb-6">Details</h2>
+      <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
+        <p className="text-tertiary font-mono text-sm">Proposal</p>
+        <p className="col-span-2 text-tertiary font-mono text-sm">
+          # {proposal.id.toString().padStart(6, '0')}
+        </p>
+        <p className="text-tertiary font-mono text-sm">Status</p>
+        <div className="col-span-2 text-sm">
           <ProposalStatus status={proposal.status} />
         </div>
-        <p className="text-secondary">Proposer</p>
+        <p className="text-tertiary font-mono text-sm">Proposer</p>
         <p className="col-span-2">
           <CopyToClipboard value={proposal.proposer} />
         </p>
         {proposal.status === 'executed' &&
         proposalExecutionTXHashState === 'loading' ? (
           <>
-            <p className="text-secondary">TX</p>
+            <p className="text-tertiary font-mono text-sm">TX</p>
             <p className="col-span-2">Loading...</p>
           </>
         ) : !!proposalExecutionTXHash ? (
           <>
             {CHAIN_TXN_URL_PREFIX ? (
               <a
-                className="text-secondary flex flex-row items-center gap-1"
+                className="text-tertiary font-mono text-sm flex flex-row items-center gap-1"
                 target="_blank"
                 rel="noopener noreferrer"
                 href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
@@ -420,7 +424,7 @@ export function ProposalDetailsSidebar({
                 <ExternalLinkIcon width={16} />
               </a>
             ) : (
-              <p className="text-secondary">TX</p>
+              <p className="text-tertiary font-mono text-sm">TX</p>
             )}
             <p className="col-span-2">
               <CopyToClipboard value={proposalExecutionTXHash} />
@@ -429,36 +433,67 @@ export function ProposalDetailsSidebar({
         ) : null}
         {proposal.status === 'open' && (
           <>
-            <p className="text-secondary">Expires</p>
-            <p className="col-span-2">
+            <p className="text-tertiary font-mono text-sm">Expires</p>
+            <p className="col-span-2 text-sm font-mono">
               {getEnd(proposal.expires, proposal.status) || 'never'}
             </p>
           </>
         )}
       </div>
 
-      <div className="grid grid-cols-3 mt-6">
-        <p className="text-secondary">Yes votes</p>
-        <div className="col-span-2">
-          {yesVotes} <p className="text-secondary inline">({yesPercent}%)</p>
-        </div>
-        <p className="text-secondary">No votes</p>
-        <div className="col-span-2">
-          {noVotes} <p className="text-secondary inline">({noPercent}%)</p>
-        </div>
-        <p className="text-secondary">Threshold</p>
-        <div className="col-span-2">{threshold}</div>
-        {quorum && (
-          <>
-            <p className="text-secondary">Quorum</p>
-            <div className="col-span-2">{quorum}</div>
-          </>
-        )}
+      <div>
+        <h3 className="text-medium mt-8 mb-6">Referendum status</h3>
       </div>
 
-      <div className="grid grid-cols-3 mt-6">
-        <p className="text-secondary">Turnout</p>
-        <div className="col-span-2">{turnoutPercent}%</div>
+      <div className="grid grid-cols-4 gap-2">
+        <p className="text-tertiary text-sm font-mono">Yes</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress turnout={Number(yesPercent)} color="rgb(var(--valid))" />
+          </div>
+          <p className="text-sm font-mono text-body">{yesPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono">No</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress turnout={Number(noPercent)} color="rgb(var(--error))" />
+          </div>
+          <p className="text-sm text-body font-mono">{noPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono">Threshold</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress
+              turnout={Number(threshold?.substring(0, threshold.length - 1))}
+              color="rgb(var(--brand))"
+            />
+          </div>
+          <p className="text-sm text-body font-mono">{threshold}%</p>
+        </div>
+        {quorum && (
+          <>
+            <p className="text-tertiary text-sm font-mono">Quorum</p>
+            <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+              <div className="col-span-3">
+                <Progress
+                  turnout={Number(quorum?.substring(0, quorum.length - 1))}
+                  color="rgb(var(--brand))"
+                />
+              </div>
+              <p className="text-sm text-body">{quorum}%</p>
+            </div>
+          </>
+        )}
+        <p className="text-tertiary text-sm font-mono">Turnout</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress
+              turnout={Number(turnoutPercent)}
+              color="rgb(var(--dark))"
+            />
+          </div>
+          <p className="text-sm text-body font-mono">{turnoutPercent}%</p>
+        </div>
       </div>
     </div>
   )
@@ -662,23 +697,21 @@ export function ProposalDetails({
       ) : (
         <pre></pre>
       )}
-      <button
-        type="button"
-        className="btn btn-sm btn-outline normal-case hover:bg-primary hover:text-primary-content mt-2"
-        onClick={() => setShowRaw((s) => !s)}
-      >
-        {showRaw ? (
-          <>
-            Hide raw data
-            <EyeOffIcon className="inline h-5 stroke-current ml-2" />
-          </>
-        ) : (
-          <>
-            Show raw data
-            <EyeIcon className="inline h-5 stroke-current ml-2" />
-          </>
-        )}
-      </button>
+      <div className="mt-4">
+        <Button size="sm" onClick={() => setShowRaw((s) => !s)}>
+          {showRaw ? (
+            <>
+              Hide raw data
+              <EyeOffIcon className="inline h-4 stroke-current ml-1" />
+            </>
+          ) : (
+            <>
+              Show raw data
+              <EyeIcon className="inline h-4 stroke-current ml-1" />
+            </>
+          )}
+        </Button>
+      </div>
       <div className="mt-6">
         <PaginatedProposalVotes
           contractAddress={contractAddress}

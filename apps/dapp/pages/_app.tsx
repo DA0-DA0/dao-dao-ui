@@ -15,6 +15,7 @@ import { HomepageLayout } from 'components/HomepageLayout'
 import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
+import ReactTooltip from 'react-tooltip'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -25,16 +26,24 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => setLoaded(true), [])
   useEffect(() => {
     setTheme((theme) => {
-      const savedTheme = localStorage.getItem('theme')
+      let savedTheme = localStorage.getItem('theme')
+      if (!(savedTheme === 'dark' || savedTheme === 'light')) {
+        // Theme used to be either junoDark or junoLight. We've sinced moved on
+        // to our own theming. This handles case where user has those old themes in
+        // local storage.
+        localStorage.setItem('theme', 'dark')
+        savedTheme = 'dark'
+      }
       const themeToUse = savedTheme ? savedTheme : theme
-      document.documentElement.setAttribute('data-theme', themeToUse)
+      document.documentElement.classList.add(themeToUse)
       return themeToUse
     })
   }, [])
 
   function updateTheme(themeName: string) {
-    document.documentElement.setAttribute('data-theme', themeName)
     setTheme(themeName)
+    const replace = themeName === 'dark' ? 'light' : 'dark'
+    document.documentElement.classList.replace(replace, themeName)
     localStorage.setItem('theme', themeName)
   }
 

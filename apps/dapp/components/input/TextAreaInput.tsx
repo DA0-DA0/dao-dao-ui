@@ -28,9 +28,8 @@ export function TextareaInput<
   )
   return (
     <textarea
-      className={`textarea
-        ${error ? ' textarea-error' : ''}
-        ${border ? ' textarea-bordered' : ''}`}
+      className={`bg-transparent rounded-lg p-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full
+        ${error ? ' ring-error ring-1' : ''}`}
       {...register(label, { validate })}
     ></textarea>
   )

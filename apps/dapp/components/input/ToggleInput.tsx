@@ -36,12 +36,14 @@ export function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
     {}
   )
   return (
-    <input
-      type="checkbox"
-      defaultChecked={true}
-      className="toggle toggle-lg"
-      disabled={disabled}
-      {...register(label, { validate, onChange })}
-    />
+    <div className="form-check form-switch">
+      <input
+        type="checkbox"
+        role="switch"
+        defaultChecked={true}
+        disabled={disabled}
+        {...register(label, { validate, onChange })}
+      />
+    </div>
   )
 }

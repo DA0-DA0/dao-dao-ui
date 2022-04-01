@@ -50,24 +50,23 @@ function Nav({ onMenuClick }: NavProps) {
   const betaWarningShowing = useRecoilValue(showBetaNoticeAtom)
 
   return (
-    <nav className="p-6 text-lg sticky top-0 h-screen flex flex-col justify-between border-r border-base-300">
+    <nav className="p-6 text-lg sticky top-0 h-screen w-full flex flex-col justify-between border-r border-inactive">
       <div>
         <div className="flex justify-between lg:justify-start items-center">
           <Link href="/starred">
             <a>
-              <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
+              <Logo height={28} width={28} alt={`${SITE_TITLE} Logo`} />
             </a>
           </Link>
-          <div className="text-error font-mono lg:pl-3">Beta</div>
 
           <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
             <MenuIcon className="w-8" />
           </div>
         </div>
         <ConnectWalletButton />
-        <div className="ml-1">
+        <div className="ml-1 text-sm">
           <div className="mt-3">
-            <h3 className="text-secondary font-mono mb-1">DAOs</h3>
+            <h3 className="text-tertiary font-mono text-sm mb-1">DAOs</h3>
             <ul className="list-none ml-2">
               {daoAddresses.map(({ dao, address }) => (
                 <li key={address} className="mt-1">
@@ -81,7 +80,7 @@ function Nav({ onMenuClick }: NavProps) {
             </ul>
             <ul className="list-none ml-2 mt-2">
               <li className="mt-1">
-                <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <ArrowRightIcon className="inline w-4 mr-2 mb-1" />
                 <Link href="/dao/list">
                   <a>All DAOs</a>
                 </Link>
@@ -89,7 +88,7 @@ function Nav({ onMenuClick }: NavProps) {
             </ul>
           </div>
           <div className="mt-3">
-            <h3 className="text-secondary font-mono mb-1">Multisigs</h3>
+            <h3 className="text-tertiary font-mono text-sm mb-1">Multisigs</h3>
             <ul className="list-none ml-2">
               {sigAddresses &&
                 sigAddresses.map(({ sig, address }) => (
@@ -105,7 +104,7 @@ function Nav({ onMenuClick }: NavProps) {
 
             <ul className="list-none ml-2">
               <li className="mt-1">
-                <ArrowRightIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <ArrowRightIcon className="inline w-4 mr-2 mb-1" />
                 <Link href="/multisig/list">
                   <a>All Multisigs</a>
                 </Link>
@@ -115,26 +114,26 @@ function Nav({ onMenuClick }: NavProps) {
         </div>
       </div>
       <div className="ml-1">
-        <h3 className="text-secondary font-mono mb-1">
+        <h3 className="text-tertiary font-mono text-sm mb-2">
           dao dao <div className="inline text-error">beta</div> v
           {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
         </h3>
         <ul
-          className={
-            'ml-2 list-none' + (betaWarningShowing ? ' text-secondary' : '')
-          }
+          className={`text-sm list-none ${
+            betaWarningShowing ? ' text-secondary' : ''
+          }`}
         >
-          <li>
+          <li className="mb-2">
             <ThemeToggle />
           </li>
           <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-2" />
             <a href="https://docs.daodao.zone" target="_blank" rel="noreferrer">
               Docs
             </a>
           </li>
           <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-1" />
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-2" />
             <a
               href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
               target="_blank"
