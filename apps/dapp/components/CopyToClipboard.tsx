@@ -1,5 +1,9 @@
-import { PaperClipIcon } from '@heroicons/react/outline'
+import { useState } from 'react'
+
+import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
+
+import SvgCopy from './icons/Copy'
 
 function concatAddressImpl(
   address: string,
@@ -26,14 +30,22 @@ export function CopyToClipboard({
   value,
   success = 'Copied to clipboard!',
 }: CopyToClipboardProps) {
+  const [copied, setCopied] = useState(false)
   return (
     <button
-      className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1 font-mono text-xs"
+      className="flex flex-row gap-1 items-center font-mono text-xs"
       onClick={() => {
         navigator.clipboard.writeText(value)
+        setTimeout(() => setCopied(false), 2000)
+        setCopied(true)
         toast.success(success)
       }}
     >
+      {copied ? (
+        <CheckCircleIcon className="w-[18px]" />
+      ) : (
+        <SvgCopy color="currentColor" height="18px" width="18px" />
+      )}
       {concatAddress(value)}
     </button>
   )
@@ -63,7 +75,7 @@ export function CopyToClipboardAccent({
 }: CopyToClipboardProps) {
   return (
     <button
-      className="transition text-sm text-accent hover:underline"
+      className="transition text-sm underline hover:no-underline text-brand transition"
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)

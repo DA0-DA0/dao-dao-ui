@@ -118,29 +118,26 @@ function DaoHome() {
               ]}
             />
             <div className={expanded ? '' : 'mr-6'}>
-              <div className="flex flex-col items-end gap-2">
-                <div className="flex items-center gap-4">
-                  {member && (
-                    <div className="flex flex-row items-center gap-2 text-secondary">
-                      <SvgMemberCheck fill="currentColor" width="15px" />
-                      <p className="text-xs">You{"'"}re a member</p>
-                    </div>
-                  )}
-                  <StarButton
-                    className="w-auto"
-                    pinned={pinned}
-                    onPin={() => {
-                      if (pinned) {
-                        setPinnedDaos((p) =>
-                          p.filter((a) => a !== contractAddress)
-                        )
-                      } else {
-                        setPinnedDaos((p) => p.concat([contractAddress]))
-                        addTokenCallback()
-                      }
-                    }}
-                  />
-                </div>
+              <div className="flex flex-row items-center gap-4">
+                {member && (
+                  <div className="flex flex-row items-center gap-2">
+                    <SvgMemberCheck fill="currentColor" width="16px" />
+                    <p className="text-sm text-primary">You{"'"}re a member</p>
+                  </div>
+                )}
+                <StarButton
+                  pinned={pinned}
+                  onPin={() => {
+                    if (pinned) {
+                      setPinnedDaos((p) =>
+                        p.filter((a) => a !== contractAddress)
+                      )
+                    } else {
+                      setPinnedDaos((p) => p.concat([contractAddress]))
+                      addToken(daoInfo.gov_token)
+                    }
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -183,7 +180,7 @@ function DaoHome() {
         </div>
       </div>
       <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
           <h2 className="font-medium text-md my-3">Your shares</h2>
           <ul className="list-none mt-3">
             <li>

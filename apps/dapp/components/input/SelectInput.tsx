@@ -14,7 +14,6 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   error,
   validation,
   children,
-  border = true,
   defaultValue,
   disabled = false,
 }: {
@@ -23,7 +22,6 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   children: ReactNode
-  border?: boolean
   defaultValue?: string
   disabled?: boolean
 }) {
@@ -33,9 +31,8 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   )
   return (
     <select
-      className={`select font-normal
-        ${error ? ' select-error' : ''}
-        ${border ? ' select-bordered' : ''}`}
+      className={`bg-transparent rounded-lg p-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border border-default
+        ${error ? ' ring-error ring-1' : ''}`}
       defaultValue={defaultValue}
       disabled={disabled}
       {...register(label, { validate })}

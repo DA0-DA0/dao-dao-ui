@@ -33,7 +33,7 @@ export function DaoContractInfo({ address }: { address: string }) {
   )
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3 border-b border-neutral py-6">
+    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3 border-b border-inactive py-6">
       <div>
         <h2 className="font-medium text-lg mb-6">Governance Details</h2>
         <ul className="list-none ml-2 mt-3 flex flex-col gap-2">

@@ -44,13 +44,14 @@ function DIYLogo({
   return (
     <Link href={href}>
       <a>
-        <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center m-2 bg-gradient-to-b from-base-300 justify-between border border-base-300 hover:shadow-accent hover:shadow-md hover:outline-accent hover:outline hover:outline-1">
+        <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center m-2 bg-card from-transparent justify-between hover:shadow-brand hover:shadow-md hover:outline-brand hover:outline hover:outline-1 relative">
+          <div className="absolute w-full h-[110px] top-0 left-0 bg-gradient-to-t to-dark from-transparent opacity-10 rounded-lg "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="mt-6">{children}</div>
-            <h3 className="text-lg font-semibold mt-3 truncate max-w-full">
+            <h3 className="text-md font-semibold truncate max-w-full">
               {title}
             </h3>
-            <p className="text-secondary text-sm font-mono text-center mt-1 break-words line-clamp-2">
+            <p className="text-secondary text-sm font-mono text-center mt-1 break-words line-clamp-3">
               {body}
             </p>
           </div>
@@ -157,7 +158,7 @@ export function MysteryContractCard({
   return (
     <DIYLogo title={title} body={body} href={href}>
       <div className="w-[70px] h-[70px] flex justify-center items-center">
-        <PlusIcon className="w-10 h-10 ml-1" />
+        <PlusIcon className="w-9" />
       </div>
     </DIYLogo>
   )

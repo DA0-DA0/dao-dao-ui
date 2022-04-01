@@ -38,7 +38,8 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   )
 
   const themeContext = useThemeContext()
-  const editorTheme = themeContext.theme !== 'junoDark' ? 'default' : 'material'
+  const editorTheme =
+    themeContext.theme !== 'dark' ? 'default' : 'material-ocean'
 
   const cmOptions = {
     mode: {
@@ -46,7 +47,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
       json: true,
     },
     theme: editorTheme,
-    lineNumbers: true,
+    lineNumbers: false,
     lineWrapping: true,
     autoCloseBrackets: true,
     tabSize: 2,

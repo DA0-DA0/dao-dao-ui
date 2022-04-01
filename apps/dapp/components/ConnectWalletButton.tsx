@@ -3,12 +3,7 @@ import { useCallback, useState } from 'react'
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { Wallet as SvgWallet } from '@dao-dao/icons'
-import {
-  CashIcon,
-  CheckCircleIcon,
-  LogoutIcon,
-  PaperClipIcon,
-} from '@heroicons/react/outline'
+import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 
 import { Button } from '@components'
 
@@ -28,10 +23,12 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 
+import SvgCopy from './icons/Copy'
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <div className="tooltip tooltip-left" data-tip="Copy wallet address">
+    <div data-tip="Copy wallet address">
       <button
         type="button"
         onClick={() => {
@@ -43,7 +40,7 @@ function CopyButton({ text }: { text: string }) {
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
-          <PaperClipIcon className="w-[18px]" />
+          <SvgCopy color="currentColor" height="18px" width="18px" />
         )}
       </button>
     </div>
@@ -60,24 +57,6 @@ function DisconnectButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-function NetworkText({ chainId }: { chainId: string }) {
-  let networkText
-  switch (chainId) {
-    case 'juno-1':
-      networkText = 'Mainnet'
-      break
-    case 'uni-2':
-      networkText = 'Testnet'
-      break
-    default:
-      networkText = chainId
-  }
-
-  return (
-    <span className="text-xs text-center align-baseline">{networkText}</span>
-  )
-}
-
 function WalletConnect() {
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
   const setInstallWarningVisible = useSetRecoilState(installWarningVisibleAtom)
@@ -90,8 +69,7 @@ function WalletConnect() {
     walletBalance,
     NATIVE_DECIMALS
   )
-  const chainDenomHuman =
-    convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
+  const chainDenomHuman = convertDenomToHumanReadableDenom(NATIVE_DENOM)
 
   const handleConnect = useCallback(async () => {
     if (!wallet) {
@@ -121,13 +99,13 @@ function WalletConnect() {
 
   if (walletAddress) {
     return (
-      <div className="w-full relative py-2 px-4 my-4 border border-secondary hover:border-accent rounded-lg group">
+      <div className="w-full relative py-2 px-4 my-4 bg-primary hover:outline hover:outline-brand rounded-lg group relative">
         <div className="flex items-center justify-left gap-4 h-full w-full">
           <SvgWallet width="20px" height="20px" fill="currentColor" />
           <div className="font-mono text-sm">
             <span>{walletName}</span>
             <br />
-            <span className="text-accent text-light">
+            <span className="text-secondary capitalize">
               {walletBalanceHuman} {chainDenomHuman}
             </span>
           </div>
@@ -136,21 +114,19 @@ function WalletConnect() {
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
         </div>
-        <div className="absolute right-2 bottom-2.5 flex gap-1 transition opacity-0 group-hover:opacity-100">
-          <NetworkText chainId={CHAIN_ID} />
-        </div>
       </div>
     )
   }
-
   return (
-    <div className="my-4 ">
+    <div className="my-4">
       <Button
         full
         onClick={handleConnect}
-        iconBefore={<CashIcon className="inline w-4 h-4" />}
+        iconBefore={
+          <SvgWallet className="inline w-5 mr-1" fill="currentColor" />
+        }
       >
-        Connect wallet
+        <p className="text-sm my-2">connect wallet</p>
       </Button>
     </div>
   )

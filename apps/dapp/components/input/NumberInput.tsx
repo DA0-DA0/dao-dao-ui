@@ -25,7 +25,6 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   onChange,
   defaultValue,
   step,
-  border = true,
   disabled = false,
 }: {
   label: FieldName
@@ -35,7 +34,6 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   onChange?: ChangeEventHandler<HTMLInputElement>
   defaultValue?: string
   step?: string | number
-  border?: boolean
   disabled?: boolean
 }) {
   const validate = validation?.reduce(
@@ -47,9 +45,8 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
       type="number"
       step={step}
       defaultValue={defaultValue}
-      className={`input
-        ${error ? ' input-error' : ''}
-        ${border ? ' input-bordered' : ''}`}
+      className={`bg-transparent rounded-lg p-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default
+        ${error ? ' ring-error ring-1' : ''}`}
       disabled={disabled}
       {...register(label, { validate, onChange })}
     />

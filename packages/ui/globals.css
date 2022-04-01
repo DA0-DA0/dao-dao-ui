@@ -6,7 +6,7 @@ html {
   --logo-fill: #06090b;
 }
 
-html[data-theme='junoDark'] {
+html[data-theme='dark'] {
   --logo-fill: #fff;
 }
 
@@ -38,4 +38,26 @@ menu {
 .CodeMirror {
   height: auto !important;
   border-radius: 6px;
+}
+
+@layer base {
+    :root {
+	--black: 17, 18, 19;
+	--dark: 25, 29, 31;
+	--light: 243, 246, 248;
+	--white: 255, 255, 255;
+	--error: 199, 62, 89;
+	--valid: 57, 166, 153;
+	--brand: 77, 76, 185;
+    }
+
+    .dark {
+	--white: 17, 18, 19;
+	--light: 25, 29, 31;
+	--dark: 243, 246, 248;
+	--black: 255, 255, 255;
+	--error: 199, 62, 89;
+	--valid: 57, 166, 153;
+	--brand: 77, 76, 185;
+    }
 }

@@ -12,12 +12,12 @@ function Sidebar({ children }: { children: ReactNode }) {
   const Icon = expanded ? ChevronRightIcon : ChevronLeftIcon
   return (
     <>
-      <button
-        onClick={() => setExpanded((e) => !e)}
-        className="text-secondary text-white fixed top-4 right-3 p-2 dark:bg-slate-800 rounded-lg"
-      >
-        <Icon className="h-5" />
-      </button>
+      {/* <button
+          onClick={() => setExpanded((e) => !e)}
+          className="text-secondary text-white fixed top-4 right-3 p-2 dark:bg-slate-800 rounded-lg"
+          >
+          <Icon className="h-5" />
+          </button> */}
       {expanded && children}
     </>
   )

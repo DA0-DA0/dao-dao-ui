@@ -7,7 +7,7 @@ export interface IThemeContext {
   updateTheme: UpdateThemeFn
 }
 
-export const DEFAULT_THEME_NAME = 'junoDark'
+export const DEFAULT_THEME_NAME = 'dark'
 
 export const DEFAULT_THEME: IThemeContext = {
   theme: DEFAULT_THEME_NAME,

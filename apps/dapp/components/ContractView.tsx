@@ -1,4 +1,4 @@
-import { Children, MouseEventHandler, ReactNode, Suspense } from 'react'
+import { Children, MouseEventHandler, ReactNode } from 'react'
 
 import Link from 'next/link'
 
@@ -6,6 +6,9 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
+import { useThemeContext } from 'ui'
+
+import { Button } from '@components'
 
 import { contractInstantiateTime } from 'selectors/contracts'
 import { isMemberSelector } from 'selectors/daos'
@@ -28,9 +31,23 @@ import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {
+  const theme = useThemeContext()
+  const endStop = theme.theme === 'dark' ? '#111213' : '#FFFFFF'
   return (
-    <div className="min-h-[40%] bg-gradient-radial-t from-accent via-base-100 p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 flex flex-col justify-between">
-      {children}
+    <div
+      style={{
+        background:
+          'linear-gradient(180deg, rgba(73, 55, 192, 0.4) 0%, rgba(17, 18, 19, 0) 100%)',
+      }}
+    >
+      <div
+        className="p-6 flex flex-col justify-between"
+        style={{
+          background: `linear-gradient(270deg, ${endStop} 0%, rgba(17, 18, 19, 0) 50%, ${endStop} 100%)`,
+        }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
@@ -50,23 +67,19 @@ export function TooltipWrapper({
 }
 
 export function StarButton({
-  className = '',
   pinned,
   onPin,
 }: {
-  className?: string
   pinned: boolean
   onPin: Function
 }) {
   return (
     <button
-      className={`text-left w-20 flex flex-row items-center text-sm ${
-        pinned ? ' text-accent' : ''
-      } ${className}`}
+      className="text-left w-20 flex flex-row items-center text-sm"
       onClick={(_e) => onPin()}
     >
       {pinned ? (
-        <StarSolid className="inline w-[20px] mr-1" />
+        <StarSolid className="inline w-[20px] mr-1 text-brand" />
       ) : (
         <StarOutline className="inline w-[20px] mr-1" />
       )}
@@ -140,7 +153,7 @@ export function HeroContractHorizontalInfo({
 }) {
   const childList = Children.toArray(children)
   return (
-    <div className="w-full border-y border-neutral py-3">
+    <div className="w-full border-y border-inactive py-3">
       <ul className="list-none flex justify-around text-sm flex-wrap gap-2">
         {Children.map(childList, (child) => (
           <li>{child}</li>
@@ -172,7 +185,7 @@ export function GovInfoListItem({
 export function BalanceIcon({ iconURI }: { iconURI?: string }) {
   return (
     <div
-      className="w-5 h-5 rounded-full bg-accent bg-center bg-cover"
+      className="rounded-full bg-brand w-4 h-4"
       style={{
         backgroundImage: iconURI ? `url(${iconURI})` : '',
       }}
@@ -265,12 +278,11 @@ export function ContractProposalsDispaly({
   const loading = useRecoilValue(walletTokenBalanceLoading(wallet))
 
   const member = useRecoilValue(isMemberSelector(contractAddress)).member
-  const tooltip =
-    (!member &&
-      `You must have voting power to create a proposal.${
+  const tooltip = !member
+    ? `You must have voting power to create a proposal.${
         multisig ? '' : ' Consider staking some tokens.'
-      }`) ||
-    'Something went wrong'
+      }`
+    : undefined
 
   return (
     <>
@@ -279,19 +291,17 @@ export function ContractProposalsDispaly({
         {loading ? (
           <LoadingButton />
         ) : (
-          <div className={!member ? 'tooltip' : ''} data-tip={tooltip}>
-            <Link href={proposalCreateLink} passHref>
+          <>
+            <Link href={member ? proposalCreateLink : '#'} passHref>
               <a
-                className={
-                  'btn btn-sm btn-outline normal-case text-left' +
-                  (!member ? ' btn-disabled' : '')
-                }
+                className={`flex items-center tooltip justify-left normal-case border border-inactive rounded-lg px-2 py-1 text-sm bg-dark text-light gap-1`}
+                data-tip={tooltip}
               >
                 New proposal
                 <PlusIcon className="inline w-5 h-5 ml-1" />
               </a>
             </Link>
-          </div>
+          </>
         )}
       </div>
       <div className="px-4 mt-4">
@@ -315,7 +325,7 @@ export function BalanceCard({
   loading: boolean
 }) {
   return (
-    <div className="shadow p-6 rounded-lg w-full border border-base-300 mt-2">
+    <div className="py-4 px-6 rounded-lg w-full border border-default mt-2">
       <h2 className="text-sm font-mono text-secondary">{title}</h2>
       {loading ? (
         <div className="animate-spin-medium inline-block mt-2">
@@ -328,12 +338,9 @@ export function BalanceCard({
         </div>
       )}
       <div className="flex justify-end">
-        <button
-          className="btn btn-xs normal-case font-normal rounded-md"
-          onClick={onManage}
-        >
-          Manage
-        </button>
+        <Button size="sm" variant="secondary" onClick={onManage}>
+          <span className="text-secondary hover:text-white">Manage</span>
+        </Button>
       </div>
     </div>
   )

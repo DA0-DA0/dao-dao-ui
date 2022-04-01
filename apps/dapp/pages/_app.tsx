@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
+import ReactTooltip from 'react-tooltip'
 import { DEFAULT_THEME_NAME, ThemeProvider } from 'ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'
@@ -25,16 +26,24 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => setLoaded(true), [])
   useEffect(() => {
     setTheme((theme) => {
-      const savedTheme = localStorage.getItem('theme')
+      let savedTheme = localStorage.getItem('theme')
+      if (!(savedTheme === 'dark' || savedTheme === 'light')) {
+        // Theme used to be either junoDark or junoLight. We've sinced moved on
+        // to our own theming. This handles case where user has those old themes in
+        // local storage.
+        localStorage.setItem('theme', 'dark')
+        savedTheme = 'dark'
+      }
       const themeToUse = savedTheme ? savedTheme : theme
-      document.documentElement.setAttribute('data-theme', themeToUse)
+      document.documentElement.classList.add(themeToUse)
       return themeToUse
     })
   }, [])
 
   function updateTheme(themeName: string) {
-    document.documentElement.setAttribute('data-theme', themeName)
     setTheme(themeName)
+    const replace = themeName === 'dark' ? 'light' : 'dark'
+    document.documentElement.classList.replace(replace, themeName)
     localStorage.setItem('theme', themeName)
   }
 

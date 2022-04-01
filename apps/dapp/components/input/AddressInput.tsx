@@ -14,7 +14,6 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   error,
   validation,
   onChange,
-  border = true,
   disabled = false,
 }: {
   label: FieldName
@@ -22,7 +21,6 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
-  border?: boolean
   disabled?: boolean
 }) {
   const validate = validation?.reduce(
@@ -32,9 +30,8 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <input
       type="text"
-      className={`input text-sm font-mono
-        ${error ? ' input-error' : ''}
-        ${border ? ' input-bordered' : ''}`}
+      className={`bg-transparent rounded-lg p-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default text-sm font-mono
+        ${error ? ' ring-error ring-1' : ''}`}
       disabled={disabled}
       {...register(label, { validate, onChange })}
     />

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 import { MenuIcon } from '@heroicons/react/outline'
+import ReactTooltip from 'react-tooltip'
 
 import { SITE_TITLE } from '../util/constants'
 import { Logo } from './Logo'
@@ -30,8 +31,8 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const [mobileMenuOpened, setMenuOpened] = useState(false)
 
   return (
-    <div className="lg:grid lg:grid-cols-5 w-full h-full">
-      <div className="hidden lg:block">
+    <div className="lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))] w-full h-full">
+      <div className="hidden lg:w-[264px] lg:block">
         <Nav />
       </div>
       <div className="lg:hidden">
@@ -52,6 +53,12 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
       >
         {children}
       </main>
+      {/*
+          For some reason entirely beyond me we have to explicitly tell this
+          library that we want the tooltip to go away when the mouse moves off
+          the element..
+        */}
+      <ReactTooltip place="top" effect="solid" eventOff="mouseout" />
     </div>
   )
 }

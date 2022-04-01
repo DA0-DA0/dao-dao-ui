@@ -95,8 +95,8 @@ const Starred: NextPage = () => {
   return (
     <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="p-6 w-full col-span-4">
-        <h1 className="text-2xl font-semibold">Starred</h1>
-        <h2 className="text-lg mb-2 mt-6">
+        <h1 className="text-xl font-semibold">Starred</h1>
+        <h2 className="text-md mb-2 mt-6">
           <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
           DAOs
         </h2>
@@ -110,7 +110,7 @@ const Starred: NextPage = () => {
           )}
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2 mt-6">
+          <h2 className="text-md mb-2 mt-6">
             <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
             Multisigs
           </h2>
@@ -126,9 +126,9 @@ const Starred: NextPage = () => {
         </div>
       </div>
       <Sidebar>
-        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-          <h2 className="font-medium text-lg">Actions</h2>
-          <ul className="list-none ml-2 mt-1">
+        <div className="col-start-5 col-span-2 p-6 min-h-screen">
+          <h2 className="font-medium text-md">Actions</h2>
+          <ul className="list-none ml-2 mt-1 text-sm">
             <li className="mt-1">
               <Link href="/dao/create">
                 <a>

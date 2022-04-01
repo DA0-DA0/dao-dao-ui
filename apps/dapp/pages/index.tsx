@@ -25,10 +25,10 @@ function EnterAppButton({ small }: { small?: boolean }) {
   return (
     <Link href="/starred" passHref>
       <Button
-        size={small ? 'md' : 'xl'}
+        size={small ? 'sm' : 'lg'}
         iconAfter={
           <ArrowNarrowRightIcon
-            className="inline h-4 w-4"
+            className={`inline ${small ? 'h-4' : 'h-5'}`}
             style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
           />
         }
@@ -49,8 +49,8 @@ function InfoCard({
   children: ReactNode
 }) {
   return (
-    <div className="bg-base-300 rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-60">
-      <div className="bg-accent-content rounded-lg h-fit w-fit p-1 w-9 h-8 flex items-center justify-center">
+    <div className="bg-primary rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-60">
+      <div className="bg-secondary rounded-lg h-fit w-fit p-1 w-9 h-8 flex items-center justify-center">
         {children}
       </div>
       <div>
@@ -64,7 +64,7 @@ function InfoCard({
 const Home: NextPage = () => {
   return (
     <GradientWrapper>
-      <nav className="border-b border-base-300/40 py-4 w-full px-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-40">
+      <nav className="border-b border-inactive py-4 w-full px-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-40">
         <div className="flex max-w-screen-lg items-center justify-between mx-auto">
           <Link href="/" passHref>
             <a className="flex items-center">
@@ -97,7 +97,7 @@ const Home: NextPage = () => {
           </div>
         </div>
       </nav>
-      <h1 className="text-7xl text-center font-medium mt-[33vh]">
+      <h1 className="text-7xl text-center text-primary font-medium mt-[33vh]">
         DAOs for everyone.
       </h1>
       <p className="text-lg text-center max-w-lg mx-auto my-5 text-secondary px-2">

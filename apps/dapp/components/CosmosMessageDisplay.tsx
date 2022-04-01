@@ -1,6 +1,6 @@
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material.css'
-import 'codemirror/theme/lucario.css'
+import 'codemirror/theme/material-ocean.css'
+
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 import { useThemeContext } from 'ui'
 
@@ -13,11 +13,11 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
 
 export const CosmosMessageDisplay = ({ value }: { value: string }) => {
   const themeCtx = useThemeContext()
-  const editorTheme = themeCtx.theme !== 'junoDark' ? 'lucario' : 'material'
+  const editorTheme = themeCtx.theme !== 'dark' ? 'default' : 'material-ocean'
   return (
     <div className="flex flex-col">
       <CodeMirror
-        className="text-lg"
+        className="text-sm"
         options={{
           theme: editorTheme,
           mode: {
@@ -25,7 +25,6 @@ export const CosmosMessageDisplay = ({ value }: { value: string }) => {
             json: true,
           },
           readOnly: true,
-          lineNumbers: true,
           lineWrapping: false,
           tabSize: 2,
         }}
