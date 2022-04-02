@@ -75,7 +75,7 @@ export function StarButton({
 }) {
   return (
     <button
-      className="text-left w-20 flex flex-row items-center text-sm"
+      className="text-left w-20 flex flex-row items-center link-text text-brand"
       onClick={(_e) => onPin()}
     >
       {pinned ? (
@@ -110,7 +110,7 @@ export function HeroContractHeader({
   imgUrl?: string | null
 }) {
   return (
-    <div className="flex items-center flex-col mt-3">
+    <div className="flex items-center flex-col mt-2">
       {imgUrl && HEADER_IMAGES_ENABLED ? (
         <div
           className="rounded-full bg-center bg-cover w-[95px] h-[95px]"
@@ -124,11 +124,11 @@ export function HeroContractHeader({
         <Logo width={85} height={85} alt="DAO DAO logo" />
       )}
       <div className="flex flex-col items-center">
-        <h1 className="inline text-2xl font-semibold mb-1 mt-5">{name}</h1>
+        <h1 className="inline header-text mt-5">{name}</h1>
         <EstablishedDate address={address} />
       </div>
-      <div className="my-2">
-        <p>{description}</p>
+      <div className="mb-[15px] mt-[10px]">
+        <p className="body-text">{description}</p>
       </div>
     </div>
   )
@@ -140,7 +140,7 @@ export function HeroContractHorizontalInfoSection({
   children: ReactNode
 }) {
   return (
-    <div className="flex flex-row items-center gap-1 text-secondary">
+    <div className="flex flex-row items-center gap-1 caption-text">
       {children}
     </div>
   )
@@ -153,7 +153,7 @@ export function HeroContractHorizontalInfo({
 }) {
   const childList = Children.toArray(children)
   return (
-    <div className="w-full border-y border-inactive py-3">
+    <div className="w-full border-y border-inactive py-[20px]">
       <ul className="list-none flex justify-around text-sm flex-wrap gap-2">
         {Children.map(childList, (child) => (
           <li>{child}</li>
@@ -173,8 +173,8 @@ export function GovInfoListItem({
   value: string
 }) {
   return (
-    <li className="flex flex-row items-center text-sm">
-      <span className="inline text-secondary flex items-center gap-1 mr-1">
+    <li className="flex flex-row items-center caption-text">
+      <span className="inline flex items-center gap-1 mr-1">
         {icon} {text}:
       </span>
       {value}
@@ -195,7 +195,7 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
 export function BalanceListItem({ children }: { children: ReactNode }) {
   return (
-    <li className="text-sm text-secondary flex flex-row items-center flex-wrap gap-2">
+    <li className="caption-text flex flex-row items-center flex-wrap gap-2">
       {children}
     </li>
   )
@@ -293,12 +293,10 @@ export function ContractProposalsDispaly({
         ) : (
           <>
             <Link href={member ? proposalCreateLink : '#'} passHref>
-              <a
-                className={`flex items-center tooltip justify-left normal-case border border-inactive rounded-lg px-2 py-1 text-sm bg-dark text-light gap-1`}
-                data-tip={tooltip}
-              >
-                New proposal
-                <PlusIcon className="inline w-5 h-5 ml-1" />
+              <a data-tip={tooltip}>
+                <Button size="sm" disabled={!!tooltip}>
+                  New proposal
+                </Button>
               </a>
             </Link>
           </>
@@ -326,20 +324,20 @@ export function BalanceCard({
 }) {
   return (
     <div className="py-4 px-6 rounded-lg w-full border border-default mt-2">
-      <h2 className="text-sm font-mono text-secondary">{title}</h2>
+      <h2 className="caption-text font-mono">{title}</h2>
       {loading ? (
         <div className="animate-spin-medium inline-block mt-2">
           <LogoNoBorder />
         </div>
       ) : (
-        <div className="mt-2 font-bold flex flex-row flex-wrap items-center gap-2">
+        <div className="mt-2 title-text flex flex-row flex-wrap items-center gap-2 mb-[22px]">
           <BalanceIcon />
           {amount} ${denom}
         </div>
       )}
       <div className="flex justify-end">
         <Button size="sm" variant="secondary" onClick={onManage}>
-          <span className="text-secondary hover:text-white">Manage</span>
+          Manage
         </Button>
       </div>
     </div>

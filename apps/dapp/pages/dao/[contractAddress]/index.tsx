@@ -181,7 +181,7 @@ function DaoHome() {
       </div>
       <Sidebar>
         <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-          <h2 className="font-medium text-md my-3">Your shares</h2>
+          <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
           <ul className="list-none mt-3">
             <li>
               <BalanceCard
@@ -234,8 +234,8 @@ function DaoHome() {
             ) : null}
           </ul>
           {govTokenBalance?.amount ? (
-            <div className="bg-base-300 rounded-lg w-full mt-2 px-6 py-4">
-              <h3 className="font-mono text-sm font-semibold mb-3">
+            <div className="bg-primary rounded-lg w-full mt-2 p-6">
+              <h3 className="link-text mb-4">
                 You have{' '}
                 {convertMicroDenomToDenomWithDecimals(
                   govTokenBalance?.amount,
@@ -243,7 +243,7 @@ function DaoHome() {
                 ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
                 unstaked {tokenInfo.symbol}
               </h3>
-              <p className="text-sm">
+              <p className="secondary-text">
                 Staking them would bring you{' '}
                 {stakedGovTokenBalance &&
                   `${(
@@ -256,16 +256,16 @@ function DaoHome() {
                 {daoInfo.config.name}
                 {"'"}s direction.
               </p>
-              <div className="text-right mt-3">
+              <div className="mt-4 flex justify-end">
                 <button
-                  className="btn btn-sm btn-ghost normal-case font-normal"
+                  className="link-text flex items-center gap-2 rounded"
                   onClick={() => {
                     setShowStaking(true)
                     setStakingDefault(StakingMode.Stake)
                   }}
                 >
                   Stake tokens
-                  <PlusSmIcon className="inline w-5 h-5 ml-2" />
+                  <PlusSmIcon className="h-5" />
                 </button>
               </div>
             </div>

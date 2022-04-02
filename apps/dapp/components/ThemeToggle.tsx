@@ -21,7 +21,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={() => themeContext.updateTheme(nextTheme)}
-      className="flex items-center"
+      className="flex items-center link-text"
     >
       {icon}
       {text}

@@ -58,6 +58,78 @@ menu {
 	--black: 255, 255, 255;
 	--error: 199, 62, 89;
 	--valid: 57, 166, 153;
-	--brand: 77, 76, 185;
+	--brand: 95, 94, 255;
+    }
+
+    .hero-text {
+	font-style: normal;
+	font-weight: 700;
+	font-size: 26px;
+	line-height: 28px;
+	color: rgba(var(--dark, 1));
+    }
+
+    .header-text {
+	font-style: normal;
+	font-weight: 600;
+	font-size: 20px;
+	line-height: 24px;
+	color: rgba(var(--dark), 1);
+    }
+
+    .title-text {
+	font-style: normal;
+	font-weight: 600;
+	font-size: 16px;
+	line-height: 20px;
+	color: rgba(var(--dark), 1);
+    }
+
+    .primary-text {
+	font-style: normal;
+	font-weight: 500;
+	font-size: 15px;
+	line-height: 20px;
+	color: rgba(var(--dark), 0.95);
+    }
+
+    .body-text {
+	font-style: normal;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 20px;
+	color: rgba(var(--dark), 0.95);
+    }
+
+    .button-text {
+	font-style: normal;
+	font-weight: 500;
+	font-size: 13px;
+	line-height: 20px;
+	color: rgba(var(--white), 1);
+    }
+
+    .link-text {
+	font-style: normal;
+	font-weight: 500;
+	font-size: 13px;
+	line-height: 20px;
+	color: rgba(var(--dark), 0.95);
+    }
+
+    .secondary-text {
+	font-style: normal;
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 16px;
+	color: rgba(var(--dark), 0.75);
+    }
+
+    .caption-text {
+	font-style: normal;
+	font-weight: 500;
+	font-size: 12px;
+	line-height: 16px;
+	color: rgba(var(--dark), 0.6);
     }
 }

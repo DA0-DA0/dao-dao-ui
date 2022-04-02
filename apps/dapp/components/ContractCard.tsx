@@ -2,11 +2,7 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
-import {
-  PlusIcon,
-  ScaleIcon,
-  StarIcon as StarIconOutline,
-} from '@heroicons/react/outline'
+import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
 import {
@@ -32,6 +28,7 @@ function DIYLogo({
   proposals,
   balance,
   children,
+  token = true,
 }: {
   title: string
   body: string
@@ -40,22 +37,35 @@ function DIYLogo({
   proposals?: number
   balance?: string
   children: ReactNode
+  token: boolean
 }) {
   return (
     <Link href={href}>
       <a>
         <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center m-2 bg-card from-transparent justify-between hover:shadow-brand hover:shadow-md hover:outline-brand hover:outline hover:outline-1 relative">
-          <div className="absolute w-full h-[110px] top-0 left-0 bg-gradient-to-t to-dark from-transparent opacity-10 rounded-lg "></div>
+          <div className="absolute w-full h-[110px] top-0 left-0 bg-gradient-to-t to-dark from-transparent opacity-[8%] rounded-lg "></div>
           <div className="flex flex-col items-center max-w-full">
-            <div className="mt-6">{children}</div>
-            <h3 className="text-md font-semibold truncate max-w-full">
+            <div className="relative">
+              {children}
+              {token && (
+                <div
+                  className="bg-center rounded-full absolute -bottom-1 -right-[10px] border border-light"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    backgroundImage: 'url(/daotoken.jpg)',
+                  }}
+                ></div>
+              )}
+            </div>
+            <h3 className="text-md font-semibold truncate max-w-full mt-3">
               {title}
             </h3>
-            <p className="text-secondary text-sm font-mono text-center mt-1 break-words line-clamp-3">
+            <p className="text-secondary text-xs font-mono text-center mt-1 break-words line-clamp-3">
               {body}
             </p>
           </div>
-          <div className="mt-3 flex flex-col items-left gap-1">
+          <div className="flex flex-col items-left gap-1">
             {balance && (
               <p className="text-sm">
                 <SvgDao fill="currentColor" className="inline w-4 mr-2 mb-1" />
@@ -76,7 +86,7 @@ function DIYLogo({
               </p>
             )}
             {weight != undefined && (
-              <p className="text-success text-sm">
+              <p className="text-success text-sm text-valid">
                 <SvgVotes
                   fill="currentColor"
                   className="inline h-5 mr-2 mb-1"
@@ -124,7 +134,7 @@ export function ContractCard({
       >
         {imgUrl && CARD_IMAGES_ENABLED ? (
           <div
-            className="rounded-full bg-center bg-cover w-[70px] h-[70px]"
+            className="rounded-full bg-center bg-cover w-[80px] h-[80px]"
             style={{
               backgroundImage: `url(${imgUrl})`,
             }}
@@ -132,14 +142,17 @@ export function ContractCard({
             aria-label="DAO's Custom Logo"
           ></div>
         ) : (
-          <Logo height={70} width={70} alt={name} />
+          <Logo height={80} width={80} alt={name} />
         )}
       </DIYLogo>
-      <button className="absolute top-6 right-6" onClick={(_e) => onPin()}>
+      <button
+        className="absolute top-[18px] right-[18px] text-brand"
+        onClick={(_e) => onPin()}
+      >
         {pinned ? (
-          <StarIconSolid className="w-5 h-5" />
+          <StarIconSolid className="w-[18px] h-[18px]" />
         ) : (
-          <StarIconOutline className="w-5 h-5" />
+          <StarIconOutline className="w-[18px] h-[18px]" />
         )}
       </button>
     </div>
@@ -156,7 +169,7 @@ export function MysteryContractCard({
   href: string
 }) {
   return (
-    <DIYLogo title={title} body={body} href={href}>
+    <DIYLogo title={title} body={body} href={href} token={false}>
       <div className="w-[70px] h-[70px] flex justify-center items-center">
         <PlusIcon className="w-9" />
       </div>
