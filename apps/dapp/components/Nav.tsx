@@ -21,7 +21,7 @@ import ConnectWalletButton from './ConnectWalletButton'
 
 function MemberDisplay({ name }: { name: string }) {
   return (
-    <div className="truncate">
+    <div className="truncate link-text">
       <LibraryIcon className="inline h-5 w-5 mb-1 mr-2" />
       {name}
     </div>
@@ -65,8 +65,8 @@ function Nav({ onMenuClick }: NavProps) {
         </div>
         <ConnectWalletButton />
         <div className="ml-1 text-sm">
-          <div className="mt-3">
-            <h3 className="text-tertiary font-mono text-sm mb-1">DAOs</h3>
+          <div className="mt-[20px]">
+            <h3 className="caption-text font-mono mb-[16px]">DAOs</h3>
             <ul className="list-none ml-2">
               {daoAddresses.map(({ dao, address }) => (
                 <li key={address} className="mt-1">
@@ -79,7 +79,7 @@ function Nav({ onMenuClick }: NavProps) {
               ))}
             </ul>
             <ul className="list-none ml-2 mt-2">
-              <li className="mt-1">
+              <li className="mt-1 link-text">
                 <ArrowRightIcon className="inline w-4 mr-2 mb-1" />
                 <Link href="/dao/list">
                   <a>All DAOs</a>
@@ -88,7 +88,9 @@ function Nav({ onMenuClick }: NavProps) {
             </ul>
           </div>
           <div className="mt-3">
-            <h3 className="text-tertiary font-mono text-sm mb-1">Multisigs</h3>
+            <h3 className="caption-text font-mono mb-[16px] mt-[20px]">
+              Multisigs
+            </h3>
             <ul className="list-none ml-2">
               {sigAddresses &&
                 sigAddresses.map(({ sig, address }) => (
@@ -103,7 +105,7 @@ function Nav({ onMenuClick }: NavProps) {
             </ul>
 
             <ul className="list-none ml-2">
-              <li className="mt-1">
+              <li className="mt-1 link-text">
                 <ArrowRightIcon className="inline w-4 mr-2 mb-1" />
                 <Link href="/multisig/list">
                   <a>All Multisigs</a>
@@ -114,26 +116,26 @@ function Nav({ onMenuClick }: NavProps) {
         </div>
       </div>
       <div className="ml-1">
-        <h3 className="text-tertiary font-mono text-sm mb-2">
+        <h3 className="caption-text font-mono mb-2">
           dao dao <div className="inline text-error">beta</div> v
           {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
         </h3>
         <ul
-          className={`text-sm list-none ${
+          className={`text-sm list-none link-text ${
             betaWarningShowing ? ' text-secondary' : ''
           }`}
         >
           <li className="mb-2">
             <ThemeToggle />
           </li>
-          <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-2" />
+          <li className="mb-2">
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2" />
             <a href="https://docs.daodao.zone" target="_blank" rel="noreferrer">
               Docs
             </a>
           </li>
           <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2 mb-2" />
+            <ExternalLinkIcon className="inline w-5 h-5 mr-2" />
             <a
               href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
               target="_blank"

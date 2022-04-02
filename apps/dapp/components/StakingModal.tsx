@@ -36,6 +36,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
 } from 'util/conversion'
+import { Button } from 'ui'
 
 export enum StakingMode {
   Stake,
@@ -67,10 +68,9 @@ function ModeButton({
 }) {
   return (
     <button
-      className={
-        'btn btn-sm rounded-md text-primary bg-transparent normal-case border-none font-normal' +
-        (!active ? ' hover:bg-base-100' : ' bg-base-100 hover:bg-base-100')
-      }
+      className={`py-2 px-4 rounded transition ${
+        active ? 'bg-secondary' : 'hover:bg-secondary'
+      } body-text`}
       onClick={onClick}
     >
       {children}
@@ -92,33 +92,36 @@ function AmountSelector({
   max: number
 }) {
   return (
-    <div className="form-control mt-2">
-      <div className="relative">
-        <button
-          className={
-            'absolute top-0 left-0 rounded-r-none btn btn-primary bg-base-100 hover:bg-base-200 border-none text-primary' +
-            (Number(amount) <= 1 ? ' btn-disabled' : '')
-          }
-          onClick={onDecrease}
-        >
+    <div className="relative">
+      <button
+        onClick={onDecrease}
+        disabled={Number(amount) <= 1}
+        className={`absolute top-0 left-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-l ${
+          Number(amount) <= 1 ? 'bg-transparent border border-inactive' : ''
+        }`}
+      >
+        <ChevronLeftIcon className="w-4 h-4" />
+      </button>
+      {/* <Button disabled={Number(amount) <= 1} onClick={onDecrease}>
           <ChevronLeftIcon className="w-4 h-4" />
-        </button>
-        <input
-          type="number"
-          className="appearance-none w-full pr-16 pl-16 input input-primary input-bordered bg-base-100 border-none"
-          value={amount}
-          onChange={onChange}
-        />
-        <button
-          className={
-            'absolute top-0 right-0 rounded-l-none btn btn-primary bg-base-100 hover:bg-base-200 border-none text-primary' +
-            (Number(amount) + 1 >= max ? ' btn-disabled' : '')
-          }
-          onClick={onIncrease}
-        >
-          <ChevronRightIcon className="w-4 h-4" />{' '}
-        </button>
-      </div>
+          </Button> */}
+      <input
+        type="number"
+        className="pr-16 pl-16 h-[56px] w-[392px] bg-secondary rounded"
+        value={amount}
+        onChange={onChange}
+      />
+      <button
+        onClick={onIncrease}
+        disabled={Number(amount) + 1 >= max}
+        className={`absolute top-0 right-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-r ${
+          Number(amount) + 1 >= max
+            ? 'bg-transparent border border-inactive'
+            : ''
+        }`}
+      >
+        <ChevronRightIcon className="w-4 h-4" />
+      </button>
     </div>
   )
 }
@@ -134,8 +137,8 @@ function PercentSelector({
 }) {
   const active = (p: number) => max * p == amount
   const getClassName = (p: number) =>
-    'btn btn-sm rounded-md bg-base-100 border-none text-primary hover:bg-base-200 font-normal' +
-    (active(p) ? '' : ' bg-transparent')
+    'rounded-md transition hover:bg-secondary link-text font-normal' +
+    (active(p) ? ' bg-secondary border border-inactive' : '')
   const getOnClick = (p: number) => () => {
     setAmount(
       (p * max)
@@ -355,12 +358,8 @@ export function StakingModal({
 
   const ActionButton = ({ ready }: { ready: boolean }) => {
     return (
-      <button
-        className={
-          'btn btn-sm rounded-md bg-primary text-primary-content normal-case border-none font-normal hover:bg-primary-focus' +
-          (!ready ? ' btn-disabled' : '') +
-          (loading ? ' loading' : '')
-        }
+      <Button
+        disabled={!ready}
         onClick={() => {
           beforeExecute()
           if (mode === StakingMode.Stake) {
@@ -418,125 +417,120 @@ export function StakingModal({
           }
         }}
       >
-        <span className="capitalize mr-1">{stakingModeString(mode)}</span>{' '}
-        tokens
-      </button>
+        <span className="capitalize mr-1">{stakingModeString(mode)}</span>
+      </Button>
     )
   }
 
   return (
-    <div className="bg-base-300 fixed bottom-0 right-0 m-3 border border-base-300 rounded-lg shadow max-w-sm">
-      <div className="py-3 px-6 mt-3">
+    <div className="fixed z-10 top-0 left-0 w-screen h-full backdrop-filter backdrop-brightness-50 flex items-center justify-center">
+      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative">
+        <button
+          className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
+          onClick={onClose}
+        >
+          <XIcon className="h-4 w-4" />
+        </button>
+
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-medium">Manage staking</h1>
-          <button
-            className="hover:bg-base-100 rounded-full p-1"
-            onClick={onClose}
-          >
-            <XIcon className="h-4 w-4" />
-          </button>
+          <h1 className="header-text">Manage staking</h1>
         </div>
-        <div className="flex gap-2 mt-3 mb-2">
+        <div className="flex py-[20px] mb-2 gap-1 border-b border-inactive">
           <ModeButton
             onClick={() => setMode(StakingMode.Stake)}
             active={mode === StakingMode.Stake}
           >
-            Staking
+            Stake
           </ModeButton>
           <ModeButton
             onClick={() => setMode(StakingMode.Unstake)}
             active={mode === StakingMode.Unstake}
           >
-            Unstaking
+            Unstake
           </ModeButton>
           {canClaim && (
             <ModeButton
               onClick={() => setMode(StakingMode.Claim)}
               active={mode === StakingMode.Claim}
             >
-              Claiming
+              Claim
             </ModeButton>
           )}
         </div>
-      </div>
-      <hr className="border-primary" />
-      {mode !== StakingMode.Claim && (
-        <>
-          <div className="py-3 px-6 flex flex-col mt-3">
-            <h2 className="font-medium mb-3">Choose your token amount</h2>
-            <AmountSelector
-              amount={amount}
-              onIncrease={() => setAmount((a) => (Number(a) + 1).toString())}
-              onDecrease={() => setAmount((a) => (Number(a) - 1).toString())}
-              onChange={(e) => setAmount(e?.target?.value)}
-              max={maxTx}
-            />
-            {Number(amount) > maxTx && (
-              <span className="text-xs text-error mt-1 ml-1">
-                Can{"'"}t {stakingModeString(mode)} more ${tokenSymbol} than you
-                own
-              </span>
-            )}
-            <span className="text-xs text-secondary font-mono mt-2">
-              Max available {maxTx} ${tokenSymbol}
-            </span>
-            <div className="mt-3">
-              <PercentSelector
-                amount={Number(amount)}
-                setAmount={setAmount}
+        {mode !== StakingMode.Claim && (
+          <>
+            <div className="flex flex-col mt-[20px]">
+              <h2 className="primary-text mb-3">Choose your token amount</h2>
+              <AmountSelector
+                amount={amount}
+                onIncrease={() => setAmount((a) => (Number(a) + 1).toString())}
+                onDecrease={() => setAmount((a) => (Number(a) - 1).toString())}
+                onChange={(e) => setAmount(e?.target?.value)}
                 max={maxTx}
               />
-            </div>
-          </div>
-          {mode === StakingMode.Unstake && durationIsNonZero(unstakeDuration) && (
-            <>
-              <hr className="mt-3" />
-              <div className="py-3 px-6 mt-3">
-                <h2 className="font-medium text-md">
-                  Unstaking period: {humanReadableDuration(unstakeDuration)}
-                </h2>
-                <p className="text-sm mt-3">
-                  There will be {humanReadableDuration(unstakeDuration)} between
-                  the time you decide to unstake your tokens and the time you
-                  can redeem them.
-                </p>
+              {Number(amount) > maxTx && (
+                <span className="caption-text text-error mt-1 ml-1">
+                  Can{"'"}t {stakingModeString(mode)} more ${tokenSymbol} than
+                  you own
+                </span>
+              )}
+              <span className="caption-text font-mono mt-2">
+                Max available {maxTx} ${tokenSymbol}
+              </span>
+              <div className="mt-3">
+                <PercentSelector
+                  amount={Number(amount)}
+                  setAmount={setAmount}
+                  max={maxTx}
+                />
               </div>
-            </>
-          )}
-          <div className="px-3 py-6 text-right">
-            <div
-              className={!ready ? 'tooltip tooltip-left' : ''}
-              data-tip={error}
-            >
+            </div>
+            {mode === StakingMode.Unstake &&
+              durationIsNonZero(unstakeDuration) && (
+                <>
+                  <hr className="mt-3" />
+                  <div className="mt-3">
+                    <h2 className="link-text">
+                      Unstaking period: {humanReadableDuration(unstakeDuration)}
+                    </h2>
+                    <p className="secondary-text mt-3">
+                      There will be {humanReadableDuration(unstakeDuration)}{' '}
+                      between the time you decide to unstake your tokens and the
+                      time you can redeem them.
+                    </p>
+                  </div>
+                </>
+              )}
+            <div className="px-3 py-6 flex justify-end">
               <ActionButton ready={ready} />
             </div>
-          </div>
-        </>
-      )}
-      {mode === StakingMode.Claim && (
-        <>
-          <div className="py-3 px-6 flex flex-col mt-3">
-            <h2 className="font-medium">
-              {convertMicroDenomToDenomWithDecimals(
-                claimAmount,
-                tokenInfo.decimals
-              )}
-              ${tokenSymbol} avaliable
-            </h2>
-            <p className="text-sm mt-3 mb-3">
-              Claim them to increase your voting power.
-            </p>
-            <div className="px-3 py-6 text-right">
-              <div
-                className={walletDisconnected() ? 'tooltip tooltip-left' : ''}
-                data-tip={walletDisconnected()}
-              >
-                <ActionButton ready={!walletDisconnected()} />
+          </>
+        )}
+        {mode === StakingMode.Claim && (
+          <>
+            <div className="py-3 px-6 flex flex-col mt-3">
+              <h2 className="font-medium">
+                {convertMicroDenomToDenomWithDecimals(
+                  claimAmount,
+                  tokenInfo.decimals
+                )}
+                ${tokenSymbol} avaliable
+              </h2>
+              <p className="text-sm mt-3 mb-3">
+                Claim them to increase your voting power.
+              </p>
+              <div className="px-3 py-6 flex justify-end">
+                <div
+                  className={walletDisconnected() ? 'tooltip tooltip-left' : ''}
+                  data-tip={walletDisconnected()}
+                >
+                  <ActionButton ready={!walletDisconnected()} />
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   )
 }

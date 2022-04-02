@@ -95,9 +95,9 @@ const Starred: NextPage = () => {
   return (
     <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="p-6 w-full col-span-4">
-        <h1 className="text-xl font-semibold">Starred</h1>
-        <h2 className="text-md mb-2 mt-6">
-          <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
+        <h1 className="header-text">Starred</h1>
+        <h2 className="primary-text mb-2 mt-6 flex items-center">
+          <StarIcon className="inline w-4 mr-2 " />
           DAOs
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -110,8 +110,8 @@ const Starred: NextPage = () => {
           )}
         </div>
         <div className="mt-6">
-          <h2 className="text-md mb-2 mt-6">
-            <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
+          <h2 className="primary-text mb-2 mt-6 flex items-center">
+            <StarIcon className="inline w-4 mr-2 " />
             Multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -127,8 +127,8 @@ const Starred: NextPage = () => {
       </div>
       <Sidebar>
         <div className="col-start-5 col-span-2 p-6 min-h-screen">
-          <h2 className="font-medium text-md">Actions</h2>
-          <ul className="list-none ml-2 mt-1 text-sm">
+          <h2 className="body-text text-[16px] font-semibold mb-6">Actions</h2>
+          <ul className="link-text list-none ml-2 mt-1">
             <li className="mt-1">
               <Link href="/dao/create">
                 <a>

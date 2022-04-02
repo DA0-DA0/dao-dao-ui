@@ -106,7 +106,7 @@ function WalletConnect() {
       <div className="w-full relative py-2 px-4 my-4 bg-primary hover:outline hover:outline-brand rounded-lg group relative">
         <div className="flex items-center justify-left gap-4 h-full w-full">
           <SvgWallet width="20px" height="20px" fill="currentColor" />
-          <div className="font-mono text-sm">
+          <div className="link-text">
             <span>{walletName}</span>
             <br />
             <span className="text-secondary capitalize">
@@ -123,14 +123,11 @@ function WalletConnect() {
   }
   return (
     <div className="my-4">
-      <Button
-        full
-        onClick={handleConnect}
-        iconBefore={
+      <Button full onClick={handleConnect}>
+        <>
           <SvgWallet className="inline w-5 mr-1" fill="currentColor" />
-        }
-      >
-        <p className="text-sm my-2">connect wallet</p>
+          <p className="text-sm my-2">connect wallet</p>
+        </>
       </Button>
     </div>
   )

@@ -7,8 +7,16 @@ const colors = {
     white: generateColorClass("white", 1),
     error: generateColorClass("error", 1),
     valid: generateColorClass("valid", 1),
-    brand: generateColorClass("brand", 1),
-    juno: 'rgba(251, 156, 134, 1)'
+    brand: generateColorClass("brand", 0.9),
+    juno: 'rgba(251, 156, 134, 1)',
+
+    btn: generateColorClass("dark", 0.95),
+    'btn-hover': generateColorClass("black", 1),
+    'btn-pressed': generateColorClass("dark", 0.85),
+    'btn-disabled': generateColorClass("dark", 0.3),
+
+    'btn-secondary-hover': generateColorClass("dark", 0.15),
+    'btn-secondary-pressed': generateColorClass("dark", 0.05),
 }
 
 const textColor = {

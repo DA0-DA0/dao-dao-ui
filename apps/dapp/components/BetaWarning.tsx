@@ -7,7 +7,7 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
   return (
     <div className="fixed z-10 w-screen h-full backdrop-filter backdrop-blur-sm flex items-center justify-center">
       <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus">
-        <div className="modal-box rounded-md prose prose-sm dark:prose-invert mb-6">
+        <div className="rounded-md prose prose-sm dark:prose-invert mb-6">
           <h2>Before you continue...</h2>
           <p>
             DAO DAO is in beta, and has not yet been audited. <b>Do not</b> keep
