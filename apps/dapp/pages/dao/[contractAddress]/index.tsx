@@ -141,7 +141,7 @@ function DaoHome() {
                         )
                       } else {
                         setPinnedDaos((p) => p.concat([contractAddress]))
-                        addToken(daoInfo.gov_token)
+                        addTokenCallback()
                       }
                     }}
                   />
