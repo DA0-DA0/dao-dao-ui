@@ -145,7 +145,6 @@ export function ProposalForm({
             />
             <InputErrorMessage error={errors.description} />
           </div>
-          <InputLabel name="Actions" />
           <ul className="list-none">
             {messageFields.map((data, index) => {
               const label = (data as any).label
@@ -179,45 +178,33 @@ export function ProposalForm({
             })}
           </ul>
           <div className="mt-2">
-            <button
-              className="m-1 rounded-md bg-primary text-primary border-none p-2 w-fit flex items-center gap-1"
+            <Button
+              variant="secondary"
               type="button"
               onClick={() => setShowTemplateSelector((s) => !s)}
             >
-              <PlusIcon className="h-4 inline" /> Add action
-            </button>
+              <PlusIcon className="h-4 inline" /> Add component
+            </Button>
             {showTemplateSelector && (
               <ProposalTemplateSelector
-                multisig
+                multisig={!!multisig}
                 templates={messageTemplates}
+                onClose={() => setShowTemplateSelector(false)}
                 onLabelSelect={(label, getDefaults) => {
                   append({
                     ...getDefaults(wallet, contractConfig, govTokenDecimals),
                     label,
                   })
-                  setShowTemplateSelector((s) => !s)
+                  setShowTemplateSelector(false)
                 }}
               />
             )}
           </div>
         </div>
-        <div className="mt-4 flex gap-2">
-          <div
-            className={!wallet ? 'tooltip' : ''}
-            data-tip="Connect your wallet to submit"
-          >
-            <Button
-              type="submit"
-              size="md"
-              variant="secondary"
-              iconAfter={<SvgAirplane className="inline stroke-current ml-2" />}
-            >
-              Submit{' '}
-            </Button>
-          </div>
-          <button
+        <div className="mt-4 flex justify-end gap-2">
+          <Button
             type="button"
-            className="btn btn-sm btn-outline normal-case hover:bg-primary hover:text-primary-content"
+            variant="secondary"
             onClick={() => setShowPreview((p) => !p)}
           >
             {showPreview ? (
@@ -231,7 +218,13 @@ export function ProposalForm({
                 <EyeIcon className="inline h-5 stroke-current ml-2" />
               </>
             )}
-          </button>
+          </Button>
+          <div data-tip={!wallet ? 'Connect your wallet to submit' : undefined}>
+            <Button type="submit">
+              Publish{' '}
+              <SvgAirplane color="currentColor" width="14px" height="14px" />
+            </Button>
+          </div>
         </div>
       </form>
     </FormProvider>

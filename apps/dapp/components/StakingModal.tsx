@@ -37,6 +37,7 @@ import {
   humanReadableDuration,
 } from 'util/conversion'
 import { Button } from 'ui'
+import { Modal } from './Modal'
 
 export enum StakingMode {
   Stake,
@@ -68,8 +69,10 @@ function ModeButton({
 }) {
   return (
     <button
-      className={`py-2 px-4 rounded transition ${
-        active ? 'bg-secondary' : 'hover:bg-secondary'
+      className={`py-2 px-4 rounded  transition ${
+        active
+          ? 'bg-btn-secondary border border-inactive'
+          : 'hover:bg-btn-secondary'
       } body-text`}
       onClick={onClick}
     >
@@ -102,12 +105,9 @@ function AmountSelector({
       >
         <ChevronLeftIcon className="w-4 h-4" />
       </button>
-      {/* <Button disabled={Number(amount) <= 1} onClick={onDecrease}>
-          <ChevronLeftIcon className="w-4 h-4" />
-          </Button> */}
       <input
         type="number"
-        className="pr-16 pl-16 h-[56px] w-[392px] bg-secondary rounded"
+        className="pr-16 pl-16 h-[56px] w-[392px] bg-btn-secondary rounded"
         value={amount}
         onChange={onChange}
       />
@@ -137,7 +137,7 @@ function PercentSelector({
 }) {
   const active = (p: number) => max * p == amount
   const getClassName = (p: number) =>
-    'rounded-md transition hover:bg-secondary link-text font-normal' +
+    'rounded-md transition hover:bg-secondary link-text font-normal px-2 py-1' +
     (active(p) ? ' bg-secondary border border-inactive' : '')
   const getOnClick = (p: number) => () => {
     setAmount(
@@ -423,7 +423,7 @@ export function StakingModal({
   }
 
   return (
-    <div className="fixed z-10 top-0 left-0 w-screen h-full backdrop-filter backdrop-brightness-50 flex items-center justify-center">
+    <Modal>
       <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative">
         <button
           className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
@@ -474,10 +474,10 @@ export function StakingModal({
                   you own
                 </span>
               )}
-              <span className="caption-text font-mono mt-2">
+              <span className="caption-text font-mono mt-4">
                 Max available {maxTx} ${tokenSymbol}
               </span>
-              <div className="mt-3">
+              <div className="mt-4">
                 <PercentSelector
                   amount={Number(amount)}
                   setAmount={setAmount}
@@ -501,7 +501,7 @@ export function StakingModal({
                   </div>
                 </>
               )}
-            <div className="px-3 py-6 flex justify-end">
+            <div className="px-3 pt-6 flex justify-end">
               <ActionButton ready={ready} />
             </div>
           </>
@@ -519,7 +519,7 @@ export function StakingModal({
               <p className="text-sm mt-3 mb-3">
                 Claim them to increase your voting power.
               </p>
-              <div className="px-3 py-6 flex justify-end">
+              <div className="px-3 pt-6 flex justify-end">
                 <div
                   className={walletDisconnected() ? 'tooltip tooltip-left' : ''}
                   data-tip={walletDisconnected()}
@@ -531,6 +531,6 @@ export function StakingModal({
           </>
         )}
       </div>
-    </div>
+    </Modal>
   )
 }

@@ -66,6 +66,8 @@ import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
+import { Button } from 'ui'
+import { InputLabel } from './input/InputLabel'
 
 function executeProposalVote(
   vote: 'yes' | 'no' | 'abstain',
@@ -669,45 +671,10 @@ export function ProposalDetails({
       <div className="max-w-prose">
         <h1 className="text-4xl font-semibold">{proposal.title}</h1>
       </div>
-      {actionLoading ||
-        (tokenBalancesLoading && (
-          <div className="mt-3">
-            <LoadingButton />
-          </div>
-        ))}
-      {!actionLoading && proposal.status === 'open' && (
-        <div className="mt-3 flex flex-col flex-wrap justify-center gap-3">
-          <>
-            <ProposalVoteStatus
-              contractAddress={contractAddress}
-              proposalId={proposalId}
-            />
-            <ProposalVoteButtons
-              yesCount={yesVotes.toString()}
-              noCount={noVotes.toString()}
-              abstainCount={abstainVotes.toString()}
-              proposalId={proposalId}
-              contractAddress={contractAddress}
-              voted={voted}
-              setLoading={setActionLoading}
-              multisig={!!multisig}
-            />
-          </>
-        </div>
-      )}
-      {!actionLoading && proposal.status === 'passed' && (
-        <div className="mt-3">
-          <ProposalExecuteButton
-            proposalId={proposalId}
-            contractAddress={contractAddress}
-            member={member.member}
-            setLoading={setActionLoading}
-          />
-        </div>
-      )}
-      <div className="py-4">
+      <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />
       </div>
+      <p className="caption-text font-mono mb-[12px] mt-[36px]">Messages</p>
       {decodedMessages?.length ? (
         showRaw ? (
           <CosmosMessageDisplay value={decodedMessagesString(proposal.msgs)} />
@@ -723,7 +690,11 @@ export function ProposalDetails({
         <pre></pre>
       )}
       <div className="mt-4">
-        <Button size="sm" onClick={() => setShowRaw((s) => !s)}>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => setShowRaw((s) => !s)}
+        >
           {showRaw ? (
             <>
               Hide raw data

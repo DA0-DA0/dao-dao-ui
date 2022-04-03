@@ -229,7 +229,7 @@ export function ProposalList({
   ).concat(propList)
 
   if (!allProposals.length) {
-    return <p>no proposals</p>
+    return <p className="body-text">no proposals</p>
   }
 
   return (
