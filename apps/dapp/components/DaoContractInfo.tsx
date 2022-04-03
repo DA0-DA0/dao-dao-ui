@@ -13,8 +13,9 @@ import {
   getThresholdAndQuorumDisplay,
 } from 'util/conversion'
 
-import { GovInfoListItem, TreasuryBalances } from './ContractView'
+import { GovInfoListItem } from './ContractView'
 import { CopyToClipboardAccent } from './CopyToClipboard'
+import { DaoTreasury } from './DaoTreasury'
 import SvgVotes from './icons/Votes'
 
 export function DaoContractInfo({ address }: { address: string }) {
@@ -84,10 +85,7 @@ export function DaoContractInfo({ address }: { address: string }) {
           </li>
         </ul>
       </div>
-      <div>
-        <h2 className="font-medium text-lg">DAO Treasury</h2>
-        <TreasuryBalances address={address} />
-      </div>
+      <DaoTreasury address={address} />
     </div>
   )
 }

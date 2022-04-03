@@ -5,12 +5,7 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import {
-  LibraryIcon,
-  PlusSmIcon,
-  PlusIcon,
-  UsersIcon,
-} from '@heroicons/react/outline'
+import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { Button } from '@components'
 
@@ -146,13 +141,6 @@ function DaoHome() {
                     }}
                   />
                 </div>
-                <Button
-                  iconAfter={<PlusIcon className="inline h-4 w-4" />}
-                  onClick={addTokenCallback}
-                  size="sm"
-                >
-                  Add Token
-                </Button>
               </div>
             </div>
           </div>
