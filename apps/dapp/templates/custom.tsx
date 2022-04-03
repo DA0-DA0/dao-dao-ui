@@ -33,7 +33,7 @@ export const CustomComponent: TemplateComponent = ({
   // that we are in a nested object nor wrapped nicely like we do
   // with register.
   return (
-    <div className="flex flex-col p-3 my-2 bg-base-300 rounded-lg">
+    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2 mb-2">
           <h2 className="text-3xl">🤖</h2>

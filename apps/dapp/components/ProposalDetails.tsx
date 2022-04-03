@@ -65,6 +65,7 @@ import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 import { Progress } from './Progress'
 import { Button } from 'ui'
+import { InputLabel } from './input/InputLabel'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -638,51 +639,10 @@ export function ProposalDetails({
       <div className="max-w-prose">
         <h1 className="text-4xl font-semibold">{proposal.title}</h1>
       </div>
-      {actionLoading && (
-        <div className="mt-3">
-          <LoadingButton />
-        </div>
-      )}
-      {!actionLoading && proposal.status === 'open' && (
-        <div className="mt-3 flex flex-row flex-wrap items-center gap-3">
-          {tokenBalancesLoading ? (
-            <LoadingButton />
-          ) : (
-            <>
-              <ProposalVoteButtons
-                yesCount={yesVotes.toString()}
-                noCount={noVotes.toString()}
-                proposalId={proposalId}
-                contractAddress={contractAddress}
-                voted={voted}
-                setLoading={setActionLoading}
-                multisig={!!multisig}
-              />
-              <ProposalVoteStatus
-                contractAddress={contractAddress}
-                proposalId={proposalId}
-              />
-            </>
-          )}
-        </div>
-      )}
-      {!actionLoading && proposal.status === 'passed' && (
-        <div className="mt-3">
-          {tokenBalancesLoading ? (
-            <LoadingButton />
-          ) : (
-            <ProposalExecuteButton
-              proposalId={proposalId}
-              contractAddress={contractAddress}
-              member={member.member}
-              setLoading={setActionLoading}
-            />
-          )}
-        </div>
-      )}
-      <div className="py-4">
+      <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />
       </div>
+      <p className="caption-text font-mono mb-[12px] mt-[36px]">Messages</p>
       {decodedMessages?.length ? (
         showRaw ? (
           <CosmosMessageDisplay value={decodedMessagesString(proposal.msgs)} />
@@ -698,7 +658,11 @@ export function ProposalDetails({
         <pre></pre>
       )}
       <div className="mt-4">
-        <Button size="sm" onClick={() => setShowRaw((s) => !s)}>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => setShowRaw((s) => !s)}
+        >
           {showRaw ? (
             <>
               Hide raw data

@@ -287,7 +287,7 @@ export function ContractProposalsDispaly({
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2 className="font-medium text-lg">Proposals</h2>
+        <h2 className="primary-text">Proposals</h2>
         {loading ? (
           <LoadingButton />
         ) : (

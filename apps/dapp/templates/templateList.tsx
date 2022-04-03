@@ -63,6 +63,7 @@ export enum ContractSupport {
 export const messageTemplates: MessageTemplate[] = [
   {
     label: '💵 Spend',
+    description: 'Spend native or cw20 tokens from the treasury.',
     component: SpendComponent,
     contractSupport: ContractSupport.Both,
     getDefaults: spendDefaults,
@@ -71,6 +72,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '🍵 Mint',
+    description: 'Mint new governance tokens.',
     component: MintComponent,
     contractSupport: ContractSupport.DAO,
     getDefaults: mintDefaults,
@@ -79,6 +81,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '📤 Staking',
+    description: 'Manage native token staking.',
     component: StakeComponent,
     contractSupport: ContractSupport.Both,
     getDefaults: stakeDefaults,
@@ -87,6 +90,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '🤖 Custom',
+    description: 'Perform any custom action a wallet can.',
     component: CustomComponent,
     contractSupport: ContractSupport.Both,
     getDefaults: customDefaults,
@@ -95,6 +99,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '🎭 Update Config',
+    description: 'Update your governance configuration.',
     component: DAOUpdateConfigComponent,
     contractSupport: ContractSupport.DAO,
     getDefaults: daoConfigUpdateDefaults,
@@ -103,6 +108,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '🔘 Add Treasury Token',
+    description: 'Add a token to your treasury.',
     component: AddTokenComponent,
     contractSupport: ContractSupport.Both,
     getDefaults: addTokenDefaults,
@@ -111,6 +117,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '⭕️ Remove Treasury Token',
+    description: 'Remove a token from your treasury.',
     component: RemoveTokenComponent,
     contractSupport: ContractSupport.Both,
     getDefaults: removeTokenDefaults,
@@ -119,6 +126,7 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     label: '🖋 Manage Members',
+    description: 'Add and remove multisig members.',
     component: ChangeMembersComponent,
     contractSupport: ContractSupport.Multisig,
     getDefaults: changeMembersDefaults,
@@ -177,6 +185,7 @@ export type TemplateComponent = React.FunctionComponent<TemplateComponentProps>
 // Defines a new template.
 export interface MessageTemplate {
   label: string
+  description: string
   component: TemplateComponent
   contractSupport: ContractSupport
   // Get default for fields in form display.
