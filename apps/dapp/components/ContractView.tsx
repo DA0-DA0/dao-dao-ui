@@ -50,9 +50,11 @@ export function TooltipWrapper({
 }
 
 export function StarButton({
+  className = '',
   pinned,
   onPin,
 }: {
+  className?: string
   pinned: boolean
   onPin: Function
 }) {
@@ -60,7 +62,7 @@ export function StarButton({
     <button
       className={`text-left w-20 flex flex-row items-center text-sm ${
         pinned ? ' text-accent' : ''
-      }`}
+      } ${className}`}
       onClick={(_e) => onPin()}
     >
       {pinned ? (

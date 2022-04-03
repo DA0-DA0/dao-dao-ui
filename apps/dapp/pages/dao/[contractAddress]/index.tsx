@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
+import {
+  LibraryIcon,
+  PlusSmIcon,
+  PlusIcon,
+  UsersIcon,
+} from '@heroicons/react/outline'
+
+import { Button } from '@components'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
@@ -94,6 +101,10 @@ function DaoHome() {
     }
   }, [shouldAddToken, daoInfo.gov_token])
 
+  const addTokenCallback = useCallback(() => {
+    addToken(daoInfo.gov_token)
+  }, [daoInfo.gov_token])
+
   return (
     <div
       className={
@@ -104,7 +115,7 @@ function DaoHome() {
     >
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between">
             <Breadcrumbs
               crumbs={[
                 ['/starred', 'Home'],
@@ -112,26 +123,36 @@ function DaoHome() {
               ]}
             />
             <div className={expanded ? '' : 'mr-6'}>
-              <div className="flex flex-row items-center gap-4">
-                {member && (
-                  <div className="flex flex-row items-center gap-2 text-secondary">
-                    <SvgMemberCheck fill="currentColor" width="15px" />
-                    <p className="text-xs">You{"'"}re a member</p>
-                  </div>
-                )}
-                <StarButton
-                  pinned={pinned}
-                  onPin={() => {
-                    if (pinned) {
-                      setPinnedDaos((p) =>
-                        p.filter((a) => a !== contractAddress)
-                      )
-                    } else {
-                      setPinnedDaos((p) => p.concat([contractAddress]))
-                      addToken(daoInfo.gov_token)
-                    }
-                  }}
-                />
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex items-center gap-4">
+                  {member && (
+                    <div className="flex flex-row items-center gap-2 text-secondary">
+                      <SvgMemberCheck fill="currentColor" width="15px" />
+                      <p className="text-xs">You{"'"}re a member</p>
+                    </div>
+                  )}
+                  <StarButton
+                    className="w-auto"
+                    pinned={pinned}
+                    onPin={() => {
+                      if (pinned) {
+                        setPinnedDaos((p) =>
+                          p.filter((a) => a !== contractAddress)
+                        )
+                      } else {
+                        setPinnedDaos((p) => p.concat([contractAddress]))
+                        addToken(daoInfo.gov_token)
+                      }
+                    }}
+                  />
+                </div>
+                <Button
+                  iconAfter={<PlusIcon className="inline h-4 w-4" />}
+                  onClick={addTokenCallback}
+                  size="sm"
+                >
+                  Add Token
+                </Button>
               </div>
             </div>
           </div>
