@@ -55,7 +55,7 @@ function ButtonComponent(
   const withIcon = iconBefore || iconAfter
   let other = disabled ? ' disabled' : ''
 
-  if (!withIcon) other += ' truncate'
+  if (!withIcon) { other += ' truncate' }
 
   return (
     <button
