@@ -24,7 +24,6 @@ import toast from 'react-hot-toast'
 
 import { ProposalStatus } from '@components'
 
-import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import { PaginatedProposalVotes } from 'components/ProposalVotes'
@@ -32,14 +31,12 @@ import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { isMemberSelector } from 'selectors/daos'
 import {
   proposalExecutionTXHashSelector,
   proposalSelector,
   proposalStartBlockSelector,
   proposalTallySelector,
   votingPowerAtHeightSelector,
-  walletVotedSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
 import {
@@ -65,7 +62,8 @@ import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 import { Progress } from './Progress'
 import { Button } from 'ui'
-import { InputLabel } from './input/InputLabel'
+import SvgAbstain from './icons/Abstain'
+import SvgAirplane from './icons/Airplane'
 
 function executeProposalVote(
   vote: 'yes' | 'no',
@@ -585,7 +583,7 @@ export function ProposalDetails({
   const router = useRouter()
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
-  )
+  )!
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
@@ -595,13 +593,27 @@ export function ProposalDetails({
   )
   const configWrapper = new ContractConfigWrapper(sigConfig)
   const tokenDecimals = configWrapper.gov_token_decimals
-  const member = useRecoilValue(isMemberSelector(contractAddress))
 
-  const voted = useRecoilValue(
-    walletVotedSelector({ contractAddress, proposalId })
+  const height = useRecoilValue(
+    proposalStartBlockSelector({ proposalId, contractAddress })
+  )
+  const votingPower = useRecoilValue(
+    votingPowerAtHeightSelector({
+      contractAddress,
+      multisig: !!multisig,
+      height,
+    })
   )
 
-  const [actionLoading, setActionLoading] = useState(false)
+  const threshold = proposal.threshold
+  // :D
+  // All the threshold variants have a total_weight key so we just index into
+  // whatever this is and get that.
+  const totalPower = Number(
+    ((threshold as any)[Object.keys(threshold)[0] as string] as any)
+      .total_weight
+  )
+  const weightPercent = (votingPower / totalPower) * 100
 
   const wallet = useRecoilValue(walletAddressSelector)
   // If token balances are loading we don't know if the user is a
@@ -637,7 +649,7 @@ export function ProposalDetails({
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="text-4xl font-semibold">{proposal.title}</h1>
+        <h1 className="header-text text-xl">{proposal.title}</h1>
       </div>
       <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />
@@ -674,6 +686,31 @@ export function ProposalDetails({
               <EyeIcon className="inline h-4 stroke-current ml-1" />
             </>
           )}
+        </Button>
+      </div>
+      <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
+      <div className="flex items-center p-4 rounded-lg border border-default bg-primary justify-between">
+        <div className="flex items-center gap-2">
+          <p className="text-2xl mr-1">🗳</p>
+          <p className="primary-text">Casting</p>
+          <p className="secondary-text">{weightPercent}% voting power</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <Button variant="secondary">
+            <CheckIcon className="text-valid w-4" />
+            Yes
+          </Button>
+          <Button variant="secondary">
+            <SvgAbstain fill="currentColor" />
+            Abstain
+          </Button>
+          <Button variant="secondary">
+            <XIcon className="text-error w-4" />
+            No
+          </Button>
+        </div>
+        <Button>
+          Vote <SvgAirplane stroke="currentColor" />
         </Button>
       </div>
       <div className="mt-6">

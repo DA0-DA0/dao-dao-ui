@@ -26,7 +26,7 @@ import {
 } from 'types/proposals'
 
 import { cosmWasmClient } from './cosm'
-import { daoSelector } from './daos'
+import { daoSelector, totalStaked } from './daos'
 import { sigSelector } from './multisigs'
 import {
   walletAddress,
