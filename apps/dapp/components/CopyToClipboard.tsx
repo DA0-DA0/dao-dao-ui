@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
-import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
+import { CheckCircleIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
+import { useThemeContext } from 'ui'
 
 import SvgCopy from './icons/Copy'
 
@@ -55,9 +56,12 @@ export function CopyToClipboardAccent({
   value,
   success = 'Copied to clipboard!',
 }: CopyToClipboardProps) {
+  const { accentColor } = useThemeContext()
+
   return (
     <button
-      className="transition text-sm underline hover:no-underline text-brand transition"
+      className="transition text-sm underline hover:no-underline text-brand"
+      style={accentColor ? { color: accentColor } : {}}
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)
