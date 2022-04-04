@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
+import ReactTooltip from 'react-tooltip'
 import { DEFAULT_THEME_NAME, ThemeProvider } from 'ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'

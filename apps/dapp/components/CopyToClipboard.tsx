@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { CheckCircleIcon } from '@heroicons/react/outline'
+import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 import { useThemeContext } from 'ui'
 
