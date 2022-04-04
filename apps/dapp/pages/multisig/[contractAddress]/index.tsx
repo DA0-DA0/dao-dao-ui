@@ -230,15 +230,15 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
     return { props: {} }
   }
 
-  const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
-  const sigInfo = await client.queryContractSmart(contractAddress, {
-    get_config: {},
-  })
-  if (!sigInfo || !sigInfo.config || !sigInfo.config.image_url) {
-    return { props: {} }
-  }
-
   try {
+    const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    const sigInfo = await client.queryContractSmart(contractAddress, {
+      get_config: {},
+    })
+    if (!sigInfo || !sigInfo.config || !sigInfo.config.image_url) {
+      return { props: {} }
+    }
+
     const accentColor = await getFastAverageColor(sigInfo.config.image_url)
     return { props: { accentColor } }
   } catch (err) {

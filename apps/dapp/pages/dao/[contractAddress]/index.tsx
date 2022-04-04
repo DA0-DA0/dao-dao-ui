@@ -303,15 +303,15 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
     return { props: {} }
   }
 
-  const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
-  const daoInfo = await client.queryContractSmart(contractAddress, {
-    get_config: {},
-  })
-  if (!daoInfo || !daoInfo.config || !daoInfo.config.image_url) {
-    return { props: {} }
-  }
-
   try {
+    const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    const daoInfo = await client.queryContractSmart(contractAddress, {
+      get_config: {},
+    })
+    if (!daoInfo || !daoInfo.config || !daoInfo.config.image_url) {
+      return { props: {} }
+    }
+
     const accentColor = await getFastAverageColor(daoInfo.config.image_url)
     return { props: { accentColor } }
   } catch (err) {
