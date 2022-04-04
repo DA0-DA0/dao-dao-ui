@@ -1,14 +1,18 @@
-import { NextPage } from 'next'
+import { useEffect } from 'react'
+
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   ScaleIcon,
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
+import { useThemeContext } from 'ui'
 
 import { CopyToClipboard } from '@components/CopyToClipboard'
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
@@ -23,12 +27,14 @@ import {
   BalanceIcon,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
+import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
 import {
   listMembers,
   memberWeight,
   sigSelector,
   totalWeight,
 } from 'selectors/multisigs'
+import { getFastAverageColor } from 'util/colors'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -185,10 +191,59 @@ function MultisigHome() {
   )
 }
 
-const MultisigHomePage: NextPage = () => (
-  <ErrorBoundary title="Multisig Not Found">
-    <MultisigHome />
-  </ErrorBoundary>
-)
+interface StaticProps {
+  accentColor?: string
+}
+
+const MultisigHomePage: NextPage<StaticProps> = ({ accentColor }) => {
+  const { isReady, isFallback } = useRouter()
+
+  const { setAccentColor } = useThemeContext()
+  useEffect(() => {
+    if (!isReady || isFallback) return
+
+    setAccentColor(accentColor)
+  }, [accentColor, setAccentColor, isReady, isFallback])
+
+  // Trigger Suspense.
+  if (!isReady || isFallback) throw new Promise((resolve) => {})
+
+  return (
+    <ErrorBoundary title="Multisig Not Found">
+      <MultisigHome />
+    </ErrorBoundary>
+  )
+}
 
 export default MultisigHomePage
+
+// Fallback to loading screen if page has not yet been statically generated.
+export const getStaticPaths: GetStaticPaths = () => ({
+  paths: [],
+  fallback: true,
+})
+
+export const getStaticProps: GetStaticProps<StaticProps> = async ({
+  params: { contractAddress } = { contractAddress: undefined },
+}) => {
+  if (typeof contractAddress !== 'string' || !contractAddress) {
+    return { props: {} }
+  }
+
+  const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+  const sigInfo = await client.queryContractSmart(contractAddress, {
+    get_config: {},
+  })
+  if (!sigInfo || !sigInfo.config || !sigInfo.config.image_url) {
+    return { props: {} }
+  }
+
+  try {
+    const accentColor = await getFastAverageColor(sigInfo.config.image_url)
+    return { props: { accentColor } }
+  } catch (err) {
+    console.error(err)
+  }
+
+  return { props: {} }
+}
