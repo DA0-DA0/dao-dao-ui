@@ -13,9 +13,9 @@ export function MultisigContractInfo({ address }: { address: string }) {
   const sigInfo = useRecoilValue(sigSelector(address))
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3 border-b border-neutral py-6">
+    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3 border-b border-inactive pt-[22px] pb-[28px]">
       <div>
-        <h2 className="font-medium text-lg mb-6">Governance Details</h2>
+        <h2 className="primary-text mb-6">Governance Details</h2>
         <ul className="list-none ml-2 mt-3 flex flex-col gap-2">
           <GovInfoListItem
             icon={<SvgVotes fill="currentColor" width="16px" />}
@@ -30,19 +30,18 @@ export function MultisigContractInfo({ address }: { address: string }) {
         </ul>
       </div>
       <div>
-        <h2 className="font-medium text-lg mb-6">Addresses</h2>
-        <ul className="list-none mt-3 flex flex-col gap-2 text-secondary text-sm">
+        <h2 className="primary-text mb-6">Addresses</h2>
+        <ul className="list-none ml-2 mt-3 flex flex-col gap-2 caption-text">
           <li>
-            Multisig address <CopyToClipboardAccent value={address} />
+            Multisig <CopyToClipboardAccent value={address} />
           </li>
           <li>
-            cw4-group address{' '}
-            <CopyToClipboardAccent value={sigInfo.group_address} />
+            cw4-group <CopyToClipboardAccent value={sigInfo.group_address} />
           </li>
         </ul>
       </div>
       <div>
-        <h2 className="font-medium text-lg">DAO Treasury</h2>
+        <h2 className="primary-text">DAO Treasury</h2>
         <TreasuryBalances address={address} />
       </div>
     </div>
