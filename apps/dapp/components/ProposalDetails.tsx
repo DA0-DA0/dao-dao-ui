@@ -62,12 +62,12 @@ import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
+import { Button } from 'ui'
+import { Execute } from './Execute'
+import SvgAbstain from './icons/Abstain'
 import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
-import { Button } from 'ui'
 import { Vote, VoteChoice } from './Vote'
-import SvgAbstain from './icons/Abstain'
-import { Execute } from './Execute'
 
 function executeProposalVote(
   choice: VoteChoice,

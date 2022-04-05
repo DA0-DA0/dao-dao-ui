@@ -113,7 +113,6 @@ export const RemoveTokenComponent: TemplateComponent = ({
             validateContractAddress,
             validateIsTreasuryToken,
           ]}
-          border={false}
           disabled={readOnly}
         />
         <InputErrorMessage error={errors?.address} />

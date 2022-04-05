@@ -1,7 +1,9 @@
-import { Config } from 'util/contractConfigWrapper'
-import { ContractSupport, MessageTemplate } from 'templates/templateList'
-import { Modal } from './Modal'
 import { XIcon } from '@heroicons/react/outline'
+
+import { ContractSupport, MessageTemplate } from 'templates/templateList'
+import { Config } from 'util/contractConfigWrapper'
+
+import { Modal } from './Modal'
 
 export function MessageTemplateDisplayItem({
   template,

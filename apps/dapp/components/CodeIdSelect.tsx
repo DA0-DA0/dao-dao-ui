@@ -20,11 +20,8 @@ export default function CodeIdSelect({
     <div className="flex items-center">
       <span className="font-medium px-2">Contract Version</span>
       <div className="dropdown dropdown-end">
-        <Button
-          size="sm"
-          iconAfter={<ChevronDownIcon className="inline h-4 w-4" />}
-        >
-          {currentVersion.name}
+        <Button size="sm">
+          {currentVersion.name} <ChevronDownIcon className="inline h-4 w-4" />
         </Button>
         <ul
           tabIndex={0}
