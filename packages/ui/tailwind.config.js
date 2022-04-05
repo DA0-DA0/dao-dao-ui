@@ -18,6 +18,7 @@ const colors = {
 
     'btn-secondary-hover': generateColorClass("dark", 0.15),
     'btn-secondary-pressed': generateColorClass("dark", 0.05),
+    'btn-active': generateColorClass("active", 0.1),
 }
 
 const textColor = {
