@@ -6,9 +6,10 @@ import SvgAirplane from './icons/Airplane'
 export interface ExecuteProps {
   onExecute: () => void
   messages: number
+  loading: boolean
 }
 
-export const Execute: FC<ExecuteProps> = ({ onExecute, messages }) => {
+export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
   const [partyMode, setPartMode] = useState(false)
   const [partyPhase, setPartyPhase] = useState(1)
 
@@ -25,7 +26,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages }) => {
               {messages} message{messages !== 1 && 's'}
             </p>
           </div>
-          <Button onClick={() => onExecute()}>
+          <Button onClick={() => onExecute()} loading={loading}>
             Execute <SvgAirplane stroke="currentColor" />
           </Button>
         </div>
@@ -34,6 +35,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages }) => {
         <div className="flex items-center p-4 rounded-lg border border-default bg-primary justify-between max-w-3xl">
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => {
                 setPartMode(false)
                 setPartyPhase(1)
@@ -86,6 +88,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages }) => {
 
             <Button
               onClick={() => onExecute()}
+              loading={loading}
               className={`${partyPhase !== 4 ? 'invisible' : ''}`}
             >
               Execute <SvgAirplane stroke="currentColor" />

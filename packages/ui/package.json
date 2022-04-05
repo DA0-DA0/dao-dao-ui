@@ -13,6 +13,9 @@
     "storybook": "start-storybook --ci -p 6006 --no-manager-cache",
     "build-storybook": "build-storybook"
   },
+    "dependencies": {
+	"@dao-dao/dapp": "*"
+    },
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@storybook/addon-actions": "^6.4.19",

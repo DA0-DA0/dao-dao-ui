@@ -109,9 +109,9 @@ export function ProposalForm({
         {showPreview && (
           <>
             <div className="max-w-prose">
-              <h1 className="text-4xl font-semibold my-6">{proposalTitle}</h1>
+              <h1 className="header-text text-xl my-6">{proposalTitle}</h1>
             </div>
-            <div className="my-6">
+            <div className="mt-[22px] mb-[36px]">
               <MarkdownPreview markdown={proposalDescription} />
             </div>
             <CosmosMessageDisplay
@@ -220,7 +220,7 @@ export function ProposalForm({
             )}
           </Button>
           <div data-tip={!wallet ? 'Connect your wallet to submit' : undefined}>
-            <Button type="submit">
+            <Button type="submit" loading={loading}>
               Publish{' '}
               <SvgAirplane color="currentColor" width="14px" height="14px" />
             </Button>
