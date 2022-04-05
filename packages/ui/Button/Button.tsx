@@ -11,6 +11,7 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   size?: 'sm' | 'lg'
   full?: boolean
   disabled?: boolean
+  className?: string
 }
 
 function ButtonComponent(
@@ -20,11 +21,11 @@ function ButtonComponent(
     size = 'lg',
     full = false,
     disabled = false,
+    className = '',
     ...rest
   }: ButtonProps,
   ref?: ForwardedRef<any>
 ) {
-  console.log(disabled)
   if (variant === 'primary') {
     return (
       <button
@@ -32,7 +33,7 @@ function ButtonComponent(
           !disabled ? 'hover:bg-dark active:bg-toast' : 'bg-btn-disabled'
         } ${size === 'lg' ? 'py-[10px]' : ''} ${
           size === 'sm' ? 'py-[4px] px-[8px]' : ''
-        }`}
+        } ${className}`}
         disabled={disabled}
         {...rest}
       >
@@ -49,7 +50,7 @@ function ButtonComponent(
             : 'bg-btn-disabled'
         } ${size === 'lg' ? 'py-[10px]' : ''} ${
           size === 'sm' ? 'py-[4px] px-[8px]' : ''
-        }`}
+        } ${className}`}
         disabled={disabled}
         {...rest}
       >

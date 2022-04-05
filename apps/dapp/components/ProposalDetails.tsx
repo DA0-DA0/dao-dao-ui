@@ -39,6 +39,7 @@ import {
   proposalStartBlockSelector,
   proposalTallySelector,
   votingPowerAtHeightSelector,
+  walletVoteSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
 import {
@@ -64,11 +65,11 @@ import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
 import { Button } from 'ui'
+import { Vote, VoteChoice } from './Vote'
 import SvgAbstain from './icons/Abstain'
-import SvgAirplane from './icons/Airplane'
 
 function executeProposalVote(
-  vote: 'yes' | 'no' | 'abstain',
+  choice: VoteChoice,
   id: number,
   contractAddress: string,
   signingClient: SigningCosmWasmClient | null,
@@ -80,6 +81,19 @@ function executeProposalVote(
     toast.error('Please connect your wallet')
     return
   }
+  let vote
+  switch (choice) {
+    case VoteChoice.Yes:
+      vote = 'yes'
+      break
+    case VoteChoice.No:
+      vote = 'no'
+      break
+    case VoteChoice.Abstain:
+      vote = 'abstain'
+      break
+  }
+
   setLoading(true)
   signingClient
     .execute(
@@ -138,126 +152,6 @@ function executeProposalExecute(
       setLoading(false)
       onDone()
     })
-}
-
-function LoadingButton() {
-  return (
-    <button className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px1 bg-base-300 btn-disabled loading">
-      Loading
-    </button>
-  )
-}
-
-function ProposalVoteButtons({
-  yesCount,
-  noCount,
-  abstainCount,
-  proposalId,
-  contractAddress,
-  voted,
-  setLoading,
-  multisig = false,
-}: {
-  yesCount: string
-  noCount: string
-  abstainCount: string
-  proposalId: number
-  contractAddress: string
-  voted: boolean
-  setLoading: SetterOrUpdater<boolean>
-  multisig: boolean
-}) {
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-
-  const setProposalUpdates = useSetRecoilState(
-    proposalUpdateCountAtom({ contractAddress, proposalId })
-  )
-  const setProposalsUpdated = useSetRecoilState(
-    proposalsUpdated(contractAddress)
-  )
-
-  /* const height = useRecoilValue(
-   *   proposalStartBlockSelector({ contractAddress, proposalId })
-   * ) */
-
-  // TODO: reactivate this check.
-  //
-  // After the chain recovering on 04/08 queries like `junod query tsx` which
-  // this one relies on stopped working for the time before the halt. Removing this
-  // for now, and then we need to add it back later.
-  /* const stakedBalanceAtStart = useRecoilValue(
-   *   votingPowerAtHeightSelector({
-   *     contractAddress,
-   *     height,
-   *     multisig,
-   *   })
-   * ) */
-
-  const ready = walletAddress && signingClient && !voted // && stakedBalanceAtStart !== 0
-  const tooltip =
-    ((!walletAddress || !signingClient) && 'Connect your wallet to vote') ||
-    /* (stakedBalanceAtStart == 0 &&
-     *   'You must have staked balance at the time of proposal creation to vote.') || */
-    (voted && 'You already voted.') ||
-    'Something went wrong.'
-
-  const VoteButton = ({
-    position,
-    children,
-  }: {
-    position: 'yes' | 'no' | 'abstain'
-    children: ReactNode
-  }) => (
-    <button
-      className={`btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1 ${
-        position === 'yes'
-          ? ' hover:bg-green-500 hover:border-green-500'
-          : position === 'no'
-          ? ' hover:bg-red-500 hover:border-red-500'
-          : ' hover:bg-primary hover:border-primary'
-      } ${ready ? '' : ' btn-disabled bg-base-300'}`}
-      onClick={() =>
-        executeProposalVote(
-          position,
-          proposalId,
-          contractAddress,
-          signingClient,
-          walletAddress,
-          () => {
-            setProposalUpdates((n) => n + 1)
-            setProposalsUpdated((p) =>
-              p.includes(proposalId) ? p : p.concat([proposalId])
-            )
-          },
-          setLoading
-        )
-      }
-    >
-      {children}
-    </button>
-  )
-  return (
-    <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
-      <div className="flex gap-2">
-        <VoteButton position="yes">
-          <CheckIcon className="w-4 h-4 inline mr-2" />
-          Yes
-          <p className="text-secondary ml-2">{yesCount}</p>
-        </VoteButton>
-        <VoteButton position="no">
-          <XIcon className="w-4 h-4 inline mr-2" />
-          No
-          <p className="text-secondary ml-2">{noCount}</p>
-        </VoteButton>
-        <VoteButton position="abstain">
-          <MinusIcon className="w-4 h-4 inline mr-2" />
-          Abstain
-          <p className="text-secondary ml-2">{abstainCount}</p>
-        </VoteButton>
-      </div>
-    </div>
-  )
 }
 
 function ProposalExecuteButton({
@@ -351,6 +245,10 @@ export function ProposalDetailsSidebar({
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
+  const walletVote = useRecoilValue(
+    walletVoteSelector({ contractAddress, proposalId })
+  )
+
   const configWrapper = new ContractConfigWrapper(sigConfig)
   const tokenDecimals = configWrapper.gov_token_decimals
 
@@ -372,14 +270,16 @@ export function ProposalDetailsSidebar({
           tokenDecimals
         )
   )
+
   const abstainVotes = Number(
     multisig
-      ? proposalTally?.votes.abstain
+      ? proposalTally.votes.abstain
       : convertMicroDenomToDenomWithDecimals(
-          proposalTally?.votes.abstain ?? 0,
+          proposalTally.votes.abstain,
           tokenDecimals
         )
   )
+
   const totalWeight = Number(
     multisig
       ? proposalTally.total_weight
@@ -390,7 +290,7 @@ export function ProposalDetailsSidebar({
   )
 
   const turnoutPercent = (
-    ((yesVotes + noVotes) / (totalWeight - abstainVotes)) *
+    ((yesVotes + noVotes + abstainVotes) / totalWeight) *
     100
   ).toLocaleString(undefined, localeOptions)
   const yesPercent = ((yesVotes / totalWeight) * 100).toLocaleString(
@@ -469,6 +369,27 @@ export function ProposalDetailsSidebar({
       </div>
 
       <div className="grid grid-cols-4 gap-2">
+        <p className="text-tertiary text-sm font-mono">Yours</p>
+        {!walletVote && (
+          <p className="col-span-3 text-tertiary text-sm font-mono">
+            Pending...
+          </p>
+        )}
+        {walletVote === 'yes' && (
+          <p className="col-span-3 text-valid text-sm font-mono flex items-center gap-1">
+            <CheckIcon className="inline w-4" /> Yes
+          </p>
+        )}
+        {walletVote === 'no' && (
+          <p className="col-span-3 text-error text-sm font-mono flex items-center gap-1">
+            <XIcon className="inline w-4" /> No
+          </p>
+        )}
+        {walletVote === 'abstain' && (
+          <p className="col-span-3 text-secondary text-sm font-mono flex items-center gap-1">
+            <SvgAbstain fill="currentColor" /> Abstain
+          </p>
+        )}
         <p className="text-tertiary text-sm font-mono">Yes</p>
         <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
           <div className="col-span-3">
@@ -491,7 +412,7 @@ export function ProposalDetailsSidebar({
               color="rgb(var(--brand))"
             />
           </div>
-          <p className="text-sm text-body font-mono">{threshold}%</p>
+          <p className="text-sm text-body font-mono">{threshold}</p>
         </div>
         {quorum && (
           <>
@@ -608,15 +529,6 @@ export function ProposalDetails({
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
   )!
-  const proposalTally = useRecoilValue(
-    proposalTallySelector({ contractAddress, proposalId })
-  )
-
-  const sigConfig = useRecoilValue(
-    contractConfigSelector({ contractAddress, multisig: !!multisig })
-  )
-  const configWrapper = new ContractConfigWrapper(sigConfig)
-  const tokenDecimals = configWrapper.gov_token_decimals
 
   const height = useRecoilValue(
     proposalStartBlockSelector({ proposalId, contractAddress })
@@ -627,6 +539,17 @@ export function ProposalDetails({
       multisig: !!multisig,
       height,
     })
+  )
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletVote = useRecoilValue(
+    walletVoteSelector({ contractAddress, proposalId })
+  )
+
+  const setProposalUpdates = useSetRecoilState(
+    proposalUpdateCountAtom({ contractAddress, proposalId })
+  )
+  const setProposalsUpdated = useSetRecoilState(
+    proposalsUpdated(contractAddress)
   )
 
   const threshold = proposal.threshold
@@ -643,6 +566,7 @@ export function ProposalDetails({
   // If token balances are loading we don't know if the user is a
   // member or not.
   const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
+  const [loading, setLoading] = useState(false)
 
   const [showRaw, setShowRaw] = useState(false)
 
@@ -650,31 +574,6 @@ export function ProposalDetails({
     router.replace(`/${multisig ? 'multisig' : 'dao'}/${contractAddress}`)
     return <div>Error</div>
   }
-
-  const yesVotes = Number(
-    multisig
-      ? proposalTally?.votes.yes
-      : convertMicroDenomToDenomWithDecimals(
-          proposalTally?.votes.yes ?? '0',
-          tokenDecimals
-        )
-  )
-  const noVotes = Number(
-    multisig
-      ? proposalTally?.votes.no
-      : convertMicroDenomToDenomWithDecimals(
-          proposalTally?.votes.no ?? 0,
-          tokenDecimals
-        )
-  )
-  const abstainVotes = Number(
-    multisig
-      ? proposalTally?.votes.abstain
-      : convertMicroDenomToDenomWithDecimals(
-          proposalTally?.votes.abstain ?? 0,
-          tokenDecimals
-        )
-  )
 
   const decodedMessages = decodeMessages(proposal.msgs)
 
@@ -687,70 +586,72 @@ export function ProposalDetails({
         <MarkdownPreview markdown={proposal.description} />
       </div>
       <p className="caption-text font-mono mb-[12px] mt-[36px]">Messages</p>
-      {decodedMessages?.length ? (
-        showRaw ? (
-          <CosmosMessageDisplay value={decodedMessagesString(proposal.msgs)} />
-        ) : (
-          <ProposalMessageTemplateList
-            msgs={proposal.msgs}
-            contractAddress={contractAddress}
-            multisig={multisig}
-            fromCosmosMsgProps={fromCosmosMsgProps}
-          />
-        )
-      ) : (
-        <pre></pre>
-      )}
-      <div className="mt-4">
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={() => setShowRaw((s) => !s)}
-        >
-          {showRaw ? (
-            <>
-              Hide raw data
-              <EyeOffIcon className="inline h-4 stroke-current ml-1" />
-            </>
+      <div className="max-w-3xl">
+        {decodedMessages?.length ? (
+          showRaw ? (
+            <CosmosMessageDisplay
+              value={decodedMessagesString(proposal.msgs)}
+            />
           ) : (
-            <>
-              Show raw data
-              <EyeIcon className="inline h-4 stroke-current ml-1" />
-            </>
-          )}
-        </Button>
+            <ProposalMessageTemplateList
+              msgs={proposal.msgs}
+              contractAddress={contractAddress}
+              multisig={multisig}
+              fromCosmosMsgProps={fromCosmosMsgProps}
+            />
+          )
+        ) : (
+          <pre>[]</pre>
+        )}
       </div>
+      {!!decodedMessages.length && (
+        <div className="mt-4">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setShowRaw((s) => !s)}
+          >
+            {showRaw ? (
+              <>
+                Hide raw data
+                <EyeOffIcon className="inline h-4 stroke-current ml-1" />
+              </>
+            ) : (
+              <>
+                Show raw data
+                <EyeIcon className="inline h-4 stroke-current ml-1" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
       <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
-      <div className="flex items-center p-4 rounded-lg border border-default bg-primary justify-between">
-        <div className="flex items-center gap-2">
-          <p className="text-2xl mr-1">🗳</p>
-          <p className="primary-text">Casting</p>
-          <p className="secondary-text">{weightPercent}% voting power</p>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          <Button variant="secondary">
-            <CheckIcon className="text-valid w-4" />
-            Yes
-          </Button>
-          <Button variant="secondary">
-            <SvgAbstain fill="currentColor" />
-            Abstain
-          </Button>
-          <Button variant="secondary">
-            <XIcon className="text-error w-4" />
-            No
-          </Button>
-        </div>
-        <Button>
-          Vote <SvgAirplane stroke="currentColor" />
-        </Button>
-      </div>
-      <div className="mt-6">
-        <PaginatedProposalVotes
-          contractAddress={contractAddress}
-          proposalId={proposalId}
+      {proposal.status === 'open' && !walletVote && (
+        <Vote
+          voterWeight={weightPercent}
+          onVote={(position) =>
+            executeProposalVote(
+              position,
+              proposalId,
+              contractAddress,
+              signingClient,
+              wallet,
+              () => {
+                setProposalUpdates((n) => n + 1)
+                setProposalsUpdated((p) =>
+                  p.includes(proposalId) ? p : p.concat([proposalId])
+                )
+              },
+              setLoading
+            )
+          }
         />
-      </div>
+      )}
+      {walletVote && (
+        <p className="body-text">
+          You already voted {walletVote} on this proposal.
+        </p>
+      )}
     </div>
   )
 }
