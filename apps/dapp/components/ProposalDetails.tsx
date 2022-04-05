@@ -65,6 +65,7 @@ import { Progress } from './Progress'
 import { Button } from 'ui'
 import { Vote, VoteChoice } from './Vote'
 import SvgAbstain from './icons/Abstain'
+import { Execute } from './Execute'
 
 function executeProposalVote(
   choice: VoteChoice,
@@ -549,6 +550,9 @@ export function ProposalDetails({
   const setProposalsUpdated = useSetRecoilState(
     proposalsUpdated(contractAddress)
   )
+  const setTreasuryTokenListUpdates = useSetRecoilState(
+    treasuryTokenListUpdates(contractAddress)
+  )
 
   const threshold = proposal.threshold
   // :D
@@ -623,6 +627,30 @@ export function ProposalDetails({
           </Button>
         </div>
       )}
+      {proposal.status === 'passed' && (
+        <>
+          <p className="caption-text font-mono mb-[12px] mt-[30px]">Status</p>
+          <Execute
+            onExecute={() =>
+              executeProposalExecute(
+                proposalId,
+                contractAddress,
+                signingClient,
+                wallet,
+                () => {
+                  setProposalUpdates((n) => n + 1)
+                  setProposalsUpdated((p) =>
+                    p.includes(proposalId) ? p : p.concat([proposalId])
+                  )
+                  setTreasuryTokenListUpdates((n) => n + 1)
+                },
+                setLoading
+              )
+            }
+            messages={proposal.msgs.length}
+          />
+        </>
+      )}
       <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
       {proposal.status === 'open' && !walletVote && (
         <Vote
@@ -646,9 +674,7 @@ export function ProposalDetails({
         />
       )}
       {walletVote && (
-        <p className="body-text">
-          You already voted {walletVote} on this proposal.
-        </p>
+        <p className="body-text">You voted {walletVote} on this proposal.</p>
       )}
     </div>
   )

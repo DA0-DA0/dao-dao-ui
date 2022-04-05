@@ -162,6 +162,8 @@ export const walletVoteSelector = selectorFamily<
         return undefined
       }
 
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
       const vote = (await client.queryContractSmart(contractAddress, {
         vote: { proposal_id: proposalId, voter: wallet },
       })) as VoteResponse
