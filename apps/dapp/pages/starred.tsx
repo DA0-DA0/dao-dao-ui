@@ -96,8 +96,8 @@ const Starred: NextPage = () => {
     <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
       <div className="p-6 w-full col-span-4">
         <h1 className="header-text">Starred</h1>
-        <h2 className="primary-text mb-2 mt-6 flex items-center">
-          <StarIcon className="inline w-4 mr-2 " />
+        <h2 className="primary-text mb-2 mt-6 flex items-center gap-1">
+          <StarIcon className="inline w-4 " />
           DAOs
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -110,8 +110,8 @@ const Starred: NextPage = () => {
           )}
         </div>
         <div className="mt-6">
-          <h2 className="primary-text mb-2 mt-6 flex items-center">
-            <StarIcon className="inline w-4 mr-2 " />
+          <h2 className="primary-text mb-2 mt-6 flex items-center gap-1">
+            <StarIcon className="inline w-4 " />
             Multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">

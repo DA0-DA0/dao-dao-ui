@@ -31,6 +31,7 @@ import {
   totalWeight,
 } from 'selectors/multisigs'
 import { walletAddress } from 'selectors/treasury'
+import { CopyToClipboard } from '@components/CopyToClipboard'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -52,20 +53,24 @@ function VoteBalanceCard({
   weight,
   title,
   weightTotal,
+  addrTitle,
 }: {
   weight: number
   title: string
   weightTotal: number
+  addrTitle?: boolean
 }) {
   return (
-    <div className="shadow p-6 rounded-lg w-full border border-base-300 h-28 mt-2">
-      <h2 className="text-sm font-mono text-secondary overflow-auto">
-        {title}
-      </h2>
-      <div className="gap-2 flex flex-row items-center gap-2">
+    <div className="py-4 px-6 rounded-lg w-full border border-default mt-2">
+      {addrTitle ? (
+        <CopyToClipboard value={title} />
+      ) : (
+        <h2 className="caption-text font-mono">{title}</h2>
+      )}
+      <div className="mt-2 title-text flex flex-row flex-wrap items-center gap-2 mb-[22px] mt-5">
         <BalanceIcon />
         {weight}
-        <span className="inline text-sm text-secondary">
+        <span className="inline secondary-text">
           {((weight / weightTotal) * 100).toLocaleString(undefined, {
             maximumSignificantDigits: 3,
           })}
@@ -127,15 +132,15 @@ function MultisigHome() {
           <div className="mt-2">
             <HeroContractHorizontalInfo>
               <div>
-                <ScaleIcon className="w-5 h-5 mb-1 mr-1 inline" />
+                <ScaleIcon className="w-4 inline" />
                 {thresholdString(sigInfo.config.threshold)}
               </div>
               <div>
-                <VariableIcon className="w-5 mb-1 mr-1 inline" />
+                <VariableIcon className="w-4 inline" />
                 Total votes: {weightTotal}
               </div>
               <div>
-                <UserGroupIcon className="w-5 mb-1 mr-1 inline" />
+                <UserGroupIcon className="w-4 inline" />
                 Total members: {memberList.length}
               </div>
             </HeroContractHorizontalInfo>
@@ -152,10 +157,10 @@ function MultisigHome() {
         </div>
       </div>
       <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full border-l border-base-300">
+        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
           {visitorWeight && (
             <>
-              <h2 className="font-medium text-md">Your shares</h2>
+              <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
               <ul className="list-none mt-3">
                 <li>
                   <VoteBalanceCard
@@ -169,19 +174,18 @@ function MultisigHome() {
           )}
           {memberList.length != 0 && (
             <>
-              <h2 className="font-medium text-md mt-3">Member shares</h2>
+              <h2 className="title-text mt-5 mb-[23px]">Member shares</h2>
               <ul className="list-none mt-3">
-                {memberList
-                  .filter((m) => m.addr != visitorAddress)
-                  .map((member) => (
-                    <li key={member.addr}>
-                      <VoteBalanceCard
-                        title={member.addr}
-                        weight={member.weight}
-                        weightTotal={weightTotal}
-                      />
-                    </li>
-                  ))}
+                {memberList.map((member) => (
+                  <li key={member.addr}>
+                    <VoteBalanceCard
+                      title={member.addr}
+                      weight={member.weight}
+                      weightTotal={weightTotal}
+                      addrTitle
+                    />
+                  </li>
+                ))}
               </ul>
             </>
           )}
