@@ -4,11 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 import { MenuIcon } from '@heroicons/react/outline'
+import ReactTooltip from 'react-tooltip'
 
 import { SITE_TITLE } from '../util/constants'
 import { Logo } from './Logo'
 import Nav from './Nav'
-import ReactTooltip from 'react-tooltip'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (

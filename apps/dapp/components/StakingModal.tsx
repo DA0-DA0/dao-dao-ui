@@ -18,6 +18,7 @@ import {
   XIcon,
 } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
+import { Button } from 'ui'
 
 import {
   cosmWasmSigningClient,
@@ -36,7 +37,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
 } from 'util/conversion'
-import { Button } from 'ui'
+
 import { Modal } from './Modal'
 
 export enum StakingMode {

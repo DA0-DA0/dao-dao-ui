@@ -12,6 +12,7 @@ import {
 
 import { Button } from '@components'
 
+import SvgArrowUpRight from '@components/icons/ArrowUpRight'
 import SvgDiscord from '@components/icons/Discord'
 import { GradientWrapper } from 'components/GradientWrapper'
 import SvgGithub from 'components/icons/Github'
@@ -20,7 +21,6 @@ import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 
 import { SITE_TITLE } from '../util/constants'
-import SvgArrowUpRight from '@components/icons/ArrowUpRight'
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (

@@ -18,6 +18,7 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@heroicons/react/outline'
+import { Button } from 'ui'
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
@@ -38,7 +39,6 @@ import {
   MULTISIG_CODE_ID,
   NATIVE_DENOM,
 } from 'util/constants'
-import { Button } from 'ui'
 
 export function MultisigCard({
   multisig,

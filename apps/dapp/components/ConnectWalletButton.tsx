@@ -26,8 +26,8 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 
-import SvgWallet from './icons/Wallet'
 import SvgCopy from './icons/Copy'
+import SvgWallet from './icons/Wallet'
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)

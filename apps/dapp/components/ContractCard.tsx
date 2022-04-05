@@ -37,7 +37,7 @@ function DIYLogo({
   proposals?: number
   balance?: string
   children: ReactNode
-  token: boolean
+  token?: boolean
 }) {
   return (
     <Link href={href}>

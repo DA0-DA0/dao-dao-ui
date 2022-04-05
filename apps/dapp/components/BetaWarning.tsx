@@ -1,4 +1,5 @@
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
+
 import { Button } from '@components'
 
 import SvgMessage from 'components/icons/Message'

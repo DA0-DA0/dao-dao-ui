@@ -1,6 +1,8 @@
-import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
+
+import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
+
 import SvgCopy from './icons/Copy'
 
 function concatAddressImpl(

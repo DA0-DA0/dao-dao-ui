@@ -110,7 +110,6 @@ export const TokenSelector = ({
           register={register}
           error={errors?.to}
           validation={[validateRequired, validateContractAddress]}
-          border={false}
           disabled={readOnly}
         />
         <InputErrorMessage error={errors?.to} />

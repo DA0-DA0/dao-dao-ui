@@ -10,6 +10,7 @@ import {
   VariableIcon,
 } from '@heroicons/react/outline'
 
+import { CopyToClipboard } from '@components/CopyToClipboard'
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { sidebarExpandedAtom } from 'atoms/sidebar'
@@ -31,7 +32,6 @@ import {
   totalWeight,
 } from 'selectors/multisigs'
 import { walletAddress } from 'selectors/treasury'
-import { CopyToClipboard } from '@components/CopyToClipboard'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {

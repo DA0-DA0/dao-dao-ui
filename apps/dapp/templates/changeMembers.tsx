@@ -124,7 +124,6 @@ export const ChangeMembersComponent: TemplateComponent = ({
                     validateRequired,
                     validateNotMember,
                   ]}
-                  border={false}
                   disabled={readOnly}
                 />
                 <InputErrorMessage error={addrError} />
@@ -136,7 +135,6 @@ export const ChangeMembersComponent: TemplateComponent = ({
                     register={register}
                     error={weightError}
                     validation={[validatePositive, validateRequired]}
-                    border={false}
                     disabled={readOnly}
                   />
                   <InputErrorMessage error={weightError} />
@@ -183,7 +181,6 @@ export const ChangeMembersComponent: TemplateComponent = ({
                 register={register}
                 error={addrError}
                 validation={[validateAddress, validateRequired, validateMember]}
-                border={false}
                 disabled={readOnly}
               />
               <InputErrorMessage error={addrError} />

@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import { Button } from 'ui'
 
 import { walletAddress } from 'selectors/treasury'
 import {
@@ -29,7 +30,6 @@ import { TextareaInput } from './input/TextAreaInput'
 import { TextInput } from './input/TextInput'
 import { MarkdownPreview } from './MarkdownPreview'
 import { ProposalTemplateSelector } from './TemplateSelector'
-import { Button } from 'ui'
 
 interface FormProposalData {
   title: string

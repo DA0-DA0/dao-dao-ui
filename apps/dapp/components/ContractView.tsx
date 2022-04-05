@@ -4,10 +4,11 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { Button } from '@components'
-
 import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
+import { useThemeContext } from 'ui'
+
+import { Button } from '@components'
 
 import { contractInstantiateTime } from 'selectors/contracts'
 import { isMemberSelector } from 'selectors/daos'
@@ -28,7 +29,6 @@ import {
 
 import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
-import { useThemeContext } from 'ui'
 
 export function GradientHero({ children }: { children: ReactNode }) {
   const theme = useThemeContext()

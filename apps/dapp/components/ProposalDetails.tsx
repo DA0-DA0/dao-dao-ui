@@ -21,6 +21,7 @@ import {
 } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { Button } from 'ui'
 
 import { ProposalStatus } from '@components'
 
@@ -60,12 +61,11 @@ import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
-import { getEnd } from './ProposalList'
-import { Progress } from './Progress'
-import { Button } from 'ui'
-import { Vote, VoteChoice } from './Vote'
-import SvgAbstain from './icons/Abstain'
 import { Execute } from './Execute'
+import SvgAbstain from './icons/Abstain'
+import { Progress } from './Progress'
+import { getEnd } from './ProposalList'
+import { Vote, VoteChoice } from './Vote'
 
 function executeProposalVote(
   choice: VoteChoice,

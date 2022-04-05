@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
+import ReactTooltip from 'react-tooltip'
 import { DEFAULT_THEME_NAME, ThemeProvider } from 'ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'
@@ -15,7 +16,6 @@ import { HomepageLayout } from 'components/HomepageLayout'
 import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
-import ReactTooltip from 'react-tooltip'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
