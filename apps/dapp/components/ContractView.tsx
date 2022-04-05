@@ -257,14 +257,6 @@ export function TreasuryBalances({ address }: { address: string }) {
   )
 }
 
-export function LoadingButton() {
-  return (
-    <a className="btn btn-sm btn-outline normal-case text-left loading">
-      Loading
-    </a>
-  )
-}
-
 export function ContractProposalsDispaly({
   contractAddress,
   proposalCreateLink,
@@ -288,19 +280,13 @@ export function ContractProposalsDispaly({
     <>
       <div className="flex justify-between items-center">
         <h2 className="primary-text">Proposals</h2>
-        {loading ? (
-          <LoadingButton />
-        ) : (
-          <>
-            <Link href={member ? proposalCreateLink : '#'} passHref>
-              <a data-tip={tooltip}>
-                <Button size="sm" disabled={!!tooltip}>
-                  New proposal
-                </Button>
-              </a>
-            </Link>
-          </>
-        )}
+        <Link href={member ? proposalCreateLink : '#'} passHref>
+          <a data-tip={tooltip}>
+            <Button size="sm" disabled={!!tooltip} loading={loading}>
+              New proposal
+            </Button>
+          </a>
+        </Link>
       </div>
       <div className="px-4 mt-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />

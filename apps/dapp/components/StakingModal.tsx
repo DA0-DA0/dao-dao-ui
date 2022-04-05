@@ -359,6 +359,7 @@ export function StakingModal({
   const ActionButton = ({ ready }: { ready: boolean }) => {
     return (
       <Button
+        loading={loading}
         disabled={!ready}
         onClick={() => {
           beforeExecute()

@@ -631,6 +631,7 @@ export function ProposalDetails({
         <>
           <p className="caption-text font-mono mb-[12px] mt-[30px]">Status</p>
           <Execute
+            loading={loading}
             onExecute={() =>
               executeProposalExecute(
                 proposalId,
@@ -655,6 +656,7 @@ export function ProposalDetails({
       {proposal.status === 'open' && !walletVote && (
         <Vote
           voterWeight={weightPercent}
+          loading={loading}
           onVote={(position) =>
             executeProposalVote(
               position,

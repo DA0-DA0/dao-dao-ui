@@ -13,9 +13,10 @@ export enum VoteChoice {
 export interface VoteProps {
   onVote: (choice: VoteChoice) => void
   voterWeight: number
+  loading: boolean
 }
 
-export const Vote: FC<VoteProps> = ({ onVote, voterWeight }) => {
+export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
@@ -85,6 +86,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight }) => {
       </div>
       <Button
         disabled={selected === undefined}
+        loading={loading}
         onClick={() => onVote(selected as VoteChoice)}
       >
         Vote <SvgAirplane stroke="currentColor" />
