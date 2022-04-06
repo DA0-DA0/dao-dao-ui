@@ -23,6 +23,7 @@ export function MessageTemplateDisplayItem({
     <button
       className="flex flex-row gap-3 items-center p-2 hover:bg-primary transition w-full rounded"
       onClick={onClick}
+      type="button"
     >
       <p className="text-3xl">{icon}</p>
       <div className="flex flex-col items-start">

@@ -71,7 +71,7 @@ export const messageTemplates: MessageTemplate[] = [
     fromCosmosMsg: transformCosmosToSpend,
   },
   {
-    label: '🍵 Mint',
+    label: '🌿 Mint',
     description: 'Mint new governance tokens.',
     component: MintComponent,
     contractSupport: ContractSupport.DAO,
