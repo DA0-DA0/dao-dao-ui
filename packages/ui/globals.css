@@ -40,6 +40,13 @@ menu {
   border-radius: 6px;
 }
 
+/* Don't show default up / down arrows on number input. */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 @-webkit-keyframes rumble {
     0% {-webkit-transform: rotate(0deg);}
     25% {-webkit-transform: translate(2px, 0px) rotate(-3deg);}

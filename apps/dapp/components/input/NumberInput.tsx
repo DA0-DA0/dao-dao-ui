@@ -1,3 +1,5 @@
+import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
+import { useState } from 'react'
 import { ChangeEventHandler } from 'react'
 
 import {
@@ -7,6 +9,7 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+import { useSetRecoilState } from 'recoil'
 
 /**
  * @param label      - the label for the value that this will contain.
@@ -22,24 +25,67 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   register,
   error,
   validation,
-  onChange,
   defaultValue,
   step,
   disabled = false,
+  plusMinus = false,
+  small = false,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
-  onChange?: ChangeEventHandler<HTMLInputElement>
   defaultValue?: string
   step?: string | number
   disabled?: boolean
+  plusMinus?: boolean
+  small?: boolean
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
+  const [value, setValue] = useState(defaultValue)
+
+  if (plusMinus) {
+    return (
+      <div
+        className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm ${
+          small ? 'w-40' : ''
+        }
+        ${error ? ' ring-error ring-1' : ''}`}
+      >
+        <button
+          type="button"
+          className="secondary-text hover:body-text transition"
+          onClick={() => setValue((v) => (Number(v) + 1).toString())}
+        >
+          <PlusIcon className="w-4" />
+        </button>
+        <button
+          type="button"
+          className="secondary-text hover:body-text transition"
+          onClick={() => setValue((v) => (Number(v) - 1).toString())}
+        >
+          <MinusIcon className="w-4" />
+        </button>
+        <input
+          type="number"
+          step={step}
+          defaultValue={defaultValue}
+          value={value}
+          className="bg-transparent w-full ring-none border-none outline-none text-right"
+          disabled={disabled}
+          {...register(label, {
+            validate,
+            onChange: (e) => setValue(e.target.value),
+          })}
+        />
+      </div>
+    )
+  }
+
   return (
     <input
       type="number"
@@ -48,7 +94,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
       className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default body-text
         ${error ? ' ring-error ring-1' : ''}`}
       disabled={disabled}
-      {...register(label, { validate, onChange })}
+      {...register(label, { validate })}
     />
   )
 }

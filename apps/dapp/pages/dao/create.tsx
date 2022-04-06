@@ -57,6 +57,7 @@ import {
   makeDaoInstantiateWithNewTokenMessage,
 } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
+import { ImageSelector } from '@components/input/ImageSelector'
 
 export interface DaoCreateData {
   deposit: string
@@ -103,7 +104,6 @@ const CreateDao: NextPage = () => {
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showImageSelect, setShowImageSelect] = useState(false)
 
   const {
     watch,
@@ -254,58 +254,12 @@ const CreateDao: NextPage = () => {
               [router.asPath, 'Create DAO'],
             ]}
           />
-          <button
-            type="button"
-            className={`w-24 h-24 rounded-full border mt-12 mx-auto border-inactive flex items-center justify-center hover:ring transition bg-center bg-cover ${
-              errors.imageUrl ? 'ring ring-error' : ''
-            }`}
-            style={{
-              backgroundImage: `url(${imageUrl})`,
-            }}
-            onClick={() => setShowImageSelect(true)}
-          >
-            <PlusIcon className="w-4" />
-          </button>
-          <div className={`${showImageSelect ? '' : 'hidden'}`}>
-            <Modal>
-              <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative flex flex-col items-center gap-3">
-                <button
-                  className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
-                  type="button"
-                  onClick={() => setShowImageSelect(false)}
-                >
-                  <XIcon className="h-4 w-4" />
-                </button>
-                <div
-                  className="rounded-full bg-center bg-cover w-[95px] h-[95px] border border-inactive"
-                  style={{
-                    backgroundImage: `url(${imageUrl})`,
-                  }}
-                  role="img"
-                  aria-label="DAO's Custom Logo"
-                ></div>
-                <div className="flex flex-col gap-1">
-                  <InputLabel name="Image URL" mono />
-                  <TextInput
-                    label="imageUrl"
-                    register={register}
-                    error={errors.imageUrl}
-                    validation={[validateUrl]}
-                  />
-                  <InputErrorMessage error={errors.imageUrl} />
-                </div>
-                <div className="text-right w-full">
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => setShowImageSelect(false)}
-                  >
-                    Done <SvgAirplane color="currentColor" />
-                  </Button>
-                </div>
-              </div>
-            </Modal>
-          </div>
+          <ImageSelector
+            imageUrl={imageUrl}
+            label="imageUrl"
+            register={register}
+            error={errors.imageUrl}
+          />
 
           <div className="flex flex-col items-center justify-center max-w-prose mx-auto mt-4 rounded-lg">
             <TextInput
@@ -319,7 +273,7 @@ const CreateDao: NextPage = () => {
           </div>
         </GradientHero>
 
-        <div className="px-6">
+        <div className="px-8">
           <div className="flex flex-col gap-1">
             <InputLabel name="Description" mono />
             <TextareaInput
@@ -410,6 +364,7 @@ const CreateDao: NextPage = () => {
                   <p className="primary-text">DAO Initial Balance</p>
                   <div className="flex flex-col gap-1 basis-3/5">
                     <NumberInput
+                      plusMinus
                       label="daoInitialBalance"
                       register={register}
                       error={errors.daoInitialBalance}
@@ -429,12 +384,14 @@ const CreateDao: NextPage = () => {
                 return (
                   <FormCard key={field.id}>
                     <div className="flex gap-3 justify-between">
-                      <p className="text-body flex items-center gap-2">
+                      <p className="body-text flex items-center gap-2">
                         <UserIcon className="w-3" /> Recepient {index + 1}
                       </p>
                       <div className="flex items-center gap-2">
                         <div className="flex flex-col gap-1">
                           <NumberInput
+                            small
+                            plusMinus
                             label={`balances.${index}.amount`}
                             register={register}
                             error={errors.daoInitialBalance}
@@ -477,7 +434,7 @@ const CreateDao: NextPage = () => {
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className={`${fields.length === 1 ? 'invisible' : ''}`}
+                        className={`${fields.length === 1 ? 'hidden' : ''}`}
                       >
                         <XIcon className="text-error w-4" />
                       </button>
@@ -505,6 +462,7 @@ const CreateDao: NextPage = () => {
               </div>
               <div className="col-span-2 flex flex-col gap-1">
                 <NumberInput
+                  plusMinus
                   label="threshold"
                   register={register}
                   error={errors.threshold}
@@ -524,6 +482,7 @@ const CreateDao: NextPage = () => {
               </div>
               <div className="col-span-2 flex flex-col gap-1">
                 <NumberInput
+                  plusMinus
                   label="quorum"
                   register={register}
                   error={errors.quorum}
