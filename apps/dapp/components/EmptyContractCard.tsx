@@ -1,4 +1,6 @@
-import { useRouter } from 'next/router'
+import Link from 'next/link'
+
+import { PlusIcon } from '@heroicons/react/outline'
 
 export const EmptyContractCard = ({
   title,
@@ -11,20 +13,21 @@ export const EmptyContractCard = ({
   backgroundUrl: string
   href: string
 }) => {
-  const router = useRouter()
   return (
-    <div
-      className="border border-md rounded-md w-min cursor-pointer hover:shadow-accent hover:shadow-md hover:outline-accent"
-      onClick={() => router.push(href)}
-    >
-      <div
-        className="w-[480px] h-72 bg-cover bg-no-repeat rounded-t-md opacity-75"
-        style={{ backgroundImage: `url(${backgroundUrl})` }}
-      />
-      <div className="px-4 py-2">
-        <div className="font-bold text-lg">{title}</div>
-        <div>{description}</div>
-      </div>
-    </div>
+    <Link href={href} passHref>
+      <a className="border border-inactive transition hover:border-brand rounded-md w-max overflow-hidden max-w-[400px]">
+        <div
+          className={'h-72 bg-cover bg-no-repeat opacity-75'}
+          style={{ backgroundImage: `url(${backgroundUrl})` }}
+        />
+        <div className="px-6 py-4">
+          <div className="primary-text mb-2 flex items-center gap-2">
+            <PlusIcon className="w-4" />
+            {title}
+          </div>
+          <div className="body-text">{description}</div>
+        </div>
+      </a>
+    </Link>
   )
 }

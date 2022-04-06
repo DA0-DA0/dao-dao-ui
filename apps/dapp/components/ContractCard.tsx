@@ -201,25 +201,3 @@ const EmptyStateContractCard = ({
     </Link>
   )
 }
-
-export function MysteryDaoCard() {
-  return (
-    <EmptyStateContractCard
-      href="/dao/create"
-      backgroundUrl={'/empty-state-dao.jpeg'}
-      title={'Create a DAO'}
-      description={'You are not a member of any DAOs. Why not create one?'}
-    />
-  )
-}
-
-export function MysteryMultisigCard() {
-  return (
-    <EmptyStateContractCard
-      href="/multisig/create"
-      backgroundUrl={'/empty-state-multisig.jpeg'}
-      title={'Create a Multisig'}
-      description={'You are not a member of any Multisigs. Why not create one?'}
-    />
-  )
-}

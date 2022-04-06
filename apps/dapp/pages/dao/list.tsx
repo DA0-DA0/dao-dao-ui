@@ -21,13 +21,10 @@ import {
 
 import { Button } from '@components'
 
+import { EmptyDaoCard } from '@components/EmptyDaoCard'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import CodeIdSelect from 'components/CodeIdSelect'
-import {
-  ContractCard,
-  LoadingContractCard,
-  MysteryDaoCard,
-} from 'components/ContractCard'
+import { ContractCard, LoadingContractCard } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
@@ -86,7 +83,7 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
             )
           })
         ) : (
-          <MysteryDaoCard />
+          <EmptyDaoCard />
         )
       ) : (
         <LoadingContractCard />

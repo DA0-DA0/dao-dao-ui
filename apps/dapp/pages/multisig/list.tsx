@@ -20,13 +20,10 @@ import {
 } from '@heroicons/react/outline'
 import { Button } from 'ui'
 
+import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import CodeIdSelect from 'components/CodeIdSelect'
-import {
-  ContractCard,
-  LoadingContractCard,
-  MysteryMultisigCard,
-} from 'components/ContractCard'
+import { ContractCard, LoadingContractCard } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
@@ -94,7 +91,7 @@ function LoadableCards({
               )
           )
         ) : (
-          <MysteryMultisigCard />
+          <EmptyMultisigCard />
         )
       ) : (
         <LoadingContractCard />

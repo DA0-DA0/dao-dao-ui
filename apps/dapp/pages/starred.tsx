@@ -5,12 +5,10 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
+import { EmptyDaoCard } from '@components/EmptyDaoCard'
+import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import {
-  MysteryDaoCard,
-  MysteryMultisigCard,
-  ContractCard,
-} from 'components/ContractCard'
+import { ContractCard } from 'components/ContractCard'
 import {
   isMemberSelector,
   memberDaoSelector,
@@ -104,7 +102,7 @@ const Starred: NextPage = () => {
               <PinnedDaoCard address={address} key={address} />
             ))
           ) : (
-            <MysteryDaoCard />
+            <EmptyDaoCard />
           )}
         </div>
         <div className="mt-6">
@@ -112,13 +110,13 @@ const Starred: NextPage = () => {
             <StarIcon className="inline w-4 " />
             Multisigs
           </h2>
-          <div className="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedMultisigs.length ? (
               pinnedMultisigs.map((address) => (
                 <PinnedMultisigCard address={address} key={address} />
               ))
             ) : (
-              <MysteryMultisigCard />
+              <EmptyMultisigCard />
             )}
           </div>
         </div>
