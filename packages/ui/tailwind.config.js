@@ -31,6 +31,7 @@ const textColor = {
 
 const backgroundColor = {
     base: generateColorClass("white", 1),
+    disabled: generateColorClass("dark", 0.03),
     primary: generateColorClass("dark", 0.05),
     secondary: generateColorClass("dark", 0.2),
     tertiary: generateColorClass("dark", 0.3),

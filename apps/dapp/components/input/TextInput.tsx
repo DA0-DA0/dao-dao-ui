@@ -21,6 +21,7 @@ export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   error,
   validation,
   disabled = false,
+  className = '',
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -28,6 +29,7 @@ export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   error?: FieldError
   border?: boolean
   disabled?: boolean
+  className?: string
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -36,8 +38,8 @@ export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <input
       type="text"
-      className={`bg-transparent rounded-lg p-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full
-        ${error ? ' ring-error ring-1' : ''}`}
+      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full body-text
+        ${error ? ' ring-error ring-1' : ''} ${className}`}
       disabled={disabled}
       {...register(label, { validate })}
     />

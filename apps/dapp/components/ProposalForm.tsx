@@ -10,7 +10,6 @@ import { Button } from 'ui'
 import { walletAddress } from 'selectors/treasury'
 import {
   messageTemplates,
-  ContractSupport,
   ToCosmosMsgProps,
   MessageTemplate,
   messageTemplateToCosmosMsg,
