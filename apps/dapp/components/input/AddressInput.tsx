@@ -8,6 +8,8 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import SvgCopy from '@components/icons/Copy'
+
 export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   label,
   register,
@@ -28,12 +30,17 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
     {}
   )
   return (
-    <input
-      type="text"
-      className={`bg-transparent rounded-lg p-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default text-sm font-mono
+    <div
+      className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm font-mono
         ${error ? ' ring-error ring-1' : ''}`}
-      disabled={disabled}
-      {...register(label, { validate, onChange })}
-    />
+    >
+      <SvgCopy width="24px" color="currentColor" />
+      <input
+        type="text"
+        className="bg-transparent w-full ring-none border-none outline-none"
+        disabled={disabled}
+        {...register(label, { validate, onChange })}
+      />
+    </div>
   )
 }

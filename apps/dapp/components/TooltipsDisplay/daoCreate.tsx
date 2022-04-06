@@ -95,16 +95,17 @@ const daoCreateTooltips: daoCreateTooltipsType = {
       https://moonphase.is/image.svg
     </p>
   ),
+  balances: <p>The token balances of your initial DAO members.</p>,
 }
 
 export const daoCreateTooltipsGetter = (label: string): TooltipResponse => {
-  if (label.startsWith('address_')) {
+  if (label.endsWith('addr')) {
     return {
-      label: 'address',
+      label: 'Address',
       content: <p>The address to allocate governance tokens to.</p>,
     }
   }
-  if (label.startsWith('weight_')) {
+  if (label.endsWith('amount')) {
     return {
       label: 'token count',
       content: <p>The number of tokens to allocate to this address.</p>,
@@ -116,7 +117,12 @@ export const daoCreateTooltipsGetter = (label: string): TooltipResponse => {
       content: daoCreateTooltips[daoCreateTooltipsDefault],
     }
   }
-  return { label, content: daoCreateTooltips[label] }
+  return {
+    label,
+    content: daoCreateTooltips[
+      label as keyof daoCreateTooltipsType
+    ] as ReactNode,
+  }
 }
 
 export const daoCreateTooltipsDefault = 'name'
