@@ -98,10 +98,8 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
 
   const quorum = watch(getLabel('quorum'))
   const defaultQuorum = watch(getLabel('defaultQuorum'))
+  const votingPeriodSeconds = watch(getLabel('max_voting_period'))
 
-  const [votingPeriodSeconds, setVotingPeriodSeconds] = useState(
-    DEFAULT_MAX_VOTING_PERIOD_SECONDS
-  )
   const [thresholdMode, setThresholdMode] = useState(
     quorum !== undefined
       ? ThresholdMode.ThresholdQuorum
@@ -264,7 +262,6 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
               register={register}
               error={errors?.duration}
               validation={[validateRequired, validatePositive]}
-              onChange={(e) => setVotingPeriodSeconds(e?.target?.value)}
               defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
               disabled={readOnly}
             />

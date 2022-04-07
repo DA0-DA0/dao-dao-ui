@@ -1,7 +1,9 @@
-import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 import { ChangeEventHandler } from 'react'
 
+import { useSetRecoilState } from 'recoil'
+
+import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
 import {
   FieldError,
   FieldPathValue,
@@ -9,7 +11,6 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
-import { useSetRecoilState } from 'recoil'
 
 /**
  * @param label      - the label for the value that this will contain.
@@ -28,7 +29,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   defaultValue,
   step,
   disabled = false,
-  plusMinus = false,
+  onPlusMinus,
   small = false,
 }: {
   label: FieldName
@@ -38,7 +39,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   defaultValue?: string
   step?: string | number
   disabled?: boolean
-  plusMinus?: boolean
+  onPlusMinus?: [() => void, () => void]
   small?: boolean
 }) {
   const validate = validation?.reduce(
@@ -46,9 +47,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
     {}
   )
 
-  const [value, setValue] = useState(defaultValue)
-
-  if (plusMinus) {
+  if (onPlusMinus) {
     return (
       <div
         className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm ${
@@ -59,27 +58,25 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
         <button
           type="button"
           className="secondary-text hover:body-text transition"
-          onClick={() => setValue((v) => (Number(v) + 1).toString())}
+          onClick={() => onPlusMinus[0]()}
         >
           <PlusIcon className="w-4" />
         </button>
         <button
           type="button"
           className="secondary-text hover:body-text transition"
-          onClick={() => setValue((v) => (Number(v) - 1).toString())}
+          onClick={() => onPlusMinus[1]()}
         >
           <MinusIcon className="w-4" />
         </button>
         <input
           type="number"
           step={step}
-          defaultValue={defaultValue}
-          value={value}
           className="bg-transparent w-full ring-none border-none outline-none text-right"
           disabled={disabled}
+          defaultValue={defaultValue}
           {...register(label, {
             validate,
-            onChange: (e) => setValue(e.target.value),
           })}
         />
       </div>

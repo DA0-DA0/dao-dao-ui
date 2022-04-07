@@ -1,7 +1,6 @@
-import SvgAirplane from '@components/icons/Airplane'
-import { Modal } from '@components/Modal'
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
+
+import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import {
   FieldError,
   FieldPathValue,
@@ -10,7 +9,11 @@ import {
   Validate,
 } from 'react-hook-form'
 import { Button } from 'ui'
+
+import SvgAirplane from '@components/icons/Airplane'
+import { Modal } from '@components/Modal'
 import { validateUrl } from 'util/formValidation'
+
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'
