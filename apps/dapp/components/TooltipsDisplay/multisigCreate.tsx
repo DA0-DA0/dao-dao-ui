@@ -26,18 +26,19 @@ const multisigCreateTooltips: multisigCreateDataType = {
       https://moonphase.is/image.svg
     </p>
   ),
+  balances: <p>The weights of your initial Multisig members.</p>,
 }
 
 export const multisigCreateTooltipsGetter = (
   label: string
 ): TooltipResponse => {
-  if (label.startsWith('address_')) {
+  if (label.endsWith('addr')) {
     return {
       label: 'address',
       content: <p>The address to allocate voting power to.</p>,
     }
   }
-  if (label.startsWith('weight_')) {
+  if (label.endsWith('amount')) {
     return {
       label: 'weight',
       content: <p>The amount of voting power to allocate to this address.</p>,
@@ -49,7 +50,10 @@ export const multisigCreateTooltipsGetter = (
       content: multisigCreateTooltips[multisigCreateTooltipsDefault],
     }
   }
-  return { label, content: multisigCreateTooltips[label] }
+  return {
+    label,
+    content: multisigCreateTooltips[label as keyof multisigCreateDataType],
+  }
 }
 
 export const multisigCreateTooltipsDefault = 'name'

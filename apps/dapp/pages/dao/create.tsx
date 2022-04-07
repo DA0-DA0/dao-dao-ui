@@ -8,21 +8,22 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
-import { PlusIcon, UserIcon, XIcon } from '@heroicons/react/outline'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { PlusIcon } from '@heroicons/react/outline'
+import { useFieldArray, useForm, Validate } from 'react-hook-form'
 import { Button } from 'ui'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
 import SvgAirplane from '@components/icons/Airplane'
 import { AddressInput } from '@components/input/AddressInput'
+import { ImageSelector } from '@components/input/ImageSelector'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
 import { TextareaInput } from '@components/input/TextAreaInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
-import { Modal } from '@components/Modal'
+import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
@@ -43,13 +44,11 @@ import {
   secondsToHms,
 } from 'util/conversion'
 import {
-  validateAddress,
   validateContractAddress,
   validateNonNegative,
   validatePercent,
   validatePositive,
   validateRequired,
-  validateUrl,
 } from 'util/formValidation'
 import { isValidName, isValidTicker } from 'util/isValidTicker'
 import {
@@ -57,7 +56,6 @@ import {
   makeDaoInstantiateWithNewTokenMessage,
 } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
-import { ImageSelector } from '@components/input/ImageSelector'
 
 export interface DaoCreateData {
   deposit: string
@@ -108,6 +106,7 @@ const CreateDao: NextPage = () => {
   const {
     watch,
     control,
+    setValue,
     register: formRegister,
     handleSubmit,
     formState: { errors },
@@ -127,8 +126,12 @@ const CreateDao: NextPage = () => {
 
   const votingPeriodSeconds = watch('duration')
   const unstakingDurationSeconds = watch('unstakingDuration')
+  const daoInitialBalance = watch('daoInitialBalance')
   const tokenSymbol = watch('tokenSymbol')
   const imageUrl = watch('imageUrl')
+
+  const threshold = watch('threshold')
+  const quorum = watch('quorum')
 
   const [tokenMode, setTokenMode] = useState(TokenMode.Create)
 
@@ -364,7 +367,18 @@ const CreateDao: NextPage = () => {
                   <p className="primary-text">DAO Initial Balance</p>
                   <div className="flex flex-col gap-1 basis-3/5">
                     <NumberInput
-                      plusMinus
+                      onPlusMinus={[
+                        () =>
+                          setValue(
+                            'daoInitialBalance',
+                            (Number(daoInitialBalance) + 1).toString()
+                          ),
+                        () =>
+                          setValue(
+                            'daoInitialBalance',
+                            (Number(daoInitialBalance) - 1).toString()
+                          ),
+                      ]}
                       label="daoInitialBalance"
                       register={register}
                       error={errors.daoInitialBalance}
@@ -381,65 +395,43 @@ const CreateDao: NextPage = () => {
                 </div>
               </FormCard>
               {fields.map((field, index) => {
-                return (
-                  <FormCard key={field.id}>
-                    <div className="flex gap-3 justify-between">
-                      <p className="body-text flex items-center gap-2">
-                        <UserIcon className="w-3" /> Recepient {index + 1}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex flex-col gap-1">
-                          <NumberInput
-                            small
-                            plusMinus
-                            label={`balances.${index}.amount`}
-                            register={register}
-                            error={errors.daoInitialBalance}
-                            validation={[validateRequired, validateNonNegative]}
-                            defaultValue="0"
-                            step={0.000001}
-                          />
-                          <InputErrorMessage
-                            error={
-                              (errors.balances &&
-                                errors.balances[index].amount) ||
-                              undefined
-                            }
-                          />
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-4 h-4 rounded-full border border-default"></div>
-                          <p className="link-text">{tokenSymbol}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <p className="secondary-text font-mono">{'->'}</p>
-                        <div className="flex flex-col gap-1">
-                          <AddressInput
-                            label={`balances.${index}.addr`}
-                            register={register}
-                            error={errors.daoInitialBalance}
-                            validation={[validateRequired, validateAddress]}
-                          />
-                          <InputErrorMessage
-                            error={
-                              (errors.balances &&
-                                errors.balances[index].addr) ||
-                              undefined
-                            }
-                          />
-                        </div>
-                      </div>
+                const amount = watch(`balances.${index}.amount`)
 
-                      <button
-                        type="button"
-                        onClick={() => remove(index)}
-                        className={`${fields.length === 1 ? 'hidden' : ''}`}
-                      >
-                        <XIcon className="text-error w-4" />
-                      </button>
-                    </div>
-                  </FormCard>
+                return (
+                  <TokenAmountInput
+                    onPlusMinus={[
+                      () =>
+                        setValue(
+                          `balances.${index}.amount`,
+                          (Number(amount) + 1).toString()
+                        ),
+                      () =>
+                        setValue(
+                          `balances.${index}.amount`,
+                          (Number(amount) - 1).toString()
+                        ),
+                    ]}
+                    amountLabel={`balances.${index}.amount`}
+                    addrLabel={`balances.${index}.addr`}
+                    onRemove={() => remove(index)}
+                    tokenSymbol={tokenSymbol}
+                    hideRemove={fields.length === 1}
+                    title={`Recepient ${index}`}
+                    key={field.id}
+                    register={register}
+                    amountError={
+                      (errors.balances &&
+                        errors.balances[index] &&
+                        errors.balances[index].amount) ||
+                      undefined
+                    }
+                    addrError={
+                      (errors.balances &&
+                        errors.balances[index] &&
+                        errors.balances[index].addr) ||
+                      undefined
+                    }
+                  />
                 )
               })}
               <Button
@@ -462,7 +454,12 @@ const CreateDao: NextPage = () => {
               </div>
               <div className="col-span-2 flex flex-col gap-1">
                 <NumberInput
-                  plusMinus
+                  onPlusMinus={[
+                    () =>
+                      setValue('threshold', (Number(threshold) + 1).toString()),
+                    () =>
+                      setValue('threshold', (Number(threshold) - 1).toString()),
+                  ]}
                   label="threshold"
                   register={register}
                   error={errors.threshold}
@@ -482,7 +479,10 @@ const CreateDao: NextPage = () => {
               </div>
               <div className="col-span-2 flex flex-col gap-1">
                 <NumberInput
-                  plusMinus
+                  onPlusMinus={[
+                    () => setValue('quorum', (Number(quorum) + 1).toString()),
+                    () => setValue('quorum', (Number(quorum) - 1).toString()),
+                  ]}
                   label="quorum"
                   register={register}
                   error={errors.quorum}
@@ -507,7 +507,7 @@ const CreateDao: NextPage = () => {
                   defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
                   validation={[validateRequired, validatePositive]}
                 />
-                <InputErrorMessage error={errors.quorum} />
+                <InputErrorMessage error={errors.duration} />
               </div>
               <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
                 <p className="secondary-text">
