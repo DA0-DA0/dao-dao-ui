@@ -41,7 +41,7 @@ import { cleanChainError } from 'util/cleanChainError'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
 import {
   convertDenomToMicroDenomWithDecimals,
-  secondsToHms,
+  secondsToWdhms,
 } from 'util/conversion'
 import {
   validateContractAddress,
@@ -511,7 +511,7 @@ const CreateDao: NextPage = () => {
               </div>
               <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
                 <p className="secondary-text">
-                  {secondsToHms(votingPeriodSeconds)}
+                  {secondsToWdhms(votingPeriodSeconds)}
                 </p>
               </div>
 
@@ -534,7 +534,7 @@ const CreateDao: NextPage = () => {
               </div>
               <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
                 <p className="secondary-text">
-                  {secondsToHms(unstakingDurationSeconds)}
+                  {secondsToWdhms(unstakingDurationSeconds)}
                 </p>
               </div>
 
