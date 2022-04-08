@@ -6,7 +6,6 @@ import {
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
 
 import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
-
 import ibcAssets from './ibc_assets.json'
 
 export function convertMicroDenomToDenomWithDecimals(
@@ -142,21 +141,29 @@ export function humanReadableDuration(d: Duration) {
   if (d.time == 0) {
     return '0 seconds'
   }
-  return `${secondsToHms(d.time.toString())}`
+  return `${secondsToWdhms(d.time.toString())}`
 }
 
-export function secondsToHms(seconds: string): string {
+const secPerDay = 24 * 60 * 60
+export function secondsToWdhms(seconds: string): string {
   const secondsInt = Number(seconds)
-  const h = Math.floor(secondsInt / 3600)
+  const w = Math.floor(secondsInt / (secPerDay * 7))
+  const d = Math.floor((secondsInt % (secPerDay * 7)) / secPerDay)
+  const h = Math.floor((secondsInt % secPerDay) / 3600)
   const m = Math.floor((secondsInt % 3600) / 60)
-  const s = Math.floor((secondsInt % 3600) % 60)
+  const s = Math.floor(secondsInt % 60)
 
-  const hDisplay =
-    h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
-  const mDisplay =
-    m > 0 ? m + (m == 1 ? ' min' : ' mins') + (s > 0 ? ', ' : '') : ''
-  const sDisplay = s > 0 ? s + (s == 1 ? ' sec' : ' secs') : ''
-  return hDisplay + mDisplay + sDisplay
+  const wDisplay = w ? w + (w === 1 ? ' wk' : ' wks') : null
+  const dDisplay = d ? d + (d === 1 ? ' day' : ' days') : null
+  const hDisplay = h ? h + (h === 1 ? ' hr' : ' hrs') : null
+  const mDisplay = m ? m + (m === 1 ? ' min' : ' mins') : null
+  const sDisplay = s ? s + (s === 1 ? ' sec' : ' secs') : null
+
+  return [wDisplay, dDisplay, hDisplay, mDisplay, sDisplay]
+    // Ignore empty values.
+    .filter(Boolean)
+    // Separate with commas.
+    .join(', ')
 }
 
 export function nativeTokenLabel(denom: string): string {
