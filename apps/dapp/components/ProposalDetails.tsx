@@ -172,23 +172,28 @@ function ProposalVoteButtons({
     proposalsUpdated(contractAddress)
   )
 
-  const height = useRecoilValue(
-    proposalStartBlockSelector({ contractAddress, proposalId })
-  )
-  const stakedBalanceAtStart = useRecoilValue(
-    votingPowerAtHeightSelector({
-      contractAddress,
-      height,
-      multisig,
-    })
-  )
+  /* const height = useRecoilValue(
+   *   proposalStartBlockSelector({ contractAddress, proposalId })
+   * ) */
 
-  const ready =
-    walletAddress && signingClient && !voted && stakedBalanceAtStart != 0
+  // TODO: reactivate this check.
+  //
+  // After the chain recovering on 04/08 queries like `junod query tsx` which
+  // this one relies on stopped working for the time before the halt. Removing this
+  // for now, and then we need to add it back later.
+  /* const stakedBalanceAtStart = useRecoilValue(
+   *   votingPowerAtHeightSelector({
+   *     contractAddress,
+   *     height,
+   *     multisig,
+   *   })
+   * ) */
+
+  const ready = walletAddress && signingClient && !voted // && stakedBalanceAtStart !== 0
   const tooltip =
     ((!walletAddress || !signingClient) && 'Connect your wallet to vote') ||
-    (stakedBalanceAtStart == 0 &&
-      'You must have staked balance at the time of proposal creation to vote.') ||
+    /* (stakedBalanceAtStart == 0 &&
+     *   'You must have staked balance at the time of proposal creation to vote.') || */
     (voted && 'You already voted.') ||
     'Something went wrong.'
 
