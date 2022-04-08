@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react'
 
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { Wallet as SvgWallet } from '@dao-dao/icons'
 import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 
 import { Button } from '@components'
