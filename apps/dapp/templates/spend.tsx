@@ -139,6 +139,7 @@ export const SpendComponent: TemplateComponent = ({
           <h2>Spend</h2>
         </div>
         <NumberInput
+          small
           label={getLabel('amount')}
           register={register}
           error={errors?.amount}
