@@ -12,7 +12,6 @@ import { DaoContractInfo } from '@components/DaoContractInfo'
 import SvgMemberCheck from '@components/icons/MemberCheck'
 import SvgPencil from '@components/icons/Pencil'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   BalanceCard,
@@ -24,7 +23,6 @@ import {
   HeroContractHorizontalInfoSection,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
-import Sidebar from 'components/Sidebar'
 import { StakingModal, StakingMode } from 'components/StakingModal'
 import {
   daoSelector,
@@ -76,8 +74,6 @@ function DaoHome() {
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
 
-  const expanded = useRecoilValue(sidebarExpandedAtom)
-
   const stakedPercent = (
     (100 * stakedTotal) /
     Number(tokenInfo?.total_supply)
@@ -91,13 +87,7 @@ function DaoHome() {
   }, [shouldAddToken, daoInfo.gov_token])
 
   return (
-    <div
-      className={
-        expanded
-          ? 'grid grid-cols-6 overflow-auto mb-3 min-h-screen'
-          : 'grid grid-cols-1 overflow-auto mb-3 min-h-screen'
-      }
-    >
+    <div className="grid grid-cols-6 overflow-auto mb-3 min-h-screen">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
@@ -107,28 +97,24 @@ function DaoHome() {
                 [router.asPath, daoInfo.config.name],
               ]}
             />
-            <div className={expanded ? '' : 'mr-6'}>
-              <div className="flex flex-row items-center gap-4">
-                {member && (
-                  <div className="flex flex-row items-center gap-2">
-                    <SvgMemberCheck fill="currentColor" width="16px" />
-                    <p className="text-sm text-primary">You{"'"}re a member</p>
-                  </div>
-                )}
-                <StarButton
-                  pinned={pinned}
-                  onPin={() => {
-                    if (pinned) {
-                      setPinnedDaos((p) =>
-                        p.filter((a) => a !== contractAddress)
-                      )
-                    } else {
-                      setPinnedDaos((p) => p.concat([contractAddress]))
-                      addToken(daoInfo.gov_token)
-                    }
-                  }}
-                />
-              </div>
+            <div className="flex flex-row items-center gap-4">
+              {member && (
+                <div className="flex flex-row items-center gap-2">
+                  <SvgMemberCheck fill="currentColor" width="16px" />
+                  <p className="text-sm text-primary">You{"'"}re a member</p>
+                </div>
+              )}
+              <StarButton
+                pinned={pinned}
+                onPin={() => {
+                  if (pinned) {
+                    setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+                  } else {
+                    setPinnedDaos((p) => p.concat([contractAddress]))
+                    addToken(daoInfo.gov_token)
+                  }
+                }}
+              />
             </div>
           </div>
 
@@ -169,114 +155,112 @@ function DaoHome() {
           />
         </div>
       </div>
-      <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-          <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
-          <ul className="list-none mt-3">
+      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+        <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
+        <ul className="list-none mt-3">
+          <li>
+            <BalanceCard
+              title="Balance"
+              amount={convertMicroDenomToDenomWithDecimals(
+                govTokenBalance?.amount,
+                tokenInfo.decimals
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
+              denom={tokenInfo?.symbol}
+              onManage={() => {
+                setShowStaking(true)
+                setStakingDefault(StakingMode.Unstake)
+              }}
+              loading={tokenBalanceLoading}
+            />
+          </li>
+          <li>
+            <BalanceCard
+              title={`Voting power (staked ${tokenInfo?.symbol})`}
+              amount={convertMicroDenomToDenomWithDecimals(
+                stakedGovTokenBalance.amount,
+                tokenInfo.decimals
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
+              denom={tokenInfo?.symbol}
+              onManage={() => {
+                setShowStaking(true)
+                setStakingDefault(StakingMode.Stake)
+              }}
+              loading={tokenBalanceLoading}
+            />
+          </li>
+          {claimsAvaliable ? (
             <li>
               <BalanceCard
-                title="Balance"
+                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
                 amount={convertMicroDenomToDenomWithDecimals(
-                  govTokenBalance?.amount,
+                  claimsAvaliable,
                   tokenInfo.decimals
-                ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
+                ).toLocaleString(undefined, {
+                  maximumFractionDigits: 20,
+                })}
                 denom={tokenInfo?.symbol}
                 onManage={() => {
                   setShowStaking(true)
-                  setStakingDefault(StakingMode.Unstake)
+                  setStakingDefault(StakingMode.Claim)
                 }}
                 loading={tokenBalanceLoading}
               />
             </li>
-            <li>
-              <BalanceCard
-                title={`Voting power (staked ${tokenInfo?.symbol})`}
-                amount={convertMicroDenomToDenomWithDecimals(
-                  stakedGovTokenBalance.amount,
-                  tokenInfo.decimals
-                ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-                denom={tokenInfo?.symbol}
-                onManage={() => {
+          ) : null}
+        </ul>
+        {govTokenBalance?.amount ? (
+          <div className="bg-primary rounded-lg w-full mt-2 p-6">
+            <h3 className="link-text mb-4">
+              You have{' '}
+              {convertMicroDenomToDenomWithDecimals(
+                govTokenBalance?.amount,
+                tokenInfo.decimals
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
+              unstaked {tokenInfo.symbol}
+            </h3>
+            <p className="secondary-text">
+              Staking them would bring you{' '}
+              {stakedGovTokenBalance &&
+                `${(
+                  (govTokenBalance.amount / stakedGovTokenBalance.amount) *
+                  100
+                ).toLocaleString(undefined, {
+                  maximumSignificantDigits: 3,
+                })}%`}{' '}
+              more voting power and help you defend your positions for{' '}
+              {daoInfo.config.name}
+              {"'"}s direction.
+            </p>
+            <div className="mt-4 flex justify-end">
+              <button
+                className="link-text flex items-center gap-2 rounded"
+                onClick={() => {
                   setShowStaking(true)
                   setStakingDefault(StakingMode.Stake)
                 }}
-                loading={tokenBalanceLoading}
-              />
-            </li>
-            {claimsAvaliable ? (
-              <li>
-                <BalanceCard
-                  title={`Pending (unclaimed ${tokenInfo?.symbol})`}
-                  amount={convertMicroDenomToDenomWithDecimals(
-                    claimsAvaliable,
-                    tokenInfo.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: 20,
-                  })}
-                  denom={tokenInfo?.symbol}
-                  onManage={() => {
-                    setShowStaking(true)
-                    setStakingDefault(StakingMode.Claim)
-                  }}
-                  loading={tokenBalanceLoading}
-                />
-              </li>
-            ) : null}
-          </ul>
-          {govTokenBalance?.amount ? (
-            <div className="bg-primary rounded-lg w-full mt-2 p-6">
-              <h3 className="link-text mb-4">
-                You have{' '}
-                {convertMicroDenomToDenomWithDecimals(
-                  govTokenBalance?.amount,
-                  tokenInfo.decimals
-                ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-                unstaked {tokenInfo.symbol}
-              </h3>
-              <p className="secondary-text">
-                Staking them would bring you{' '}
-                {stakedGovTokenBalance &&
-                  `${(
-                    (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                    100
-                  ).toLocaleString(undefined, {
-                    maximumSignificantDigits: 3,
-                  })}%`}{' '}
-                more voting power and help you defend your positions for{' '}
-                {daoInfo.config.name}
-                {"'"}s direction.
-              </p>
-              <div className="mt-4 flex justify-end">
-                <button
-                  className="link-text flex items-center gap-2 rounded"
-                  onClick={() => {
-                    setShowStaking(true)
-                    setStakingDefault(StakingMode.Stake)
-                  }}
-                >
-                  Stake tokens
-                  <PlusSmIcon className="h-5" />
-                </button>
-              </div>
+              >
+                Stake tokens
+                <PlusSmIcon className="h-5" />
+              </button>
             </div>
-          ) : null}
-          <ClaimsPendingList
-            stakingAddress={daoInfo.staking_contract}
-            tokenInfo={tokenInfo}
+          </div>
+        ) : null}
+        <ClaimsPendingList
+          stakingAddress={daoInfo.staking_contract}
+          tokenInfo={tokenInfo}
+        />
+        {showStaking && (
+          <StakingModal
+            defaultMode={stakingDefault}
+            contractAddress={contractAddress}
+            tokenSymbol={tokenInfo.symbol}
+            claimAmount={claimsAvaliable}
+            onClose={() => setShowStaking(false)}
+            beforeExecute={() => setTokenBalancesLoading(true)}
+            afterExecute={() => setTokenBalancesLoading(false)}
           />
-          {showStaking && (
-            <StakingModal
-              defaultMode={stakingDefault}
-              contractAddress={contractAddress}
-              tokenSymbol={tokenInfo.symbol}
-              claimAmount={claimsAvaliable}
-              onClose={() => setShowStaking(false)}
-              beforeExecute={() => setTokenBalancesLoading(true)}
-              afterExecute={() => setTokenBalancesLoading(false)}
-            />
-          )}
-        </div>
-      </Sidebar>
+        )}
+      </div>
     </div>
   )
 }

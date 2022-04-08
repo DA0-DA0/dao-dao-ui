@@ -2,11 +2,7 @@ import { useCallback, useState } from 'react'
 
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
-import {
-  CheckCircleIcon,
-  LogoutIcon,
-  PaperClipIcon,
-} from '@heroicons/react/outline'
+import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 
 import { Button } from '@components'
 

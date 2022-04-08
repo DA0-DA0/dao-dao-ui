@@ -21,7 +21,6 @@ import {
 import { Button } from 'ui'
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
@@ -29,7 +28,6 @@ import {
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
-import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
@@ -135,8 +133,6 @@ const MultisigList: NextPage = () => {
     waitForAll(pinnedSigAddresses.map((a) => sigMemberSelector(a)))
   )
 
-  const expanded = useRecoilValue(sidebarExpandedAtom)
-
   const [version, setMultisigVersion] = useState<MultisigVersion>(
     MULTISIG_VERSIONS[0]
   )
@@ -148,7 +144,7 @@ const MultisigList: NextPage = () => {
   )
 
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className="grid grid-cols-6">
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
           <h1 className="header-text">Multisigs</h1>
@@ -190,20 +186,18 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
       </div>
-      <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen">
-          <h2 className="font-medium title-text">Overview</h2>
-          <div className="mt-6">
-            <ul className="list-none ml-2 leading-relaxed">
-              <li className="body-text flex items-center gap-2">
-                <LibraryIcon className="inline w-4" />
-                {total} active multisig
-                {total > 1 && 's'}
-              </li>
-            </ul>
-          </div>
+      <div className="col-start-5 col-span-2 p-6 min-h-screen">
+        <h2 className="font-medium title-text">Overview</h2>
+        <div className="mt-6">
+          <ul className="list-none ml-2 leading-relaxed">
+            <li className="body-text flex items-center gap-2">
+              <LibraryIcon className="inline w-4" />
+              {total} active multisig
+              {total > 1 && 's'}
+            </li>
+          </ul>
         </div>
-      </Sidebar>
+      </div>
     </div>
   )
 }

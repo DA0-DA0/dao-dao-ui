@@ -3,13 +3,11 @@ import { useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ProposalDetails,
   ProposalDetailsSidebar,
 } from 'components/ProposalDetails'
-import Sidebar from 'components/Sidebar'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 
@@ -19,10 +17,9 @@ const Proposal: NextPage = () => {
   const contractAddress = router.query.contractAddress as string
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const govTokenInfo = useRecoilValue(cw20TokenInfo(daoInfo.gov_token))
-  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   return (
-    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
+    <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -39,14 +36,12 @@ const Proposal: NextPage = () => {
           }}
         />
       </div>
-      <Sidebar>
-        <div className="col-span-2 p-6 bg-base-200 min-h-screen">
-          <ProposalDetailsSidebar
-            contractAddress={contractAddress}
-            proposalId={Number(proposalKey)}
-          />
-        </div>
-      </Sidebar>
+      <div className="col-span-2 p-6 bg-base-200 min-h-screen">
+        <ProposalDetailsSidebar
+          contractAddress={contractAddress}
+          proposalId={Number(proposalKey)}
+        />
+      </div>
     </div>
   )
 }

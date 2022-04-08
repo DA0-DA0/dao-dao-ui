@@ -12,8 +12,6 @@ import toast from 'react-hot-toast'
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { proposalsCreatedAtom } from 'atoms/proposals'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -37,7 +35,6 @@ const ProposalCreate: NextPage = () => {
   )
 
   const [proposalLoading, setProposalLoading] = useState(false)
-  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
@@ -120,7 +117,7 @@ const ProposalCreate: NextPage = () => {
   }
 
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className={`grid grid-cols-6`}>
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -142,9 +139,6 @@ const ProposalCreate: NextPage = () => {
           }}
         />
       </div>
-      <Sidebar>
-        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
-      </Sidebar>
     </div>
   )
 }

@@ -27,7 +27,6 @@ import { ProposalStatus } from '@components'
 
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
-import { PaginatedProposalVotes } from 'components/ProposalVotes'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -151,72 +150,6 @@ function executeProposalExecute(
       setLoading(false)
       onDone()
     })
-}
-
-function ProposalExecuteButton({
-  proposalId,
-  contractAddress,
-  setLoading,
-}: {
-  proposalId: number
-  contractAddress: string
-  member: boolean
-  setLoading: SetterOrUpdater<boolean>
-}) {
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-
-  const setProposalUpdates = useSetRecoilState(
-    proposalUpdateCountAtom({ contractAddress, proposalId })
-  )
-  const setProposalsUpdated = useSetRecoilState(
-    proposalsUpdated(contractAddress)
-  )
-  const setTreasuryTokenListUpdates = useSetRecoilState(
-    treasuryTokenListUpdates(contractAddress)
-  )
-
-  const ready = walletAddress && signingClient
-  const tooltip =
-    ((!walletAddress || !signingClient) && 'Please connect your wallet.') ||
-    'Something went wrong'
-
-  const VoteButton = ({ children }: { children: ReactNode }) => (
-    <button
-      className={
-        'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
-        (ready ? '' : ' btn-disabled bg-base-300')
-      }
-      onClick={() =>
-        executeProposalExecute(
-          proposalId,
-          contractAddress,
-          signingClient,
-          walletAddress,
-          () => {
-            setProposalUpdates((n) => n + 1)
-            setProposalsUpdated((p) =>
-              p.includes(proposalId) ? p : p.concat([proposalId])
-            )
-            setTreasuryTokenListUpdates((n) => n + 1)
-          },
-          setLoading
-        )
-      }
-    >
-      {children}
-    </button>
-  )
-  return (
-    <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
-      <div className="flex gap-3">
-        <VoteButton>
-          <SparklesIcon className="w-4 h-4 inline mr-2" />
-          Execute
-        </VoteButton>
-      </div>
-    </div>
-  )
 }
 
 export function ProposalDetailsSidebar({
@@ -565,9 +498,6 @@ export function ProposalDetails({
   const weightPercent = (votingPower / totalPower) * 100
 
   const wallet = useRecoilValue(walletAddressSelector)
-  // If token balances are loading we don't know if the user is a
-  // member or not.
-  const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
   const [loading, setLoading] = useState(false)
 
   const [showRaw, setShowRaw] = useState(false)

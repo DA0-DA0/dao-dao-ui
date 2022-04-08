@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
+import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import { useThemeContext } from 'ui'
 
@@ -48,20 +48,6 @@ export function GradientHero({ children }: { children: ReactNode }) {
       >
         {children}
       </div>
-    </div>
-  )
-}
-
-export function TooltipWrapper({
-  tip,
-  children,
-}: {
-  tip: string
-  children: ReactNode
-}) {
-  return (
-    <div className="tooltip" data-tip={tip}>
-      {children}
     </div>
   )
 }

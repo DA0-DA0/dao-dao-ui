@@ -13,7 +13,6 @@ import {
 import { CopyToClipboard } from '@components/CopyToClipboard'
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   ContractProposalsDispaly,
@@ -24,14 +23,12 @@ import {
   BalanceIcon,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
-import Sidebar from 'components/Sidebar'
 import {
   listMembers,
   memberWeight,
   sigSelector,
   totalWeight,
 } from 'selectors/multisigs'
-import { walletAddress } from 'selectors/treasury'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -89,16 +86,13 @@ function MultisigHome() {
 
   const weightTotal = useRecoilValue(totalWeight(contractAddress))
   const visitorWeight = useRecoilValue(memberWeight(contractAddress))
-  const visitorAddress = useRecoilValue(walletAddress)
   const memberList = useRecoilValue(listMembers(contractAddress))
 
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(contractAddress)
 
-  const expanded = useRecoilValue(sidebarExpandedAtom)
-
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className="grid grid-cols-6">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between items-center">
@@ -108,18 +102,16 @@ function MultisigHome() {
                 [router.asPath, sigInfo.config.name],
               ]}
             />
-            <div className={expanded ? '' : 'mr-6'}>
-              <StarButton
-                pinned={pinned}
-                onPin={() => {
-                  if (pinned) {
-                    setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
-                  } else {
-                    setPinnedSigs((p) => p.concat([contractAddress]))
-                  }
-                }}
-              />
-            </div>
+            <StarButton
+              pinned={pinned}
+              onPin={() => {
+                if (pinned) {
+                  setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+                } else {
+                  setPinnedSigs((p) => p.concat([contractAddress]))
+                }
+              }}
+            />
           </div>
 
           <HeroContractHeader
@@ -156,41 +148,39 @@ function MultisigHome() {
           />
         </div>
       </div>
-      <Sidebar>
-        <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-          {visitorWeight && (
-            <>
-              <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
-              <ul className="list-none mt-3">
-                <li>
+      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+        {visitorWeight && (
+          <>
+            <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
+            <ul className="list-none mt-3">
+              <li>
+                <VoteBalanceCard
+                  title="voting weight"
+                  weight={visitorWeight}
+                  weightTotal={weightTotal}
+                />
+              </li>
+            </ul>
+          </>
+        )}
+        {memberList.length != 0 && (
+          <>
+            <h2 className="title-text mt-5 mb-[23px]">Member shares</h2>
+            <ul className="list-none mt-3">
+              {memberList.map((member) => (
+                <li key={member.addr}>
                   <VoteBalanceCard
-                    title="voting weight"
-                    weight={visitorWeight}
+                    title={member.addr}
+                    weight={member.weight}
                     weightTotal={weightTotal}
+                    addrTitle
                   />
                 </li>
-              </ul>
-            </>
-          )}
-          {memberList.length != 0 && (
-            <>
-              <h2 className="title-text mt-5 mb-[23px]">Member shares</h2>
-              <ul className="list-none mt-3">
-                {memberList.map((member) => (
-                  <li key={member.addr}>
-                    <VoteBalanceCard
-                      title={member.addr}
-                      weight={member.weight}
-                      weightTotal={weightTotal}
-                      addrTitle
-                    />
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-      </Sidebar>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </div>
   )
 }

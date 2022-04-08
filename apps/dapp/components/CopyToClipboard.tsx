@@ -51,24 +51,6 @@ export function CopyToClipboard({
   )
 }
 
-export function CopyToClipboardSmall({
-  value,
-  success = 'Copied to clipboard!',
-}: CopyToClipboardProps) {
-  return (
-    <button
-      className="transition font-sm font-mono text-sm text-secondary hover:text-primary"
-      onClick={() => {
-        navigator.clipboard.writeText(value)
-        toast.success(success)
-      }}
-    >
-      <PaperClipIcon className="w-4 h-4 inline mr-1" />
-      {concatAddressImpl(value, 12, 7)}
-    </button>
-  )
-}
-
 export function CopyToClipboardAccent({
   value,
   success = 'Copied to clipboard!',
