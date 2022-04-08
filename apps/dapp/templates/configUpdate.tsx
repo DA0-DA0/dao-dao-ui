@@ -12,7 +12,7 @@ import { ToggleInput } from '@components/input/ToggleInput'
 import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
 import { Config } from 'util/contractConfigWrapper'
 import {
-  secondsToHms,
+  secondsToWdhms,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getThresholdAndQuorum,
@@ -267,7 +267,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
             />
             <InputErrorMessage error={errors?.duration} />
             <div className="text-sm text-secondary">
-              {secondsToHms(votingPeriodSeconds)}
+              {secondsToWdhms(votingPeriodSeconds)}
             </div>
           </div>
 

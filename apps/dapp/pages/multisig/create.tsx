@@ -35,7 +35,7 @@ import {
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { secondsToHms } from 'util/conversion'
+import { secondsToWdhms } from 'util/conversion'
 import {
   validatePercent,
   validatePositive,
@@ -282,7 +282,7 @@ const CreateMultisig: NextPage = () => {
               </div>
               <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
                 <p className="secondary-text">
-                  {secondsToHms(votingPeriodSeconds)}
+                  {secondsToWdhms(votingPeriodSeconds)}
                 </p>
               </div>
             </div>
