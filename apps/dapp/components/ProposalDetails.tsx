@@ -356,7 +356,7 @@ export function ProposalDetailsSidebar({
                   color="rgb(var(--brand))"
                 />
               </div>
-              <p className="text-sm text-body">{quorum}%</p>
+              <p className="text-sm text-body">{quorum}</p>
             </div>
           </>
         )}

@@ -25,6 +25,7 @@ import {
   HeroContractHeader,
   StarButton,
   BalanceIcon,
+  HeroContractHorizontalInfoSection,
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
@@ -129,18 +130,18 @@ function MultisigHome() {
 
           <div className="mt-2">
             <HeroContractHorizontalInfo>
-              <div>
+              <HeroContractHorizontalInfoSection>
                 <ScaleIcon className="w-4 inline" />
                 {thresholdString(sigInfo.config.threshold)}
-              </div>
-              <div>
+              </HeroContractHorizontalInfoSection>
+              <HeroContractHorizontalInfoSection>
                 <VariableIcon className="w-4 inline" />
                 Total votes: {weightTotal}
-              </div>
-              <div>
+              </HeroContractHorizontalInfoSection>
+              <HeroContractHorizontalInfoSection>
                 <UserGroupIcon className="w-4 inline" />
                 Total members: {memberList.length}
-              </div>
+              </HeroContractHorizontalInfoSection>
             </HeroContractHorizontalInfo>
           </div>
 
