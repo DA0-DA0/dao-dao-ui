@@ -276,28 +276,30 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
   const { isReady, isFallback } = useRouter()
 
   const { setAccentColor, theme } = useThemeContext()
+
+  // Only set the accent color if we have enough contrast.
+  if (accentColor) {
+    const rgb = accentColor
+      .replace(/^rgba?\(|\s+|\)$/g, '')
+      .split(',')
+      .map(Number)
+    const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+    if (
+      (theme === 'dark' && brightness < 60) ||
+      (theme === 'light' && brightness > 255 - 80)
+    ) {
+      accentColor = undefined
+    }
+  }
+
   useEffect(() => {
     if (!isReady || isFallback) return
 
-    // Only set the accent color if we have enough contrast.
-    if (accentColor) {
-      const rgb = accentColor
-        .replace(/^rgba?\(|\s+|\)$/g, '')
-        .split(',')
-        .map(Number)
-      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
-      if (
-        (theme === 'dark' && brightness < 60) ||
-        (theme === 'light' && brightness > 255 - 80)
-      ) {
-        accentColor = undefined
-      }
-    }
     setAccentColor(accentColor)
   }, [accentColor, setAccentColor, isReady, isFallback])
 
   // Trigger Suspense.
-  if (!isReady || isFallback) throw new Promise((resolve) => {})
+  if (!isReady || isFallback) throw new Promise((_resolve) => {})
 
   return (
     <ErrorBoundary title="DAO Not Found">

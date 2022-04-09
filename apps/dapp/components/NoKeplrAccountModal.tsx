@@ -15,8 +15,9 @@ export function NoKeplrAccountModal({ onClose }: { onClose: () => void }) {
         </button>
         <h1 className="header-text">Configure your wallet to continue</h1>
         <p className="my-6 body-text">
-          You have Keplr installed, but it doesn{"'"}t seem like you've set up a
-          wallet. To continue, open the keplr extension and set up a wallet.
+          You have Keplr installed, but it doesn{"'"}t seem like you{"'"}ve set
+          up a wallet. To continue, open the keplr extension and set up a
+          wallet.
         </p>
         <Button onClick={onClose}>
           Got it <ChevronRightIcon className="w-4" />

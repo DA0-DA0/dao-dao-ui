@@ -102,6 +102,7 @@ function WalletConnect() {
     wallet,
     setChainWarningVisible,
     setInstallWarningVisible,
+    setNoKeplrAccount,
     setWallet,
   ])
 
