@@ -95,7 +95,6 @@ export const listMembers = selectorFamily<MultisigMemberInfo[], string>({
       const members = await client.queryContractSmart(sigInfo.group_address, {
         list_members: {},
       })
-      console.log(members)
       return members.members
     },
 })

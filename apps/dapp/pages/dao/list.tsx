@@ -31,7 +31,6 @@ import {
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
-// import { cw20TokenInfo } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { DAO_CODE_ID, LEGACY_DAO_CODE_ID } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
