@@ -67,7 +67,7 @@ class MyDocument extends Document {
           <meta property="og:type" content="website" key="og:type" />
           <meta property="og:url" content={url} key="og:url" />
         </Head>
-        <body className="bg-white text-body">
+        <body className="bg-white body-text">
           <Main />
           <NextScript />
         </body>
