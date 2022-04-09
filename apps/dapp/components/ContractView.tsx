@@ -123,7 +123,7 @@ export function HeroContractHeader({
         <EstablishedDate address={address} />
       </div>
       <div className="mb-4 mt-2">
-        <p className="body-text">{description}</p>
+        <p className="body-text whitespace-pre-wrap">{description}</p>
       </div>
     </div>
   )
