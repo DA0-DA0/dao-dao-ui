@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 
-import type { NextPage } from 'next'
+import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
+import { useThemeContext } from 'ui'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
 import SvgMemberCheck from '@components/icons/MemberCheck'
 import SvgPencil from '@components/icons/Pencil'
+import LoadingScreen from '@components/LoadingScreen'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
@@ -24,6 +27,7 @@ import {
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import { StakingModal, StakingMode } from 'components/StakingModal'
+import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
 import {
   daoSelector,
   isMemberSelector,
@@ -40,6 +44,7 @@ import {
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
+import { getFastAverageColor } from 'util/colors'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 function DaoHome() {
@@ -259,10 +264,59 @@ function DaoHome() {
   )
 }
 
-const DaoHomePage: NextPage = () => (
-  <ErrorBoundary title="DAO Not Found">
-    <DaoHome />
-  </ErrorBoundary>
-)
+interface StaticProps {
+  accentColor?: string
+}
+
+const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
+  const { isReady, isFallback } = useRouter()
+
+  const { setAccentColor } = useThemeContext()
+  useEffect(() => {
+    if (!isReady || isFallback) return
+
+    setAccentColor(accentColor)
+  }, [accentColor, setAccentColor, isReady, isFallback])
+
+  // Trigger Suspense.
+  if (!isReady || isFallback) throw new Promise((resolve) => {})
+
+  return (
+    <ErrorBoundary title="DAO Not Found">
+      <DaoHome />
+    </ErrorBoundary>
+  )
+}
 
 export default DaoHomePage
+
+// Fallback to loading screen if page has not yet been statically generated.
+export const getStaticPaths: GetStaticPaths = () => ({
+  paths: [],
+  fallback: true,
+})
+
+export const getStaticProps: GetStaticProps<StaticProps> = async ({
+  params: { contractAddress } = { contractAddress: undefined },
+}) => {
+  if (typeof contractAddress !== 'string' || !contractAddress) {
+    return { props: {} }
+  }
+
+  try {
+    const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    const daoInfo = await client.queryContractSmart(contractAddress, {
+      get_config: {},
+    })
+    if (!daoInfo || !daoInfo.config || !daoInfo.config.image_url) {
+      return { props: {} }
+    }
+
+    const accentColor = await getFastAverageColor(daoInfo.config.image_url)
+    return { props: { accentColor } }
+  } catch (err) {
+    console.error(err)
+  }
+
+  return { props: {} }
+}
