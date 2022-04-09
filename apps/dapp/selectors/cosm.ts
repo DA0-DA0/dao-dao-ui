@@ -11,7 +11,8 @@ import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
 export type WalletConnection = 'keplr' | ''
 
-const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
+export const CHAIN_RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
 export const stargateClient = selector({
@@ -63,6 +64,11 @@ export const chainWarningVisibleAtom = atom<boolean>({
 //  Ensure chain has been enabled for connecting wallet
 export const chainDisabledAtom = atom<boolean>({
   key: 'chainDisabledAtom',
+  default: false,
+})
+
+export const noKeplrAccountAtom = atom<boolean>({
+  key: 'noKeplrAccountAtom',
   default: false,
 })
 
@@ -120,6 +126,10 @@ export const keplrAccountNameSelector = selector<string | undefined>({
   get: async ({ get }) => {
     // Invalidate state when the keplr instance changes.
     get(kelprOfflineSigner)
+    const connectedWallet = get(connectedWalletAtom)
+    if (connectedWallet !== 'keplr') {
+      return ''
+    }
     const info = await window.keplr?.getKey(CHAIN_ID as string)
     return info?.name
   },

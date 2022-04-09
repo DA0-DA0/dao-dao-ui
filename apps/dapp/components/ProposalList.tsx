@@ -101,13 +101,13 @@ function ProposalLine({
       }/${contractAddress}/proposals/${proposalKey}`}
     >
       <a>
-        <div className="grid grid-cols-6 items-center p-4 my-1 rounded-lg bg-base-300 text-sm">
+        <div className="grid grid-cols-6 items-center p-4 my-1 rounded-lg bg-primary text-sm">
           <div className="flex flex-row flex-wrap items-center gap-4 col-span-2">
-            <p className="font-mono font-thin text-secondary"># {displayKey}</p>
+            <p className="font-mono caption-text"># {displayKey}</p>
             <ProposalStatus status={prop.status} />
           </div>
-          <p className="col-span-3 text-medium truncate">{prop.title}</p>
-          <p className="text-sm">{getEnd(prop.expires, prop.status)}</p>
+          <p className="col-span-3 link-text truncate">{prop.title}</p>
+          <p className="body-text">{getEnd(prop.expires, prop.status)}</p>
         </div>
       </a>
     </Link>
@@ -229,7 +229,7 @@ export function ProposalList({
   ).concat(propList)
 
   if (!allProposals.length) {
-    return <p>no proposals</p>
+    return <p className="body-text">no proposals</p>
   }
 
   return (

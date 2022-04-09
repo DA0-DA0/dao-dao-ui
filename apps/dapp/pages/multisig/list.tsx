@@ -18,9 +18,9 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@heroicons/react/outline'
+import { Button } from 'ui'
 
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
@@ -28,7 +28,6 @@ import {
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
-import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
@@ -134,8 +133,6 @@ const MultisigList: NextPage = () => {
     waitForAll(pinnedSigAddresses.map((a) => sigMemberSelector(a)))
   )
 
-  const expanded = useRecoilValue(sidebarExpandedAtom)
-
   const [version, setMultisigVersion] = useState<MultisigVersion>(
     MULTISIG_VERSIONS[0]
   )
@@ -147,21 +144,19 @@ const MultisigList: NextPage = () => {
   )
 
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className="grid grid-cols-6">
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-semibold">Multisigs</h1>
-          <div className={expanded ? '' : 'mr-10'}>
-            <Link href="/multisig/create" passHref>
-              <button className="btn btn-sm bg-primary text-primary-content normal-case text-left">
-                Create a multisig <PlusIcon className="inline w-5 h-5 ml-1" />
-              </button>
-            </Link>
-          </div>
+          <h1 className="header-text">Multisigs</h1>
+          <Link href="/multisig/create" passHref>
+            <Button size="sm">
+              Create a Multisig <PlusIcon className="inline h-4 w-4" />
+            </Button>
+          </Link>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2">
-            <UserIcon className="inline w-5 h-5 mr-2 mb-1" />
+          <h2 className="primary-text mb-2 flex items-center gap-1">
+            <UserIcon className="inline w-4" />
             Your pinned multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -170,8 +165,8 @@ const MultisigList: NextPage = () => {
         </div>
         <div className="mt-6">
           <div className="flex flex-row justify-between">
-            <h2 className="text-lg mb-2">
-              <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
+            <h2 className="primary-text mb-2 flex items-center gap-1">
+              <SparklesIcon className="inline w-4" />
               Community multisigs
             </h2>
             {!!LEGACY_MULTISIG_CODE_ID && (
@@ -191,20 +186,18 @@ const MultisigList: NextPage = () => {
           </div>
         </div>
       </div>
-      <Sidebar>
-        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-          <h2 className="font-medium">Overview</h2>
-          <div className="mt-6">
-            <ul className="list-none ml-2 leading-relaxed">
-              <li>
-                <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-                {total} active multisig
-                {total > 1 && 's'}
-              </li>
-            </ul>
-          </div>
+      <div className="col-start-5 col-span-2 p-6 min-h-screen">
+        <h2 className="font-medium title-text">Overview</h2>
+        <div className="mt-6">
+          <ul className="list-none ml-2 leading-relaxed">
+            <li className="body-text flex items-center gap-2">
+              <LibraryIcon className="inline w-4" />
+              {total} active multisig
+              {total > 1 && 's'}
+            </li>
+          </ul>
         </div>
-      </Sidebar>
+      </div>
     </div>
   )
 }

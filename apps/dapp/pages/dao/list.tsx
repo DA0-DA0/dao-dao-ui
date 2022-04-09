@@ -22,7 +22,6 @@ import {
 import { Button } from '@components'
 
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import CodeIdSelect from 'components/CodeIdSelect'
 import {
   ContractCard,
@@ -30,10 +29,8 @@ import {
   LoadingContractCard,
 } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
-import Sidebar from 'components/Sidebar'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
-// import { cw20TokenInfo } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { DAO_CODE_ID, LEGACY_DAO_CODE_ID } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
@@ -128,7 +125,6 @@ const DaoList: NextPage = () => {
   const pinnedDaos = useRecoilValueLoadable(
     waitForAll(pinnedDaoAddresses.map((a) => memberDaoSelector(a)))
   )
-  const expanded = useRecoilValue(sidebarExpandedAtom)
   const [version, setDaosVersion] = useState<DaoVersion>(DAO_VERSIONS[0])
   const { contracts, total } = useRecoilValue(
     pagedContractsByCodeId({ codeId: version.codeId, page, limit })
@@ -138,24 +134,19 @@ const DaoList: NextPage = () => {
   )
 
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className="grid grid-cols-6">
       <div className="p-6 w-full col-span-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-semibold">DAOs</h1>
+          <h1 className="header-text">DAOs</h1>
           <Link href="/dao/create" passHref>
-            <div className={expanded ? '' : 'mr-10'}>
-              <Button
-                size="sm"
-                iconAfter={<PlusIcon className="inline h-4 w-4" />}
-              >
-                Create a DAO
-              </Button>
-            </div>
+            <Button size="sm">
+              Create a DAO <PlusIcon className="inline h-4 w-4" />
+            </Button>
           </Link>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2">
-            <UserIcon className="inline w-5 h-5 mr-2 mb-1" />
+          <h2 className="primary-text mb-2 flex items-center gap-1">
+            <UserIcon className="inline w-4" />
             Your pinned DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -165,8 +156,8 @@ const DaoList: NextPage = () => {
         <div className="mt-6">
           {/* Community DAO header */}
           <div className="flex flex-row justify-between">
-            <h2 className="text-lg mb-2">
-              <SparklesIcon className="inline w-5 h-5 mr-2 mb-1" />
+            <h2 className="primary-text mb-2 flex items-center gap-1">
+              <SparklesIcon className="inline w-4" />
               Community DAOs
             </h2>
             {!!LEGACY_DAO_CODE_ID && (
@@ -185,19 +176,18 @@ const DaoList: NextPage = () => {
           </div>
         </div>
       </div>
-      <Sidebar>
-        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-          <h2 className="font-medium text-lg">Overview</h2>
-          <div className="mt-6">
-            <ul className="list-none ml-2 leading-relaxed">
-              <li>
-                <LibraryIcon className="inline w-5 h-5 mr-2 mb-1" />
-                {total} active DAOs
-              </li>
-            </ul>
-          </div>
+
+      <div className="col-start-5 col-span-2 p-6 min-h-screen">
+        <h2 className="font-medium title-text">Overview</h2>
+        <div className="mt-6">
+          <ul className="list-none ml-2 leading-relaxed">
+            <li className="body-text flex items-center gap-2">
+              <LibraryIcon className="inline w-4" />
+              {total} active DAOs
+            </li>
+          </ul>
         </div>
-      </Sidebar>
+      </div>
     </div>
   )
 }

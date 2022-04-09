@@ -1,7 +1,10 @@
+import { selectorFamily } from 'recoil'
+
 import {
   ProposalResponse,
   ProposalTallyResponse,
   VoteInfo,
+  VoteResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
@@ -14,7 +17,6 @@ import {
   EmptyProposalTallyResponse,
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
-import { selectorFamily } from 'recoil'
 import {
   ContractProposalMap,
   ExtendedProposalResponse,
@@ -23,6 +25,7 @@ import {
   ProposalMapItem,
   ProposalMessageKey,
 } from 'types/proposals'
+
 import { cosmWasmClient } from './cosm'
 import { daoSelector } from './daos'
 import { sigSelector } from './multisigs'
@@ -145,32 +148,61 @@ export const proposalStartBlockSelector = selectorFamily<
     },
 })
 
-export const walletVotedSelector = selectorFamily<
-  boolean,
+export const walletVoteSelector = selectorFamily<
+  'yes' | 'no' | 'abstain' | 'veto' | undefined,
   { contractAddress: string; proposalId: number }
 >({
   key: 'walletHasVotedOnProposalStatusSelector',
   get:
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
-      // Refresh when new updates occur.
-      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
       const client = get(cosmWasmClient)
       const wallet = get(walletAddress)
       if (!client || !wallet) {
-        return false
+        return undefined
       }
+
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const vote = (await client.queryContractSmart(contractAddress, {
+        vote: { proposal_id: proposalId, voter: wallet },
+      })) as VoteResponse
+      if (!vote.vote) {
+        return undefined
+      }
+      return vote.vote.vote
+    },
+})
+
+export const proposalExecutionTXHashSelector = selectorFamily<
+  string | null,
+  { contractAddress: string; proposalId: number }
+>({
+  key: 'proposalTXHashSelector',
+  get:
+    ({ contractAddress, proposalId }) =>
+    async ({ get }) => {
+      // Refresh when new updates occur.
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
+
+      const client = get(cosmWasmClient)
+      const proposal = get(proposalSelector({ contractAddress, proposalId }))
+      // No TX Hash if proposal not yet executed.
+      if (!client || proposal?.status !== 'executed') return null
 
       const events = await client.searchTx({
         tags: [
           { key: 'wasm._contract_address', value: contractAddress },
           { key: 'wasm.proposal_id', value: proposalId.toString() },
-          { key: 'wasm.action', value: 'vote' },
-          { key: 'wasm.sender', value: wallet },
+          { key: 'wasm.action', value: 'execute' },
         ],
       })
 
-      return events.length != 0
+      if (events.length > 1) {
+        console.error('More than one execution', events)
+      }
+
+      return events.length > 0 ? events[0].hash : null
     },
 })
 

@@ -1,6 +1,7 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
-import { UnControlled as CodeMirror } from 'react-codemirror2'
+
+import { Controlled as CodeMirror } from 'react-codemirror2'
 import {
   FieldError,
   Path,
@@ -8,36 +9,37 @@ import {
   Validate,
   Control,
   Controller,
+  FieldValues,
 } from 'react-hook-form'
 import { useThemeContext } from 'ui'
 
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material.css'
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
-export function CodeMirrorInput<
-  FieldValues,
-  FieldName extends Path<FieldValues>
->({
+interface CodeMirrorInputProps<T extends FieldValues, U extends Path<T>> {
+  label: U
+  control?: Control<T>
+  validation?: Validate<FieldPathValue<T, U>>[]
+  error?: FieldError
+  readOnly?: boolean
+}
+
+export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   label,
   control,
   validation,
-}: {
-  label: FieldName
-  control: Control<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-}) {
+  readOnly = false,
+}: CodeMirrorInputProps<T, U>) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
 
   const themeContext = useThemeContext()
-  const editorTheme = themeContext.theme !== 'junoDark' ? 'default' : 'material'
+  const editorTheme =
+    themeContext.theme !== 'dark' ? 'default' : 'material-ocean'
 
   const cmOptions = {
     mode: {
@@ -45,12 +47,13 @@ export function CodeMirrorInput<
       json: true,
     },
     theme: editorTheme,
-    lineNumbers: true,
+    lineNumbers: false,
     lineWrapping: true,
-    autoCloseBrackets: true,
+    autoCloseBrackets: false,
     tabSize: 2,
     gutters: ['CodeMirror-lint-markers'],
     lint: true,
+    readOnly,
   }
 
   return (
@@ -59,17 +62,16 @@ export function CodeMirrorInput<
       name={label}
       rules={{ validate: validate }}
       shouldUnregister
-      render={({ field: { onChange, onBlur, ref } }) => {
-        return (
-          <CodeMirror
-            onChange={(_editor, _data, value) => onChange(value)}
-            onBlur={(_instance, _event) => onBlur()}
-            ref={ref}
-            options={cmOptions}
-            className="rounded"
-          />
-        )
-      }}
+      render={({ field: { onChange, onBlur, ref, value } }) => (
+        <CodeMirror
+          onBeforeChange={(_editor, _data, value) => onChange(value)}
+          onBlur={(_instance, _event) => onBlur()}
+          options={cmOptions}
+          ref={ref}
+          className="rounded"
+          value={value}
+        />
+      )}
     />
   )
 }

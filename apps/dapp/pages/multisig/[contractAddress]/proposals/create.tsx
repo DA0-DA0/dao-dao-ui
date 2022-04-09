@@ -11,14 +11,11 @@ import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { sigSelector } from 'selectors/multisigs'
-import { MessageTemplate, messageTemplates } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
 
 const MultisigProposalCreate: NextPage = () => {
@@ -29,27 +26,10 @@ const MultisigProposalCreate: NextPage = () => {
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletAddress = useRecoilValue(walletAddressSelector)
 
-  const expanded = useRecoilValue(sidebarExpandedAtom)
-
   const [proposalLoading, setProposalLoading] = useState(false)
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
-    let cosmMsgs = d.messages.map((m: MessageTemplate) => {
-      const toCosmosMsg = messageTemplates.find(
-        (template) => template.label === m.label
-      )?.toCosmosMsg
-
-      // Unreachable.
-      if (!toCosmosMsg) return {}
-
-      return toCosmosMsg(m as any, {
-        sigAddress: contractAddress,
-        govAddress: sigInfo.group_address,
-        govDecimals: 0,
-        multisig: true,
-      })
-    })
 
     await signingClient
       ?.execute(
@@ -59,7 +39,7 @@ const MultisigProposalCreate: NextPage = () => {
           propose: {
             title: d.title,
             description: d.description,
-            msgs: cosmMsgs,
+            msgs: d.messages,
           },
         },
         'auto'
@@ -82,7 +62,7 @@ const MultisigProposalCreate: NextPage = () => {
   }
 
   return (
-    <div className={expanded ? 'grid grid-cols-6' : 'grid grid-cols-1'}>
+    <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -95,12 +75,15 @@ const MultisigProposalCreate: NextPage = () => {
           contractAddress={contractAddress}
           onSubmit={onProposalSubmit}
           loading={proposalLoading}
+          toCosmosMsgProps={{
+            sigAddress: contractAddress,
+            govAddress: sigInfo.group_address,
+            govDecimals: 0,
+            multisig: true,
+          }}
           multisig
         />
       </div>
-      <Sidebar>
-        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
-      </Sidebar>
     </div>
   )
 }

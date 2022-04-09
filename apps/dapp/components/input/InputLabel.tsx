@@ -1,7 +1,19 @@
-export function InputLabel({ name }: { name: string }) {
+export function InputLabel({
+  className,
+  mono,
+  name,
+}: {
+  className?: string
+  mono?: boolean
+  name: string
+}) {
   return (
-    <label className="label">
-      <span className="label-text text-secondary text-medium">{name}</span>
+    <label className="flex">
+      <span
+        className={`caption-text ml-1 ${mono ? 'font-mono' : ''} ${className}`}
+      >
+        {name}
+      </span>
     </label>
   )
 }

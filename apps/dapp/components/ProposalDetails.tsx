@@ -1,39 +1,51 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
 import {
-  atom,
   SetterOrUpdater,
-  useRecoilState,
   useRecoilValue,
+  useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { CheckIcon, SparklesIcon, XIcon } from '@heroicons/react/outline'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  EyeIcon,
+  EyeOffIcon,
+  XIcon,
+} from '@heroicons/react/outline'
+import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { Button } from 'ui'
 
 import { ProposalStatus } from '@components'
 
-import ProposalVoteStatus from '@components/ProposalVoteStatus'
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
-import { PaginatedProposalVotes } from 'components/ProposalVotes'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
-import { isMemberSelector } from 'selectors/daos'
 import {
+  proposalExecutionTXHashSelector,
   proposalSelector,
   proposalStartBlockSelector,
   proposalTallySelector,
   votingPowerAtHeightSelector,
-  walletVotedSelector,
+  walletVoteSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
+import {
+  FromCosmosMsgProps,
+  MessageTemplate,
+  messageTemplateAndValuesForDecodedCosmosMsg,
+} from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
+import { CHAIN_TXN_URL_PREFIX } from 'util/constants'
 import {
   contractConfigSelector,
   ContractConfigWrapper,
@@ -41,17 +53,21 @@ import {
 import {
   convertMicroDenomToDenomWithDecimals,
   getThresholdAndQuorumDisplay,
-  thresholdString,
 } from 'util/conversion'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { Address } from './Address'
+import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
+import { Execute } from './Execute'
+import SvgAbstain from './icons/Abstain'
+import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
+import { StakingModal, StakingMode } from './StakingModal'
+import { Vote, VoteChoice } from './Vote'
 
 function executeProposalVote(
-  vote: 'yes' | 'no',
+  choice: VoteChoice,
   id: number,
   contractAddress: string,
   signingClient: SigningCosmWasmClient | null,
@@ -63,6 +79,19 @@ function executeProposalVote(
     toast.error('Please connect your wallet')
     return
   }
+  let vote
+  switch (choice) {
+    case VoteChoice.Yes:
+      vote = 'yes'
+      break
+    case VoteChoice.No:
+      vote = 'no'
+      break
+    case VoteChoice.Abstain:
+      vote = 'abstain'
+      break
+  }
+
   setLoading(true)
   signingClient
     .execute(
@@ -108,7 +137,9 @@ function executeProposalExecute(
       'auto'
     )
     .then((response) => {
-      toast.success(`Success. Transaction hash: (${response.transactionHash})`)
+      toast.success(
+        `Success. Transaction hash (${response.transactionHash}) can be found in the sidebar.`
+      )
     })
     .catch((err) => {
       console.error(err)
@@ -119,183 +150,6 @@ function executeProposalExecute(
       setLoading(false)
       onDone()
     })
-}
-
-function LoadingButton() {
-  return (
-    <button className="btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px1 bg-base-300 btn-disabled loading">
-      Loading
-    </button>
-  )
-}
-
-function ProposalVoteButtons({
-  yesCount,
-  noCount,
-  proposalId,
-  contractAddress,
-  voted,
-  setLoading,
-  multisig = false,
-}: {
-  yesCount: string
-  noCount: string
-  proposalId: number
-  contractAddress: string
-  voted: boolean
-  setLoading: SetterOrUpdater<boolean>
-  multisig: boolean
-}) {
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-
-  const setProposalUpdates = useSetRecoilState(
-    proposalUpdateCountAtom({ contractAddress, proposalId })
-  )
-  const setProposalsUpdated = useSetRecoilState(
-    proposalsUpdated(contractAddress)
-  )
-
-  /* const height = useRecoilValue(
-   *   proposalStartBlockSelector({ contractAddress, proposalId })
-   * ) */
-
-  // TODO: reactivate this check.
-  //
-  // After the chain recovering on 04/08 queries like `junod query tsx` which
-  // this one relies on stopped working for the time before the halt. Removing this
-  // for now, and then we need to add it back later.
-  /* const stakedBalanceAtStart = useRecoilValue(
-   *   votingPowerAtHeightSelector({
-   *     contractAddress,
-   *     height,
-   *     multisig,
-   *   })
-   * ) */
-
-  const ready = walletAddress && signingClient && !voted // && stakedBalanceAtStart !== 0
-  const tooltip =
-    ((!walletAddress || !signingClient) && 'Connect your wallet to vote') ||
-    /* (stakedBalanceAtStart == 0 &&
-     *   'You must have staked balance at the time of proposal creation to vote.') || */
-    (voted && 'You already voted.') ||
-    'Something went wrong.'
-
-  const VoteButton = ({
-    position,
-    children,
-  }: {
-    position: 'yes' | 'no'
-    children: ReactNode
-  }) => (
-    <button
-      className={
-        'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
-        (position === 'yes' ? ' hover:bg-green-500' : ' hover:bg-red-500') +
-        (ready ? '' : ' btn-disabled bg-base-300')
-      }
-      onClick={() =>
-        executeProposalVote(
-          position,
-          proposalId,
-          contractAddress,
-          signingClient,
-          walletAddress,
-          () => {
-            setProposalUpdates((n) => n + 1)
-            setProposalsUpdated((p) =>
-              p.includes(proposalId) ? p : p.concat([proposalId])
-            )
-          },
-          setLoading
-        )
-      }
-    >
-      {children}
-    </button>
-  )
-  return (
-    <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
-      <div className="flex gap-2">
-        <VoteButton position="yes">
-          <CheckIcon className="w-4 h-4 inline mr-2" />
-          Yes
-          <p className="text-secondary ml-2">{yesCount}</p>
-        </VoteButton>
-        <VoteButton position="no">
-          <XIcon className="w-4 h-4 inline mr-2" />
-          No
-          <p className="text-secondary ml-2">{noCount}</p>
-        </VoteButton>
-      </div>
-    </div>
-  )
-}
-
-function ProposalExecuteButton({
-  proposalId,
-  contractAddress,
-  setLoading,
-}: {
-  proposalId: number
-  contractAddress: string
-  member: boolean
-  setLoading: SetterOrUpdater<boolean>
-}) {
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-
-  const setProposalUpdates = useSetRecoilState(
-    proposalUpdateCountAtom({ contractAddress, proposalId })
-  )
-  const setProposalsUpdated = useSetRecoilState(
-    proposalsUpdated(contractAddress)
-  )
-  const setTreasuryTokenListUpdates = useSetRecoilState(
-    treasuryTokenListUpdates(contractAddress)
-  )
-
-  const ready = walletAddress && signingClient
-  const tooltip =
-    ((!walletAddress || !signingClient) && 'Please connect your wallet.') ||
-    'Something went wrong'
-
-  const VoteButton = ({ children }: { children: ReactNode }) => (
-    <button
-      className={
-        'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
-        (ready ? '' : ' btn-disabled bg-base-300')
-      }
-      onClick={() =>
-        executeProposalExecute(
-          proposalId,
-          contractAddress,
-          signingClient,
-          walletAddress,
-          () => {
-            setProposalUpdates((n) => n + 1)
-            setProposalsUpdated((p) =>
-              p.includes(proposalId) ? p : p.concat([proposalId])
-            )
-            setTreasuryTokenListUpdates((n) => n + 1)
-          },
-          setLoading
-        )
-      }
-    >
-      {children}
-    </button>
-  )
-  return (
-    <div className={!ready ? 'tooltip tooltip-right' : ''} data-tip={tooltip}>
-      <div className="flex gap-3">
-        <VoteButton>
-          <SparklesIcon className="w-4 h-4 inline mr-2" />
-          Execute
-        </VoteButton>
-      </div>
-    </div>
-  )
 }
 
 export function ProposalDetailsSidebar({
@@ -313,10 +167,20 @@ export function ProposalDetailsSidebar({
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
+  const { state: proposalExecutionTXHashState, contents: txHashContents } =
+    useRecoilValueLoadable(
+      proposalExecutionTXHashSelector({ contractAddress, proposalId })
+    )
+  const proposalExecutionTXHash: string | null =
+    proposalExecutionTXHashState === 'hasValue' ? txHashContents : null
 
   const sigConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
+  const walletVote = useRecoilValue(
+    walletVoteSelector({ contractAddress, proposalId })
+  )
+
   const configWrapper = new ContractConfigWrapper(sigConfig)
   const tokenDecimals = configWrapper.gov_token_decimals
 
@@ -338,6 +202,16 @@ export function ProposalDetailsSidebar({
           tokenDecimals
         )
   )
+
+  const abstainVotes = Number(
+    multisig
+      ? proposalTally.votes.abstain
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally.votes.abstain,
+          tokenDecimals
+        )
+  )
+
   const totalWeight = Number(
     multisig
       ? proposalTally.total_weight
@@ -348,7 +222,7 @@ export function ProposalDetailsSidebar({
   )
 
   const turnoutPercent = (
-    ((yesVotes + noVotes) / totalWeight) *
+    ((yesVotes + noVotes + abstainVotes) / totalWeight) *
     100
   ).toLocaleString(undefined, localeOptions)
   const yesPercent = ((yesVotes / totalWeight) * 100).toLocaleString(
@@ -372,182 +246,392 @@ export function ProposalDetailsSidebar({
 
   return (
     <div>
-      <h2 className="font-medium text-sm font-mono mb-8 text-secondary">
-        Proposal {proposal.id}
-      </h2>
-      <div className="grid grid-cols-3">
-        <p className="text-secondary">Status</p>
-        <div className="col-span-2">
+      <h2 className="font-medium text-medium mb-6">Details</h2>
+      <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
+        <p className="text-tertiary font-mono text-sm">Proposal</p>
+        <p className="col-span-2 text-tertiary font-mono text-sm">
+          # {proposal.id.toString().padStart(6, '0')}
+        </p>
+        <p className="text-tertiary font-mono text-sm">Status</p>
+        <div className="col-span-2 text-sm">
           <ProposalStatus status={proposal.status} />
         </div>
-        <p className="text-secondary">Proposer</p>
+        <p className="text-tertiary font-mono text-sm">Proposer</p>
         <p className="col-span-2">
-          <Address address={proposal.proposer} />
+          <CopyToClipboard value={proposal.proposer} />
         </p>
+        {proposal.status === 'executed' &&
+        proposalExecutionTXHashState === 'loading' ? (
+          <>
+            <p className="text-tertiary font-mono text-sm">TX</p>
+            <p className="col-span-2">Loading...</p>
+          </>
+        ) : !!proposalExecutionTXHash ? (
+          <>
+            {CHAIN_TXN_URL_PREFIX ? (
+              <a
+                className="text-tertiary font-mono text-sm flex flex-row items-center gap-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+              >
+                TX
+                <ExternalLinkIcon width={16} />
+              </a>
+            ) : (
+              <p className="text-tertiary font-mono text-sm">TX</p>
+            )}
+            <p className="col-span-2">
+              <CopyToClipboard value={proposalExecutionTXHash} />
+            </p>
+          </>
+        ) : null}
         {proposal.status === 'open' && (
           <>
-            <p className="text-secondary">Expires</p>
-            <p className="col-span-2">
+            <p className="text-tertiary font-mono text-sm">Expires</p>
+            <p className="col-span-2 text-sm font-mono">
               {getEnd(proposal.expires, proposal.status) || 'never'}
             </p>
           </>
         )}
       </div>
 
-      <div className="grid grid-cols-3 mt-6">
-        <p className="text-secondary">Yes votes</p>
-        <div className="col-span-2">
-          {yesVotes} <p className="text-secondary inline">({yesPercent}%)</p>
-        </div>
-        <p className="text-secondary">No votes</p>
-        <div className="col-span-2">
-          {noVotes} <p className="text-secondary inline">({noPercent}%)</p>
-        </div>
-        <p className="text-secondary">Threshold</p>
-        <div className="col-span-2">{threshold}</div>
-        {quorum && (
-          <>
-            <p className="text-secondary">Quorum</p>
-            <div className="col-span-2">{quorum}</div>
-          </>
-        )}
+      <div>
+        <h3 className="text-medium mt-8 mb-6">Referendum status</h3>
       </div>
 
-      <div className="grid grid-cols-3 mt-6">
-        <p className="text-secondary">Turnout</p>
-        <div className="col-span-2">{turnoutPercent}%</div>
+      <div className="grid grid-cols-4 gap-2">
+        <p className="text-tertiary text-sm font-mono">Yours</p>
+        {!walletVote && (
+          <p className="col-span-3 text-tertiary text-sm font-mono">
+            Pending...
+          </p>
+        )}
+        {walletVote === 'yes' && (
+          <p className="col-span-3 text-valid text-sm font-mono flex items-center gap-1">
+            <CheckIcon className="inline w-4" /> Yes
+          </p>
+        )}
+        {walletVote === 'no' && (
+          <p className="col-span-3 text-error text-sm font-mono flex items-center gap-1">
+            <XIcon className="inline w-4" /> No
+          </p>
+        )}
+        {walletVote === 'abstain' && (
+          <p className="col-span-3 text-secondary text-sm font-mono flex items-center gap-1">
+            <SvgAbstain fill="currentColor" /> Abstain
+          </p>
+        )}
+        <p className="text-tertiary text-sm font-mono">Yes</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress turnout={Number(yesPercent)} color="rgb(var(--valid))" />
+          </div>
+          <p className="text-sm font-mono text-body">{yesPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono">No</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress turnout={Number(noPercent)} color="rgb(var(--error))" />
+          </div>
+          <p className="text-sm text-body font-mono">{noPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono">Threshold</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress
+              turnout={Number(threshold?.substring(0, threshold.length - 1))}
+              color="rgb(var(--brand))"
+            />
+          </div>
+          <p className="text-sm text-body font-mono">{threshold}</p>
+        </div>
+        {quorum && (
+          <>
+            <p className="text-tertiary text-sm font-mono">Quorum</p>
+            <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+              <div className="col-span-3">
+                <Progress
+                  turnout={Number(quorum?.substring(0, quorum.length - 1))}
+                  color="rgb(var(--brand))"
+                />
+              </div>
+              <p className="text-sm text-body">{quorum}</p>
+            </div>
+          </>
+        )}
+        <p className="text-tertiary text-sm font-mono">Turnout</p>
+        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+          <div className="col-span-3">
+            <Progress
+              turnout={Number(turnoutPercent)}
+              color="rgb(var(--dark))"
+            />
+          </div>
+          <p className="text-sm text-body font-mono">{turnoutPercent}%</p>
+        </div>
       </div>
     </div>
   )
 }
 
-const proposalActionLoading = atom({
-  key: 'proposalActionLoading',
-  default: false,
-})
+interface ProposalMessageTemplateListItemProps {
+  template: MessageTemplate
+  values: any
+  contractAddress: string
+  multisig?: boolean
+}
+
+function ProposalMessageTemplateListItem({
+  template,
+  values,
+  contractAddress,
+  multisig,
+}: ProposalMessageTemplateListItemProps) {
+  const formMethods = useForm({
+    defaultValues: values,
+  })
+
+  return (
+    <FormProvider {...formMethods}>
+      <form>
+        <template.component
+          getLabel={(field) => field}
+          readOnly
+          contractAddress={contractAddress}
+          multisig={multisig}
+        />
+      </form>
+    </FormProvider>
+  )
+}
+
+interface ProposalMessageTemplateListProps {
+  msgs: CosmosMsgFor_Empty[]
+  contractAddress: string
+  multisig?: boolean
+  fromCosmosMsgProps: FromCosmosMsgProps
+}
+
+function ProposalMessageTemplateList({
+  msgs,
+  contractAddress,
+  multisig,
+  fromCosmosMsgProps,
+}: ProposalMessageTemplateListProps) {
+  const components: ReactNode[] = msgs.map((msg, index) => {
+    const decoded = decodeMessages([msg])[0]
+    const data = messageTemplateAndValuesForDecodedCosmosMsg(
+      decoded,
+      fromCosmosMsgProps
+    )
+
+    return data ? (
+      <ProposalMessageTemplateListItem
+        key={index}
+        template={data.template}
+        values={data.values}
+        contractAddress={contractAddress}
+        multisig={multisig}
+      />
+    ) : (
+      // If no message template found, render raw message.
+      <CosmosMessageDisplay
+        key={index}
+        value={JSON.stringify(decoded, undefined, 2)}
+      />
+    )
+  })
+
+  return <>{components}</>
+}
 
 export function ProposalDetails({
   contractAddress,
   proposalId,
   multisig,
+  fromCosmosMsgProps,
 }: {
   contractAddress: string
   proposalId: number
   multisig?: boolean
+  fromCosmosMsgProps: FromCosmosMsgProps
 }) {
   const router = useRouter()
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
-  )
-  const proposalTally = useRecoilValue(
-    proposalTallySelector({ contractAddress, proposalId })
-  )
-
-  const sigConfig = useRecoilValue(
-    contractConfigSelector({ contractAddress, multisig: !!multisig })
-  )
-  const configWrapper = new ContractConfigWrapper(sigConfig)
-  const tokenDecimals = configWrapper.gov_token_decimals
-  const member = useRecoilValue(isMemberSelector(contractAddress))
-
-  const voted = useRecoilValue(
-    walletVotedSelector({ contractAddress, proposalId })
-  )
-
-  const [actionLoading, setActionLoading] = useRecoilState(
-    proposalActionLoading
-  )
-
+  )!
   const wallet = useRecoilValue(walletAddressSelector)
-  // If token balances are loading we don't know if the user is a
-  // member or not.
-  const tokenBalancesLoading = useRecoilValue(walletTokenBalanceLoading(wallet))
+
+  const height = useRecoilValue(
+    proposalStartBlockSelector({ proposalId, contractAddress })
+  )
+  const votingPower = useRecoilValue(
+    votingPowerAtHeightSelector({
+      contractAddress,
+      multisig: !!multisig,
+      height,
+    })
+  )
+  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const walletVote = useRecoilValue(
+    walletVoteSelector({ contractAddress, proposalId })
+  )
+  const setTokenBalancesLoading = useSetRecoilState(
+    walletTokenBalanceLoading(wallet)
+  )
+
+  const setProposalUpdates = useSetRecoilState(
+    proposalUpdateCountAtom({ contractAddress, proposalId })
+  )
+  const setProposalsUpdated = useSetRecoilState(
+    proposalsUpdated(contractAddress)
+  )
+  const setTreasuryTokenListUpdates = useSetRecoilState(
+    treasuryTokenListUpdates(contractAddress)
+  )
+
+  const threshold = proposal.threshold
+  // :D
+  // All the threshold variants have a total_weight key so we just index into
+  // whatever this is and get that.
+  const totalPower = Number(
+    ((threshold as any)[Object.keys(threshold)[0] as string] as any)
+      .total_weight
+  )
+  const weightPercent = (votingPower / totalPower) * 100
+
+  const [loading, setLoading] = useState(false)
+
+  const [showRaw, setShowRaw] = useState(false)
+  const [showStaking, setShowStakng] = useState(false)
 
   if (!proposal) {
     router.replace(`/${multisig ? 'multisig' : 'dao'}/${contractAddress}`)
     return <div>Error</div>
   }
 
-  const yesVotes = Number(
-    multisig
-      ? proposalTally?.votes.yes
-      : convertMicroDenomToDenomWithDecimals(
-          proposalTally?.votes.yes ?? '0',
-          tokenDecimals
-        )
-  )
-  const noVotes = Number(
-    multisig
-      ? proposalTally?.votes.no
-      : convertMicroDenomToDenomWithDecimals(
-          proposalTally?.votes.no ?? 0,
-          tokenDecimals
-        )
-  )
-
-  const decodedMessages = decodeMessages(proposal)
+  const decodedMessages = decodeMessages(proposal.msgs)
 
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="text-4xl font-medium font-semibold">{proposal.title}</h1>
+        <h1 className="header-text text-xl">{proposal.title}</h1>
       </div>
-      {actionLoading && (
-        <div className="mt-3">
-          <LoadingButton />
-        </div>
-      )}
-      {!actionLoading && proposal.status === 'open' && (
-        <div className="mt-3 flex flex-row flex-wrap items-center gap-3">
-          {tokenBalancesLoading ? (
-            <LoadingButton />
-          ) : (
-            <>
-              <ProposalVoteButtons
-                yesCount={yesVotes.toString()}
-                noCount={noVotes.toString()}
-                proposalId={proposalId}
-                contractAddress={contractAddress}
-                voted={voted}
-                setLoading={setActionLoading}
-                multisig={!!multisig}
-              />
-              <ProposalVoteStatus
-                contractAddress={contractAddress}
-                proposalId={proposalId}
-              />
-            </>
-          )}
-        </div>
-      )}
-      {!actionLoading && proposal.status === 'passed' && (
-        <div className="mt-3">
-          {tokenBalancesLoading ? (
-            <LoadingButton />
-          ) : (
-            <ProposalExecuteButton
-              proposalId={proposalId}
-              contractAddress={contractAddress}
-              member={member.member}
-              setLoading={setActionLoading}
-            />
-          )}
-        </div>
-      )}
-      <div className="py-4">
+      <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />
       </div>
-      {decodedMessages?.length ? (
-        <CosmosMessageDisplay value={decodedMessagesString(proposal)} />
-      ) : (
-        <pre></pre>
-      )}
-      <div className="mt-6">
-        <PaginatedProposalVotes
-          contractAddress={contractAddress}
-          proposalId={proposalId}
-        />
+      <p className="caption-text font-mono mb-[12px] mt-[36px]">Messages</p>
+      <div className="max-w-3xl">
+        {decodedMessages?.length ? (
+          showRaw ? (
+            <CosmosMessageDisplay
+              value={decodedMessagesString(proposal.msgs)}
+            />
+          ) : (
+            <ProposalMessageTemplateList
+              msgs={proposal.msgs}
+              contractAddress={contractAddress}
+              multisig={multisig}
+              fromCosmosMsgProps={fromCosmosMsgProps}
+            />
+          )
+        ) : (
+          <pre>[]</pre>
+        )}
       </div>
+      {!!decodedMessages.length && (
+        <div className="mt-4">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setShowRaw((s) => !s)}
+          >
+            {showRaw ? (
+              <>
+                Hide raw data
+                <EyeOffIcon className="inline h-4 stroke-current ml-1" />
+              </>
+            ) : (
+              <>
+                Show raw data
+                <EyeIcon className="inline h-4 stroke-current ml-1" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+      {proposal.status === 'passed' && (
+        <>
+          <p className="caption-text font-mono mb-[12px] mt-[30px]">Status</p>
+          <Execute
+            loading={loading}
+            onExecute={() =>
+              executeProposalExecute(
+                proposalId,
+                contractAddress,
+                signingClient,
+                wallet,
+                () => {
+                  setProposalUpdates((n) => n + 1)
+                  setProposalsUpdated((p) =>
+                    p.includes(proposalId) ? p : p.concat([proposalId])
+                  )
+                  setTreasuryTokenListUpdates((n) => n + 1)
+                },
+                setLoading
+              )
+            }
+            messages={proposal.msgs.length}
+          />
+        </>
+      )}
+      <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
+      {proposal.status === 'open' && !walletVote && votingPower !== 0 && (
+        <Vote
+          voterWeight={weightPercent}
+          loading={loading}
+          onVote={(position) =>
+            executeProposalVote(
+              position,
+              proposalId,
+              contractAddress,
+              signingClient,
+              wallet,
+              () => {
+                setProposalUpdates((n) => n + 1)
+                setProposalsUpdated((p) =>
+                  p.includes(proposalId) ? p : p.concat([proposalId])
+                )
+              },
+              setLoading
+            )
+          }
+        />
+      )}
+      {walletVote && (
+        <p className="body-text">You voted {walletVote} on this proposal.</p>
+      )}
+      {votingPower === 0 && (
+        <p className="body-text max-w-prose">
+          You must have voting power at the time of proposal creation to vote.{' '}
+          {!multisig && (
+            <button className="underline" onClick={() => setShowStakng(true)}>
+              Stake some tokens?
+            </button>
+          )}
+          {!multisig && showStaking && (
+            <StakingModal
+              defaultMode={StakingMode.Stake}
+              contractAddress={contractAddress}
+              claimAmount={0}
+              onClose={() => setShowStakng(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              afterExecute={() => setTokenBalancesLoading(false)}
+            />
+          )}
+        </p>
+      )}
     </div>
   )
 }

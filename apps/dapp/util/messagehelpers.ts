@@ -1,8 +1,7 @@
+import { useRecoilValue } from 'recoil'
+
 import { fromBase64, toBase64, fromAscii, toAscii } from '@cosmjs/encoding'
-import {
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-} from './conversion'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   BankMsg,
   Coin,
@@ -17,21 +16,24 @@ import {
   Uint128,
   ProposalResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
 import {
   InstantiateMsg as MultisigInstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
 import { MintMsg } from 'types/messages'
+import { ProposalMapItem } from 'types/proposals'
+
 import {
   MessageMapEntry,
   ProposalMessageType,
 } from '../models/proposal/messageMap'
-import { ProposalMapItem } from 'types/proposals'
-import { convertDenomToContractReadableDenom } from './conversion'
 import { cw20TokenInfo } from '../selectors/treasury'
-import { useRecoilValue } from 'recoil'
+import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
+import { convertDenomToContractReadableDenom } from './conversion'
+import {
+  convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
+} from './conversion'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -55,6 +57,7 @@ export function makeBankMessage(
           denom,
         },
       ],
+      // TODO: What are these type and from_address fields? They don't show up in spend messages after proposals are created.
       [TYPE_KEY]: BANK_SEND_TYPE,
       from_address,
       to_address,
@@ -95,16 +98,16 @@ export function makeWasmMessage(message: { wasm: any }): {
   // We need to encode Wasm Execute, Instantiate, and Migrate messages
   let msg = message
   if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = toBase64(
-      toAscii(JSON.stringify(message.wasm.execute.msg))
+    msg.wasm.execute.msg = btoa(
+      unescape(encodeURIComponent(JSON.stringify(message.wasm.execute.msg)))
     )
   } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = toBase64(
-      toAscii(JSON.stringify(message.wasm.instantiate.msg))
+    msg.wasm.instantiate.msg = btoa(
+      unescape(encodeURIComponent(JSON.stringify(message.wasm.instantiate.msg)))
     )
   } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = toBase64(
-      toAscii(JSON.stringify(message.wasm.migrate.msg))
+    msg.wasm.migrate.msg = btoa(
+      unescape(encodeURIComponent(JSON.stringify(message.wasm.migrate.msg)))
     )
   }
   // Messages such as update or clear admin pass through without modification
@@ -259,6 +262,7 @@ export function makeDaoInstantiateWithNewTokenMessage(
   description: string,
   tokenName: string,
   tokenSymbol: string,
+  tokenImage: string,
   owners: Cw20Coin[],
   dao_initial_balance: Uint128,
   threshold: number,
@@ -297,6 +301,7 @@ export function makeDaoInstantiateWithNewTokenMessage(
           symbol: tokenSymbol,
           decimals: 6,
           initial_balances: owners,
+          ...(tokenImage && { marketing: { logo: { url: tokenImage } } }),
         },
         stake_contract_code_id: STAKE_CODE_ID,
         initial_dao_balance: dao_initial_balance,
@@ -390,8 +395,7 @@ export function labelForMessage(
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
-    const stringMessage = fromBase64(base64String)
-    const jsonMessage = fromAscii(stringMessage)
+    const jsonMessage = decodeURIComponent(escape(atob(base64String)))
     if (jsonMessage) {
       return JSON.parse(jsonMessage)
     }
@@ -444,10 +448,10 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 }
 
 export function decodeMessages(
-  proposal: ProposalResponse
+  msgs: ProposalResponse['msgs']
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
-  const proposalMsgs = Object.values(proposal.msgs)
+  const proposalMsgs = Object.values(msgs)
   for (const msgObj of proposalMsgs) {
     if (isWasmMsg(msgObj)) {
       const msgType = getWasmMsgType(msgObj.wasm)
@@ -481,8 +485,8 @@ export function decodeMessages(
   return decodedMessages
 }
 
-export function decodedMessagesString(proposal: ProposalResponse): string {
-  const decodedMessageArray = decodeMessages(proposal)
+export function decodedMessagesString(msgs: ProposalResponse['msgs']): string {
+  const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }
 
@@ -526,7 +530,7 @@ export function isMintMsg(msg: any): msg is MintMsg {
   return false
 }
 
-export function messageForDraftProposal(
+export function useMessageForDraftProposal(
   draftProposal: ProposalMapItem,
   govTokenAddress?: string
 ) {

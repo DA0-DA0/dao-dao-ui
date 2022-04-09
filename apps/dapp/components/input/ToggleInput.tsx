@@ -22,23 +22,28 @@ export function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
   register,
   validation,
   onChange,
+  disabled = false,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   onChange?: ChangeEventHandler<HTMLInputElement>
+  disabled?: boolean
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
   return (
-    <input
-      type="checkbox"
-      defaultChecked={true}
-      className="toggle toggle-lg"
-      {...register(label, { validate, onChange })}
-    />
+    <div className="form-check form-switch">
+      <input
+        type="checkbox"
+        role="switch"
+        defaultChecked={true}
+        disabled={disabled}
+        {...register(label, { validate, onChange })}
+      />
+    </div>
   )
 }
