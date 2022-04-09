@@ -7,7 +7,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Tooltip from '@reach/tooltip'
-import '@reach/tooltip/styles.css'
+
 import { useThemeContext } from 'ui'
 
 import { Button } from '@components'
@@ -123,7 +123,7 @@ export function HeroContractHeader({
         <h1 className="inline header-text mt-5">{name}</h1>
         <EstablishedDate address={address} />
       </div>
-      <div className="mb-[15px] mt-[10px]">
+      <div className="mb-4 mt-2">
         <p className="body-text">{description}</p>
       </div>
     </div>
