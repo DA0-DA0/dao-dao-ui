@@ -124,6 +124,21 @@ export function ProposalForm({
           </>
         )}
         <div className={showPreview ? 'hidden' : ''}>
+          {showTemplateSelector && (
+            <ProposalTemplateSelector
+              multisig={!!multisig}
+              templates={messageTemplates}
+              onClose={() => setShowTemplateSelector(false)}
+              onLabelSelect={(label, getDefaults) => {
+                append({
+                  ...getDefaults(wallet, contractConfig, govTokenDecimals),
+                  label,
+                })
+                setShowTemplateSelector(false)
+              }}
+            />
+          )}
+
           <div className="flex flex-col gap-1 my-3">
             <InputLabel name="Title" />
             <TextInput

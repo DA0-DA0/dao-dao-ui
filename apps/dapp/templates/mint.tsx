@@ -49,7 +49,8 @@ export const MintComponent: TemplateComponent = ({
   multisig,
   readOnly,
 }) => {
-  const { register } = useFormContext()
+  const { register, watch, setValue } = useFormContext()
+  const amount = watch(getLabel('amount'))
 
   const info = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
@@ -66,6 +67,13 @@ export const MintComponent: TemplateComponent = ({
         </div>
         <div className="flex flex-col">
           <NumberInput
+            small
+            onPlusMinus={[
+              () =>
+                setValue(getLabel('amount'), (Number(amount) + 1).toString()),
+              () =>
+                setValue(getLabel('amount'), (Number(amount) - 1).toString()),
+            ]}
             label={getLabel('amount')}
             register={register}
             error={errors?.amount}
@@ -80,7 +88,7 @@ export const MintComponent: TemplateComponent = ({
           </p>
         )}
         <div className="flex gap-2 items-center">
-          <ArrowRightIcon className="h-4" />
+          <p className="secondary-text font-mono">{'->'}</p>
           <div className="flex flex-col">
             <AddressInput
               label={getLabel('to')}

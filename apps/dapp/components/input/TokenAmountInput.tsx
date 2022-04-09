@@ -37,6 +37,7 @@ export function TokenAmountInput<
   addrLabel,
   onRemove,
   tokenSymbol,
+  tokenImage,
   hideRemove,
   title,
   register,
@@ -48,6 +49,7 @@ export function TokenAmountInput<
   addrLabel: AddrFieldName
   onRemove: () => void
   tokenSymbol: string
+  tokenImage: string
   hideRemove: boolean
   title: string
   register: UseFormRegister<FieldValues>
@@ -82,7 +84,12 @@ export function TokenAmountInput<
             <InputErrorMessage error={amountError} />
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full border border-default"></div>
+            <div
+              className="w-4 h-4 rounded-full border border-default bg-center bg-cover"
+              style={{
+                backgroundImage: `url(${tokenImage})`,
+              }}
+            ></div>
             <p className="link-text">{tokenSymbol}</p>
           </div>
         </div>

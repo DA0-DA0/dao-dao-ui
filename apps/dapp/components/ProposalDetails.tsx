@@ -589,7 +589,7 @@ export function ProposalDetails({
         <Vote
           voterWeight={weightPercent}
           loading={loading}
-          onVote={(position) =>
+          onVote={(position) => {
             executeProposalVote(
               position,
               proposalId,
@@ -604,7 +604,7 @@ export function ProposalDetails({
               },
               setLoading
             )
-          }
+          }}
         />
       )}
       {walletVote && (

@@ -20,7 +20,7 @@ import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
-import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 import {
   cw20TokensList,
@@ -59,7 +59,7 @@ export const SpendComponent: TemplateComponent = ({
   errors,
   readOnly,
 }) => {
-  const { register, watch, clearErrors } = useFormContext()
+  const { register, watch, clearErrors, setValue } = useFormContext()
 
   const tokenList = useRecoilValue(cw20TokensList(contractAddress))
   const cw20Info = useRecoilValue(
@@ -140,6 +140,18 @@ export const SpendComponent: TemplateComponent = ({
         </div>
         <NumberInput
           small
+          onPlusMinus={[
+            () =>
+              setValue(
+                getLabel('amount'),
+                (Number(spendAmount) + 1).toString()
+              ),
+            () =>
+              setValue(
+                getLabel('amount'),
+                (Number(spendAmount) - 1).toString()
+              ),
+          ]}
           label={getLabel('amount')}
           register={register}
           error={errors?.amount}
@@ -176,7 +188,7 @@ export const SpendComponent: TemplateComponent = ({
           ))}
         </SelectInput>
         <div className="flex gap-2 items-center">
-          <ArrowRightIcon className="h-4" />
+          <p className="secondary-text font-mono">{'->'}</p>
           <div className="flex flex-col">
             <AddressInput
               label={getLabel('to')}

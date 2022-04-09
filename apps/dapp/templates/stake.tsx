@@ -232,9 +232,9 @@ export const StakeComponent: TemplateComponent = ({
         <InputErrorMessage error={errors?.validator} />
       </div>
 
-      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-base-200">
+      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-disabled">
         <InformationCircleIcon className="h-4" />
-        <p>
+        <p className="body-text">
           This template is new and in beta. Double check the generated JSON
           before executing.
         </p>

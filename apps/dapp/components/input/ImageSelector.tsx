@@ -12,11 +12,66 @@ import { Button } from 'ui'
 
 import SvgAirplane from '@components/icons/Airplane'
 import { Modal } from '@components/Modal'
-import { validateUrl } from 'util/formValidation'
 
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'
+
+export function ImageSelectorModal<
+  FieldValues,
+  FieldName extends Path<FieldValues>
+>({
+  label,
+  register,
+  error,
+  validation,
+  imageUrl,
+  onClose,
+}: {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  imageUrl: string
+  onClose: () => void
+}) {
+  return (
+    <Modal>
+      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative flex flex-col items-center gap-3">
+        <button
+          className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
+          type="button"
+          onClick={onClose}
+        >
+          <XIcon className="h-4 w-4" />
+        </button>
+        <div
+          className="rounded-full bg-center bg-cover w-[95px] h-[95px] border border-inactive"
+          style={{
+            backgroundImage: `url(${imageUrl})`,
+          }}
+          role="img"
+          aria-label="DAO's Custom Logo"
+        ></div>
+        <div className="flex flex-col gap-1">
+          <InputLabel name="Image URL" mono />
+          <TextInput
+            label={label}
+            register={register}
+            error={error}
+            validation={validation}
+          />
+          <InputErrorMessage error={error} />
+        </div>
+        <div className="text-right w-full">
+          <Button type="button" size="sm" onClick={onClose}>
+            Done <SvgAirplane color="currentColor" />
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  )
+}
 
 export function ImageSelector<
   FieldValues,
@@ -50,44 +105,14 @@ export function ImageSelector<
         <PlusIcon className="w-4" />
       </button>
       <div className={`${showImageSelect ? '' : 'hidden'}`}>
-        <Modal>
-          <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative flex flex-col items-center gap-3">
-            <button
-              className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
-              type="button"
-              onClick={() => setShowImageSelect(false)}
-            >
-              <XIcon className="h-4 w-4" />
-            </button>
-            <div
-              className="rounded-full bg-center bg-cover w-[95px] h-[95px] border border-inactive"
-              style={{
-                backgroundImage: `url(${imageUrl})`,
-              }}
-              role="img"
-              aria-label="DAO's Custom Logo"
-            ></div>
-            <div className="flex flex-col gap-1">
-              <InputLabel name="Image URL" mono />
-              <TextInput
-                label={label}
-                register={register}
-                error={error}
-                validation={validation}
-              />
-              <InputErrorMessage error={error} />
-            </div>
-            <div className="text-right w-full">
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => setShowImageSelect(false)}
-              >
-                Done <SvgAirplane color="currentColor" />
-              </Button>
-            </div>
-          </div>
-        </Modal>
+        <ImageSelectorModal
+          label={label}
+          register={register}
+          error={error}
+          validation={validation}
+          imageUrl={imageUrl}
+          onClose={() => setShowImageSelect(false)}
+        />
       </div>
     </>
   )

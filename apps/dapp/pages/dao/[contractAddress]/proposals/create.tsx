@@ -111,6 +111,17 @@ const ProposalCreate: NextPage = () => {
 
         setProposalsCreated((n) => n + 1)
 
+        fetch(
+          'https://discord.com/api/webhooks/962064682552819763/9G4Z_V_lHUAcgY7VbEOBDpylJWMDBHzQA7FBZzjdy79E6uF3vrz3PW5FzYQNt3TrYR9l',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              content: `new proposal! https://testnet.daodao.zone/dao/${contractAddress}/proposals/${proposalId}`,
+            }),
+          }
+        )
+
         router.push(`/dao/${contractAddress}/proposals/${proposalId}`)
       })
       .finally(() => setProposalLoading(false))
