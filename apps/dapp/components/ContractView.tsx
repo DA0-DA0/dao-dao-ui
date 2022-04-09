@@ -7,7 +7,6 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Tooltip from '@reach/tooltip'
-
 import { useThemeContext } from 'ui'
 
 import { Button } from '@components'
@@ -183,10 +182,10 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
   return (
     <div
-      className="rounded-full bg-brand w-4 h-4"
+      className="rounded-full bg-brand w-4 h-4 bg-center bg-cover"
       style={{
-        backgroundImage: iconURI ? `url(${iconURI})` : '',
         ...(!!accentColor && { backgroundColor: accentColor }),
+        backgroundImage: iconURI ? `url(${iconURI})` : '',
       }}
     ></div>
   )
