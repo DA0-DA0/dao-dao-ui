@@ -94,7 +94,7 @@ export function ProposalForm({
   return (
     <FormProvider {...formMethods}>
       <form
-        className=""
+        className="max-w-[800px] mx-auto"
         onSubmit={handleSubmit((d) =>
           onSubmit({
             ...d,

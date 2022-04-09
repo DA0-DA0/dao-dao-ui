@@ -16,8 +16,6 @@ import {
   ExternalLinkIcon,
   EyeIcon,
   EyeOffIcon,
-  MinusIcon,
-  SparklesIcon,
   XIcon,
 } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -66,6 +64,7 @@ import { Execute } from './Execute'
 import SvgAbstain from './icons/Abstain'
 import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
+import { StakingModal, StakingMode } from './StakingModal'
 import { Vote, VoteChoice } from './Vote'
 
 function executeProposalVote(
@@ -463,6 +462,7 @@ export function ProposalDetails({
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
   )!
+  const wallet = useRecoilValue(walletAddressSelector)
 
   const height = useRecoilValue(
     proposalStartBlockSelector({ proposalId, contractAddress })
@@ -477,6 +477,9 @@ export function ProposalDetails({
   const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletVote = useRecoilValue(
     walletVoteSelector({ contractAddress, proposalId })
+  )
+  const setTokenBalancesLoading = useSetRecoilState(
+    walletTokenBalanceLoading(wallet)
   )
 
   const setProposalUpdates = useSetRecoilState(
@@ -499,10 +502,10 @@ export function ProposalDetails({
   )
   const weightPercent = (votingPower / totalPower) * 100
 
-  const wallet = useRecoilValue(walletAddressSelector)
   const [loading, setLoading] = useState(false)
 
   const [showRaw, setShowRaw] = useState(false)
+  const [showStaking, setShowStakng] = useState(false)
 
   if (!proposal) {
     router.replace(`/${multisig ? 'multisig' : 'dao'}/${contractAddress}`)
@@ -585,11 +588,11 @@ export function ProposalDetails({
         </>
       )}
       <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
-      {proposal.status === 'open' && !walletVote && (
+      {proposal.status === 'open' && !walletVote && votingPower !== 0 && (
         <Vote
           voterWeight={weightPercent}
           loading={loading}
-          onVote={(position) => {
+          onVote={(position) =>
             executeProposalVote(
               position,
               proposalId,
@@ -604,11 +607,31 @@ export function ProposalDetails({
               },
               setLoading
             )
-          }}
+          }
         />
       )}
       {walletVote && (
         <p className="body-text">You voted {walletVote} on this proposal.</p>
+      )}
+      {votingPower === 0 && (
+        <p className="body-text max-w-prose">
+          You must have voting power at the time of proposal creation to vote.{' '}
+          {!multisig && (
+            <button className="underline" onClick={() => setShowStakng(true)}>
+              Stake some tokens?
+            </button>
+          )}
+          {!multisig && showStaking && (
+            <StakingModal
+              defaultMode={StakingMode.Stake}
+              contractAddress={contractAddress}
+              claimAmount={0}
+              onClose={() => setShowStakng(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              afterExecute={() => setTokenBalancesLoading(false)}
+            />
+          )}
+        </p>
       )}
     </div>
   )

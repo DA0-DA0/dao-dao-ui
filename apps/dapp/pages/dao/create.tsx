@@ -17,6 +17,7 @@ import { FormCard } from '@components/FormCard'
 import SvgAirplane from '@components/icons/Airplane'
 import { AddressInput } from '@components/input/AddressInput'
 import { ImageSelector } from '@components/input/ImageSelector'
+import { ImageSelectorModal } from '@components/input/ImageSelector'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
@@ -57,9 +58,8 @@ import {
   makeDaoInstantiateWithNewTokenMessage,
 } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
-import { ImageSelectorModal } from '@components/input/ImageSelector'
 
-interface DaoCreateData {
+export interface DaoCreateData {
   deposit: string
   description: string
   duration: string
@@ -90,8 +90,8 @@ interface DaoCreateData {
   balances: { addr: string; amount: string }[]
 }
 
-const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
-const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
+export const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
+export const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
 
 enum TokenMode {
   UseExisting,

@@ -207,9 +207,8 @@ const CreateMultisig: NextPage = () => {
                 amountLabel={`balances.${index}.amount`}
                 addrLabel={`balances.${index}.addr`}
                 onRemove={() => remove(index)}
-                tokenSymbol={'weight'}
                 hideRemove={fields.length === 1}
-                title={`Member ${index}`}
+                title={`Member ${index} weight`}
                 key={field.id}
                 register={register}
                 amountError={

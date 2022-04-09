@@ -125,7 +125,7 @@ export const messageTemplates: MessageTemplate[] = [
     fromCosmosMsg: transformCosmosToRemoveToken,
   },
   {
-    label: '🖋 Manage Members',
+    label: '👥 Manage Members',
     description: 'Add and remove multisig members.',
     component: ChangeMembersComponent,
     contractSupport: ContractSupport.Multisig,
