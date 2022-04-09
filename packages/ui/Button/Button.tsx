@@ -1,40 +1,20 @@
 import {
   ReactNode,
   ComponentPropsWithoutRef,
-  memo,
   forwardRef,
   ForwardedRef,
 } from 'react'
 
-import { useThemeContext } from '../theme'
-import daisyuiThemes from '../daisyui-themes.json'
-
-const [junoLight, junoDark] = Object.keys(daisyuiThemes) || ['']
-
-type ButtonIconProps = {
-  icon?: ReactNode
-  position: string
-}
-
-const ButtonIcon = memo(function ButtonIcon({
-  icon,
-  position,
-}: ButtonIconProps) {
-  if (!icon) return null
-
-  const padding = position === 'left' ? 'pr-1.5' : 'pl-1.5'
-
-  return <i className={`btn-icon ${padding}`}>{icon}</i>
-})
+import { Logo } from '@dao-dao/dapp/components/Logo'
 
 export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'lg'
   full?: boolean
   disabled?: boolean
-  iconBefore?: ReactNode
-  iconAfter?: ReactNode
+  className?: string
+  loading?: boolean
 }
 
 function ButtonComponent(
@@ -44,43 +24,90 @@ function ButtonComponent(
     size = 'lg',
     full = false,
     disabled = false,
-    iconBefore,
-    iconAfter,
+    loading = false,
+    className = '',
     ...rest
   }: ButtonProps,
   ref?: ForwardedRef<any>
 ) {
-  const themeContext = useThemeContext()
-  const theme = themeContext.theme === junoLight ? 'light' : 'dark'
-  const withIcon = iconBefore || iconAfter
-  let other = disabled ? ' disabled' : ''
-
-  if (!withIcon) {
-    other += ' truncate'
+  if (variant === 'primary') {
+    return (
+      <button
+        ref={ref}
+        className={`relative link-text text-light bg-btn rounded-md py-[6px] px-[16px] transition ${
+          !disabled ? 'hover:bg-dark active:bg-toast' : 'bg-btn-disabled'
+        } ${size === 'lg' ? 'py-[10px]' : ''} ${
+          size === 'sm' ? 'py-[4px] px-[8px]' : ''
+        } ${className}`}
+        disabled={disabled || loading}
+        {...rest}
+      >
+        <div className="absolute top-0 right-0 left-0 bottom-0 flex justify-center items-center">
+          <div
+            className={`animate-spin inline-block mx-auto ${
+              loading ? '' : 'invisible'
+            }`}
+          >
+            <Logo width={20} height={20} invert />
+          </div>
+        </div>
+        <div
+          className={`${
+            loading ? 'invisible' : ''
+          } flex flex-row items-center gap-2`}
+        >
+          {children}
+        </div>
+      </button>
+    )
+  }
+  if (variant == 'secondary') {
+    return (
+      <button
+        ref={ref}
+        className={`relative link-text bg-primary rounded-md py-[6px] px-[16px] transition ${
+          !disabled
+            ? 'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed'
+            : 'bg-btn-disabled'
+        } ${size === 'lg' ? 'py-[10px]' : ''} ${
+          size === 'sm' ? 'py-[4px] px-[8px]' : ''
+        } ${className}`}
+        disabled={disabled || loading}
+        {...rest}
+      >
+        <div className="absolute top-0 right-0 left-0 bottom-0 flex justify-center items-center">
+          <div
+            className={`animate-spin inline-block mx-auto ${
+              loading ? '' : 'invisible'
+            }`}
+          >
+            <Logo width={20} height={20} invert />
+          </div>
+        </div>
+        <div
+          className={`${
+            loading ? 'invisible' : ''
+          } flex flex-row items-center gap-2`}
+        >
+          {children}
+        </div>
+      </button>
+    )
+  }
+  if (variant === 'ghost') {
+    return (
+      <button
+        ref={ref}
+        className={`link-text text-secondary transition hover:text-primary flex flex-row items-center gap-2 ${className}`}
+        disabled={disabled || loading}
+        {...rest}
+      >
+        {children}
+      </button>
+    )
   }
 
-  return (
-    <button
-      ref={ref}
-      className={`btn ${theme} ${variant} ${size}${
-        full ? ' w-full' : ''
-      }${other}`}
-      disabled={disabled}
-      {...rest}
-    >
-      {withIcon ? (
-        <div className="flex justify-between">
-          <div className="truncate">
-            <ButtonIcon icon={iconBefore} position="left" />
-            <span className="align-middle">{children}</span>
-          </div>
-          <ButtonIcon icon={iconAfter} position="right" />
-        </div>
-      ) : (
-        <>{children}</>
-      )}
-    </button>
-  )
+  return null
 }
 
 export const Button = forwardRef(ButtonComponent)

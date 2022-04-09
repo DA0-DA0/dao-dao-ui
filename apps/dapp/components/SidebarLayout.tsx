@@ -30,8 +30,8 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const [mobileMenuOpened, setMenuOpened] = useState(false)
 
   return (
-    <div className="lg:grid lg:grid-cols-5 w-full h-full">
-      <div className="hidden lg:block">
+    <div className="lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))] w-full h-full">
+      <div className="hidden lg:w-[264px] lg:block">
         <Nav />
       </div>
       <div className="lg:hidden">

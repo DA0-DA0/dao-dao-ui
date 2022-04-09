@@ -6,9 +6,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
 import { ContractCard } from 'components/ContractCard'
-import Sidebar from 'components/Sidebar'
 import {
   isMemberSelector,
   memberDaoSelector,
@@ -90,14 +88,13 @@ function PinnedMultisigCard({ address }: { address: string }) {
 const Starred: NextPage = () => {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
-  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className="grid grid-cols-6">
       <div className="p-6 w-full col-span-4">
-        <h1 className="text-2xl font-semibold">Starred</h1>
-        <h2 className="text-lg mb-2 mt-6">
-          <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
+        <h1 className="header-text">Starred</h1>
+        <h2 className="primary-text mb-2 mt-6 flex items-center gap-1">
+          <StarIcon className="inline w-4 " />
           DAOs
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -110,8 +107,8 @@ const Starred: NextPage = () => {
           )}
         </div>
         <div className="mt-6">
-          <h2 className="text-lg mb-2 mt-6">
-            <StarIcon className="inline w-5 h-5 mr-2 mb-1" />
+          <h2 className="primary-text mb-2 mt-6 flex items-center gap-1">
+            <StarIcon className="inline w-4 " />
             Multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -125,45 +122,43 @@ const Starred: NextPage = () => {
           </div>
         </div>
       </div>
-      <Sidebar>
-        <div className="col-start-5 col-span-2 border-l border-base-300 p-6 min-h-screen">
-          <h2 className="font-medium text-lg">Actions</h2>
-          <ul className="list-none ml-2 mt-1">
-            <li className="mt-1">
-              <Link href="/dao/create">
-                <a>
-                  <PlusIcon className="inline w-5 h-5 mr-2 mb-1" />
-                  Create a DAO
-                </a>
-              </Link>
-            </li>
-            <li className="mt-1">
-              <Link href="/multisig/create">
-                <a>
-                  <PlusIcon className="inline w-5 h-5 mr-2 mb-1" />
-                  Create a multisig
-                </a>
-              </Link>
-            </li>
-            <li className="mt-1">
-              <Link href="/dao/list">
-                <a>
-                  <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
-                  Explore all DAOs
-                </a>
-              </Link>
-            </li>
-            <li className="mt-1">
-              <Link href="/multisig/list">
-                <a>
-                  <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
-                  Explore all multisigs
-                </a>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </Sidebar>
+      <div className="col-start-5 col-span-2 p-6 min-h-screen">
+        <h2 className="body-text text-[16px] font-semibold mb-6">Actions</h2>
+        <ul className="link-text list-none ml-2 mt-1">
+          <li className="mt-1">
+            <Link href="/dao/create">
+              <a>
+                <PlusIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Create a DAO
+              </a>
+            </Link>
+          </li>
+          <li className="mt-1">
+            <Link href="/multisig/create">
+              <a>
+                <PlusIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Create a multisig
+              </a>
+            </Link>
+          </li>
+          <li className="mt-1">
+            <Link href="/dao/list">
+              <a>
+                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Explore all DAOs
+              </a>
+            </Link>
+          </li>
+          <li className="mt-1">
+            <Link href="/multisig/list">
+              <a>
+                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+                Explore all multisigs
+              </a>
+            </Link>
+          </li>
+        </ul>
+      </div>
     </div>
   )
 }

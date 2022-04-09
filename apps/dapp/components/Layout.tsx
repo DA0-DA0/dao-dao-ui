@@ -5,6 +5,7 @@ import Head from 'next/head'
 import {
   useRecoilRefresher_UNSTABLE,
   useRecoilState,
+  useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
 
@@ -13,7 +14,11 @@ import { Keplr } from '@keplr-wallet/types'
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
 import LoadingScreen from 'components/LoadingScreen'
 import { SidebarLayout } from 'components/SidebarLayout'
-import { kelprOfflineSigner, connectedWalletAtom } from 'selectors/cosm'
+import {
+  kelprOfflineSigner,
+  connectedWalletAtom,
+  noKeplrAccountAtom,
+} from 'selectors/cosm'
 import {
   installWarningVisibleAtom,
   chainWarningVisibleAtom,
@@ -25,6 +30,7 @@ import { SITE_TITLE } from '../util/constants'
 import { BetaNotice, BetaWarningModal } from './BetaWarning'
 import ChainEnableModal from './ChainEnableModal'
 import { InstallKeplr } from './InstallKeplr'
+import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
@@ -41,6 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   )
   const setChainDisabled = useSetRecoilState(chainDisabledAtom)
   const [wallet, setWallet] = useRecoilState(connectedWalletAtom)
+  const [noKeplrAccount, setNoKeplrAccount] = useRecoilState(noKeplrAccountAtom)
 
   useEffect(() => {
     async function loadKeplr() {
@@ -112,6 +119,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {installWarningVisible && (
         <InstallKeplr onClose={() => setInstallWarningVisible(false)} />
+      )}
+      {noKeplrAccount && (
+        <NoKeplrAccountModal onClose={() => setNoKeplrAccount(false)} />
       )}
       {!loaded && !error && <LoadingScreen />}
       {!betaWarningAccepted && (

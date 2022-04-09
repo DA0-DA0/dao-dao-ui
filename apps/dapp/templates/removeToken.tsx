@@ -13,6 +13,8 @@ import { cw20TokenInfo, cw20TokensList } from 'selectors/treasury'
 
 import { TokenInfoDisplay } from './addToken'
 import { TemplateComponent, ToCosmosMsgProps } from './templateList'
+import { Button } from 'ui/Button'
+import { secondsToWdhms } from 'util/conversion'
 
 export interface RemoveTokenData {
   address: string
@@ -43,23 +45,24 @@ const AddressSelector = ({
   )
 
   const active = (a: string) => a === selectedAddress
-  const getClassName = (a: string) =>
-    'btn btn-sm btn-outline rounded-md font-normal' +
-    (active(a) ? ' bg-primary text-primary-content' : '')
   return (
     <div className="grid grid-cols-5 gap-1">
       {options.map((address, idx) => {
         const info = tokenInfo[idx]
         return (
-          <button
-            className={getClassName(address)}
+          <Button
+            size="sm"
+            variant="secondary"
             onClick={() => onSelect(address)}
             key={address}
             type="button"
             disabled={readOnly}
+            className={`${
+              active(address) ? '' : 'bg-transparent text-secondary'
+            }`}
           >
             ${info.symbol}
-          </button>
+          </Button>
         )
       })}
     </div>
@@ -82,10 +85,10 @@ export const RemoveTokenComponent: TemplateComponent = ({
     tokens.includes(v) || 'This token is not in the DAO treasury.'
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-base-300">
+    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-4xl">⭕️</h2>
+          <h2 className="text-3xl">⭕️</h2>
           <h2>Remove Treasury Token</h2>
         </div>
         {onRemove && (
@@ -94,7 +97,7 @@ export const RemoveTokenComponent: TemplateComponent = ({
           </button>
         )}
       </div>
-      <div className="mt-3">
+      <div className="my-3 flex flex-col gap-1">
         <AddressSelector
           onSelect={(address) => setValue(getLabel('address'), address)}
           selectedAddress={tokenAddress}
@@ -102,7 +105,7 @@ export const RemoveTokenComponent: TemplateComponent = ({
           readOnly={readOnly}
         />
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col mb-3">
         <InputLabel name="Token address" />
         <AddressInput
           label={getLabel('address')}
@@ -113,7 +116,6 @@ export const RemoveTokenComponent: TemplateComponent = ({
             validateContractAddress,
             validateIsTreasuryToken,
           ]}
-          border={false}
           disabled={readOnly}
         />
         <InputErrorMessage error={errors?.address} />

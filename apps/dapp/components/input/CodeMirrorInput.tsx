@@ -1,7 +1,7 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
-import { UnControlled as CodeMirror } from 'react-codemirror2'
+import { Controlled as CodeMirror } from 'react-codemirror2'
 import {
   FieldError,
   Path,
@@ -38,7 +38,8 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   )
 
   const themeContext = useThemeContext()
-  const editorTheme = themeContext.theme !== 'junoDark' ? 'default' : 'material'
+  const editorTheme =
+    themeContext.theme !== 'dark' ? 'default' : 'material-ocean'
 
   const cmOptions = {
     mode: {
@@ -46,9 +47,9 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
       json: true,
     },
     theme: editorTheme,
-    lineNumbers: true,
+    lineNumbers: false,
     lineWrapping: true,
-    autoCloseBrackets: true,
+    autoCloseBrackets: false,
     tabSize: 2,
     gutters: ['CodeMirror-lint-markers'],
     lint: true,
@@ -63,10 +64,10 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
       shouldUnregister
       render={({ field: { onChange, onBlur, ref, value } }) => (
         <CodeMirror
-          onChange={(_editor, _data, value) => onChange(value)}
+          onBeforeChange={(_editor, _data, value) => onChange(value)}
           onBlur={(_instance, _event) => onBlur()}
-          ref={ref}
           options={cmOptions}
+          ref={ref}
           className="rounded"
           value={value}
         />

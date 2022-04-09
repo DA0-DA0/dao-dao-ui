@@ -10,10 +10,9 @@ import { findAttribute } from '@cosmjs/stargate/build/logs'
 import toast from 'react-hot-toast'
 
 import { Breadcrumbs } from '@components/Breadcrumbs'
+import { CopyToClipboard } from '@components/CopyToClipboard'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { proposalsCreatedAtom } from 'atoms/proposals'
-import { sidebarExpandedAtom } from 'atoms/sidebar'
-import Sidebar from 'components/Sidebar'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -37,7 +36,6 @@ const ProposalCreate: NextPage = () => {
   )
 
   const [proposalLoading, setProposalLoading] = useState(false)
-  const expanded = useRecoilValue(sidebarExpandedAtom)
 
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
@@ -120,7 +118,7 @@ const ProposalCreate: NextPage = () => {
   }
 
   return (
-    <div className={`grid ${expanded ? 'grid-cols-6' : 'grid-cols-1'}`}>
+    <div className="grid grid-cols-6">
       <div className="w-full col-span-4 p-6">
         <Breadcrumbs
           crumbs={[
@@ -133,6 +131,7 @@ const ProposalCreate: NextPage = () => {
           onSubmit={onProposalSubmit}
           contractAddress={contractAddress}
           loading={proposalLoading}
+          multisig={false}
           toCosmosMsgProps={{
             sigAddress: contractAddress,
             govAddress: daoInfo.gov_token,
@@ -141,9 +140,23 @@ const ProposalCreate: NextPage = () => {
           }}
         />
       </div>
-      <Sidebar>
-        <div className="col-span-2 p-6 bg-base-200 min-h-screen"></div>
-      </Sidebar>
+      <div className="col-span-2 p-6">
+        <h2 className="font-medium text-medium mb-6">Info</h2>
+        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
+          <p className="text-tertiary font-mono text-sm">DAO Treasury</p>
+          <div className="col-span-2">
+            <CopyToClipboard value={contractAddress} />
+          </div>
+          <p className="text-tertiary font-mono text-sm">Gov Token</p>
+          <div className="col-span-2">
+            <CopyToClipboard value={daoInfo.gov_token} />
+          </div>
+          <p className="text-tertiary font-mono text-sm">Staking</p>
+          <div className="col-span-2">
+            <CopyToClipboard value={daoInfo.staking_contract} />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

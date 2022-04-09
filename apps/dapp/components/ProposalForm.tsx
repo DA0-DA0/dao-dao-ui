@@ -4,12 +4,13 @@ import { useRecoilValue } from 'recoil'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import { Button } from 'ui'
 
 import { walletAddress } from 'selectors/treasury'
 import {
   messageTemplates,
-  ContractSupport,
   ToCosmosMsgProps,
   MessageTemplate,
   messageTemplateToCosmosMsg,
@@ -28,6 +29,7 @@ import { InputLabel } from './input/InputLabel'
 import { TextareaInput } from './input/TextAreaInput'
 import { TextInput } from './input/TextInput'
 import { MarkdownPreview } from './MarkdownPreview'
+import { ProposalTemplateSelector } from './TemplateSelector'
 
 interface FormProposalData {
   title: string
@@ -74,6 +76,7 @@ export function ProposalForm({
   } = formMethods
 
   const [showPreview, setShowPreview] = useState(false)
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -92,7 +95,7 @@ export function ProposalForm({
   return (
     <FormProvider {...formMethods}>
       <form
-        className=""
+        className="max-w-[800px] mx-auto"
         onSubmit={handleSubmit((d) =>
           onSubmit({
             ...d,
@@ -106,9 +109,9 @@ export function ProposalForm({
         {showPreview && (
           <>
             <div className="max-w-prose">
-              <h1 className="text-4xl font-semibold my-6">{proposalTitle}</h1>
+              <h1 className="header-text text-xl my-6">{proposalTitle}</h1>
             </div>
-            <div className="my-6">
+            <div className="mt-[22px] mb-[36px]">
               <MarkdownPreview markdown={proposalDescription} />
             </div>
             <CosmosMessageDisplay
@@ -122,7 +125,22 @@ export function ProposalForm({
           </>
         )}
         <div className={showPreview ? 'hidden' : ''}>
-          <div className="form-control">
+          {showTemplateSelector && (
+            <ProposalTemplateSelector
+              multisig={!!multisig}
+              templates={messageTemplates}
+              onClose={() => setShowTemplateSelector(false)}
+              onLabelSelect={(label, getDefaults) => {
+                append({
+                  ...getDefaults(wallet, contractConfig, govTokenDecimals),
+                  label,
+                })
+                setShowTemplateSelector(false)
+              }}
+            />
+          )}
+
+          <div className="flex flex-col gap-1 my-3">
             <InputLabel name="Title" />
             <TextInput
               label="title"
@@ -132,7 +150,7 @@ export function ProposalForm({
             />
             <InputErrorMessage error={errors.title} />
           </div>
-          <div className="form-control">
+          <div className="flex flex-col gap-1 my-3">
             <InputLabel name="Description" />
             <TextareaInput
               label="description"
@@ -141,9 +159,6 @@ export function ProposalForm({
               validation={[validateRequired]}
             />
             <InputErrorMessage error={errors.description} />
-          </div>
-          <div className="-mb-2">
-            <InputLabel name="Actions" />
           </div>
           <ul className="list-none">
             {messageFields.map((data, index) => {
@@ -177,74 +192,34 @@ export function ProposalForm({
               )
             })}
           </ul>
-          <div className="dropdown dropdown-right mt-2">
-            <div
-              tabIndex={0}
-              className="m-1 btn normal-case btn-sm rounded-md bg-base-300 text-primary border-none hover:bg-base-200"
+          <div className="mt-2">
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => setShowTemplateSelector((s) => !s)}
             >
-              <PlusIcon className="h-5 inline mr-1" /> Add action
-            </div>
-            <ul
-              tabIndex={0}
-              className="p-2 shadow menu dropdown-content rounded-md bg-base-300 border border-secondary w-max"
-            >
-              {messageTemplates
-                .filter(({ contractSupport }) => {
-                  switch (contractSupport) {
-                    case ContractSupport.Both:
-                      return true
-                    case ContractSupport.Multisig:
-                      return multisig
-                    case ContractSupport.DAO:
-                      return !multisig
-                  }
-                })
-                .map(({ label, getDefaults }, index) => (
-                  <li
-                    key={index}
-                    className="transition hover:bg-base-200 text-lg p-1 rounded"
-                  >
-                    <button
-                      className="text-left"
-                      onClick={() =>
-                        append({
-                          ...getDefaults(
-                            wallet,
-                            contractConfig,
-                            govTokenDecimals
-                          ),
-                          label,
-                        })
-                      }
-                      type="button"
-                    >
-                      {label}
-                    </button>
-                  </li>
-                ))}
-            </ul>
+              <PlusIcon className="h-4 inline" /> Add component
+            </Button>
+            {showTemplateSelector && (
+              <ProposalTemplateSelector
+                multisig={!!multisig}
+                templates={messageTemplates}
+                onClose={() => setShowTemplateSelector(false)}
+                onLabelSelect={(label, getDefaults) => {
+                  append({
+                    ...getDefaults(wallet, contractConfig, govTokenDecimals),
+                    label,
+                  })
+                  setShowTemplateSelector(false)
+                }}
+              />
+            )}
           </div>
         </div>
-        <div className="mt-4 flex gap-2">
-          <div
-            className={!wallet ? 'tooltip' : ''}
-            data-tip="Connect your wallet to submit"
-          >
-            <button
-              type="submit"
-              className={`btn btn-sm normal-case bg-primary text-primary-content hover:bg-primary-content hover:text-primary ${
-                loading ? 'loading' : ''
-              } ${!wallet ? 'btn-disabled' : ''}`}
-            >
-              Submit{' '}
-              {!loading && (
-                <SvgAirplane className="inline stroke-current ml-2" />
-              )}
-            </button>
-          </div>
-          <button
+        <div className="mt-4 flex justify-end gap-2">
+          <Button
             type="button"
-            className="btn btn-sm btn-outline normal-case hover:bg-primary hover:text-primary-content"
+            variant="secondary"
             onClick={() => setShowPreview((p) => !p)}
           >
             {showPreview ? (
@@ -258,7 +233,15 @@ export function ProposalForm({
                 <EyeIcon className="inline h-5 stroke-current ml-2" />
               </>
             )}
-          </button>
+          </Button>
+          <Tooltip
+            label={!wallet ? 'Connect your wallet to submit' : undefined}
+          >
+            <Button type="submit" loading={loading}>
+              Publish{' '}
+              <SvgAirplane color="currentColor" width="14px" height="14px" />
+            </Button>
+          </Tooltip>
         </div>
       </form>
     </FormProvider>

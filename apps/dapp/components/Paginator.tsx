@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import { Button } from 'ui'
+
 function Paginator({
   page,
   limit,
@@ -12,10 +14,12 @@ function Paginator({
   const total = Math.ceil(count / limit)
 
   return (
-    <div className="btn-group">
+    <div className="flex items-center gap-2">
       {Array.from(Array(total), (_, i) => (
         <Link key={i + 1} href={`?page=${i + 1}&limit=${limit}`} passHref>
-          <a className={`btn ${page === i + 1 ? 'btn-active' : ''}`}>{i + 1}</a>
+          <Button size="sm" className={`${page - 1 === i ? 'ring' : ''}`}>
+            {i + 1}
+          </Button>
         </Link>
       ))}
     </div>

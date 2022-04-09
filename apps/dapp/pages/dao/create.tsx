@@ -1,29 +1,31 @@
 import React, { useEffect, useState } from 'react'
 
 import type { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import {
-  atom,
-  selector,
-  useRecoilValue,
-  useRecoilState,
-  useSetRecoilState,
-} from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
-import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/outline'
-import { useForm, Validate } from 'react-hook-form'
+import { PlusIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { Button } from 'ui'
 
+import { GradientHero } from '@components/ContractView'
+import { FormCard } from '@components/FormCard'
+import SvgAirplane from '@components/icons/Airplane'
+import { AddressInput } from '@components/input/AddressInput'
+import { ImageSelector } from '@components/input/ImageSelector'
+import { ImageSelectorModal } from '@components/input/ImageSelector'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
+import { TextareaInput } from '@components/input/TextAreaInput'
 import { TextInput } from '@components/input/TextInput'
 import { ToggleInput } from '@components/input/ToggleInput'
-import { PlusMinusButton } from '@components/PlusMinusButton'
+import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
@@ -41,10 +43,9 @@ import { cleanChainError } from 'util/cleanChainError'
 import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
 import {
   convertDenomToMicroDenomWithDecimals,
-  secondsToHms,
+  secondsToWdhms,
 } from 'util/conversion'
 import {
-  validateAddress,
   validateContractAddress,
   validateNonNegative,
   validatePercent,
@@ -77,6 +78,7 @@ export interface DaoCreateData {
 
   tokenName: string
   tokenSymbol: string
+  tokenImage: string
   daoInitialBalance: string
 
   // Field for creating a DAO with an existing token.
@@ -85,7 +87,8 @@ export interface DaoCreateData {
   unstakingDuration: string
   refund: string | boolean
   imageUrl: string
-  [key: string]: string | boolean
+
+  balances: { addr: string; amount: string }[]
 }
 
 export const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
@@ -96,117 +99,30 @@ enum TokenMode {
   Create,
 }
 
-enum ThresholdMode {
-  Threshold,
-  ThresholdQuorum,
-}
-
-// Atoms for keeping track of token distrbution so that we can warn
-// about potentially problematic ones.
-const tokenWeightsAtom = atom<number[]>({
-  key: 'tokenWeightsAtom',
-  default: [],
-})
-
-const daoInitialBalanceAtom = atom<number>({
-  key: 'daoInitialBalanceAtom',
-  default: 0,
-})
-
-const passThresholdAtom = atom({
-  key: 'proposalPassThreshold',
-  default: 51,
-})
-
-const smallestVoteCartelSelector = selector({
-  key: 'smallesVoteCartel',
-  get: ({ get }) => {
-    const threshold = get(passThresholdAtom) / 100
-    const weights = get(tokenWeightsAtom)
-    const dao = get(daoInitialBalanceAtom)
-
-    const total = weights.reduce((p, n) => p + n, 0) + dao
-    const shares = weights
-      .map((w) => w / total)
-      .sort()
-      .reverse()
-
-    let votePower = 0
-    let votes = 0
-    for (const share of shares) {
-      votePower += share
-      votes += 1
-      if (votePower >= threshold) {
-        return votes
-      }
-    }
-
-    // Impossible to reach threshold
-    return Infinity
-  },
-})
-
-function MinorityRuleWarning({ memberCount }: { memberCount: number }) {
-  const cartel = useRecoilValue(smallestVoteCartelSelector)
-  const cartelPercent = (cartel / memberCount) * 100
-
-  const warn = cartelPercent <= 20
-  const localeOptions = { maximumSignificantDigits: 3 }
-
-  if (warn) {
-    return (
-      <>
-        <div className="outline outline-warning shadow-md rounded-lg w-full py-4 px-6 flex items-center">
-          <div>
-            <h3 className="font-mono text-sm">
-              WARNING: Minority rule is possible
-            </h3>
-            <p className="text-sm mt-2">
-              {cartelPercent.toLocaleString(undefined, localeOptions)}% of
-              accounts could approve a proposal that the remaining{' '}
-              {(100 - cartelPercent).toLocaleString(undefined, localeOptions)}%
-              oppose.
-            </p>
-          </div>
-        </div>
-
-        <div className="outline outline-info shadow-md rounded-lg w-full py-4 px-6 flex items-center mt-3">
-          <div>
-            <h3 className="font-mono text-sm">
-              <InformationCircleIcon className="h-4 w-4 inline mb-0.5 mr-2" />
-              Tip
-            </h3>
-            <p className="text-sm mt-2">
-              Consider{' '}
-              <Link href="/multisig/create">
-                <a className="link">creating a multisig</a>
-              </Link>{' '}
-              or allocating some tokens to the DAO.
-            </p>
-          </div>
-        </div>
-      </>
-    )
-  }
-  return null
-}
-
 const CreateDao: NextPage = () => {
   const router = useRouter()
   const walletAddress = useRecoilValue(walletAddressSelector)
   const signingClient = useRecoilValue(cosmWasmSigningClient)
 
-  const [count, setCount] = useState(1)
-  const [contractAddress, _setContractAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const [showTokenImageModal, setShowTokenImageModal] = useState(false)
+
   const {
     watch,
+    control,
+    setValue,
     register: formRegister,
     handleSubmit,
     formState: { errors },
   } = useForm<DaoCreateData>()
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'balances',
+  })
+  useEffect(() => append({ addr: '', amount: '0' }), [append])
 
   const [selectedTooltip, register] = useTooltipsRegister(
     formRegister,
@@ -216,30 +132,15 @@ const CreateDao: NextPage = () => {
 
   const votingPeriodSeconds = watch('duration')
   const unstakingDurationSeconds = watch('unstakingDuration')
+  const daoInitialBalance = watch('daoInitialBalance')
+  const tokenSymbol = watch('tokenSymbol')
+  const imageUrl = watch('imageUrl')
+  const tokenImage = watch('tokenImage')
+
+  const threshold = watch('threshold')
+  const quorum = watch('quorum')
 
   const [tokenMode, setTokenMode] = useState(TokenMode.Create)
-  const [thresholdMode, setThresholdMode] = useState(
-    ThresholdMode.ThresholdQuorum
-  )
-
-  // Maps address rows to their token weights. Used to surface
-  // warnings about minority rule.
-  const [tokenWeights, setTokenWeights] = useRecoilState(tokenWeightsAtom)
-
-  // Holds the threshold for a vote to pass as the form is being
-  // filled out. Used to surface warnings about minority rule.
-  const setPassThreshold = useSetRecoilState(passThresholdAtom)
-  // Holds the initial balance of the DAO which needs to be treated
-  // different than wallet balance in detecting problematic token
-  // distributions.
-  const [daoInitialBalance, setDaoInitialBalance] = useRecoilState(
-    daoInitialBalanceAtom
-  )
-
-  // Total supply
-  const totalTokenSupply =
-    daoInitialBalance +
-    tokenWeights.reduce((accum, weight) => accum + weight, 0)
 
   const setPinnedDaos = useSetRecoilState(pinnedDaosAtom)
 
@@ -251,38 +152,21 @@ const CreateDao: NextPage = () => {
     setError('')
     setLoading(true)
 
-    function getStringValue(key: string): string {
-      const val = data[key]
-      if (typeof val === 'string') {
-        return val.trim()
-      }
-      return ''
-    }
-    function getIntValue(key: string): number {
-      return parseInt(getStringValue(key) || '0', 10)
-    }
-    function getIndexedValue(prefix: string, index: number): string {
-      return getStringValue(`${prefix}_${index}`)
-    }
-    const owners = [...Array(count)].map((_item, index) => ({
-      address: getIndexedValue('address', index),
-      // Convert human readable amount to micro denom amount
-      amount: convertDenomToMicroDenomWithDecimals(
-        getIndexedValue('weight', index),
-        NATIVE_DECIMALS
-      ),
+    const owners = data.balances.map(({ addr, amount }) => ({
+      address: addr,
+      amount: convertDenomToMicroDenomWithDecimals(amount, NATIVE_DECIMALS),
     }))
-    const threshold = getIntValue('threshold')
-    const quorum = getIntValue('quorum')
+    const threshold = Number(data.threshold)
+    const quorum = Number(data.quorum)
     const maxVotingPeriod = {
-      time: getIntValue('duration'),
+      time: Number(data.duration),
     }
     const unstakingDuration = {
-      time: getIntValue('unstakingDuration'),
+      time: Number(data.unstakingDuration),
     }
     const refund =
       typeof data.refund === 'string'
-        ? getIntValue('refund') === 1
+        ? Number(data.refund) === 1
         : !!data.refund
 
     const imgUrl = data.imageUrl !== '' ? data.imageUrl : undefined
@@ -297,7 +181,7 @@ const CreateDao: NextPage = () => {
       tokenDecimals = tokenInfo.decimals
     }
     const proposalDeposit = convertDenomToMicroDenomWithDecimals(
-      getIntValue('deposit') || 0,
+      Number(data.deposit) || 0,
       tokenDecimals
     )
 
@@ -308,15 +192,14 @@ const CreateDao: NextPage = () => {
             data.description,
             data.tokenName,
             data.tokenSymbol,
+            data.tokenImage,
             owners,
             convertDenomToMicroDenomWithDecimals(
               data.daoInitialBalance,
               NATIVE_DECIMALS
             ),
             threshold / 100, // Conversion to decimal percentage
-            thresholdMode === ThresholdMode.ThresholdQuorum
-              ? quorum / 100
-              : undefined,
+            quorum / 100,
             maxVotingPeriod,
             unstakingDuration,
             proposalDeposit,
@@ -328,9 +211,7 @@ const CreateDao: NextPage = () => {
             data.description,
             data.existingTokenAddress,
             threshold / 100, // Conversion to decimal percentage
-            thresholdMode === ThresholdMode.ThresholdQuorum
-              ? quorum / 100
-              : undefined,
+            quorum / 100,
             maxVotingPeriod,
             unstakingDuration,
             proposalDeposit,
@@ -374,35 +255,44 @@ const CreateDao: NextPage = () => {
       })
   }
 
-  const complete = contractAddress.length > 0
-
   return (
     <div className="grid grid-cols-6">
-      <div className="p-6 w-full col-span-4">
-        <Breadcrumbs
-          crumbs={[
-            ['/starred', 'Home'],
-            [router.asPath, 'Create DAO'],
-          ]}
-        />
+      <div className="col-span-4">
+        <form
+          className="mx-auto max-w-[800px]"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <GradientHero>
+            <Breadcrumbs
+              crumbs={[
+                ['/starred', 'Home'],
+                [router.asPath, 'Create DAO'],
+              ]}
+            />
+            <ImageSelector
+              imageUrl={imageUrl}
+              label="imageUrl"
+              register={register}
+              error={errors.imageUrl}
+            />
 
-        <form className="mb-8" onSubmit={handleSubmit(onSubmit)}>
-          <h2 className="pl-4 mt-10 text-lg">Name and description</h2>
-          <div className="px-3">
-            <div className="form-control">
-              <InputLabel name="Name" />
+            <div className="flex flex-col items-center justify-center max-w-prose mx-auto mt-4 rounded-lg">
+              <InputLabel name="DAO Name" mono className="pb-1" />
               <TextInput
                 label="name"
                 register={register}
                 error={errors.name}
                 validation={[validateRequired]}
+                className="text-center font-bold"
               />
               <InputErrorMessage error={errors.name} />
             </div>
+          </GradientHero>
 
-            <div className="form-control">
-              <InputLabel name="Description" />
-              <TextInput
+          <div className="px-8">
+            <div className="flex flex-col gap-1">
+              <InputLabel name="Description" mono />
+              <TextareaInput
                 label="description"
                 register={register}
                 error={errors.description}
@@ -410,238 +300,243 @@ const CreateDao: NextPage = () => {
               />
               <InputErrorMessage error={errors.description} />
             </div>
-
-            <div className="form-control">
-              <InputLabel name="Image URL (optional)" />
-              <TextInput
-                label="imageUrl"
-                register={register}
-                error={errors.imageUrl}
-                validation={[validateUrl]}
-              />
-              <InputErrorMessage error={errors.imageUrl} />
+            <h2 className="title-text mt-8 mb-4">New DAO{"'"}s tokenomics</h2>
+            <div className="flex gap-2 items-center mt-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                type="button"
+                onClick={() => setTokenMode(TokenMode.Create)}
+                className={`${
+                  tokenMode === TokenMode.Create
+                    ? ''
+                    : 'bg-transparent text-secondary'
+                }`}
+              >
+                Create new token
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                type="button"
+                onClick={() => setTokenMode(TokenMode.UseExisting)}
+                className={`${
+                  tokenMode === TokenMode.UseExisting
+                    ? ''
+                    : 'bg-transparent text-secondary'
+                }`}
+              >
+                Use existing token
+              </Button>
             </div>
-          </div>
-
-          <div className="tabs mt-8">
-            <button
-              className={
-                'tab tab-lifted tab-lg' +
-                (tokenMode == TokenMode.Create ? ' tab-active' : '')
-              }
-              onClick={() => setTokenMode(TokenMode.Create)}
-              type="button"
-            >
-              Create new token
-            </button>
-            <button
-              className={
-                'tab tab-lifted tab-lg' +
-                (tokenMode == TokenMode.UseExisting ? ' tab-active' : '')
-              }
-              onClick={() => setTokenMode(TokenMode.UseExisting)}
-              type="button"
-            >
-              Use existing token
-            </button>
-            <div className="flex-1 cursor-default tab tab-lifted"></div>
-          </div>
-
-          <div className="border-r border-b border-l border-solid p-3 border-base-300 rounded-b-lg">
-            {tokenMode == TokenMode.Create ? (
-              <>
-                <div className="form-control">
-                  <InputLabel name="Token Name" />
-                  <TextInput
-                    label="tokenName"
-                    register={register}
-                    error={errors.tokenName}
-                    validation={[isValidName]}
-                  />
-                  <InputErrorMessage error={errors.tokenName} />
-                </div>
-
-                <div className="form-control">
-                  <InputLabel name="Token Symbol" />
-                  <TextInput
-                    label="tokenSymbol"
-                    register={register}
-                    error={errors.tokenSymbol}
-                    validation={[isValidTicker]}
-                  />
-                  <InputErrorMessage error={errors.tokenSymbol} />
-                </div>
-
-                <h2 className="mt-8 mb-2 text-lg">Token distribution</h2>
-
-                <div className="grid grid-cols-3 gap-2 mt-3">
-                  <div className="col-span-3">
-                    <div className="flex flex-row justify-between">
-                      <div className="form-control">
-                        <InputLabel name="Initial treasury balance" />
-                        <NumberInput
-                          label="daoInitialBalance"
-                          register={register}
-                          error={errors.daoInitialBalance}
-                          validation={[validateRequired, validateNonNegative]}
-                          defaultValue="0"
-                          step={0.000001}
-                          onChange={(e) => {
-                            const val = e?.target?.value
-                            setDaoInitialBalance(Number(val))
+            <FormCard>
+              {tokenMode === TokenMode.Create && (
+                <div className="grid grid-cols-4 gap-3">
+                  <div className="col-span-1 flex gap-2">
+                    <div className="flex flex-col gap-2">
+                      <InputLabel name="Token designs" mono />
+                      <button
+                        className="flex flex-row gap-2 group items-center"
+                        type="button"
+                        onClick={() => setShowTokenImageModal(true)}
+                      >
+                        <div
+                          className="rounded-full flex items-center justify-center border border-inactive w-8 h-8 group-hover:ring transition bg-center bg-cover"
+                          style={{
+                            backgroundImage: `url(${tokenImage})`,
                           }}
-                        />
-                        <InputErrorMessage error={errors.daoInitialBalance} />
-                      </div>
-                      <div className="flex flex-col flex-end items-end">
-                        <InputLabel name="Total token supply" />
-                        <div className="w-min">
-                          {totalTokenSupply.toLocaleString(undefined)}
+                        >
+                          <PlusIcon className="w-4 h-4" />
                         </div>
-                      </div>
+                        <p className="caption-text">Add an image</p>
+                      </button>
+                      {showTokenImageModal && (
+                        <ImageSelectorModal
+                          label="tokenImage"
+                          register={register}
+                          error={errors.tokenImage}
+                          validation={[validateUrl]}
+                          imageUrl={tokenImage}
+                          onClose={() => setShowTokenImageModal(false)}
+                        />
+                      )}
                     </div>
                   </div>
-                  <div className="col-span-2"></div>
-
-                  <h3 className="label-text col-span-2 text-secondary">
-                    Address
-                  </h3>
-                  <h3 className="label-text text-secondary">Amount</h3>
+                  <div className="col-span-1 flex flex-col gap-1">
+                    <InputLabel name="Symbol" mono />
+                    <TextInput
+                      label="tokenSymbol"
+                      register={register}
+                      error={errors.tokenSymbol}
+                      validation={[isValidTicker]}
+                    />
+                    <InputErrorMessage error={errors.tokenSymbol} />
+                  </div>
+                  <div className="col-span-2 flex flex-col gap-1">
+                    <InputLabel name="Name" mono />
+                    <TextInput
+                      label="tokenName"
+                      register={register}
+                      error={errors.tokenName}
+                      validation={[isValidName]}
+                    />
+                    <InputErrorMessage error={errors.tokenName} />
+                  </div>
                 </div>
-                <ul className="list-none">
-                  {[...Array(count).keys()].map((idx) => {
-                    // These labels are later used in conjunction
-                    // with `count` to extract the input addresses
-                    // and weights.
-                    const addressLabel = `address_${idx}`
-                    const weightLabel = `weight_${idx}`
-
-                    return (
-                      <li key={idx} className="grid grid-cols-3 gap-2 my-2">
-                        <div className="form-control col-span-2">
-                          <TextInput
-                            label={addressLabel}
-                            register={register}
-                            error={errors[addressLabel]}
-                            validation={[
-                              validateAddress as Validate<string | boolean>,
-                              validateRequired,
-                            ]}
-                          />
-                          <InputErrorMessage error={errors[addressLabel]} />
-                        </div>
-                        <div className="form-control">
-                          <NumberInput
-                            label={weightLabel}
-                            register={register}
-                            error={errors[weightLabel]}
-                            validation={[
-                              validateRequired,
-                              validatePositive as Validate<string | boolean>,
-                            ]}
-                            defaultValue="1"
-                            step={0.000001}
-                            onChange={(e) => {
-                              const val = e?.target?.value
-                              setTokenWeights((weights) => {
-                                const newWeights = [...weights]
-                                while (idx >= newWeights.length) {
-                                  newWeights.push(1)
-                                }
-                                newWeights[idx] = Number(val)
-                                return newWeights
-                              })
-                            }}
-                          />
-                          <InputErrorMessage error={errors[weightLabel]} />
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-                <PlusMinusButton
-                  onPlus={() => {
-                    setCount(count + 1)
-                    setTokenWeights((weights) => {
-                      const newWeights = [...weights, 1]
-                      return newWeights
-                    })
-                  }}
-                  onMinus={() => {
-                    setCount(count - 1)
-                    setTokenWeights((weights) => {
-                      const newWeights = [...weights]
-                      newWeights.pop()
-                      return newWeights
-                    })
-                  }}
-                  disableMinus={count <= 1}
-                />
+              )}
+              {tokenMode === TokenMode.UseExisting && (
+                <div className="flex gap-3">
+                  <div className="flex items-center basis-1/4">
+                    <InputLabel name="Existing token address" mono />
+                  </div>
+                  <div className="flex flex-col basis-3/4">
+                    <AddressInput
+                      label="existingTokenAddress"
+                      register={register}
+                      error={errors.existingTokenAddress}
+                      validation={[validateContractAddress, validateRequired]}
+                    />
+                    <InputErrorMessage error={errors.existingTokenAddress} />
+                  </div>
+                </div>
+              )}
+            </FormCard>
+            {tokenMode === TokenMode.Create && (
+              <>
+                {' '}
+                <h2 className="title-text mt-8 mb-4">Distribution</h2>
+                <FormCard>
+                  <div className="flex gap-3 justify-between items-center py-3">
+                    <p className="primary-text">DAO Initial Balance</p>
+                    <div className="flex flex-col gap-1 basis-3/5">
+                      <NumberInput
+                        onPlusMinus={[
+                          () =>
+                            setValue(
+                              'daoInitialBalance',
+                              (Number(daoInitialBalance) + 1).toString()
+                            ),
+                          () =>
+                            setValue(
+                              'daoInitialBalance',
+                              (Number(daoInitialBalance) - 1).toString()
+                            ),
+                        ]}
+                        label="daoInitialBalance"
+                        register={register}
+                        error={errors.daoInitialBalance}
+                        validation={[validateRequired, validateNonNegative]}
+                        defaultValue="0"
+                        step={0.000001}
+                      />
+                      <InputErrorMessage error={errors.daoInitialBalance} />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-8 h-8 rounded-full border border-default bg-center bg-cover"
+                        style={{
+                          backgroundImage: `url(${tokenImage})`,
+                        }}
+                      ></div>
+                      <p className="body-text">{tokenSymbol}</p>
+                    </div>
+                  </div>
+                </FormCard>
+                {fields.map((field, index) => {
+                  const amount = watch(`balances.${index}.amount`)
+                  return (
+                    <TokenAmountInput
+                      onPlusMinus={[
+                        () =>
+                          setValue(
+                            `balances.${index}.amount`,
+                            (Number(amount) + 1).toString()
+                          ),
+                        () =>
+                          setValue(
+                            `balances.${index}.amount`,
+                            (Number(amount) - 1).toString()
+                          ),
+                      ]}
+                      amountLabel={`balances.${index}.amount`}
+                      tokenImage={tokenImage}
+                      addrLabel={`balances.${index}.addr`}
+                      onRemove={() => remove(index)}
+                      tokenSymbol={tokenSymbol}
+                      hideRemove={fields.length === 1}
+                      title={`Recepient ${index}`}
+                      key={field.id}
+                      register={register}
+                      amountError={
+                        (errors.balances &&
+                          errors.balances[index] &&
+                          errors.balances[index].amount) ||
+                        undefined
+                      }
+                      addrError={
+                        (errors.balances &&
+                          errors.balances[index] &&
+                          errors.balances[index].addr) ||
+                        undefined
+                      }
+                    />
+                  )
+                })}
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => append({ addr: '', amount: '0' })}
+                >
+                  <PlusIcon className="w-3" /> Add an address
+                </Button>
               </>
-            ) : (
-              <div className="form-control">
-                <InputLabel name="Existing token address" />
-                <TextInput
-                  label="existingTokenAddress"
-                  register={register}
-                  error={errors.existingTokenAddress}
-                  validation={[validateContractAddress, validateRequired]}
-                />
-                <InputErrorMessage error={errors.existingTokenAddress} />
-              </div>
             )}
-          </div>
-
-          <h2 className="mt-8 text-lg">
-            <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Voting configuration
-          </h2>
-
-          <div className="tabs mt-8 mx-3">
-            <button
-              className={
-                'tab tab-lifted tab-lg' +
-                (thresholdMode == ThresholdMode.ThresholdQuorum
-                  ? ' tab-active'
-                  : '')
-              }
-              onClick={() => setThresholdMode(ThresholdMode.ThresholdQuorum)}
-              type="button"
-            >
-              Threshold and quorum
-            </button>
-            <button
-              className={
-                'tab tab-lifted tab-lg' +
-                (thresholdMode == ThresholdMode.Threshold ? ' tab-active' : '')
-              }
-              onClick={() => setThresholdMode(ThresholdMode.Threshold)}
-              type="button"
-            >
-              Absolute threshold
-            </button>
-            <div className="flex-1 cursor-default tab tab-lifted"></div>
-          </div>
-
-          <div className="mx-3 border-r border-b border-l border-solid p-3 border-base-300 rounded-b-lg">
-            {thresholdMode == ThresholdMode.ThresholdQuorum ? (
-              <div className="grid grid-cols-2 gap-x-3">
-                <div className="form-control">
-                  <InputLabel name="Passing Threshold (%)" />
+            <h2 className="title-text mt-8 mb-4">Voting configuration</h2>
+            <FormCard>
+              <div className="grid grid-cols-5 gap-y-8 gap-x-1">
+                <div className="col-span-3">
+                  <p className="body-text">Passing threshold (%)</p>
+                  <p className="caption-text">
+                    Percentage of yes votes required for a proposal to pass.
+                  </p>
+                </div>
+                <div className="col-span-2 flex flex-col gap-1">
                   <NumberInput
+                    onPlusMinus={[
+                      () =>
+                        setValue(
+                          'threshold',
+                          (Number(threshold) + 1).toString()
+                        ),
+                      () =>
+                        setValue(
+                          'threshold',
+                          (Number(threshold) - 1).toString()
+                        ),
+                    ]}
                     label="threshold"
                     register={register}
                     error={errors.threshold}
                     validation={[validateRequired, validatePercent]}
                     defaultValue="51"
                     step="any"
-                    onChange={(e) => setPassThreshold(Number(e?.target?.value))}
                   />
                   <InputErrorMessage error={errors.threshold} />
                 </div>
-                <div className="form-control">
-                  <InputLabel name="Quorum (%)" />
+
+                <div className="col-span-3">
+                  <p className="body-text">Quorum (%)</p>
+                  <p className="caption-text">
+                    Minimum percentage of voting power that must participate in
+                    a proposal for it to pass.
+                  </p>
+                </div>
+                <div className="col-span-2 flex flex-col gap-1">
                   <NumberInput
+                    onPlusMinus={[
+                      () => setValue('quorum', (Number(quorum) + 1).toString()),
+                      () => setValue('quorum', (Number(quorum) - 1).toString()),
+                    ]}
                     label="quorum"
                     register={register}
                     error={errors.quorum}
@@ -651,108 +546,97 @@ const CreateDao: NextPage = () => {
                   />
                   <InputErrorMessage error={errors.quorum} />
                 </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-x-3">
-                <div className="form-control">
-                  <InputLabel name="Passing Threshold (%)" />
+
+                <div className="col-span-3">
+                  <p className="body-text">Voting duration (seconds)</p>
+                  <p className="caption-text">
+                    Amount of time proposals will remain open for voting.
+                  </p>
+                </div>
+                <div className="col-span-1 flex flex-col gap-2">
                   <NumberInput
-                    label="threshold"
+                    label="duration"
                     register={register}
-                    error={errors.threshold}
-                    validation={[validateRequired, validatePercent]}
-                    defaultValue="51"
-                    step="any"
-                    onChange={(e) => setPassThreshold(Number(e?.target?.value))}
+                    error={errors.duration}
+                    defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+                    validation={[validateRequired, validatePositive]}
                   />
-                  <InputErrorMessage error={errors.threshold} />
+                  <InputErrorMessage error={errors.duration} />
+                </div>
+                <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
+                  <p className="secondary-text">
+                    {secondsToWdhms(votingPeriodSeconds)}
+                  </p>
+                </div>
+
+                <div className="col-span-3">
+                  <p className="body-text">Unstaking duration (seconds)</p>
+                  <p className="caption-text">
+                    Amount of time between unstaking and those tokens being
+                    claimable.
+                  </p>
+                </div>
+                <div className="col-span-1 flex flex-col gap-2">
+                  <NumberInput
+                    label="unstakingDuration"
+                    register={register}
+                    error={errors.unstakingDuration}
+                    validation={[validateRequired]}
+                    defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
+                  />
+                  <InputErrorMessage error={errors.unstakingDuration} />
+                </div>
+                <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
+                  <p className="secondary-text">
+                    {secondsToWdhms(unstakingDurationSeconds)}
+                  </p>
+                </div>
+
+                <div className="col-span-3">
+                  <p className="body-text">Proposal deposit</p>
+                  <p className="caption-text">
+                    Number of governance tokens that must be deposited to create
+                    a proposal.
+                  </p>
+                </div>
+                <div className="col-span-2 flex gap-1">
+                  <div className="flex flex-col gap-1 basis-1/2">
+                    <NumberInput
+                      label="deposit"
+                      register={register}
+                      error={errors.deposit}
+                      validation={[validateRequired]}
+                      step={0.000001}
+                      defaultValue="0"
+                    />
+                    <InputErrorMessage error={errors.deposit} />
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center gap-2 basis-1/2">
+                    <InputLabel name="Refund" mono />
+                    <ToggleInput label="refund" register={register} />
+                  </div>
                 </div>
               </div>
-            )}
+            </FormCard>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
-            <div className="form-control">
-              <InputLabel name="Voting Duration (seconds)" />
-              <NumberInput
-                label="duration"
-                register={register}
-                error={errors.duration}
-                validation={[validateRequired, validatePositive]}
-                defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
-              />
-              <InputErrorMessage error={errors.duration} />
-              <div
-                style={{
-                  textAlign: 'end',
-                  padding: '5px 0 0 17px',
-                  fontSize: ' 12px',
-                  color: 'grey',
-                }}
-              >
-                {secondsToHms(votingPeriodSeconds)}
-              </div>
-            </div>
-
-            <div className="form-control">
-              <InputLabel name="Proposal Deposit" />
-              <NumberInput
-                label="deposit"
-                register={register}
-                error={errors.deposit}
-                validation={[validateRequired]}
-                step={0.000001}
-                defaultValue="0"
-              />
-              <InputErrorMessage error={errors.deposit} />
-            </div>
-
-            <div className="form-control">
-              <InputLabel name="Unstaking Duration (seconds)" />
-              <NumberInput
-                label="unstakingDuration"
-                register={register}
-                error={errors.unstakingDuration}
-                validation={[validateRequired]}
-                defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
-              />
-              <InputErrorMessage error={errors.unstakingDuration} />
-              <div
-                style={{
-                  textAlign: 'end',
-                  padding: '5px 0 0 17px',
-                  fontSize: ' 12px',
-                  color: 'grey',
-                }}
-              >
-                {secondsToHms(unstakingDurationSeconds)}
-              </div>
-            </div>
-
-            <div className="form-control">
-              <InputLabel name="Refund Failed Proposal Deposits" />
-              <ToggleInput label="refund" register={register} />
-              <InputErrorMessage error={errors.refund} />
-            </div>
-          </div>
-          {!complete && (
-            <button
-              className={`mt-3 w-44 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg ${
-                loading ? 'loading' : ''
-              }`}
-              style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-              type="submit"
-              disabled={loading}
+          <div className="px-6 mb-8 mt-4 flex justify-end w-full">
+            <Tooltip
+              label={
+                !walletAddress ? 'Connect your wallet to submit' : undefined
+              }
             >
-              Create DAO
-            </button>
-          )}
+              <Button type="submit" loading={loading}>
+                Submit{' '}
+                <SvgAirplane color="currentColor" width="14px" height="14px" />
+              </Button>
+            </Tooltip>
+          </div>
         </form>
       </div>
 
       <div className="col-span-2">
         <div className="sticky top-0 p-6 w-full">
-          <MinorityRuleWarning memberCount={count} />
           <TooltipsDisplay selected={selectedTooltip} />
         </div>
       </div>

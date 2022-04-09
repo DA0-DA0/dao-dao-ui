@@ -6,19 +6,26 @@ import { useRouter } from 'next/router'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
-import { ScaleIcon, UsersIcon } from '@heroicons/react/outline'
-import { useForm } from 'react-hook-form'
+import { PlusIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
+import { useFieldArray, useForm, Validate } from 'react-hook-form'
+import { Button } from 'ui'
 
+import { GradientHero } from '@components/ContractView'
+import { FormCard } from '@components/FormCard'
+import SvgAirplane from '@components/icons/Airplane'
+import { ImageSelector } from '@components/input/ImageSelector'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { NumberInput } from '@components/input/NumberInput'
+import { TextareaInput } from '@components/input/TextAreaInput'
 import { TextInput } from '@components/input/TextInput'
+import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
-import { PlusMinusButton } from 'components/PlusMinusButton'
 import {
   multisigCreateTooltipsDefault,
   multisigCreateTooltipsGetter,
@@ -29,16 +36,15 @@ import {
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { secondsToHms } from 'util/conversion'
+import { secondsToWdhms } from 'util/conversion'
 import {
-  validateAddress,
   validatePercent,
   validatePositive,
   validateRequired,
-  validateUrl,
 } from 'util/formValidation'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
+import '@reach/tooltip/styles.css'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -51,23 +57,29 @@ export interface MultisigCreateData {
 
   imageUrl: string
 
-  [key: string]: string
+  balances: { addr: string; amount: string }[]
 }
 
 const CreateMultisig: NextPage = () => {
   const router = useRouter()
 
   const [loading, setLoading] = useState(false)
-  // The number of addresses involved in the multisig.
-  const [count, setCount] = useState(1)
   const [error, setError] = useState('')
 
   const {
     watch,
+    control,
+    setValue,
     register: formRegister,
     handleSubmit,
     formState: { errors },
   } = useForm<MultisigCreateData>()
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'balances',
+  })
+  useEffect(() => append({ addr: '', amount: '0' }), [append])
 
   const [selectedTooltip, register] = useTooltipsRegister(
     formRegister,
@@ -76,6 +88,8 @@ const CreateMultisig: NextPage = () => {
   )
 
   const votingPeriodSeconds = watch('duration')
+  const imageUrl = watch('imageUrl')
+  const threshold = watch('threshold')
 
   const walletAddress = useRecoilValue(walletAddressSelector)
   const signingClient = useRecoilValue(cosmWasmSigningClient)
@@ -90,20 +104,9 @@ const CreateMultisig: NextPage = () => {
     setError('')
     setLoading(true)
 
-    function getStringValue(key: string): string {
-      const val = data[key]
-      if (typeof val === 'string') {
-        return val.trim()
-      }
-      return ''
-    }
-    function getIndexedValue(prefix: string, index: number): string {
-      return getStringValue(`${prefix}_${index}`)
-    }
-    const voters = [...Array(count)].map((_item, index) => ({
-      addr: getIndexedValue('address', index),
-      // Convert human readable amount to micro denom amount
-      weight: Number(getIndexedValue('weight', index)),
+    const voters = data.balances.map(({ addr, amount }) => ({
+      addr,
+      weight: Number(amount),
     }))
 
     const imgUrl = data.imageUrl !== '' ? data.imageUrl : undefined
@@ -147,159 +150,158 @@ const CreateMultisig: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="p-6 w-full col-span-4">
-        <Breadcrumbs
-          crumbs={[
-            ['/starred', 'Home'],
-            [router.asPath, 'Create multisig'],
-          ]}
-        />
-        <form
-          className="mb-8"
-          onSubmit={handleSubmit<MultisigCreateData>(onSubmit)}
-        >
-          <h2 className="pl-4 mt-10 text-lg">Name and description</h2>
-          <div className="px-3">
-            <div className="form-control">
-              <InputLabel name="Name" />
-              <TextInput
-                label="name"
-                register={register}
-                error={errors.name}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.name} />
-            </div>
+      <form className="col-span-4" onSubmit={handleSubmit(onSubmit)}>
+        <GradientHero>
+          <Breadcrumbs
+            crumbs={[
+              ['/starred', 'Home'],
+              [router.asPath, 'Create Multisig'],
+            ]}
+          />
+          <ImageSelector
+            imageUrl={imageUrl}
+            label="imageUrl"
+            register={register}
+            error={errors.imageUrl}
+          />
 
-            <div className="form-control">
-              <InputLabel name="Description" />
-              <TextInput
-                label="description"
-                register={register}
-                error={errors.description}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-            <div className="form-control">
-              <InputLabel name="Image URL (optional)" />
-              <TextInput
-                label="imageUrl"
-                register={register}
-                error={errors.imageUrl}
-                validation={[validateUrl]}
-              />
-              <InputErrorMessage error={errors.imageUrl} />
-            </div>
-          </div>
-
-          <h2 className="mb-2 text-lg mt-8">
-            <UsersIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Members
-          </h2>
-
-          <div className="px-3">
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              <h3 className="label-text col-span-2 text-secondary">Address</h3>
-              <h3 className="label-text text-secondary">Weight</h3>
-            </div>
-            <ul className="list-none">
-              {[...Array(count).keys()].map((idx) => {
-                // These labels are later used in conjunction
-                // with `count` to extract the input addresses
-                // and weights.
-                const addressLabel = `address_${idx}`
-                const weightLabel = `weight_${idx}`
-
-                return (
-                  <li key={idx} className="grid grid-cols-3 gap-2 my-2">
-                    <div className="form-control col-span-2">
-                      <TextInput
-                        label={addressLabel}
-                        register={register}
-                        error={errors[addressLabel]}
-                        validation={[validateAddress, validateRequired]}
-                      />
-                      <InputErrorMessage error={errors[addressLabel]} />
-                    </div>
-                    <div className="form-control">
-                      <NumberInput
-                        label={weightLabel}
-                        register={register}
-                        error={errors[weightLabel]}
-                        validation={[validateRequired, validatePositive]}
-                        defaultValue="1"
-                      />
-                      <InputErrorMessage error={errors[weightLabel]} />
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
-            <PlusMinusButton
-              onPlus={() => {
-                setCount(count + 1)
-              }}
-              onMinus={() => {
-                setCount(count - 1)
-              }}
-              disableMinus={count <= 1}
+          <div className="flex flex-col items-center justify-center max-w-prose mx-auto mt-4 rounded-lg">
+            <InputLabel name="Multisig Name" mono className="pb-1" />
+            <TextInput
+              label="name"
+              register={register}
+              error={errors.name}
+              validation={[validateRequired]}
+              className="text-center font-bold"
             />
+            <InputErrorMessage error={errors.name} />
           </div>
+        </GradientHero>
 
-          <h2 className="mt-8 text-lg">
-            <ScaleIcon className="inline w-5 h-5 mr-2 mb-1" />
-            Voting configuration
-          </h2>
-          <div className="grid grid-cols-2 gap-x-3 mb-8 px-3 mt-1">
-            <div className="form-control">
-              <InputLabel name="Passing Threshold" />
-              <NumberInput
-                label="threshold"
-                register={register}
-                error={errors.threshold}
-                validation={[validateRequired, validatePercent]}
-                step={0.01}
-                defaultValue="1"
-              />
-              <InputErrorMessage error={errors.threshold} />
-            </div>
+        <div className="px-8">
+          <div className="flex flex-col gap-1">
+            <InputLabel name="Description" mono />
+            <TextareaInput
+              label="description"
+              register={register}
+              error={errors.description}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors.description} />
+          </div>
+          <h2 className="title-text mt-8 mb-4">Members</h2>
+          {fields.map((field, index) => {
+            const amount = watch(`balances.${index}.amount`)
 
-            <div className="form-control">
-              <InputLabel name="Voting Duration (seconds)" />
-              <NumberInput
-                label="duration"
+            return (
+              <TokenAmountInput
+                onPlusMinus={[
+                  () =>
+                    setValue(
+                      `balances.${index}.amount`,
+                      (Number(amount) + 1).toString()
+                    ),
+                  () =>
+                    setValue(
+                      `balances.${index}.amount`,
+                      (Number(amount) - 1).toString()
+                    ),
+                ]}
+                amountLabel={`balances.${index}.amount`}
+                addrLabel={`balances.${index}.addr`}
+                onRemove={() => remove(index)}
+                hideRemove={fields.length === 1}
+                title={`Member ${index} weight`}
+                key={field.id}
                 register={register}
-                error={errors.duration}
-                validation={[validateRequired, validatePositive]}
-                defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+                amountError={
+                  (errors.balances &&
+                    errors.balances[index] &&
+                    errors.balances[index].amount) ||
+                  undefined
+                }
+                addrError={
+                  (errors.balances &&
+                    errors.balances[index] &&
+                    errors.balances[index].addr) ||
+                  undefined
+                }
               />
-              <InputErrorMessage error={errors.duration} />
-              <div
-                style={{
-                  textAlign: 'end',
-                  padding: '5px 0 0 17px',
-                  fontSize: ' 12px',
-                  color: 'grey',
-                }}
-              >
-                {secondsToHms(votingPeriodSeconds)}
+            )
+          })}
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => append({ addr: '', amount: '0' })}
+          >
+            <PlusIcon className="w-3" /> Add an address
+          </Button>
+          <h2 className="title-text mt-8 mb-4">Voting configuration</h2>
+          <FormCard>
+            <div className="grid grid-cols-5 gap-y-8 gap-x-1">
+              <div className="col-span-3">
+                <p className="body-text">Passing weight</p>
+                <p className="caption-text">
+                  Number of yes votes required for a proposal to pass.
+                </p>
+              </div>
+              <div className="col-span-2 flex flex-col gap-1">
+                <NumberInput
+                  onPlusMinus={[
+                    () =>
+                      setValue('threshold', (Number(threshold) + 1).toString()),
+                    () =>
+                      setValue('threshold', (Number(threshold) - 1).toString()),
+                  ]}
+                  label="threshold"
+                  register={register}
+                  error={errors.threshold}
+                  validation={[validateRequired, validatePercent]}
+                  defaultValue="1"
+                  step="any"
+                />
+                <InputErrorMessage error={errors.threshold} />
+              </div>
+
+              <div className="col-span-3">
+                <p className="body-text">Voting duration (seconds)</p>
+                <p className="caption-text">
+                  Amount of time proposals will remain open for voting.
+                </p>
+              </div>
+              <div className="col-span-1 flex flex-col gap-2">
+                <NumberInput
+                  label="duration"
+                  register={register}
+                  error={errors.duration}
+                  defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+                  validation={[
+                    validateRequired,
+                    validatePositive as Validate<string>,
+                  ]}
+                />
+                <InputErrorMessage error={errors.duration} />
+              </div>
+              <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
+                <p className="secondary-text">
+                  {secondsToWdhms(votingPeriodSeconds)}
+                </p>
               </div>
             </div>
-          </div>
-
-          <button
-            className={`mt-3 w-48 btn btn-primary btn-md font-semibold normal-case hover:text-base-100 text-lg ${
-              loading ? 'loading' : ''
-            }`}
-            style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
-            type="submit"
-            disabled={loading}
+          </FormCard>
+        </div>
+        <div className="px-6 mb-8 mt-4 flex justify-end w-full">
+          <Tooltip
+            label={!walletAddress ? 'Connect your wallet to submit' : undefined}
           >
-            Create multisig
-          </button>
-        </form>
-      </div>
+            <Button type="submit" loading={loading} disabled={!walletAddress}>
+              Submit{' '}
+              <SvgAirplane color="currentColor" width="14px" height="14px" />
+            </Button>
+          </Tooltip>
+        </div>
+      </form>
+
       <div className="col-span-2">
         <div className="sticky top-0 p-6 w-full">
           <TooltipsDisplay selected={selectedTooltip} />

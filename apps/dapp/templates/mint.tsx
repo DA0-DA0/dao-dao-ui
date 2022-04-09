@@ -49,7 +49,8 @@ export const MintComponent: TemplateComponent = ({
   multisig,
   readOnly,
 }) => {
-  const { register } = useFormContext()
+  const { register, watch, setValue } = useFormContext()
+  const amount = watch(getLabel('amount'))
 
   const info = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
@@ -58,19 +59,25 @@ export const MintComponent: TemplateComponent = ({
   const govTokenDenom = config.gov_token_symbol
 
   return (
-    <div className="flex justify-between items-center bg-base-300 p-3 rounded-lg my-2">
+    <div className="flex justify-between items-center bg-primary p-3 rounded-lg my-2">
       <div className="flex items-center gap-4 gap-y-2 flex-wrap">
-        <div className="flex items-center flex-wrap gap-x-2 gap-y-2 w-24">
-          <h2 className="text-3xl">🍵</h2>
+        <div className="flex items-center flex-wrap gap-2 w-24">
+          <h2 className="text-3xl">🌿</h2>
           <h2>Mint</h2>
         </div>
         <div className="flex flex-col">
           <NumberInput
+            small
+            onPlusMinus={[
+              () =>
+                setValue(getLabel('amount'), (Number(amount) + 1).toString()),
+              () =>
+                setValue(getLabel('amount'), (Number(amount) - 1).toString()),
+            ]}
             label={getLabel('amount')}
             register={register}
             error={errors?.amount}
             validation={[validateRequired, validatePositive]}
-            border={false}
             disabled={readOnly}
           />
           <InputErrorMessage error={errors?.amount} />
@@ -81,14 +88,13 @@ export const MintComponent: TemplateComponent = ({
           </p>
         )}
         <div className="flex gap-2 items-center">
-          <ArrowRightIcon className="h-4" />
+          <p className="secondary-text font-mono">{'->'}</p>
           <div className="flex flex-col">
             <AddressInput
               label={getLabel('to')}
               register={register}
               error={errors?.to}
               validation={[validateRequired, validateAddress]}
-              border={false}
               disabled={readOnly}
             />
             <InputErrorMessage error={errors?.to} />

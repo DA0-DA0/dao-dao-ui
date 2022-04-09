@@ -91,10 +91,10 @@ export const TokenSelector = ({
   const tokenAddress = watch(getLabel('address'))
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-base-300">
+    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-4xl">{symbol}</h2>
+          <h2 className="text-3xl">{symbol}</h2>
           <h2>{title}</h2>
         </div>
         {onRemove && (
@@ -110,7 +110,6 @@ export const TokenSelector = ({
           register={register}
           error={errors?.to}
           validation={[validateRequired, validateContractAddress]}
-          border={false}
           disabled={readOnly}
         />
         <InputErrorMessage error={errors?.to} />

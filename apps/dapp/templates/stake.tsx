@@ -54,7 +54,7 @@ export interface StakeData {
 }
 
 export const stakeDefaults = (
-  walletAddress: string,
+  _walletAddress: string,
   _contractConfig: Config
 ): StakeData => {
   const denom = convertDenomToHumanReadableDenom(
@@ -124,10 +124,10 @@ export const StakeComponent: TemplateComponent = ({
   }
 
   return (
-    <div className="bg-base-300 p-3 rounded-lg my-2">
+    <div className="bg-primary p-3 rounded-lg my-2">
       <div className="flex justify-between w-full">
-        <div className="flex items-center flex-wrap gap-x-2 gap-y-2 w-24">
-          <h2 className="text-4xl mr-2">📤</h2>
+        <div className="flex items-center flex-wrap gap-2 w-24">
+          <h2 className="text-3xl">📤</h2>
           <h2>Stake</h2>
         </div>
         {onRemove && (
@@ -143,7 +143,6 @@ export const StakeComponent: TemplateComponent = ({
           register={register}
           error={errors?.stakeType}
           defaultValue={stakeActions[0].type}
-          border={false}
           disabled={readOnly}
         >
           {stakeActions.map(({ name, type }, idx) => (
@@ -165,7 +164,6 @@ export const StakeComponent: TemplateComponent = ({
                 (amount: string) => validatePossibleSpendWrapper(denom, amount),
               ]}
               step={0.000001}
-              border={false}
               disabled={readOnly}
             />
 
@@ -176,7 +174,6 @@ export const StakeComponent: TemplateComponent = ({
               validation={[
                 (denom: string) => validatePossibleSpendWrapper(denom, amount),
               ]}
-              border={false}
               disabled={readOnly}
             >
               {nativeBalances.length !== 0 ? (
@@ -208,7 +205,6 @@ export const StakeComponent: TemplateComponent = ({
               register={register}
               error={errors?.fromValidator}
               validation={[validateValidatorAddress]}
-              border={false}
               disabled={readOnly}
             />
           </div>
@@ -228,7 +224,6 @@ export const StakeComponent: TemplateComponent = ({
           register={register}
           error={errors?.validator}
           validation={[validateRequired, validateValidatorAddress]}
-          border={false}
           disabled={readOnly}
         />
       </div>
@@ -237,9 +232,9 @@ export const StakeComponent: TemplateComponent = ({
         <InputErrorMessage error={errors?.validator} />
       </div>
 
-      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-base-200">
+      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-disabled">
         <InformationCircleIcon className="h-4" />
-        <p>
+        <p className="body-text">
           This template is new and in beta. Double check the generated JSON
           before executing.
         </p>
@@ -250,7 +245,7 @@ export const StakeComponent: TemplateComponent = ({
 
 export const transformStakeToCosmos = (
   self: StakeData,
-  props: ToCosmosMsgProps
+  _props: ToCosmosMsgProps
 ) => {
   if (self.stakeType === 'withdraw_delegator_reward') {
     return makeDistributeMessage(self.validator)

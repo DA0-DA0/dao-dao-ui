@@ -2,13 +2,8 @@ import { useCallback, useState } from 'react'
 
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { Wallet as SvgWallet } from '@dao-dao/icons'
-import {
-  CashIcon,
-  CheckCircleIcon,
-  LogoutIcon,
-  PaperClipIcon,
-} from '@heroicons/react/outline'
+import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 
 import { Button } from '@components'
 
@@ -20,6 +15,7 @@ import {
   chainDisabledAtom,
   keplrAccountNameSelector,
   walletChainBalanceSelector,
+  noKeplrAccountAtom,
 } from 'selectors/cosm'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
 import { CHAIN_ID, NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
@@ -28,10 +24,13 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from 'util/conversion'
 
+import SvgCopy from './icons/Copy'
+import SvgWallet from './icons/Wallet'
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <div className="tooltip tooltip-left" data-tip="Copy wallet address">
+    <Tooltip label="Copy wallet address">
       <button
         type="button"
         onClick={() => {
@@ -43,38 +42,20 @@ function CopyButton({ text }: { text: string }) {
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
-          <PaperClipIcon className="w-[18px]" />
+          <SvgCopy color="currentColor" height="18px" width="18px" />
         )}
       </button>
-    </div>
+    </Tooltip>
   )
 }
 
 function DisconnectButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="tooltip tooltip-left" data-tip="Disconnect wallet">
+    <Tooltip label="Disconnect wallet">
       <button type="button" onClick={onClick}>
         <LogoutIcon className="w-[18px]" />
       </button>
-    </div>
-  )
-}
-
-function NetworkText({ chainId }: { chainId: string }) {
-  let networkText
-  switch (chainId) {
-    case 'juno-1':
-      networkText = 'Mainnet'
-      break
-    case 'uni-2':
-      networkText = 'Testnet'
-      break
-    default:
-      networkText = chainId
-  }
-
-  return (
-    <span className="text-xs text-center align-baseline">{networkText}</span>
+    </Tooltip>
   )
 }
 
@@ -83,6 +64,7 @@ function WalletConnect() {
   const setInstallWarningVisible = useSetRecoilState(installWarningVisibleAtom)
   const setChainWarningVisible = useSetRecoilState(chainWarningVisibleAtom)
   const setChainDisabled = useSetRecoilState(chainDisabledAtom)
+  const setNoKeplrAccount = useSetRecoilState(noKeplrAccountAtom)
   const walletAddress = useRecoilValue(walletAddressSelector)
   const walletName = useRecoilValue(keplrAccountNameSelector)
   const walletBalance = useRecoilValue(walletChainBalanceSelector)
@@ -90,8 +72,7 @@ function WalletConnect() {
     walletBalance,
     NATIVE_DECIMALS
   )
-  const chainDenomHuman =
-    convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
+  const chainDenomHuman = convertDenomToHumanReadableDenom(NATIVE_DENOM)
 
   const handleConnect = useCallback(async () => {
     if (!wallet) {
@@ -103,9 +84,14 @@ function WalletConnect() {
           await (window as any).keplr.enable(CHAIN_ID)
           setInstallWarningVisible(false)
           setWallet('keplr')
-        } catch {
-          setChainWarningVisible(true)
-          setChainDisabled(true)
+        } catch (e: any) {
+          console.log(e)
+          if (e.message === "key doesn't exist") {
+            setNoKeplrAccount(true)
+          } else {
+            setChainWarningVisible(true)
+            setChainDisabled(true)
+          }
         }
       }
     } else {
@@ -116,18 +102,19 @@ function WalletConnect() {
     wallet,
     setChainWarningVisible,
     setInstallWarningVisible,
+    setNoKeplrAccount,
     setWallet,
   ])
 
   if (walletAddress) {
     return (
-      <div className="w-full relative py-2 px-4 my-4 border border-secondary hover:border-accent rounded-lg group">
+      <div className="w-full relative py-2 px-4 my-4 bg-primary hover:outline hover:outline-brand rounded-lg group relative">
         <div className="flex items-center justify-left gap-4 h-full w-full">
           <SvgWallet width="20px" height="20px" fill="currentColor" />
-          <div className="font-mono text-sm">
+          <div className="link-text">
             <span>{walletName}</span>
             <br />
-            <span className="text-accent text-light">
+            <span className="text-secondary capitalize">
               {walletBalanceHuman} {chainDenomHuman}
             </span>
           </div>
@@ -136,21 +123,16 @@ function WalletConnect() {
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
         </div>
-        <div className="absolute right-2 bottom-2.5 flex gap-1 transition opacity-0 group-hover:opacity-100">
-          <NetworkText chainId={CHAIN_ID} />
-        </div>
       </div>
     )
   }
-
   return (
-    <div className="my-4 ">
-      <Button
-        full
-        onClick={handleConnect}
-        iconBefore={<CashIcon className="inline w-4 h-4" />}
-      >
-        Connect wallet
+    <div className="my-4">
+      <Button full onClick={handleConnect}>
+        <>
+          <SvgWallet className="inline w-5 mr-1" fill="currentColor" />
+          <p className="text-sm my-2">connect wallet</p>
+        </>
       </Button>
     </div>
   )

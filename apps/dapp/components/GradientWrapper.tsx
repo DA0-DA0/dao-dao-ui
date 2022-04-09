@@ -7,7 +7,7 @@ import { LogoNoBorder } from './Logo'
 export function GradientWrapper({ children }: { children: ReactNode }) {
   const theme = useThemeContext()
   const bg =
-    theme.theme === 'junoDark'
+    theme.theme === 'dark'
       ? 'url(/gradients/BG-Gradient-Dark@2x.png)'
       : 'url(/gradients/BG-Gradient-Light@2x.png)'
 

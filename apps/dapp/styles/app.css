@@ -1,7 +1,0 @@
-.dao-input {
-  @apply input input-bordered rounded box-border p-3 w-full text-xl;
-}
-
-.dao-input-error {
-  @apply input input-bordered rounded box-border p-3 w-full text-xl input-error;
-}

@@ -4,6 +4,7 @@ import {
   ProposalResponse,
   ProposalTallyResponse,
   VoteInfo,
+  VoteResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import {
   contractProposalMapAtom,
@@ -147,32 +148,29 @@ export const proposalStartBlockSelector = selectorFamily<
     },
 })
 
-export const walletVotedSelector = selectorFamily<
-  boolean,
+export const walletVoteSelector = selectorFamily<
+  'yes' | 'no' | 'abstain' | 'veto' | undefined,
   { contractAddress: string; proposalId: number }
 >({
   key: 'walletHasVotedOnProposalStatusSelector',
   get:
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
-      // Refresh when new updates occur.
-      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
       const client = get(cosmWasmClient)
       const wallet = get(walletAddress)
       if (!client || !wallet) {
-        return false
+        return undefined
       }
 
-      const events = await client.searchTx({
-        tags: [
-          { key: 'wasm._contract_address', value: contractAddress },
-          { key: 'wasm.proposal_id', value: proposalId.toString() },
-          { key: 'wasm.action', value: 'vote' },
-          { key: 'wasm.sender', value: wallet },
-        ],
-      })
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
-      return events.length != 0
+      const vote = (await client.queryContractSmart(contractAddress, {
+        vote: { proposal_id: proposalId, voter: wallet },
+      })) as VoteResponse
+      if (!vote.vote) {
+        return undefined
+      }
+      return vote.vote.vote
     },
 })
 

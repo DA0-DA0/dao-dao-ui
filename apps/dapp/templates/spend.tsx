@@ -20,7 +20,7 @@ import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { NumberInput } from '@components/input/NumberInput'
 import { SelectInput } from '@components/input/SelectInput'
-import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 import {
   cw20TokensList,
@@ -59,7 +59,7 @@ export const SpendComponent: TemplateComponent = ({
   errors,
   readOnly,
 }) => {
-  const { register, watch, clearErrors } = useFormContext()
+  const { register, watch, clearErrors, setValue } = useFormContext()
 
   const tokenList = useRecoilValue(cw20TokensList(contractAddress))
   const cw20Info = useRecoilValue(
@@ -132,13 +132,26 @@ export const SpendComponent: TemplateComponent = ({
   }
 
   return (
-    <div className="flex justify-between items-center bg-base-300 p-3 rounded-lg my-2">
+    <div className="flex justify-between items-center bg-primary p-3 rounded-lg my-2">
       <div className="flex items-center gap-4 flex-wrap">
-        <div className="flex items-center flex-wrap gap-x-2 gap-y-2 w-24">
-          <h2 className="text-4xl">💵</h2>
+        <div className="flex items-center flex-wrap gap-2 w-24">
+          <h2 className="text-3xl">💵</h2>
           <h2>Spend</h2>
         </div>
         <NumberInput
+          small
+          onPlusMinus={[
+            () =>
+              setValue(
+                getLabel('amount'),
+                (Number(spendAmount) + 1).toString()
+              ),
+            () =>
+              setValue(
+                getLabel('amount'),
+                (Number(spendAmount) - 1).toString()
+              ),
+          ]}
           label={getLabel('amount')}
           register={register}
           error={errors?.amount}
@@ -149,7 +162,6 @@ export const SpendComponent: TemplateComponent = ({
               validatePossibleSpendWrapper(spendDenom, amount),
           ]}
           step={0.000001}
-          border={false}
           disabled={readOnly}
         />
         <SelectInput
@@ -160,7 +172,6 @@ export const SpendComponent: TemplateComponent = ({
           validation={[
             (denom: string) => validatePossibleSpendWrapper(denom, spendAmount),
           ]}
-          border={false}
           disabled={readOnly}
         >
           {nativeBalances.map(({ denom }, idx) => {
@@ -177,14 +188,13 @@ export const SpendComponent: TemplateComponent = ({
           ))}
         </SelectInput>
         <div className="flex gap-2 items-center">
-          <ArrowRightIcon className="h-4" />
+          <p className="secondary-text font-mono">{'->'}</p>
           <div className="flex flex-col">
             <AddressInput
               label={getLabel('to')}
               register={register}
               error={errors?.to}
               validation={[validateRequired, validateAddress]}
-              border={false}
               disabled={readOnly}
             />
           </div>

@@ -1,11 +1,15 @@
-import { Children, MouseEventHandler, ReactNode, Suspense } from 'react'
+import { Children, MouseEventHandler, ReactNode } from 'react'
 
 import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
+import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
+import Tooltip from '@reach/tooltip'
+import { useThemeContext } from 'ui'
+
+import { Button } from '@components'
 
 import { contractInstantiateTime } from 'selectors/contracts'
 import { isMemberSelector } from 'selectors/daos'
@@ -28,45 +32,49 @@ import { Logo, LogoNoBorder } from './Logo'
 import { ProposalList } from './ProposalList'
 
 export function GradientHero({ children }: { children: ReactNode }) {
+  const theme = useThemeContext()
+  const endStop = theme.theme === 'dark' ? '#111213' : '#FFFFFF'
+  const baseRgb = theme.accentColor
+    ? theme.accentColor.split('(')[1].split(')')[0]
+    : '73, 55, 192'
   return (
-    <div className="min-h-[40%] bg-gradient-radial-t from-accent via-base-100 p-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 flex flex-col justify-between">
-      {children}
-    </div>
-  )
-}
-
-export function TooltipWrapper({
-  tip,
-  children,
-}: {
-  tip: string
-  children: ReactNode
-}) {
-  return (
-    <div className="tooltip" data-tip={tip}>
-      {children}
+    <div
+      style={{
+        background: `linear-gradient(180deg, rgba(${baseRgb}, 0.4) 0%, rgba(17, 18, 19, 0) 100%)`,
+      }}
+    >
+      <div
+        className="p-6 flex flex-col justify-between"
+        style={{
+          background: `linear-gradient(270deg, ${endStop} 0%, rgba(17, 18, 19, 0) 50%, ${endStop} 100%)`,
+        }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
 
 export function StarButton({
-  className = '',
   pinned,
   onPin,
 }: {
-  className?: string
   pinned: boolean
   onPin: Function
 }) {
+  const { accentColor } = useThemeContext()
+
   return (
     <button
-      className={`text-left w-20 flex flex-row items-center text-sm ${
-        pinned ? ' text-accent' : ''
-      } ${className}`}
+      className="text-left w-20 flex flex-row items-center link-text text-brand"
+      style={accentColor ? { color: accentColor } : {}}
       onClick={(_e) => onPin()}
     >
       {pinned ? (
-        <StarSolid className="inline w-[20px] mr-1" />
+        <StarSolid
+          className="inline w-[20px] mr-1 text-brand"
+          style={accentColor ? { color: accentColor } : {}}
+        />
       ) : (
         <StarOutline className="inline w-[20px] mr-1" />
       )}
@@ -97,7 +105,7 @@ export function HeroContractHeader({
   imgUrl?: string | null
 }) {
   return (
-    <div className="flex items-center flex-col mt-3">
+    <div className="flex items-center flex-col mt-2">
       {imgUrl && HEADER_IMAGES_ENABLED ? (
         <div
           className="rounded-full bg-center bg-cover w-[95px] h-[95px]"
@@ -111,11 +119,11 @@ export function HeroContractHeader({
         <Logo width={85} height={85} alt="DAO DAO logo" />
       )}
       <div className="flex flex-col items-center">
-        <h1 className="inline text-2xl font-semibold mb-1 mt-5">{name}</h1>
+        <h1 className="inline header-text mt-5">{name}</h1>
         <EstablishedDate address={address} />
       </div>
-      <div className="my-2">
-        <p>{description}</p>
+      <div className="mb-4 mt-2">
+        <p className="body-text">{description}</p>
       </div>
     </div>
   )
@@ -127,7 +135,7 @@ export function HeroContractHorizontalInfoSection({
   children: ReactNode
 }) {
   return (
-    <div className="flex flex-row items-center gap-1 text-secondary">
+    <div className="flex flex-row items-center gap-1 caption-text">
       {children}
     </div>
   )
@@ -140,7 +148,7 @@ export function HeroContractHorizontalInfo({
 }) {
   const childList = Children.toArray(children)
   return (
-    <div className="w-full border-y border-neutral py-3">
+    <div className="w-full border-y border-inactive py-[20px]">
       <ul className="list-none flex justify-around text-sm flex-wrap gap-2">
         {Children.map(childList, (child) => (
           <li>{child}</li>
@@ -160,8 +168,8 @@ export function GovInfoListItem({
   value: string
 }) {
   return (
-    <li className="flex flex-row items-center text-sm">
-      <span className="inline text-secondary flex items-center gap-1 mr-1">
+    <li className="flex flex-row items-center caption-text">
+      <span className="inline flex items-center gap-1 mr-1">
         {icon} {text}:
       </span>
       {value}
@@ -170,10 +178,13 @@ export function GovInfoListItem({
 }
 
 export function BalanceIcon({ iconURI }: { iconURI?: string }) {
+  const { accentColor } = useThemeContext()
+
   return (
     <div
-      className="w-5 h-5 rounded-full bg-accent bg-center bg-cover"
+      className="rounded-full bg-brand w-4 h-4 bg-center bg-cover"
       style={{
+        ...(!!accentColor && { backgroundColor: accentColor }),
         backgroundImage: iconURI ? `url(${iconURI})` : '',
       }}
     ></div>
@@ -182,7 +193,7 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
 export function BalanceListItem({ children }: { children: ReactNode }) {
   return (
-    <li className="text-sm text-secondary flex flex-row items-center flex-wrap gap-2">
+    <li className="caption-text flex flex-row items-center flex-wrap gap-2">
       {children}
     </li>
   )
@@ -244,14 +255,6 @@ export function TreasuryBalances({ address }: { address: string }) {
   )
 }
 
-export function LoadingButton() {
-  return (
-    <a className="btn btn-sm btn-outline normal-case text-left loading">
-      Loading
-    </a>
-  )
-}
-
 export function ContractProposalsDispaly({
   contractAddress,
   proposalCreateLink,
@@ -265,34 +268,26 @@ export function ContractProposalsDispaly({
   const loading = useRecoilValue(walletTokenBalanceLoading(wallet))
 
   const member = useRecoilValue(isMemberSelector(contractAddress)).member
-  const tooltip =
-    (!member &&
-      `You must have voting power to create a proposal.${
+  const tooltip = !member
+    ? `You must have voting power to create a proposal.${
         multisig ? '' : ' Consider staking some tokens.'
-      }`) ||
-    'Something went wrong'
+      }`
+    : undefined
 
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2 className="font-medium text-lg">Proposals</h2>
-        {loading ? (
-          <LoadingButton />
-        ) : (
-          <div className={!member ? 'tooltip' : ''} data-tip={tooltip}>
-            <Link href={proposalCreateLink} passHref>
-              <a
-                className={
-                  'btn btn-sm btn-outline normal-case text-left' +
-                  (!member ? ' btn-disabled' : '')
-                }
-              >
-                New proposal
-                <PlusIcon className="inline w-5 h-5 ml-1" />
-              </a>
-            </Link>
-          </div>
-        )}
+        <h2 className="primary-text">Proposals</h2>
+
+        <Link href={member ? proposalCreateLink : '#'} passHref>
+          <a>
+            <Tooltip label={tooltip}>
+              <Button size="sm" disabled={!!tooltip || loading}>
+                {loading ? 'Loading...' : 'New proposal'}
+              </Button>
+            </Tooltip>
+          </a>
+        </Link>
       </div>
       <div className="px-4 mt-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />
@@ -315,25 +310,22 @@ export function BalanceCard({
   loading: boolean
 }) {
   return (
-    <div className="shadow p-6 rounded-lg w-full border border-base-300 mt-2">
-      <h2 className="text-sm font-mono text-secondary">{title}</h2>
+    <div className="py-4 px-6 rounded-lg w-full border border-default mt-2">
+      <h2 className="caption-text font-mono">{title}</h2>
       {loading ? (
         <div className="animate-spin-medium inline-block mt-2">
           <LogoNoBorder />
         </div>
       ) : (
-        <div className="mt-2 font-bold flex flex-row flex-wrap items-center gap-2">
+        <div className="mt-2 title-text flex flex-row flex-wrap items-center gap-2 mb-[22px]">
           <BalanceIcon />
           {amount} ${denom}
         </div>
       )}
       <div className="flex justify-end">
-        <button
-          className="btn btn-xs normal-case font-normal rounded-md"
-          onClick={onManage}
-        >
+        <Button size="sm" variant="secondary" onClick={onManage}>
           Manage
-        </button>
+        </Button>
       </div>
     </div>
   )
