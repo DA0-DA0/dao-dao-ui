@@ -92,7 +92,6 @@ function ButtonComponent(
       </button>
     )
   }
-
   if (variant === 'ghost') {
     return (
       <button

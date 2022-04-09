@@ -13,6 +13,7 @@ import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
 import SvgMemberCheck from '@components/icons/MemberCheck'
 import SvgPencil from '@components/icons/Pencil'
+import LoadingScreen from '@components/LoadingScreen'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
