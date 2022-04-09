@@ -26,7 +26,9 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
       <div className="flex items-center gap-2">
         <p className="text-2xl mr-1">🗳</p>
         <p className="primary-text">Casting</p>
-        <p className="secondary-text">{voterWeight}% voting power</p>
+        <p className="secondary-text">
+          {voterWeight.toLocaleString()}% voting power
+        </p>
       </div>
       <div className="grid grid-cols-3 gap-2">
         <Button

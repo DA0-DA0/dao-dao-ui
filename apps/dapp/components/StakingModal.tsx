@@ -513,7 +513,7 @@ export function StakingModal({
                 {convertMicroDenomToDenomWithDecimals(
                   claimAmount,
                   tokenInfo.decimals
-                )}
+                )}{' '}
                 ${tokenInfo.symbol} avaliable
               </h2>
               <p className="text-sm mt-3 mb-3">

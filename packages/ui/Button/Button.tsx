@@ -92,6 +92,19 @@ function ButtonComponent(
       </button>
     )
   }
+
+  if (variant === 'ghost') {
+    return (
+      <button
+        className={`link-text text-secondary transition hover:text-primary flex flex-row items-center gap-2 ${className}`}
+        disabled={disabled || loading}
+        {...rest}
+      >
+        {children}
+      </button>
+    )
+  }
+
   return null
 }
 

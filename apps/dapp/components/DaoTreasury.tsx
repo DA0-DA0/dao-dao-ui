@@ -26,14 +26,9 @@ export function DaoTreasury({ address }: { address: string }) {
   return (
     <div>
       <div className="flex justify-between gap-1">
-        <h2 className="font-medium text-lg">DAO Treasury</h2>
-        <Button
-          iconAfter={<PlusSmIcon className="h-4 w-4" />}
-          onClick={addTokenCallback}
-          size="sm"
-          variant="ghost"
-        >
-          Add Token
+        <h2 className="primary-text">DAO Treasury</h2>
+        <Button onClick={addTokenCallback} variant="ghost">
+          Add Token <PlusSmIcon className="h-4 w-4" />
         </Button>
       </div>
       <TreasuryBalances address={address} />

@@ -9,13 +9,10 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 import { useThemeContext } from 'ui'
 
-import { Button } from '@components'
-
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
 import SvgMemberCheck from '@components/icons/MemberCheck'
 import SvgPencil from '@components/icons/Pencil'
-import LoadingScreen from '@components/LoadingScreen'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
@@ -95,10 +92,6 @@ function DaoHome() {
       addToken(daoInfo.gov_token)
     }
   }, [shouldAddToken, daoInfo.gov_token])
-
-  const addTokenCallback = useCallback(() => {
-    addToken(daoInfo.gov_token)
-  }, [daoInfo.gov_token])
 
   return (
     <div className="grid grid-cols-6 overflow-auto mb-3 min-h-screen">
@@ -256,6 +249,7 @@ function DaoHome() {
           </div>
         ) : null}
         <ClaimsPendingList
+          incrementClaimsAvaliable={(n) => setClaimsAvaliable((a) => a + n)}
           stakingAddress={daoInfo.staking_contract}
           tokenInfo={tokenInfo}
         />
