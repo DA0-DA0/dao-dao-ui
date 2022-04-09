@@ -4,9 +4,10 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
+import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import Tooltip from '@reach/tooltip'
+import '@reach/tooltip/styles.css'
 import { useThemeContext } from 'ui'
 
 import { Button } from '@components'
@@ -278,15 +279,16 @@ export function ContractProposalsDispaly({
     <>
       <div className="flex justify-between items-center">
         <h2 className="primary-text">Proposals</h2>
-        <Tooltip label={tooltip}>
-          <Link href={member ? proposalCreateLink : '#'} passHref>
-            <a>
+
+        <Link href={member ? proposalCreateLink : '#'} passHref>
+          <a>
+            <Tooltip label={tooltip}>
               <Button size="sm" disabled={!!tooltip || loading}>
                 {loading ? 'Loading...' : 'New proposal'}
               </Button>
-            </a>
-          </Link>
-        </Tooltip>
+            </Tooltip>
+          </a>
+        </Link>
       </div>
       <div className="px-4 mt-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />

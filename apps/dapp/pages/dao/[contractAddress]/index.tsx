@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -13,7 +13,6 @@ import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
 import SvgMemberCheck from '@components/icons/MemberCheck'
 import SvgPencil from '@components/icons/Pencil'
-import LoadingScreen from '@components/LoadingScreen'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
@@ -276,10 +275,24 @@ interface StaticProps {
 const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
   const { isReady, isFallback } = useRouter()
 
-  const { setAccentColor } = useThemeContext()
+  const { setAccentColor, theme } = useThemeContext()
   useEffect(() => {
     if (!isReady || isFallback) return
 
+    // Only set the accent color if we have enough contrast.
+    if (accentColor) {
+      const rgb = accentColor
+        .replace(/^rgba?\(|\s+|\)$/g, '')
+        .split(',')
+        .map(Number)
+      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+      if (
+        (theme === 'dark' && brightness < 60) ||
+        (theme === 'light' && brightness > 255 - 80)
+      ) {
+        accentColor = undefined
+      }
+    }
     setAccentColor(accentColor)
   }, [accentColor, setAccentColor, isReady, isFallback])
 

@@ -33,6 +33,7 @@ function ButtonComponent(
   if (variant === 'primary') {
     return (
       <button
+        ref={ref}
         className={`relative link-text text-light bg-btn rounded-md py-[6px] px-[16px] transition ${
           !disabled ? 'hover:bg-dark active:bg-toast' : 'bg-btn-disabled'
         } ${size === 'lg' ? 'py-[10px]' : ''} ${
@@ -63,6 +64,7 @@ function ButtonComponent(
   if (variant == 'secondary') {
     return (
       <button
+        ref={ref}
         className={`relative link-text bg-primary rounded-md py-[6px] px-[16px] transition ${
           !disabled
             ? 'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed'
@@ -95,6 +97,7 @@ function ButtonComponent(
   if (variant === 'ghost') {
     return (
       <button
+        ref={ref}
         className={`link-text text-secondary transition hover:text-primary flex flex-row items-center gap-2 ${className}`}
         disabled={disabled || loading}
         {...rest}

@@ -10,7 +10,7 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { PlusIcon } from '@heroicons/react/outline'
 import Tooltip from '@reach/tooltip'
-import { useFieldArray, useForm, Validate } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { Button } from 'ui'
 
 import { GradientHero } from '@components/ContractView'
@@ -192,6 +192,7 @@ const CreateDao: NextPage = () => {
             data.description,
             data.tokenName,
             data.tokenSymbol,
+            data.tokenImage,
             owners,
             convertDenomToMicroDenomWithDecimals(
               data.daoInitialBalance,
