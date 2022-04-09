@@ -15,6 +15,7 @@ import {
   chainDisabledAtom,
   keplrAccountNameSelector,
   walletChainBalanceSelector,
+  noKeplrAccountAtom,
 } from 'selectors/cosm'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
 import { CHAIN_ID, NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
@@ -63,6 +64,7 @@ function WalletConnect() {
   const setInstallWarningVisible = useSetRecoilState(installWarningVisibleAtom)
   const setChainWarningVisible = useSetRecoilState(chainWarningVisibleAtom)
   const setChainDisabled = useSetRecoilState(chainDisabledAtom)
+  const setNoKeplrAccount = useSetRecoilState(noKeplrAccountAtom)
   const walletAddress = useRecoilValue(walletAddressSelector)
   const walletName = useRecoilValue(keplrAccountNameSelector)
   const walletBalance = useRecoilValue(walletChainBalanceSelector)
@@ -82,9 +84,14 @@ function WalletConnect() {
           await (window as any).keplr.enable(CHAIN_ID)
           setInstallWarningVisible(false)
           setWallet('keplr')
-        } catch {
-          setChainWarningVisible(true)
-          setChainDisabled(true)
+        } catch (e: any) {
+          console.log(e)
+          if (e.message === "key doesn't exist") {
+            setNoKeplrAccount(true)
+          } else {
+            setChainWarningVisible(true)
+            setChainDisabled(true)
+          }
         }
       }
     } else {

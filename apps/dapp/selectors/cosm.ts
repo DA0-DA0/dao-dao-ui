@@ -67,6 +67,11 @@ export const chainDisabledAtom = atom<boolean>({
   default: false,
 })
 
+export const noKeplrAccountAtom = atom<boolean>({
+  key: 'noKeplrAccountAtom',
+  default: false,
+})
+
 export const kelprOfflineSigner = selector({
   key: 'kelprOfflineSigner',
   get: ({ get }) => {
