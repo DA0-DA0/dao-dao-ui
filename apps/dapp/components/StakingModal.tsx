@@ -294,7 +294,6 @@ function executeClaimAction(
 export function StakingModal({
   defaultMode,
   contractAddress,
-  tokenSymbol,
   claimAmount,
   onClose,
   beforeExecute,
@@ -302,7 +301,6 @@ export function StakingModal({
 }: {
   defaultMode: StakingMode
   contractAddress: string
-  tokenSymbol: string
   claimAmount: number
   onClose: MouseEventHandler<HTMLButtonElement>
   beforeExecute: Function
@@ -472,12 +470,12 @@ export function StakingModal({
               />
               {Number(amount) > maxTx && (
                 <span className="caption-text text-error mt-1 ml-1">
-                  Can{"'"}t {stakingModeString(mode)} more ${tokenSymbol} than
-                  you own
+                  Can{"'"}t {stakingModeString(mode)} more ${tokenInfo.symbol}{' '}
+                  than you own
                 </span>
               )}
               <span className="caption-text font-mono mt-4">
-                Max available {maxTx} ${tokenSymbol}
+                Max available {maxTx} ${tokenInfo.symbol}
               </span>
               <div className="mt-4">
                 <PercentSelector
@@ -516,7 +514,7 @@ export function StakingModal({
                   claimAmount,
                   tokenInfo.decimals
                 )}
-                ${tokenSymbol} avaliable
+                ${tokenInfo.symbol} avaliable
               </h2>
               <p className="text-sm mt-3 mb-3">
                 Claim them to increase your voting power.

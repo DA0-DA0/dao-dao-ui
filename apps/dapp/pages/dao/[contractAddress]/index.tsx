@@ -69,7 +69,6 @@ function DaoHome() {
   )
 
   const [showStaking, setShowStaking] = useState(false)
-  const [stakingDefault, setStakingDefault] = useState(StakingMode.Stake)
 
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
@@ -168,7 +167,6 @@ function DaoHome() {
               denom={tokenInfo?.symbol}
               onManage={() => {
                 setShowStaking(true)
-                setStakingDefault(StakingMode.Unstake)
               }}
               loading={tokenBalanceLoading}
             />
@@ -183,7 +181,6 @@ function DaoHome() {
               denom={tokenInfo?.symbol}
               onManage={() => {
                 setShowStaking(true)
-                setStakingDefault(StakingMode.Stake)
               }}
               loading={tokenBalanceLoading}
             />
@@ -201,7 +198,6 @@ function DaoHome() {
                 denom={tokenInfo?.symbol}
                 onManage={() => {
                   setShowStaking(true)
-                  setStakingDefault(StakingMode.Claim)
                 }}
                 loading={tokenBalanceLoading}
               />
@@ -236,7 +232,6 @@ function DaoHome() {
                 className="link-text flex items-center gap-2 rounded"
                 onClick={() => {
                   setShowStaking(true)
-                  setStakingDefault(StakingMode.Stake)
                 }}
               >
                 Stake tokens
@@ -251,9 +246,8 @@ function DaoHome() {
         />
         {showStaking && (
           <StakingModal
-            defaultMode={stakingDefault}
+            defaultMode={StakingMode.Stake}
             contractAddress={contractAddress}
-            tokenSymbol={tokenInfo.symbol}
             claimAmount={claimsAvaliable}
             onClose={() => setShowStaking(false)}
             beforeExecute={() => setTokenBalancesLoading(true)}

@@ -94,17 +94,9 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
   errors,
   readOnly,
 }) => {
-  const { register, setValue, watch } = useFormContext()
+  const { register, watch } = useFormContext()
 
-  const quorum = watch(getLabel('quorum'))
-  const defaultQuorum = watch(getLabel('defaultQuorum'))
   const votingPeriodSeconds = watch(getLabel('max_voting_period'))
-
-  const [thresholdMode, setThresholdMode] = useState(
-    quorum !== undefined
-      ? ThresholdMode.ThresholdQuorum
-      : ThresholdMode.Threshold
-  )
 
   return (
     <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
@@ -156,106 +148,37 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
           <InputErrorMessage error={errors?.imageUrl} />
         </div>
 
-        <div className="mt-8 flex flex-row">
-          <button
-            className={`${
-              thresholdMode === ThresholdMode.ThresholdQuorum
-                ? 'border-l border-r'
-                : 'border-b'
-            } border-default px-2 py-1`}
-            style={{
-              borderTopWidth:
-                thresholdMode === ThresholdMode.ThresholdQuorum ? '1px' : '0px',
-              borderTopRightRadius: '0.5rem',
-              borderTopLeftRadius: '0.5rem',
-              pointerEvents: readOnly ? 'none' : 'auto',
-            }}
-            onClick={() => {
-              setThresholdMode(ThresholdMode.ThresholdQuorum)
-              setValue(getLabel('quorum'), defaultQuorum)
-            }}
-            type="button"
-            disabled={readOnly}
-          >
-            Threshold and quorum
-          </button>
-          <button
-            className={`${
-              thresholdMode === ThresholdMode.Threshold
-                ? 'border-l border-r'
-                : 'border-b'
-            } border-default px-2 py-1`}
-            style={{
-              borderTopWidth:
-                thresholdMode === ThresholdMode.Threshold ? '1px' : '0px',
-              borderTopRightRadius: '0.5rem',
-              borderTopLeftRadius: '0.5rem',
-              pointerEvents: readOnly ? 'none' : 'auto',
-            }}
-            onClick={() => {
-              setThresholdMode(ThresholdMode.Threshold)
-              // Clear the quorum value.
-              setValue(getLabel('quorum'), undefined)
-            }}
-            type="button"
-            disabled={readOnly}
-          >
-            Absolute threshold
-          </button>
-          <div className="flex-1 cursor-default border-default border-b"></div>
+        <div className="flex gap-3">
+          <div className="flex flex-col gap-1 col-span-1 basis-1/2">
+            <InputLabel name="Passing Threshold (%)" />
+            <NumberInput
+              label={getLabel('threshold')}
+              register={register}
+              error={errors?.threshold}
+              validation={[validateRequired, validatePercent]}
+              defaultValue="51"
+              step="any"
+              disabled={readOnly}
+            />
+            <InputErrorMessage error={errors?.threshold} />
+          </div>
+          <div className="flex flex-col gap-1 col-span-1 basis-1/2">
+            <InputLabel name="Quorum (%)" />
+            <NumberInput
+              label={getLabel('quorum')}
+              register={register}
+              error={errors?.quorum}
+              validation={[validateRequired, validatePercent]}
+              defaultValue="33"
+              step="any"
+              disabled={readOnly}
+            />
+            <InputErrorMessage error={errors?.quorum} />
+          </div>
         </div>
 
-        <div className="border-r border-b border-l border-solid p-3 border-default rounded-b-lg bg-base-100">
-          {thresholdMode == ThresholdMode.ThresholdQuorum ? (
-            <div className="grid grid-cols-2 gap-x-3">
-              <div className="form-control">
-                <InputLabel name="Passing Threshold (%)" />
-                <NumberInput
-                  label={getLabel('threshold')}
-                  register={register}
-                  error={errors?.threshold}
-                  validation={[validateRequired, validatePercent]}
-                  defaultValue="51"
-                  step="any"
-                  disabled={readOnly}
-                />
-                <InputErrorMessage error={errors?.threshold} />
-              </div>
-              <div className="form-control">
-                <InputLabel name="Quorum (%)" />
-                <NumberInput
-                  label={getLabel('quorum')}
-                  register={register}
-                  error={errors?.quorum}
-                  validation={[validateRequired, validatePercent]}
-                  defaultValue="33"
-                  step="any"
-                  disabled={readOnly}
-                />
-                <InputErrorMessage error={errors?.quorum} />
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-x-3">
-              <div className="form-control">
-                <InputLabel name="Passing Threshold (%)" />
-                <NumberInput
-                  label={getLabel('threshold')}
-                  register={register}
-                  error={errors?.threshold}
-                  validation={[validateRequired, validatePercent]}
-                  defaultValue="51"
-                  step="any"
-                  disabled={readOnly}
-                />
-                <InputErrorMessage error={errors?.threshold} />
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 my-3">
-          <div className="flex flex-col gap-1">
+        <div className="flex gap-3 my-3">
+          <div className="flex flex-col gap-1 basis-1/2">
             <InputLabel name="Voting Duration (seconds)" />
             <NumberInput
               label={getLabel('max_voting_period')}
@@ -266,12 +189,12 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
               disabled={readOnly}
             />
             <InputErrorMessage error={errors?.duration} />
-            <div className="text-sm text-secondary">
+            <div className="caption-text">
               {secondsToWdhms(votingPeriodSeconds)}
             </div>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 basis-1/2">
             <InputLabel name="Proposal Deposit" />
             <NumberInput
               label={getLabel('proposal_deposit')}
@@ -295,7 +218,7 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
           <InputErrorMessage error={errors?.refund} />
         </div>
       </div>
-      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-base-200">
+      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-disabled">
         <InformationCircleIcon className="h-4" />
         <p>This will change the configuration of your DAO. Take Care.</p>
       </div>

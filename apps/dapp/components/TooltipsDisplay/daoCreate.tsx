@@ -95,6 +95,12 @@ const daoCreateTooltips: daoCreateTooltipsType = {
       https://moonphase.is/image.svg
     </p>
   ),
+  tokenImage: (
+    <p>
+      An image for your DAO{"'"}s token. For example,
+      https://moonphase.is/image.svg
+    </p>
+  ),
   balances: <p>The token balances of your initial DAO members.</p>,
 }
 

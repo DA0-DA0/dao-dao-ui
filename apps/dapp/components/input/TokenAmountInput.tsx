@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { UserIcon, XIcon } from '@heroicons/react/outline'
 import {
   FieldError,
@@ -10,7 +12,6 @@ import {
 import { FormCard } from '@components/FormCard'
 import {
   validateAddress,
-  validateNonNegative,
   validatePositive,
   validateRequired,
 } from 'util/formValidation'
@@ -39,24 +40,27 @@ export function TokenAmountInput<
   tokenSymbol,
   tokenImage,
   hideRemove,
+  icon = <UserIcon className="w-4" />,
   title,
   register,
   onPlusMinus,
   amountError,
   addrError,
+  readOnly,
 }: {
   amountLabel: AmountFieldName
   addrLabel: AddrFieldName
   onRemove: () => void
-  tokenSymbol: string
-  tokenImage: string
+  tokenSymbol?: string
+  tokenImage?: string
   hideRemove: boolean
+  icon?: ReactNode
   title: string
   register: UseFormRegister<FieldValues>
   onPlusMinus?: [() => void, () => void]
   amountError?: FieldError
   addrError?: FieldError
-  border?: boolean
+  readOnly?: boolean
 }) {
   type ValidateFn = Validate<FieldPathValue<FieldValues, AddrFieldName>>
 
@@ -64,7 +68,7 @@ export function TokenAmountInput<
     <FormCard>
       <div className="flex gap-3 justify-between">
         <p className="body-text flex items-center gap-2">
-          <UserIcon className="w-3" /> {title}
+          {icon} {title}
         </p>
         <div className="flex items-center gap-2">
           <div className="flex flex-col gap-1">
@@ -80,18 +84,21 @@ export function TokenAmountInput<
               ]}
               defaultValue="0"
               step={0.000001}
+              disabled={readOnly}
             />
             <InputErrorMessage error={amountError} />
           </div>
-          <div className="flex items-center gap-1">
-            <div
-              className="w-4 h-4 rounded-full border border-default bg-center bg-cover"
-              style={{
-                backgroundImage: `url(${tokenImage})`,
-              }}
-            ></div>
-            <p className="link-text">{tokenSymbol}</p>
-          </div>
+          {tokenSymbol && (
+            <div className="flex items-center gap-1">
+              <div
+                className="w-4 h-4 rounded-full border border-default bg-center bg-cover"
+                style={{
+                  backgroundImage: `url(${tokenImage})`,
+                }}
+              ></div>
+              <p className="link-text">{tokenSymbol}</p>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <p className="secondary-text font-mono">{'->'}</p>
@@ -104,18 +111,20 @@ export function TokenAmountInput<
                 validateRequired as ValidateFn,
                 validateAddress as ValidateFn,
               ]}
+              disabled={readOnly}
             />
             <InputErrorMessage error={addrError} />
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={onRemove}
-          className={`${hideRemove ? 'hidden' : ''}`}
-        >
-          <XIcon className="text-error w-4" />
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className={`${hideRemove ? 'hidden' : ''}`}
+          >
+            <XIcon className="text-error w-4" />
+          </button>
+        )}{' '}
       </div>
     </FormCard>
   )

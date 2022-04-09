@@ -14,7 +14,7 @@ import { cw20TokenInfo, cw20TokensList } from 'selectors/treasury'
 import { TokenInfoDisplay } from './addToken'
 import { TemplateComponent, ToCosmosMsgProps } from './templateList'
 import { Button } from 'ui/Button'
-import { secondsToHms } from 'util/conversion'
+import { secondsToWdhms } from 'util/conversion'
 
 export interface RemoveTokenData {
   address: string
@@ -97,7 +97,7 @@ export const RemoveTokenComponent: TemplateComponent = ({
           </button>
         )}
       </div>
-      <div className="my-3">
+      <div className="my-3 flex flex-col gap-1">
         <AddressSelector
           onSelect={(address) => setValue(getLabel('address'), address)}
           selectedAddress={tokenAddress}

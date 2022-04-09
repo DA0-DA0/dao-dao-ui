@@ -59,6 +59,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
           type="button"
           className="secondary-text hover:body-text transition"
           onClick={() => onPlusMinus[0]()}
+          disabled={disabled}
         >
           <PlusIcon className="w-4" />
         </button>
@@ -66,6 +67,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
           type="button"
           className="secondary-text hover:body-text transition"
           onClick={() => onPlusMinus[1]()}
+          disabled={disabled}
         >
           <MinusIcon className="w-4" />
         </button>
