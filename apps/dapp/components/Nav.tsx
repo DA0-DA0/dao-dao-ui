@@ -58,7 +58,6 @@ function Nav({ onMenuClick }: NavProps) {
               <Logo height={28} width={28} alt={`${SITE_TITLE} Logo`} />
             </a>
           </Link>
-
           <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
             <MenuIcon className="w-8" />
           </div>

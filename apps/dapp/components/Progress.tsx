@@ -11,7 +11,7 @@ export const Progress = ({
   return (
     <div className="w-full h-1 bg-secondary rounded-md">
       <div
-        className={`h-full rounded-lg`}
+        className="h-full rounded-lg"
         style={{ width: `${turnout}%`, backgroundColor: color }}
       ></div>
     </div>

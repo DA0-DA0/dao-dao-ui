@@ -52,7 +52,6 @@ export function ProposalTemplateSelector({
   onClose: () => void
   multisig: boolean
 }) {
-  console.log(`multisig: ${multisig}`)
   return (
     <Modal>
       <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative">
