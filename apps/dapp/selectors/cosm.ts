@@ -11,7 +11,8 @@ import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
 export type WalletConnection = 'keplr' | ''
 
-const CHAIN_RPC_ENDPOINT = process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
+export const CHAIN_RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 
 export const stargateClient = selector({

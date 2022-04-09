@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
+import ReactTooltip from 'react-tooltip'
 import { DEFAULT_THEME_NAME, ThemeProvider } from 'ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'
@@ -20,6 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
   const [theme, setTheme] = useState(DEFAULT_THEME_NAME)
+  const [accentColor, setAccentColor] = useState<string | undefined>()
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => setLoaded(true), [])
@@ -52,7 +54,12 @@ function MyApp({ Component, pageProps }: AppProps) {
     <RecoilRoot>
       <ErrorBoundary title="An unexpected error occured.">
         <Suspense fallback={<LoadingScreen />}>
-          <ThemeProvider updateTheme={updateTheme} theme={theme}>
+          <ThemeProvider
+            updateTheme={updateTheme}
+            theme={theme}
+            accentColor={accentColor}
+            setAccentColor={setAccentColor}
+          >
             {loaded && (
               <Layout>
                 <Component {...pageProps} />

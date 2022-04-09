@@ -159,11 +159,13 @@ export function secondsToWdhms(seconds: string): string {
   const mDisplay = m ? m + (m === 1 ? ' min' : ' mins') : null
   const sDisplay = s ? s + (s === 1 ? ' sec' : ' secs') : null
 
-  return [wDisplay, dDisplay, hDisplay, mDisplay, sDisplay]
-    // Ignore empty values.
-    .filter(Boolean)
-    // Separate with commas.
-    .join(', ')
+  return (
+    [wDisplay, dDisplay, hDisplay, mDisplay, sDisplay]
+      // Ignore empty values.
+      .filter(Boolean)
+      // Separate with commas.
+      .join(', ')
+  )
 }
 
 export function nativeTokenLabel(denom: string): string {
