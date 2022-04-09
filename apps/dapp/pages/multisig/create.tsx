@@ -164,12 +164,13 @@ const CreateMultisig: NextPage = () => {
           />
 
           <div className="flex flex-col items-center justify-center max-w-prose mx-auto mt-4 rounded-lg">
+            <InputLabel name="DAO Name" mono className="pb-1" />
             <TextInput
               label="name"
               register={register}
               error={errors.name}
               validation={[validateRequired]}
-              className="text-center"
+              className="text-center font-bold"
             />
             <InputErrorMessage error={errors.name} />
           </div>
