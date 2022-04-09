@@ -17,6 +17,7 @@ import {
   ChevronRightIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import toast from 'react-hot-toast'
 import { Button } from 'ui'
 
@@ -520,12 +521,9 @@ export function StakingModal({
                 Claim them to increase your voting power.
               </p>
               <div className="px-3 pt-6 flex justify-end">
-                <div
-                  className={walletDisconnected() ? 'tooltip tooltip-left' : ''}
-                  data-tip={walletDisconnected()}
-                >
+                <Tooltip label={walletDisconnected()}>
                   <ActionButton ready={!walletDisconnected()} />
-                </div>
+                </Tooltip>
               </div>
             </div>
           </>

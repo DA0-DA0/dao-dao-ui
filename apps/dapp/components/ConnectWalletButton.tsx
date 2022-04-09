@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 
 import { Button } from '@components'
 
@@ -28,7 +29,7 @@ import SvgWallet from './icons/Wallet'
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <div data-tip="Copy wallet address">
+    <Tooltip label="Copy wallet address">
       <button
         type="button"
         onClick={() => {
@@ -43,17 +44,17 @@ function CopyButton({ text }: { text: string }) {
           <SvgCopy color="currentColor" height="18px" width="18px" />
         )}
       </button>
-    </div>
+    </Tooltip>
   )
 }
 
 function DisconnectButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="tooltip tooltip-left" data-tip="Disconnect wallet">
+    <Tooltip label="Disconnect wallet">
       <button type="button" onClick={onClick}>
         <LogoutIcon className="w-[18px]" />
       </button>
-    </div>
+    </Tooltip>
   )
 }
 

@@ -4,6 +4,7 @@ import { useRecoilValue } from 'recoil'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { Button } from 'ui'
 
@@ -233,12 +234,14 @@ export function ProposalForm({
               </>
             )}
           </Button>
-          <div data-tip={!wallet ? 'Connect your wallet to submit' : undefined}>
+          <Tooltip
+            label={!wallet ? 'Connect your wallet to submit' : undefined}
+          >
             <Button type="submit" loading={loading}>
               Publish{' '}
               <SvgAirplane color="currentColor" width="14px" height="14px" />
             </Button>
-          </div>
+          </Tooltip>
         </div>
       </form>
     </FormProvider>

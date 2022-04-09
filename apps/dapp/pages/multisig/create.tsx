@@ -7,6 +7,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { PlusIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
 import { Button } from 'ui'
 
@@ -43,6 +44,7 @@ import {
 } from 'util/formValidation'
 import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
 import { errorNotify, successNotify } from 'util/toast'
+import '@reach/tooltip/styles.css'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -164,7 +166,7 @@ const CreateMultisig: NextPage = () => {
           />
 
           <div className="flex flex-col items-center justify-center max-w-prose mx-auto mt-4 rounded-lg">
-            <InputLabel name="DAO Name" mono className="pb-1" />
+            <InputLabel name="Multisig Name" mono className="pb-1" />
             <TextInput
               label="name"
               register={register}
@@ -288,17 +290,15 @@ const CreateMultisig: NextPage = () => {
             </div>
           </FormCard>
         </div>
-
-        <div
-          className="px-6 mb-8 mt-4 text-right w-full"
-          data-tip={
-            !walletAddress ? 'Connect your wallet to submit' : undefined
-          }
-        >
-          <Button type="submit" loading={loading}>
-            Submit{' '}
-            <SvgAirplane color="currentColor" width="14px" height="14px" />
-          </Button>
+        <div className="px-6 mb-8 mt-4 flex justify-end w-full">
+          <Tooltip
+            label={!walletAddress ? 'Connect your wallet to submit' : undefined}
+          >
+            <Button type="submit" loading={loading} disabled={!walletAddress}>
+              Submit{' '}
+              <SvgAirplane color="currentColor" width="14px" height="14px" />
+            </Button>
+          </Tooltip>
         </div>
       </form>
 

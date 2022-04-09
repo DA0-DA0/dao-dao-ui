@@ -9,6 +9,7 @@ import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { PlusIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
 import { Button } from 'ui'
 
@@ -618,16 +619,17 @@ const CreateDao: NextPage = () => {
             </FormCard>
           </div>
 
-          <div
-            className="px-6 mb-8 mt-4 text-right w-full"
-            data-tip={
-              !walletAddress ? 'Connect your wallet to submit' : undefined
-            }
-          >
-            <Button type="submit" loading={loading}>
-              Submit{' '}
-              <SvgAirplane color="currentColor" width="14px" height="14px" />
-            </Button>
+          <div className="px-6 mb-8 mt-4 flex justify-end w-full">
+            <Tooltip
+              label={
+                !walletAddress ? 'Connect your wallet to submit' : undefined
+              }
+            >
+              <Button type="submit" loading={loading}>
+                Submit{' '}
+                <SvgAirplane color="currentColor" width="14px" height="14px" />
+              </Button>
+            </Tooltip>
           </div>
         </form>
       </div>

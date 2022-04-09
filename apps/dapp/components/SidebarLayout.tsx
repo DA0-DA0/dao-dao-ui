@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 import { MenuIcon } from '@heroicons/react/outline'
-import ReactTooltip from 'react-tooltip'
 
 import { SITE_TITLE } from '../util/constants'
 import { Logo } from './Logo'
@@ -53,12 +52,6 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
       >
         {children}
       </main>
-      {/*
-          For some reason entirely beyond me we have to explicitly tell this
-          library that we want the tooltip to go away when the mouse moves off
-          the element..
-        */}
-      <ReactTooltip place="top" effect="solid" eventOff="mouseout" />
     </div>
   )
 }

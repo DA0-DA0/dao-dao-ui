@@ -6,6 +6,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
+import Tooltip from '@reach/tooltip'
 import { useThemeContext } from 'ui'
 
 import { Button } from '@components'
@@ -277,13 +278,15 @@ export function ContractProposalsDispaly({
     <>
       <div className="flex justify-between items-center">
         <h2 className="primary-text">Proposals</h2>
-        <Link href={member ? proposalCreateLink : '#'} passHref>
-          <a data-tip={tooltip}>
-            <Button size="sm" disabled={!!tooltip || loading}>
-              {loading ? 'Loading...' : 'New proposal'}
-            </Button>
-          </a>
-        </Link>
+        <Tooltip label={tooltip}>
+          <Link href={member ? proposalCreateLink : '#'} passHref>
+            <a>
+              <Button size="sm" disabled={!!tooltip || loading}>
+                {loading ? 'Loading...' : 'New proposal'}
+              </Button>
+            </a>
+          </Link>
+        </Tooltip>
       </div>
       <div className="px-4 mt-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />
