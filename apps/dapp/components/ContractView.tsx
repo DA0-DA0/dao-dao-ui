@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { StarIcon as StarOutline } from '@heroicons/react/outline'
+import { StarIcon as StarOutline, PlusIcon } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import { useThemeContext } from 'ui'
 
@@ -33,11 +33,13 @@ import { ProposalList } from './ProposalList'
 export function GradientHero({ children }: { children: ReactNode }) {
   const theme = useThemeContext()
   const endStop = theme.theme === 'dark' ? '#111213' : '#FFFFFF'
+  const baseRgb = theme.accentColor
+    ? theme.accentColor.split('(')[1].split(')')[0]
+    : '73, 55, 192'
   return (
     <div
       style={{
-        background:
-          'linear-gradient(180deg, rgba(73, 55, 192, 0.4) 0%, rgba(17, 18, 19, 0) 100%)',
+        background: `linear-gradient(180deg, rgba(${baseRgb}, 0.4) 0%, rgba(17, 18, 19, 0) 100%)`,
       }}
     >
       <div
@@ -59,13 +61,19 @@ export function StarButton({
   pinned: boolean
   onPin: Function
 }) {
+  const { accentColor } = useThemeContext()
+
   return (
     <button
       className={`text-left w-20 flex flex-row items-center link-text text-brand`}
+      style={accentColor ? { color: accentColor } : {}}
       onClick={(_e) => onPin()}
     >
       {pinned ? (
-        <StarSolid className="inline w-[20px] mr-1 text-brand" />
+        <StarSolid
+          className="inline w-[20px] mr-1 text-brand"
+          style={accentColor ? { color: accentColor } : {}}
+        />
       ) : (
         <StarOutline className="inline w-[20px] mr-1" />
       )}
@@ -169,11 +177,14 @@ export function GovInfoListItem({
 }
 
 export function BalanceIcon({ iconURI }: { iconURI?: string }) {
+  const { accentColor } = useThemeContext()
+
   return (
     <div
       className="rounded-full bg-brand w-4 h-4"
       style={{
         backgroundImage: iconURI ? `url(${iconURI})` : '',
+        ...(!!accentColor && { backgroundColor: accentColor }),
       }}
     ></div>
   )
