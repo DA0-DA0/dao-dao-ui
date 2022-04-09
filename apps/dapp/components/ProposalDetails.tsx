@@ -16,6 +16,7 @@ import {
   ExternalLinkIcon,
   EyeIcon,
   EyeOffIcon,
+  MinusIcon,
   SparklesIcon,
   XIcon,
 } from '@heroicons/react/outline'
@@ -65,7 +66,7 @@ import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { getEnd } from './ProposalList'
 
 function executeProposalVote(
-  vote: 'yes' | 'no',
+  vote: 'yes' | 'no' | 'abstain',
   id: number,
   contractAddress: string,
   signingClient: SigningCosmWasmClient | null,
@@ -148,6 +149,7 @@ function LoadingButton() {
 function ProposalVoteButtons({
   yesCount,
   noCount,
+  abstainCount,
   proposalId,
   contractAddress,
   voted,
@@ -156,6 +158,7 @@ function ProposalVoteButtons({
 }: {
   yesCount: string
   noCount: string
+  abstainCount: string
   proposalId: number
   contractAddress: string
   voted: boolean
@@ -201,15 +204,17 @@ function ProposalVoteButtons({
     position,
     children,
   }: {
-    position: 'yes' | 'no'
+    position: 'yes' | 'no' | 'abstain'
     children: ReactNode
   }) => (
     <button
-      className={
-        'btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1' +
-        (position === 'yes' ? ' hover:bg-green-500' : ' hover:bg-red-500') +
-        (ready ? '' : ' btn-disabled bg-base-300')
-      }
+      className={`btn btn-sm btn-outline normal-case border-base-300 shadow w-36 font-normal rounded-md px-1 ${
+        position === 'yes'
+          ? ' hover:bg-green-500 hover:border-green-500'
+          : position === 'no'
+          ? ' hover:bg-red-500 hover:border-red-500'
+          : ' hover:bg-primary hover:border-primary'
+      } ${ready ? '' : ' btn-disabled bg-base-300'}`}
       onClick={() =>
         executeProposalVote(
           position,
@@ -242,6 +247,11 @@ function ProposalVoteButtons({
           <XIcon className="w-4 h-4 inline mr-2" />
           No
           <p className="text-secondary ml-2">{noCount}</p>
+        </VoteButton>
+        <VoteButton position="abstain">
+          <MinusIcon className="w-4 h-4 inline mr-2" />
+          Abstain
+          <p className="text-secondary ml-2">{abstainCount}</p>
         </VoteButton>
       </div>
     </div>
@@ -360,6 +370,14 @@ export function ProposalDetailsSidebar({
           tokenDecimals
         )
   )
+  const abstainVotes = Number(
+    multisig
+      ? proposalTally?.votes.abstain
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally?.votes.abstain ?? 0,
+          tokenDecimals
+        )
+  )
   const totalWeight = Number(
     multisig
       ? proposalTally.total_weight
@@ -370,7 +388,7 @@ export function ProposalDetailsSidebar({
   )
 
   const turnoutPercent = (
-    ((yesVotes + noVotes) / totalWeight) *
+    ((yesVotes + noVotes) / (totalWeight - abstainVotes)) *
     100
   ).toLocaleString(undefined, localeOptions)
   const yesPercent = ((yesVotes / totalWeight) * 100).toLocaleString(
@@ -451,6 +469,8 @@ export function ProposalDetailsSidebar({
         <div className="col-span-2">
           {noVotes} <p className="text-secondary inline">({noPercent}%)</p>
         </div>
+        <p className="text-secondary">Abstain votes</p>
+        <div className="col-span-2">{abstainVotes}</div>
         <p className="text-secondary">Threshold</p>
         <div className="col-span-2">{threshold}</div>
         {quorum && (
@@ -600,6 +620,14 @@ export function ProposalDetails({
           tokenDecimals
         )
   )
+  const abstainVotes = Number(
+    multisig
+      ? proposalTally?.votes.abstain
+      : convertMicroDenomToDenomWithDecimals(
+          proposalTally?.votes.abstain ?? 0,
+          tokenDecimals
+        )
+  )
 
   const decodedMessages = decodeMessages(proposal.msgs)
 
@@ -608,46 +636,40 @@ export function ProposalDetails({
       <div className="max-w-prose">
         <h1 className="text-4xl font-semibold">{proposal.title}</h1>
       </div>
-      {actionLoading && (
-        <div className="mt-3">
-          <LoadingButton />
-        </div>
-      )}
-      {!actionLoading && proposal.status === 'open' && (
-        <div className="mt-3 flex flex-row flex-wrap items-center gap-3">
-          {tokenBalancesLoading ? (
+      {actionLoading ||
+        (tokenBalancesLoading && (
+          <div className="mt-3">
             <LoadingButton />
-          ) : (
-            <>
-              <ProposalVoteButtons
-                yesCount={yesVotes.toString()}
-                noCount={noVotes.toString()}
-                proposalId={proposalId}
-                contractAddress={contractAddress}
-                voted={voted}
-                setLoading={setActionLoading}
-                multisig={!!multisig}
-              />
-              <ProposalVoteStatus
-                contractAddress={contractAddress}
-                proposalId={proposalId}
-              />
-            </>
-          )}
+          </div>
+        ))}
+      {!actionLoading && proposal.status === 'open' && (
+        <div className="mt-3 flex flex-col flex-wrap justify-center gap-3">
+          <>
+            <ProposalVoteStatus
+              contractAddress={contractAddress}
+              proposalId={proposalId}
+            />
+            <ProposalVoteButtons
+              yesCount={yesVotes.toString()}
+              noCount={noVotes.toString()}
+              abstainCount={abstainVotes.toString()}
+              proposalId={proposalId}
+              contractAddress={contractAddress}
+              voted={voted}
+              setLoading={setActionLoading}
+              multisig={!!multisig}
+            />
+          </>
         </div>
       )}
       {!actionLoading && proposal.status === 'passed' && (
         <div className="mt-3">
-          {tokenBalancesLoading ? (
-            <LoadingButton />
-          ) : (
-            <ProposalExecuteButton
-              proposalId={proposalId}
-              contractAddress={contractAddress}
-              member={member.member}
-              setLoading={setActionLoading}
-            />
-          )}
+          <ProposalExecuteButton
+            proposalId={proposalId}
+            contractAddress={contractAddress}
+            member={member.member}
+            setLoading={setActionLoading}
+          />
         </div>
       )}
       <div className="py-4">
