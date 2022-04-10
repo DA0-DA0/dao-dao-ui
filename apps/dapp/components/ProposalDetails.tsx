@@ -304,7 +304,7 @@ export function ProposalDetailsSidebar({
         <p className="text-tertiary text-sm font-mono">Yours</p>
         {!walletVote && (
           <p className="col-span-3 text-tertiary text-sm font-mono">
-            Pending...
+            {proposal.status === 'open' ? 'Pending...' : 'None'}
           </p>
         )}
         {walletVote === 'yes' && (
@@ -611,6 +611,9 @@ export function ProposalDetails({
       )}
       {walletVote && (
         <p className="body-text">You voted {walletVote} on this proposal.</p>
+      )}
+      {proposal.status !== 'open' && !walletVote && (
+        <p className="body-text">You did not vote on this proposal.</p>
       )}
       {votingPower === 0 && (
         <p className="body-text max-w-prose">
