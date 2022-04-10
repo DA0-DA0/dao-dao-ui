@@ -32,11 +32,10 @@ class ChainClientRouter<T> {
    * or return an existing instance of the client.
    *  */
   async connect(rpcEndpoint: string) {
-    if (this.getClientInstance(rpcEndpoint)) {
-      return this.getClientInstance(rpcEndpoint)
+    if (!this.getClientInstance(rpcEndpoint)) {
+      const instance = await this.handleConnect(rpcEndpoint)
+      this.setClientInstance(rpcEndpoint, instance)
     }
-
-    this.setClientInstance(rpcEndpoint, await this.handleConnect(rpcEndpoint))
 
     return this.getClientInstance(rpcEndpoint)
   }
