@@ -5,7 +5,6 @@ import Head from 'next/head'
 import {
   useRecoilRefresher_UNSTABLE,
   useRecoilState,
-  useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
 
