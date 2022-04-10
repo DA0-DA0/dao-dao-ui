@@ -8,7 +8,7 @@ type ChainClientRoutes<T> = {
 type HandleConnect<T> = (rpcEndpoint: string) => Promise<T>
 
 /*
- * This is a workaround for `@cosmjs` clients to avoid re-connecting to the chain more than once.
+ * This is a workaround for `@cosmjs` clients to avoid connecting to the chain more than once.
  *
  * @example
  * export const stargateClientRouter = new ChainClientRouter({
