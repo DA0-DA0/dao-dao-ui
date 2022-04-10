@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   ScaleIcon,
@@ -35,6 +34,7 @@ import {
   sigSelector,
   totalWeight,
 } from 'selectors/multisigs'
+import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
 
 const thresholdString = (t: Threshold) => {
@@ -232,7 +232,7 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
   }
 
   try {
-    const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    const client = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
     const sigInfo = await client.queryContractSmart(contractAddress, {
       get_config: {},
     })
