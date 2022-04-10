@@ -217,6 +217,14 @@ export function ProposalForm({
           </div>
         </div>
         <div className="mt-4 flex justify-end gap-2">
+          <Tooltip
+            label={!wallet ? 'Connect your wallet to submit' : undefined}
+          >
+            <Button type="submit" loading={loading}>
+              Publish{' '}
+              <SvgAirplane color="currentColor" width="14px" height="14px" />
+            </Button>
+          </Tooltip>
           <Button
             type="button"
             variant="secondary"
@@ -234,14 +242,6 @@ export function ProposalForm({
               </>
             )}
           </Button>
-          <Tooltip
-            label={!wallet ? 'Connect your wallet to submit' : undefined}
-          >
-            <Button type="submit" loading={loading}>
-              Publish{' '}
-              <SvgAirplane color="currentColor" width="14px" height="14px" />
-            </Button>
-          </Tooltip>
         </div>
       </form>
     </FormProvider>
