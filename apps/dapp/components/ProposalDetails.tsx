@@ -61,7 +61,7 @@ import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Execute } from './Execute'
 import SvgAbstain from './icons/Abstain'
-import { Progress } from './Progress'
+import { Progress, ProgressMany } from './Progress'
 import { getEnd } from './ProposalList'
 import { StakingModal, StakingMode } from './StakingModal'
 import { Vote, VoteChoice } from './Vote'
@@ -233,6 +233,10 @@ export function ProposalDetailsSidebar({
     undefined,
     localeOptions
   )
+  const abstainPercent = ((abstainVotes / totalWeight) * 100).toLocaleString(
+    undefined,
+    localeOptions
+  )
 
   if (!proposal) {
     return <div>Error, no proposal</div>
@@ -248,15 +252,21 @@ export function ProposalDetailsSidebar({
     <div>
       <h2 className="font-medium text-medium mb-6">Details</h2>
       <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
-        <p className="text-tertiary font-mono text-sm">Proposal</p>
+        <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden">
+          Proposal
+        </p>
         <p className="col-span-2 text-tertiary font-mono text-sm">
           # {proposal.id.toString().padStart(6, '0')}
         </p>
-        <p className="text-tertiary font-mono text-sm">Status</p>
+        <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden">
+          Status
+        </p>
         <div className="col-span-2 text-sm">
           <ProposalStatus status={proposal.status} />
         </div>
-        <p className="text-tertiary font-mono text-sm">Proposer</p>
+        <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden">
+          Proposer
+        </p>
         <p className="col-span-2">
           <CopyToClipboard value={proposal.proposer} />
         </p>
@@ -300,47 +310,37 @@ export function ProposalDetailsSidebar({
         <h3 className="text-medium mt-8 mb-6">Referendum status</h3>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
-        <p className="text-tertiary text-sm font-mono">Yours</p>
+      <div className="grid grid-cols-3 gap-2">
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Your vote
+        </p>
         {!walletVote && (
-          <p className="col-span-3 text-tertiary text-sm font-mono">
+          <p className="col-span-2 text-tertiary text-sm font-mono">
             {proposal.status === 'open' ? 'Pending...' : 'None'}
           </p>
         )}
         {walletVote === 'yes' && (
-          <p className="col-span-3 text-valid text-sm font-mono flex items-center gap-1">
+          <p className="col-span-2 text-valid text-sm font-mono flex items-center gap-1">
             <CheckIcon className="inline w-4" /> Yes
           </p>
         )}
         {walletVote === 'no' && (
-          <p className="col-span-3 text-error text-sm font-mono flex items-center gap-1">
+          <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
             <XIcon className="inline w-4" /> No
           </p>
         )}
         {walletVote === 'abstain' && (
-          <p className="col-span-3 text-secondary text-sm font-mono flex items-center gap-1">
+          <p className="col-span-2 text-secondary text-sm font-mono flex items-center gap-1">
             <SvgAbstain fill="currentColor" /> Abstain
           </p>
         )}
-        <p className="text-tertiary text-sm font-mono">Yes</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
-          <div className="col-span-3">
-            <Progress turnout={Number(yesPercent)} color="rgb(var(--valid))" />
-          </div>
-          <p className="text-sm font-mono text-body">{yesPercent}%</p>
-        </div>
-        <p className="text-tertiary text-sm font-mono">No</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
-          <div className="col-span-3">
-            <Progress turnout={Number(noPercent)} color="rgb(var(--error))" />
-          </div>
-          <p className="text-sm text-body font-mono">{noPercent}%</p>
-        </div>
-        <p className="text-tertiary text-sm font-mono">Threshold</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Threshold
+        </p>
+        <div className="col-span-2 grid items-center gap-2 grid-cols-4 text-right">
           <div className="col-span-3">
             <Progress
-              turnout={Number(threshold?.substring(0, threshold.length - 1))}
+              value={Number(threshold?.substring(0, threshold.length - 1))}
               color="rgb(var(--brand))"
             />
           </div>
@@ -348,11 +348,13 @@ export function ProposalDetailsSidebar({
         </div>
         {quorum && (
           <>
-            <p className="text-tertiary text-sm font-mono">Quorum</p>
-            <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+            <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+              Quorum
+            </p>
+            <div className="col-span-2 grid items-center gap-2 grid-cols-4 text-right">
               <div className="col-span-3">
                 <Progress
-                  turnout={Number(quorum?.substring(0, quorum.length - 1))}
+                  value={Number(quorum?.substring(0, quorum.length - 1))}
                   color="rgb(var(--brand))"
                 />
               </div>
@@ -360,15 +362,47 @@ export function ProposalDetailsSidebar({
             </div>
           </>
         )}
-        <p className="text-tertiary text-sm font-mono">Turnout</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Turnout
+        </p>
+        <div className="col-span-2 grid items-center gap-2 grid-cols-4 text-right">
           <div className="col-span-3">
-            <Progress
-              turnout={Number(turnoutPercent)}
-              color="rgb(var(--dark))"
+            <ProgressMany
+              data={[
+                {
+                  value: Number(yesPercent),
+                  color: 'rgb(var(--valid))',
+                },
+                {
+                  value: Number(noPercent),
+                  color: 'rgb(var(--error))',
+                },
+                {
+                  value: Number(abstainPercent),
+                  color: 'rgb(var(--dark))',
+                },
+              ]}
             />
           </div>
           <p className="text-sm text-body font-mono">{turnoutPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Yes
+        </p>
+        <div className="col-span-2 text-right">
+          <p className="text-sm font-mono text-body">{yesPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          No
+        </p>
+        <div className="col-span-2 text-right">
+          <p className="text-sm text-body font-mono">{noPercent}%</p>
+        </div>
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Abstain
+        </p>
+        <div className="col-span-2 text-right">
+          <p className="text-sm font-mono text-body">{abstainPercent}%</p>
         </div>
       </div>
     </div>
