@@ -128,11 +128,13 @@ function WalletConnect() {
   }
   return (
     <div className="my-4">
-      <Button full onClick={handleConnect}>
-        <>
-          <SvgWallet className="inline w-5 mr-1" fill="currentColor" />
-          <p className="text-sm my-2">connect wallet</p>
-        </>
+      <Button
+        full
+        onClick={handleConnect}
+        className="w-full hover:outline hover:outline-brand py-4"
+      >
+        <SvgWallet width="20px" height="20px" fill="currentColor" />
+        <p className="link-text text-light">Connect wallet</p>
       </Button>
     </div>
   )
