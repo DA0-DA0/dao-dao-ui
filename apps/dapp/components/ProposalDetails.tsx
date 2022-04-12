@@ -198,14 +198,14 @@ export function ProposalDetailsSidebar({
           tokenDecimals
         )
   )
-  const noVotes = Number(
+  const noVotes = 10000000 /*Number(
     multisig
       ? proposalTally.votes.no
       : convertMicroDenomToDenomWithDecimals(
           proposalTally.votes.no,
           tokenDecimals
         )
-  )
+  )*/
 
   const abstainVotes = Number(
     multisig
@@ -225,10 +225,14 @@ export function ProposalDetailsSidebar({
         )
   )
 
-  const turnoutPercent = (
-    ((yesVotes + noVotes + abstainVotes) / totalWeight) *
-    100
-  ).toLocaleString(undefined, localeOptions)
+  const turnoutTotal = yesVotes + noVotes + abstainVotes
+  const turnoutYesPercent = turnoutTotal ? (yesVotes / turnoutTotal) * 100 : 0
+  const turnoutNoPercent = turnoutTotal ? (noVotes / turnoutTotal) * 100 : 0
+  const turnoutAbstainPercent = turnoutTotal
+    ? (abstainVotes / turnoutTotal) * 100
+    : 0
+
+  const turnoutPercent = (turnoutTotal / totalWeight) * 100
   const yesPercent = ((yesVotes / totalWeight) * 100).toLocaleString(
     undefined,
     localeOptions
@@ -253,10 +257,12 @@ export function ProposalDetailsSidebar({
   )
   const thresholdValue = threshold?.endsWith('%')
     ? Number(threshold.slice(0, -1))
-    : undefined
+    : 0
   const quorumValue = quorum?.endsWith('%')
     ? Number(quorum.slice(0, -1))
     : undefined
+  const quorumInactiveOrMet =
+    quorumValue === undefined || turnoutPercent > quorumValue
 
   return (
     <div>
@@ -355,7 +361,7 @@ export function ProposalDetailsSidebar({
           </>
         )}
 
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+        {/* <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
           Needs
         </p>
         <div className="col-span-2 grid items-center">
@@ -386,9 +392,9 @@ export function ProposalDetailsSidebar({
               />
             </div>
           ) : null}
-        </div>
+        </div> */}
 
-        {!multisig && threshold !== undefined && thresholdValue !== undefined && (
+        {/* {!multisig && threshold !== undefined && thresholdValue !== undefined && (
           <>
             <p></p>
             <p className="col-span-2 text-sm text-body font-mono">
@@ -405,54 +411,80 @@ export function ProposalDetailsSidebar({
               <span className="text-brand">{quorum ?? threshold} turnout</span>
             </p>
           </>
-        )}
+        )} */}
 
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Has
-        </p>
-        <div className="col-span-2 grid items-center">
+        <div className="col-span-3 grid items-center">
           <ProgressMany
-            data={[
+            rows={[
               {
-                value: Number(yesPercent),
-                color: 'rgb(var(--valid))',
+                backgroundColor:
+                  quorumInactiveOrMet && thresholdValue !== undefined
+                    ? turnoutYesPercent > thresholdValue
+                      ? 'rgba(var(--valid), 0.3)'
+                      : turnoutNoPercent > thresholdValue
+                      ? 'rgba(var(--error), 0.3)'
+                      : 'rgba(var(--dark), 0.2)'
+                    : 'rgba(var(--dark), 0.2)',
+                data: [
+                  ...[
+                    {
+                      value: Number(yesPercent),
+                      color: 'rgb(var(--valid))',
+                    },
+                    {
+                      value: Number(noPercent),
+                      color: 'rgb(var(--error))',
+                    },
+                  ].sort((a, b) => b.value - a.value),
+                  {
+                    value: Number(abstainPercent),
+                    color: 'rgb(var(--dark))',
+                  },
+                ],
               },
               {
-                value: Number(noPercent),
-                color: 'rgb(var(--error))',
-              },
-              {
-                value: Number(abstainPercent),
-                color: 'rgb(var(--dark))',
+                data: [
+                  {
+                    value:
+                      quorumValue === undefined
+                        ? thresholdValue
+                        : (thresholdValue / 100) *
+                          Math.max(quorumValue, turnoutPercent),
+                    color: 'rgb(var(--brand))',
+                  },
+                ],
               },
             ]}
+            verticalBars={quorumValue !== undefined ? [{
+              value: quorumValue,
+              label: "Quorum",
+            }] : []}
           />
+          <p className="font-mono text-brand" style={{ fontSize: 8, lineHeight: 2 }}>Threshold</p>
         </div>
 
-        <p></p>
-        <p className="col-span-2 text-sm text-body font-mono">
-          <span className="text-valid">
-            {Number(yesPercent).toLocaleString(undefined, localeOptions)}% yes
-          </span>
-          , <span className="text-brand">{turnoutPercent}% turnout</span>
+        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Threshold
         </p>
-
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+        <div className="text-right">
+          <p className="text-sm font-mono text-body">{threshold}</p>
+        </div>
+        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
           Yes
         </p>
-        <div className="col-span-2 text-right">
+        <div className="text-right">
           <p className="text-sm font-mono text-body">{yesPercent}%</p>
         </div>
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
           No
         </p>
-        <div className="col-span-2 text-right">
+        <div className="text-right">
           <p className="text-sm text-body font-mono">{noPercent}%</p>
         </div>
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
           Abstain
         </p>
-        <div className="col-span-2 text-right">
+        <div className="text-right">
           <p className="text-sm font-mono text-body">{abstainPercent}%</p>
         </div>
       </div>
