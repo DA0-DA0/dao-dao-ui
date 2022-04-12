@@ -4,8 +4,19 @@
   "main": "index.tsx",
   "license": "MIT",
   "devDependencies": {
+    "@project/eslint-config": "*",
+    "@project/prettier-config": "*",
     "tsconfig": "*",
-    "config": "*",
     "typescript": "^4.5.3"
-  }
+  },
+  "eslintConfig": {
+    "extends": [
+      "@project/eslint-config"
+    ],
+    "ignorePatterns": [
+      "node_modules"
+    ],
+    "root": true
+  },
+  "prettier": "@project/prettier-config"
 }

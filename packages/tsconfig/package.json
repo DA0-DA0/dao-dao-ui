@@ -7,5 +7,6 @@
     "base.json",
     "nextjs.json",
     "react-library.json"
-  ]
+  ],
+  "prettier": "@project/prettier-config"
 }

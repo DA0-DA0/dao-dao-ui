@@ -9,7 +9,18 @@
     "build": "svgr --out-dir dist --typescript --icon --replace-attr-values \"#191D20={props.color}\" -- assets"
   },
   "devDependencies": {
-    "@svgr/cli": "^6.1.1",
-    "config": "*"
-  }
+    "@project/eslint-config": "*",
+    "@project/prettier-config": "*",
+    "@svgr/cli": "^6.1.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@project/eslint-config"
+    ],
+    "ignorePatterns": [
+      "node_modules"
+    ],
+    "root": true
+  },
+  "prettier": "@project/prettier-config"
 }

@@ -58,6 +58,8 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@next/bundle-analyzer": "^12.1.0",
+    "@project/eslint-config": "*",
+    "@project/prettier-config": "*",
     "@svgr/cli": "^6.1.1",
     "@types/jest": "^27.0.2",
     "@types/jsoneditor": "^9.5.1",
@@ -66,7 +68,6 @@
     "@types/react": "17.0.19",
     "autoprefixer": "^10.4.0",
     "babel-loader": "^8.2.3",
-    "config": "*",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "jest": "^27.3.0",
@@ -76,5 +77,15 @@
     "ts-jest": "^27.0.7",
     "tsconfig": "*",
     "typescript": "4.5.4"
-  }
+  },
+  "eslintConfig": {
+    "extends": [
+      "@project/eslint-config"
+    ],
+    "ignorePatterns": [
+      "node_modules"
+    ],
+    "root": true
+  },
+  "prettier": "@project/prettier-config"
 }
