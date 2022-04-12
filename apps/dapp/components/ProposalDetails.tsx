@@ -63,7 +63,7 @@ import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Execute } from './Execute'
 import SvgAbstain from './icons/Abstain'
-import { Progress, ProgressMany } from './Progress'
+import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
 import { StakingModal, StakingMode } from './StakingModal'
 import { Vote, VoteChoice } from './Vote'
@@ -369,7 +369,7 @@ export function ProposalDetailsSidebar({
             <p className="text-sm text-body font-mono">{threshold}</p>
           ) : thresholdValue !== undefined ? (
             <div className="col-span-3">
-              <ProgressMany
+              <Progress
                 data={
                   quorumValue === undefined
                     ? [
@@ -414,17 +414,10 @@ export function ProposalDetailsSidebar({
         )} */}
 
         <div className="col-span-3 grid items-center">
-          <ProgressMany
+          <Progress
             rows={[
               {
-                backgroundColor:
-                  quorumInactiveOrMet && thresholdValue !== undefined
-                    ? turnoutYesPercent > thresholdValue
-                      ? 'rgba(var(--valid), 0.3)'
-                      : turnoutNoPercent > thresholdValue
-                      ? 'rgba(var(--error), 0.3)'
-                      : 'rgba(var(--dark), 0.2)'
-                    : 'rgba(var(--dark), 0.2)',
+                thickness: 7,
                 data: [
                   ...[
                     {
@@ -443,6 +436,7 @@ export function ProposalDetailsSidebar({
                 ],
               },
               {
+                thickness: 3,
                 data: [
                   {
                     value:
@@ -450,14 +444,21 @@ export function ProposalDetailsSidebar({
                         ? thresholdValue
                         : (thresholdValue / 100) *
                           Math.max(quorumValue, turnoutPercent),
-                    color: 'rgb(var(--brand))',
+                    color: quorumInactiveOrMet && thresholdValue !== undefined
+                    ? turnoutYesPercent > thresholdValue
+                      ? 'rgb(var(--valid))'
+                      : turnoutNoPercent > thresholdValue
+                      ? 'rgb(var(--error))'
+                      : 'rgba(var(--brand), 0.8)'
+                    : 'rgba(var(--brand), 0.8)',
                   },
                 ],
               },
             ]}
             verticalBars={quorumValue !== undefined ? [{
               value: quorumValue,
-              label: "Quorum",
+              color: `rgba(var(--brand), ${quorumInactiveOrMet ? 0.4 : 0.8})`,
+              label: 'Quorum',
             }] : []}
           />
           <p className="font-mono text-brand" style={{ fontSize: 8, lineHeight: 2 }}>Threshold</p>
