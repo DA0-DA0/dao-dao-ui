@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --reach-tooltip: 1;
+}
+
+/* node_modules/@reach/tooltip/styles.css */
+[data-reach-tooltip] {
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 1;
+  @apply animate-slide-up-fade bg-white px-2 py-1 rounded shadow text-sm;
+}
+
 html {
   --logo-fill: #06090b;
 }
