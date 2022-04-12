@@ -12,7 +12,7 @@
   position: absolute;
   white-space: nowrap;
   z-index: 1;
-  @apply animate-slide-up-fade bg-white px-2 py-1 rounded shadow text-sm;
+  @apply animate-slide-up-fade bg-white px-2 py-1 rounded shadow text-xs;
 }
 
 html {
