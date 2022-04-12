@@ -198,15 +198,14 @@ export function ProposalDetailsSidebar({
           tokenDecimals
         )
   )
-  const noVotes = 10000000 /*Number(
+  const noVotes = Number(
     multisig
       ? proposalTally.votes.no
       : convertMicroDenomToDenomWithDecimals(
           proposalTally.votes.no,
           tokenDecimals
         )
-  )*/
-
+  )
   const abstainVotes = Number(
     multisig
       ? proposalTally.votes.abstain
@@ -255,7 +254,7 @@ export function ProposalDetailsSidebar({
     !!multisig,
     tokenDecimals
   )
-  const thresholdValue = threshold?.endsWith('%')
+  const thresholdValue = threshold.endsWith('%')
     ? Number(threshold.slice(0, -1))
     : 0
   const quorumValue = quorum?.endsWith('%')
@@ -444,7 +443,7 @@ export function ProposalDetailsSidebar({
                         ? thresholdValue
                         : (thresholdValue / 100) *
                           Math.max(quorumValue, turnoutPercent),
-                    color: quorumInactiveOrMet && thresholdValue !== undefined
+                    color: thresholdValue !== undefined
                     ? turnoutYesPercent > thresholdValue
                       ? 'rgb(var(--valid))'
                       : turnoutNoPercent > thresholdValue
