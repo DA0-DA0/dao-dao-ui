@@ -28,6 +28,7 @@ import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import { MarkdownPreview } from 'components/MarkdownPreview'
 import {
   cosmWasmSigningClient,
+  isMemberSelector,
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import {
@@ -36,6 +37,7 @@ import {
   proposalStartBlockSelector,
   proposalTallySelector,
   votingPowerAtHeightSelector,
+  WalletVote,
   walletVoteSelector,
 } from 'selectors/proposals'
 import { walletTokenBalanceLoading } from 'selectors/treasury'
@@ -181,6 +183,8 @@ export function ProposalDetailsSidebar({
     walletVoteSelector({ contractAddress, proposalId })
   )
 
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
+
   const configWrapper = new ContractConfigWrapper(sigConfig)
   const tokenDecimals = configWrapper.gov_token_decimals
 
@@ -247,6 +251,12 @@ export function ProposalDetailsSidebar({
     !!multisig,
     tokenDecimals
   )
+  const thresholdValue = threshold?.endsWith('%')
+    ? Number(threshold.slice(0, -1))
+    : undefined
+  const quorumValue = quorum?.endsWith('%')
+    ? Number(quorum.slice(0, -1))
+    : undefined
 
   return (
     <div>
@@ -311,81 +321,122 @@ export function ProposalDetailsSidebar({
       </div>
 
       <div className="grid grid-cols-3 gap-2">
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Your vote
-        </p>
-        {!walletVote && (
-          <p className="col-span-2 text-tertiary text-sm font-mono">
-            {proposal.status === 'open' ? 'Pending...' : 'None'}
-          </p>
-        )}
-        {walletVote === 'yes' && (
-          <p className="col-span-2 text-valid text-sm font-mono flex items-center gap-1">
-            <CheckIcon className="inline w-4" /> Yes
-          </p>
-        )}
-        {walletVote === 'no' && (
-          <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
-            <XIcon className="inline w-4" /> No
-          </p>
-        )}
-        {walletVote === 'abstain' && (
-          <p className="col-span-2 text-secondary text-sm font-mono flex items-center gap-1">
-            <SvgAbstain fill="currentColor" /> Abstain
-          </p>
-        )}
-        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Threshold
-        </p>
-        <div className="col-span-2 grid items-center gap-2 grid-cols-4 text-right">
-          <div className="col-span-3">
-            <Progress
-              value={Number(threshold?.substring(0, threshold.length - 1))}
-              color="rgb(var(--brand))"
-            />
-          </div>
-          <p className="text-sm text-body font-mono">{threshold}</p>
-        </div>
-        {quorum && (
+        {member && (
           <>
             <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-              Quorum
+              Your vote
             </p>
-            <div className="col-span-2 grid items-center gap-2 grid-cols-4 text-right">
-              <div className="col-span-3">
-                <Progress
-                  value={Number(quorum?.substring(0, quorum.length - 1))}
-                  color="rgb(var(--brand))"
-                />
-              </div>
-              <p className="text-sm text-body">{quorum}</p>
-            </div>
+
+            {walletVote === WalletVote.Yes ? (
+              <p className="col-span-2 text-valid text-sm font-mono flex items-center gap-1">
+                <CheckIcon className="inline w-4" /> Yes
+              </p>
+            ) : walletVote === WalletVote.No ? (
+              <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
+                <XIcon className="inline w-4" /> No
+              </p>
+            ) : walletVote === WalletVote.Abstain ? (
+              <p className="col-span-2 text-secondary text-sm font-mono flex items-center gap-1">
+                <SvgAbstain fill="currentColor" /> Abstain
+              </p>
+            ) : walletVote === WalletVote.Veto ? (
+              <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
+                <XIcon className="inline w-4" /> Veto
+              </p>
+            ) : walletVote ? (
+              <p className="col-span-2 text-secondary text-sm font-mono break-all">
+                Unknown: {walletVote}
+              </p>
+            ) : (
+              <p className="col-span-2 text-tertiary text-sm font-mono">
+                {proposal.status === 'open' ? 'Pending...' : 'None'}
+              </p>
+            )}
           </>
         )}
+
         <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Turnout
+          Needs
         </p>
-        <div className="col-span-2 grid items-center gap-2 grid-cols-4 text-right">
-          <div className="col-span-3">
-            <ProgressMany
-              data={[
-                {
-                  value: Number(yesPercent),
-                  color: 'rgb(var(--valid))',
-                },
-                {
-                  value: Number(noPercent),
-                  color: 'rgb(var(--error))',
-                },
-                {
-                  value: Number(abstainPercent),
-                  color: 'rgb(var(--dark))',
-                },
-              ]}
-            />
-          </div>
-          <p className="text-sm text-body font-mono">{turnoutPercent}%</p>
+        <div className="col-span-2 grid items-center">
+          {multisig ? (
+            <p className="text-sm text-body font-mono">{threshold}</p>
+          ) : thresholdValue !== undefined ? (
+            <div className="col-span-3">
+              <ProgressMany
+                data={
+                  quorumValue === undefined
+                    ? [
+                        {
+                          value: thresholdValue,
+                          color: 'rgb(var(--valid))',
+                        },
+                      ]
+                    : [
+                        {
+                          value: (thresholdValue / 100) * quorumValue,
+                          color: 'rgb(var(--valid))',
+                        },
+                        {
+                          value: (1 - thresholdValue / 100) * quorumValue,
+                          color: 'rgb(var(--brand))',
+                        },
+                      ]
+                }
+              />
+            </div>
+          ) : null}
         </div>
+
+        {!multisig && threshold !== undefined && thresholdValue !== undefined && (
+          <>
+            <p></p>
+            <p className="col-span-2 text-sm text-body font-mono">
+              <span className="text-valid">
+                {quorumValue === undefined
+                  ? threshold.slice(0, -1)
+                  : Number((thresholdValue / 100) * quorumValue).toLocaleString(
+                      undefined,
+                      localeOptions
+                    )}
+                % yes
+              </span>
+              ,{' '}
+              <span className="text-brand">{quorum ?? threshold} turnout</span>
+            </p>
+          </>
+        )}
+
+        <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+          Has
+        </p>
+        <div className="col-span-2 grid items-center">
+          <ProgressMany
+            data={[
+              {
+                value: Number(yesPercent),
+                color: 'rgb(var(--valid))',
+              },
+              {
+                value: Number(noPercent),
+                color: 'rgb(var(--error))',
+              },
+              {
+                value: Number(abstainPercent),
+                color: 'rgb(var(--dark))',
+              },
+            ]}
+          />
+        </div>
+
+        <p></p>
+        <p className="col-span-2 text-sm text-body font-mono">
+          <span className="text-valid">
+            {Number(yesPercent).toLocaleString(undefined, localeOptions)}% yes
+          </span>
+          , <span className="text-brand">{turnoutPercent}% turnout</span>
+        </p>
+
         <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
           Yes
         </p>

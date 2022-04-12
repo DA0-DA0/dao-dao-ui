@@ -7,8 +7,8 @@ import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { ContractCard } from 'components/ContractCard'
+import { isMemberSelector } from 'selectors/cosm'
 import {
-  isMemberSelector,
   memberDaoSelector,
   proposalCount,
 } from 'selectors/daos'

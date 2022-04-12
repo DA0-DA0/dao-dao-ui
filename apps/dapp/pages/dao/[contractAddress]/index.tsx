@@ -25,10 +25,9 @@ import {
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import { StakingModal, StakingMode } from 'components/StakingModal'
-import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
+import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
 import {
   daoSelector,
-  isMemberSelector,
   proposalCount,
   tokenConfig,
   totalStaked,
