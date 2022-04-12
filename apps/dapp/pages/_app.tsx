@@ -16,7 +16,6 @@ import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
 
-import '@reach/tooltip/styles.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
