@@ -9,8 +9,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint && prettier --check \"**/*.{ts,tsx,md}\"",
-    "format": "turbo run format && prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint && prettier --check \"**/*.{css,json,md}\"",
+    "format": "turbo run format && prettier --write \"**/*.{css,json,md}\"",
     "test": "turbo run test"
   },
   "devDependencies": {
