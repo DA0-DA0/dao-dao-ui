@@ -9,6 +9,18 @@ const tsConfig = fs.existsSync('tsconfig.json')
   ? path.resolve('types/tsconfig.json')
   : undefined
 
+/** @type {import("eslint").Linter.RuleEntry} */
+const noUnusedVarsConfig = [
+  'warn',
+  {
+    args: 'after-used',
+    argsIgnorePattern: '^_',
+    ignoreRestSiblings: false,
+    vars: 'all',
+    varsIgnorePattern: '^_',
+  },
+]
+
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
   extends: [
@@ -19,16 +31,7 @@ const eslintConfig = {
   plugins: ['tailwindcss'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
-    'no-unused-vars': [
-      'error',
-      {
-        args: 'after-used',
-        argsIgnorePattern: '^_',
-        ignoreRestSiblings: false,
-        vars: 'all',
-        varsIgnorePattern: '^_',
-      },
-    ],
+    'no-unused-vars': noUnusedVarsConfig,
     'react/jsx-sort-props': ['warn', { reservedFirst: ['key'] }],
     'tailwindcss/classnames-order': ['warn'],
   },
@@ -36,8 +39,14 @@ const eslintConfig = {
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
       extends: ['plugin:prettier/recommended'],
+      parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
+      },
+      plugins: ['@typescript-eslint'],
+      rules: {
+        'no-unused-vars': ['off'],
+        '@typescript-eslint/no-unused-vars': noUnusedVarsConfig,
       },
     },
   ],
