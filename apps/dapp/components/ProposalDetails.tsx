@@ -677,8 +677,7 @@ export function ProposalDetailsSidebar({
             </p>
 
             <p className="col-span-3 text-dark text-xs font-mono text-right">
-              {/* TODO: Do not need to show in full detail. */}
-              {secondsToWdhms(expiresInSeconds)}
+              {secondsToWdhms(expiresInSeconds, 2)}
             </p>
 
             {maxVotingSeconds !== undefined && (

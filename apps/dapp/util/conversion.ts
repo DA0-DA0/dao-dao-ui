@@ -129,7 +129,7 @@ export function humanReadableDuration(d: Duration) {
 }
 
 const secPerDay = 24 * 60 * 60
-export function secondsToWdhms(seconds: string | number): string {
+export function secondsToWdhms(seconds: string | number, numUnits = 5): string {
   const secondsInt = Number(seconds)
   const w = Math.floor(secondsInt / (secPerDay * 7))
   const d = Math.floor((secondsInt % (secPerDay * 7)) / secPerDay)
@@ -147,6 +147,8 @@ export function secondsToWdhms(seconds: string | number): string {
     [wDisplay, dDisplay, hDisplay, mDisplay, sDisplay]
       // Ignore empty values.
       .filter(Boolean)
+      // Only keep certain precision of units.
+      .slice(0, numUnits)
       // Separate with commas.
       .join(', ')
   )
