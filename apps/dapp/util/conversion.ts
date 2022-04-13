@@ -1,5 +1,6 @@
 import {
   Duration,
+  Expiration,
   Threshold as DaoThreshold,
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
@@ -128,7 +129,7 @@ export function humanReadableDuration(d: Duration) {
 }
 
 const secPerDay = 24 * 60 * 60
-export function secondsToWdhms(seconds: string): string {
+export function secondsToWdhms(seconds: string | number): string {
   const secondsInt = Number(seconds)
   const w = Math.floor(secondsInt / (secPerDay * 7))
   const d = Math.floor((secondsInt % (secPerDay * 7)) / secPerDay)
@@ -180,4 +181,16 @@ export function nativeTokenDecimals(denom: string): number | undefined {
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   return asset?.decimals
+}
+
+export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
+  if (!('at_time' in exp)) {
+    return undefined
+  }
+
+  const end = Number(exp['at_time'])
+  const nowSeconds = new Date().getTime() / 1000
+  const endSeconds = end / 1000000000
+
+  return endSeconds - nowSeconds
 }

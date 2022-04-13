@@ -54,7 +54,9 @@ import {
 } from 'util/contractConfigWrapper'
 import {
   convertMicroDenomToDenomWithDecimals,
+  expirationAtTimeToSecondsFromNow,
   getThresholdAndQuorumDisplay,
+  secondsToWdhms,
 } from 'util/conversion'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
@@ -263,9 +265,18 @@ export function ProposalDetailsSidebar({
   const quorumInactiveOrMet =
     quorumValue === undefined || turnoutPercent > quorumValue
 
+  const maxVotingSeconds =
+    'time' in sigConfig.config.max_voting_period
+      ? sigConfig.config.max_voting_period.time
+      : undefined
+  const expiresInSeconds =
+    proposal.expires && 'at_time' in proposal.expires
+      ? expirationAtTimeToSecondsFromNow(proposal.expires)
+      : undefined
+
   return (
     <div>
-      <h2 className="font-medium text-medium mb-6">Details</h2>
+      <h2 className="font-medium mb-6">Details</h2>
       <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
         <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden">
           Proposal
@@ -322,7 +333,7 @@ export function ProposalDetailsSidebar({
       </div>
 
       <div>
-        <h3 className="text-medium mt-8 mb-6">Referendum status</h3>
+        <h3 className="font-medium mt-8 mb-6">Referendum status</h3>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
@@ -356,6 +367,133 @@ export function ProposalDetailsSidebar({
               <p className="col-span-2 text-tertiary text-sm font-mono">
                 {proposal.status === 'open' ? 'Pending...' : 'None'}
               </p>
+            )}
+          </>
+        )}
+
+        <p className="col-span-3 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mb-3">
+          Ratio of votes
+        </p>
+
+        <p className="col-span-2 text-xs font-mono flex flex-row items-center gap-4">
+          <span className="text-valid">
+            Yes {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
+          </span>
+
+          <span className="text-error">
+            No {turnoutNoPercent.toLocaleString(undefined, localeOptions)}%
+          </span>
+        </p>
+        <p className="col-span-1 text-xs font-mono text-tertiary">
+          Abstain{' '}
+          {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}%
+        </p>
+
+        <div className="col-span-3 my-2">
+          <Progress
+            rows={[
+              {
+                thickness: 3,
+                data: [
+                  {
+                    value: Number(turnoutYesPercent),
+                    color: 'rgb(var(--valid))',
+                  },
+                  {
+                    value: Number(turnoutNoPercent),
+                    color: 'rgb(var(--error))',
+                  },
+                  {
+                    value: Number(turnoutAbstainPercent),
+                    color: 'rgb(var(--dark))',
+                  },
+                ],
+              },
+            ]}
+            // TODO: Handle absolute_count.
+            verticalBars={'absolute_count' in proposal.threshold ? [
+
+            ] : [
+              {
+                value: thresholdValue,
+                color: 'rgba(var(--dark), 0.5)',
+              },
+            ]}
+          />
+        </div>
+
+        <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
+          <p className="text-tertiary text-sm">Passing threshold</p>
+          <p className="text-tertiary text-xs font-mono">{threshold}</p>
+        </div>
+
+        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mt-4">
+          Voter turnout
+        </p>
+        <p className="text-tertiary text-xs font-mono text-right mt-4">
+          {turnoutPercent.toLocaleString(undefined, localeOptions)}%
+        </p>
+
+        <div className="col-span-3 my-2">
+          <Progress
+            rows={[
+              {
+                thickness: 3,
+                data: [
+                  {
+                    value: turnoutPercent,
+                    color: 'rgb(var(--dark))',
+                  },
+                ],
+              },
+            ]}
+            verticalBars={
+              quorumValue !== undefined
+                ? [
+                    {
+                      value: quorumValue,
+                      color: 'rgba(var(--dark), 0.5)',
+                    },
+                  ]
+                : []
+            }
+          />
+        </div>
+
+        {quorum && (
+          <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
+            <p className="text-tertiary text-sm">Quorum</p>
+            <p className="text-tertiary text-xs font-mono">{quorum}</p>
+          </div>
+        )}
+
+        {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
+          <>
+            <p className="col-span-3 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mt-4">
+              Time left
+            </p>
+
+            <p className="col-span-3 text-tertiary text-xs font-mono">
+              {secondsToWdhms(expiresInSeconds)}
+            </p>
+
+            {maxVotingSeconds !== undefined && (
+              <div className="col-span-3 my-2">
+                <Progress
+                  rows={[
+                    {
+                      thickness: 3,
+                      data: [
+                        {
+                          value: (expiresInSeconds / maxVotingSeconds) * 100,
+                          color: 'rgb(var(--dark))',
+                        },
+                      ],
+                    },
+                  ]}
+                  alignEnd
+                />
+              </div>
             )}
           </>
         )}
@@ -412,7 +550,7 @@ export function ProposalDetailsSidebar({
           </>
         )} */}
 
-        <div className="col-span-3 grid items-center">
+        {/* <div className="col-span-3 grid items-center">
           <Progress
             rows={[
               {
@@ -486,7 +624,7 @@ export function ProposalDetailsSidebar({
         </p>
         <div className="text-right">
           <p className="text-sm font-mono text-body">{abstainPercent}%</p>
-        </div>
+        </div> */}
       </div>
     </div>
   )
