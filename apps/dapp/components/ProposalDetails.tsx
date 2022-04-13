@@ -18,10 +18,10 @@ import {
   EyeOffIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { Button } from 'ui'
-import Tooltip from '@reach/tooltip'
 
 import { ProposalStatus } from '@components'
 
