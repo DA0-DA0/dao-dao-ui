@@ -322,37 +322,37 @@ export function ProposalDetailsSidebar({
 
       <div className="grid grid-cols-3 gap-2">
         {member && (
-          <>
+          <div className="col-span-3 flex flex-row justify-between items-center gap-2 mb-4">
             <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
               Your vote
             </p>
 
             {walletVote === WalletVote.Yes ? (
-              <p className="col-span-2 text-valid text-sm font-mono flex items-center gap-1">
+              <p className="text-valid text-sm font-mono flex items-center gap-1">
                 <CheckIcon className="inline w-4" /> Yes
               </p>
             ) : walletVote === WalletVote.No ? (
-              <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
+              <p className="text-error text-sm font-mono flex items-center gap-1">
                 <XIcon className="inline w-4" /> No
               </p>
             ) : walletVote === WalletVote.Abstain ? (
-              <p className="col-span-2 text-secondary text-sm font-mono flex items-center gap-1">
+              <p className="text-secondary text-sm font-mono flex items-center gap-1">
                 <SvgAbstain fill="currentColor" /> Abstain
               </p>
             ) : walletVote === WalletVote.Veto ? (
-              <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
+              <p className="text-error text-sm font-mono flex items-center gap-1">
                 <XIcon className="inline w-4" /> Veto
               </p>
             ) : walletVote ? (
-              <p className="col-span-2 text-secondary text-sm font-mono break-all">
+              <p className="text-secondary text-sm font-mono break-all">
                 Unknown: {walletVote}
               </p>
             ) : (
-              <p className="col-span-2 text-tertiary text-sm font-mono">
+              <p className="text-tertiary text-sm font-mono">
                 {proposal.status === 'open' ? 'Pending...' : 'None'}
               </p>
             )}
-          </>
+          </div>
         )}
 
         {threshold ? (
@@ -699,6 +699,30 @@ export function ProposalDetailsSidebar({
               </div>
             )}
           </>
+        )}
+
+        {threshold?.percent === 50 && yesVotes === noVotes && (
+          <div className="col-span-3 mt-4 text-sm">
+            <p className="text-tertiary font-mono">
+              Tie clarification
+            </p>
+
+            <p className="mt-2">
+              {"'Yes' will win a tie vote."}
+            </p>
+          </div>
+        )}
+
+        {abstainVotes === turnoutTotal && (
+          <div className="col-span-3 mt-4 text-sm">
+            <p className="text-tertiary font-mono">
+              All abstain clarification
+            </p>
+
+            <p className="mt-2">
+              When all abstain, a proposal will fail.
+            </p>
+          </div>
         )}
       </div>
     </div>
