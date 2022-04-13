@@ -234,23 +234,15 @@ export function ProposalDetailsSidebar({
     : 0
 
   const turnoutPercent = (turnoutTotal / totalWeight) * 100
-  const yesPercent = ((yesVotes / totalWeight) * 100).toLocaleString(
-    undefined,
-    localeOptions
-  )
-  const noPercent = ((noVotes / totalWeight) * 100).toLocaleString(
-    undefined,
-    localeOptions
-  )
-  const abstainPercent = ((abstainVotes / totalWeight) * 100).toLocaleString(
-    undefined,
-    localeOptions
-  )
+  const totalYesPercent = (yesVotes / totalWeight) * 100
+  const totalNoPercent = (noVotes / totalWeight) * 100
+  const totalAbstainPercent = (abstainVotes / totalWeight) * 100
 
   if (!proposal) {
     return <div>Error, no proposal</div>
   }
 
+  // TODO: Replace this function.
   const [threshold, quorum] = getThresholdAndQuorumDisplay(
     proposal.threshold,
     !!multisig,
@@ -262,8 +254,6 @@ export function ProposalDetailsSidebar({
   const quorumValue = quorum?.endsWith('%')
     ? Number(quorum.slice(0, -1))
     : undefined
-  const quorumInactiveOrMet =
-    quorumValue === undefined || turnoutPercent > quorumValue
 
   const maxVotingSeconds =
     'time' in sigConfig.config.max_voting_period
@@ -371,100 +361,213 @@ export function ProposalDetailsSidebar({
           </>
         )}
 
-        <p className="col-span-3 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mb-3">
-          Ratio of votes
-        </p>
+        {quorumValue === undefined ? (
+          <>
+            <div className="col-span-3 mb-3 flex flex-row justify-between items-center">
+              <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+                Turnout
+              </p>
 
-        <p className="col-span-2 text-xs font-mono flex flex-row items-center gap-4">
-          <span className="text-valid">
-            Yes {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
-          </span>
+              {totalYesPercent > thresholdValue ? (
+                <p className="text-xs text-valid font-mono">Yes</p>
+              ) : totalNoPercent > thresholdValue ? (
+                <p className="text-xs text-error font-mono">No</p>
+              ) : (
+                <p className="text-xs text-tertiary font-mono">
+                  {totalYesPercent > totalNoPercent
+                    ? "'Yes' leads"
+                    : totalNoPercent > totalYesPercent
+                    ? "'No' leads"
+                    : 'Tied'}
+                </p>
+              )}
+            </div>
 
-          <span className="text-error">
-            No {turnoutNoPercent.toLocaleString(undefined, localeOptions)}%
-          </span>
-        </p>
-        <p className="col-span-1 text-xs font-mono text-tertiary">
-          Abstain{' '}
-          {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}%
-        </p>
+            <p className="col-span-2 text-xs font-mono flex flex-row items-center gap-4">
+              {[
+                <span key="yes" className="text-valid">
+                  Yes {totalYesPercent.toLocaleString(undefined, localeOptions)}
+                  %
+                </span>,
+                <span key="no" className="text-error">
+                  No {totalNoPercent.toLocaleString(undefined, localeOptions)}%
+                </span>,
+              ].sort((a, b) => totalYesPercent - totalNoPercent)}
+            </p>
+            <p className="col-span-1 text-xs font-mono text-dark text-right">
+              Abstain{' '}
+              {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
+            </p>
 
-        <div className="col-span-3 my-2">
-          <Progress
-            rows={[
-              {
-                thickness: 3,
-                data: [
+            <div className="col-span-3 my-2">
+              <Progress
+                rows={[
                   {
-                    value: Number(turnoutYesPercent),
-                    color: 'rgb(var(--valid))',
+                    thickness: 3,
+                    data: [
+                      ...[
+                        {
+                          value: Number(totalYesPercent),
+                          color: 'rgb(var(--valid))',
+                        },
+                        {
+                          value: Number(totalNoPercent),
+                          color: 'rgb(var(--error))',
+                        },
+                      ].sort((a, b) => b.value - a.value),
+                      {
+                        value: Number(totalAbstainPercent),
+                        color: 'rgb(var(--dark))',
+                      },
+                    ],
                   },
+                ]}
+                // TODO: Handle absolute_count.
+                verticalBars={
+                  'absolute_count' in proposal.threshold
+                    ? []
+                    : [
+                        {
+                          value: thresholdValue,
+                          color: 'rgba(var(--dark), 0.5)',
+                        },
+                      ]
+                }
+              />
+            </div>
+
+            <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
+              <p className="text-tertiary text-sm">Passing threshold</p>
+              <p className="text-tertiary text-xs font-mono">{threshold}</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="col-span-3 flex flex-row justify-between items-center mb-3">
+              <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+                Ratio of votes
+              </p>
+
+              {proposal.status === 'open' || proposal.status === 'pending' ? (
+                <p className="text-xs text-tertiary font-mono">
+                  {turnoutYesPercent > turnoutNoPercent
+                    ? "'Yes' leads"
+                    : turnoutNoPercent > turnoutYesPercent
+                    ? "'No' leads"
+                    : 'Tied'}
+                </p>
+              ) : turnoutYesPercent > thresholdValue ? (
+                <p className="text-xs text-valid font-mono">Yes</p>
+              ) : turnoutNoPercent > thresholdValue ? (
+                <p className="text-xs text-error font-mono">No</p>
+              ) : (
+                // TODO: Decide what to show if proposal is no longer open but nothing is past the threshold.
+                <p className="text-xs text-tertiary font-mono">Tied</p>
+              )}
+            </div>
+
+            <p className="col-span-2 text-xs font-mono flex flex-row items-center gap-4">
+              {[
+                <span key="yes" className="text-valid">
+                  Yes{' '}
+                  {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
+                </span>,
+                <span key="no" className="text-error">
+                  No {turnoutNoPercent.toLocaleString(undefined, localeOptions)}
+                  %
+                </span>,
+              ].sort((a, b) => turnoutYesPercent - turnoutNoPercent)}
+            </p>
+            <p className="col-span-1 text-xs font-mono text-dark text-right">
+              Abstain{' '}
+              {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}%
+            </p>
+
+            <div className="col-span-3 my-2">
+              <Progress
+                rows={[
                   {
-                    value: Number(turnoutNoPercent),
-                    color: 'rgb(var(--error))',
+                    thickness: 3,
+                    data: [
+                      ...[
+                        {
+                          value: Number(turnoutYesPercent),
+                          color: 'rgb(var(--valid))',
+                        },
+                        {
+                          value: Number(turnoutNoPercent),
+                          color: 'rgb(var(--error))',
+                        },
+                      ].sort((a, b) => b.value - a.value),
+                      {
+                        value: Number(turnoutAbstainPercent),
+                        color: 'rgb(var(--dark))',
+                      },
+                    ],
                   },
+                ]}
+                // TODO: Handle absolute_count.
+                verticalBars={
+                  'absolute_count' in proposal.threshold
+                    ? []
+                    : [
+                        {
+                          value: thresholdValue,
+                          color: 'rgba(var(--dark), 0.5)',
+                        },
+                      ]
+                }
+              />
+            </div>
+
+            <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
+              <p className="text-tertiary text-sm">Passing threshold</p>
+              <p className="text-tertiary text-xs font-mono">{threshold}</p>
+            </div>
+
+            <div className="col-span-3 flex flex-row justify-between mt-4 mb-3">
+              <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
+                Turnout
+              </p>
+
+              {turnoutPercent > quorumValue && (
+                <p className="text-xs text-valid font-mono flex flex-row items-center gap-1">
+                  Quorum reached <CheckIcon className="inline w-4" />
+                </p>
+              )}
+            </div>
+
+            <p className="col-span-3 text-tertiary text-xs font-mono">
+              {turnoutPercent.toLocaleString(undefined, localeOptions)}%
+            </p>
+
+            <div className="col-span-3 my-2">
+              <Progress
+                rows={[
                   {
-                    value: Number(turnoutAbstainPercent),
-                    color: 'rgb(var(--dark))',
+                    thickness: 3,
+                    data: [
+                      {
+                        value: turnoutPercent,
+                        color: 'rgb(var(--dark))',
+                      },
+                    ],
                   },
-                ],
-              },
-            ]}
-            // TODO: Handle absolute_count.
-            verticalBars={'absolute_count' in proposal.threshold ? [
-
-            ] : [
-              {
-                value: thresholdValue,
-                color: 'rgba(var(--dark), 0.5)',
-              },
-            ]}
-          />
-        </div>
-
-        <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
-          <p className="text-tertiary text-sm">Passing threshold</p>
-          <p className="text-tertiary text-xs font-mono">{threshold}</p>
-        </div>
-
-        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mt-4">
-          Voter turnout
-        </p>
-        <p className="text-tertiary text-xs font-mono text-right mt-4">
-          {turnoutPercent.toLocaleString(undefined, localeOptions)}%
-        </p>
-
-        <div className="col-span-3 my-2">
-          <Progress
-            rows={[
-              {
-                thickness: 3,
-                data: [
+                ]}
+                verticalBars={[
                   {
-                    value: turnoutPercent,
-                    color: 'rgb(var(--dark))',
+                    value: quorumValue,
+                    color: 'rgba(var(--dark), 0.5)',
                   },
-                ],
-              },
-            ]}
-            verticalBars={
-              quorumValue !== undefined
-                ? [
-                    {
-                      value: quorumValue,
-                      color: 'rgba(var(--dark), 0.5)',
-                    },
-                  ]
-                : []
-            }
-          />
-        </div>
+                ]}
+              />
+            </div>
 
-        {quorum && (
-          <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
-            <p className="text-tertiary text-sm">Quorum</p>
-            <p className="text-tertiary text-xs font-mono">{quorum}</p>
-          </div>
+            <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
+              <p className="text-tertiary text-sm">Quorum</p>
+              <p className="text-tertiary text-xs font-mono">{quorum}</p>
+            </div>
+          </>
         )}
 
         {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
@@ -473,12 +576,13 @@ export function ProposalDetailsSidebar({
               Time left
             </p>
 
-            <p className="col-span-3 text-tertiary text-xs font-mono">
+            <p className="col-span-3 text-dark text-xs font-mono text-right">
+              {/* TODO: Do not need to show in full detail. */}
               {secondsToWdhms(expiresInSeconds)}
             </p>
 
             {maxVotingSeconds !== undefined && (
-              <div className="col-span-3 my-2">
+              <div className="col-span-3 mt-1">
                 <Progress
                   rows={[
                     {
@@ -497,134 +601,6 @@ export function ProposalDetailsSidebar({
             )}
           </>
         )}
-
-        {/* <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Needs
-        </p>
-        <div className="col-span-2 grid items-center">
-          {multisig ? (
-            <p className="text-sm text-body font-mono">{threshold}</p>
-          ) : thresholdValue !== undefined ? (
-            <div className="col-span-3">
-              <Progress
-                data={
-                  quorumValue === undefined
-                    ? [
-                        {
-                          value: thresholdValue,
-                          color: 'rgb(var(--valid))',
-                        },
-                      ]
-                    : [
-                        {
-                          value: (thresholdValue / 100) * quorumValue,
-                          color: 'rgb(var(--valid))',
-                        },
-                        {
-                          value: (1 - thresholdValue / 100) * quorumValue,
-                          color: 'rgb(var(--brand))',
-                        },
-                      ]
-                }
-              />
-            </div>
-          ) : null}
-        </div> */}
-
-        {/* {!multisig && threshold !== undefined && thresholdValue !== undefined && (
-          <>
-            <p></p>
-            <p className="col-span-2 text-sm text-body font-mono">
-              <span className="text-valid">
-                {quorumValue === undefined
-                  ? threshold.slice(0, -1)
-                  : Number((thresholdValue / 100) * quorumValue).toLocaleString(
-                      undefined,
-                      localeOptions
-                    )}
-                % yes
-              </span>
-              ,{' '}
-              <span className="text-brand">{quorum ?? threshold} turnout</span>
-            </p>
-          </>
-        )} */}
-
-        {/* <div className="col-span-3 grid items-center">
-          <Progress
-            rows={[
-              {
-                thickness: 7,
-                data: [
-                  ...[
-                    {
-                      value: Number(yesPercent),
-                      color: 'rgb(var(--valid))',
-                    },
-                    {
-                      value: Number(noPercent),
-                      color: 'rgb(var(--error))',
-                    },
-                  ].sort((a, b) => b.value - a.value),
-                  {
-                    value: Number(abstainPercent),
-                    color: 'rgb(var(--dark))',
-                  },
-                ],
-              },
-              {
-                thickness: 3,
-                data: [
-                  {
-                    value:
-                      quorumValue === undefined
-                        ? thresholdValue
-                        : (thresholdValue / 100) *
-                          Math.max(quorumValue, turnoutPercent),
-                    color: thresholdValue !== undefined
-                    ? turnoutYesPercent > thresholdValue
-                      ? 'rgb(var(--valid))'
-                      : turnoutNoPercent > thresholdValue
-                      ? 'rgb(var(--error))'
-                      : 'rgba(var(--brand), 0.8)'
-                    : 'rgba(var(--brand), 0.8)',
-                  },
-                ],
-              },
-            ]}
-            verticalBars={quorumValue !== undefined ? [{
-              value: quorumValue,
-              color: `rgba(var(--brand), ${quorumInactiveOrMet ? 0.4 : 0.8})`,
-              label: 'Quorum',
-            }] : []}
-          />
-          <p className="font-mono text-brand" style={{ fontSize: 8, lineHeight: 2 }}>Threshold</p>
-        </div>
-
-        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Threshold
-        </p>
-        <div className="text-right">
-          <p className="text-sm font-mono text-body">{threshold}</p>
-        </div>
-        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Yes
-        </p>
-        <div className="text-right">
-          <p className="text-sm font-mono text-body">{yesPercent}%</p>
-        </div>
-        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          No
-        </p>
-        <div className="text-right">
-          <p className="text-sm text-body font-mono">{noPercent}%</p>
-        </div>
-        <p className="col-span-2 text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-          Abstain
-        </p>
-        <div className="text-right">
-          <p className="text-sm font-mono text-body">{abstainPercent}%</p>
-        </div> */}
       </div>
     </div>
   )
