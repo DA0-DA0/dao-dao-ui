@@ -91,7 +91,7 @@ export const SpendComponent: TemplateComponent = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount}).`
+        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount}).`
       )
     }
     const cw20 = cw20BalanceInfo.find(
@@ -108,7 +108,7 @@ export const SpendComponent: TemplateComponent = ({
       )
       return (
         Number(microAmount) <= Number(cw20.balance.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${cw20.info.symbol}).`
+        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} $${cw20.info.symbol}).`
       )
     }
     // If there are no native tokens in the treasury the native balances query

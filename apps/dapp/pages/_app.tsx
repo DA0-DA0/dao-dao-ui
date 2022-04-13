@@ -16,7 +16,6 @@ import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
 
-
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
