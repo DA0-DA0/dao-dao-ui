@@ -16,7 +16,6 @@ import SidebarLayout from 'components/Layout'
 import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
 
-
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
@@ -55,10 +54,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ErrorBoundary title="An unexpected error occured.">
         <Suspense fallback={<LoadingScreen />}>
           <ThemeProvider
-            updateTheme={updateTheme}
-            theme={theme}
             accentColor={accentColor}
             setAccentColor={setAccentColor}
+            theme={theme}
+            updateTheme={updateTheme}
           >
             {loaded && (
               <Layout>

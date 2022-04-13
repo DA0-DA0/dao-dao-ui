@@ -1,7 +1,7 @@
-import { Config } from 'util/contractConfigWrapper'
-
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
+
+import { Config } from 'util/contractConfigWrapper'
 
 import {
   AddTokenComponent,

@@ -5,8 +5,8 @@ export function TooltipsDisplay({ selected }: { selected: TooltipResponse }) {
 
   return (
     <div>
-      <h2 className="primary-text mb-2 capitalize">{withSpaces}</h2>
-      <p className="prose dark:prose-invert prose-sm">{selected.content}</p>
+      <h2 className="mb-2 capitalize primary-text">{withSpaces}</h2>
+      <p className="prose prose-sm dark:prose-invert">{selected.content}</p>
     </div>
   )
 }

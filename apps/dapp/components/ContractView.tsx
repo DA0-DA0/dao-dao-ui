@@ -44,7 +44,7 @@ export function GradientHero({ children }: { children: ReactNode }) {
       }}
     >
       <div
-        className="p-6 flex flex-col justify-between"
+        className="flex flex-col justify-between p-6"
         style={{
           background: `linear-gradient(270deg, ${endStop} 0%, rgba(17, 18, 19, 0) 50%, ${endStop} 100%)`,
         }}
@@ -66,17 +66,17 @@ export function StarButton({
 
   return (
     <button
-      className="text-left w-20 flex flex-row items-center link-text text-brand"
-      style={accentColor ? { color: accentColor } : {}}
+      className="flex flex-row items-center w-20 text-left text-brand link-text"
       onClick={(_e) => onPin()}
+      style={accentColor ? { color: accentColor } : {}}
     >
       {pinned ? (
         <StarSolid
-          className="inline w-[20px] mr-1 text-brand"
+          className="inline mr-1 w-[20px] text-brand"
           style={accentColor ? { color: accentColor } : {}}
         />
       ) : (
-        <StarOutline className="inline w-[20px] mr-1" />
+        <StarOutline className="inline mr-1 w-[20px]" />
       )}
       {pinned ? 'Starred' : 'Star'}
     </button>
@@ -105,25 +105,25 @@ export function HeroContractHeader({
   imgUrl?: string | null
 }) {
   return (
-    <div className="flex items-center flex-col mt-2">
+    <div className="flex flex-col items-center mt-2">
       {imgUrl && HEADER_IMAGES_ENABLED ? (
         <div
-          className="rounded-full bg-center bg-cover w-[95px] h-[95px]"
+          aria-label="DAO's Custom Logo"
+          className="w-[95px] h-[95px] bg-center bg-cover rounded-full"
+          role="img"
           style={{
             backgroundImage: `url(${imgUrl})`,
           }}
-          role="img"
-          aria-label="DAO's Custom Logo"
         ></div>
       ) : (
-        <Logo width={85} height={85} alt="DAO DAO logo" />
+        <Logo alt="DAO DAO logo" height={85} width={85} />
       )}
       <div className="flex flex-col items-center">
-        <h1 className="inline header-text mt-5">{name}</h1>
+        <h1 className="inline mt-5 header-text">{name}</h1>
         <EstablishedDate address={address} />
       </div>
-      <div className="mb-4 mt-2">
-        <p className="body-text whitespace-pre-wrap">{description}</p>
+      <div className="mt-2 mb-4">
+        <p className="whitespace-pre-wrap body-text">{description}</p>
       </div>
     </div>
   )
@@ -135,7 +135,7 @@ export function HeroContractHorizontalInfoSection({
   children: ReactNode
 }) {
   return (
-    <div className="flex flex-row items-center gap-1 caption-text">
+    <div className="flex flex-row gap-1 items-center caption-text">
       {children}
     </div>
   )
@@ -148,8 +148,8 @@ export function HeroContractHorizontalInfo({
 }) {
   const childList = Children.toArray(children)
   return (
-    <div className="w-full border-y border-inactive py-[20px]">
-      <ul className="list-none flex justify-around text-sm flex-wrap gap-2">
+    <div className="py-[20px] w-full border-y border-inactive">
+      <ul className="flex flex-wrap gap-2 justify-around text-sm list-none">
         {Children.map(childList, (child) => (
           <li>{child}</li>
         ))}
@@ -169,7 +169,7 @@ export function GovInfoListItem({
 }) {
   return (
     <li className="flex flex-row items-center caption-text">
-      <span className="inline flex items-center gap-1 mr-1">
+      <span className="inline flex gap-1 items-center mr-1">
         {icon} {text}:
       </span>
       {value}
@@ -182,7 +182,7 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
   return (
     <div
-      className="rounded-full bg-brand w-4 h-4 bg-center bg-cover"
+      className="w-4 h-4 bg-brand bg-center bg-cover rounded-full"
       style={{
         ...(!!accentColor && { backgroundColor: accentColor }),
         backgroundImage: iconURI ? `url(${iconURI})` : '',
@@ -193,7 +193,7 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
 export function BalanceListItem({ children }: { children: ReactNode }) {
   return (
-    <li className="caption-text flex flex-row items-center flex-wrap gap-2">
+    <li className="flex flex-row flex-wrap gap-2 items-center caption-text">
       {children}
     </li>
   )
@@ -212,7 +212,7 @@ export function TreasuryBalances({ address }: { address: string }) {
   }))
 
   return (
-    <ul className="list-none mt-6 flex flex-col gap-2">
+    <ul className="flex flex-col gap-2 mt-6 list-none">
       {nativeBalances.map((coin, idx) => {
         const symbol = nativeTokenLabel(coin.denom)
         const icon = nativeTokenLogoURI(coin.denom)
@@ -282,7 +282,7 @@ export function ContractProposalsDispaly({
         <Link href={member ? proposalCreateLink : '#'} passHref>
           <a>
             <Tooltip label={tooltip}>
-              <Button size="sm" disabled={!!tooltip || loading}>
+              <Button disabled={!!tooltip || loading} size="sm">
                 {loading ? 'Loading...' : 'New proposal'}
               </Button>
             </Tooltip>
@@ -310,20 +310,20 @@ export function BalanceCard({
   loading: boolean
 }) {
   return (
-    <div className="py-4 px-6 rounded-lg w-full border border-default mt-2">
-      <h2 className="caption-text font-mono">{title}</h2>
+    <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
+      <h2 className="font-mono caption-text">{title}</h2>
       {loading ? (
-        <div className="animate-spin-medium inline-block mt-2">
+        <div className="inline-block mt-2 animate-spin-medium">
           <LogoNoBorder />
         </div>
       ) : (
-        <div className="mt-2 title-text flex flex-row flex-wrap items-center gap-2 mb-[22px]">
+        <div className="flex flex-row flex-wrap gap-2 items-center mt-2 mb-[22px] title-text">
           <BalanceIcon />
           {amount} ${denom}
         </div>
       )}
       <div className="flex justify-end">
-        <Button size="sm" variant="secondary" onClick={onManage}>
+        <Button onClick={onManage} size="sm" variant="secondary">
           Manage
         </Button>
       </div>

@@ -60,18 +60,18 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
     <Controller
       control={control}
       name={label}
-      rules={{ validate: validate }}
-      shouldUnregister
       render={({ field: { onChange, onBlur, ref, value } }) => (
         <CodeMirror
+          className="rounded"
           onBeforeChange={(_editor, _data, value) => onChange(value)}
           onBlur={(_instance, _event) => onBlur()}
           options={cmOptions}
           ref={ref}
-          className="rounded"
           value={value}
         />
       )}
+      rules={{ validate: validate }}
+      shouldUnregister
     />
   )
 }

@@ -45,13 +45,13 @@ function InfoCard({
   children: ReactNode
 }) {
   return (
-    <div className="bg-primary rounded-lg w-80 h-48 mt-2 px-6 py-4 flex flex-col justify-around bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-60">
-      <div className="bg-secondary rounded h-fit w-fit p-2 w-9 h-8 flex items-center justify-center">
+    <div className="flex flex-col justify-around py-4 px-6 mt-2 w-80 h-48 bg-clip-padding bg-primary bg-opacity-60 rounded-lg backdrop-blur-2xl backdrop-filter">
+      <div className="flex justify-center items-center p-2 w-fit w-9 h-fit h-8 bg-secondary rounded">
         {children}
       </div>
       <div>
         <h3 className="header-text">{title}</h3>
-        <p className="body-text mt-[12px]">{body}</p>
+        <p className="mt-[12px] body-text">{body}</p>
       </div>
     </div>
   )
@@ -60,16 +60,16 @@ function InfoCard({
 const Home: NextPage = () => {
   return (
     <GradientWrapper>
-      <nav className="border-b border-inactive py-4 w-full px-6 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-40">
-        <div className="flex max-w-screen-lg items-center justify-between mx-auto">
+      <nav className="py-4 px-6 w-full bg-clip-padding bg-opacity-40 border-b border-inactive backdrop-blur-xl backdrop-filter">
+        <div className="flex justify-between items-center mx-auto max-w-screen-lg">
           <Link href="/" passHref>
             <a className="flex items-center">
               <div className="mr-3">
-                <Logo height={32} width={32} alt={`${SITE_TITLE} Logo`} />
+                <Logo alt={`${SITE_TITLE} Logo`} height={32} width={32} />
               </div>
-              <p className="font-medium mr-1">DAO</p>
+              <p className="mr-1 font-medium">DAO</p>
               <p
-                className="font-medium text-secondary font-semibold"
+                className="font-medium font-semibold text-secondary"
                 style={{ transform: 'scaleY(-1) scaleX(-1)' }}
               >
                 DAO
@@ -81,14 +81,14 @@ const Home: NextPage = () => {
               <ThemeToggle />
             </div>
             <a
+              className="flex gap-2 items-center"
               href="https://docs.daodao.zone"
-              className="flex items-center gap-2"
             >
               Documentation
               <SvgArrowUpRight
                 color="currentColor"
-                width="10px"
                 height="10px"
+                width="10px"
               />
             </a>
             <div className="hidden md:block">
@@ -97,77 +97,77 @@ const Home: NextPage = () => {
           </div>
         </div>
       </nav>
-      <h1 className="hero-text text-[54px] text-primary text-center mt-[33vh]">
+      <h1 className="mt-[33vh] text-[54px] text-center text-primary hero-text">
         DAOs for everyone
       </h1>
-      <p className="text-lg text-center max-w-lg mx-auto my-[40px] text-secondary px-2">
+      <p className="px-2 my-[40px] mx-auto max-w-lg text-lg text-center text-secondary">
         We provide tooling for creating, deploying, managing, and joining DAOs.
         Built with love on Juno.
       </p>
-      <div className="mb-12 mx-auto">
+      <div className="mx-auto mb-12">
         <EnterAppButton />
       </div>
       <div className="mx-3">
-        <div className="flex flex-row gap-3 flex-wrap justify-center">
+        <div className="flex flex-row flex-wrap gap-3 justify-center">
           <InfoCard
-            title="Create DAOs"
             body="Make DAOs with a visual interface. No command line required."
+            title="Create DAOs"
           >
             <PlusSmIcon />
           </InfoCard>
           <InfoCard
-            title="Propose and vote"
             body="Create and vote on proposals without writing code."
+            title="Propose and vote"
           >
             <ScaleIcon />
           </InfoCard>
           <InfoCard
-            title="Launch tokens"
             body="Launch your token. Share them across any chain that supports IBC."
+            title="Launch tokens"
           >
             <StarIcon />
           </InfoCard>
         </div>
-        <div className="caption-text font-mono grid grid-cols-1 md:grid-cols-3 my-10 gap-2">
-          <div className="flex flex-wrap gap-6 text-sm justify-center md:justify-left items-center">
+        <div className="grid grid-cols-1 gap-2 my-10 font-mono md:grid-cols-3 caption-text">
+          <div className="flex flex-wrap gap-6 justify-center items-center text-sm md:justify-left">
             <p>DAO DAO v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}</p>
             <a
+              className="hover:text-primary transition"
               href="https://www.junonetwork.io/"
-              target="_blank"
               rel="noreferrer"
-              className="transition hover:text-primary"
+              target="_blank"
             >
               Powered by Juno
               <ArrowNarrowRightIcon
-                className="w-6 h-4 inline mb-0.5 font-light"
+                className="inline mb-0.5 w-6 h-4 font-light"
                 style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
               />
             </a>
           </div>
           <div className="flex gap-4 justify-center items-center">
             <a
+              className="hover:text-primary transition"
               href="https://github.com/DA0-DA0"
-              target="_blank"
               rel="noreferrer"
-              className="transition hover:text-primary"
+              target="_blank"
             >
-              <SvgGithub fill="currentColor" width="20px" height="20px" />
+              <SvgGithub fill="currentColor" height="20px" width="20px" />
             </a>
             <a
+              className="hover:text-primary transition"
               href="https://twitter.com/da0_da0"
-              target="_blank"
               rel="noreferrer"
-              className="transition hover:text-primary"
+              target="_blank"
             >
-              <SvgTwitter fill="currentColor" width="20px" height="20px" />
+              <SvgTwitter fill="currentColor" height="20px" width="20px" />
             </a>
             <a
+              className="hover:text-primary transition"
               href="https://discord.gg/sAaGuyW3D2"
-              target="_blank"
               rel="noreferrer"
-              className="transition hover:text-primary"
+              target="_blank"
             >
-              <SvgDiscord fill="currentColor" width="20px" height="20px" />
+              <SvgDiscord fill="currentColor" height="20px" width="20px" />
             </a>
           </div>
         </div>

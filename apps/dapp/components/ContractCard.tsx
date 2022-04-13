@@ -42,14 +42,14 @@ function DIYLogo({
   return (
     <Link href={href}>
       <a>
-        <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center m-2 bg-card from-transparent justify-between hover:shadow-brand hover:shadow-md hover:outline-brand hover:outline hover:outline-1 relative">
-          <div className="absolute w-full h-[110px] top-0 left-0 bg-gradient-to-t to-dark from-transparent opacity-[8%] rounded-lg "></div>
+        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline shadow hover:shadow-md hover:shadow-brand transition-shadow">
+          <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="relative">
               {children}
               {token && (
                 <div
-                  className="bg-center rounded-full absolute -bottom-1 -right-[10px] border border-light"
+                  className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
                   style={{
                     width: '32px',
                     height: '32px',
@@ -58,17 +58,17 @@ function DIYLogo({
                 ></div>
               )}
             </div>
-            <h3 className="text-md font-semibold truncate max-w-full mt-3">
+            <h3 className="mt-3 max-w-full font-semibold truncate text-md">
               {title}
             </h3>
-            <p className="text-secondary text-xs font-mono text-center mt-1 break-words line-clamp-3">
+            <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
               {body}
             </p>
           </div>
-          <div className="flex flex-col items-left gap-1">
+          <div className="flex flex-col gap-1 items-left">
             {balance && (
               <p className="text-sm">
-                <SvgDao fill="currentColor" className="inline w-4 mr-2 mb-1" />
+                <SvgDao className="inline mr-2 mb-1 w-4" fill="currentColor" />
                 {convertMicroDenomToDenomWithDecimals(
                   balance,
                   NATIVE_DECIMALS
@@ -79,17 +79,17 @@ function DIYLogo({
             {proposals != undefined && (
               <p className="text-sm">
                 <SvgPencil
+                  className="inline mr-2 mb-1 w-4"
                   fill="currentColor"
-                  className="inline w-4 mr-2 mb-1"
                 />
                 {proposals} proposal{weight != 1 && 's'}
               </p>
             )}
             {weight != undefined && (
-              <p className="text-success text-sm text-valid">
+              <p className="text-sm text-valid text-success">
                 <SvgVotes
+                  className="inline mr-2 mb-1 h-5"
                   fill="currentColor"
-                  className="inline h-5 mr-2 mb-1"
                 />
                 {weight} vote{weight != 1 && 's'}
               </p>
@@ -125,24 +125,24 @@ export function ContractCard({
   return (
     <div className="relative">
       <DIYLogo
-        title={name}
+        balance={balance}
         body={description}
         href={href}
-        weight={weight}
         proposals={proposals}
-        balance={balance}
+        title={name}
+        weight={weight}
       >
         {imgUrl && CARD_IMAGES_ENABLED ? (
           <div
-            className="rounded-full bg-center bg-cover w-[80px] h-[80px]"
+            aria-label="DAO's Custom Logo"
+            className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
+            role="img"
             style={{
               backgroundImage: `url(${imgUrl})`,
             }}
-            role="img"
-            aria-label="DAO's Custom Logo"
           ></div>
         ) : (
-          <Logo height={80} width={80} alt={name} />
+          <Logo alt={name} height={80} width={80} />
         )}
       </DIYLogo>
       <button
@@ -169,8 +169,8 @@ export function MysteryContractCard({
   href: string
 }) {
   return (
-    <DIYLogo title={title} body={body} href={href} token={false}>
-      <div className="w-[70px] h-[70px] flex justify-center items-center">
+    <DIYLogo body={body} href={href} title={title} token={false}>
+      <div className="flex justify-center items-center w-[70px] h-[70px]">
         <PlusIcon className="w-9" />
       </div>
     </DIYLogo>
@@ -179,10 +179,10 @@ export function MysteryContractCard({
 
 export function LoadingContractCard() {
   return (
-    <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center  m-2 bg-card from-transparent justify-center relative">
-      <div className="absolute w-full h-[110px] top-0 left-0 bg-gradient-to-t to-dark from-transparent opacity-[8%] rounded-lg "></div>
-      <div className="w-[70px] h-[70px] flex justify-center items-center">
-        <div className="animate-spin inline-block">
+    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
+      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
+      <div className="flex justify-center items-center w-[70px] h-[70px]">
+        <div className="inline-block animate-spin">
           <Logo height={72} width={72} />
         </div>
       </div>

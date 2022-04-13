@@ -6,7 +6,7 @@ export function InputErrorMessage({
   error: FieldError | undefined
 }) {
   if (error && error.message) {
-    return <span className="text-xs text-error mt-1 ml-1">{error.message}</span>
+    return <span className="mt-1 ml-1 text-xs text-error">{error.message}</span>
   }
   return null
 }

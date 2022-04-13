@@ -38,10 +38,10 @@ export function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <div className="form-check form-switch">
       <input
-        type="checkbox"
-        role="switch"
         defaultChecked={true}
         disabled={disabled}
+        role="switch"
+        type="checkbox"
         {...register(label, { validate, onChange })}
       />
     </div>

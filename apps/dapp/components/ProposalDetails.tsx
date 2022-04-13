@@ -246,40 +246,40 @@ export function ProposalDetailsSidebar({
 
   return (
     <div>
-      <h2 className="font-medium text-medium mb-6">Details</h2>
+      <h2 className="mb-6 font-medium text-medium">Details</h2>
       <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
-        <p className="text-tertiary font-mono text-sm">Proposal</p>
-        <p className="col-span-2 text-tertiary font-mono text-sm">
+        <p className="font-mono text-sm text-tertiary">Proposal</p>
+        <p className="col-span-2 font-mono text-sm text-tertiary">
           # {proposal.id.toString().padStart(6, '0')}
         </p>
-        <p className="text-tertiary font-mono text-sm">Status</p>
+        <p className="font-mono text-sm text-tertiary">Status</p>
         <div className="col-span-2 text-sm">
           <ProposalStatus status={proposal.status} />
         </div>
-        <p className="text-tertiary font-mono text-sm">Proposer</p>
+        <p className="font-mono text-sm text-tertiary">Proposer</p>
         <p className="col-span-2">
           <CopyToClipboard value={proposal.proposer} />
         </p>
         {proposal.status === 'executed' &&
         proposalExecutionTXHashState === 'loading' ? (
           <>
-            <p className="text-tertiary font-mono text-sm">TX</p>
+            <p className="font-mono text-sm text-tertiary">TX</p>
             <p className="col-span-2">Loading...</p>
           </>
         ) : !!proposalExecutionTXHash ? (
           <>
             {CHAIN_TXN_URL_PREFIX ? (
               <a
-                className="text-tertiary font-mono text-sm flex flex-row items-center gap-1"
-                target="_blank"
-                rel="noopener noreferrer"
+                className="flex flex-row gap-1 items-center font-mono text-sm text-tertiary"
                 href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+                rel="noopener noreferrer"
+                target="_blank"
               >
                 TX
                 <ExternalLinkIcon width={16} />
               </a>
             ) : (
-              <p className="text-tertiary font-mono text-sm">TX</p>
+              <p className="font-mono text-sm text-tertiary">TX</p>
             )}
             <p className="col-span-2">
               <CopyToClipboard value={proposalExecutionTXHash} />
@@ -288,8 +288,8 @@ export function ProposalDetailsSidebar({
         ) : null}
         {proposal.status === 'open' && (
           <>
-            <p className="text-tertiary font-mono text-sm">Expires</p>
-            <p className="col-span-2 text-sm font-mono">
+            <p className="font-mono text-sm text-tertiary">Expires</p>
+            <p className="col-span-2 font-mono text-sm">
               {getEnd(proposal.expires, proposal.status) || 'never'}
             </p>
           </>
@@ -297,78 +297,78 @@ export function ProposalDetailsSidebar({
       </div>
 
       <div>
-        <h3 className="text-medium mt-8 mb-6">Referendum status</h3>
+        <h3 className="mt-8 mb-6 text-medium">Referendum status</h3>
       </div>
 
       <div className="grid grid-cols-4 gap-2">
-        <p className="text-tertiary text-sm font-mono">Yours</p>
+        <p className="font-mono text-sm text-tertiary">Yours</p>
         {!walletVote && (
-          <p className="col-span-3 text-tertiary text-sm font-mono">
+          <p className="col-span-3 font-mono text-sm text-tertiary">
             Pending...
           </p>
         )}
         {walletVote === 'yes' && (
-          <p className="col-span-3 text-valid text-sm font-mono flex items-center gap-1">
+          <p className="flex col-span-3 gap-1 items-center font-mono text-sm text-valid">
             <CheckIcon className="inline w-4" /> Yes
           </p>
         )}
         {walletVote === 'no' && (
-          <p className="col-span-3 text-error text-sm font-mono flex items-center gap-1">
+          <p className="flex col-span-3 gap-1 items-center font-mono text-sm text-error">
             <XIcon className="inline w-4" /> No
           </p>
         )}
         {walletVote === 'abstain' && (
-          <p className="col-span-3 text-secondary text-sm font-mono flex items-center gap-1">
+          <p className="flex col-span-3 gap-1 items-center font-mono text-sm text-secondary">
             <SvgAbstain fill="currentColor" /> Abstain
           </p>
         )}
-        <p className="text-tertiary text-sm font-mono">Yes</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+        <p className="font-mono text-sm text-tertiary">Yes</p>
+        <div className="flex grid grid-cols-4 col-span-3 gap-2 items-center text-right">
           <div className="col-span-3">
-            <Progress turnout={Number(yesPercent)} color="rgb(var(--valid))" />
+            <Progress color="rgb(var(--valid))" turnout={Number(yesPercent)} />
           </div>
-          <p className="text-sm font-mono text-body">{yesPercent}%</p>
+          <p className="font-mono text-sm text-body">{yesPercent}%</p>
         </div>
-        <p className="text-tertiary text-sm font-mono">No</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+        <p className="font-mono text-sm text-tertiary">No</p>
+        <div className="flex grid grid-cols-4 col-span-3 gap-2 items-center text-right">
           <div className="col-span-3">
-            <Progress turnout={Number(noPercent)} color="rgb(var(--error))" />
+            <Progress color="rgb(var(--error))" turnout={Number(noPercent)} />
           </div>
-          <p className="text-sm text-body font-mono">{noPercent}%</p>
+          <p className="font-mono text-sm text-body">{noPercent}%</p>
         </div>
-        <p className="text-tertiary text-sm font-mono">Threshold</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+        <p className="font-mono text-sm text-tertiary">Threshold</p>
+        <div className="flex grid grid-cols-4 col-span-3 gap-2 items-center text-right">
           <div className="col-span-3">
             <Progress
-              turnout={Number(threshold?.substring(0, threshold.length - 1))}
               color="rgb(var(--brand))"
+              turnout={Number(threshold?.substring(0, threshold.length - 1))}
             />
           </div>
-          <p className="text-sm text-body font-mono">{threshold}</p>
+          <p className="font-mono text-sm text-body">{threshold}</p>
         </div>
         {quorum && (
           <>
-            <p className="text-tertiary text-sm font-mono">Quorum</p>
-            <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+            <p className="font-mono text-sm text-tertiary">Quorum</p>
+            <div className="flex grid grid-cols-4 col-span-3 gap-2 items-center text-right">
               <div className="col-span-3">
                 <Progress
-                  turnout={Number(quorum?.substring(0, quorum.length - 1))}
                   color="rgb(var(--brand))"
+                  turnout={Number(quorum?.substring(0, quorum.length - 1))}
                 />
               </div>
               <p className="text-sm text-body">{quorum}</p>
             </div>
           </>
         )}
-        <p className="text-tertiary text-sm font-mono">Turnout</p>
-        <div className="col-span-3 flex items-center gap-2 grid grid-cols-4 text-right">
+        <p className="font-mono text-sm text-tertiary">Turnout</p>
+        <div className="flex grid grid-cols-4 col-span-3 gap-2 items-center text-right">
           <div className="col-span-3">
             <Progress
-              turnout={Number(turnoutPercent)}
               color="rgb(var(--dark))"
+              turnout={Number(turnoutPercent)}
             />
           </div>
-          <p className="text-sm text-body font-mono">{turnoutPercent}%</p>
+          <p className="font-mono text-sm text-body">{turnoutPercent}%</p>
         </div>
       </div>
     </div>
@@ -396,10 +396,10 @@ function ProposalMessageTemplateListItem({
     <FormProvider {...formMethods}>
       <form>
         <template.component
-          getLabel={(field) => field}
-          readOnly
           contractAddress={contractAddress}
+          getLabel={(field) => field}
           multisig={multisig}
+          readOnly
         />
       </form>
     </FormProvider>
@@ -429,10 +429,10 @@ function ProposalMessageTemplateList({
     return data ? (
       <ProposalMessageTemplateListItem
         key={index}
-        template={data.template}
-        values={data.values}
         contractAddress={contractAddress}
         multisig={multisig}
+        template={data.template}
+        values={data.values}
       />
     ) : (
       // If no message template found, render raw message.
@@ -516,12 +516,12 @@ export function ProposalDetails({
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="header-text text-xl">{proposal.title}</h1>
+        <h1 className="text-xl header-text">{proposal.title}</h1>
       </div>
       <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />
       </div>
-      <p className="caption-text font-mono mb-[12px] mt-[36px]">Messages</p>
+      <p className="mt-[36px] mb-[12px] font-mono caption-text">Messages</p>
       <div className="max-w-3xl">
         {decodedMessages?.length ? (
           showRaw ? (
@@ -530,10 +530,10 @@ export function ProposalDetails({
             />
           ) : (
             <ProposalMessageTemplateList
-              msgs={proposal.msgs}
               contractAddress={contractAddress}
-              multisig={multisig}
               fromCosmosMsgProps={fromCosmosMsgProps}
+              msgs={proposal.msgs}
+              multisig={multisig}
             />
           )
         ) : (
@@ -543,19 +543,19 @@ export function ProposalDetails({
       {!!decodedMessages.length && (
         <div className="mt-4">
           <Button
+            onClick={() => setShowRaw((s) => !s)}
             size="sm"
             variant="secondary"
-            onClick={() => setShowRaw((s) => !s)}
           >
             {showRaw ? (
               <>
                 Hide raw data
-                <EyeOffIcon className="inline h-4 stroke-current ml-1" />
+                <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
               </>
             ) : (
               <>
                 Show raw data
-                <EyeIcon className="inline h-4 stroke-current ml-1" />
+                <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
           </Button>
@@ -563,9 +563,10 @@ export function ProposalDetails({
       )}
       {proposal.status === 'passed' && (
         <>
-          <p className="caption-text font-mono mb-[12px] mt-[30px]">Status</p>
+          <p className="mt-[30px] mb-[12px] font-mono caption-text">Status</p>
           <Execute
             loading={loading}
+            messages={proposal.msgs.length}
             onExecute={() =>
               executeProposalExecute(
                 proposalId,
@@ -582,14 +583,12 @@ export function ProposalDetails({
                 setLoading
               )
             }
-            messages={proposal.msgs.length}
           />
         </>
       )}
-      <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
+      <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
       {proposal.status === 'open' && !walletVote && votingPower !== 0 && (
         <Vote
-          voterWeight={weightPercent}
           loading={loading}
           onVote={(position) =>
             executeProposalVote(
@@ -607,13 +606,14 @@ export function ProposalDetails({
               setLoading
             )
           }
+          voterWeight={weightPercent}
         />
       )}
       {walletVote && (
         <p className="body-text">You voted {walletVote} on this proposal.</p>
       )}
       {votingPower === 0 && (
-        <p className="body-text max-w-prose">
+        <p className="max-w-prose body-text">
           You must have voting power at the time of proposal creation to vote.{' '}
           {!multisig && (
             <button className="underline" onClick={() => setShowStakng(true)}>
@@ -622,12 +622,12 @@ export function ProposalDetails({
           )}
           {!multisig && showStaking && (
             <StakingModal
-              defaultMode={StakingMode.Stake}
-              contractAddress={contractAddress}
-              claimAmount={0}
-              onClose={() => setShowStakng(false)}
-              beforeExecute={() => setTokenBalancesLoading(true)}
               afterExecute={() => setTokenBalancesLoading(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              claimAmount={0}
+              contractAddress={contractAddress}
+              defaultMode={StakingMode.Stake}
+              onClose={() => setShowStakng(false)}
             />
           )}
         </p>

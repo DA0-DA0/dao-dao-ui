@@ -1,5 +1,11 @@
 import { useRecoilValue } from 'recoil'
 
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
+import { AddressInput } from '@components/input/AddressInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
 import {
   Config,
   contractConfigSelector,
@@ -15,12 +21,6 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { makeExecutableMintMessage, makeMintMessage } from 'util/messagehelpers'
-
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
-import { ArrowRightIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   FromCosmosMsgProps,
@@ -59,43 +59,43 @@ export const MintComponent: TemplateComponent = ({
   const govTokenDenom = config.gov_token_symbol
 
   return (
-    <div className="flex justify-between items-center bg-primary p-3 rounded-lg my-2">
-      <div className="flex items-center gap-4 gap-y-2 flex-wrap">
-        <div className="flex items-center flex-wrap gap-2 w-24">
+    <div className="flex justify-between items-center p-3 my-2 bg-primary rounded-lg">
+      <div className="flex flex-wrap gap-4 gap-y-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center w-24">
           <h2 className="text-3xl">🌿</h2>
           <h2>Mint</h2>
         </div>
         <div className="flex flex-col">
           <NumberInput
-            small
+            disabled={readOnly}
+            error={errors?.amount}
+            label={getLabel('amount')}
             onPlusMinus={[
               () =>
                 setValue(getLabel('amount'), (Number(amount) + 1).toString()),
               () =>
                 setValue(getLabel('amount'), (Number(amount) - 1).toString()),
             ]}
-            label={getLabel('amount')}
             register={register}
-            error={errors?.amount}
+            small
             validation={[validateRequired, validatePositive]}
-            disabled={readOnly}
           />
           <InputErrorMessage error={errors?.amount} />
         </div>
         {govTokenDenom && (
-          <p className="font-mono text-secondary text-sm uppercase">
+          <p className="font-mono text-sm text-secondary uppercase">
             ${govTokenDenom}
           </p>
         )}
         <div className="flex gap-2 items-center">
-          <p className="secondary-text font-mono">{'->'}</p>
+          <p className="font-mono secondary-text">{'->'}</p>
           <div className="flex flex-col">
             <AddressInput
+              disabled={readOnly}
+              error={errors?.to}
               label={getLabel('to')}
               register={register}
-              error={errors?.to}
               validation={[validateRequired, validateAddress]}
-              disabled={readOnly}
             />
             <InputErrorMessage error={errors?.to} />
           </div>

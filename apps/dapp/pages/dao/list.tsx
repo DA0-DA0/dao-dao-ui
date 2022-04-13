@@ -52,13 +52,11 @@ export function DaoCard({
 
   return (
     <ContractCard
-      name={config.name}
+      balance={dao.balance}
       description={config.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenomWithDecimals(dao.weight, DECIMALS)}
-      balance={dao.balance}
-      proposals={dao.proposals}
-      pinned={pinned}
+      imgUrl={config.image_url}
+      name={config.name}
       onPin={() => {
         if (pinned) {
           setPinnedDaos((p) => p.filter((a) => a !== address))
@@ -67,7 +65,9 @@ export function DaoCard({
           addToken(dao.gov_token)
         }
       }}
-      imgUrl={config.image_url}
+      pinned={pinned}
+      proposals={dao.proposals}
+      weight={convertMicroDenomToDenomWithDecimals(dao.weight, DECIMALS)}
     />
   )
 }
@@ -75,9 +75,9 @@ export function DaoCard({
 export function MysteryDaoCard() {
   return (
     <MysteryContractCard
-      title="Create a DAO"
       body="You are not staking with any DAOs. Why not create one?"
       href="/dao/create"
+      title="Create a DAO"
     />
   )
 }
@@ -91,7 +91,7 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
             return (
               dao?.dao &&
               dao?.address?.length > 0 && (
-                <DaoCard dao={dao} address={dao.address} key={idx} />
+                <DaoCard key={idx} address={dao.address} dao={dao} />
               )
             )
           })
@@ -135,17 +135,17 @@ const DaoList: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="p-6 w-full col-span-4">
+      <div className="col-span-4 p-6 w-full">
         <div className="flex justify-between items-center">
           <h1 className="header-text">DAOs</h1>
           <Link href="/dao/create" passHref>
             <Button size="sm">
-              Create a DAO <PlusIcon className="inline h-4 w-4" />
+              Create a DAO <PlusIcon className="inline w-4 h-4" />
             </Button>
           </Link>
         </div>
         <div className="mt-6">
-          <h2 className="primary-text mb-2 flex items-center gap-1">
+          <h2 className="flex gap-1 items-center mb-2 primary-text">
             <UserIcon className="inline w-4" />
             Your pinned DAOs
           </h2>
@@ -156,15 +156,15 @@ const DaoList: NextPage = () => {
         <div className="mt-6">
           {/* Community DAO header */}
           <div className="flex flex-row justify-between">
-            <h2 className="primary-text mb-2 flex items-center gap-1">
+            <h2 className="flex gap-1 items-center mb-2 primary-text">
               <SparklesIcon className="inline w-4" />
               Community DAOs
             </h2>
             {!!LEGACY_DAO_CODE_ID && (
               <CodeIdSelect
-                versions={DAO_VERSIONS}
                 currentVersion={version}
                 onSelect={(v) => setDaosVersion(v)}
+                versions={DAO_VERSIONS}
               />
             )}
           </div>
@@ -172,16 +172,16 @@ const DaoList: NextPage = () => {
             <LoadableDaoCards daos={daos} />
           </div>
           <div className="flex justify-center mt-4">
-            <Paginator count={total} page={page} limit={limit} />
+            <Paginator count={total} limit={limit} page={page} />
           </div>
         </div>
       </div>
 
-      <div className="col-start-5 col-span-2 p-6 min-h-screen">
+      <div className="col-span-2 col-start-5 p-6 min-h-screen">
         <h2 className="font-medium title-text">Overview</h2>
         <div className="mt-6">
-          <ul className="list-none ml-2 leading-relaxed">
-            <li className="body-text flex items-center gap-2">
+          <ul className="ml-2 leading-relaxed list-none">
+            <li className="flex gap-2 items-center body-text">
               <LibraryIcon className="inline w-4" />
               {total} active DAOs
             </li>

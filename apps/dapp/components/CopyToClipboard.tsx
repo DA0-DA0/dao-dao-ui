@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
+import { CheckCircleIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 import { useThemeContext } from 'ui'
 
@@ -60,12 +60,12 @@ export function CopyToClipboardAccent({
 
   return (
     <button
-      className="transition text-sm underline hover:no-underline text-brand"
-      style={accentColor ? { color: accentColor } : {}}
+      className="text-sm text-brand underline hover:no-underline transition"
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)
       }}
+      style={accentColor ? { color: accentColor } : {}}
     >
       {concatAddressImpl(value, 12, 7)}
     </button>

@@ -11,15 +11,15 @@ import Nav from './Nav'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
-    <div className="p-6 pb-2 sticky top-0 flex flex-row w-full justify-between items-center text-lg">
+    <div className="flex sticky top-0 flex-row justify-between items-center p-6 pb-2 w-full text-lg">
       <Link href="/starred">
         <a>
-          <Logo height={38} width={38} alt={`${SITE_TITLE} Logo`} />
+          <Logo alt={`${SITE_TITLE} Logo`} height={38} width={38} />
         </a>
       </Link>
-      <div className="text-error font-mono">Beta</div>
+      <div className="font-mono text-error">Beta</div>
 
-      <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
+      <div className="cursor-pointer lg:hidden" onClick={onMenuClick}>
         <MenuIcon className="w-8" />
       </div>
     </div>
@@ -30,13 +30,13 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const [mobileMenuOpened, setMenuOpened] = useState(false)
 
   return (
-    <div className="lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))] w-full h-full">
-      <div className="hidden lg:w-[264px] lg:block">
+    <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
+      <div className="hidden lg:block lg:w-[264px]">
         <Nav />
       </div>
       <div className="lg:hidden">
         {mobileMenuOpened ? (
-          <div className="fixed w-screen h-screen z-10 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 overflow-none">
+          <div className="fixed z-10 w-screen h-screen bg-clip-padding bg-opacity-60 backdrop-blur-xl backdrop-filter overflow-none">
             <Nav onMenuClick={() => setMenuOpened(!mobileMenuOpened)} />
           </div>
         ) : (
