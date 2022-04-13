@@ -21,6 +21,7 @@ import {
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { Button } from 'ui'
+import Tooltip from '@reach/tooltip'
 
 import { ProposalStatus } from '@components'
 
@@ -156,6 +157,11 @@ function executeProposalExecute(
       onDone()
     })
 }
+
+const PASSING_THRESHOLD_TOOLTIP =
+  "A proposal must attain this proportion of 'Yes' votes to pass."
+const QUORUM_TOOLTIP =
+  'This proportion of voting weight must vote for this proposal to pass.'
 
 export function ProposalDetailsSidebar({
   contractAddress,
@@ -449,32 +455,34 @@ export function ProposalDetailsSidebar({
                   }}
                 />
 
-                <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
-                  <p className="text-tertiary text-sm">
-                    Passing threshold:{' '}
-                    <span className="font-mono">{threshold.display}</span>
-                  </p>
+                <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
+                  <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
+                    <p className="text-tertiary text-sm">
+                      Passing threshold:{' '}
+                      <span className="font-mono">{threshold.display}</span>
+                    </p>
 
-                  <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
-                    {turnoutYesPercent >= threshold.percent ? (
-                      <>
-                        Reached{' '}
-                        <CheckIcon
-                          className="inline w-4"
-                          color="rgb(var(--valid))"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        Not met{' '}
-                        <XIcon
-                          className="inline w-4"
-                          color="rgb(var(--error))"
-                        />
-                      </>
-                    )}
-                  </p>
-                </div>
+                    <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
+                      {turnoutYesPercent >= threshold.percent ? (
+                        <>
+                          Reached{' '}
+                          <CheckIcon
+                            className="inline w-4"
+                            color="rgb(var(--valid))"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          Not met{' '}
+                          <XIcon
+                            className="inline w-4"
+                            color="rgb(var(--error))"
+                          />
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </Tooltip>
               </div>
 
               <div className="col-span-3 flex flex-row justify-between mt-4 mb-1">
@@ -525,31 +533,34 @@ export function ProposalDetailsSidebar({
                   }}
                 />
 
-                <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
-                  <p className="text-tertiary text-sm">
-                    Quorum: <span className="font-mono">{quorum.display}</span>
-                  </p>
+                <Tooltip label={QUORUM_TOOLTIP}>
+                  <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
+                    <p className="text-tertiary text-sm">
+                      Quorum:{' '}
+                      <span className="font-mono">{quorum.display}</span>
+                    </p>
 
-                  <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
-                    {turnoutPercent >= quorum.percent ? (
-                      <>
-                        Reached{' '}
-                        <CheckIcon
-                          className="inline w-4"
-                          color="rgb(var(--valid))"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        Not met{' '}
-                        <XIcon
-                          className="inline w-4"
-                          color="rgb(var(--error))"
-                        />
-                      </>
-                    )}
-                  </p>
-                </div>
+                    <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
+                      {turnoutPercent >= quorum.percent ? (
+                        <>
+                          Reached{' '}
+                          <CheckIcon
+                            className="inline w-4"
+                            color="rgb(var(--valid))"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          Not met{' '}
+                          <XIcon
+                            className="inline w-4"
+                            color="rgb(var(--error))"
+                          />
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </Tooltip>
               </div>
             </>
           ) : (
@@ -639,32 +650,34 @@ export function ProposalDetailsSidebar({
                   }}
                 />
 
-                <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
-                  <p className="text-tertiary text-sm">
-                    Passing threshold:{' '}
-                    <span className="font-mono">{threshold.display}</span>
-                  </p>
+                <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
+                  <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
+                    <p className="text-tertiary text-sm">
+                      Passing threshold:{' '}
+                      <span className="font-mono">{threshold.display}</span>
+                    </p>
 
-                  <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
-                    {totalYesPercent >= threshold.percent ? (
-                      <>
-                        Reached{' '}
-                        <CheckIcon
-                          className="inline w-4"
-                          color="rgb(var(--valid))"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        Not met{' '}
-                        <XIcon
-                          className="inline w-4"
-                          color="rgb(var(--error))"
-                        />
-                      </>
-                    )}
-                  </p>
-                </div>
+                    <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
+                      {totalYesPercent >= threshold.percent ? (
+                        <>
+                          Reached{' '}
+                          <CheckIcon
+                            className="inline w-4"
+                            color="rgb(var(--valid))"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          Not met{' '}
+                          <XIcon
+                            className="inline w-4"
+                            color="rgb(var(--error))"
+                          />
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </Tooltip>
               </div>
             </>
           )
@@ -703,25 +716,17 @@ export function ProposalDetailsSidebar({
 
         {threshold?.percent === 50 && yesVotes === noVotes && (
           <div className="col-span-3 mt-4 text-sm">
-            <p className="text-tertiary font-mono">
-              Tie clarification
-            </p>
+            <p className="text-tertiary font-mono">Tie clarification</p>
 
-            <p className="mt-2">
-              {"'Yes' will win a tie vote."}
-            </p>
+            <p className="mt-2">{"'Yes' will win a tie vote."}</p>
           </div>
         )}
 
         {abstainVotes === turnoutTotal && (
           <div className="col-span-3 mt-4 text-sm">
-            <p className="text-tertiary font-mono">
-              All abstain clarification
-            </p>
+            <p className="text-tertiary font-mono">All abstain clarification</p>
 
-            <p className="mt-2">
-              When all abstain, a proposal will fail.
-            </p>
+            <p className="mt-2">When all abstain, a proposal will fail.</p>
           </div>
         )}
       </div>
