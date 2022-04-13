@@ -19,6 +19,16 @@ const eslintConfig = {
   plugins: ['tailwindcss'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
+    'no-unused-vars': [
+      'error',
+      {
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+        ignoreRestSiblings: false,
+        vars: 'all',
+        varsIgnorePattern: '^_',
+      },
+    ],
     'react/jsx-sort-props': ['warn', { reservedFirst: ['key'] }],
     'tailwindcss/classnames-order': ['warn'],
   },
