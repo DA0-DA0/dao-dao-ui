@@ -99,7 +99,7 @@ export const StakeComponent: TemplateComponent = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't stake more tokens than are in the DAO tresury (${humanReadableAmount}).`
+        `Can't stake more tokens than are in the DAO treasury (${humanReadableAmount}).`
       )
     }
     // If there are no native tokens in the treasury the native balances query
