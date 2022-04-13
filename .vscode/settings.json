@@ -2,7 +2,34 @@
   "workbench.colorCustomizations": {
     "activityBar.background": "#38027e"
   },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "css.validate": false,
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  "eslint.onIgnoredFiles": "warn",
   "eslint.workingDirectories": [
-    "./apps/dapp", 
-  ],
+    {
+      "pattern": "apps/*",
+      "!cwd": false
+    },
+    {
+      "pattern": "packages/*",
+      "!cwd": false
+    }
+  ]
 }
