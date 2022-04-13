@@ -358,46 +358,46 @@ export function ProposalDetailsSidebar({
         {threshold ? (
           quorum ? (
             <>
-              <div className="col-span-3 flex flex-row justify-between items-center mb-3">
-                <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-                  Ratio of votes
-                </p>
+              <p className="col-span-3 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mb-3">
+                Ratio of votes
+              </p>
 
-                {proposal.status === 'open' || proposal.status === 'pending' ? (
-                  <p className="text-xs text-tertiary font-mono">
-                    {turnoutYesPercent > turnoutNoPercent
-                      ? "'Yes' leads"
-                      : turnoutNoPercent > turnoutYesPercent
-                      ? "'No' leads"
-                      : 'Tied'}
-                  </p>
-                ) : turnoutYesPercent >= threshold.percent ? (
-                  <p className="text-xs text-valid font-mono">Yes</p>
-                ) : turnoutNoPercent >= threshold.percent ? (
-                  <p className="text-xs text-error font-mono">No</p>
-                ) : (
-                  <p className="text-xs text-tertiary font-mono">Closed</p>
-                )}
-              </div>
-
-              <p className="col-span-2 text-xs font-mono flex flex-row items-center gap-4">
+              <div className="col-span-3 text-xs font-mono flex flex-row items-center gap-4">
                 {[
-                  <span key="yes" className="text-valid">
+                  <p key="yes" className="text-valid">
                     Yes{' '}
                     {turnoutYesPercent.toLocaleString(undefined, localeOptions)}
                     %
-                  </span>,
-                  <span key="no" className="text-error">
+                  </p>,
+                  <p key="no" className="text-error">
                     No{' '}
                     {turnoutNoPercent.toLocaleString(undefined, localeOptions)}%
-                  </span>,
-                ].sort(() => turnoutYesPercent - turnoutNoPercent)}
-              </p>
-              <p className="col-span-1 text-xs font-mono text-dark text-right">
-                Abstain{' '}
-                {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}
-                %
-              </p>
+                  </p>,
+                ]
+                  .sort(() => yesVotes - noVotes)
+                  .map((elem, idx) => (
+                    <div
+                      key={idx}
+                      className={
+                        idx === 0 && yesVotes !== noVotes ? 'flex-1' : ''
+                      }
+                    >
+                      {elem}
+                    </div>
+                  ))}
+                <p
+                  className={`text-dark ${
+                    yesVotes === noVotes ? 'flex-1 text-right' : ''
+                  }`}
+                >
+                  Abstain{' '}
+                  {turnoutAbstainPercent.toLocaleString(
+                    undefined,
+                    localeOptions
+                  )}
+                  %
+                </p>
+              </div>
 
               <div className="col-span-3 my-2">
                 <Progress
@@ -451,17 +451,26 @@ export function ProposalDetailsSidebar({
 
                 <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
                   <p className="text-tertiary text-sm">
-                    Passing threshold: <span className="font-mono">{threshold.display}</span>
+                    Passing threshold:{' '}
+                    <span className="font-mono">{threshold.display}</span>
                   </p>
 
                   <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
                     {turnoutYesPercent >= threshold.percent ? (
                       <>
-                        Reached <CheckIcon className="inline w-4" />
+                        Reached{' '}
+                        <CheckIcon
+                          className="inline w-4"
+                          color="rgb(var(--valid))"
+                        />
                       </>
                     ) : (
                       <>
-                        Not met <XIcon className="inline w-4" />
+                        Not met{' '}
+                        <XIcon
+                          className="inline w-4"
+                          color="rgb(var(--error))"
+                        />
                       </>
                     )}
                   </p>
@@ -524,11 +533,19 @@ export function ProposalDetailsSidebar({
                   <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
                     {turnoutPercent >= quorum.percent ? (
                       <>
-                        Reached <CheckIcon className="inline w-4" />
+                        Reached{' '}
+                        <CheckIcon
+                          className="inline w-4"
+                          color="rgb(var(--valid))"
+                        />
                       </>
                     ) : (
                       <>
-                        Not met <XIcon className="inline w-4" />
+                        Not met{' '}
+                        <XIcon
+                          className="inline w-4"
+                          color="rgb(var(--error))"
+                        />
                       </>
                     )}
                   </p>
@@ -537,42 +554,42 @@ export function ProposalDetailsSidebar({
             </>
           ) : (
             <>
-              <div className="col-span-3 mb-3 flex flex-row justify-between items-center">
-                <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden">
-                  Turnout
-                </p>
+              <p className="col-span-3 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mb-3">
+                Turnout
+              </p>
 
-                {totalYesPercent >= threshold.percent ? (
-                  <p className="text-xs text-valid font-mono">Yes</p>
-                ) : totalNoPercent >= threshold.percent ? (
-                  <p className="text-xs text-error font-mono">No</p>
-                ) : (
-                  <p className="text-xs text-tertiary font-mono">
-                    {totalYesPercent > totalNoPercent
-                      ? "'Yes' leads"
-                      : totalNoPercent > totalYesPercent
-                      ? "'No' leads"
-                      : 'Tied'}
-                  </p>
-                )}
-              </div>
-
-              <p className="col-span-2 text-xs font-mono flex flex-row items-center gap-4">
+              <div className="col-span-3 text-xs font-mono flex flex-row items-center gap-4">
                 {[
-                  <span key="yes" className="text-valid">
+                  <p key="yes" className="text-valid">
                     Yes{' '}
                     {totalYesPercent.toLocaleString(undefined, localeOptions)}%
-                  </span>,
-                  <span key="no" className="text-error">
+                  </p>,
+                  <p key="no" className="text-error">
                     No {totalNoPercent.toLocaleString(undefined, localeOptions)}
                     %
-                  </span>,
-                ].sort(() => totalYesPercent - totalNoPercent)}
-              </p>
-              <p className="col-span-1 text-xs font-mono text-dark text-right">
-                Abstain{' '}
-                {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
-              </p>
+                  </p>,
+                ]
+                  .sort(() => yesVotes - noVotes)
+                  .map((elem, idx) => (
+                    <div
+                      key={idx}
+                      className={
+                        idx === 0 && yesVotes !== noVotes ? 'flex-1' : ''
+                      }
+                    >
+                      {elem}
+                    </div>
+                  ))}
+                <p
+                  className={`text-dark ${
+                    yesVotes === noVotes ? 'flex-1 text-right' : ''
+                  }`}
+                >
+                  Abstain{' '}
+                  {totalAbstainPercent.toLocaleString(undefined, localeOptions)}
+                  %
+                </p>
+              </div>
 
               <div className="col-span-3 my-2">
                 <Progress
@@ -624,17 +641,26 @@ export function ProposalDetailsSidebar({
 
                 <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
                   <p className="text-tertiary text-sm">
-                    Passing threshold: <span className="font-mono">{threshold.display}</span>
+                    Passing threshold:{' '}
+                    <span className="font-mono">{threshold.display}</span>
                   </p>
 
                   <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
                     {totalYesPercent >= threshold.percent ? (
                       <>
-                        Reached <CheckIcon className="inline w-4" />
+                        Reached{' '}
+                        <CheckIcon
+                          className="inline w-4"
+                          color="rgb(var(--valid))"
+                        />
                       </>
                     ) : (
                       <>
-                        Not met <XIcon className="inline w-4" />
+                        Not met{' '}
+                        <XIcon
+                          className="inline w-4"
+                          color="rgb(var(--error))"
+                        />
                       </>
                     )}
                   </p>
