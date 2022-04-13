@@ -9,8 +9,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "@project/eslint-config/overrides",
-      "plugin:prettier/recommended"
+      "@project/eslint-config"
     ],
     "ignorePatterns": [
       "node_modules"

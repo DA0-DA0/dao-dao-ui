@@ -13,8 +13,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "./overrides.js",
-      "plugin:prettier/recommended"
+      "./index.js"
     ],
     "ignorePatterns": [
       "node_modules"
