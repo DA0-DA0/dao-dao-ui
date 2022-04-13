@@ -15,7 +15,7 @@ import {
   secondsToWdhms,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  getThresholdAndQuorum,
+  getDaoThresholdAndQuorum,
 } from 'util/conversion'
 import {
   validatePercent,
@@ -64,9 +64,7 @@ export const daoConfigUpdateDefaults = (
   if ('time' in config.max_voting_period) {
     max_voting_period = config.max_voting_period.time
   }
-  let [threshold, quorum] = getThresholdAndQuorum(config.threshold)
-
-  const processedQuorum = quorum ? (Number(quorum) * 100).toString() : '33'
+  const { threshold, quorum } = getDaoThresholdAndQuorum(config.threshold)
 
   return {
     name: config.name,
@@ -77,14 +75,14 @@ export const daoConfigUpdateDefaults = (
       config.proposal_deposit,
       govTokenDecimals
     ),
-    threshold: (Number(threshold) * 100).toString(),
-    quorum: processedQuorum,
+    threshold: threshold ?? '50',
+    quorum: quorum ?? '33',
     refund_failed_proposals: !!config.refund_failed_proposals,
 
     // Store the default quorum in addition to the currently selected
     // quorum. This allows us to restore the value of the quorum if the absolute
     // threshold tab is selected (clearing it).
-    defaultQuorum: processedQuorum,
+    defaultQuorum: quorum ?? '33',
   }
 }
 

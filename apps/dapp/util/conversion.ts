@@ -68,6 +68,22 @@ export const zeroStakingCoin = {
   denom: process.env.NEXT_PUBLIC_STAKING_DENOM || 'ujuno',
 }
 
+export const getDaoThresholdAndQuorum = (
+  t: DaoThreshold
+): { threshold: string | undefined; quorum: string | undefined } => {
+  let threshold = undefined
+  let quorum = undefined
+
+  if ('absolute_percentage' in t) {
+    threshold = (Number(t.absolute_percentage.percentage) * 100).toString()
+  } else if ('threshold_quorum' in t) {
+    threshold = (Number(t.threshold_quorum.threshold) * 100).toString()
+    quorum = (Number(t.threshold_quorum.quorum) * 100).toString()
+  }
+
+  return { threshold, quorum }
+}
+
 export const getThresholdAndQuorumDisplay = (
   t: ThresholdResponse | DaoThreshold | SigThreshold,
   multisig: boolean,
