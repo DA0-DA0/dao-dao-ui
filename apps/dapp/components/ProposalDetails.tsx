@@ -161,7 +161,7 @@ function executeProposalExecute(
 const PASSING_THRESHOLD_TOOLTIP =
   "A proposal must attain this proportion of 'Yes' votes to pass."
 const QUORUM_TOOLTIP =
-  'This proportion of voting weight must vote for this proposal to pass.'
+  'This proportion of voting weight must vote for a proposal to pass.'
 
 export function ProposalDetailsSidebar({
   contractAddress,
