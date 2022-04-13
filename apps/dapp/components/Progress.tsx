@@ -27,7 +27,9 @@ export const Progress = ({
       {rows.map(({ backgroundColor, data, thickness }, rowIndex) => (
         <div
           key={rowIndex}
-          className={`flex flex-row items-stretch ${!backgroundColor ? "bg-secondary" : ""} ${alignEnd ? "justify-end" : ""}`}
+          className={`flex flex-row items-stretch ${
+            !backgroundColor ? 'bg-secondary' : ''
+          } ${alignEnd ? 'justify-end' : ''}`}
           style={{
             backgroundColor,
             height: thickness,
@@ -36,7 +38,9 @@ export const Progress = ({
           {data.map(({ value, color }, index) => (
             <div
               key={index}
-              className={`h-full ${index === data.length - 1 && !alignEnd ? "rounded-r-full" : ""} ${index === 0 && alignEnd ? "rounded-l-full" : ""}`}
+              className={`h-full ${
+                index === data.length - 1 && !alignEnd ? 'rounded-r-full' : ''
+              } ${index === 0 && alignEnd ? 'rounded-l-full' : ''}`}
               style={{ width: `${value}%`, backgroundColor: color }}
             ></div>
           ))}
@@ -48,9 +52,20 @@ export const Progress = ({
       <div
         key={index}
         className="absolute w-[2px] -top-[3px] rounded-full"
-        style={{ left: `${value}%`, backgroundColor: color, height: rows.reduce((sum, row) => row.thickness + sum, 6) }}
+        style={{
+          left: `${value}%`,
+          backgroundColor: color,
+          height: rows.reduce((sum, row) => row.thickness + sum, 6),
+        }}
       >
-        {!!label && <p className="absolute font-mono -top-4" style={{ fontSize: 8, lineHeight: 2, color }}>{label}</p>}
+        {!!label && (
+          <p
+            className="absolute font-mono -top-4"
+            style={{ fontSize: 8, lineHeight: 2, color }}
+          >
+            {label}
+          </p>
+        )}
       </div>
     ))}
   </div>

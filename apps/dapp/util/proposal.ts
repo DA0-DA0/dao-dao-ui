@@ -1,4 +1,8 @@
-import { constSelector, TransactionInterface_UNSTABLE, useRecoilValue } from 'recoil'
+import {
+  constSelector,
+  TransactionInterface_UNSTABLE,
+  useRecoilValue,
+} from 'recoil'
 
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 
@@ -11,7 +15,11 @@ import {
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
 import { listMembers, MultisigMemberInfo } from 'selectors/multisigs'
-import { draftProposalsSelector, proposalSelector, proposalTallySelector } from 'selectors/proposals'
+import {
+  draftProposalsSelector,
+  proposalSelector,
+  proposalTallySelector,
+} from 'selectors/proposals'
 import {
   ContractProposalMap,
   ExtendedProposalResponse,
@@ -19,7 +27,11 @@ import {
   ProposalMapItem,
 } from 'types/proposals'
 
-import { Config, contractConfigSelector, ContractConfigWrapper } from './contractConfigWrapper'
+import {
+  Config,
+  contractConfigSelector,
+  ContractConfigWrapper,
+} from './contractConfigWrapper'
 import { convertMicroDenomToDenomWithDecimals } from './conversion'
 
 // Prefix used in IDs for draft proposals
@@ -190,7 +202,7 @@ export const useThresholdQuorum = (
     return {
       threshold: {
         absolute: threshold,
-        percent: threshold / Number(proposalTally.total_weight) * 100,
+        percent: (threshold / Number(proposalTally.total_weight)) * 100,
         display: `${threshold} vote${count != 1 ? 's' : ''}`,
       },
     }
