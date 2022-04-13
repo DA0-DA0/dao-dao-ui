@@ -65,6 +65,7 @@ import { CopyToClipboard } from './CopyToClipboard'
 import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Execute } from './Execute'
 import SvgAbstain from './icons/Abstain'
+import { TriangleUp } from './icons/TriangleUp'
 import { Progress } from './Progress'
 import { getEnd } from './ProposalList'
 import { StakingModal, StakingMode } from './StakingModal'
@@ -435,10 +436,16 @@ export function ProposalDetailsSidebar({
                 }
               />
             </div>
+ 
+            <div className="col-span-3 relative">
+              {thresholdValue !== undefined && (
+                <TriangleUp className="absolute -top-[22px]" color="rgb(var(--light))" width="36px" height="36px" style={{ left: thresholdValue < 10 ? "0" : thresholdValue > 90 ? "calc(100% - 32px)" : `calc(${thresholdValue}% - 17px)` }} />
+              )}
 
-            <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
-              <p className="text-tertiary text-sm">Passing threshold</p>
-              <p className="text-tertiary text-xs font-mono">{threshold}</p>
+              <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full">
+                <p className="text-tertiary text-sm">Passing threshold</p>
+                <p className="text-tertiary text-xs font-mono">{threshold}</p>
+              </div>
             </div>
           </>
         ) : (
@@ -519,10 +526,16 @@ export function ProposalDetailsSidebar({
                 }
               />
             </div>
+ 
+            <div className="col-span-3 relative">
+              {thresholdValue !== undefined && (
+                <TriangleUp className="absolute -top-[22px]" color="rgb(var(--light))" width="36px" height="36px" style={{ left: thresholdValue < 10 ? "0" : thresholdValue > 90 ? "calc(100% - 32px)" : `calc(${thresholdValue}% - 17px)` }} />
+              )}
 
-            <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
-              <p className="text-tertiary text-sm">Passing threshold</p>
-              <p className="text-tertiary text-xs font-mono">{threshold}</p>
+              <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full">
+                <p className="text-tertiary text-sm">Passing threshold</p>
+                <p className="text-tertiary text-xs font-mono">{threshold}</p>
+              </div>
             </div>
 
             <div className="col-span-3 flex flex-row justify-between mt-4 mb-3">
@@ -563,9 +576,13 @@ export function ProposalDetailsSidebar({
               />
             </div>
 
-            <div className="col-span-3 bg-light px-4 py-3 rounded-md flex flex-row justify-between items-center">
-              <p className="text-tertiary text-sm">Quorum</p>
-              <p className="text-tertiary text-xs font-mono">{quorum}</p>
+            <div className="col-span-3 relative">
+              <TriangleUp className="absolute -top-[22px]" color="rgb(var(--light))" width="36px" height="36px" style={{ left: quorumValue < 10 ? "0" : quorumValue > 90 ? "calc(100% - 32px)" : `calc(${quorumValue}% - 17px)` }} />
+
+              <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full">
+                <p className="text-tertiary text-sm">Quorum</p>
+                <p className="text-tertiary text-xs font-mono">{quorum}</p>
+              </div>
             </div>
           </>
         )}

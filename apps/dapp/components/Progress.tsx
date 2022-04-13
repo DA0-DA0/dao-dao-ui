@@ -48,7 +48,7 @@ export const Progress = ({
       <div
         key={index}
         className="absolute w-[2px] -top-[3px] rounded-full"
-        style={{ left: `${Math.floor(value)}%`, backgroundColor: color, height: rows.reduce((sum, row) => row.thickness + sum, 6) }}
+        style={{ left: `${value}%`, backgroundColor: color, height: rows.reduce((sum, row) => row.thickness + sum, 6) }}
       >
         {!!label && <p className="absolute font-mono -top-4" style={{ fontSize: 8, lineHeight: 2, color }}>{label}</p>}
       </div>
