@@ -17,19 +17,20 @@ function concatAddressImpl(
   return first + '...' + last
 }
 
-function concatAddress(address: string) {
-  const takeN = 7
+function concatAddress(address: string, takeN = 7): string {
   return concatAddressImpl(address, takeN, takeN)
 }
 
 interface CopyToClipboardProps {
   value: string
   success?: string
+  takeN?: number
 }
 
 export function CopyToClipboard({
   value,
   success = 'Copied to clipboard!',
+  takeN,
 }: CopyToClipboardProps) {
   const [copied, setCopied] = useState(false)
   return (
@@ -47,7 +48,7 @@ export function CopyToClipboard({
       ) : (
         <SvgCopy color="currentColor" height="18px" width="18px" />
       )}
-      {concatAddress(value)}
+      {concatAddress(value, takeN)}
     </button>
   )
 }
