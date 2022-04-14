@@ -2,8 +2,8 @@
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
-  extends: [require.resolve('@dao-dao/config/eslint')],
-  ignorePatterns: ['.next', '.turbo', 'node_modules', 'out'],
+  extends: [require.resolve('./eslint')],
+  ignorePatterns: ['node_modules'],
   root: true,
 }
 

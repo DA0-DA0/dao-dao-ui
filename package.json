@@ -9,17 +9,17 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint && prettier --check \"**/*.{ts,tsx,md}\"",
-    "format": "turbo run format && prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint && prettier --check \"**/*.{css,json,md}\"",
+    "format": "turbo run format && prettier --write \"**/*.{css,json,md}\"",
     "test": "turbo run test"
   },
   "devDependencies": {
-    "prettier": "^2.5.1",
     "turbo": "latest"
   },
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
   },
+  "prettier": "@dao-dao/config/prettier",
   "packageManager": "yarn@1.22.11"
 }

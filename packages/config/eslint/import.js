@@ -1,14 +1,9 @@
-module.exports = {
-  extends: ['next/core-web-vitals'],
-  plugins: ['import'],
+// @ts-check
 
-  settings: {
-    next: {
-      rootDir: ['apps/*/', 'packages/*/'],
-    },
-  },
+/** @type {import("eslint").Linter.Config} */
+const eslintConfig = {
+  plugins: ['import', 'unused-imports'],
   rules: {
-    '@next/next/no-html-link-for-pages': 'off',
     'import/order': [
       'error',
       {
@@ -44,5 +39,17 @@ module.exports = {
         },
       },
     ],
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
   },
 }
+
+module.exports = eslintConfig
