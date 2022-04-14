@@ -1,12 +1,11 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
 const withTM = require('next-transpile-modules')([
   'ui',
   '@dao-dao/icons',
   '@dao-dao/utils',
 ])
-
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
 
 /** @type {import("next").NextConfig} */
 let config = {
