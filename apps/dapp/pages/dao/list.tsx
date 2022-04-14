@@ -21,13 +21,10 @@ import {
 
 import { Button } from '@components'
 
+import { EmptyDaoCard } from '@components/EmptyDaoCard'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import CodeIdSelect from 'components/CodeIdSelect'
-import {
-  ContractCard,
-  MysteryContractCard,
-  LoadingContractCard,
-} from 'components/ContractCard'
+import { ContractCard, LoadingContractCard } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { DaoListType, memberDaoSelector } from 'selectors/daos'
@@ -72,16 +69,6 @@ export function DaoCard({
   )
 }
 
-export function MysteryDaoCard() {
-  return (
-    <MysteryContractCard
-      title="Create a DAO"
-      body="You are not staking with any DAOs. Why not create one?"
-      href="/dao/create"
-    />
-  )
-}
-
 function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
   return (
     <>
@@ -96,7 +83,7 @@ function LoadableDaoCards({ daos }: { daos: Loadable<DaoListType[]> }) {
             )
           })
         ) : (
-          <MysteryDaoCard />
+          <EmptyDaoCard />
         )
       ) : (
         <LoadingContractCard />

@@ -159,24 +159,6 @@ export function ContractCard({
   )
 }
 
-export function MysteryContractCard({
-  title,
-  body,
-  href,
-}: {
-  title: string
-  body: string
-  href: string
-}) {
-  return (
-    <DIYLogo title={title} body={body} href={href} token={false}>
-      <div className="w-[70px] h-[70px] flex justify-center items-center">
-        <PlusIcon className="w-9" />
-      </div>
-    </DIYLogo>
-  )
-}
-
 export function LoadingContractCard() {
   return (
     <div className="transition-shadow shadow p-6 h-[300px] rounded-lg flex flex-col items-center  m-2 bg-card from-transparent justify-center relative">
@@ -187,5 +169,35 @@ export function LoadingContractCard() {
         </div>
       </div>
     </div>
+  )
+}
+
+const EmptyStateContractCard = ({
+  title,
+  description,
+  backgroundUrl,
+  href,
+}: {
+  title: string
+  description: string
+  backgroundUrl: string
+  href: string
+}) => {
+  return (
+    <Link href={href} passHref>
+      <a className="border border-inactive transition hover:border-brand rounded-md w-max overflow-hidden max-w-[400px]">
+        <div
+          className={'h-72 bg-cover bg-no-repeat opacity-75'}
+          style={{ backgroundImage: `url(${backgroundUrl})` }}
+        />
+        <div className="px-6 py-4">
+          <div className="primary-text mb-2 flex items-center gap-2">
+            <PlusIcon className="w-4" />
+            {title}
+          </div>
+          <div className="body-text">{description}</div>
+        </div>
+      </a>
+    </Link>
   )
 }

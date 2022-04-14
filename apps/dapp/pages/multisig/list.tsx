@@ -20,13 +20,10 @@ import {
 } from '@heroicons/react/outline'
 import { Button } from 'ui'
 
+import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
 import CodeIdSelect from 'components/CodeIdSelect'
-import {
-  ContractCard,
-  MysteryContractCard,
-  LoadingContractCard,
-} from 'components/ContractCard'
+import { ContractCard, LoadingContractCard } from 'components/ContractCard'
 import Paginator from 'components/Paginator'
 import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
@@ -74,16 +71,6 @@ export function MultisigCard({
   )
 }
 
-export function MysteryMultisigCard() {
-  return (
-    <MysteryContractCard
-      title="Create a multisig"
-      body="You are not a member of any multisigs. Why not create one?"
-      href="/multisig/create"
-    />
-  )
-}
-
 function LoadableCards({
   loadable,
 }: {
@@ -104,7 +91,7 @@ function LoadableCards({
               )
           )
         ) : (
-          <MysteryMultisigCard />
+          <EmptyMultisigCard />
         )
       ) : (
         <LoadingContractCard />
