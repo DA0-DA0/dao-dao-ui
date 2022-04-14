@@ -45,7 +45,7 @@ const QUORUM_TOOLTIP =
 
 interface ProposalDetailsProps {
   contractAddress: string
-  multisig?: boolean
+  multisig: boolean
   proposalId: number
 }
 
@@ -74,7 +74,7 @@ export const ProposalDetailsCard = ({
   const votingPower = useRecoilValue(
     votingPowerAtHeightSelector({
       contractAddress,
-      multisig: !!multisig,
+      multisig,
       height,
     })
   )
@@ -86,7 +86,7 @@ export const ProposalDetailsCard = ({
 
   return (
     <div className="rounded-md border border-light">
-      <div className="flex flex-row justify-around items-stretch py-5 px-7">
+      <div className="flex flex-row justify-evenly items-stretch py-5">
         <div className="flex flex-col gap-2 items-center">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             Proposal
@@ -153,7 +153,7 @@ export const ProposalDetailsCard = ({
       <div className="flex flex-col gap-3 p-7 border-t border-light">
         <p className="font-mono text-sm text-tertiary">Proposer</p>
 
-        <CopyToClipboard takeN={12} value={proposal.proposer} />
+        <CopyToClipboard takeN={9} value={proposal.proposer} />
 
         {proposal.status === 'executed' &&
         proposalExecutionTXHashState === 'loading' ? (
@@ -177,7 +177,7 @@ export const ProposalDetailsCard = ({
               <p className="mt-4 font-mono text-sm text-tertiary">TX</p>
             )}
 
-            <CopyToClipboard takeN={12} value={proposalExecutionTXHash} />
+            <CopyToClipboard takeN={9} value={proposalExecutionTXHash} />
           </>
         ) : null}
       </div>
@@ -198,13 +198,13 @@ export const ProposalDetailsVoteStatus = ({
   )
 
   const config = useRecoilValue(
-    contractConfigSelector({ contractAddress, multisig: !!multisig })
+    contractConfigSelector({ contractAddress, multisig })
   )
 
   const { threshold, quorum } = useThresholdQuorum(
     contractAddress,
     proposalId,
-    !!multisig
+    multisig
   )
 
   const configWrapper = new ContractConfigWrapper(config)
