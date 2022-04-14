@@ -14,12 +14,12 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "prettier": "^2.5.1",
     "turbo": "latest"
   },
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
   },
+  "prettier": "@dao-dao/config/prettier",
   "packageManager": "yarn@1.22.11"
 }

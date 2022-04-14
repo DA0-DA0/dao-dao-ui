@@ -3,7 +3,7 @@
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
   extends: [require.resolve('@dao-dao/config/eslint')],
-  ignorePatterns: ['.next', '.turbo', 'node_modules', 'out'],
+  ignorePatterns: ['dist', 'node_modules'],
   root: true,
 }
 
