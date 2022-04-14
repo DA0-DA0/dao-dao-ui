@@ -12,7 +12,7 @@ import { useThemeContext } from 'ui'
 import { Button } from '@components'
 
 import { contractInstantiateTime } from 'selectors/contracts'
-import { isMemberSelector } from 'selectors/daos'
+import { isMemberSelector } from 'selectors/cosm'
 import {
   cw20Balances,
   cw20TokenInfo,

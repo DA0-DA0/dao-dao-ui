@@ -15,6 +15,11 @@ import { walletTokenBalanceUpdateCountAtom } from './treasury'
 
 export type WalletConnection = 'keplr' | ''
 
+export interface MemberStatus {
+  member: boolean
+  weight: number
+}
+
 export const CHAIN_RPC_ENDPOINT =
   process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
@@ -182,6 +187,28 @@ export const voterInfoSelector = selectorFamily({
 
       return {
         weight: Number(response?.weight || 0),
+      }
+    },
+})
+
+export const isMemberSelector = selectorFamily<MemberStatus, string>({
+  key: 'isMember',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          member: false,
+          weight: 0,
+        }
+      }
+      const voterInfo = get(
+        voterInfoSelector({ contractAddress, walletAddress: wallet })
+      )
+      return {
+        member: voterInfo.weight !== 0,
+        weight: voterInfo.weight,
       }
     },
 })

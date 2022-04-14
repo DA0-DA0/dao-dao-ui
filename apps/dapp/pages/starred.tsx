@@ -9,11 +9,8 @@ import { EmptyDaoCard } from '@components/EmptyDaoCard'
 import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { ContractCard } from 'components/ContractCard'
-import {
-  isMemberSelector,
-  memberDaoSelector,
-  proposalCount,
-} from 'selectors/daos'
+import { isMemberSelector } from 'selectors/cosm'
+import { memberDaoSelector, proposalCount } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { cw20TokenInfo, nativeBalance } from 'selectors/treasury'
 import { addToken } from 'util/addToken'

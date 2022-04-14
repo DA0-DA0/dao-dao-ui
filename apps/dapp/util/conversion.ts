@@ -1,5 +1,6 @@
 import {
   Duration,
+  Expiration,
   Threshold as DaoThreshold,
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
@@ -67,28 +68,27 @@ export const zeroStakingCoin = {
   denom: process.env.NEXT_PUBLIC_STAKING_DENOM || 'ujuno',
 }
 
-export const getThresholdAndQuorum = (
-  t: ThresholdResponse | DaoThreshold | SigThreshold
-) => {
-  if ('absolute_count' in t) {
-    const count = t.absolute_count.weight
-    return [count.toString(), undefined]
-  } else if ('absolute_percentage' in t) {
-    const threshold = t.absolute_percentage.percentage
-    return [threshold, undefined]
+export const getDaoThresholdAndQuorum = (
+  t: DaoThreshold
+): { threshold: string | undefined; quorum: string | undefined } => {
+  let threshold = undefined
+  let quorum = undefined
+
+  if ('absolute_percentage' in t) {
+    threshold = (Number(t.absolute_percentage.percentage) * 100).toString()
   } else if ('threshold_quorum' in t) {
-    const quorum = t.threshold_quorum.quorum
-    const threshold = t.threshold_quorum.threshold
-    return [threshold, quorum]
+    threshold = (Number(t.threshold_quorum.threshold) * 100).toString()
+    quorum = (Number(t.threshold_quorum.quorum) * 100).toString()
   }
-  return ['unknown', 'unknown']
+
+  return { threshold, quorum }
 }
 
 export const getThresholdAndQuorumDisplay = (
   t: ThresholdResponse | DaoThreshold | SigThreshold,
   multisig: boolean,
   tokenDecimals: number
-) => {
+): [string, string | undefined] => {
   if ('absolute_count' in t) {
     const count = t.absolute_count.weight
     return [
@@ -145,7 +145,7 @@ export function humanReadableDuration(d: Duration) {
 }
 
 const secPerDay = 24 * 60 * 60
-export function secondsToWdhms(seconds: string): string {
+export function secondsToWdhms(seconds: string | number, numUnits = 5): string {
   const secondsInt = Number(seconds)
   const w = Math.floor(secondsInt / (secPerDay * 7))
   const d = Math.floor((secondsInt % (secPerDay * 7)) / secPerDay)
@@ -163,6 +163,8 @@ export function secondsToWdhms(seconds: string): string {
     [wDisplay, dDisplay, hDisplay, mDisplay, sDisplay]
       // Ignore empty values.
       .filter(Boolean)
+      // Only keep certain precision of units.
+      .slice(0, numUnits)
       // Separate with commas.
       .join(', ')
   )
@@ -197,4 +199,16 @@ export function nativeTokenDecimals(denom: string): number | undefined {
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   return asset?.decimals
+}
+
+export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
+  if (!('at_time' in exp)) {
+    return undefined
+  }
+
+  const end = Number(exp['at_time'])
+  const nowSeconds = new Date().getTime() / 1000
+  const endSeconds = end / 1000000000
+
+  return endSeconds - nowSeconds
 }

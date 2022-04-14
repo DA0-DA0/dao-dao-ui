@@ -45,7 +45,7 @@ export function DaoContractInfo({ address }: { address: string }) {
           <GovInfoListItem
             icon={<SvgVotes fill="currentColor" width="16px" />}
             text="Passing threshold"
-            value={threshold as string}
+            value={threshold}
           />
           {quorum && (
             <GovInfoListItem

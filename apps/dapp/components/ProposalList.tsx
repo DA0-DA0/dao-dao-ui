@@ -26,6 +26,10 @@ import {
   proposalSelector,
 } from 'selectors/proposals'
 import { ExtendedProposalResponse } from 'types/proposals'
+import {
+  expirationAtTimeToSecondsFromNow,
+  secondsToWdhms,
+} from 'util/conversion'
 
 import { draftProposalsToExtendedResponses } from '../util/proposal'
 
@@ -53,29 +57,21 @@ const zeroPad = (num: number, target: number) => {
   return '0'.repeat(target - s.length) + s
 }
 
-const secondsToHm = (seconds: number) => {
-  var h = Math.floor(seconds / 3600)
-  var m = Math.floor((seconds % 3600) / 60)
-  var s = Math.floor((seconds % 3600) % 60)
-
-  var hDisplay =
-    h > 0 ? h + (h == 1 ? ' hr' : ' hrs') + (m > 0 || s > 0 ? ', ' : '') : ''
-  var mDisplay = m > 0 ? m + (m == 1 ? ' min' : ' mins') : ''
-  return hDisplay + mDisplay
-}
-
 export const getEnd = (exp: Expiration, status: Status) => {
   if (status != 'open' && status != 'pending') {
     return 'Completed'
   }
   if (exp && 'at_time' in exp) {
-    const end = Number(exp['at_time'])
-    const nowSeconds = new Date().getTime() / 1000
-    const endSeconds = end / 1000000000
-    if (endSeconds <= nowSeconds) {
+    const secondsFromNow = expirationAtTimeToSecondsFromNow(exp)
+    // Type check, but should never happen.
+    if (secondsFromNow === undefined) {
+      return ''
+    }
+
+    if (secondsFromNow <= 0) {
       return 'Completed'
     } else {
-      return secondsToHm(endSeconds - nowSeconds)
+      return secondsToWdhms(secondsFromNow)
     }
   }
   // Not much we can say about proposals that expire at a block

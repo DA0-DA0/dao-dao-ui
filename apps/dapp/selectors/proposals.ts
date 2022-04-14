@@ -6,6 +6,7 @@ import {
   VoteInfo,
   VoteResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
+
 import {
   contractProposalMapAtom,
   proposalsRequestIdAtom,
@@ -50,6 +51,14 @@ export type ProposalExecuteParams = {
   proposalId: string | number
   walletAddress: string
 }
+
+export enum WalletVote {
+  Yes = 'yes',
+  No = 'no',
+  Abstain = 'abstain',
+  Veto = 'veto',
+}
+type WalletVoteValue = `${WalletVote}`
 
 export const onChainProposalsSelector = selectorFamily<
   ProposalResponse[],
@@ -149,7 +158,7 @@ export const proposalStartBlockSelector = selectorFamily<
 })
 
 export const walletVoteSelector = selectorFamily<
-  'yes' | 'no' | 'abstain' | 'veto' | undefined,
+  WalletVoteValue | undefined,
   { contractAddress: string; proposalId: number }
 >({
   key: 'walletHasVotedOnProposalStatusSelector',

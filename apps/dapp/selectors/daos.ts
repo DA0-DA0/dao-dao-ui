@@ -1,23 +1,21 @@
-import { cosmWasmClient, voterInfoSelector } from 'selectors/cosm'
-import { contractsByCodeId } from 'selectors/contracts'
-import { selector, selectorFamily } from 'recoil'
-import { DAO_CODE_ID, NATIVE_DENOM } from 'util/constants'
+import { selectorFamily } from 'recoil'
+
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   Config,
   ConfigResponse,
   Duration,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+
+import { contractsByCodeId } from 'selectors/contracts'
+import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
+import { DAO_CODE_ID, NATIVE_DENOM } from 'util/constants'
+
 import {
   nativeBalance,
   walletAddress,
   walletTokenBalanceUpdateCountAtom,
 } from './treasury'
-
-export interface MemberStatus {
-  member: boolean
-  weight: number
-}
 
 export interface DaoListType {
   address: string
@@ -73,28 +71,6 @@ export const proposalCount = selectorFamily<number, string>({
         proposal_count: {},
       })
       return response
-    },
-})
-
-export const isMemberSelector = selectorFamily<MemberStatus, string>({
-  key: 'isMember',
-  get:
-    (contractAddress) =>
-    async ({ get }) => {
-      const wallet = get(walletAddress)
-      if (!wallet) {
-        return {
-          member: false,
-          weight: 0,
-        }
-      }
-      const voterInfo = get(
-        voterInfoSelector({ contractAddress, walletAddress: wallet })
-      )
-      return {
-        member: voterInfo.weight !== 0,
-        weight: voterInfo.weight,
-      }
     },
 })
 
