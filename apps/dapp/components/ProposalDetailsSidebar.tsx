@@ -148,7 +148,7 @@ export function ProposalDetailsSidebar({
 
   return (
     <div>
-      <h2 className="font-medium mb-6">Details</h2>
+      <h2 className="font-medium text-base mb-6">Details</h2>
       <div className="grid grid-cols-3 gap-x-4 gap-y-2 items-center">
         <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden text-right">
           Proposal
@@ -229,9 +229,7 @@ export function ProposalDetailsSidebar({
         )}
       </div>
 
-      <div>
-        <h3 className="font-medium mt-8 mb-6">Referendum status</h3>
-      </div>
+      <h3 className="font-medium text-base mt-8 mb-6">Referendum status</h3>
 
       <div className="grid grid-cols-3 gap-2">
         {threshold ? (
@@ -265,7 +263,7 @@ export function ProposalDetailsSidebar({
                     </div>
                   ))}
                 <p
-                  className={`text-dark ${
+                  className={`text-secondary ${
                     yesVotes === noVotes ? 'flex-1 text-right' : ''
                   }`}
                 >
@@ -296,7 +294,8 @@ export function ProposalDetailsSidebar({
                         ].sort((a, b) => b.value - a.value),
                         {
                           value: Number(turnoutAbstainPercent),
-                          color: 'rgb(var(--dark))',
+                          // Secondary is dark with 80% opacity.
+                          color: 'rgba(var(--dark), 0.8)',
                         },
                       ],
                     },
@@ -465,7 +464,7 @@ export function ProposalDetailsSidebar({
                     </div>
                   ))}
                 <p
-                  className={`text-dark ${
+                  className={`text-secondary ${
                     yesVotes === noVotes ? 'flex-1 text-right' : ''
                   }`}
                 >
@@ -493,7 +492,8 @@ export function ProposalDetailsSidebar({
                         ].sort((a, b) => b.value - a.value),
                         {
                           value: Number(totalAbstainPercent),
-                          color: 'rgb(var(--dark))',
+                          // Secondary is dark with 80% opacity.
+                          color: 'rgba(var(--dark), 0.8)',
                         },
                       ],
                     },
