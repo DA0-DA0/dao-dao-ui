@@ -1,5 +1,18 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
+import { AddressInput } from '@components/input/AddressInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
+import { SelectInput } from '@components/input/SelectInput'
+import {
+  cw20TokensList,
+  cw20TokenInfo,
+  nativeBalance as nativeBalanceSelector,
+  cw20Balances as cw20BalancesSelector,
+} from 'selectors/treasury'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import {
@@ -15,19 +28,6 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { makeBankMessage, makeWasmMessage } from 'util/messagehelpers'
-
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
-import { SelectInput } from '@components/input/SelectInput'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
-import {
-  cw20TokensList,
-  cw20TokenInfo,
-  nativeBalance as nativeBalanceSelector,
-  cw20Balances as cw20BalancesSelector,
-} from 'selectors/treasury'
 
 import {
   FromCosmosMsgProps,
@@ -91,7 +91,7 @@ export const SpendComponent: TemplateComponent = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount}).`
+        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount}).`
       )
     }
     const cw20 = cw20BalanceInfo.find(
@@ -108,7 +108,7 @@ export const SpendComponent: TemplateComponent = ({
       )
       return (
         Number(microAmount) <= Number(cw20.balance.amount) ||
-        `Can't spend more tokens than are in the DAO tresury (${humanReadableAmount} $${cw20.info.symbol}).`
+        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} $${cw20.info.symbol}).`
       )
     }
     // If there are no native tokens in the treasury the native balances query
@@ -132,14 +132,16 @@ export const SpendComponent: TemplateComponent = ({
   }
 
   return (
-    <div className="flex justify-between items-center bg-primary p-3 rounded-lg my-2">
-      <div className="flex items-center gap-4 flex-wrap">
-        <div className="flex items-center flex-wrap gap-2 w-24">
+    <div className="flex justify-between items-center p-3 my-2 bg-primary rounded-lg">
+      <div className="flex flex-wrap gap-4 items-center">
+        <div className="flex flex-wrap gap-2 items-center w-24">
           <h2 className="text-3xl">💵</h2>
           <h2>Spend</h2>
         </div>
         <NumberInput
-          small
+          disabled={readOnly}
+          error={errors?.amount}
+          label={getLabel('amount')}
           onPlusMinus={[
             () =>
               setValue(
@@ -152,50 +154,48 @@ export const SpendComponent: TemplateComponent = ({
                 (Number(spendAmount) - 1).toString()
               ),
           ]}
-          label={getLabel('amount')}
           register={register}
-          error={errors?.amount}
+          small
+          step={0.000001}
           validation={[
             validateRequired,
             validatePositive,
             (amount: string) =>
               validatePossibleSpendWrapper(spendDenom, amount),
           ]}
-          step={0.000001}
-          disabled={readOnly}
         />
         <SelectInput
+          defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
+          disabled={readOnly}
+          error={errors?.denom}
           label={getLabel('denom')}
           register={register}
-          error={errors?.denom}
-          defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
           validation={[
             (denom: string) => validatePossibleSpendWrapper(denom, spendAmount),
           ]}
-          disabled={readOnly}
         >
           {nativeBalances.map(({ denom }, idx) => {
             return (
-              <option value={denom} key={idx}>
+              <option key={idx} value={denom}>
                 ${nativeTokenLabel(denom)}
               </option>
             )
           })}
           {cw20Info.map(({ symbol }, idx) => (
-            <option value={tokenList[idx]} key={tokenList[idx]}>
+            <option key={tokenList[idx]} value={tokenList[idx]}>
               ${symbol}
             </option>
           ))}
         </SelectInput>
         <div className="flex gap-2 items-center">
-          <p className="secondary-text font-mono">{'->'}</p>
+          <p className="font-mono secondary-text">{'->'}</p>
           <div className="flex flex-col">
             <AddressInput
+              disabled={readOnly}
+              error={errors?.to}
               label={getLabel('to')}
               register={register}
-              error={errors?.to}
               validation={[validateRequired, validateAddress]}
-              disabled={readOnly}
             />
           </div>
         </div>

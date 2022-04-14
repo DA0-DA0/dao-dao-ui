@@ -1,9 +1,11 @@
-import { ConfigResponse } from '@dao-dao/types/contracts/cw3-multisig'
 import { selectorFamily } from 'recoil'
+
+import { ConfigResponse } from '@dao-dao/types/contracts/cw3-multisig'
+
 import { contractsByCodeId } from 'selectors/contracts'
-import { cosmWasmClient } from 'selectors/cosm'
+import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
 import { MULTISIG_CODE_ID } from 'util/constants'
-import { isMemberSelector } from './daos'
+
 import { walletAddress } from './treasury'
 
 export interface MultisigListType {

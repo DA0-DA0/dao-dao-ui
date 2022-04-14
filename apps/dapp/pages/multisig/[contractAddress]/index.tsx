@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   ScaleIcon,
@@ -35,6 +34,7 @@ import {
   sigSelector,
   totalWeight,
 } from 'selectors/multisigs'
+import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
 
 const thresholdString = (t: Threshold) => {
@@ -65,13 +65,13 @@ function VoteBalanceCard({
   addrTitle?: boolean
 }) {
   return (
-    <div className="py-4 px-6 rounded-lg w-full border border-default mt-2">
+    <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
       {addrTitle ? (
         <CopyToClipboard value={title} />
       ) : (
-        <h2 className="caption-text font-mono">{title}</h2>
+        <h2 className="font-mono caption-text">{title}</h2>
       )}
-      <div className="mt-2 title-text flex flex-row flex-wrap items-center gap-2 mb-[22px] mt-5">
+      <div className="flex flex-row flex-wrap gap-2 items-center mt-2 mt-5 mb-[22px] title-text">
         <BalanceIcon />
         {weight}
         <span className="inline secondary-text">
@@ -110,7 +110,6 @@ function MultisigHome() {
               ]}
             />
             <StarButton
-              pinned={pinned}
               onPin={() => {
                 if (pinned) {
                   setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
@@ -118,28 +117,29 @@ function MultisigHome() {
                   setPinnedSigs((p) => p.concat([contractAddress]))
                 }
               }}
+              pinned={pinned}
             />
           </div>
 
           <HeroContractHeader
-            name={sigInfo.config.name}
             address={contractAddress}
             description={sigInfo.config.description}
             imgUrl={sigInfo.config.image_url}
+            name={sigInfo.config.name}
           />
 
           <div className="mt-2">
             <HeroContractHorizontalInfo>
               <HeroContractHorizontalInfoSection>
-                <ScaleIcon className="w-4 inline" />
+                <ScaleIcon className="inline w-4" />
                 {thresholdString(sigInfo.config.threshold)}
               </HeroContractHorizontalInfoSection>
               <HeroContractHorizontalInfoSection>
-                <VariableIcon className="w-4 inline" />
+                <VariableIcon className="inline w-4" />
                 Total votes: {weightTotal}
               </HeroContractHorizontalInfoSection>
               <HeroContractHorizontalInfoSection>
-                <UserGroupIcon className="w-4 inline" />
+                <UserGroupIcon className="inline w-4" />
                 Total members: {memberList.length}
               </HeroContractHorizontalInfoSection>
             </HeroContractHorizontalInfo>
@@ -150,16 +150,16 @@ function MultisigHome() {
         <div className="px-6">
           <ContractProposalsDispaly
             contractAddress={contractAddress}
-            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
             multisig
+            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
+      <div className="col-span-2 col-start-5 p-6 h-full min-h-screen">
         {visitorWeight && (
           <>
-            <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
-            <ul className="list-none mt-3">
+            <h2 className="mt-1 mb-[23px] title-text">Your shares</h2>
+            <ul className="mt-3 list-none">
               <li>
                 <VoteBalanceCard
                   title="voting weight"
@@ -172,15 +172,15 @@ function MultisigHome() {
         )}
         {memberList.length != 0 && (
           <>
-            <h2 className="title-text mt-5 mb-[23px]">Member shares</h2>
-            <ul className="list-none mt-3">
+            <h2 className="mt-5 mb-[23px] title-text">Member shares</h2>
+            <ul className="mt-3 list-none">
               {memberList.map((member) => (
                 <li key={member.addr}>
                   <VoteBalanceCard
+                    addrTitle
                     title={member.addr}
                     weight={member.weight}
                     weightTotal={weightTotal}
-                    addrTitle
                   />
                 </li>
               ))}
@@ -232,7 +232,7 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
   }
 
   try {
-    const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    const client = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
     const sigInfo = await client.queryContractSmart(contractAddress, {
       get_config: {},
     })

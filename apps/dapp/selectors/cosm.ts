@@ -1,15 +1,24 @@
 import { selector, selectorFamily, atom } from 'recoil'
-import { GasPrice, StargateClient } from '@cosmjs/stargate'
+
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { GasPrice } from '@cosmjs/stargate'
+
 import {
-  CosmWasmClient,
-  SigningCosmWasmClient,
-} from '@cosmjs/cosmwasm-stargate'
-import { connectKeplrWithoutAlerts } from '../services/keplr'
-import { walletTokenBalanceUpdateCountAtom } from './treasury'
-import { localStorageEffect } from '../atoms/localStorageEffect'
+  cosmWasmClientRouter,
+  stargateClientRouter,
+} from 'util/chainClientRouter'
 import { NATIVE_DENOM, GAS_PRICE } from 'util/constants'
 
+import { localStorageEffect } from '../atoms/localStorageEffect'
+import { connectKeplrWithoutAlerts } from '../services/keplr'
+import { walletTokenBalanceUpdateCountAtom } from './treasury'
+
 export type WalletConnection = 'keplr' | ''
+
+export interface MemberStatus {
+  member: boolean
+  weight: number
+}
 
 export const CHAIN_RPC_ENDPOINT =
   process.env.NEXT_PUBLIC_CHAIN_RPC_ENDPOINT || ''
@@ -18,14 +27,14 @@ const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 export const stargateClient = selector({
   key: 'stargateClient',
   get: () => {
-    return StargateClient.connect(CHAIN_RPC_ENDPOINT)
+    return stargateClientRouter.connect(CHAIN_RPC_ENDPOINT)
   },
 })
 
 export const cosmWasmClient = selector({
   key: 'cosmWasmClient',
   get: () => {
-    return CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    return cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
   },
 })
 
@@ -178,6 +187,28 @@ export const voterInfoSelector = selectorFamily({
 
       return {
         weight: Number(response?.weight || 0),
+      }
+    },
+})
+
+export const isMemberSelector = selectorFamily<MemberStatus, string>({
+  key: 'isMember',
+  get:
+    (contractAddress) =>
+    async ({ get }) => {
+      const wallet = get(walletAddress)
+      if (!wallet) {
+        return {
+          member: false,
+          weight: 0,
+        }
+      }
+      const voterInfo = get(
+        voterInfoSelector({ contractAddress, walletAddress: wallet })
+      )
+      return {
+        member: voterInfo.weight !== 0,
+        weight: voterInfo.weight,
       }
     },
 })

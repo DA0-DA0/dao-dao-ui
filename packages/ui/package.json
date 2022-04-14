@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
+    "@dao-dao/config": "*",
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-essentials": "^6.4.19",
     "@storybook/addon-interactions": "^6.4.19",
@@ -28,7 +29,7 @@
     "babel-loader": "^8.2.3",
     "storybook-addon-designs": "^6.2.1",
     "tsconfig": "*",
-    "config": "*",
     "typescript": "^4.5.3"
-  }
+  },
+  "prettier": "@dao-dao/config/prettier"
 }

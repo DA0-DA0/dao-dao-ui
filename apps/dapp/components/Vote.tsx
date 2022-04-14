@@ -22,9 +22,9 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex items-center p-4 rounded-lg border border-default bg-primary justify-between max-w-3xl">
-      <div className="flex items-center gap-2">
-        <p className="text-2xl mr-1">🗳</p>
+    <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+      <div className="flex gap-2 items-center">
+        <p className="mr-1 text-2xl">🗳</p>
         <p className="primary-text">Casting</p>
         <p className="secondary-text">
           {voterWeight.toLocaleString()}% voting power
@@ -32,7 +32,6 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
       </div>
       <div className="grid grid-cols-3 gap-2">
         <Button
-          variant="secondary"
           className={`group transition ${
             selected === VoteChoice.Yes ? 'bg-valid hover:bg-valid' : ''
           }`}
@@ -41,6 +40,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
               s === VoteChoice.Yes ? undefined : VoteChoice.Yes
             )
           }
+          variant="secondary"
         >
           <CheckIcon
             className={`${
@@ -52,7 +52,6 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
           Yes
         </Button>
         <Button
-          variant="secondary"
           className={`group transition ${
             selected === VoteChoice.Abstain
               ? 'bg-tertiary hover:bg-tertiary'
@@ -63,12 +62,12 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
               s === VoteChoice.Abstain ? undefined : VoteChoice.Abstain
             )
           }
+          variant="secondary"
         >
           <SvgAbstain fill="currentColor" />
           Abstain
         </Button>
         <Button
-          variant="secondary"
           className={`group transition ${
             selected === VoteChoice.No ? 'bg-error hover:bg-error' : ''
           }`}
@@ -77,6 +76,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
               s === VoteChoice.No ? undefined : VoteChoice.No
             )
           }
+          variant="secondary"
         >
           <XIcon
             className={`${

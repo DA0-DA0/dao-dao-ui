@@ -8,7 +8,6 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import SvgCopy from '@components/icons/Copy'
 import SvgWallet from '@components/icons/Wallet'
 
 export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
@@ -35,12 +34,12 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
       className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm font-mono
         ${error ? ' ring-error ring-1' : ''}`}
     >
-      <SvgWallet width="24px" color="currentColor" />
+      <SvgWallet color="currentColor" width="24px" />
       <input
-        type="text"
-        placeholder="Juno address"
-        className="bg-transparent w-full ring-none border-none outline-none"
+        className="w-full bg-transparent border-none outline-none ring-none"
         disabled={disabled}
+        placeholder="Juno address"
+        type="text"
         {...register(label, { validate, onChange })}
       />
     </div>

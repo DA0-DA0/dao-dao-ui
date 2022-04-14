@@ -9,7 +9,8 @@
     "build": "svgr --out-dir dist --typescript --icon --replace-attr-values \"#191D20={props.color}\" -- assets"
   },
   "devDependencies": {
-    "@svgr/cli": "^6.1.1",
-    "config": "*"
-  }
+    "@dao-dao/config": "*",
+    "@svgr/cli": "^6.1.1"
+  },
+  "prettier": "@dao-dao/config/prettier"
 }

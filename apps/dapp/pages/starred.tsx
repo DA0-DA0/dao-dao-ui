@@ -5,21 +5,17 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
+import { EmptyDaoCard } from '@components/EmptyDaoCard'
+import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { ContractCard } from 'components/ContractCard'
-import {
-  isMemberSelector,
-  memberDaoSelector,
-  proposalCount,
-} from 'selectors/daos'
+import { isMemberSelector } from 'selectors/cosm'
+import { memberDaoSelector, proposalCount } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { cw20TokenInfo, nativeBalance } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { NATIVE_DENOM } from 'util/constants'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
-
-import { MysteryDaoCard } from './dao/list'
-import { MysteryMultisigCard } from './multisig/list'
 
 function PinnedDaoCard({ address }: { address: string }) {
   const listInfo = useRecoilValue(memberDaoSelector(address))
@@ -30,16 +26,11 @@ function PinnedDaoCard({ address }: { address: string }) {
 
   return (
     <ContractCard
-      name={listInfo.dao.name}
+      balance={listInfo.balance}
       description={listInfo.dao.description}
       href={`/dao/${address}`}
-      weight={convertMicroDenomToDenomWithDecimals(
-        listInfo.weight,
-        tokenInfo.decimals
-      )}
-      balance={listInfo.balance}
-      proposals={listInfo.proposals}
-      pinned={pinned}
+      imgUrl={listInfo.dao.image_url}
+      name={listInfo.dao.name}
       onPin={() => {
         if (pinned) {
           setPinnedDaos((p) => p.filter((a) => a !== address))
@@ -48,7 +39,12 @@ function PinnedDaoCard({ address }: { address: string }) {
           addToken(listInfo.gov_token)
         }
       }}
-      imgUrl={listInfo.dao.image_url}
+      pinned={pinned}
+      proposals={listInfo.proposals}
+      weight={convertMicroDenomToDenomWithDecimals(
+        listInfo.weight,
+        tokenInfo.decimals
+      )}
     />
   )
 }
@@ -66,13 +62,11 @@ function PinnedMultisigCard({ address }: { address: string }) {
 
   return (
     <ContractCard
-      name={config.name}
+      balance={chainNativeBalance}
       description={config.description}
       href={`/multisig/${address}`}
-      weight={weight}
-      proposals={proposals}
-      balance={chainNativeBalance}
-      pinned={pinned}
+      imgUrl={config.image_url}
+      name={config.name}
       onPin={() => {
         if (pinned) {
           setPinnedSigs((p) => p.filter((a) => a !== address))
@@ -80,7 +74,9 @@ function PinnedMultisigCard({ address }: { address: string }) {
           setPinnedSigs((p) => p.concat([address]))
         }
       }}
-      imgUrl={config.image_url}
+      pinned={pinned}
+      proposals={proposals}
+      weight={weight}
     />
   )
 }
@@ -91,44 +87,44 @@ const Starred: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="p-6 w-full col-span-4">
+      <div className="col-span-4 p-6 w-full">
         <h1 className="header-text">Starred</h1>
-        <h2 className="primary-text mb-2 mt-6 flex items-center gap-1">
+        <h2 className="flex gap-1 items-center mt-6 mb-2 primary-text">
           <StarIcon className="inline w-4 " />
           DAOs
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {pinnedDaos.length ? (
             pinnedDaos.map((address) => (
-              <PinnedDaoCard address={address} key={address} />
+              <PinnedDaoCard key={address} address={address} />
             ))
           ) : (
-            <MysteryDaoCard />
+            <EmptyDaoCard />
           )}
         </div>
         <div className="mt-6">
-          <h2 className="primary-text mb-2 mt-6 flex items-center gap-1">
+          <h2 className="flex gap-1 items-center mt-6 mb-2 primary-text">
             <StarIcon className="inline w-4 " />
             Multisigs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedMultisigs.length ? (
               pinnedMultisigs.map((address) => (
-                <PinnedMultisigCard address={address} key={address} />
+                <PinnedMultisigCard key={address} address={address} />
               ))
             ) : (
-              <MysteryMultisigCard />
+              <EmptyMultisigCard />
             )}
           </div>
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen">
-        <h2 className="body-text text-[16px] font-semibold mb-6">Actions</h2>
-        <ul className="link-text list-none ml-2 mt-1">
+      <div className="col-span-2 col-start-5 p-6 min-h-screen">
+        <h2 className="mb-6 text-[16px] font-semibold body-text">Actions</h2>
+        <ul className="mt-1 ml-2 list-none link-text">
           <li className="mt-1">
             <Link href="/dao/create">
               <a>
-                <PlusIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <PlusIcon className="inline mr-2 mb-1 w-5 h-5" />
                 Create a DAO
               </a>
             </Link>
@@ -136,7 +132,7 @@ const Starred: NextPage = () => {
           <li className="mt-1">
             <Link href="/multisig/create">
               <a>
-                <PlusIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <PlusIcon className="inline mr-2 mb-1 w-5 h-5" />
                 Create a multisig
               </a>
             </Link>
@@ -144,7 +140,7 @@ const Starred: NextPage = () => {
           <li className="mt-1">
             <Link href="/dao/list">
               <a>
-                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <MapIcon className="inline mr-2 mb-1 w-5 h-5" />
                 Explore all DAOs
               </a>
             </Link>
@@ -152,7 +148,7 @@ const Starred: NextPage = () => {
           <li className="mt-1">
             <Link href="/multisig/list">
               <a>
-                <MapIcon className="inline w-5 h-5 mr-2 mb-1" />
+                <MapIcon className="inline mr-2 mb-1 w-5 h-5" />
                 Explore all multisigs
               </a>
             </Link>

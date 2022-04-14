@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { CheckCircleIcon, PaperClipIcon } from '@heroicons/react/outline'
+import { CheckCircleIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 import { useThemeContext } from 'ui'
 
@@ -17,19 +17,20 @@ function concatAddressImpl(
   return first + '...' + last
 }
 
-function concatAddress(address: string) {
-  const takeN = 7
+function concatAddress(address: string, takeN = 7): string {
   return concatAddressImpl(address, takeN, takeN)
 }
 
 interface CopyToClipboardProps {
   value: string
   success?: string
+  takeN?: number
 }
 
 export function CopyToClipboard({
   value,
   success = 'Copied to clipboard!',
+  takeN,
 }: CopyToClipboardProps) {
   const [copied, setCopied] = useState(false)
   return (
@@ -47,7 +48,7 @@ export function CopyToClipboard({
       ) : (
         <SvgCopy color="currentColor" height="18px" width="18px" />
       )}
-      {concatAddress(value)}
+      {concatAddress(value, takeN)}
     </button>
   )
 }
@@ -60,12 +61,12 @@ export function CopyToClipboardAccent({
 
   return (
     <button
-      className="transition text-sm underline hover:no-underline text-brand"
-      style={accentColor ? { color: accentColor } : {}}
+      className="text-sm text-brand underline hover:no-underline transition"
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)
       }}
+      style={accentColor ? { color: accentColor } : {}}
     >
       {concatAddressImpl(value, 12, 7)}
     </button>

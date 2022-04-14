@@ -9,8 +9,8 @@ export function HomepageLayout({ children }: { children: ReactNode }) {
     <>
       <Head>
         <title>{SITE_TITLE}</title>
-        <link rel="icon" type="image/svg+xml" href="/daodao-dark.svg" />
-        <link rel="icon" href="/yin_yang.png" />
+        <link href="/daodao-dark.svg" rel="icon" type="image/svg+xml" />
+        <link href="/yin_yang.png" rel="icon" />
       </Head>
       {children}
     </>

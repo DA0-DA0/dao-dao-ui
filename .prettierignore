@@ -1,4 +1,4 @@
-node_modules
-.next
-build
-dist
+**/.next/
+**/dist/
+**/node_modules/
+**/out/

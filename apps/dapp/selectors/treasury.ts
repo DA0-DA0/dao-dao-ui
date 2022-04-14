@@ -1,18 +1,20 @@
 import { atomFamily, selector, selectorFamily } from 'recoil'
+
 import { IndexedTx, Coin } from '@cosmjs/stargate'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   // Cw20Coin,
   Cw20BalancesResponse,
   // Cw20CoinVerified,
 } from '@dao-dao/types/contracts/cw3-dao'
+import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
+
+import { treasuryTokenListUpdates } from '../atoms/treasury'
 import {
   stargateClient,
   cosmWasmClient,
   walletAddress,
 } from '../selectors/cosm'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
-import { treasuryTokenListUpdates } from '../atoms/treasury'
 
 export { walletAddress }
 

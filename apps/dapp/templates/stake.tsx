@@ -1,5 +1,13 @@
 import { useRecoilValue } from 'recoil'
 
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
+import { AddressInput } from '@components/input/AddressInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
+import { SelectInput } from '@components/input/SelectInput'
+import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 import { NATIVE_DECIMALS, NATIVE_DENOM } from 'util/constants'
 import { Config } from 'util/contractConfigWrapper'
 import {
@@ -15,14 +23,6 @@ import {
   validateRequired,
 } from 'util/formValidation'
 import { makeStakingMessage, makeDistributeMessage } from 'util/messagehelpers'
-
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
-import { SelectInput } from '@components/input/SelectInput'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
-import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 
 import { TemplateComponent, ToCosmosMsgProps } from './templateList'
 
@@ -99,7 +99,7 @@ export const StakeComponent: TemplateComponent = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't stake more tokens than are in the DAO tresury (${humanReadableAmount}).`
+        `Can't stake more tokens than are in the DAO treasury (${humanReadableAmount}).`
       )
     }
     // If there are no native tokens in the treasury the native balances query
@@ -124,9 +124,9 @@ export const StakeComponent: TemplateComponent = ({
   }
 
   return (
-    <div className="bg-primary p-3 rounded-lg my-2">
+    <div className="p-3 my-2 bg-primary rounded-lg">
       <div className="flex justify-between w-full">
-        <div className="flex items-center flex-wrap gap-2 w-24">
+        <div className="flex flex-wrap gap-2 items-center w-24">
           <h2 className="text-3xl">📤</h2>
           <h2>Stake</h2>
         </div>
@@ -139,14 +139,14 @@ export const StakeComponent: TemplateComponent = ({
 
       <div className="flex gap-4 mt-4">
         <SelectInput
-          label={getLabel('stakeType')}
-          register={register}
-          error={errors?.stakeType}
           defaultValue={stakeActions[0].type}
           disabled={readOnly}
+          error={errors?.stakeType}
+          label={getLabel('stakeType')}
+          register={register}
         >
           {stakeActions.map(({ name, type }, idx) => (
-            <option value={type} key={idx}>
+            <option key={idx} value={type}>
               {name}
             </option>
           ))}
@@ -155,35 +155,35 @@ export const StakeComponent: TemplateComponent = ({
         {stakeType != 'withdraw_delegator_reward' && (
           <>
             <NumberInput
+              disabled={readOnly}
+              error={errors?.amount}
               label={getLabel('amount')}
               register={register}
-              error={errors?.amount}
+              step={0.000001}
               validation={[
                 validateRequired,
                 validatePositive,
                 (amount: string) => validatePossibleSpendWrapper(denom, amount),
               ]}
-              step={0.000001}
-              disabled={readOnly}
             />
 
             <SelectInput
+              disabled={readOnly}
+              error={errors?.denom}
               label={getLabel('denom')}
               register={register}
-              error={errors?.denom}
               validation={[
                 (denom: string) => validatePossibleSpendWrapper(denom, amount),
               ]}
-              disabled={readOnly}
             >
               {nativeBalances.length !== 0 ? (
                 nativeBalances.map(({ denom }, idx) => (
-                  <option value={denom} key={idx}>
+                  <option key={idx} value={denom}>
                     ${nativeTokenLabel(denom)}
                   </option>
                 ))
               ) : (
-                <option value={NATIVE_DENOM} key="native-filler">
+                <option key="native-filler" value={NATIVE_DENOM}>
                   ${nativeTokenLabel(NATIVE_DENOM)}
                 </option>
               )}
@@ -198,14 +198,14 @@ export const StakeComponent: TemplateComponent = ({
 
       {stakeType == 'redelegate' && (
         <>
-          <h3 className="mb-1 mt-4">From Validator</h3>
+          <h3 className="mt-4 mb-1">From Validator</h3>
           <div className="form-control">
             <AddressInput
+              disabled={readOnly}
+              error={errors?.fromValidator}
               label={getLabel('fromValidator')}
               register={register}
-              error={errors?.fromValidator}
               validation={[validateValidatorAddress]}
-              disabled={readOnly}
             />
           </div>
 
@@ -215,16 +215,16 @@ export const StakeComponent: TemplateComponent = ({
         </>
       )}
 
-      <h3 className="mb-1 mt-4">
+      <h3 className="mt-4 mb-1">
         {stakeType == 'redelegate' ? 'To Validator' : 'Validator'}
       </h3>
       <div className="form-control">
         <AddressInput
+          disabled={readOnly}
+          error={errors?.validator}
           label={getLabel('validator')}
           register={register}
-          error={errors?.validator}
           validation={[validateRequired, validateValidatorAddress]}
-          disabled={readOnly}
         />
       </div>
 
@@ -232,7 +232,7 @@ export const StakeComponent: TemplateComponent = ({
         <InputErrorMessage error={errors?.validator} />
       </div>
 
-      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-disabled">
+      <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
         <InformationCircleIcon className="h-4" />
         <p className="body-text">
           This template is new and in beta. Double check the generated JSON

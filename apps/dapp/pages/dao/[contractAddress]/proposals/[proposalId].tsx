@@ -4,10 +4,12 @@ import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs } from 'components/Breadcrumbs'
+import { ProposalDetails } from 'components/ProposalDetails'
 import {
-  ProposalDetails,
   ProposalDetailsSidebar,
-} from 'components/ProposalDetails'
+  ProposalDetailsCard,
+  ProposalDetailsVoteStatus,
+} from 'components/ProposalDetailsSidebar'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 
@@ -18,9 +20,15 @@ const Proposal: NextPage = () => {
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const govTokenInfo = useRecoilValue(cw20TokenInfo(daoInfo.gov_token))
 
+  const proposalDetailsProps = {
+    contractAddress,
+    multisig: false,
+    proposalId: Number(proposalKey),
+  }
+
   return (
-    <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
+    <div className="grid grid-cols-4 lg:grid-cols-6">
+      <div className="col-span-4 p-6 w-full">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -28,19 +36,27 @@ const Proposal: NextPage = () => {
             [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
+
+        <div className="px-6 mt-6 lg:hidden">
+          <ProposalDetailsCard {...proposalDetailsProps} />
+        </div>
+
         <ProposalDetails
           contractAddress={contractAddress}
-          proposalId={Number(proposalKey)}
           fromCosmosMsgProps={{
             govDecimals: govTokenInfo.decimals,
           }}
-        />
-      </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">
-        <ProposalDetailsSidebar
-          contractAddress={contractAddress}
           proposalId={Number(proposalKey)}
         />
+
+        <div className="px-6 pb-6 mt-6 lg:hidden">
+          <h3 className="mb-6 text-base font-medium">Referendum status</h3>
+
+          <ProposalDetailsVoteStatus {...proposalDetailsProps} />
+        </div>
+      </div>
+      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
+        <ProposalDetailsSidebar {...proposalDetailsProps} />
       </div>
     </div>
   )

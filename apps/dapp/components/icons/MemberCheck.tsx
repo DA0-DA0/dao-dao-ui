@@ -3,10 +3,10 @@ import { SVGProps } from 'react'
 
 const SvgMemberCheck = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    width="1em"
+    fill="none"
     height="1em"
     viewBox="0 0 16 12"
-    fill="none"
+    width="1em"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >

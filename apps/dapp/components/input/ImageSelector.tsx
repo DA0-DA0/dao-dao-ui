@@ -37,34 +37,34 @@ export function ImageSelectorModal<
 }) {
   return (
     <Modal>
-      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative flex flex-col items-center gap-3">
+      <div className="flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white rounded-lg border border-focus">
         <button
-          className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
-          type="button"
+          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
+          type="button"
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="w-4 h-4" />
         </button>
         <div
-          className="rounded-full bg-center bg-cover w-[95px] h-[95px] border border-inactive"
+          aria-label="DAO's Custom Logo"
+          className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
+          role="img"
           style={{
             backgroundImage: `url(${imageUrl})`,
           }}
-          role="img"
-          aria-label="DAO's Custom Logo"
         ></div>
         <div className="flex flex-col gap-1">
-          <InputLabel name="Image URL" mono />
+          <InputLabel mono name="Image URL" />
           <TextInput
+            error={error}
             label={label}
             register={register}
-            error={error}
             validation={validation}
           />
           <InputErrorMessage error={error} />
         </div>
-        <div className="text-right w-full">
-          <Button type="button" size="sm" onClick={onClose}>
+        <div className="w-full text-right">
+          <Button onClick={onClose} size="sm" type="button">
             Done <SvgAirplane color="currentColor" />
           </Button>
         </div>
@@ -93,25 +93,25 @@ export function ImageSelector<
   return (
     <>
       <button
-        type="button"
         className={`w-24 h-24 rounded-full border mt-12 mx-auto border-inactive flex items-center justify-center hover:ring transition bg-center bg-cover ${
           error ? 'ring ring-error' : ''
         }`}
+        onClick={() => setShowImageSelect(true)}
         style={{
           backgroundImage: `url(${imageUrl})`,
         }}
-        onClick={() => setShowImageSelect(true)}
+        type="button"
       >
         <PlusIcon className="w-4" />
       </button>
       <div className={`${showImageSelect ? '' : 'hidden'}`}>
         <ImageSelectorModal
-          label={label}
-          register={register}
           error={error}
-          validation={validation}
           imageUrl={imageUrl}
+          label={label}
           onClose={() => setShowImageSelect(false)}
+          register={register}
+          validation={validation}
         />
       </div>
     </>

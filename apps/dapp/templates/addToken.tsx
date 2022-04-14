@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 
 import { useRecoilValueLoadable } from 'recoil'
 
-import { Config } from 'util/contractConfigWrapper'
-import { validateContractAddress, validateRequired } from 'util/formValidation'
-import { makeWasmMessage } from 'util/messagehelpers'
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
 import { LogoNoBorder } from '@components/Logo'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 import { tokenConfig } from 'selectors/daos'
+import { Config } from 'util/contractConfigWrapper'
+import { validateContractAddress, validateRequired } from 'util/formValidation'
+import { makeWasmMessage } from 'util/messagehelpers'
 
 import {
   TemplateComponent,
@@ -53,14 +53,14 @@ export const TokenInfoDisplay = ({
   return (
     <div>
       {tokenInfo.state === 'loading' && (
-        <div className="animate-spin-medium inline-block mt-2 p-2">
+        <div className="inline-block p-2 mt-2 animate-spin-medium">
           <LogoNoBorder />
         </div>
       )}
       {tokenInfo.state === 'hasValue' && (
         <>
           <InputLabel name="Token info" />
-          <pre className="overflow-auto border rounded-lg p-2 text-secondary border-secondary">
+          <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
             {JSON.stringify(tokenInfo.getValue(), null, 2)}
           </pre>
         </>
@@ -91,9 +91,9 @@ export const TokenSelector = ({
   const tokenAddress = watch(getLabel('address'))
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
-      <div className="flex items-center gap-2 justify-between">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
+      <div className="flex gap-2 justify-between items-center">
+        <div className="flex gap-2 items-center">
           <h2 className="text-3xl">{symbol}</h2>
           <h2>{title}</h2>
         </div>
@@ -106,20 +106,20 @@ export const TokenSelector = ({
       <div className="flex flex-col">
         <InputLabel name="Token address" />
         <AddressInput
+          disabled={readOnly}
+          error={errors?.to}
           label={getLabel('address')}
           register={register}
-          error={errors?.to}
           validation={[validateRequired, validateContractAddress]}
-          disabled={readOnly}
         />
         <InputErrorMessage error={errors?.to} />
       </div>
       <TokenInfoDisplay
         address={tokenAddress}
+        clearError={() => clearErrors(getLabel('to'))}
         setError={(message) =>
           setError(getLabel('to'), { type: 'manual', message })
         }
-        clearError={() => clearErrors(getLabel('to'))}
       />
     </div>
   )
@@ -132,9 +132,9 @@ export const AddTokenComponent: TemplateComponent = ({
   readOnly,
 }) => (
   <TokenSelector
+    errors={errors}
     getLabel={getLabel}
     onRemove={onRemove}
-    errors={errors}
     readOnly={readOnly}
     symbol="🔘"
     title="Add Treasury Token"

@@ -21,7 +21,7 @@ export function MessageTemplateDisplayItem({
 
   return (
     <button
-      className="flex flex-row gap-3 items-center p-2 hover:bg-primary transition w-full rounded"
+      className="flex flex-row gap-3 items-center p-2 w-full hover:bg-primary rounded transition"
       onClick={onClick}
       type="button"
     >
@@ -54,18 +54,18 @@ export function ProposalTemplateSelector({
 }) {
   return (
     <Modal>
-      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
         <button
-          className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
-          type="button"
+          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
+          type="button"
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="w-4 h-4" />
         </button>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="header-text">Proposal templates</h1>
         </div>
-        <ul className="list-none flex flex-col gap-3">
+        <ul className="flex flex-col gap-3 list-none">
           {templates
             .filter(({ contractSupport }) => {
               switch (contractSupport) {
@@ -80,10 +80,10 @@ export function ProposalTemplateSelector({
             .map((template, index) => (
               <li key={index}>
                 <MessageTemplateDisplayItem
-                  template={template}
                   onClick={() =>
                     onLabelSelect(template.label, template.getDefaults)
                   }
+                  template={template}
                 />
               </li>
             ))}

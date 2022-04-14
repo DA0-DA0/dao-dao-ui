@@ -33,19 +33,19 @@ export function DaoContractInfo({ address }: { address: string }) {
   )
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3 border-b border-inactive pt-[22px] pb-[28px]">
+    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b border-inactive md:grid md:grid-cols-3">
       <div>
-        <h2 className="primary-text mb-6">Governance Details</h2>
-        <ul className="list-none ml-2 mt-3 flex flex-col gap-2">
+        <h2 className="mb-6 primary-text">Governance Details</h2>
+        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">
           <GovInfoListItem
-            icon={<ChartPieIcon className="w-4 inline" />}
+            icon={<ChartPieIcon className="inline w-4" />}
             text="Unstaking period"
             value={humanReadableDuration(unstakingDuration)}
           />
           <GovInfoListItem
             icon={<SvgVotes fill="currentColor" width="16px" />}
             text="Passing threshold"
-            value={threshold as string}
+            value={threshold}
           />
           {quorum && (
             <GovInfoListItem
@@ -55,12 +55,12 @@ export function DaoContractInfo({ address }: { address: string }) {
             />
           )}
           <GovInfoListItem
-            icon={<CashIcon className="w-4 inline" />}
+            icon={<CashIcon className="inline w-4" />}
             text="Proposal deposit refund"
             value={daoInfo.config.refund_failed_proposals ? 'ON' : 'OFF'}
           />
           <li className="flex flex-row items-center caption-text">
-            <span className="flex items-center gap-1">
+            <span className="flex gap-1 items-center">
               <SvgVotes fill="currentColor" width="16px" />{' '}
               {convertMicroDenomToDenomWithDecimals(
                 daoInfo.config.proposal_deposit,
@@ -72,8 +72,8 @@ export function DaoContractInfo({ address }: { address: string }) {
         </ul>
       </div>
       <div>
-        <h2 className="primary-text mb-6">Addresses</h2>
-        <ul className="list-none ml-2 mt-3 flex flex-col gap-2 caption-text">
+        <h2 className="mb-6 primary-text">Addresses</h2>
+        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none caption-text">
           <li>
             DAO <CopyToClipboardAccent value={address} />
           </li>

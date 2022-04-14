@@ -1,5 +1,3 @@
-import { STATUS_COLORS } from 'util/constants'
-
 import SvgDraft from '../icons/Draft'
 import SvgExecuted from '../icons/Executed'
 import SvgOpen from '../icons/Open'

@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 import { useThemeContext } from 'ui'
 
@@ -26,10 +25,9 @@ import {
 } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import { StakingModal, StakingMode } from 'components/StakingModal'
-import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
+import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
 import {
   daoSelector,
-  isMemberSelector,
   proposalCount,
   tokenConfig,
   totalStaked,
@@ -43,6 +41,7 @@ import {
   walletTokenBalanceLoading,
 } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
+import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
 import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
@@ -94,7 +93,7 @@ function DaoHome() {
   }, [shouldAddToken, daoInfo.gov_token])
 
   return (
-    <div className="grid grid-cols-6 overflow-auto mb-3 min-h-screen">
+    <div className="grid overflow-auto grid-cols-6 mb-3 min-h-screen">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <div className="flex justify-between">
@@ -104,15 +103,14 @@ function DaoHome() {
                 [router.asPath, daoInfo.config.name],
               ]}
             />
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row gap-4 items-center">
               {member && (
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row gap-2 items-center">
                   <SvgMemberCheck fill="currentColor" width="16px" />
                   <p className="text-sm text-primary">You{"'"}re a member</p>
                 </div>
               )}
               <StarButton
-                pinned={pinned}
                 onPin={() => {
                   if (pinned) {
                     setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
@@ -121,21 +119,22 @@ function DaoHome() {
                     addToken(daoInfo.gov_token)
                   }
                 }}
+                pinned={pinned}
               />
             </div>
           </div>
 
           <HeroContractHeader
-            name={daoInfo.config.name}
             address={contractAddress}
             description={daoInfo.config.description}
             imgUrl={daoInfo.config.image_url}
+            name={daoInfo.config.name}
           />
 
           <div className="mt-2">
             <HeroContractHorizontalInfo>
               <HeroContractHorizontalInfoSection>
-                <UsersIcon className="w-4 inline" />
+                <UsersIcon className="inline w-4" />
                 {convertMicroDenomToDenomWithDecimals(
                   tokenInfo.total_supply,
                   tokenInfo.decimals
@@ -143,11 +142,11 @@ function DaoHome() {
                 ${tokenInfo?.symbol} total supply
               </HeroContractHorizontalInfoSection>
               <HeroContractHorizontalInfoSection>
-                <LibraryIcon className="w-4 inline" />
+                <LibraryIcon className="inline w-4" />
                 {stakedPercent}% ${tokenInfo?.symbol} staked
               </HeroContractHorizontalInfoSection>
               <HeroContractHorizontalInfoSection>
-                <SvgPencil fill="currentColor" className="inline" />
+                <SvgPencil className="inline" fill="currentColor" />
                 {proposalsTotal} proposals created
               </HeroContractHorizontalInfoSection>
             </HeroContractHorizontalInfo>
@@ -162,41 +161,40 @@ function DaoHome() {
           />
         </div>
       </div>
-      <div className="col-start-5 col-span-2 p-6 min-h-screen h-full">
-        <h2 className="title-text mb-[23px] mt-1">Your shares</h2>
-        <ul className="list-none mt-3">
+      <div className="col-span-2 col-start-5 p-6 h-full min-h-screen">
+        <h2 className="mt-1 mb-[23px] title-text">Your shares</h2>
+        <ul className="mt-3 list-none">
           <li>
             <BalanceCard
-              title="Balance"
               amount={convertMicroDenomToDenomWithDecimals(
                 govTokenBalance?.amount,
                 tokenInfo.decimals
               ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
+              loading={tokenBalanceLoading}
               onManage={() => {
                 setShowStaking(true)
               }}
-              loading={tokenBalanceLoading}
+              title="Balance"
             />
           </li>
           <li>
             <BalanceCard
-              title={`Voting power (staked ${tokenInfo?.symbol})`}
               amount={convertMicroDenomToDenomWithDecimals(
                 stakedGovTokenBalance.amount,
                 tokenInfo.decimals
               ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
               denom={tokenInfo?.symbol}
+              loading={tokenBalanceLoading}
               onManage={() => {
                 setShowStaking(true)
               }}
-              loading={tokenBalanceLoading}
+              title={`Voting power (staked ${tokenInfo?.symbol})`}
             />
           </li>
           {claimsAvaliable ? (
             <li>
               <BalanceCard
-                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
                 amount={convertMicroDenomToDenomWithDecimals(
                   claimsAvaliable,
                   tokenInfo.decimals
@@ -204,17 +202,18 @@ function DaoHome() {
                   maximumFractionDigits: 20,
                 })}
                 denom={tokenInfo?.symbol}
+                loading={tokenBalanceLoading}
                 onManage={() => {
                   setShowStaking(true)
                 }}
-                loading={tokenBalanceLoading}
+                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
               />
             </li>
           ) : null}
         </ul>
         {govTokenBalance?.amount ? (
-          <div className="bg-primary rounded-lg w-full mt-2 p-6">
-            <h3 className="link-text mb-4">
+          <div className="p-6 mt-2 w-full bg-primary rounded-lg">
+            <h3 className="mb-4 link-text">
               You have{' '}
               {convertMicroDenomToDenomWithDecimals(
                 govTokenBalance?.amount,
@@ -235,9 +234,9 @@ function DaoHome() {
               {daoInfo.config.name}
               {"'"}s direction.
             </p>
-            <div className="mt-4 flex justify-end">
+            <div className="flex justify-end mt-4">
               <button
-                className="link-text flex items-center gap-2 rounded"
+                className="flex gap-2 items-center rounded link-text"
                 onClick={() => {
                   setShowStaking(true)
                 }}
@@ -255,12 +254,12 @@ function DaoHome() {
         />
         {showStaking && (
           <StakingModal
-            defaultMode={StakingMode.Stake}
-            contractAddress={contractAddress}
-            claimAmount={claimsAvaliable}
-            onClose={() => setShowStaking(false)}
-            beforeExecute={() => setTokenBalancesLoading(true)}
             afterExecute={() => setTokenBalancesLoading(false)}
+            beforeExecute={() => setTokenBalancesLoading(true)}
+            claimAmount={claimsAvaliable}
+            contractAddress={contractAddress}
+            defaultMode={StakingMode.Stake}
+            onClose={() => setShowStaking(false)}
           />
         )}
       </div>
@@ -324,7 +323,7 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
   }
 
   try {
-    const client = await CosmWasmClient.connect(CHAIN_RPC_ENDPOINT)
+    const client = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
     const daoInfo = await client.queryContractSmart(contractAddress, {
       get_config: {},
     })
