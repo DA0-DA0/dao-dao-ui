@@ -8,6 +8,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
+/** @type {import("next").NextConfig} */
 let config = {
   /*
     The reactStrictMode flag is set to false
@@ -19,7 +20,19 @@ let config = {
     useSuspense: false,
     wait: true,
   },
-  experimental: {},
+  eslint: {
+    dirs: [
+      'atoms',
+      'components',
+      'models',
+      'pages',
+      'selectors',
+      'services',
+      'templates',
+      'types',
+      'util',
+    ],
+  },
 }
 
 // Only need rewrites for local development
