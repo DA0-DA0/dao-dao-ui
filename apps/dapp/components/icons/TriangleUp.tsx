@@ -3,9 +3,9 @@ import { SVGProps } from 'react'
 
 export const TriangleUp = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    width="24px"
     height="24px"
     viewBox="0 0 24 24"
+    width="24px"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >

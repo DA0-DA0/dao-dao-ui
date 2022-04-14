@@ -8,7 +8,9 @@ import {
   ThresholdResponse,
   Votes,
 } from '@dao-dao/types/contracts/cw3-dao'
+
 import { ProposalMapItem } from 'types/proposals'
+
 import { labelForMessage } from '../../util/messagehelpers'
 
 export const MEMO_MAX_LEN = 255

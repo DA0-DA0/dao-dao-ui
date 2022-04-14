@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
 import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
@@ -97,9 +95,9 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
   const votingPeriodSeconds = watch(getLabel('max_voting_period'))
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
-      <div className="flex items-center gap-2 justify-between">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
+      <div className="flex gap-2 justify-between items-center">
+        <div className="flex gap-2 items-center">
           <h2 className="text-3xl">🎭</h2>
           <h2>Update Config</h2>
         </div>
@@ -113,11 +111,11 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
         <div className="flex flex-col gap-1 my-3">
           <InputLabel name="Name" />
           <TextInput
+            disabled={readOnly}
+            error={errors?.name}
             label={getLabel('name')}
             register={register}
-            error={errors?.name}
             validation={[validateRequired]}
-            disabled={readOnly}
           />
           <InputErrorMessage error={errors?.name} />
         </div>
@@ -125,11 +123,11 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
         <div className="flex flex-col gap-1 my-3">
           <InputLabel name="Description" />
           <TextInput
+            disabled={readOnly}
+            error={errors?.description}
             label={getLabel('description')}
             register={register}
-            error={errors?.description}
             validation={[validateRequired]}
-            disabled={readOnly}
           />
           <InputErrorMessage error={errors?.description} />
         </div>
@@ -137,54 +135,54 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
         <div className="flex flex-col gap-1 my-3">
           <InputLabel name="Image URL (optional)" />
           <TextInput
+            disabled={readOnly}
+            error={errors?.imageUrl}
             label={getLabel('image_url')}
             register={register}
-            error={errors?.imageUrl}
             validation={[validateUrl]}
-            disabled={readOnly}
           />
           <InputErrorMessage error={errors?.imageUrl} />
         </div>
 
         <div className="flex gap-3">
-          <div className="flex flex-col gap-1 col-span-1 basis-1/2">
+          <div className="flex basis-1/2 flex-col col-span-1 gap-1">
             <InputLabel name="Passing Threshold (%)" />
             <NumberInput
+              defaultValue="51"
+              disabled={readOnly}
+              error={errors?.threshold}
               label={getLabel('threshold')}
               register={register}
-              error={errors?.threshold}
-              validation={[validateRequired, validatePercent]}
-              defaultValue="51"
               step="any"
-              disabled={readOnly}
+              validation={[validateRequired, validatePercent]}
             />
             <InputErrorMessage error={errors?.threshold} />
           </div>
-          <div className="flex flex-col gap-1 col-span-1 basis-1/2">
+          <div className="flex basis-1/2 flex-col col-span-1 gap-1">
             <InputLabel name="Quorum (%)" />
             <NumberInput
+              defaultValue="33"
+              disabled={readOnly}
+              error={errors?.quorum}
               label={getLabel('quorum')}
               register={register}
-              error={errors?.quorum}
-              validation={[validateRequired, validatePercent]}
-              defaultValue="33"
               step="any"
-              disabled={readOnly}
+              validation={[validateRequired, validatePercent]}
             />
             <InputErrorMessage error={errors?.quorum} />
           </div>
         </div>
 
         <div className="flex gap-3 my-3">
-          <div className="flex flex-col gap-1 basis-1/2">
+          <div className="flex basis-1/2 flex-col gap-1">
             <InputLabel name="Voting Duration (seconds)" />
             <NumberInput
-              label={getLabel('max_voting_period')}
-              register={register}
-              error={errors?.duration}
-              validation={[validateRequired, validatePositive]}
               defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
               disabled={readOnly}
+              error={errors?.duration}
+              label={getLabel('max_voting_period')}
+              register={register}
+              validation={[validateRequired, validatePositive]}
             />
             <InputErrorMessage error={errors?.duration} />
             <div className="caption-text">
@@ -192,15 +190,15 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-1 basis-1/2">
+          <div className="flex basis-1/2 flex-col gap-1">
             <InputLabel name="Proposal Deposit" />
             <NumberInput
+              disabled={readOnly}
+              error={errors?.deposit}
               label={getLabel('proposal_deposit')}
               register={register}
-              error={errors?.deposit}
-              validation={[validateRequired]}
               step={0.000001}
-              disabled={readOnly}
+              validation={[validateRequired]}
             />
             <InputErrorMessage error={errors?.deposit} />
           </div>
@@ -208,15 +206,15 @@ export const DAOUpdateConfigComponent: TemplateComponent = ({
 
         <div className="flex gap-1">
           <ToggleInput
+            disabled={readOnly}
             label={getLabel('refund_failed_proposals')}
             register={register}
-            disabled={readOnly}
           />
           <InputLabel name="Refund Failed Proposal Deposits" />
           <InputErrorMessage error={errors?.refund} />
         </div>
       </div>
-      <div className="p-2 rounded-lg mt-3 flex items-center gap-2 bg-disabled">
+      <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
         <InformationCircleIcon className="h-4" />
         <p>This will change the configuration of your DAO. Take Care.</p>
       </div>

@@ -1,19 +1,19 @@
 import { useRecoilValue } from 'recoil'
 
+import { PlusIcon, UserIcon, XIcon } from '@heroicons/react/outline'
+import { useFieldArray, useFormContext } from 'react-hook-form'
+import { Button } from 'ui/Button'
+
+import { FormCard } from '@components/FormCard'
+import { AddressInput } from '@components/input/AddressInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { TokenAmountInput } from '@components/input/TokenAmountInput'
+import { listMembers } from 'selectors/multisigs'
 import { Config } from 'util/contractConfigWrapper'
 import { validateAddress, validateRequired } from 'util/formValidation'
 import { makeWasmMessage } from 'util/messagehelpers'
 
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { PlusIcon, UserIcon, XIcon } from '@heroicons/react/outline'
-import { useFieldArray, useFormContext } from 'react-hook-form'
-import { listMembers } from 'selectors/multisigs'
-
 import { TemplateComponent, ToCosmosMsgProps } from './templateList'
-import { TokenAmountInput } from '@components/input/TokenAmountInput'
-import { Button } from 'ui/Button'
-import { FormCard } from '@components/FormCard'
 
 export interface Member {
   addr: string
@@ -68,9 +68,9 @@ export const ChangeMembersComponent: TemplateComponent = ({
     currentMembers.includes(addr) || 'Not a member of the multisig.'
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
+    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
       <div className="flex flex-row flex-wrap gap-2 justify-between">
-        <div className="flex gap-2 flex-wrap items-center mt-2 mb-3">
+        <div className="flex flex-wrap gap-2 items-center mt-2 mb-3">
           <h2 className="text-2xl">👥</h2>
           <h2 className="primary-text">Manage members</h2>
         </div>
@@ -81,7 +81,7 @@ export const ChangeMembersComponent: TemplateComponent = ({
         )}
       </div>
       <h3 className="mb-1">To Add</h3>
-      <ul className="list-none mb-2">
+      <ul className="mb-2 list-none">
         {addFields.map((field, index) => {
           const newGetLabel = (label: string) =>
             `${getLabel('toAdd')}.${index}.${label}`
@@ -92,6 +92,13 @@ export const ChangeMembersComponent: TemplateComponent = ({
 
           return (
             <TokenAmountInput
+              key={field.id}
+              addrError={addrError}
+              addrLabel={newGetLabel('addr')}
+              amountError={weightError}
+              amountLabel={newGetLabel('weight')}
+              hideRemove={false}
+              icon={<p className="primary-text">👤</p>}
               onPlusMinus={[
                 () =>
                   setValue(
@@ -104,17 +111,10 @@ export const ChangeMembersComponent: TemplateComponent = ({
                     (Number(weight) - 1).toString()
                   ),
               ]}
-              amountLabel={newGetLabel('weight')}
-              addrLabel={newGetLabel('addr')}
               onRemove={() => addRemove(index)}
-              hideRemove={false}
-              title={`Member weight`}
-              icon={<p className="primary-text">👤</p>}
-              key={field.id}
-              register={register}
-              amountError={weightError}
-              addrError={addrError}
               readOnly={readOnly}
+              register={register}
+              title={`Member weight`}
             />
           )
         })}
@@ -122,42 +122,42 @@ export const ChangeMembersComponent: TemplateComponent = ({
       {!readOnly && (
         <div className="w-min">
           <Button
-            variant="secondary"
-            type="button"
             onClick={() => addAppend({ addr: '', weight: '0' })}
+            type="button"
+            variant="secondary"
           >
             <PlusIcon className="w-3" /> Add an address
           </Button>
         </div>
       )}
-      <h3 className="mb-1 mt-3">To Remove</h3>
+      <h3 className="mt-3 mb-1">To Remove</h3>
       {removeFields.map((field, index) => {
         const newGetLabel = () => `${getLabel('toRemove')}.${index}`
         const addrError = errors?.toRemove?.[index]
         return (
           <FormCard key={field.id}>
             <div className="flex gap-3">
-              <p className="body-text flex items-center gap-2">
+              <p className="flex gap-2 items-center body-text">
                 <UserIcon className="w-3" /> Member
               </p>
               <div className="flex flex-col gap-1">
                 <AddressInput
+                  key={field.id}
+                  disabled={readOnly}
+                  error={addrError}
                   label={newGetLabel()}
                   register={register}
-                  error={addrError}
                   validation={[
                     validateAddress,
                     validateRequired,
                     validateMember,
                   ]}
-                  disabled={readOnly}
-                  key={field.id}
                 />
                 <InputErrorMessage error={addrError} />
               </div>
               {!readOnly && (
-                <button type="button" onClick={() => removeRemove(index)}>
-                  <XIcon className="text-error w-4" />
+                <button onClick={() => removeRemove(index)} type="button">
+                  <XIcon className="w-4 text-error" />
                 </button>
               )}
             </div>
@@ -167,9 +167,9 @@ export const ChangeMembersComponent: TemplateComponent = ({
       {!readOnly && (
         <div className="w-min">
           <Button
-            variant="secondary"
-            type="button"
             onClick={() => removeAppend({ addr: '' })}
+            type="button"
+            variant="secondary"
           >
             <PlusIcon className="w-3" /> Add an address
           </Button>

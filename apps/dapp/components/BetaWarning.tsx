@@ -6,9 +6,9 @@ import SvgMessage from 'components/icons/Message'
 
 export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
   return (
-    <div className="fixed z-10 w-screen h-full backdrop-filter backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus">
-        <div className="rounded-md prose prose-sm dark:prose-invert mb-6">
+    <div className="flex fixed z-10 justify-center items-center w-screen h-full backdrop-blur-sm backdrop-filter">
+      <div className="p-6 max-w-md h-min bg-white rounded-lg border border-focus">
+        <div className="mb-6 rounded-md prose prose-sm dark:prose-invert">
           <h2>Before you continue...</h2>
           <p>
             DAO DAO is in beta, and has not yet been audited. <b>Do not</b> keep
@@ -17,10 +17,10 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
           </p>
           <p>
             <a
-              className="text-accent underline hover:no-underline"
+              className="underline hover:no-underline text-accent"
               href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
-              target="_blank"
               rel="noreferrer"
+              target="_blank"
             >
               Give us feedback!
             </a>{' '}
@@ -39,7 +39,7 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
         </div>
         <Button onClick={() => onAccept()}>
           I accept the terms
-          <ChevronRightIcon className="w-4 h-4 ml-2" />
+          <ChevronRightIcon className="ml-2 w-4 h-4" />
         </Button>
       </div>
     </div>
@@ -48,25 +48,25 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
 
 export function BetaNotice({ onClose }: { onClose: Function }) {
   return (
-    <div className="fixed bottom-3 left-3 bg-light text-primary-content z-10 rounded-md p-3">
+    <div className="fixed bottom-3 left-3 z-10 p-3 bg-light rounded-md text-primary-content">
       <div className="flex gap-2 items-center">
         <SvgMessage />
         <h2>
           DAO DAO is in <div className="inline text-error">beta!</div>
         </h2>
         <a
-          className="underline font-mono text-secondary text-sm"
+          className="font-mono text-sm text-secondary underline"
           href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
-          target="_blank"
           rel="noreferrer"
+          target="_blank"
         >
           Share feedback
         </a>
         <button
-          className="transition text-primary-content hover:text-secondary"
+          className="hover:text-secondary transition text-primary-content"
           onClick={() => onClose()}
         >
-          <XIcon className="inline h-3 mb-2" />
+          <XIcon className="inline mb-2 h-3" />
         </button>
       </div>
     </div>

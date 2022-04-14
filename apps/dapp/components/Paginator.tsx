@@ -14,10 +14,10 @@ function Paginator({
   const total = Math.ceil(count / limit)
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex gap-2 items-center">
       {Array.from(Array(total), (_, i) => (
         <Link key={i + 1} href={`?page=${i + 1}&limit=${limit}`} passHref>
-          <Button size="sm" className={`${page - 1 === i ? 'ring' : ''}`}>
+          <Button className={`${page - 1 === i ? 'ring' : ''}`} size="sm">
             {i + 1}
           </Button>
         </Link>

@@ -1,6 +1,6 @@
 import { useRecoilValue } from 'recoil'
 
-import { fromBase64, toBase64, fromAscii, toAscii } from '@cosmjs/encoding'
+import { toBase64, toAscii } from '@cosmjs/encoding'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   BankMsg,
@@ -20,6 +20,7 @@ import {
   InstantiateMsg as MultisigInstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
+
 import { MintMsg } from 'types/messages'
 import { ProposalMapItem } from 'types/proposals'
 

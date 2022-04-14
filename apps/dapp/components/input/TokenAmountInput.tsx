@@ -67,31 +67,31 @@ export function TokenAmountInput<
   return (
     <FormCard>
       <div className="flex gap-3 justify-between">
-        <p className="body-text flex items-center gap-2">
+        <p className="flex gap-2 items-center body-text">
           {icon} {title}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex gap-2 items-center">
           <div className="flex flex-col gap-1">
             <NumberInput
-              small
-              onPlusMinus={onPlusMinus}
-              label={amountLabel as any}
-              register={register}
+              defaultValue="0"
+              disabled={readOnly}
               error={amountError}
+              label={amountLabel as any}
+              onPlusMinus={onPlusMinus}
+              register={register}
+              small
+              step={0.000001}
               validation={[
                 validateRequired as ValidateFn,
                 validatePositive as ValidateFn,
               ]}
-              defaultValue="0"
-              step={0.000001}
-              disabled={readOnly}
             />
             <InputErrorMessage error={amountError} />
           </div>
           {tokenSymbol && (
-            <div className="flex items-center gap-1">
+            <div className="flex gap-1 items-center">
               <div
-                className="w-4 h-4 rounded-full border border-default bg-center bg-cover"
+                className="w-4 h-4 bg-center bg-cover rounded-full border border-default"
                 style={{
                   backgroundImage: `url(${tokenImage})`,
                 }}
@@ -100,29 +100,29 @@ export function TokenAmountInput<
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <p className="secondary-text font-mono">{'->'}</p>
+        <div className="flex gap-2 items-center">
+          <p className="font-mono secondary-text">{'->'}</p>
           <div className="flex flex-col gap-1">
             <AddressInput
+              disabled={readOnly}
+              error={addrError}
               label={addrLabel}
               register={register}
-              error={addrError}
               validation={[
                 validateRequired as ValidateFn,
                 validateAddress as ValidateFn,
               ]}
-              disabled={readOnly}
             />
             <InputErrorMessage error={addrError} />
           </div>
         </div>
         {!readOnly && (
           <button
-            type="button"
-            onClick={onRemove}
             className={`${hideRemove ? 'hidden' : ''}`}
+            onClick={onRemove}
+            type="button"
           >
-            <XIcon className="text-error w-4" />
+            <XIcon className="w-4 text-error" />
           </button>
         )}{' '}
       </div>

@@ -159,20 +159,20 @@ const CreateMultisig: NextPage = () => {
             ]}
           />
           <ImageSelector
+            error={errors.imageUrl}
             imageUrl={imageUrl}
             label="imageUrl"
             register={register}
-            error={errors.imageUrl}
           />
 
-          <div className="flex flex-col items-center justify-center max-w-prose mx-auto mt-4 rounded-lg">
-            <InputLabel name="Multisig Name" mono className="pb-1" />
+          <div className="flex flex-col justify-center items-center mx-auto mt-4 max-w-prose rounded-lg">
+            <InputLabel className="pb-1" mono name="Multisig Name" />
             <TextInput
+              className="font-bold text-center"
+              error={errors.name}
               label="name"
               register={register}
-              error={errors.name}
               validation={[validateRequired]}
-              className="text-center font-bold"
             />
             <InputErrorMessage error={errors.name} />
           </div>
@@ -180,21 +180,37 @@ const CreateMultisig: NextPage = () => {
 
         <div className="px-8">
           <div className="flex flex-col gap-1">
-            <InputLabel name="Description" mono />
+            <InputLabel mono name="Description" />
             <TextareaInput
+              error={errors.description}
               label="description"
               register={register}
-              error={errors.description}
               validation={[validateRequired]}
             />
             <InputErrorMessage error={errors.description} />
           </div>
-          <h2 className="title-text mt-8 mb-4">Members</h2>
+          <h2 className="mt-8 mb-4 title-text">Members</h2>
           {fields.map((field, index) => {
             const amount = watch(`balances.${index}.amount`)
 
             return (
               <TokenAmountInput
+                key={field.id}
+                addrError={
+                  (errors.balances &&
+                    errors.balances[index] &&
+                    errors.balances[index].addr) ||
+                  undefined
+                }
+                addrLabel={`balances.${index}.addr`}
+                amountError={
+                  (errors.balances &&
+                    errors.balances[index] &&
+                    errors.balances[index].amount) ||
+                  undefined
+                }
+                amountLabel={`balances.${index}.amount`}
+                hideRemove={fields.length === 1}
                 onPlusMinus={[
                   () =>
                     setValue(
@@ -207,58 +223,42 @@ const CreateMultisig: NextPage = () => {
                       (Number(amount) - 1).toString()
                     ),
                 ]}
-                amountLabel={`balances.${index}.amount`}
-                addrLabel={`balances.${index}.addr`}
                 onRemove={() => remove(index)}
-                hideRemove={fields.length === 1}
-                title={`Member ${index} weight`}
-                key={field.id}
                 register={register}
-                amountError={
-                  (errors.balances &&
-                    errors.balances[index] &&
-                    errors.balances[index].amount) ||
-                  undefined
-                }
-                addrError={
-                  (errors.balances &&
-                    errors.balances[index] &&
-                    errors.balances[index].addr) ||
-                  undefined
-                }
+                title={`Member ${index} weight`}
               />
             )
           })}
           <Button
-            variant="secondary"
-            type="button"
             onClick={() => append({ addr: '', amount: '0' })}
+            type="button"
+            variant="secondary"
           >
             <PlusIcon className="w-3" /> Add an address
           </Button>
-          <h2 className="title-text mt-8 mb-4">Voting configuration</h2>
+          <h2 className="mt-8 mb-4 title-text">Voting configuration</h2>
           <FormCard>
-            <div className="grid grid-cols-5 gap-y-8 gap-x-1">
+            <div className="grid grid-cols-5 gap-x-1 gap-y-8">
               <div className="col-span-3">
                 <p className="body-text">Passing weight</p>
                 <p className="caption-text">
                   Number of yes votes required for a proposal to pass.
                 </p>
               </div>
-              <div className="col-span-2 flex flex-col gap-1">
+              <div className="flex flex-col col-span-2 gap-1">
                 <NumberInput
+                  defaultValue="1"
+                  error={errors.threshold}
+                  label="threshold"
                   onPlusMinus={[
                     () =>
                       setValue('threshold', (Number(threshold) + 1).toString()),
                     () =>
                       setValue('threshold', (Number(threshold) - 1).toString()),
                   ]}
-                  label="threshold"
                   register={register}
-                  error={errors.threshold}
-                  validation={[validateRequired, validatePercent]}
-                  defaultValue="1"
                   step="any"
+                  validation={[validateRequired, validatePercent]}
                 />
                 <InputErrorMessage error={errors.threshold} />
               </div>
@@ -269,12 +269,12 @@ const CreateMultisig: NextPage = () => {
                   Amount of time proposals will remain open for voting.
                 </p>
               </div>
-              <div className="col-span-1 flex flex-col gap-2">
+              <div className="flex flex-col col-span-1 gap-2">
                 <NumberInput
+                  defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+                  error={errors.duration}
                   label="duration"
                   register={register}
-                  error={errors.duration}
-                  defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
                   validation={[
                     validateRequired,
                     validatePositive as Validate<string>,
@@ -282,7 +282,7 @@ const CreateMultisig: NextPage = () => {
                 />
                 <InputErrorMessage error={errors.duration} />
               </div>
-              <div className="col-span-1 flex items-center justify-center rounded-lg bg-disabled">
+              <div className="flex col-span-1 justify-center items-center bg-disabled rounded-lg">
                 <p className="secondary-text">
                   {secondsToWdhms(votingPeriodSeconds)}
                 </p>
@@ -290,13 +290,13 @@ const CreateMultisig: NextPage = () => {
             </div>
           </FormCard>
         </div>
-        <div className="px-6 mb-8 mt-4 flex justify-end w-full">
+        <div className="flex justify-end px-6 mt-4 mb-8 w-full">
           <Tooltip
             label={!walletAddress ? 'Connect your wallet to submit' : undefined}
           >
-            <Button type="submit" loading={loading} disabled={!walletAddress}>
+            <Button disabled={!walletAddress} loading={loading} type="submit">
               Submit{' '}
-              <SvgAirplane color="currentColor" width="14px" height="14px" />
+              <SvgAirplane color="currentColor" height="14px" width="14px" />
             </Button>
           </Tooltip>
         </div>

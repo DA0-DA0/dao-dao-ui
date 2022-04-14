@@ -1,6 +1,10 @@
-import { ConfigResponse as SigConfig } from '@dao-dao/types/contracts/cw3-flex-multisig'
-import { ConfigResponse as DaoConfig } from '@dao-dao/types/contracts/cw3-dao'
+/* eslint-disable react-hooks/rules-of-hooks */
+
 import { selectorFamily, useRecoilValue, waitForAll } from 'recoil'
+
+import { ConfigResponse as DaoConfig } from '@dao-dao/types/contracts/cw3-dao'
+import { ConfigResponse as SigConfig } from '@dao-dao/types/contracts/cw3-flex-multisig'
+
 import { daoSelector, tokenConfig } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 

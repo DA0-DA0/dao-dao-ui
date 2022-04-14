@@ -18,7 +18,7 @@ const Proposal: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
+      <div className="col-span-4 p-6 w-full">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -28,13 +28,13 @@ const Proposal: NextPage = () => {
         />
         <ProposalDetails
           contractAddress={contractAddress}
-          proposalId={Number(proposalKey)}
           fromCosmosMsgProps={{
             govDecimals: govTokenInfo.decimals,
           }}
+          proposalId={Number(proposalKey)}
         />
       </div>
-      <div className="col-span-2 p-6 bg-base-200 min-h-screen">
+      <div className="col-span-2 p-6 min-h-screen bg-base-200">
         <ProposalDetailsSidebar
           contractAddress={contractAddress}
           proposalId={Number(proposalKey)}

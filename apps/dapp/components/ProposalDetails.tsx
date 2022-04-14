@@ -145,10 +145,10 @@ function ProposalMessageTemplateListItem({
     <FormProvider {...formMethods}>
       <form>
         <template.component
-          getLabel={(field) => field}
-          readOnly
           contractAddress={contractAddress}
+          getLabel={(field) => field}
           multisig={multisig}
+          readOnly
         />
       </form>
     </FormProvider>
@@ -178,10 +178,10 @@ function ProposalMessageTemplateList({
     return data ? (
       <ProposalMessageTemplateListItem
         key={index}
-        template={data.template}
-        values={data.values}
         contractAddress={contractAddress}
         multisig={multisig}
+        template={data.template}
+        values={data.values}
       />
     ) : (
       // If no message template found, render raw message.
@@ -265,12 +265,12 @@ export function ProposalDetails({
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="header-text text-xl">{proposal.title}</h1>
+        <h1 className="text-xl header-text">{proposal.title}</h1>
       </div>
       <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />
       </div>
-      <p className="caption-text font-mono mb-[12px] mt-[36px]">Messages</p>
+      <p className="mt-[36px] mb-[12px] font-mono caption-text">Messages</p>
       <div className="max-w-3xl">
         {decodedMessages?.length ? (
           showRaw ? (
@@ -279,10 +279,10 @@ export function ProposalDetails({
             />
           ) : (
             <ProposalMessageTemplateList
-              msgs={proposal.msgs}
               contractAddress={contractAddress}
-              multisig={multisig}
               fromCosmosMsgProps={fromCosmosMsgProps}
+              msgs={proposal.msgs}
+              multisig={multisig}
             />
           )
         ) : (
@@ -292,19 +292,19 @@ export function ProposalDetails({
       {!!decodedMessages.length && (
         <div className="mt-4">
           <Button
+            onClick={() => setShowRaw((s) => !s)}
             size="sm"
             variant="secondary"
-            onClick={() => setShowRaw((s) => !s)}
           >
             {showRaw ? (
               <>
                 Hide raw data
-                <EyeOffIcon className="inline h-4 stroke-current ml-1" />
+                <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
               </>
             ) : (
               <>
                 Show raw data
-                <EyeIcon className="inline h-4 stroke-current ml-1" />
+                <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
           </Button>
@@ -312,9 +312,10 @@ export function ProposalDetails({
       )}
       {proposal.status === 'passed' && (
         <>
-          <p className="caption-text font-mono mb-[12px] mt-[30px]">Status</p>
+          <p className="mt-[30px] mb-[12px] font-mono caption-text">Status</p>
           <Execute
             loading={loading}
+            messages={proposal.msgs.length}
             onExecute={() =>
               executeProposalExecute(
                 proposalId,
@@ -331,14 +332,12 @@ export function ProposalDetails({
                 setLoading
               )
             }
-            messages={proposal.msgs.length}
           />
         </>
       )}
-      <p className="caption-text font-mono mb-[12px] mt-[30px]">Vote</p>
+      <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
       {proposal.status === 'open' && !walletVote && votingPower !== 0 && (
         <Vote
-          voterWeight={weightPercent}
           loading={loading}
           onVote={(position) =>
             executeProposalVote(
@@ -356,6 +355,7 @@ export function ProposalDetails({
               setLoading
             )
           }
+          voterWeight={weightPercent}
         />
       )}
       {walletVote && (
@@ -365,7 +365,7 @@ export function ProposalDetails({
         <p className="body-text">You did not vote on this proposal.</p>
       )}
       {votingPower === 0 && (
-        <p className="body-text max-w-prose">
+        <p className="max-w-prose body-text">
           You must have voting power at the time of proposal creation to vote.{' '}
           {!multisig && (
             <button className="underline" onClick={() => setShowStakng(true)}>
@@ -374,12 +374,12 @@ export function ProposalDetails({
           )}
           {!multisig && showStaking && (
             <StakingModal
-              defaultMode={StakingMode.Stake}
-              contractAddress={contractAddress}
-              claimAmount={0}
-              onClose={() => setShowStakng(false)}
-              beforeExecute={() => setTokenBalancesLoading(true)}
               afterExecute={() => setTokenBalancesLoading(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              claimAmount={0}
+              contractAddress={contractAddress}
+              defaultMode={StakingMode.Stake}
+              onClose={() => setShowStakng(false)}
             />
           )}
         </p>

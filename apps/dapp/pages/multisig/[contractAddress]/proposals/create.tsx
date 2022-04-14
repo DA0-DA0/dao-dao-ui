@@ -63,7 +63,7 @@ const MultisigProposalCreate: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
+      <div className="col-span-4 p-6 w-full">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -73,15 +73,15 @@ const MultisigProposalCreate: NextPage = () => {
         />
         <ProposalForm
           contractAddress={contractAddress}
-          onSubmit={onProposalSubmit}
           loading={proposalLoading}
+          multisig
+          onSubmit={onProposalSubmit}
           toCosmosMsgProps={{
             sigAddress: contractAddress,
             govAddress: sigInfo.group_address,
             govDecimals: 0,
             multisig: true,
           }}
-          multisig
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+
 import { MessageMap } from 'models/proposal/messageMap'
 
 export type ProposalKey = {

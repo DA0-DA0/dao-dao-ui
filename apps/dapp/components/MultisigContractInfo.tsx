@@ -14,25 +14,25 @@ export function MultisigContractInfo({ address }: { address: string }) {
   const sigInfo = useRecoilValue(sigSelector(address))
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3 border-b border-inactive pt-[22px] pb-[28px]">
+    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b border-inactive md:grid md:grid-cols-3">
       <div>
-        <h2 className="primary-text mb-6">Governance Details</h2>
-        <ul className="list-none ml-2 mt-3 flex flex-col gap-2">
+        <h2 className="mb-6 primary-text">Governance Details</h2>
+        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">
           <GovInfoListItem
             icon={<SvgVotes fill="currentColor" width="16px" />}
             text="Passing threshold"
             value={thresholdString(sigInfo.config.threshold, true, 0)}
           />
           <GovInfoListItem
-            icon={<ClockIcon className="w-4 inline" />}
+            icon={<ClockIcon className="inline w-4" />}
             text="Proposal duration"
             value={humanReadableDuration(sigInfo.config.max_voting_period)}
           />
         </ul>
       </div>
       <div>
-        <h2 className="primary-text mb-6">Addresses</h2>
-        <ul className="list-none ml-2 mt-3 flex flex-col gap-2 caption-text">
+        <h2 className="mb-6 primary-text">Addresses</h2>
+        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none caption-text">
           <li>
             Multisig <CopyToClipboardAccent value={address} />
           </li>

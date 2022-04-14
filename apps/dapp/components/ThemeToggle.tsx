@@ -8,9 +8,9 @@ function ThemeToggle() {
 
   const icon =
     themeContext.theme === 'light' ? (
-      <MoonIcon className="inline w-5 h-5 mr-2" />
+      <MoonIcon className="inline mr-2 w-5 h-5" />
     ) : (
-      <SunIcon className="inline w-5 h-5 mr-2" />
+      <SunIcon className="inline mr-2 w-5 h-5" />
     )
 
   const nextTheme = themeContext.theme === 'dark' ? 'light' : 'dark'
@@ -19,9 +19,9 @@ function ThemeToggle() {
 
   return (
     <button
-      type="button"
-      onClick={() => themeContext.updateTheme(nextTheme)}
       className="flex items-center link-text"
+      onClick={() => themeContext.updateTheme(nextTheme)}
+      type="button"
     >
       {icon}
       {text}

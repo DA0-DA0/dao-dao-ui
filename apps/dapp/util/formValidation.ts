@@ -1,10 +1,10 @@
-import JSON5 from 'json5'
-
 import {
   isValidAddress,
   isValidContractAddress,
   isValidValidatorAddress,
 } from '@dao-dao/utils'
+import JSON5 from 'json5'
+
 import { isValidUrl } from './isValidUrl'
 
 const CHAIN_PREFIX = process.env.NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string

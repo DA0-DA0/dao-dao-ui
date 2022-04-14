@@ -1,8 +1,4 @@
-import {
-  constSelector,
-  TransactionInterface_UNSTABLE,
-  useRecoilValue,
-} from 'recoil'
+import { TransactionInterface_UNSTABLE, useRecoilValue } from 'recoil'
 
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 
@@ -14,10 +10,8 @@ import {
   EmptyProposalResponse,
   EmptyThresholdResponse,
 } from 'models/proposal/proposal'
-import { listMembers, MultisigMemberInfo } from 'selectors/multisigs'
 import {
   draftProposalsSelector,
-  proposalSelector,
   proposalTallySelector,
 } from 'selectors/proposals'
 import {
@@ -28,7 +22,6 @@ import {
 } from 'types/proposals'
 
 import {
-  Config,
   contractConfigSelector,
   ContractConfigWrapper,
 } from './contractConfigWrapper'

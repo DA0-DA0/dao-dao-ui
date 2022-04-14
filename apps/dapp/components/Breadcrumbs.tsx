@@ -7,11 +7,11 @@ import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
  */
 export function Breadcrumbs({ crumbs }: { crumbs: Array<[string, string]> }) {
   return (
-    <ul className="link-text list-none flex">
+    <ul className="flex list-none link-text">
       <li key="icon">
         <Link href={crumbs[crumbs.length - 2][0]}>
           <a>
-            <ArrowNarrowLeftIcon className="inline w-5 h-5 mb-1" />
+            <ArrowNarrowLeftIcon className="inline mb-1 w-5 h-5" />
           </a>
         </Link>
       </li>
