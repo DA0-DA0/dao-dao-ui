@@ -2,18 +2,11 @@ import { ReactNode, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
-import {
-  SetterOrUpdater,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import {
-  EyeIcon,
-  EyeOffIcon,
-} from '@heroicons/react/outline'
+import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { Button } from 'ui'
