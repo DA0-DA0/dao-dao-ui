@@ -5,7 +5,11 @@ import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import { ProposalDetails } from 'components/ProposalDetails'
-import { ProposalDetailsSidebar } from 'components/ProposalDetailsSidebar'
+import {
+  ProposalDetailsSidebar,
+  ProposalDetailsCard,
+  ProposalDetailsVoteStatus,
+} from 'components/ProposalDetailsSidebar'
 import { sigSelector } from 'selectors/multisigs'
 
 const MultisigProposal: NextPage = () => {
@@ -14,8 +18,14 @@ const MultisigProposal: NextPage = () => {
   const contractAddress = router.query.contractAddress as string
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
 
+  const proposalDetailsProps = {
+    contractAddress,
+    multisig: true,
+    proposalId: Number(proposalKey),
+  }
+
   return (
-    <div className="grid grid-cols-6">
+    <div className="grid grid-cols-4 lg:grid-cols-6">
       <div className="col-span-4 p-6 w-full">
         <Breadcrumbs
           crumbs={[
@@ -24,6 +34,11 @@ const MultisigProposal: NextPage = () => {
             [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
+
+        <div className="px-6 mt-6 lg:hidden">
+          <ProposalDetailsCard {...proposalDetailsProps} />
+        </div>
+
         <ProposalDetails
           contractAddress={contractAddress}
           fromCosmosMsgProps={{
@@ -32,13 +47,15 @@ const MultisigProposal: NextPage = () => {
           multisig
           proposalId={Number(proposalKey)}
         />
+
+        <div className="px-6 pb-6 mt-6 lg:hidden">
+          <h3 className="mb-6 text-base font-medium">Referendum status</h3>
+
+          <ProposalDetailsVoteStatus {...proposalDetailsProps} />
+        </div>
       </div>
-      <div className="col-span-2 p-6 min-h-screen bg-base-200">
-        <ProposalDetailsSidebar
-          contractAddress={contractAddress}
-          multisig
-          proposalId={Number(proposalKey)}
-        />
+      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
+        <ProposalDetailsSidebar {...proposalDetailsProps} />
       </div>
     </div>
   )
