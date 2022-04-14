@@ -1,5 +1,3 @@
-// Need color and width literals here because tailwind isn't able to generate
-// the right classNames for the production build otherwise.
 export const Progress = ({
   rows,
   verticalBars = [],

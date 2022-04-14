@@ -4,10 +4,8 @@ import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs } from 'components/Breadcrumbs'
-import {
-  ProposalDetails,
-  ProposalDetailsSidebar,
-} from 'components/ProposalDetails'
+import { ProposalDetails } from 'components/ProposalDetails'
+import { ProposalDetailsSidebar } from 'components/ProposalDetailsSidebar'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
 

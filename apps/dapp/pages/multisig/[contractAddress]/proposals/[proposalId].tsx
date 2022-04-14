@@ -4,10 +4,8 @@ import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs } from 'components/Breadcrumbs'
-import {
-  ProposalDetails,
-  ProposalDetailsSidebar,
-} from 'components/ProposalDetails'
+import { ProposalDetails } from 'components/ProposalDetails'
+import { ProposalDetailsSidebar } from 'components/ProposalDetailsSidebar'
 import { sigSelector } from 'selectors/multisigs'
 
 const MultisigProposal: NextPage = () => {

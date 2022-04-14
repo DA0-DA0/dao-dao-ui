@@ -177,19 +177,16 @@ export const useThresholdQuorum = (
   const config = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig })
   )
-  const proposal = useRecoilValue(
-    proposalSelector({ contractAddress, proposalId })
-  )
   const proposalTally = useRecoilValue(
     proposalTallySelector({ contractAddress, proposalId })
   )
 
-  const thresholdConfig = proposal?.threshold
+  const thresholdConfig = proposalTally?.threshold
 
   const configWrapper = new ContractConfigWrapper(config)
   const tokenDecimals = configWrapper.gov_token_decimals
 
-  if (!config || !thresholdConfig || !proposal || !proposalTally) {
+  if (!config || !thresholdConfig || !proposalTally) {
     return {}
   }
 
