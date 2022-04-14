@@ -99,28 +99,28 @@ function AmountSelector({
   return (
     <div className="relative">
       <button
-        onClick={onDecrease}
-        disabled={Number(amount) <= 1}
         className={`absolute top-0 left-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-l ${
           Number(amount) <= 1 ? 'bg-transparent border border-inactive' : ''
         }`}
+        disabled={Number(amount) <= 1}
+        onClick={onDecrease}
       >
         <ChevronLeftIcon className="w-4 h-4" />
       </button>
       <input
-        type="number"
-        className="pr-16 pl-16 h-[56px] w-[392px] bg-btn-secondary rounded"
-        value={amount}
+        className="pr-16 pl-16 w-[392px] h-[56px] bg-btn-secondary rounded"
         onChange={onChange}
+        type="number"
+        value={amount}
       />
       <button
-        onClick={onIncrease}
-        disabled={Number(amount) + 1 >= max}
         className={`absolute top-0 right-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-r ${
           Number(amount) + 1 >= max
             ? 'bg-transparent border border-inactive'
             : ''
         }`}
+        disabled={Number(amount) + 1 >= max}
+        onClick={onIncrease}
       >
         <ChevronRightIcon className="w-4 h-4" />
       </button>
@@ -359,8 +359,8 @@ export function StakingModal({
   const ActionButton = ({ ready }: { ready: boolean }) => {
     return (
       <Button
-        loading={loading}
         disabled={!ready}
+        loading={loading}
         onClick={() => {
           beforeExecute()
           if (mode === StakingMode.Stake) {
@@ -418,41 +418,41 @@ export function StakingModal({
           }
         }}
       >
-        <span className="capitalize mr-1">{stakingModeString(mode)}</span>
+        <span className="mr-1 capitalize">{stakingModeString(mode)}</span>
       </Button>
     )
   }
 
   return (
     <Modal>
-      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
         <button
-          className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
+          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between items-center">
           <h1 className="header-text">Manage staking</h1>
         </div>
-        <div className="flex py-[20px] mb-2 gap-1 border-b border-inactive">
+        <div className="flex gap-1 py-[20px] mb-2 border-b border-inactive">
           <ModeButton
-            onClick={() => setMode(StakingMode.Stake)}
             active={mode === StakingMode.Stake}
+            onClick={() => setMode(StakingMode.Stake)}
           >
             Stake
           </ModeButton>
           <ModeButton
-            onClick={() => setMode(StakingMode.Unstake)}
             active={mode === StakingMode.Unstake}
+            onClick={() => setMode(StakingMode.Unstake)}
           >
             Unstake
           </ModeButton>
           {canClaim && (
             <ModeButton
-              onClick={() => setMode(StakingMode.Claim)}
               active={mode === StakingMode.Claim}
+              onClick={() => setMode(StakingMode.Claim)}
             >
               Claim
             </ModeButton>
@@ -461,28 +461,28 @@ export function StakingModal({
         {mode !== StakingMode.Claim && (
           <>
             <div className="flex flex-col mt-[20px]">
-              <h2 className="primary-text mb-3">Choose your token amount</h2>
+              <h2 className="mb-3 primary-text">Choose your token amount</h2>
               <AmountSelector
                 amount={amount}
-                onIncrease={() => setAmount((a) => (Number(a) + 1).toString())}
-                onDecrease={() => setAmount((a) => (Number(a) - 1).toString())}
-                onChange={(e) => setAmount(e?.target?.value)}
                 max={maxTx}
+                onChange={(e) => setAmount(e?.target?.value)}
+                onDecrease={() => setAmount((a) => (Number(a) - 1).toString())}
+                onIncrease={() => setAmount((a) => (Number(a) + 1).toString())}
               />
               {Number(amount) > maxTx && (
-                <span className="caption-text text-error mt-1 ml-1">
+                <span className="mt-1 ml-1 text-error caption-text">
                   Can{"'"}t {stakingModeString(mode)} more ${tokenInfo.symbol}{' '}
                   than you own
                 </span>
               )}
-              <span className="caption-text font-mono mt-4">
+              <span className="mt-4 font-mono caption-text">
                 Max available {maxTx} ${tokenInfo.symbol}
               </span>
               <div className="mt-4">
                 <PercentSelector
                   amount={Number(amount)}
-                  setAmount={setAmount}
                   max={maxTx}
+                  setAmount={setAmount}
                 />
               </div>
             </div>
@@ -494,7 +494,7 @@ export function StakingModal({
                     <h2 className="link-text">
                       Unstaking period: {humanReadableDuration(unstakeDuration)}
                     </h2>
-                    <p className="secondary-text mt-3">
+                    <p className="mt-3 secondary-text">
                       There will be {humanReadableDuration(unstakeDuration)}{' '}
                       between the time you decide to unstake your tokens and the
                       time you can redeem them.
@@ -502,14 +502,14 @@ export function StakingModal({
                   </div>
                 </>
               )}
-            <div className="px-3 pt-6 flex justify-end">
+            <div className="flex justify-end px-3 pt-6">
               <ActionButton ready={ready} />
             </div>
           </>
         )}
         {mode === StakingMode.Claim && (
           <>
-            <div className="py-3 px-6 flex flex-col mt-3">
+            <div className="flex flex-col py-3 px-6 mt-3">
               <h2 className="font-medium">
                 {convertMicroDenomToDenomWithDecimals(
                   claimAmount,
@@ -517,10 +517,10 @@ export function StakingModal({
                 )}{' '}
                 ${tokenInfo.symbol} avaliable
               </h2>
-              <p className="text-sm mt-3 mb-3">
+              <p className="mt-3 mb-3 text-sm">
                 Claim them to increase your voting power.
               </p>
-              <div className="px-3 pt-6 flex justify-end">
+              <div className="flex justify-end px-3 pt-6">
                 <Tooltip label={walletDisconnected()}>
                   <ActionButton ready={!walletDisconnected()} />
                 </Tooltip>

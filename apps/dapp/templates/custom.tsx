@@ -1,11 +1,11 @@
-import { Config } from 'util/contractConfigWrapper'
-import { makeWasmMessage } from 'util/messagehelpers'
-import { validateCosmosMsg } from 'util/validateWasmMsg'
-
-import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
+
+import { CodeMirrorInput } from '@components/input/CodeMirrorInput'
+import { Config } from 'util/contractConfigWrapper'
+import { makeWasmMessage } from 'util/messagehelpers'
+import { validateCosmosMsg } from 'util/validateWasmMsg'
 
 import { TemplateComponent, ToCosmosMsgProps } from './templateList'
 
@@ -35,7 +35,7 @@ export const CustomComponent: TemplateComponent = ({
   return (
     <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex gap-2 items-center mb-2">
           <h2 className="text-3xl">🤖</h2>
           <h2>Custom</h2>
         </div>
@@ -46,9 +46,10 @@ export const CustomComponent: TemplateComponent = ({
         )}
       </div>
       <CodeMirrorInput
-        label={getLabel('message')}
         control={control}
         error={errors?.message}
+        label={getLabel('message')}
+        readOnly={readOnly}
         validation={[
           (v: string) => {
             let msg
@@ -66,20 +67,19 @@ export const CustomComponent: TemplateComponent = ({
             }
           },
         ]}
-        readOnly={readOnly}
       />
       <div className="mt-2">
         {errors?.message ? (
-          <p className="text-error text-sm flex items-center gap-1">
-            <XIcon className="w-5 inline" />{' '}
+          <p className="flex gap-1 items-center text-sm text-error">
+            <XIcon className="inline w-5" />{' '}
             {errors?.message.message === 'Invalid cosmos message' ? (
               <>
                 Invalid{' '}
                 <a
-                  className="link inline"
+                  className="inline link"
+                  href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
                   rel="noreferrer"
                   target="_blank"
-                  href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
                 >
                   cosmos message
                 </a>
@@ -87,8 +87,8 @@ export const CustomComponent: TemplateComponent = ({
             ) : null}
           </p>
         ) : (
-          <p className="text-success text-sm flex items-center gap-1">
-            <CheckIcon className="w-5 inline" /> json is valid
+          <p className="flex gap-1 items-center text-sm text-success">
+            <CheckIcon className="inline w-5" /> json is valid
           </p>
         )}
       </div>

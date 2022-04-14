@@ -119,7 +119,7 @@ const ProposalCreate: NextPage = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <div className="w-full col-span-4 p-6">
+      <div className="col-span-4 p-6 w-full">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -128,10 +128,10 @@ const ProposalCreate: NextPage = () => {
           ]}
         />
         <ProposalForm
-          onSubmit={onProposalSubmit}
           contractAddress={contractAddress}
           loading={proposalLoading}
           multisig={false}
+          onSubmit={onProposalSubmit}
           toCosmosMsgProps={{
             sigAddress: contractAddress,
             govAddress: daoInfo.gov_token,
@@ -141,17 +141,17 @@ const ProposalCreate: NextPage = () => {
         />
       </div>
       <div className="col-span-2 p-6">
-        <h2 className="font-medium text-medium mb-6">Info</h2>
+        <h2 className="mb-6 font-medium text-medium">Info</h2>
         <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
-          <p className="text-tertiary font-mono text-sm">DAO Treasury</p>
+          <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
           <div className="col-span-2">
             <CopyToClipboard value={contractAddress} />
           </div>
-          <p className="text-tertiary font-mono text-sm">Gov Token</p>
+          <p className="font-mono text-sm text-tertiary">Gov Token</p>
           <div className="col-span-2">
             <CopyToClipboard value={daoInfo.gov_token} />
           </div>
-          <p className="text-tertiary font-mono text-sm">Staking</p>
+          <p className="font-mono text-sm text-tertiary">Staking</p>
           <div className="col-span-2">
             <CopyToClipboard value={daoInfo.staking_contract} />
           </div>

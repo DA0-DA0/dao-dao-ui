@@ -1,20 +1,19 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { Config } from 'util/contractConfigWrapper'
-import { validateContractAddress, validateRequired } from 'util/formValidation'
-import { makeWasmMessage } from 'util/messagehelpers'
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+import { Button } from 'ui/Button'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'
 import { InputLabel } from '@components/input/InputLabel'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 import { cw20TokenInfo, cw20TokensList } from 'selectors/treasury'
+import { Config } from 'util/contractConfigWrapper'
+import { validateContractAddress, validateRequired } from 'util/formValidation'
+import { makeWasmMessage } from 'util/messagehelpers'
 
 import { TokenInfoDisplay } from './addToken'
 import { TemplateComponent, ToCosmosMsgProps } from './templateList'
-import { Button } from 'ui/Button'
-import { secondsToWdhms } from 'util/conversion'
 
 export interface RemoveTokenData {
   address: string
@@ -51,15 +50,15 @@ const AddressSelector = ({
         const info = tokenInfo[idx]
         return (
           <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => onSelect(address)}
             key={address}
-            type="button"
-            disabled={readOnly}
             className={`${
               active(address) ? '' : 'bg-transparent text-secondary'
             }`}
+            disabled={readOnly}
+            onClick={() => onSelect(address)}
+            size="sm"
+            type="button"
+            variant="secondary"
           >
             ${info.symbol}
           </Button>
@@ -85,9 +84,9 @@ export const RemoveTokenComponent: TemplateComponent = ({
     tokens.includes(v) || 'This token is not in the DAO treasury.'
 
   return (
-    <div className="flex flex-col p-3 rounded-lg my-2 bg-primary">
-      <div className="flex items-center gap-2 justify-between">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
+      <div className="flex gap-2 justify-between items-center">
+        <div className="flex gap-2 items-center">
           <h2 className="text-3xl">⭕️</h2>
           <h2>Remove Treasury Token</h2>
         </div>
@@ -97,35 +96,35 @@ export const RemoveTokenComponent: TemplateComponent = ({
           </button>
         )}
       </div>
-      <div className="my-3 flex flex-col gap-1">
+      <div className="flex flex-col gap-1 my-3">
         <AddressSelector
           onSelect={(address) => setValue(getLabel('address'), address)}
-          selectedAddress={tokenAddress}
           options={tokens}
           readOnly={readOnly}
+          selectedAddress={tokenAddress}
         />
       </div>
       <div className="flex flex-col mb-3">
         <InputLabel name="Token address" />
         <AddressInput
+          disabled={readOnly}
+          error={errors?.address}
           label={getLabel('address')}
           register={register}
-          error={errors?.address}
           validation={[
             validateRequired,
             validateContractAddress,
             validateIsTreasuryToken,
           ]}
-          disabled={readOnly}
         />
         <InputErrorMessage error={errors?.address} />
       </div>
       <TokenInfoDisplay
         address={tokenAddress}
+        clearError={() => clearErrors(getLabel('address'))}
         setError={(message) =>
           setError(getLabel('address'), { type: 'manual', message })
         }
-        clearError={() => clearErrors(getLabel('address'))}
       />
     </div>
   )

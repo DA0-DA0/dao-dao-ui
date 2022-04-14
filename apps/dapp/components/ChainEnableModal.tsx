@@ -14,12 +14,12 @@ function ChainEnableModal({
 }) {
   return (
     <Modal>
-      <div className="bg-white h-min max-w-md p-6 rounded-lg border border-focus relative">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
         <button
-          className="hover:bg-secondary transition rounded-full p-1 absolute right-2 top-2"
+          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="w-4 h-4" />
         </button>
 
         <h1 className="header-text">Add Chain &quot;{CHAIN_ID}&quot;</h1>
@@ -28,7 +28,7 @@ function ChainEnableModal({
           <code>{CHAIN_ID}</code> chain. You will need to approve adding the{' '}
           {CHAIN_NAME} <code>{CHAIN_ID}</code> chain to connect your wallet.
         </p>
-        <Button onClick={onAction} className="mt-8">
+        <Button className="mt-8" onClick={onAction}>
           ENABLE CHAIN &quot;{CHAIN_ID?.toUpperCase()}&quot;
         </Button>
       </div>

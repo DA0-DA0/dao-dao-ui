@@ -32,12 +32,12 @@ function CopyButton({ text }: { text: string }) {
   return (
     <Tooltip label="Copy wallet address">
       <button
-        type="button"
         onClick={() => {
           navigator.clipboard.writeText(text)
           setTimeout(() => setCopied(false), 2000)
           setCopied(true)
         }}
+        type="button"
       >
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
@@ -52,7 +52,7 @@ function CopyButton({ text }: { text: string }) {
 function DisconnectButton({ onClick }: { onClick: () => void }) {
   return (
     <Tooltip label="Disconnect wallet">
-      <button type="button" onClick={onClick}>
+      <button onClick={onClick} type="button">
         <LogoutIcon className="w-[18px]" />
       </button>
     </Tooltip>
@@ -108,9 +108,9 @@ function WalletConnect() {
 
   if (walletAddress) {
     return (
-      <div className="w-full relative py-2 px-4 my-4 bg-primary hover:outline hover:outline-brand rounded-lg group relative">
-        <div className="flex items-center justify-left gap-4 h-full w-full">
-          <SvgWallet width="20px" height="20px" fill="currentColor" />
+      <div className="group relative py-2 px-4 my-4 w-full bg-primary rounded-lg hover:outline-brand hover:outline">
+        <div className="flex gap-4 items-center w-full h-full justify-left">
+          <SvgWallet fill="currentColor" height="20px" width="20px" />
           <div className="link-text">
             <span>{walletName}</span>
             <br />
@@ -119,7 +119,7 @@ function WalletConnect() {
             </span>
           </div>
         </div>
-        <div className="absolute right-2 top-1 flex gap-1 transition opacity-0 group-hover:opacity-100">
+        <div className="flex absolute top-1 right-2 gap-1 opacity-0 group-hover:opacity-100 transition">
           <CopyButton text={walletAddress} />
           <DisconnectButton onClick={handleConnect} />
         </div>
@@ -129,12 +129,12 @@ function WalletConnect() {
   return (
     <div className="my-4">
       <Button
+        className="py-4 w-full hover:outline-brand hover:outline"
         full
         onClick={handleConnect}
-        className="w-full hover:outline hover:outline-brand py-4"
       >
-        <SvgWallet width="20px" height="20px" fill="currentColor" />
-        <p className="link-text text-light">Connect wallet</p>
+        <SvgWallet fill="currentColor" height="20px" width="20px" />
+        <p className="text-light link-text">Connect wallet</p>
       </Button>
     </div>
   )

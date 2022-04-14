@@ -15,13 +15,13 @@ export const EmptyContractCard = ({
 }) => {
   return (
     <Link href={href} passHref>
-      <a className="border border-inactive transition hover:border-brand rounded-md w-max overflow-hidden max-w-[400px]">
+      <a className="overflow-hidden w-max max-w-[400px] rounded-md border border-inactive hover:border-brand transition">
         <div
-          className={'h-72 bg-cover bg-no-repeat opacity-75'}
+          className={'h-72 bg-no-repeat bg-cover opacity-75'}
           style={{ backgroundImage: `url(${backgroundUrl})` }}
         />
-        <div className="px-6 py-4">
-          <div className="primary-text mb-2 flex items-center gap-2">
+        <div className="py-4 px-6">
+          <div className="flex gap-2 items-center mb-2 primary-text">
             <PlusIcon className="w-4" />
             {title}
           </div>

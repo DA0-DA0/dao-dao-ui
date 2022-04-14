@@ -3,10 +3,10 @@ import { EmptyContractCard } from './EmptyContractCard'
 export function EmptyMultisigCard() {
   return (
     <EmptyContractCard
-      href="/multisig/create"
       backgroundUrl={'/empty-state-multisig.jpeg'}
-      title={'Create a Multisig'}
       description={'You are not a member of any Multisigs. Why not create one?'}
+      href="/multisig/create"
+      title={'Create a Multisig'}
     />
   )
 }

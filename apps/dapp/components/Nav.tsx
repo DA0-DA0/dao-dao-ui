@@ -22,7 +22,7 @@ import ConnectWalletButton from './ConnectWalletButton'
 function MemberDisplay({ name }: { name: string }) {
   return (
     <div className="truncate link-text">
-      <LibraryIcon className="inline h-5 w-5 mb-1 mr-2" />
+      <LibraryIcon className="inline mr-2 mb-1 w-5 h-5" />
       {name}
     </div>
   )
@@ -50,23 +50,23 @@ function Nav({ onMenuClick }: NavProps) {
   const betaWarningShowing = useRecoilValue(showBetaNoticeAtom)
 
   return (
-    <nav className="p-6 text-lg sticky top-0 h-screen w-full flex flex-col justify-between border-r border-inactive">
+    <nav className="flex sticky top-0 flex-col justify-between p-6 w-full h-screen text-lg border-r border-inactive">
       <div>
-        <div className="flex justify-between lg:justify-start items-center">
+        <div className="flex justify-between items-center lg:justify-start">
           <Link href="/starred">
             <a>
-              <Logo height={28} width={28} alt={`${SITE_TITLE} Logo`} />
+              <Logo alt={`${SITE_TITLE} Logo`} height={28} width={28} />
             </a>
           </Link>
-          <div className="lg:hidden cursor-pointer" onClick={onMenuClick}>
+          <div className="cursor-pointer lg:hidden" onClick={onMenuClick}>
             <MenuIcon className="w-8" />
           </div>
         </div>
         <ConnectWalletButton />
         <div className="ml-1 text-sm">
           <div className="mt-[20px]">
-            <h3 className="caption-text font-mono mb-[16px]">DAOs</h3>
-            <ul className="list-none ml-2">
+            <h3 className="mb-[16px] font-mono caption-text">DAOs</h3>
+            <ul className="ml-2 list-none">
               {daoAddresses.map(({ dao, address }) => (
                 <li key={address} className="mt-1">
                   <Link href={`/dao/${address}`}>
@@ -77,9 +77,9 @@ function Nav({ onMenuClick }: NavProps) {
                 </li>
               ))}
             </ul>
-            <ul className="list-none ml-2 mt-2">
+            <ul className="mt-2 ml-2 list-none">
               <li className="mt-1 link-text">
-                <ArrowRightIcon className="inline w-4 mr-2 mb-1" />
+                <ArrowRightIcon className="inline mr-2 mb-1 w-4" />
                 <Link href="/dao/list">
                   <a>All DAOs</a>
                 </Link>
@@ -87,10 +87,10 @@ function Nav({ onMenuClick }: NavProps) {
             </ul>
           </div>
           <div className="mt-3">
-            <h3 className="caption-text font-mono mb-[16px] mt-[20px]">
+            <h3 className="mt-[20px] mb-[16px] font-mono caption-text">
               Multisigs
             </h3>
-            <ul className="list-none ml-2">
+            <ul className="ml-2 list-none">
               {sigAddresses &&
                 sigAddresses.map(({ sig, address }) => (
                   <li key={sig.config.name} className="mt-1">
@@ -103,9 +103,9 @@ function Nav({ onMenuClick }: NavProps) {
                 ))}
             </ul>
 
-            <ul className="list-none ml-2">
+            <ul className="ml-2 list-none">
               <li className="mt-1 link-text">
-                <ArrowRightIcon className="inline w-4 mr-2 mb-1" />
+                <ArrowRightIcon className="inline mr-2 mb-1 w-4" />
                 <Link href="/multisig/list">
                   <a>All Multisigs</a>
                 </Link>
@@ -115,7 +115,7 @@ function Nav({ onMenuClick }: NavProps) {
         </div>
       </div>
       <div className="ml-1">
-        <h3 className="caption-text font-mono mb-2">
+        <h3 className="mb-2 font-mono caption-text">
           dao dao <div className="inline text-error">beta</div> v
           {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
         </h3>
@@ -128,17 +128,17 @@ function Nav({ onMenuClick }: NavProps) {
             <ThemeToggle />
           </li>
           <li className="mb-2">
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2" />
-            <a href="https://docs.daodao.zone" target="_blank" rel="noreferrer">
+            <ExternalLinkIcon className="inline mr-2 w-5 h-5" />
+            <a href="https://docs.daodao.zone" rel="noreferrer" target="_blank">
               Docs
             </a>
           </li>
           <li>
-            <ExternalLinkIcon className="inline w-5 h-5 mr-2" />
+            <ExternalLinkIcon className="inline mr-2 w-5 h-5" />
             <a
               href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
-              target="_blank"
               rel="noreferrer"
+              target="_blank"
             >
               Feedback
             </a>

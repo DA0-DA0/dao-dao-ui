@@ -93,12 +93,12 @@ function ClaimListItem({
   return (
     <div className="my-2">
       {avaliable ? (
-        <p className="text-secondary font-mono text-sm">
+        <p className="font-mono text-sm text-secondary">
           Avaliable
-          <CheckIcon className="inline h-4 ml-1" />
+          <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
-        <div className="flex flex-wrap gap-2 text-secondary font-mono text-sm">
+        <div className="flex flex-wrap gap-2 font-mono text-sm text-secondary">
           <p>{durationRemainingForHumans || '0'} left</p>
           <p>/ {durationForHumans}</p>
         </div>
@@ -136,11 +136,11 @@ export function ClaimsPendingList({
               return (
                 <ClaimListItem
                   key={idx}
-                  claim={claim}
                   blockHeight={blockHeight}
-                  unstakingDuration={unstakeDuration}
-                  tokenInfo={tokenInfo}
+                  claim={claim}
                   incrementClaimsAvaliable={incrementClaimsAvaliable}
+                  tokenInfo={tokenInfo}
+                  unstakingDuration={unstakeDuration}
                 />
               )
             })}
@@ -168,12 +168,12 @@ export function ClaimAvaliableCard({
     .reduce((p, n) => p + Number(n.amount), 0)
 
   return (
-    <div className="shadow p-6 rounded-lg w-full border border-base-300 mt-2">
-      <h2 className="text-sm font-mono text-secondary">
+    <div className="p-6 mt-2 w-full rounded-lg border shadow border-base-300">
+      <h2 className="font-mono text-sm text-secondary">
         Unclaimed (unstaked ${tokenInfo.symbol})
       </h2>
       {loading ? (
-        <div className="animate-spin-medium inline-block mt-2">
+        <div className="inline-block mt-2 animate-spin-medium">
           <LogoNoBorder />
         </div>
       ) : (
@@ -187,7 +187,7 @@ export function ClaimAvaliableCard({
       )}
       <div className="flex justify-end">
         <button
-          className="btn-outline btn btn-xs border-secondary normal-case"
+          className="normal-case btn-outline btn btn-xs border-secondary"
           onClick={onClaim}
         >
           Claim

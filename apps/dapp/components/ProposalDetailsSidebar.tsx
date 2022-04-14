@@ -148,21 +148,21 @@ export function ProposalDetailsSidebar({
 
   return (
     <div>
-      <h2 className="font-medium text-base mb-6">Details</h2>
+      <h2 className="mb-6 text-base font-medium">Details</h2>
       <div className="grid grid-cols-3 gap-x-4 gap-y-2 items-center">
-        <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden text-right">
+        <p className="overflow-hidden font-mono text-sm text-right text-tertiary text-ellipsis">
           Proposal
         </p>
         <p className="col-span-2 font-mono text-sm">
           # {proposal.id.toString().padStart(6, '0')}
         </p>
-        <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden text-right">
+        <p className="overflow-hidden font-mono text-sm text-right text-tertiary text-ellipsis">
           Status
         </p>
         <div className="col-span-2 text-sm">
           <ProposalStatus status={proposal.status} />
         </div>
-        <p className="text-tertiary font-mono text-sm text-ellipsis overflow-hidden text-right">
+        <p className="overflow-hidden font-mono text-sm text-right text-tertiary text-ellipsis">
           Proposer
         </p>
         <p className="col-span-2">
@@ -171,23 +171,23 @@ export function ProposalDetailsSidebar({
         {proposal.status === 'executed' &&
         proposalExecutionTXHashState === 'loading' ? (
           <>
-            <p className="text-tertiary font-mono text-sm text-right">TX</p>
+            <p className="font-mono text-sm text-right text-tertiary">TX</p>
             <p className="col-span-2">Loading...</p>
           </>
         ) : !!proposalExecutionTXHash ? (
           <>
             {CHAIN_TXN_URL_PREFIX ? (
               <a
-                className="text-tertiary font-mono text-sm flex flex-row items-center gap-1 text-right"
-                target="_blank"
-                rel="noopener noreferrer"
+                className="flex flex-row gap-1 items-center font-mono text-sm text-right text-tertiary"
                 href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+                rel="noopener noreferrer"
+                target="_blank"
               >
                 TX
                 <ExternalLinkIcon width={16} />
               </a>
             ) : (
-              <p className="text-tertiary font-mono text-sm text-right">TX</p>
+              <p className="font-mono text-sm text-right text-tertiary">TX</p>
             )}
             <p className="col-span-2">
               <CopyToClipboard value={proposalExecutionTXHash} />
@@ -196,32 +196,32 @@ export function ProposalDetailsSidebar({
         ) : null}
         {memberWhenProposalCreated && (
           <>
-            <p className="text-tertiary text-sm font-mono text-ellipsis overflow-hidden text-right">
+            <p className="overflow-hidden font-mono text-sm text-right text-tertiary text-ellipsis">
               Your vote
             </p>
 
             {walletVote === WalletVote.Yes ? (
-              <p className="col-span-2 text-valid text-sm font-mono flex items-center gap-1">
+              <p className="flex col-span-2 gap-1 items-center font-mono text-sm text-valid">
                 <CheckIcon className="inline w-4" /> Yes
               </p>
             ) : walletVote === WalletVote.No ? (
-              <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
+              <p className="flex col-span-2 gap-1 items-center font-mono text-sm text-error">
                 <XIcon className="inline w-4" /> No
               </p>
             ) : walletVote === WalletVote.Abstain ? (
-              <p className="col-span-2 text-secondary text-sm font-mono flex items-center gap-1">
+              <p className="flex col-span-2 gap-1 items-center font-mono text-sm text-secondary">
                 <SvgAbstain fill="currentColor" /> Abstain
               </p>
             ) : walletVote === WalletVote.Veto ? (
-              <p className="col-span-2 text-error text-sm font-mono flex items-center gap-1">
+              <p className="flex col-span-2 gap-1 items-center font-mono text-sm text-error">
                 <XIcon className="inline w-4" /> Veto
               </p>
             ) : walletVote ? (
-              <p className="col-span-2 text-secondary text-sm font-mono break-all">
+              <p className="col-span-2 font-mono text-sm text-secondary break-all">
                 Unknown: {walletVote}
               </p>
             ) : (
-              <p className="col-span-2 text-tertiary text-sm font-mono">
+              <p className="col-span-2 font-mono text-sm text-tertiary">
                 {proposal.status === 'open' ? 'Pending...' : 'None'}
               </p>
             )}
@@ -229,17 +229,17 @@ export function ProposalDetailsSidebar({
         )}
       </div>
 
-      <h3 className="font-medium text-base mt-8 mb-6">Referendum status</h3>
+      <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
 
       <div className="grid grid-cols-3 gap-2">
         {threshold ? (
           quorum ? (
             <>
-              <p className="col-span-3 text-sm body-text text-ellipsis overflow-hidden mb-3">
+              <p className="overflow-hidden col-span-3 mb-3 text-sm text-ellipsis body-text">
                 Ratio of votes
               </p>
 
-              <div className="col-span-3 text-xs font-mono flex flex-row items-center gap-4">
+              <div className="flex flex-row col-span-3 gap-4 items-center font-mono text-xs">
                 {[
                   <p key="yes" className="text-valid">
                     Yes{' '}
@@ -311,11 +311,10 @@ export function ProposalDetailsSidebar({
                 />
               </div>
 
-              <div className="col-span-3 relative">
+              <div className="relative col-span-3">
                 <TriangleUp
                   className="absolute -top-[22px]"
                   color="rgb(var(--light))"
-                  width="36px"
                   height="36px"
                   style={{
                     left:
@@ -325,16 +324,17 @@ export function ProposalDetailsSidebar({
                         ? 'calc(100% - 32px)'
                         : `calc(${threshold.percent}% - 17px)`,
                   }}
+                  width="36px"
                 />
 
                 <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
-                  <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
-                    <p className="text-tertiary text-sm">
+                  <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                    <p className="text-sm text-tertiary">
                       Passing threshold:{' '}
                       <span className="font-mono">{threshold.display}</span>
                     </p>
 
-                    <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
+                    <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                       {turnoutYesPercent >= threshold.percent ? (
                         <>
                           Reached{' '}
@@ -357,12 +357,12 @@ export function ProposalDetailsSidebar({
                 </Tooltip>
               </div>
 
-              <div className="col-span-3 flex flex-row justify-between mt-4 mb-1">
-                <p className="text-sm body-text text-ellipsis overflow-hidden">
+              <div className="flex flex-row col-span-3 justify-between mt-4 mb-1">
+                <p className="overflow-hidden text-sm text-ellipsis body-text">
                   Turnout
                 </p>
 
-                <p className="text-tertiary text-xs font-mono">
+                <p className="font-mono text-xs text-tertiary">
                   {turnoutPercent.toLocaleString(undefined, localeOptions)}%
                 </p>
               </div>
@@ -389,11 +389,10 @@ export function ProposalDetailsSidebar({
                 />
               </div>
 
-              <div className="col-span-3 relative">
+              <div className="relative col-span-3">
                 <TriangleUp
                   className="absolute -top-[22px]"
                   color="rgb(var(--light))"
-                  width="36px"
                   height="36px"
                   style={{
                     left:
@@ -403,16 +402,17 @@ export function ProposalDetailsSidebar({
                         ? 'calc(100% - 32px)'
                         : `calc(${quorum.percent}% - 17px)`,
                   }}
+                  width="36px"
                 />
 
                 <Tooltip label={QUORUM_TOOLTIP}>
-                  <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
-                    <p className="text-tertiary text-sm">
+                  <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                    <p className="text-sm text-tertiary">
                       Quorum:{' '}
                       <span className="font-mono">{quorum.display}</span>
                     </p>
 
-                    <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
+                    <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                       {turnoutPercent >= quorum.percent ? (
                         <>
                           Reached{' '}
@@ -437,11 +437,11 @@ export function ProposalDetailsSidebar({
             </>
           ) : (
             <>
-              <p className="col-span-3 text-sm body-text text-ellipsis overflow-hidden mb-3">
+              <p className="overflow-hidden col-span-3 mb-3 text-sm text-ellipsis body-text">
                 Turnout
               </p>
 
-              <div className="col-span-3 text-xs font-mono flex flex-row items-center gap-4">
+              <div className="flex flex-row col-span-3 gap-4 items-center font-mono text-xs">
                 {[
                   <p key="yes" className="text-valid">
                     Yes{' '}
@@ -507,11 +507,10 @@ export function ProposalDetailsSidebar({
                 />
               </div>
 
-              <div className="col-span-3 relative">
+              <div className="relative col-span-3">
                 <TriangleUp
                   className="absolute -top-[22px]"
                   color="rgb(var(--light))"
-                  width="36px"
                   height="36px"
                   style={{
                     left:
@@ -521,16 +520,17 @@ export function ProposalDetailsSidebar({
                         ? 'calc(100% - 32px)'
                         : `calc(${threshold.percent}% - 17px)`,
                   }}
+                  width="36px"
                 />
 
                 <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
-                  <div className="bg-light rounded-md px-4 py-3 flex flex-row justify-between items-center w-full gap-2">
-                    <p className="text-tertiary text-sm">
+                  <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                    <p className="text-sm text-tertiary">
                       Passing threshold:{' '}
                       <span className="font-mono">{threshold.display}</span>
                     </p>
 
-                    <p className="text-tertiary text-xs font-mono flex flex-row items-center gap-2">
+                    <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                       {totalYesPercent >= threshold.percent ? (
                         <>
                           Reached{' '}
@@ -558,17 +558,18 @@ export function ProposalDetailsSidebar({
 
         {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
           <>
-            <p className="col-span-3 text-tertiary text-sm font-mono text-ellipsis overflow-hidden mt-4">
+            <p className="overflow-hidden col-span-3 mt-4 font-mono text-sm text-tertiary text-ellipsis">
               Time left
             </p>
 
-            <p className="col-span-3 text-dark text-xs font-mono text-right">
+            <p className="col-span-3 font-mono text-xs text-right text-dark">
               {secondsToWdhms(expiresInSeconds, 2)}
             </p>
 
             {maxVotingSeconds !== undefined && (
               <div className="col-span-3 mt-1">
                 <Progress
+                  alignEnd
                   rows={[
                     {
                       thickness: 3,
@@ -580,7 +581,6 @@ export function ProposalDetailsSidebar({
                       ],
                     },
                   ]}
-                  alignEnd
                 />
               </div>
             )}
@@ -589,7 +589,7 @@ export function ProposalDetailsSidebar({
 
         {threshold?.percent === 50 && yesVotes === noVotes && (
           <div className="col-span-3 mt-4 text-sm">
-            <p className="text-tertiary font-mono">Tie clarification</p>
+            <p className="font-mono text-tertiary">Tie clarification</p>
 
             <p className="mt-2 body-text">{"'Yes' will win a tie vote."}</p>
           </div>
@@ -597,7 +597,7 @@ export function ProposalDetailsSidebar({
 
         {abstainVotes === turnoutTotal && (
           <div className="col-span-3 mt-4 text-sm">
-            <p className="text-tertiary font-mono">All abstain clarification</p>
+            <p className="font-mono text-tertiary">All abstain clarification</p>
 
             <p className="mt-2 body-text">
               When all abstain, a proposal will fail.

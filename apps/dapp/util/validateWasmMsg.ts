@@ -1,4 +1,5 @@
 import Ajv from 'ajv'
+
 import schema from './cosmos_msg.json'
 
 const ajv = new Ajv()

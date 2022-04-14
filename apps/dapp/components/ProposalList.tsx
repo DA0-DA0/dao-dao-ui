@@ -97,12 +97,12 @@ function ProposalLine({
       }/${contractAddress}/proposals/${proposalKey}`}
     >
       <a>
-        <div className="grid grid-cols-6 items-center p-4 my-1 rounded-lg bg-primary text-sm">
-          <div className="flex flex-row flex-wrap items-center gap-4 col-span-2">
+        <div className="grid grid-cols-6 items-center p-4 my-1 text-sm bg-primary rounded-lg">
+          <div className="flex flex-row flex-wrap col-span-2 gap-4 items-center">
             <p className="font-mono caption-text"># {displayKey}</p>
             <ProposalStatus status={prop.status} />
           </div>
-          <p className="col-span-3 link-text truncate">{prop.title}</p>
+          <p className="col-span-3 truncate link-text">{prop.title}</p>
           <p className="body-text">{getEnd(prop.expires, prop.status)}</p>
         </div>
       </a>
@@ -235,17 +235,17 @@ export function ProposalList({
           const key = `prop_${prop.draftId ?? prop.id ?? idx}`
           return (
             <ProposalLine
-              prop={prop}
               key={key}
               contractAddress={contractAddress}
               multisig={multisig}
+              prop={prop}
             />
           )
         })}
       </ul>
       {showLoadMore && (
         <button
-          className="btn btn-sm btn-outline normal-case text-left text-sm font-mono mt-3"
+          className="mt-3 font-mono text-sm text-left normal-case btn btn-sm btn-outline"
           onClick={() => {
             const proposal = propList && propList[propList.length - 1]
             if (proposal) {
@@ -253,7 +253,7 @@ export function ProposalList({
             }
           }}
         >
-          Load more <DownloadIcon className="inline w-5 h-5 ml-1" />
+          Load more <DownloadIcon className="inline ml-1 w-5 h-5" />
         </button>
       )}
     </div>

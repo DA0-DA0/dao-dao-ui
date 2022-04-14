@@ -49,7 +49,7 @@ export const Progress = ({
     {verticalBars.map(({ value, color, label }, index) => (
       <div
         key={index}
-        className="absolute w-[2px] -top-[3px] rounded-full"
+        className="absolute -top-[3px] w-[2px] rounded-full"
         style={{
           left: `${value}%`,
           backgroundColor: color,
@@ -58,7 +58,7 @@ export const Progress = ({
       >
         {!!label && (
           <p
-            className="absolute font-mono -top-4"
+            className="absolute -top-4 font-mono"
             style={{ fontSize: 8, lineHeight: 2, color }}
           >
             {label}

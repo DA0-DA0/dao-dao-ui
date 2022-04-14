@@ -80,8 +80,8 @@ function TransferRows({ contractAddress }: { contractAddress: string }) {
           {txs.contents.map((tx: IndexedTx) => (
             <TransferRow
               key={tx.hash}
-              tx={tx}
               contract_address={contractAddress}
+              tx={tx}
             />
           ))}
         </>
@@ -100,7 +100,7 @@ function TransferRows({ contractAddress }: { contractAddress: string }) {
 
 function Transfers({ contract_address }: { contract_address: string }) {
   return (
-    <div className="border border-base-200 rounded-lg pb-1 shadow-lg">
+    <div className="pb-1 rounded-lg border shadow-lg border-base-200">
       <table className="table w-full">
         <thead>
           <tr>

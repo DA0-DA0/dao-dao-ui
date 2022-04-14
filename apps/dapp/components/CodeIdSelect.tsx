@@ -18,19 +18,19 @@ export default function CodeIdSelect({
 }) {
   return (
     <div className="flex items-center">
-      <span className="font-medium px-2">Contract Version</span>
+      <span className="px-2 font-medium">Contract Version</span>
       <div className="dropdown dropdown-end">
         <Button size="sm">
-          {currentVersion.name} <ChevronDownIcon className="inline h-4 w-4" />
+          {currentVersion.name} <ChevronDownIcon className="inline w-4 h-4" />
         </Button>
         <ul
+          className="p-2 w-52 shadow-2xl dropdown-content menu bg-base-100 rounded-box"
           tabIndex={0}
-          className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-box w-52"
         >
           {versions.map((v) => (
             <li
               key={v.name}
-              className="hover:bg-purple-500 p-2 rounded-md cursor-pointer"
+              className="p-2 hover:bg-purple-500 rounded-md cursor-pointer"
               onClick={() => onSelect(v)}
             >
               {v.name}

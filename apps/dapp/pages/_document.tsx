@@ -19,53 +19,53 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <link
+            href="/apple-touch-icon.png"
             rel="apple-touch-icon"
             sizes="180x180"
-            href="/apple-touch-icon.png"
           />
           <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
             href="/favicon-32x32.png"
+            rel="icon"
+            sizes="32x32"
+            type="image/png"
           />
           <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
             href="/favicon-16x16.png"
+            rel="icon"
+            sizes="16x16"
+            type="image/png"
           />
-          <link rel="manifest" href="/site.webmanifest" />
-          <meta name="msapplication-TileColor" content="#da532c" />
-          <meta name="theme-color" content="#ffffff" />
-          <meta name="title" content={SITE_TITLE} key="title" />
-          <meta name="description" content={description} key="description" />
+          <link href="/site.webmanifest" rel="manifest" />
+          <meta content="#da532c" name="msapplication-TileColor" />
+          <meta content="#ffffff" name="theme-color" />
+          <meta key="title" content={SITE_TITLE} name="title" />
+          <meta key="description" content={description} name="description" />
           <meta
-            property="twitter:title"
-            content={SITE_TITLE}
             key="twitter:title"
+            content={SITE_TITLE}
+            property="twitter:title"
           />
           <meta
-            property="twitter:card"
-            content="summary_large_image"
             key="twitter:card"
+            content="summary_large_image"
+            property="twitter:card"
           />
           <meta
-            property="twitter:description"
-            content={description}
             key="twitter:description"
-          />
-          <meta property="twitter:image" content={image} key="twitter:image" />
-          <meta property="twitter:url" content={url} key="twitter:url" />
-          <meta
-            property="og:description"
             content={description}
-            key="og:description"
+            property="twitter:description"
           />
-          <meta property="og:image" content={image} key="og:image" />
-          <meta property="og:title" content={SITE_TITLE} key="og:title" />
-          <meta property="og:type" content="website" key="og:type" />
-          <meta property="og:url" content={url} key="og:url" />
+          <meta key="twitter:image" content={image} property="twitter:image" />
+          <meta key="twitter:url" content={url} property="twitter:url" />
+          <meta
+            key="og:description"
+            content={description}
+            property="og:description"
+          />
+          <meta key="og:image" content={image} property="og:image" />
+          <meta key="og:title" content={SITE_TITLE} property="og:title" />
+          <meta key="og:type" content="website" property="og:type" />
+          <meta key="og:url" content={url} property="og:url" />
         </Head>
         <body className="bg-white body-text">
           <Main />

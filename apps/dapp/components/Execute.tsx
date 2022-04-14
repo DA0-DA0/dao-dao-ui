@@ -18,9 +18,9 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
   return (
     <>
       {!partyMode && (
-        <div className="flex items-center p-4 rounded-lg border border-default bg-primary justify-between max-w-3xl">
-          <div className="flex items-center gap-2">
-            <button onClick={() => setPartMode(true)} className="text-2xl mr-1">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+          <div className="flex gap-2 items-center">
+            <button className="mr-1 text-2xl" onClick={() => setPartMode(true)}>
               🎉
             </button>
             <p className="primary-text">Passed</p>
@@ -28,20 +28,15 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               {messages} message{messages !== 1 && 's'}
             </p>
           </div>
-          <Button onClick={() => onExecute()} loading={loading}>
+          <Button loading={loading} onClick={() => onExecute()}>
             Execute <SvgAirplane stroke="currentColor" />
           </Button>
         </div>
       )}
       {partyMode && (
-        <div className="flex items-center p-4 rounded-lg border border-default bg-primary justify-between max-w-3xl">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+          <div className="flex gap-2 items-center">
             <button
-              type="button"
-              onClick={() => {
-                setPartMode(false)
-                setPartyPhase(1)
-              }}
               className={`text-2xl mr-1 ${
                 [
                   '',
@@ -51,6 +46,11 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
                   'rumble-fastest',
                 ][partyPhase]
               }`}
+              onClick={() => {
+                setPartMode(false)
+                setPartyPhase(1)
+              }}
+              type="button"
             >
               🚀
             </button>
@@ -61,37 +61,37 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
           </div>
           <div className="flex gap-2">
             <Button
-              variant="secondary"
               className={`bg-error hover:bg-error hover:ring text-white ${
                 partyPhase !== 1 ? 'invisible' : ''
               }`}
               onClick={() => setPartyPhase(2)}
+              variant="secondary"
             >
               3
             </Button>
             <Button
-              variant="secondary"
               className={`bg-error hover:bg-error hover:ring text-white ${
                 partyPhase !== 2 ? 'invisible' : ''
               }`}
               onClick={() => setPartyPhase(3)}
+              variant="secondary"
             >
               2
             </Button>
             <Button
-              variant="secondary"
               className={`bg-error hover:bg-error hover:ring text-white ${
                 partyPhase !== 3 ? 'invisible' : ''
               }`}
               onClick={() => setPartyPhase(4)}
+              variant="secondary"
             >
               1
             </Button>
 
             <Button
-              onClick={() => onExecute()}
-              loading={loading}
               className={`${partyPhase !== 4 ? 'invisible' : ''}`}
+              loading={loading}
+              onClick={() => onExecute()}
             >
               Execute <SvgAirplane stroke="currentColor" />
             </Button>

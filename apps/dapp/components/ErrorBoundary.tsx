@@ -40,7 +40,7 @@ class ErrorBoundaryHelper extends Component<
         router.pathname.startsWith('/multisig')
       ) {
         return (
-          <div className="max-w-prose break-words p-6">
+          <div className="p-6 max-w-prose break-words">
             <h1 className="text-3xl font-bold">{title}</h1>
             <p className="mt-3">
               We couldn{"'"}t find the contract with address
@@ -56,7 +56,7 @@ class ErrorBoundaryHelper extends Component<
         )
       } else {
         return (
-          <div className="max-w-prose break-words p-6 mx-auto">
+          <div className="p-6 mx-auto max-w-prose break-words">
             <h1 className="text-3xl font-bold">{title}</h1>
             <p className="mt-3">
               This could happen because the RPC node DAO DAO uses is down.

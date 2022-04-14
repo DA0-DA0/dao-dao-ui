@@ -1,8 +1,3 @@
-import { useState } from 'react'
-import { ChangeEventHandler } from 'react'
-
-import { useSetRecoilState } from 'recoil'
-
 import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
 import {
   FieldError,
@@ -56,27 +51,27 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
         ${error ? ' ring-error ring-1' : ''}`}
       >
         <button
-          type="button"
-          className="secondary-text hover:body-text transition"
-          onClick={() => onPlusMinus[0]()}
+          className="transition secondary-text hover:body-text"
           disabled={disabled}
+          onClick={() => onPlusMinus[0]()}
+          type="button"
         >
           <PlusIcon className="w-4" />
         </button>
         <button
-          type="button"
-          className="secondary-text hover:body-text transition"
-          onClick={() => onPlusMinus[1]()}
+          className="transition secondary-text hover:body-text"
           disabled={disabled}
+          onClick={() => onPlusMinus[1]()}
+          type="button"
         >
           <MinusIcon className="w-4" />
         </button>
         <input
-          type="number"
-          step={step}
-          className="bg-transparent w-full ring-none border-none outline-none text-right"
-          disabled={disabled}
+          className="w-full text-right bg-transparent border-none outline-none ring-none"
           defaultValue={defaultValue}
+          disabled={disabled}
+          step={step}
+          type="number"
           {...register(label, {
             validate,
           })}
@@ -87,12 +82,12 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
 
   return (
     <input
-      type="number"
-      step={step}
-      defaultValue={defaultValue}
       className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default body-text
         ${error ? ' ring-error ring-1' : ''}`}
+      defaultValue={defaultValue}
       disabled={disabled}
+      step={step}
+      type="number"
       {...register(label, { validate })}
     />
   )
