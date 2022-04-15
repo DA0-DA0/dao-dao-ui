@@ -1,5 +1,9 @@
 import { useRecoilValue } from 'recoil'
 
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
@@ -11,10 +15,6 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
 import {
   validateAddress,
   validatePositive,

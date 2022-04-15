@@ -1,5 +1,14 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+} from '@dao-dao/utils'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
@@ -14,15 +23,6 @@ import {
   cw20Balances as cw20BalancesSelector,
 } from 'selectors/treasury'
 import { Config } from 'util/contractConfigWrapper'
-import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-} from '@dao-dao/utils'
 import {
   validateAddress,
   validatePositive,

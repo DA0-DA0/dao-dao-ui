@@ -5,8 +5,9 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 import { useThemeContext, StakingMode } from '@dao-dao/ui'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
@@ -43,7 +44,6 @@ import {
 import { addToken } from 'util/addToken'
 import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 function DaoHome() {
   const router = useRouter()

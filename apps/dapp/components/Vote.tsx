@@ -1,7 +1,7 @@
 import { FC, useState } from 'react'
 
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import { Button } from '@dao-dao/ui'
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
 
 import SvgAbstain from './icons/Abstain'
 import SvgAirplane from './icons/Airplane'

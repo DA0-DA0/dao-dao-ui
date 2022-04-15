@@ -1,6 +1,7 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
+import { useThemeContext } from '@dao-dao/ui'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import {
   FieldError,
@@ -11,7 +12,6 @@ import {
   Controller,
   FieldValues,
 } from 'react-hook-form'
-import { useThemeContext } from '@dao-dao/ui'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {

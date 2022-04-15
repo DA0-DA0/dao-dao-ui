@@ -158,7 +158,8 @@ export const messageTemplateAndValuesForDecodedCosmosMsg = (
   msg: Record<string, any>,
   props: FromCosmosMsgProps
 ) => {
-  // Ensure custom is the last message template since it will match most proposals and we return the first successful message match.
+  // Ensure custom is the last message template since it will match most
+  // proposals and we return the first successful message match.
   for (const template of messageTemplates) {
     const values = template.fromCosmosMsg(msg, props)
     if (values) {

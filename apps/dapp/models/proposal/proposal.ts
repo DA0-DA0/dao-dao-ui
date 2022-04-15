@@ -11,8 +11,6 @@ import {
 
 import { ProposalMapItem } from 'types/proposals'
 
-import { labelForMessage } from '../../util/messagehelpers'
-
 export const MEMO_MAX_LEN = 255
 
 const EmptyThreshold: Threshold = {
@@ -75,14 +73,4 @@ export const EmptyProposalResponse: ProposalResponse = {
   status: 'Draft' as Status,
   threshold: { ...EmptyThresholdResponse },
   total_weight: '0',
-}
-
-export function memoForProposal(proposal: Proposal): string {
-  const messagesMemo = proposal.msgs
-    ? proposal.msgs.map((msg) => labelForMessage(msg)).join(', ')
-    : ''
-  return `${proposal.title}\n${proposal.description}\n\n${messagesMemo}`.slice(
-    0,
-    MEMO_MAX_LEN
-  )
 }

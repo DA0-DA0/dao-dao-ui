@@ -3,6 +3,10 @@ import Link from 'next/link'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import {
+  NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
 import { EmptyDaoCard } from '@components/EmptyDaoCard'
@@ -14,10 +18,6 @@ import { memberDaoSelector, proposalCount } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 import { cw20TokenInfo, nativeBalance } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
-import {
-  NATIVE_DENOM,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
 
 function PinnedDaoCard({ address }: { address: string }) {
   const listInfo = useRecoilValue(memberDaoSelector(address))

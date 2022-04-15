@@ -6,13 +6,16 @@ import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { Button, StakingMode } from '@dao-dao/ui'
+import {
+  Button,
+  StakingMode,
+  ProposalDetails as StatelessProposalDetails,
+} from '@dao-dao/ui'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
-import { MarkdownPreview } from 'components/MarkdownPreview'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
@@ -33,7 +36,6 @@ import { cleanChainError } from 'util/cleanChainError'
 import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Execute } from './Execute'
 import { StakingModal } from './StakingModal'
 import { Vote, VoteChoice } from './Vote'
@@ -262,10 +264,12 @@ export function ProposalDetails({
 
   const decodedMessages = decodeMessages(proposal.msgs)
 
+  return <StatelessProposalDetails proposal={proposal} />
+
   return (
     <div className="p-6">
       <div className="max-w-prose">
-        <h1 className="text-xl header-text">{proposal.title}</h1>
+        <h1 className="header-text">{proposal.title}</h1>
       </div>
       <div className="mt-[22px]">
         <MarkdownPreview markdown={proposal.description} />

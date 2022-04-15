@@ -14,7 +14,6 @@ export function TextareaInput<
   register,
   error,
   validation,
-  border = true,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>

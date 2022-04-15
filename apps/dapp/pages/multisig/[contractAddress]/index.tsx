@@ -6,12 +6,12 @@ import { useRouter } from 'next/router'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
+import { useThemeContext } from '@dao-dao/ui'
 import {
   ScaleIcon,
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
-import { useThemeContext } from '@dao-dao/ui'
 
 import { CopyToClipboard } from '@components/CopyToClipboard'
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
@@ -207,7 +207,7 @@ const MultisigHomePage: NextPage<StaticProps> = ({ accentColor }) => {
   }, [accentColor, setAccentColor, isReady, isFallback])
 
   // Trigger Suspense.
-  if (!isReady || isFallback) throw new Promise((resolve) => {})
+  if (!isReady || isFallback) throw new Promise((_) => {})
 
   return (
     <ErrorBoundary title="Multisig Not Found">

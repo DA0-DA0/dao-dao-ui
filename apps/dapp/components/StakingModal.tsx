@@ -4,9 +4,12 @@ import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-
-import toast from 'react-hot-toast'
 import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
+import toast from 'react-hot-toast'
 
 import {
   cosmWasmSigningClient,
@@ -24,10 +27,6 @@ import {
   walletTokenBalanceUpdateCountAtom,
 } from 'selectors/treasury'
 import { cleanChainError } from 'util/cleanChainError'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
 
 function executeUnstakeAction(
   denomAmount: number,
@@ -156,7 +155,6 @@ export function StakingModal({
   beforeExecute: Function
   afterExecute: Function
 }) {
-  const [mode, setMode] = useState(defaultMode)
   const [amount, setAmount] = useState(0)
 
   const walletAddress = useRecoilValue(walletAddressSelector)
@@ -255,19 +253,19 @@ export function StakingModal({
 
   return (
     <StatelessStakingModal
-      defaultMode={defaultMode}
       amount={amount}
-      setAmount={(newAmount) => setAmount(newAmount)}
-      onClose={onClose}
       claimableTokens={claimableTokens}
+      defaultMode={defaultMode}
+      error={error}
+      loading={loading || tokenBalanceLoading}
+      onAction={onAction}
+      onClose={onClose}
+      setAmount={(newAmount) => setAmount(newAmount)}
       stakableTokens={govTokenBalance}
+      tokenDecimals={tokenInfo.decimals}
+      tokenSymbol={tokenInfo.symbol}
       unstakableTokens={stakedGovTokenBalance}
       unstakingDuration={unstakingDuration}
-      tokenSymbol={tokenInfo.symbol}
-      tokenDecimals={tokenInfo.decimals}
-      loading={loading || tokenBalanceLoading}
-      error={error}
-      onAction={onAction}
     />
   )
 }

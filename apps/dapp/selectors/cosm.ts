@@ -2,12 +2,12 @@ import { selector, selectorFamily, atom } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { GasPrice } from '@cosmjs/stargate'
+import { NATIVE_DENOM, GAS_PRICE } from '@dao-dao/utils'
 
 import {
   cosmWasmClientRouter,
   stargateClientRouter,
 } from 'util/chainClientRouter'
-import { NATIVE_DENOM, GAS_PRICE } from '@dao-dao/utils'
 
 import { localStorageEffect } from '../atoms/localStorageEffect'
 import { connectKeplrWithoutAlerts } from '../services/keplr'

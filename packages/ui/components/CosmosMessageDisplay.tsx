@@ -1,7 +1,9 @@
+import { FC } from 'react'
+import { useThemeContext } from '../theme'
+
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-ocean.css'
 
-import { useThemeContext } from '@dao-dao/ui'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
 import 'codemirror/lib/codemirror.css'
@@ -11,7 +13,13 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
-export const CosmosMessageDisplay = ({ value }: { value: string }) => {
+export interface CosmosMessageDisplayProps {
+  value: string
+}
+
+export const CosmosMessageDisplay: FC<CosmosMessageDisplayProps> = ({
+  value,
+}) => {
   const themeCtx = useThemeContext()
   const editorTheme = themeCtx.theme !== 'dark' ? 'default' : 'material-ocean'
   return (

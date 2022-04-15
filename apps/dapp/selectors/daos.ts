@@ -6,10 +6,10 @@ import {
   ConfigResponse,
   Duration,
 } from '@dao-dao/types/contracts/cw3-dao'
+import { DAO_CODE_ID, NATIVE_DENOM } from '@dao-dao/utils'
 
 import { contractsByCodeId } from 'selectors/contracts'
 import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
-import { DAO_CODE_ID, NATIVE_DENOM } from '@dao-dao/utils'
 
 import {
   nativeBalance,

@@ -8,9 +8,15 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
+import { Button, Tooltip } from '@dao-dao/ui'
+import {
+  DAO_CODE_ID,
+  NATIVE_DECIMALS,
+  convertDenomToMicroDenomWithDecimals,
+  secondsToWdhms,
+} from '@dao-dao/utils'
 import { PlusIcon } from '@heroicons/react/outline'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { Button, Tooltip } from '@dao-dao/ui'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
@@ -39,12 +45,6 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
-import {
-  DAO_CODE_ID,
-  NATIVE_DECIMALS,
-  convertDenomToMicroDenomWithDecimals,
-  secondsToWdhms,
-} from '@dao-dao/utils'
 import {
   validateContractAddress,
   validateNonNegative,

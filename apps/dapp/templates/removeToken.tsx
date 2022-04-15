@@ -1,8 +1,8 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { Button } from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
-import { Button } from '@dao-dao/ui'
 
 import { AddressInput } from '@components/input/AddressInput'
 import { InputErrorMessage } from '@components/input/InputErrorMessage'

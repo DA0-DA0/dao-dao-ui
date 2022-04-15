@@ -1,6 +1,7 @@
 import { TransactionInterface_UNSTABLE, useRecoilValue } from 'recoil'
 
 import { Proposal, ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import {
   contractProposalMapAtom,
@@ -25,7 +26,6 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from './contractConfigWrapper'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 // Prefix used in IDs for draft proposals
 const DRAFT_PROPOSAL_PREFFIX = 'draft:'
