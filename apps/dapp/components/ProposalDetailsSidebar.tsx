@@ -383,7 +383,7 @@ export const ProposalDetailsVoteStatus = ({
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
-                        Reached{' '}
+                        Passing{' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -391,7 +391,7 @@ export const ProposalDetailsVoteStatus = ({
                       </>
                     ) : (
                       <>
-                        Not met{' '}
+                        Failing{' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
