@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FC } from 'react'
 
-import { Button } from '@dao-dao/ui'
+import { Button } from './Button'
 
 import { Airplane } from '@dao-dao/icons'
 

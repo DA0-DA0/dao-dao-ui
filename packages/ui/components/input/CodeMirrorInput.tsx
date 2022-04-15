@@ -1,7 +1,7 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
-import { useThemeContext } from '@dao-dao/ui'
+import { useThemeContext } from '../../theme'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import {
   FieldError,

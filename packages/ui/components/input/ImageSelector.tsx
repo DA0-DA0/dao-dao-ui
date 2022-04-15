@@ -11,7 +11,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import SvgAirplane from '@components/icons/Airplane'
+import { Airplane } from '@dao-dao/icons'
 
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'

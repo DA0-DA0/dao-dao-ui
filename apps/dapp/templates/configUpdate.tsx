@@ -1,5 +1,12 @@
 import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
 import {
+  InputErrorMessage,
+  InputLabel,
+  NumberInput,
+  TextInput,
+  ToggleInput,
+} from '@dao-dao/ui'
+import {
   secondsToWdhms,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -8,11 +15,6 @@ import {
 import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { NumberInput } from '@components/input/NumberInput'
-import { TextInput } from '@components/input/TextInput'
-import { ToggleInput } from '@components/input/ToggleInput'
 import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
 import { Config } from 'util/contractConfigWrapper'
 import {
