@@ -109,13 +109,13 @@ function WalletConnect() {
 
   if (walletAddress) {
     return (
-      <div className="group relative py-2 px-4 my-4 w-full rounded-lg hover:outline bg-primary hover:outline-brand">
+      <div className="group relative py-2 px-4 my-4 w-full bg-primary rounded-lg hover:outline-brand hover:outline">
         <div className="flex gap-4 items-center w-full h-full justify-left">
           <SvgWallet fill="currentColor" height="20px" width="20px" />
           <div className="link-text">
             <span>{walletName}</span>
             <br />
-            <span className="capitalize text-secondary">
+            <span className="text-secondary capitalize">
               {walletBalanceHuman} {chainDenomHuman}
             </span>
           </div>
@@ -130,7 +130,7 @@ function WalletConnect() {
   return (
     <div className="my-4">
       <Button
-        className="py-4 w-full hover:outline hover:outline-brand"
+        className="py-4 w-full hover:outline-brand hover:outline"
         full
         onClick={handleConnect}
       >

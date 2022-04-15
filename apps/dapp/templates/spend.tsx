@@ -1,12 +1,6 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
-  AddressInput,
-  InputErrorMessage,
-  NumberInput,
-  SelectInput,
-} from '@dao-dao/ui'
-import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
@@ -25,15 +19,6 @@ import {
   cw20Balances as cw20BalancesSelector,
 } from 'selectors/treasury'
 import { Config } from 'util/contractConfigWrapper'
-import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-} from '@dao-dao/utils'
 import {
   validateAddress,
   validatePositive,

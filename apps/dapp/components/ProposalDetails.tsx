@@ -6,7 +6,11 @@ import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { Button, StakingMode } from '@dao-dao/ui'
+import {
+  Button,
+  StakingMode,
+  ProposalDetails as StatelessProposalDetails,
+} from '@dao-dao/ui'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -30,7 +34,6 @@ import {
 import { cleanChainError } from 'util/cleanChainError'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { CosmosMessageDisplay } from './CosmosMessageDisplay'
 import { Execute } from './Execute'
 import { StakingModal } from './StakingModal'
 import { Vote, VoteChoice } from './Vote'
@@ -184,29 +187,101 @@ export function ProposalDetails({
     return <div>Error</div>
   }
 
+  const decodedMessages = decodeMessages(proposal.msgs)
+
+  return <StatelessProposalDetails proposal={proposal} />
+
   return (
-    <StatelessProposalDetails
-      loading={loading}
-      messageToDisplay={(message) => {
-        const data = messageTemplateAndValuesForDecodedCosmosMsg(
-          message,
-          fromCosmosMsgProps
-        )
-        if (data) {
-          const ThisIsAComponentBecauseReactIsAnnoying = () => {
-            // Can't call `useForm` in a callback.
-            const formMethods = useForm({ defaultValues: data.values })
-            return (
-              <FormProvider {...formMethods}>
-                <form>
-                  <data.template.component
-                    contractAddress={contractAddress}
-                    getLabel={(field: string) => field}
-                    multisig={multisig}
-                    readOnly
-                  />
-                </form>
-              </FormProvider>
+    <div className="p-6">
+      <div className="max-w-prose">
+        <h1 className="header-text">{proposal.title}</h1>
+      </div>
+      <div className="mt-[22px]">
+        <MarkdownPreview markdown={proposal.description} />
+      </div>
+      <p className="mt-[36px] mb-[12px] font-mono caption-text">Messages</p>
+      <div className="max-w-3xl">
+        {decodedMessages?.length ? (
+          showRaw ? (
+            <CosmosMessageDisplay
+              value={decodedMessagesString(proposal.msgs)}
+            />
+          ) : (
+            <ProposalMessageTemplateList
+              contractAddress={contractAddress}
+              fromCosmosMsgProps={fromCosmosMsgProps}
+              msgs={proposal.msgs}
+              multisig={multisig}
+            />
+          )
+        ) : (
+          <pre>[]</pre>
+        )}
+      </div>
+      {!!decodedMessages.length && (
+        <div className="mt-4">
+          <Button
+            onClick={() => setShowRaw((s) => !s)}
+            size="sm"
+            variant="secondary"
+          >
+            {showRaw ? (
+              <>
+                Hide raw data
+                <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
+              </>
+            ) : (
+              <>
+                Show raw data
+                <EyeIcon className="inline ml-1 h-4 stroke-current" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+      {proposal.status === 'passed' && (
+        <>
+          <p className="mt-[30px] mb-[12px] font-mono caption-text">Status</p>
+          <Execute
+            loading={loading}
+            messages={proposal.msgs.length}
+            onExecute={() =>
+              executeProposalExecute(
+                proposalId,
+                contractAddress,
+                signingClient,
+                wallet,
+                () => {
+                  setProposalUpdates((n) => n + 1)
+                  setProposalsUpdated((p) =>
+                    p.includes(proposalId) ? p : p.concat([proposalId])
+                  )
+                  setTreasuryTokenListUpdates((n) => n + 1)
+                },
+                setLoading
+              )
+            }
+          />
+        </>
+      )}
+      <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
+      {proposal.status === 'open' && !walletVote && votingPower !== 0 && (
+        <Vote
+          loading={loading}
+          onVote={(position) =>
+            executeProposalVote(
+              position,
+              proposalId,
+              contractAddress,
+              signingClient,
+              wallet,
+              () => {
+                setProposalUpdates((n) => n + 1)
+                setProposalsUpdated((p) =>
+                  p.includes(proposalId) ? p : p.concat([proposalId])
+                )
+              },
+              setLoading
             )
           }
           return <ThisIsAComponentBecauseReactIsAnnoying />

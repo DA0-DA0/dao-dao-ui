@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
-import { Button } from '../Button'
-import { Modal } from '../Modal'
+import { Button, Modal } from '@dao-dao/ui'
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import {
@@ -11,7 +10,6 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
-import { Button, Modal } from '@dao-dao/ui'
 
 import SvgAirplane from '@components/icons/Airplane'
 

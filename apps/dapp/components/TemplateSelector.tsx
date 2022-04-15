@@ -20,7 +20,7 @@ export function MessageTemplateDisplayItem({
 
   return (
     <button
-      className="flex flex-row gap-3 items-center p-2 w-full rounded transition hover:bg-primary"
+      className="flex flex-row gap-3 items-center p-2 w-full hover:bg-primary rounded transition"
       onClick={onClick}
       type="button"
     >
@@ -55,7 +55,7 @@ export function ProposalTemplateSelector({
     <Modal>
       <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
         <button
-          className="absolute top-2 right-2 p-1 rounded-full transition hover:bg-secondary"
+          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
           type="button"
         >

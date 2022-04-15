@@ -2,7 +2,6 @@ import { FC, useState } from 'react'
 
 import { Button } from '@dao-dao/ui'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import { Button } from '@dao-dao/ui'
 
 import { Abstain, Airplane } from '@dao-dao/icons'
 

@@ -24,7 +24,6 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@heroicons/react/outline'
-import { Button } from '@dao-dao/ui'
 
 import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
@@ -35,11 +34,6 @@ import { pagedContractsByCodeId } from 'selectors/contracts'
 import { proposalCount } from 'selectors/daos'
 import { MultisigListType, sigMemberSelector } from 'selectors/multisigs'
 import { nativeBalance } from 'selectors/treasury'
-import {
-  LEGACY_MULTISIG_CODE_ID,
-  MULTISIG_CODE_ID,
-  NATIVE_DENOM,
-} from '@dao-dao/utils'
 
 export function MultisigCard({
   multisig,

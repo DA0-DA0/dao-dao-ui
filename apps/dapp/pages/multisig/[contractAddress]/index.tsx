@@ -7,13 +7,11 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import { useThemeContext } from '@dao-dao/ui'
-import { CopyToClipboard } from '@dao-dao/ui'
 import {
   ScaleIcon,
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
-import { useThemeContext } from '@dao-dao/ui'
 
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'

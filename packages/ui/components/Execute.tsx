@@ -20,7 +20,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
   return (
     <>
       {!partyMode && (
-        <div className="flex justify-between items-center p-4 max-w-3xl rounded-lg border bg-primary border-default">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button className="mr-1 text-2xl" onClick={() => setPartMode(true)}>
               🎉
@@ -36,7 +36,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
         </div>
       )}
       {partyMode && (
-        <div className="flex justify-between items-center p-4 max-w-3xl rounded-lg border bg-primary border-default">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className={`text-2xl mr-1 ${

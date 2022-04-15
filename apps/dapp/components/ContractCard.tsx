@@ -9,7 +9,7 @@ import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
+import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
 import SvgDao from './icons/Dao'
@@ -39,8 +39,8 @@ function ContractCardBase({
   return (
     <Link href={href}>
       <a>
-        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] from-transparent rounded-lg hover:outline-1 hover:outline shadow hover:shadow-md transition-shadow bg-card hover:outline-brand hover:shadow-brand">
-          <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent rounded-lg to-dark opacity-[8%] "></div>
+        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline shadow hover:shadow-md hover:shadow-brand transition-shadow">
+          <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="relative">
               {children}
@@ -58,7 +58,7 @@ function ContractCardBase({
             <h3 className="mt-3 max-w-full font-semibold truncate text-md">
               {title}
             </h3>
-            <p className="mt-1 font-mono text-xs text-center break-words text-secondary line-clamp-3">
+            <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
               {body}
             </p>
           </div>
@@ -152,43 +152,13 @@ export function ContractCard({
 
 export function LoadingContractCard() {
   return (
-    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  from-transparent rounded-lg shadow transition-shadow bg-card">
-      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent rounded-lg to-dark opacity-[8%] "></div>
+    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
+      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
       <div className="flex justify-center items-center w-[70px] h-[70px]">
         <div className="inline-block animate-spin">
           <Logo height={72} width={72} />
         </div>
       </div>
     </div>
-  )
-}
-
-const EmptyStateContractCard = ({
-  title,
-  description,
-  backgroundUrl,
-  href,
-}: {
-  title: string
-  description: string
-  backgroundUrl: string
-  href: string
-}) => {
-  return (
-    <Link href={href} passHref>
-      <a className="overflow-hidden w-max max-w-[400px] rounded-md border transition border-inactive hover:border-brand">
-        <div
-          className={'h-72 bg-no-repeat bg-cover opacity-75'}
-          style={{ backgroundImage: `url(${backgroundUrl})` }}
-        />
-        <div className="py-4 px-6">
-          <div className="flex gap-2 items-center mb-2 primary-text">
-            <PlusIcon className="w-4" />
-            {title}
-          </div>
-          <div className="body-text">{description}</div>
-        </div>
-      </a>
-    </Link>
   )
 }

@@ -1,14 +1,5 @@
 import { useRecoilValue } from 'recoil'
 
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
-
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
-import { SelectInput } from '@components/input/SelectInput'
-import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
-import { Config } from 'util/contractConfigWrapper'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -18,6 +9,15 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
+import { AddressInput } from '@components/input/AddressInput'
+import { InputErrorMessage } from '@components/input/InputErrorMessage'
+import { NumberInput } from '@components/input/NumberInput'
+import { SelectInput } from '@components/input/SelectInput'
+import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
+import { Config } from 'util/contractConfigWrapper'
 import {
   validateValidatorAddress,
   validatePositive,

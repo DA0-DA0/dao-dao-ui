@@ -8,7 +8,6 @@ import {
   cosmWasmClientRouter,
   stargateClientRouter,
 } from 'util/chainClientRouter'
-import { NATIVE_DENOM, GAS_PRICE } from '@dao-dao/utils'
 
 import { localStorageEffect } from '../atoms/localStorageEffect'
 import { connectKeplrWithoutAlerts } from '../services/keplr'

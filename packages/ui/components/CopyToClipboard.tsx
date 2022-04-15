@@ -61,7 +61,7 @@ export function CopyToClipboardAccent({
 
   return (
     <button
-      className="text-sm underline hover:no-underline transition text-brand"
+      className="text-sm text-brand underline hover:no-underline transition"
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)

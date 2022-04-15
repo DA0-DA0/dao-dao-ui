@@ -1,6 +1,5 @@
 import { useRecoilValue } from 'recoil'
 
-import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -13,10 +12,6 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
 import {
   validateAddress,
   validatePositive,

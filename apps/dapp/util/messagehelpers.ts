@@ -21,7 +21,9 @@ import {
   C4_GROUP_CODE_ID,
   CW20_CODE_ID,
   STAKE_CODE_ID,
+  convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { MintMsg } from 'types/messages'
@@ -31,14 +33,6 @@ import {
   ProposalMessageType,
 } from '../models/proposal/messageMap'
 import { cw20TokenInfo } from '../selectors/treasury'
-import {
-  C4_GROUP_CODE_ID,
-  CW20_CODE_ID,
-  STAKE_CODE_ID,
-  convertDenomToContractReadableDenom,
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-} from '@dao-dao/utils'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''

@@ -1,5 +1,6 @@
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
+import { Tooltip } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
@@ -7,7 +8,6 @@ import {
   secondsToWdhms,
 } from '@dao-dao/utils'
 import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
-import { Tooltip } from '@dao-dao/ui'
 
 import {
   proposalSelector,
@@ -31,7 +31,7 @@ import { ProposalStatus } from './ProposalStatus'
 
 const YouTooltip = ({ label }: { label: string }) => (
   <Tooltip label={label}>
-    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
+    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs text-tertiary rounded-full border cursor-pointer border-tertiary">
       ?
     </p>
   </Tooltip>
@@ -92,7 +92,7 @@ export const ProposalDetailsCard = ({
     <div className="rounded-md border border-light">
       <div className="flex flex-row justify-evenly items-stretch py-5">
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             Proposal
           </p>
 
@@ -104,7 +104,7 @@ export const ProposalDetailsCard = ({
         <div className="w-[1px] bg-light"></div>
 
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             Status
           </p>
 
@@ -116,7 +116,7 @@ export const ProposalDetailsCard = ({
         <div className="w-[1px] bg-light"></div>
 
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             You
           </p>
 
@@ -143,7 +143,7 @@ export const ProposalDetailsCard = ({
               <XIcon className="inline w-4" /> Veto
             </p>
           ) : walletVote ? (
-            <p className="font-mono text-sm break-all text-secondary">
+            <p className="font-mono text-sm text-secondary break-all">
               Unknown: {walletVote}
             </p>
           ) : proposal.status === 'open' ? (
@@ -317,7 +317,7 @@ export const ProposalDetailsVoteStatus = ({
               />
 
               <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     Passing threshold:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -395,7 +395,7 @@ export const ProposalDetailsVoteStatus = ({
               />
 
               <Tooltip label={QUORUM_TOOLTIP}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     Quorum: <span className="font-mono">{quorum.display}</span>
                   </p>
@@ -510,7 +510,7 @@ export const ProposalDetailsVoteStatus = ({
               />
 
               <Tooltip label={PASSING_THRESHOLD_TOOLTIP}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     Passing threshold:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -544,7 +544,7 @@ export const ProposalDetailsVoteStatus = ({
 
       {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
         <>
-          <p className="overflow-hidden col-span-3 mt-4 font-mono text-sm text-ellipsis text-tertiary">
+          <p className="overflow-hidden col-span-3 mt-4 font-mono text-sm text-tertiary text-ellipsis">
             Time left
           </p>
 

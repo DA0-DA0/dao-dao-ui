@@ -26,7 +26,6 @@ import {
   contractConfigSelector,
   ContractConfigWrapper,
 } from './contractConfigWrapper'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 // Prefix used in IDs for draft proposals
 const DRAFT_PROPOSAL_PREFFIX = 'draft:'

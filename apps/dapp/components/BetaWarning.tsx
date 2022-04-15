@@ -47,14 +47,14 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
 
 export function BetaNotice({ onClose }: { onClose: Function }) {
   return (
-    <div className="fixed bottom-3 left-3 z-10 p-3 rounded-md bg-light text-primary-content">
+    <div className="fixed bottom-3 left-3 z-10 p-3 bg-light rounded-md text-primary-content">
       <div className="flex gap-2 items-center">
         <Message />
         <h2>
           DAO DAO is in <div className="inline text-error">beta!</div>
         </h2>
         <a
-          className="font-mono text-sm underline text-secondary"
+          className="font-mono text-sm text-secondary underline"
           href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
           rel="noreferrer"
           target="_blank"
@@ -62,7 +62,7 @@ export function BetaNotice({ onClose }: { onClose: Function }) {
           Share feedback
         </a>
         <button
-          className="transition hover:text-secondary text-primary-content"
+          className="hover:text-secondary transition text-primary-content"
           onClick={() => onClose()}
         >
           <XIcon className="inline mb-2 h-3" />
