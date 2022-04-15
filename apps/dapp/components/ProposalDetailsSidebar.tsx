@@ -276,11 +276,22 @@ export const ProposalDetailsVoteStatus = ({
     (quorum ? turnoutYesPercent : totalYesPercent) >= threshold.percent
   const quorumMet = !!quorum && turnoutPercent >= quorum.percent
 
+  const helpfulStatusText =
+    proposal.status === 'open' && threshold && quorum
+      ? thresholdReached && quorumMet
+        ? 'If the current vote stands, this proposal will pass.'
+        : !thresholdReached && quorumMet
+        ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
+        : thresholdReached && !quorumMet
+        ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
+        : undefined
+      : undefined
+
   return (
     <div className="flex flex-col gap-2 items-stretch">
-      {proposal.status === 'open' && thresholdReached && quorumMet && (
+      {helpfulStatusText && (
         <p className="-mt-4 mb-4 text-sm italic text-tertiary">
-          If the current vote stands, this proposal will pass.
+          {helpfulStatusText}
         </p>
       )}
 
