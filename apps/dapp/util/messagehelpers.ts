@@ -1,5 +1,3 @@
-import { useRecoilValue } from 'recoil'
-
 import { toBase64, toAscii } from '@cosmjs/encoding'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
@@ -8,7 +6,6 @@ import {
   StakingMsg,
   DistributionMsg,
   CosmosMsgFor_Empty,
-  ExecuteMsg,
   InstantiateMsg as DaoInstantiateMsg,
   Cw20Coin,
   Duration,
@@ -24,19 +21,15 @@ import {
   C4_GROUP_CODE_ID,
   CW20_CODE_ID,
   STAKE_CODE_ID,
-  convertDenomToContractReadableDenom,
   convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { MintMsg } from 'types/messages'
-import { ProposalMapItem } from 'types/proposals'
 
 import {
   MessageMapEntry,
   ProposalMessageType,
 } from '../models/proposal/messageMap'
-import { cw20TokenInfo } from '../selectors/treasury'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''

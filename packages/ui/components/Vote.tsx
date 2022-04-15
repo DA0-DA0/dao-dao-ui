@@ -3,8 +3,7 @@ import { FC, useState } from 'react'
 import { Button } from '@dao-dao/ui'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 
-import SvgAbstain from './icons/Abstain'
-import SvgAirplane from './icons/Airplane'
+import { Abstain, Airplane } from '@dao-dao/icons'
 
 export enum VoteChoice {
   Yes,
@@ -64,7 +63,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
           }
           variant="secondary"
         >
-          <SvgAbstain fill="currentColor" />
+          <Abstain fill="currentColor" />
           Abstain
         </Button>
         <Button
@@ -93,7 +92,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
         loading={loading}
         onClick={() => onVote(selected as VoteChoice)}
       >
-        Vote <SvgAirplane stroke="currentColor" />
+        Vote <Airplane stroke="currentColor" />
       </Button>
     </div>
   )

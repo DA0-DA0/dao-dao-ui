@@ -1,13 +1,11 @@
 import { useRecoilValue } from 'recoil'
 
 import { Button } from '@dao-dao/ui'
+import { AddressInput, InputErrorMessage, TokenAmountInput } from '@dao-dao/ui'
 import { PlusIcon, UserIcon, XIcon } from '@heroicons/react/outline'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { FormCard } from '@components/FormCard'
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import { listMembers } from 'selectors/multisigs'
 import { Config } from 'util/contractConfigWrapper'
 import { validateAddress, validateRequired } from 'util/formValidation'

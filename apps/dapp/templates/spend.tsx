@@ -1,6 +1,12 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
+  AddressInput,
+  InputErrorMessage,
+  NumberInput,
+  SelectInput,
+} from '@dao-dao/ui'
+import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
@@ -12,10 +18,6 @@ import {
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
-import { SelectInput } from '@components/input/SelectInput'
 import {
   cw20TokensList,
   cw20TokenInfo,

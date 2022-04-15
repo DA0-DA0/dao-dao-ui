@@ -10,6 +10,18 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { Button, Tooltip } from '@dao-dao/ui'
 import {
+  AddressInput,
+  ImageSelector,
+  ImageSelectorModal,
+  InputErrorMessage,
+  InputLabel,
+  NumberInput,
+  TextareaInput,
+  TextInput,
+  ToggleInput,
+  TokenAmountInput,
+} from '@dao-dao/ui'
+import {
   DAO_CODE_ID,
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
@@ -21,16 +33,6 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
 import SvgAirplane from '@components/icons/Airplane'
-import { AddressInput } from '@components/input/AddressInput'
-import { ImageSelector } from '@components/input/ImageSelector'
-import { ImageSelectorModal } from '@components/input/ImageSelector'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { NumberInput } from '@components/input/NumberInput'
-import { TextareaInput } from '@components/input/TextAreaInput'
-import { TextInput } from '@components/input/TextInput'
-import { ToggleInput } from '@components/input/ToggleInput'
-import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'

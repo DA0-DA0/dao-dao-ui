@@ -1,17 +1,16 @@
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import { useRouter } from 'next/router'
 
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
-  Button,
   StakingMode,
   ProposalDetails as StatelessProposalDetails,
+  CosmosMessageDisplay,
 } from '@dao-dao/ui'
-import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import { VoteChoice } from '@dao-dao/ui'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
@@ -29,16 +28,12 @@ import {
 import { walletTokenBalanceLoading } from 'selectors/treasury'
 import {
   FromCosmosMsgProps,
-  MessageTemplate,
   messageTemplateAndValuesForDecodedCosmosMsg,
 } from 'templates/templateList'
 import { cleanChainError } from 'util/cleanChainError'
-import { decodedMessagesString, decodeMessages } from 'util/messagehelpers'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { Execute } from './Execute'
 import { StakingModal } from './StakingModal'
-import { Vote, VoteChoice } from './Vote'
 
 function executeProposalVote(
   choice: VoteChoice,
@@ -126,77 +121,6 @@ function executeProposalExecute(
     })
 }
 
-interface ProposalMessageTemplateListItemProps {
-  template: MessageTemplate
-  values: any
-  contractAddress: string
-  multisig?: boolean
-}
-
-function ProposalMessageTemplateListItem({
-  template,
-  values,
-  contractAddress,
-  multisig,
-}: ProposalMessageTemplateListItemProps) {
-  const formMethods = useForm({
-    defaultValues: values,
-  })
-
-  return (
-    <FormProvider {...formMethods}>
-      <form>
-        <template.component
-          contractAddress={contractAddress}
-          getLabel={(field) => field}
-          multisig={multisig}
-          readOnly
-        />
-      </form>
-    </FormProvider>
-  )
-}
-
-interface ProposalMessageTemplateListProps {
-  msgs: CosmosMsgFor_Empty[]
-  contractAddress: string
-  multisig?: boolean
-  fromCosmosMsgProps: FromCosmosMsgProps
-}
-
-function ProposalMessageTemplateList({
-  msgs,
-  contractAddress,
-  multisig,
-  fromCosmosMsgProps,
-}: ProposalMessageTemplateListProps) {
-  const components: ReactNode[] = msgs.map((msg, index) => {
-    const decoded = decodeMessages([msg])[0]
-    const data = messageTemplateAndValuesForDecodedCosmosMsg(
-      decoded,
-      fromCosmosMsgProps
-    )
-
-    return data ? (
-      <ProposalMessageTemplateListItem
-        key={index}
-        contractAddress={contractAddress}
-        multisig={multisig}
-        template={data.template}
-        values={data.values}
-      />
-    ) : (
-      // If no message template found, render raw message.
-      <CosmosMessageDisplay
-        key={index}
-        value={JSON.stringify(decoded, undefined, 2)}
-      />
-    )
-  })
-
-  return <>{components}</>
-}
-
 export function ProposalDetails({
   contractAddress,
   proposalId,
@@ -253,141 +177,91 @@ export function ProposalDetails({
   const weightPercent = (votingPower / totalPower) * 100
 
   const [loading, setLoading] = useState(false)
-
-  const [showRaw, setShowRaw] = useState(false)
-  const [showStaking, setShowStakng] = useState(false)
+  const [showStaking, setShowStaking] = useState(false)
 
   if (!proposal) {
     router.replace(`/${multisig ? 'multisig' : 'dao'}/${contractAddress}`)
     return <div>Error</div>
   }
 
-  const decodedMessages = decodeMessages(proposal.msgs)
-
-  return <StatelessProposalDetails proposal={proposal} />
-
   return (
-    <div className="p-6">
-      <div className="max-w-prose">
-        <h1 className="header-text">{proposal.title}</h1>
-      </div>
-      <div className="mt-[22px]">
-        <MarkdownPreview markdown={proposal.description} />
-      </div>
-      <p className="mt-[36px] mb-[12px] font-mono caption-text">Messages</p>
-      <div className="max-w-3xl">
-        {decodedMessages?.length ? (
-          showRaw ? (
-            <CosmosMessageDisplay
-              value={decodedMessagesString(proposal.msgs)}
-            />
-          ) : (
-            <ProposalMessageTemplateList
-              contractAddress={contractAddress}
-              fromCosmosMsgProps={fromCosmosMsgProps}
-              msgs={proposal.msgs}
-              multisig={multisig}
-            />
-          )
-        ) : (
-          <pre>[]</pre>
-        )}
-      </div>
-      {!!decodedMessages.length && (
-        <div className="mt-4">
-          <Button
-            onClick={() => setShowRaw((s) => !s)}
-            size="sm"
-            variant="secondary"
-          >
-            {showRaw ? (
-              <>
-                Hide raw data
-                <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
-              </>
-            ) : (
-              <>
-                Show raw data
-                <EyeIcon className="inline ml-1 h-4 stroke-current" />
-              </>
-            )}
-          </Button>
-        </div>
-      )}
-      {proposal.status === 'passed' && (
-        <>
-          <p className="mt-[30px] mb-[12px] font-mono caption-text">Status</p>
-          <Execute
-            loading={loading}
-            messages={proposal.msgs.length}
-            onExecute={() =>
-              executeProposalExecute(
-                proposalId,
-                contractAddress,
-                signingClient,
-                wallet,
-                () => {
-                  setProposalUpdates((n) => n + 1)
-                  setProposalsUpdated((p) =>
-                    p.includes(proposalId) ? p : p.concat([proposalId])
-                  )
-                  setTreasuryTokenListUpdates((n) => n + 1)
-                },
-                setLoading
-              )
-            }
-          />
-        </>
-      )}
-      <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
-      {proposal.status === 'open' && !walletVote && votingPower !== 0 && (
-        <Vote
-          loading={loading}
-          onVote={(position) =>
-            executeProposalVote(
-              position,
-              proposalId,
-              contractAddress,
-              signingClient,
-              wallet,
-              () => {
-                setProposalUpdates((n) => n + 1)
-                setProposalsUpdated((p) =>
-                  p.includes(proposalId) ? p : p.concat([proposalId])
-                )
-              },
-              setLoading
+    <StatelessProposalDetails
+      loading={loading}
+      messageToDisplay={(message) => {
+        const data = messageTemplateAndValuesForDecodedCosmosMsg(
+          message,
+          fromCosmosMsgProps
+        )
+        if (data) {
+          const ThisIsAComponentBecauseReactIsAnnoying = () => {
+            // Can't call `useForm` in a callback.
+            const formMethods = useForm({ defaultValues: data.values })
+            return (
+              <FormProvider {...formMethods}>
+                <form>
+                  <data.template.component
+                    contractAddress={contractAddress}
+                    getLabel={(field: string) => field}
+                    multisig={multisig}
+                    readOnly
+                  />
+                </form>
+              </FormProvider>
             )
           }
-          voterWeight={weightPercent}
+          return <ThisIsAComponentBecauseReactIsAnnoying />
+        }
+        return (
+          <CosmosMessageDisplay value={JSON.stringify(message, undefined, 2)} />
+        )
+      }}
+      onExecute={() =>
+        executeProposalExecute(
+          proposalId,
+          contractAddress,
+          signingClient,
+          wallet,
+          () => {
+            setProposalUpdates((n) => n + 1)
+            setProposalsUpdated((p) =>
+              p.includes(proposalId) ? p : p.concat([proposalId])
+            )
+            setTreasuryTokenListUpdates((n) => n + 1)
+          },
+          setLoading
+        )
+      }
+      onVote={(choice) =>
+        executeProposalVote(
+          choice,
+          proposalId,
+          contractAddress,
+          signingClient,
+          wallet,
+          () => {
+            setProposalUpdates((n) => n + 1)
+            setProposalsUpdated((p) =>
+              p.includes(proposalId) ? p : p.concat([proposalId])
+            )
+          },
+          setLoading
+        )
+      }
+      proposal={proposal}
+      setShowStaking={(s) => setShowStaking(s)}
+      showStaking={showStaking}
+      stakingModal={
+        <StakingModal
+          afterExecute={() => setTokenBalancesLoading(false)}
+          beforeExecute={() => setTokenBalancesLoading(true)}
+          claimableTokens={0}
+          contractAddress={contractAddress}
+          defaultMode={StakingMode.Stake}
+          onClose={() => setShowStaking(false)}
         />
-      )}
-      {walletVote && (
-        <p className="body-text">You voted {walletVote} on this proposal.</p>
-      )}
-      {proposal.status !== 'open' && !walletVote && (
-        <p className="body-text">You did not vote on this proposal.</p>
-      )}
-      {votingPower === 0 && (
-        <p className="max-w-prose body-text">
-          You must have voting power at the time of proposal creation to vote.{' '}
-          {!multisig && (
-            <button className="underline" onClick={() => setShowStakng(true)}>
-              Stake some tokens?
-            </button>
-          )}
-          {!multisig && showStaking && (
-            <StakingModal
-              afterExecute={() => setTokenBalancesLoading(false)}
-              beforeExecute={() => setTokenBalancesLoading(true)}
-              claimableTokens={0}
-              contractAddress={contractAddress}
-              defaultMode={StakingMode.Stake}
-              onClose={() => setShowStakng(false)}
-            />
-          )}
-        </p>
-      )}
-    </div>
+      }
+      walletVote={walletVote}
+      walletWeightPercent={weightPercent}
+    />
   )
 }

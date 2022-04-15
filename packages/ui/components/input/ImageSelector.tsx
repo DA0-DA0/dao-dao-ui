@@ -11,8 +11,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import SvgAirplane from '@components/icons/Airplane'
-import { daoCreateTooltipsGetter } from '@components/TooltipsDisplay/daoCreate'
+import { Airplane } from '@dao-dao/icons'
 
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
@@ -61,7 +60,7 @@ export function ImageSelectorModal<
           <InputLabel
             mono
             name="Image URL"
-            tooltip={daoCreateTooltipsGetter(label).content}
+            tooltip="A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg"
           />
           <TextInput
             error={error}
@@ -73,7 +72,7 @@ export function ImageSelectorModal<
         </div>
         <div className="w-full text-right">
           <Button onClick={onClose} size="sm" type="button">
-            Done <SvgAirplane color="currentColor" />
+            Done <Airplane color="currentColor" />
           </Button>
         </div>
       </div>

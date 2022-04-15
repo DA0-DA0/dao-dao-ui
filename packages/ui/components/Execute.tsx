@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { FC } from 'react'
 
-import { Button } from '@dao-dao/ui'
+import { Button } from './Button'
 
-import SvgAirplane from './icons/Airplane'
+import { Airplane } from '@dao-dao/icons'
 
 export interface ExecuteProps {
   onExecute: () => void
   messages: number
   loading: boolean
 }
+
+export const Hmm: FC<{}> = () => null
 
 export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
   const [partyMode, setPartMode] = useState(false)
@@ -29,7 +31,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
             </p>
           </div>
           <Button loading={loading} onClick={() => onExecute()}>
-            Execute <SvgAirplane stroke="currentColor" />
+            Execute <Airplane stroke="currentColor" />
           </Button>
         </div>
       )}
@@ -93,7 +95,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               loading={loading}
               onClick={() => onExecute()}
             >
-              Execute <SvgAirplane stroke="currentColor" />
+              Execute <Airplane stroke="currentColor" />
             </Button>
           </div>
         </div>
