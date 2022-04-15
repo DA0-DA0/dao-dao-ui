@@ -14,6 +14,10 @@ import {
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
 import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
+import {
   validateAddress,
   validatePositive,
   validateRequired,

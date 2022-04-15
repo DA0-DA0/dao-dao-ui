@@ -5,12 +5,9 @@ import { useRouter } from 'next/router'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import {
-  StakingMode,
-  ProposalDetails as StatelessProposalDetails,
-  CosmosMessageDisplay,
-} from '@dao-dao/ui'
-import { VoteChoice } from '@dao-dao/ui'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { Button, StakingMode } from '@dao-dao/ui'
+import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
@@ -33,7 +30,10 @@ import {
 import { cleanChainError } from 'util/cleanChainError'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
+import { CosmosMessageDisplay } from './CosmosMessageDisplay'
+import { Execute } from './Execute'
 import { StakingModal } from './StakingModal'
+import { Vote, VoteChoice } from './Vote'
 
 function executeProposalVote(
   choice: VoteChoice,
@@ -259,9 +259,33 @@ export function ProposalDetails({
           defaultMode={StakingMode.Stake}
           onClose={() => setShowStaking(false)}
         />
-      }
-      walletVote={walletVote}
-      walletWeightPercent={weightPercent}
-    />
+      )}
+      {walletVote && (
+        <p className="body-text">You voted {walletVote} on this proposal.</p>
+      )}
+      {proposal.status !== 'open' && !walletVote && (
+        <p className="body-text">You did not vote on this proposal.</p>
+      )}
+      {votingPower === 0 && (
+        <p className="max-w-prose body-text">
+          You must have voting power at the time of proposal creation to vote.{' '}
+          {!multisig && (
+            <button className="underline" onClick={() => setShowStakng(true)}>
+              Stake some tokens?
+            </button>
+          )}
+          {!multisig && showStaking && (
+            <StakingModal
+              afterExecute={() => setTokenBalancesLoading(false)}
+              beforeExecute={() => setTokenBalancesLoading(true)}
+              claimableTokens={0}
+              contractAddress={contractAddress}
+              defaultMode={StakingMode.Stake}
+              onClose={() => setShowStakng(false)}
+            />
+          )}
+        </p>
+      )}
+    </div>
   )
 }

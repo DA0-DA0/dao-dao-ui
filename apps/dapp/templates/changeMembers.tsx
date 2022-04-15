@@ -4,6 +4,7 @@ import { Button } from '@dao-dao/ui'
 import { AddressInput, InputErrorMessage, TokenAmountInput } from '@dao-dao/ui'
 import { PlusIcon, UserIcon, XIcon } from '@heroicons/react/outline'
 import { useFieldArray, useFormContext } from 'react-hook-form'
+import { Button } from '@dao-dao/ui'
 
 import { FormCard } from '@components/FormCard'
 import { listMembers } from 'selectors/multisigs'

@@ -1,6 +1,7 @@
-import { Message } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
+
+import SvgMessage from 'components/icons/Message'
 
 export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
   return (
@@ -46,14 +47,14 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
 
 export function BetaNotice({ onClose }: { onClose: Function }) {
   return (
-    <div className="fixed bottom-3 left-3 z-10 p-3 bg-light rounded-md text-primary-content">
+    <div className="fixed bottom-3 left-3 z-10 p-3 rounded-md bg-light text-primary-content">
       <div className="flex gap-2 items-center">
         <Message />
         <h2>
           DAO DAO is in <div className="inline text-error">beta!</div>
         </h2>
         <a
-          className="font-mono text-sm text-secondary underline"
+          className="font-mono text-sm underline text-secondary"
           href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
           rel="noreferrer"
           target="_blank"
@@ -61,7 +62,7 @@ export function BetaNotice({ onClose }: { onClose: Function }) {
           Share feedback
         </a>
         <button
-          className="hover:text-secondary transition text-primary-content"
+          className="transition hover:text-secondary text-primary-content"
           onClick={() => onClose()}
         >
           <XIcon className="inline mb-2 h-3" />

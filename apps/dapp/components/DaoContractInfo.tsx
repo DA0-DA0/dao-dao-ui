@@ -1,7 +1,5 @@
 import { useRecoilValue } from 'recoil'
 
-import { Votes } from '@dao-dao/icons'
-import { CopyToClipboardAccent } from '@dao-dao/ui'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
@@ -33,7 +31,7 @@ export function DaoContractInfo({ address }: { address: string }) {
   )
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b border-inactive md:grid md:grid-cols-3">
+    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b md:grid md:grid-cols-3 border-inactive">
       <div>
         <h2 className="mb-6 primary-text">Governance Details</h2>
         <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">

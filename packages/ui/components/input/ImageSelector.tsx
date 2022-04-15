@@ -11,8 +11,9 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+import { Button, Modal } from '@dao-dao/ui'
 
-import { Airplane } from '@dao-dao/icons'
+import SvgAirplane from '@components/icons/Airplane'
 
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'

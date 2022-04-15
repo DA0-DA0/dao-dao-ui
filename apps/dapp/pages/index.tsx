@@ -13,9 +13,15 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 
+import { Button } from '@dao-dao/ui'
+
+import SvgArrowUpRight from '@components/icons/ArrowUpRight'
+import SvgDiscord from '@components/icons/Discord'
 import { GradientWrapper } from 'components/GradientWrapper'
 import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
+
+import { SITE_TITLE } from '@dao-dao/utils'
 
 function EnterAppButton({ small }: { small?: boolean }) {
   return (

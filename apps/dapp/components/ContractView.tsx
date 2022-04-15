@@ -181,7 +181,7 @@ export function BalanceIcon({ iconURI }: { iconURI?: string }) {
 
   return (
     <div
-      className="w-4 h-4 bg-brand bg-center bg-cover rounded-full"
+      className="w-4 h-4 bg-center bg-cover rounded-full bg-brand"
       style={{
         ...(!!accentColor && { backgroundColor: accentColor }),
         backgroundImage: iconURI ? `url(${iconURI})` : '',

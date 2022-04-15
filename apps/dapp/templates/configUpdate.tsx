@@ -12,11 +12,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getDaoThresholdAndQuorum,
 } from '@dao-dao/utils'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
-
-import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
-import { Config } from 'util/contractConfigWrapper'
 import {
   validatePercent,
   validatePositive,

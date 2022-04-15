@@ -5,6 +5,7 @@ import { MULTISIG_CODE_ID } from '@dao-dao/utils'
 
 import { contractsByCodeId } from 'selectors/contracts'
 import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
+import { MULTISIG_CODE_ID } from '@dao-dao/utils'
 
 import { walletAddress } from './treasury'
 

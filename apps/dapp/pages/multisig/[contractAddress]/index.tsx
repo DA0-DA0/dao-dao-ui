@@ -13,6 +13,7 @@ import {
   UserGroupIcon,
   VariableIcon,
 } from '@heroicons/react/outline'
+import { useThemeContext } from '@dao-dao/ui'
 
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'

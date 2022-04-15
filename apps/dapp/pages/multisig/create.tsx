@@ -20,6 +20,7 @@ import {
 import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
 import { PlusIcon } from '@heroicons/react/outline'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
+import { Button, Tooltip } from '@dao-dao/ui'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
@@ -37,6 +38,7 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
+import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
 import {
   validatePercent,
   validatePositive,

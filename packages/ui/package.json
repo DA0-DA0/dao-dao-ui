@@ -15,13 +15,8 @@
   },
   "dependencies": {
     "@dao-dao/utils": "*",
-    "@dao-dao/icons": "*",
     "@heroicons/react": "^1.0.5",
-    "@dao-dao/types": "^0.0.8",
-    "react-markdown": "^8.0.0",
-    "react-hook-form": "^7.20.4",
-    "clsx": "^1.1.1",
-    "codemirror": "^5.65.0"
+    "@dao-dao/types": "^0.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
