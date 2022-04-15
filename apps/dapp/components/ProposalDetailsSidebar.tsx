@@ -271,16 +271,25 @@ export const ProposalDetailsVoteStatus = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expires)
       : undefined
 
+  const thresholdReached =
+    !!threshold &&
+    (quorum ? turnoutYesPercent : totalYesPercent) >= threshold.percent
+  const quorumMet = !!quorum && turnoutPercent >= quorum.percent
+
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="flex flex-col gap-2 items-stretch">
+      {proposal.status === 'open' && thresholdReached && quorumMet && (
+        <p className="-mt-4 mb-4 text-sm italic text-tertiary">
+          If the current vote stands, this proposal will pass.
+        </p>
+      )}
+
       {threshold ? (
         quorum ? (
           <>
-            <p className="overflow-hidden col-span-3 mb-3 text-sm text-ellipsis body-text">
-              Ratio of votes
-            </p>
+            <p className="mb-3 text-sm body-text">Ratio of votes</p>
 
-            <div className="flex flex-row col-span-3 gap-4 items-center font-mono text-xs">
+            <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
                   Yes{' '}
@@ -313,7 +322,7 @@ export const ProposalDetailsVoteStatus = ({
               </p>
             </div>
 
-            <div className="col-span-3 my-2">
+            <div className="my-2">
               <Progress
                 rows={[
                   {
@@ -348,7 +357,7 @@ export const ProposalDetailsVoteStatus = ({
               />
             </div>
 
-            <div className="relative col-span-3">
+            <div className="relative">
               <TriangleUp
                 className="absolute -top-[22px]"
                 color="rgb(var(--light))"
@@ -372,7 +381,7 @@ export const ProposalDetailsVoteStatus = ({
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
-                    {turnoutYesPercent >= threshold.percent ? (
+                    {thresholdReached ? (
                       <>
                         Reached{' '}
                         <CheckIcon
@@ -394,7 +403,7 @@ export const ProposalDetailsVoteStatus = ({
               </Tooltip>
             </div>
 
-            <div className="flex flex-row col-span-3 justify-between mt-4 mb-1">
+            <div className="flex flex-row justify-between mt-4 mb-1">
               <p className="overflow-hidden text-sm text-ellipsis body-text">
                 Turnout
               </p>
@@ -404,7 +413,7 @@ export const ProposalDetailsVoteStatus = ({
               </p>
             </div>
 
-            <div className="col-span-3 my-2">
+            <div className="my-2">
               <Progress
                 rows={[
                   {
@@ -426,7 +435,7 @@ export const ProposalDetailsVoteStatus = ({
               />
             </div>
 
-            <div className="relative col-span-3">
+            <div className="relative">
               <TriangleUp
                 className="absolute -top-[22px]"
                 color="rgb(var(--light))"
@@ -449,7 +458,7 @@ export const ProposalDetailsVoteStatus = ({
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
-                    {turnoutPercent >= quorum.percent ? (
+                    {quorumMet ? (
                       <>
                         Reached{' '}
                         <CheckIcon
@@ -473,11 +482,11 @@ export const ProposalDetailsVoteStatus = ({
           </>
         ) : (
           <>
-            <p className="overflow-hidden col-span-3 mb-3 text-sm text-ellipsis body-text">
+            <p className="overflow-hidden mb-3 text-sm text-ellipsis body-text">
               Turnout
             </p>
 
-            <div className="flex flex-row col-span-3 gap-4 items-center font-mono text-xs">
+            <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
                   Yes {totalYesPercent.toLocaleString(undefined, localeOptions)}
@@ -508,7 +517,7 @@ export const ProposalDetailsVoteStatus = ({
               </p>
             </div>
 
-            <div className="col-span-3 my-2">
+            <div className="my-2">
               <Progress
                 rows={[
                   {
@@ -541,7 +550,7 @@ export const ProposalDetailsVoteStatus = ({
               />
             </div>
 
-            <div className="relative col-span-3">
+            <div className="relative">
               <TriangleUp
                 className="absolute -top-[22px]"
                 color="rgb(var(--light))"
@@ -565,7 +574,7 @@ export const ProposalDetailsVoteStatus = ({
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
-                    {totalYesPercent >= threshold.percent ? (
+                    {thresholdReached ? (
                       <>
                         Reached{' '}
                         <CheckIcon
@@ -592,16 +601,16 @@ export const ProposalDetailsVoteStatus = ({
 
       {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
         <>
-          <p className="overflow-hidden col-span-3 mt-4 font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
             Time left
           </p>
 
-          <p className="col-span-3 font-mono text-xs text-right text-dark">
+          <p className="font-mono text-xs text-right text-dark">
             {secondsToWdhms(expiresInSeconds, 2)}
           </p>
 
           {maxVotingSeconds !== undefined && (
-            <div className="col-span-3 mt-1">
+            <div className="mt-1">
               <Progress
                 alignEnd
                 rows={[
@@ -622,7 +631,7 @@ export const ProposalDetailsVoteStatus = ({
       )}
 
       {threshold?.percent === 50 && yesVotes === noVotes && (
-        <div className="col-span-3 mt-4 text-sm">
+        <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">Tie clarification</p>
 
           <p className="mt-2 body-text">{"'Yes' will win a tie vote."}</p>
@@ -630,11 +639,12 @@ export const ProposalDetailsVoteStatus = ({
       )}
 
       {abstainVotes === turnoutTotal && (
-        <div className="col-span-3 mt-4 text-sm">
+        <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">All abstain clarification</p>
 
           <p className="mt-2 body-text">
-            When all abstain, a proposal will fail.
+            {/* TODO: Change this to fail wen v1 contracts. */}
+            When all abstain, a proposal will pass.
           </p>
         </div>
       )}
