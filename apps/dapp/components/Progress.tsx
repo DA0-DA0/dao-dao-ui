@@ -1,3 +1,6 @@
+// The height in pixels a vertical bar extends beyond the progress bar on top and bottom.
+const VERTICAL_BAR_PADDING = 5
+
 export const Progress = ({
   rows,
   verticalBars = [],
@@ -14,7 +17,6 @@ export const Progress = ({
   verticalBars?: {
     value: number
     color: string
-    label?: string
   }[]
   alignEnd?: boolean
 }) => (
@@ -46,25 +48,18 @@ export const Progress = ({
       ))}
     </div>
 
-    {verticalBars.map(({ value, color, label }, index) => (
+    {verticalBars.map(({ value, color }, index) => (
       <div
         key={index}
-        className="absolute -top-[3px] w-[2px] rounded-full"
+        className="absolute w-[2px] rounded-full"
         style={{
           left: `${value}%`,
           backgroundColor: color,
-          height: rows.reduce((sum, row) => row.thickness + sum, 6),
+          // Extend above and below bar.
+          top: -VERTICAL_BAR_PADDING,
+          bottom: -VERTICAL_BAR_PADDING,
         }}
-      >
-        {!!label && (
-          <p
-            className="absolute -top-4 font-mono"
-            style={{ fontSize: 8, lineHeight: 2, color }}
-          >
-            {label}
-          </p>
-        )}
-      </div>
+      ></div>
     ))}
   </div>
 )
