@@ -277,7 +277,12 @@ const CreateDao: NextPage = () => {
             />
 
             <div className="flex flex-col justify-center items-center mx-auto mt-4 max-w-prose rounded-lg">
-              <InputLabel className="pb-1" mono name="DAO Name" />
+              <InputLabel
+                className="pb-1"
+                mono
+                name="DAO Name"
+                tooltip={daoCreateTooltipsGetter('name').content}
+              />
               <TextInput
                 className="font-bold text-center"
                 error={errors.name}
@@ -291,7 +296,11 @@ const CreateDao: NextPage = () => {
 
           <div className="px-8">
             <div className="flex flex-col gap-1">
-              <InputLabel mono name="Description" />
+              <InputLabel
+                mono
+                name="Description"
+                tooltip={daoCreateTooltipsGetter('description').content}
+              />
               <TextareaInput
                 error={errors.description}
                 label="description"
@@ -363,7 +372,11 @@ const CreateDao: NextPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col col-span-1 gap-1">
-                    <InputLabel mono name="Symbol" />
+                    <InputLabel
+                      mono
+                      name="Symbol"
+                      tooltip={daoCreateTooltipsGetter('tokenSymbol').content}
+                    />
                     <TextInput
                       error={errors.tokenSymbol}
                       label="tokenSymbol"
@@ -373,7 +386,11 @@ const CreateDao: NextPage = () => {
                     <InputErrorMessage error={errors.tokenSymbol} />
                   </div>
                   <div className="flex flex-col col-span-2 gap-1">
-                    <InputLabel mono name="Name" />
+                    <InputLabel
+                      mono
+                      name="Name"
+                      tooltip={daoCreateTooltipsGetter('tokenName').content}
+                    />
                     <TextInput
                       error={errors.tokenName}
                       label="tokenName"
@@ -387,7 +404,13 @@ const CreateDao: NextPage = () => {
               {tokenMode === TokenMode.UseExisting && (
                 <div className="flex gap-3">
                   <div className="flex basis-1/4 items-center">
-                    <InputLabel mono name="Existing token address" />
+                    <InputLabel
+                      mono
+                      name="Existing token address"
+                      tooltip={
+                        daoCreateTooltipsGetter('existingTokenAddress').content
+                      }
+                    />
                   </div>
                   <div className="flex basis-3/4 flex-col">
                     <AddressInput
