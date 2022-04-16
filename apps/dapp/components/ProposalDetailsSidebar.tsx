@@ -610,36 +610,38 @@ export const ProposalDetailsVoteStatus = ({
         )
       ) : null}
 
-      {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
-        <>
-          <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
-            Time left
-          </p>
+      {proposal.status === 'open' &&
+        expiresInSeconds !== undefined &&
+        expiresInSeconds > 0 && (
+          <>
+            <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
+              Time left
+            </p>
 
-          <p className="font-mono text-xs text-right text-dark">
-            {secondsToWdhms(expiresInSeconds, 2)}
-          </p>
+            <p className="font-mono text-xs text-right text-dark">
+              {secondsToWdhms(expiresInSeconds, 2)}
+            </p>
 
-          {maxVotingSeconds !== undefined && (
-            <div className="mt-1">
-              <Progress
-                alignEnd
-                rows={[
-                  {
-                    thickness: 3,
-                    data: [
-                      {
-                        value: (expiresInSeconds / maxVotingSeconds) * 100,
-                        color: 'rgb(var(--dark))',
-                      },
-                    ],
-                  },
-                ]}
-              />
-            </div>
-          )}
-        </>
-      )}
+            {maxVotingSeconds !== undefined && (
+              <div className="mt-1">
+                <Progress
+                  alignEnd
+                  rows={[
+                    {
+                      thickness: 3,
+                      data: [
+                        {
+                          value: (expiresInSeconds / maxVotingSeconds) * 100,
+                          color: 'rgb(var(--dark))',
+                        },
+                      ],
+                    },
+                  ]}
+                />
+              </div>
+            )}
+          </>
+        )}
 
       {threshold?.percent === 50 && yesVotes === noVotes && (
         <div className="mt-4 text-sm">
