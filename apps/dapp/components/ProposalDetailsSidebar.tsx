@@ -271,9 +271,13 @@ export const ProposalDetailsVoteStatus = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expires)
       : undefined
 
+  // TODO: Change this wen v1 contracts launch, since the conditions
+  // will change. In v1, all abstain fails instead of passes.
   const thresholdReached =
     !!threshold &&
-    (quorum ? turnoutYesPercent : totalYesPercent) >= threshold.percent
+    yesVotes >=
+      ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
+        (threshold.percent / 100)
   const quorumMet = !!quorum && turnoutPercent >= quorum.percent
 
   const helpfulStatusText =
@@ -286,6 +290,10 @@ export const ProposalDetailsVoteStatus = ({
         ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
         : undefined
       : undefined
+
+  // When only abstain votes have been cast and there is no quorum,
+  // position abstain to the left of Yes and No above the progress bar.
+  const onlyAbstain = yesVotes === 0 && noVotes === 0 && abstainVotes > 0
 
   return (
     <div className="flex flex-col gap-2 items-stretch">
@@ -498,6 +506,13 @@ export const ProposalDetailsVoteStatus = ({
             </p>
 
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
+              {onlyAbstain && (
+                <p className="flex-1 text-secondary">
+                  Abstain{' '}
+                  {totalAbstainPercent.toLocaleString(undefined, localeOptions)}
+                  %
+                </p>
+              )}
               {[
                 <p key="yes" className="text-valid">
                   Yes {totalYesPercent.toLocaleString(undefined, localeOptions)}
@@ -518,14 +533,17 @@ export const ProposalDetailsVoteStatus = ({
                     {elem}
                   </div>
                 ))}
-              <p
-                className={`text-secondary ${
-                  yesVotes === noVotes ? 'flex-1 text-right' : ''
-                }`}
-              >
-                Abstain{' '}
-                {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
-              </p>
+              {!onlyAbstain && (
+                <p
+                  className={`text-secondary ${
+                    yesVotes === noVotes ? 'flex-1 text-right' : ''
+                  }`}
+                >
+                  Abstain{' '}
+                  {totalAbstainPercent.toLocaleString(undefined, localeOptions)}
+                  %
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -643,7 +661,7 @@ export const ProposalDetailsVoteStatus = ({
           </>
         )}
 
-      {threshold?.percent === 50 && yesVotes === noVotes && (
+      {threshold?.percent === 50 && yesVotes === noVotes && yesVotes > 0 && (
         <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">Tie clarification</p>
 
@@ -657,7 +675,8 @@ export const ProposalDetailsVoteStatus = ({
 
           <p className="mt-2 body-text">
             {/* TODO: Change this to fail wen v1 contracts. */}
-            When all abstain, a proposal will pass.
+            When all abstain{quorum && ' and the quorum is met'}, a proposal
+            will pass.
           </p>
         </div>
       )}
