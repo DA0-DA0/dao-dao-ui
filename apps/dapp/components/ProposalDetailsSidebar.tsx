@@ -1,5 +1,6 @@
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
+import { TriangleUp, Abstain } from '@dao-dao/icons'
 import { Tooltip } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
@@ -25,8 +26,6 @@ import {
 import { useThresholdQuorum } from 'util/proposal'
 
 import { CopyToClipboard } from './CopyToClipboard'
-import SvgAbstain from './icons/Abstain'
-import { TriangleUp } from './icons/TriangleUp'
 import { Progress } from './Progress'
 import { ProposalStatus } from './ProposalStatus'
 
@@ -132,7 +131,7 @@ export const ProposalDetailsCard = ({
             </p>
           ) : walletVote === WalletVote.Abstain ? (
             <p className="flex gap-1 items-center font-mono text-sm text-secondary">
-              <SvgAbstain fill="currentColor" /> Abstain
+              <Abstain fill="currentColor" /> Abstain
             </p>
           ) : walletVote === WalletVote.Veto ? (
             <p className="flex gap-1 items-center font-mono text-sm text-error">

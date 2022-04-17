@@ -1,13 +1,8 @@
-import SvgDraft from '../icons/Draft'
-import SvgExecuted from '../icons/Executed'
-import SvgOpen from '../icons/Open'
-import SvgPassed from '../icons/Passed'
-import SvgRejected from '../icons/Rejected'
+import { Executed, Open, Passed, Rejected } from '@dao-dao/icons'
 
 export const StatusIcons: { [key: string]: JSX.Element } = {
-  draft: <SvgDraft color="currentColor" style={{ display: 'inline' }} />,
-  open: <SvgOpen color="currentColor" style={{ display: 'inline' }} />,
-  executed: <SvgExecuted color="currentColor" style={{ display: 'inline' }} />,
-  passed: <SvgPassed color="currentColor" style={{ display: 'inline' }} />,
-  rejected: <SvgRejected color="currentColor" style={{ display: 'inline' }} />,
+  open: <Open color="currentColor" style={{ display: 'inline' }} />,
+  executed: <Executed color="currentColor" style={{ display: 'inline' }} />,
+  passed: <Passed color="currentColor" style={{ display: 'inline' }} />,
+  rejected: <Rejected color="currentColor" style={{ display: 'inline' }} />,
 }

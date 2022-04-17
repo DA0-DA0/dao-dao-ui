@@ -1,5 +1,6 @@
 import { useRecoilValue } from 'recoil'
 
+import { Votes } from '@dao-dao/icons'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
@@ -16,7 +17,6 @@ import {
 import { GovInfoListItem } from './ContractView'
 import { CopyToClipboardAccent } from './CopyToClipboard'
 import { DaoTreasury } from './DaoTreasury'
-import SvgVotes from './icons/Votes'
 
 export function DaoContractInfo({ address }: { address: string }) {
   const daoInfo = useRecoilValue(daoSelector(address))
@@ -43,13 +43,13 @@ export function DaoContractInfo({ address }: { address: string }) {
             value={humanReadableDuration(unstakingDuration)}
           />
           <GovInfoListItem
-            icon={<SvgVotes fill="currentColor" width="16px" />}
+            icon={<Votes fill="currentColor" width="16px" />}
             text="Passing threshold"
             value={threshold}
           />
           {quorum && (
             <GovInfoListItem
-              icon={<SvgVotes fill="currentColor" width="16px" />}
+              icon={<Votes fill="currentColor" width="16px" />}
               text="Quorum"
               value={quorum}
             />
@@ -61,7 +61,7 @@ export function DaoContractInfo({ address }: { address: string }) {
           />
           <li className="flex flex-row items-center caption-text">
             <span className="flex gap-1 items-center">
-              <SvgVotes fill="currentColor" width="16px" />{' '}
+              <Votes fill="currentColor" width="16px" />{' '}
               {convertMicroDenomToDenomWithDecimals(
                 daoInfo.config.proposal_deposit,
                 govTokenInfo.decimals

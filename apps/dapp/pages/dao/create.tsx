@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { Airplane } from '@dao-dao/icons'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { Button, Tooltip } from '@dao-dao/ui'
@@ -32,7 +33,6 @@ import { useFieldArray, useForm } from 'react-hook-form'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
-import SvgAirplane from '@components/icons/Airplane'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
@@ -653,7 +653,7 @@ const CreateDao: NextPage = () => {
             >
               <Button loading={loading} type="submit">
                 Submit{' '}
-                <SvgAirplane color="currentColor" height="14px" width="14px" />
+                <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
           </div>

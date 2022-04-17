@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
+import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import {
   CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
@@ -12,9 +13,6 @@ import {
 import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
-import SvgDao from './icons/Dao'
-import SvgPencil from './icons/Pencil'
-import SvgVotes from './icons/Votes'
 import { Logo } from './Logo'
 
 function ContractCardBase({
@@ -65,7 +63,7 @@ function ContractCardBase({
           <div className="flex flex-col gap-1 items-left">
             {balance && (
               <p className="text-sm">
-                <SvgDao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+                <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
                 {convertMicroDenomToDenomWithDecimals(
                   balance,
                   NATIVE_DECIMALS
@@ -75,19 +73,13 @@ function ContractCardBase({
             )}
             {proposals != undefined && (
               <p className="text-sm">
-                <SvgPencil
-                  className="inline mr-2 mb-1 w-4"
-                  fill="currentColor"
-                />
+                <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
                 {proposals} proposal{weight != 1 && 's'}
               </p>
             )}
             {weight != undefined && (
               <p className="text-sm text-valid text-success">
-                <SvgVotes
-                  className="inline mr-2 mb-1 h-5"
-                  fill="currentColor"
-                />
+                <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
                 {weight} vote{weight != 1 && 's'}
               </p>
             )}

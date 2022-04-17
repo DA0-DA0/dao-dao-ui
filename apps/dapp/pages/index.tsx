@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 
+import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { ScaleIcon } from '@heroicons/react/outline'
@@ -12,11 +13,7 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 
-import SvgArrowUpRight from '@components/icons/ArrowUpRight'
-import SvgDiscord from '@components/icons/Discord'
 import { GradientWrapper } from 'components/GradientWrapper'
-import SvgGithub from 'components/icons/Github'
-import SvgTwitter from 'components/icons/Twitter'
 import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 
@@ -26,7 +23,7 @@ function EnterAppButton({ small }: { small?: boolean }) {
       <a>
         <Button size={small ? 'sm' : 'lg'}>
           Enter the app{' '}
-          <SvgArrowUpRight color="currentColor" height="10px" width="10px" />
+          <ArrowUpRight color="currentColor" height="10px" width="10px" />
         </Button>
       </a>
     </Link>
@@ -83,11 +80,7 @@ const Home: NextPage = () => {
               href="https://docs.daodao.zone"
             >
               Documentation
-              <SvgArrowUpRight
-                color="currentColor"
-                height="10px"
-                width="10px"
-              />
+              <ArrowUpRight color="currentColor" height="10px" width="10px" />
             </a>
             <div className="hidden md:block">
               <EnterAppButton small />
@@ -149,7 +142,7 @@ const Home: NextPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              <SvgGithub fill="currentColor" height="20px" width="20px" />
+              <Github fill="currentColor" height="20px" width="20px" />
             </a>
             <a
               className="hover:text-primary transition"
@@ -157,7 +150,7 @@ const Home: NextPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              <SvgTwitter fill="currentColor" height="20px" width="20px" />
+              <Twitter fill="currentColor" height="20px" width="20px" />
             </a>
             <a
               className="hover:text-primary transition"
@@ -165,7 +158,7 @@ const Home: NextPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              <SvgDiscord fill="currentColor" height="20px" width="20px" />
+              <Discord fill="currentColor" height="20px" width="20px" />
             </a>
           </div>
         </div>

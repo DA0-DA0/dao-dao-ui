@@ -5,14 +5,13 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import { MemberCheck, Pencil } from '@dao-dao/icons'
 import { useThemeContext, StakingMode } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
-import SvgMemberCheck from '@components/icons/MemberCheck'
-import SvgPencil from '@components/icons/Pencil'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
@@ -106,7 +105,7 @@ function DaoHome() {
             <div className="flex flex-row gap-4 items-center">
               {member && (
                 <div className="flex flex-row gap-2 items-center">
-                  <SvgMemberCheck fill="currentColor" width="16px" />
+                  <MemberCheck fill="currentColor" width="16px" />
                   <p className="text-sm text-primary">You{"'"}re a member</p>
                 </div>
               )}
@@ -146,7 +145,7 @@ function DaoHome() {
                 {stakedPercent}% ${tokenInfo?.symbol} staked
               </HeroContractHorizontalInfoSection>
               <HeroContractHorizontalInfoSection>
-                <SvgPencil className="inline" fill="currentColor" />
+                <Pencil className="inline" fill="currentColor" />
                 {proposalsTotal} proposals created
               </HeroContractHorizontalInfoSection>
             </HeroContractHorizontalInfo>

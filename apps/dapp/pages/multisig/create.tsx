@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { Airplane } from '@dao-dao/icons'
 import { Button, Tooltip } from '@dao-dao/ui'
 import {
   ImageSelector,
@@ -22,7 +23,6 @@ import { useFieldArray, useForm, Validate } from 'react-hook-form'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
-import SvgAirplane from '@components/icons/Airplane'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
@@ -296,7 +296,7 @@ const CreateMultisig: NextPage = () => {
           >
             <Button disabled={!walletAddress} loading={loading} type="submit">
               Submit{' '}
-              <SvgAirplane color="currentColor" height="14px" width="14px" />
+              <Airplane color="currentColor" height="14px" width="14px" />
             </Button>
           </Tooltip>
         </div>

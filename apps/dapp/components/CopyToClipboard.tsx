@@ -1,10 +1,9 @@
 import { useState } from 'react'
 
+import { Copy } from '@dao-dao/icons'
 import { useThemeContext } from '@dao-dao/ui'
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
-
-import SvgCopy from './icons/Copy'
 
 function concatAddressImpl(
   address: string,
@@ -46,7 +45,7 @@ export function CopyToClipboard({
       {copied ? (
         <CheckCircleIcon className="w-[18px]" />
       ) : (
-        <SvgCopy color="currentColor" height="18px" width="18px" />
+        <Copy color="currentColor" height="18px" width="18px" />
       )}
       {concatAddress(value, takeN)}
     </button>
