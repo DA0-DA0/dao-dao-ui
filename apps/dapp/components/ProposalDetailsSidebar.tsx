@@ -506,13 +506,6 @@ export const ProposalDetailsVoteStatus = ({
             </p>
 
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
-              {onlyAbstain && (
-                <p className="flex-1 text-secondary">
-                  Abstain{' '}
-                  {totalAbstainPercent.toLocaleString(undefined, localeOptions)}
-                  %
-                </p>
-              )}
               {[
                 <p key="yes" className="text-valid">
                   Yes {totalYesPercent.toLocaleString(undefined, localeOptions)}
@@ -533,21 +526,19 @@ export const ProposalDetailsVoteStatus = ({
                     {elem}
                   </div>
                 ))}
-              {!onlyAbstain && (
-                <p
-                  className={`text-secondary ${
-                    yesVotes === noVotes ? 'flex-1 text-right' : ''
-                  }`}
-                >
-                  Abstain{' '}
-                  {totalAbstainPercent.toLocaleString(undefined, localeOptions)}
-                  %
-                </p>
-              )}
+              <p
+                className={`text-secondary ${
+                  yesVotes === noVotes ? 'flex-1 text-right' : ''
+                }`}
+              >
+                Abstain{' '}
+                {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
+              </p>
             </div>
 
             <div className="my-2">
               <Progress
+                alignEnd={onlyAbstain}
                 rows={[
                   {
                     thickness: 3,
