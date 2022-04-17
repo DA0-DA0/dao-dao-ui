@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
+import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import {
   CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
@@ -12,9 +13,6 @@ import {
 import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
-import SvgDao from './icons/Dao'
-import SvgPencil from './icons/Pencil'
-import SvgVotes from './icons/Votes'
 import { Logo } from './Logo'
 
 function ContractCardBase({

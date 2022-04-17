@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { Copy, Wallet } from '@dao-dao/icons'
 import { Button, Tooltip } from '@dao-dao/ui'
 import {
   CHAIN_ID,
@@ -24,9 +25,6 @@ import {
 } from 'selectors/cosm'
 import { connectKeplrWithoutAlerts } from 'services/keplr'
 
-import SvgCopy from './icons/Copy'
-import SvgWallet from './icons/Wallet'
-
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
@@ -42,7 +40,7 @@ function CopyButton({ text }: { text: string }) {
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
-          <SvgCopy color="currentColor" height="18px" width="18px" />
+          <Copy color="currentColor" height="18px" width="18px" />
         )}
       </button>
     </Tooltip>
@@ -111,7 +109,7 @@ function WalletConnect() {
     return (
       <div className="group relative py-2 px-4 my-4 w-full bg-primary rounded-lg hover:outline-brand hover:outline">
         <div className="flex gap-4 items-center w-full h-full justify-left">
-          <SvgWallet fill="currentColor" height="20px" width="20px" />
+          <Wallet fill="currentColor" height="20px" width="20px" />
           <div className="link-text">
             <span>{walletName}</span>
             <br />
@@ -134,7 +132,7 @@ function WalletConnect() {
         full
         onClick={handleConnect}
       >
-        <SvgWallet fill="currentColor" height="20px" width="20px" />
+        <Wallet fill="currentColor" height="20px" width="20px" />
         <p className="text-light link-text">Connect wallet</p>
       </Button>
     </div>

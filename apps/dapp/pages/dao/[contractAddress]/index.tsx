@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import { MemberCheck, Pencil } from '@dao-dao/icons'
 import { useThemeContext, StakingMode } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'

@@ -1,5 +1,6 @@
 import { useRecoilValue } from 'recoil'
 
+import { Votes } from '@dao-dao/icons'
 import { humanReadableDuration, thresholdString } from '@dao-dao/utils'
 import { ClockIcon } from '@heroicons/react/outline'
 

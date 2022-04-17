@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 
+import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { ScaleIcon } from '@heroicons/react/outline'
@@ -12,8 +13,6 @@ import {
   StarIcon,
 } from '@heroicons/react/solid'
 
-import SvgArrowUpRight from '@components/icons/ArrowUpRight'
-import SvgDiscord from '@components/icons/Discord'
 import { GradientWrapper } from 'components/GradientWrapper'
 import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'

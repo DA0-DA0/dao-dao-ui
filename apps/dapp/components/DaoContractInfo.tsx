@@ -1,5 +1,6 @@
 import { useRecoilValue } from 'recoil'
 
+import { Votes } from '@dao-dao/icons'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,

@@ -33,7 +33,6 @@ import { useFieldArray, useForm } from 'react-hook-form'
 
 import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
-import SvgAirplane from '@components/icons/Airplane'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
