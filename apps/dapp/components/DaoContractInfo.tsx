@@ -1,6 +1,7 @@
 import { useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
+import { CopyToClipboardAccent } from '@dao-dao/ui'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
@@ -15,7 +16,6 @@ import {
 } from 'selectors/daos'
 
 import { GovInfoListItem } from './ContractView'
-import { CopyToClipboardAccent } from './CopyToClipboard'
 import { DaoTreasury } from './DaoTreasury'
 
 export function DaoContractInfo({ address }: { address: string }) {

@@ -9,6 +9,7 @@ import {
   ProposalResponse,
   Status,
 } from '@dao-dao/types/contracts/cw3-dao'
+import { ProposalStatus } from '@dao-dao/ui'
 import {
   expirationAtTimeToSecondsFromNow,
   secondsToWdhms,
@@ -30,7 +31,6 @@ import {
 import { ExtendedProposalResponse } from 'types/proposals'
 
 import { draftProposalsToExtendedResponses } from '../util/proposal'
-import { ProposalStatus } from './ProposalStatus'
 
 const PROP_LOAD_LIMIT = 10
 

@@ -7,8 +7,8 @@ import { Breadcrumbs } from 'components/Breadcrumbs'
 import { ProposalDetails } from 'components/ProposalDetails'
 import {
   ProposalDetailsSidebar,
-  ProposalDetailsCard,
   ProposalDetailsVoteStatus,
+  ProposalDetailsCard,
 } from 'components/ProposalDetailsSidebar'
 import { daoSelector } from 'selectors/daos'
 import { cw20TokenInfo } from 'selectors/treasury'
