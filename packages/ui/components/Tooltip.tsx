@@ -3,7 +3,7 @@ import { FC, ReactNode } from 'react'
 import ReachTooltip from '@reach/tooltip'
 
 export interface TooltipProps {
-  label: string | undefined
+  label: ReactNode | undefined
   children: ReactNode
 }
 
