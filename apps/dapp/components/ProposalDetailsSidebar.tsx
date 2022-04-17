@@ -292,7 +292,8 @@ export const ProposalDetailsVoteStatus = ({
       : undefined
 
   // When only abstain votes have been cast and there is no quorum,
-  // position abstain to the left of Yes and No above the progress bar.
+  // align the abstain progress bar to the right to line up with Abstain
+  // text.
   const onlyAbstain = yesVotes === 0 && noVotes === 0 && abstainVotes > 0
 
   return (
