@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-import { ProposalLine } from '@dao-dao/ui'
+import { ProposalLine, Button } from '@dao-dao/ui'
 import { DownloadIcon } from '@heroicons/react/outline'
 
 import {
@@ -156,17 +156,19 @@ export function ProposalList({
         })}
       </ul>
       {showLoadMore && (
-        <button
-          className="mt-3 font-mono text-sm text-left normal-case btn btn-sm btn-outline"
+        <Button
+          className="mt-3 font-mono border border-inactive"
           onClick={() => {
             const proposal = propList && propList[propList.length - 1]
             if (proposal) {
               setStartBefore(proposal.id)
             }
           }}
+          size="sm"
+          variant="secondary"
         >
           Load more <DownloadIcon className="inline ml-1 w-5 h-5" />
-        </button>
+        </Button>
       )}
     </div>
   )

@@ -36,7 +36,7 @@ function ContractCardBase({
   return (
     <Link href={href}>
       <a>
-        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline shadow hover:shadow-md hover:shadow-brand transition-shadow">
+        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline">
           <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="relative">

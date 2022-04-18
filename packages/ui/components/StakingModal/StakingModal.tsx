@@ -82,6 +82,9 @@ export const StakingModal: FC<StakingModalProps> = ({
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
 
   const invalidAmount = (): string | undefined => {
+    if (mode === StakingMode.Claim) {
+      return claimableTokens > 0 ? undefined : "Can't claim zero tokens"
+    }
     if (amount <= 0) {
       return `Can't ${stakingModeString(mode)} zero tokens.`
     }
@@ -145,7 +148,7 @@ export const StakingModal: FC<StakingModalProps> = ({
             tokenDecimals={tokenDecimals}
           />
         )}
-        {mode === StakingMode.Claim && canClaim && (
+        {mode === StakingMode.Claim && (
           <ClaimBody
             amount={claimableTokens}
             tokenDecimals={tokenDecimals}
@@ -157,7 +160,12 @@ export const StakingModal: FC<StakingModalProps> = ({
             error={error}
             loading={loading}
             mode={mode}
-            onClick={() => onAction(mode, amount)}
+            onClick={() =>
+              onAction(
+                mode,
+                mode === StakingMode.Claim ? claimableTokens : amount
+              )
+            }
           />
         </div>
       </div>
@@ -243,7 +251,7 @@ const ClaimBody: FC<ClaimBodyProps> = ({
       {tokenSymbol} avaliable
     </h2>
     <p className="mt-3 mb-3 text-sm">
-      Claim them to increase your voting power.
+      Claim them to receive your unstaked tokens.
     </p>
   </div>
 )

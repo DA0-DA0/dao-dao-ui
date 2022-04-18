@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { MemberCheck, Pencil } from '@dao-dao/icons'
 import {
@@ -44,6 +44,7 @@ import {
   walletStakedTokenBalance,
   walletTokenBalance,
   walletTokenBalanceLoading,
+  walletTokenBalanceUpdateCountAtom,
 } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { cosmWasmClientRouter } from 'util/chainClientRouter'
@@ -69,17 +70,16 @@ function DaoHome() {
   )
   const blockHeight = useRecoilValue(getBlockHeight)
   const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const initialClaimsAvaliable = stuff.claims
+  const claimsAvaliable = stuff.claims
     .filter((c) => claimAvaliable(c, blockHeight))
     .reduce((p, n) => p + Number(n.amount), 0)
-
-  // If a claim becomes avaliable while the page is open we need a way to update
-  // the number of claims avaliable.
-  const [claimsAvaliable, setClaimsAvaliable] = useState(initialClaimsAvaliable)
 
   const wallet = useRecoilValue(walletAddress)
   const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
     walletTokenBalanceLoading(wallet)
+  )
+  const setWalletTokenBalanceUpdateCount = useSetRecoilState(
+    walletTokenBalanceUpdateCountAtom(wallet)
   )
 
   const [showStaking, setShowStaking] = useState(false)
@@ -255,7 +255,9 @@ function DaoHome() {
           </div>
         ) : null}
         <ClaimsPendingList
-          incrementClaimsAvaliable={(n) => setClaimsAvaliable((a) => a + n)}
+          incrementClaimsAvaliable={(_) =>
+            setWalletTokenBalanceUpdateCount((n) => n + 1)
+          }
           stakingAddress={daoInfo.staking_contract}
           tokenInfo={tokenInfo}
         />

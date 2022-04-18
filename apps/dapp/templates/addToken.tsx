@@ -118,9 +118,9 @@ export const TokenSelector = ({
       </div>
       <TokenInfoDisplay
         address={tokenAddress}
-        clearError={() => clearErrors(getLabel('to'))}
+        clearError={() => clearErrors(getLabel('address'))}
         setError={(message) =>
-          setError(getLabel('to'), { type: 'manual', message })
+          setError(getLabel('address'), { type: 'manual', message })
         }
       />
     </div>

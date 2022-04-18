@@ -25,7 +25,8 @@ export function convertDenomToMicroDenomWithDecimals(
   if (typeof amount === 'string') {
     amount = Number(amount)
   }
-  amount = amount * Math.pow(10, decimals)
+  // Need to round. Example: `8.029409 * Math.pow(10, 6)`.
+  amount = Math.round(amount * Math.pow(10, decimals))
   return isNaN(amount) ? '0' : String(amount)
 }
 

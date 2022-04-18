@@ -8,6 +8,8 @@ import {
   claimAvaliable,
 } from '@dao-dao/utils'
 
+import { BalanceIcon } from '../ContractView/BalanceIcon'
+
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 
@@ -81,22 +83,27 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
   return (
-    <div className="my-2">
+    <div className="my-2 flex justify-between gap-2 items-center p-4 my-2 bg-primary rounded-lg">
+      <p className="mt-1 flex gap-2 items-center">
+        <BalanceIcon />
+        {convertMicroDenomToDenomWithDecimals(
+          claim.amount,
+          tokenInfo.decimals
+        )}{' '}
+        ${tokenInfo.symbol}
+      </p>
+
       {avaliable ? (
         <p className="font-mono text-sm text-secondary">
           Avaliable
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
-        <div className="flex flex-wrap gap-2 font-mono text-sm text-secondary">
+        <div className="flex flex-wrap gap-2 text-caption">
           <p>{durationRemainingForHumans || '0'} left</p>
           <p>/ {durationForHumans}</p>
         </div>
       )}
-      <p className="mt-1">
-        {convertMicroDenomToDenomWithDecimals(claim.amount, tokenInfo.decimals)}
-        ${tokenInfo.symbol}
-      </p>
     </div>
   )
 }

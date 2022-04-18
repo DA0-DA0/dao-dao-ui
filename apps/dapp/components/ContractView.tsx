@@ -5,9 +5,9 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import {
   Button,
   TreasuryBalances as StatelessTreasuryBalances,
+  Tooltip,
 } from '@dao-dao/ui'
 import { NATIVE_DECIMALS, nativeTokenDecimals } from '@dao-dao/utils'
-import Tooltip from '@reach/tooltip'
 
 import { isMemberSelector } from 'selectors/cosm'
 import {

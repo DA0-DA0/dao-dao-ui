@@ -40,10 +40,12 @@ function executeUnstakeAction(
   if (!signingClient) {
     toast.error('Please connect your wallet')
   }
+
   const amount = convertDenomToMicroDenomWithDecimals(
     denomAmount,
     tokenInfo.decimals
   )
+
   setLoading(true)
   signingClient
     ?.execute(

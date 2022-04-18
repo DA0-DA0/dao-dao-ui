@@ -181,6 +181,7 @@ export interface TemplateComponentProps {
   multisig?: boolean
   readOnly?: boolean
 }
+
 export type TemplateComponent = React.FunctionComponent<TemplateComponentProps>
 
 // Defines a new template.
