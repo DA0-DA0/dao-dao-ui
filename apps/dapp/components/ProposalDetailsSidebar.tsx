@@ -661,7 +661,7 @@ export const ProposalDetailsVoteStatus = ({
         </div>
       )}
 
-      {abstainVotes === turnoutTotal && (
+      {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">All abstain clarification</p>
 
