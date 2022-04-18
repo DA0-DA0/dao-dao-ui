@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { Logo } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import {
   ArrowRightIcon,
@@ -12,7 +13,6 @@ import { MenuIcon } from '@heroicons/react/outline'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { showBetaNoticeAtom } from 'atoms/status'
-import { Logo } from 'components/Logo'
 import ThemeToggle from 'components/ThemeToggle'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'

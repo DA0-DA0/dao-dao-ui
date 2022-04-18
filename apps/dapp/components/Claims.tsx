@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
+import { LogoNoBorder } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
@@ -14,8 +15,6 @@ import { CheckIcon } from '@heroicons/react/outline'
 
 import { unstakingDuration } from 'selectors/daos'
 import { getBlockHeight, walletClaims } from 'selectors/treasury'
-
-import { LogoNoBorder } from './Logo'
 
 export function claimAvaliable(claim: Claim, blockHeight: number) {
   if ('at_height' in claim.release_at) {

@@ -8,12 +8,11 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
-import { DEFAULT_THEME_NAME, ThemeProvider } from '@dao-dao/ui'
+import { DEFAULT_THEME_NAME, ThemeProvider, LoadingScreen } from '@dao-dao/ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'
 import { HomepageLayout } from 'components/HomepageLayout'
 import SidebarLayout from 'components/Layout'
-import LoadingScreen from 'components/LoadingScreen'
 import Notifications from 'components/Notifications'
 
 function MyApp({ Component, pageProps }: AppProps) {

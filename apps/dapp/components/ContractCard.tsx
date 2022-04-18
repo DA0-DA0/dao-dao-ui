@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import Link from 'next/link'
 
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
+import { Logo } from '@dao-dao/ui'
 import {
   CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
@@ -12,8 +13,6 @@ import {
 } from '@dao-dao/utils'
 import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
-
-import { Logo } from './Logo'
 
 function ContractCardBase({
   title,

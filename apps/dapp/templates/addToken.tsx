@@ -2,11 +2,15 @@ import { useEffect } from 'react'
 
 import { useRecoilValueLoadable } from 'recoil'
 
-import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
+import {
+  AddressInput,
+  InputErrorMessage,
+  InputLabel,
+  LogoNoBorder,
+} from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
-import { LogoNoBorder } from '@components/Logo'
 import { tokenConfig } from 'selectors/daos'
 import { Config } from 'util/contractConfigWrapper'
 import { validateContractAddress, validateRequired } from 'util/formValidation'

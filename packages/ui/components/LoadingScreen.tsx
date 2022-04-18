@@ -1,6 +1,6 @@
-import { Logo } from 'components/Logo'
+import { Logo } from './Logo'
 
-function LoadingScreen() {
+export const LoadingScreen = () => {
   return (
     <div className="flex justify-center items-center w-screen h-screen">
       <div className="inline-block animate-spin">
@@ -9,5 +9,3 @@ function LoadingScreen() {
     </div>
   )
 }
-
-export default LoadingScreen

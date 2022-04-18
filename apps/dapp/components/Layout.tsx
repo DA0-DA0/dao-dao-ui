@@ -8,11 +8,11 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
+import { LoadingScreen } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { Keplr } from '@keplr-wallet/types'
 
 import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
-import LoadingScreen from 'components/LoadingScreen'
 import { SidebarLayout } from 'components/SidebarLayout'
 import {
   kelprOfflineSigner,

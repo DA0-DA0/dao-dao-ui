@@ -1,9 +1,11 @@
 import {
   Expiration,
+  Status,
   Threshold as DaoThreshold,
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
+import { secondsToWdhms } from './time'
 
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
@@ -130,4 +132,34 @@ export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
   const endSeconds = end / 1000000000
 
   return endSeconds - nowSeconds
+}
+
+export const zeroPad = (num: number, target: number) => {
+  const s = num.toString()
+  if (s.length > target) {
+    return s
+  }
+  return '0'.repeat(target - s.length) + s
+}
+
+export const getProposalEnd = (exp: Expiration, status: Status) => {
+  if (status != 'open' && status != 'pending') {
+    return 'Completed'
+  }
+  if (exp && 'at_time' in exp) {
+    const secondsFromNow = expirationAtTimeToSecondsFromNow(exp)
+    // Type check, but should never happen.
+    if (secondsFromNow === undefined) {
+      return ''
+    }
+
+    if (secondsFromNow <= 0) {
+      return 'Completed'
+    } else {
+      return secondsToWdhms(secondsFromNow)
+    }
+  }
+  // Not much we can say about proposals that expire at a block
+  // height / never.
+  return ''
 }

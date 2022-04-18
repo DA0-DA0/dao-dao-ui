@@ -6,7 +6,17 @@ import { useRouter } from 'next/router'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
-import { useThemeContext } from '@dao-dao/ui'
+import {
+  CopyToClipboard,
+  useThemeContext,
+  GradientHero,
+  HorizontalInfo,
+  HorizontalInfoSection,
+  ContractHeader,
+  StarButton,
+  BalanceIcon,
+  Breadcrumbs,
+} from '@dao-dao/ui'
 import {
   ScaleIcon,
   UserGroupIcon,
@@ -15,17 +25,9 @@ import {
 
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import {
-  ContractProposalsDispaly,
-  GradientHero,
-  HeroContractHorizontalInfo,
-  HeroContractHeader,
-  StarButton,
-  BalanceIcon,
-  HeroContractHorizontalInfoSection,
-} from 'components/ContractView'
+import { ContractProposalsDispaly } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
+import { contractInstantiateTime } from 'selectors/contracts'
 import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
 import {
   listMembers,
@@ -89,6 +91,7 @@ function MultisigHome() {
   const contractAddress = router.query.contractAddress as string
 
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
+  const established = useRecoilValue(contractInstantiateTime(contractAddress))
 
   const weightTotal = useRecoilValue(totalWeight(contractAddress))
   const visitorWeight = useRecoilValue(memberWeight(contractAddress))
@@ -120,28 +123,28 @@ function MultisigHome() {
             />
           </div>
 
-          <HeroContractHeader
-            address={contractAddress}
+          <ContractHeader
             description={sigInfo.config.description}
-            imgUrl={sigInfo.config.image_url}
+            established={established}
+            imgUrl={sigInfo.config.image_url || undefined}
             name={sigInfo.config.name}
           />
 
           <div className="mt-2">
-            <HeroContractHorizontalInfo>
-              <HeroContractHorizontalInfoSection>
+            <HorizontalInfo>
+              <HorizontalInfoSection>
                 <ScaleIcon className="inline w-4" />
                 {thresholdString(sigInfo.config.threshold)}
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
+              </HorizontalInfoSection>
+              <HorizontalInfoSection>
                 <VariableIcon className="inline w-4" />
                 Total votes: {weightTotal}
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
+              </HorizontalInfoSection>
+              <HorizontalInfoSection>
                 <UserGroupIcon className="inline w-4" />
                 Total members: {memberList.length}
-              </HeroContractHorizontalInfoSection>
-            </HeroContractHorizontalInfo>
+              </HorizontalInfoSection>
+            </HorizontalInfo>
           </div>
 
           <MultisigContractInfo address={contractAddress} />

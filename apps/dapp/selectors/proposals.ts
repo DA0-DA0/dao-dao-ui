@@ -60,7 +60,7 @@ export enum WalletVote {
 }
 type WalletVoteValue = `${WalletVote}`
 
-export const onChainProposalsSelector = selectorFamily<
+export const proposalsSelector = selectorFamily<
   ProposalResponse[],
   {
     contractAddress: string
@@ -336,61 +336,6 @@ export const votingPowerAtHeightSelector = selectorFamily<
         })
       )
       return balance
-    },
-})
-
-export const draftProposalsSelector = selectorFamily<ProposalMap, string>({
-  key: 'draftProposals',
-  get:
-    (contractAddress) =>
-    ({ get }) => {
-      return get(proposalMapSelector(contractAddress))
-    },
-  set:
-    (contractAddress) =>
-    ({ set }, newValue) => {
-      set(proposalMapSelector(contractAddress), newValue)
-    },
-})
-
-export const proposalsSelector = selectorFamily<
-  ExtendedProposalResponse[],
-  {
-    contractAddress: string
-    startBefore: number
-    limit: number
-  }
->({
-  key: 'proposals',
-  get:
-    ({ contractAddress, startBefore, limit }) =>
-    async ({ get }) => {
-      let draftProposalItems: ExtendedProposalResponse[] = []
-      // Add in draft proposals:
-      const draftProposals = get(draftProposalsSelector(contractAddress))
-      if (draftProposals) {
-        draftProposalItems = Object.values(draftProposals).map((draft) => {
-          const proposalResponse: ExtendedProposalResponse = {
-            ...EmptyProposalResponse,
-            ...draft.proposal,
-            status: 'draft' as any,
-            draftId: draft.id,
-            threshold: { ...EmptyThresholdResponse },
-            total_weight: 0,
-          }
-          return proposalResponse
-        })
-      }
-
-      const onChainProposalList = get(
-        onChainProposalsSelector({
-          contractAddress,
-          startBefore,
-          limit,
-        })
-      )
-
-      return (draftProposalItems ?? []).concat(onChainProposalList)
     },
 })
 

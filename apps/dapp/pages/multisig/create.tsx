@@ -9,6 +9,8 @@ import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { Airplane } from '@dao-dao/icons'
 import { Button, Tooltip } from '@dao-dao/ui'
 import {
+  GradientHero,
+  Breadcrumbs,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
@@ -21,13 +23,11 @@ import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
 import { PlusIcon } from '@heroicons/react/outline'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
 
-import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   multisigCreateTooltipsDefault,
   multisigCreateTooltipsGetter,

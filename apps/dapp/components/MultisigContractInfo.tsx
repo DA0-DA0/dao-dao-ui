@@ -1,12 +1,12 @@
 import { useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
+import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
 import { humanReadableDuration, thresholdString } from '@dao-dao/utils'
 import { ClockIcon } from '@heroicons/react/outline'
 
 import { sigSelector } from 'selectors/multisigs'
 
-import { GovInfoListItem } from './ContractView'
 import { DaoTreasury } from './DaoTreasury'
 
 export function MultisigContractInfo({ address }: { address: string }) {

@@ -1,10 +1,14 @@
-import { ReactNode } from 'react'
+import { ReactNode, FC } from 'react'
 
-import { useThemeContext } from '@dao-dao/ui'
+import { useThemeContext } from '../theme'
 
 import { LogoNoBorder } from './Logo'
 
-export function GradientWrapper({ children }: { children: ReactNode }) {
+export interface GradientWrapperProps {
+  children: ReactNode
+}
+
+export const GradientWrapper: FC<GradientWrapperProps> = ({ children }) => {
   const theme = useThemeContext()
   const bg =
     theme.theme === 'dark'

@@ -3,7 +3,8 @@ import { useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
-import { Breadcrumbs } from 'components/Breadcrumbs'
+import { Breadcrumbs } from '@dao-dao/ui'
+
 import { ProposalDetails } from 'components/ProposalDetails'
 import {
   ProposalDetailsSidebar,

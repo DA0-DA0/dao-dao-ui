@@ -6,25 +6,27 @@ import { useRouter } from 'next/router'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { MemberCheck, Pencil } from '@dao-dao/icons'
-import { useThemeContext, StakingMode } from '@dao-dao/ui'
+import {
+  useThemeContext,
+  StakingMode,
+  GradientHero,
+  HorizontalInfo,
+  ContractHeader,
+  StarButton,
+  HorizontalInfoSection,
+  BalanceCard,
+  Breadcrumbs,
+} from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
-import {
-  BalanceCard,
-  ContractProposalsDispaly,
-  GradientHero,
-  HeroContractHorizontalInfo,
-  HeroContractHeader,
-  StarButton,
-  HeroContractHorizontalInfoSection,
-} from 'components/ContractView'
+import { ContractProposalsDispaly } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
 import { StakingModal } from 'components/StakingModal'
+import { contractInstantiateTime } from 'selectors/contracts'
 import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
 import {
   daoSelector,
@@ -50,6 +52,9 @@ function DaoHome() {
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
+  const establishedDate = useRecoilValue(
+    contractInstantiateTime(contractAddress)
+  )
   const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const { member } = useRecoilValue(isMemberSelector(contractAddress))
@@ -123,32 +128,32 @@ function DaoHome() {
             </div>
           </div>
 
-          <HeroContractHeader
-            address={contractAddress}
+          <ContractHeader
             description={daoInfo.config.description}
-            imgUrl={daoInfo.config.image_url}
+            established={establishedDate}
+            imgUrl={daoInfo.config.image_url || undefined}
             name={daoInfo.config.name}
           />
 
           <div className="mt-2">
-            <HeroContractHorizontalInfo>
-              <HeroContractHorizontalInfoSection>
+            <HorizontalInfo>
+              <HorizontalInfoSection>
                 <UsersIcon className="inline w-4" />
                 {convertMicroDenomToDenomWithDecimals(
                   tokenInfo.total_supply,
                   tokenInfo.decimals
                 ).toLocaleString()}{' '}
                 ${tokenInfo?.symbol} total supply
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
+              </HorizontalInfoSection>
+              <HorizontalInfoSection>
                 <LibraryIcon className="inline w-4" />
                 {stakedPercent}% ${tokenInfo?.symbol} staked
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
+              </HorizontalInfoSection>
+              <HorizontalInfoSection>
                 <Pencil className="inline" fill="currentColor" />
                 {proposalsTotal} proposals created
-              </HeroContractHorizontalInfoSection>
-            </HeroContractHorizontalInfo>
+              </HorizontalInfoSection>
+            </HorizontalInfo>
           </div>
 
           <DaoContractInfo address={contractAddress} />

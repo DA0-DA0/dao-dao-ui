@@ -12,6 +12,7 @@ import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
 import { Button, Tooltip } from '@dao-dao/ui'
 import {
   AddressInput,
+  Breadcrumbs,
   ImageSelector,
   ImageSelectorModal,
   InputErrorMessage,
@@ -21,6 +22,7 @@ import {
   TextInput,
   ToggleInput,
   TokenAmountInput,
+  GradientHero,
 } from '@dao-dao/ui'
 import {
   DAO_CODE_ID,
@@ -31,13 +33,11 @@ import {
 import { PlusIcon } from '@heroicons/react/outline'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   daoCreateTooltipsGetter,
   daoCreateTooltipsDefault,

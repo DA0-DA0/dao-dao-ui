@@ -5,7 +5,7 @@ import {
   ForwardedRef,
 } from 'react'
 
-import { Logo } from '@dao-dao/dapp/components/Logo'
+import { Logo } from '../Logo'
 
 export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode

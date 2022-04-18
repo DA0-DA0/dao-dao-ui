@@ -7,10 +7,9 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { CopyToClipboard } from '@dao-dao/ui'
+import { CopyToClipboard, Breadcrumbs } from '@dao-dao/ui'
 import toast from 'react-hot-toast'
 
-import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { proposalsCreatedAtom } from 'atoms/proposals'
 import {
