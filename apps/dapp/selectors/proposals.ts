@@ -8,25 +8,11 @@ import {
 } from '@dao-dao/types/contracts/cw3-dao'
 
 import {
-  contractProposalMapAtom,
   proposalsRequestIdAtom,
   proposalUpdateCountAtom,
 } from 'atoms/proposals'
-import { MessageMap, MessageMapEntry } from 'models/proposal/messageMap'
-import {
-  EmptyProposalResponse,
-  EmptyProposalTallyResponse,
-  EmptyThresholdResponse,
-} from 'models/proposal/proposal'
-import {
-  ContractProposalMap,
-  ExtendedProposalResponse,
-  ProposalKey,
-  ProposalMap,
-  ProposalMapItem,
-  ProposalMessageKey,
-} from 'types/proposals'
 
+import { EmptyProposalTallyResponse } from '../models/proposal/proposal'
 import { cosmWasmClient } from './cosm'
 import { daoSelector } from './daos'
 import { sigSelector } from './multisigs'
@@ -90,7 +76,7 @@ export const proposalsSelector = selectorFamily<
 
 export const proposalSelector = selectorFamily<
   ProposalResponse | undefined,
-  { contractAddress: string; proposalId: string | number }
+  { contractAddress: string; proposalId: number }
 >({
   key: 'proposalSelector',
   get:
@@ -99,20 +85,10 @@ export const proposalSelector = selectorFamily<
       proposalId,
     }: {
       contractAddress: string
-      proposalId: string | number
+      proposalId: number
     }) =>
     async ({ get }) => {
-      if (typeof proposalId === 'string') {
-        const draftProposal = get(
-          draftProposalSelector({ contractAddress, proposalId })
-        )
-        if (draftProposal?.proposal) {
-          return draftProposal?.proposal
-        }
-      }
-      if (typeof proposalId === 'number') {
-        get(proposalUpdateCountAtom({ contractAddress, proposalId }))
-      }
+      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
       const client = get(cosmWasmClient)
       try {
@@ -170,25 +146,6 @@ export const walletVoteSelector = selectorFamily<
       if (!client || !wallet) {
         return undefined
       }
-      return vote.vote.vote
-    },
-})
-
-export const proposalExecutionTXHashSelector = selectorFamily<
-  string | null,
-  { contractAddress: string; proposalId: number }
->({
-  key: 'proposalTXHashSelector',
-  get:
-    ({ contractAddress, proposalId }) =>
-    async ({ get }) => {
-      // Refresh when new updates occur.
-      get(proposalUpdateCountAtom({ contractAddress, proposalId }))
-
-      const client = get(cosmWasmClient)
-      const proposal = get(proposalSelector({ contractAddress, proposalId }))
-      // No TX Hash if proposal not yet executed.
-      if (!client || proposal?.status !== 'executed') return null
 
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
@@ -291,9 +248,7 @@ export const proposalTallySelector = selectorFamily<
         return tally
       } catch (e) {
         console.error(e)
-        return {
-          ...EmptyProposalTallyResponse,
-        }
+        return { ...EmptyProposalTallyResponse }
       }
     },
 })
@@ -336,91 +291,5 @@ export const votingPowerAtHeightSelector = selectorFamily<
         })
       )
       return balance
-    },
-})
-
-export const proposalMapSelector = selectorFamily<ProposalMap, string>({
-  key: 'proposalMap',
-  get:
-    (contractAddress) =>
-    ({ get }) => {
-      const contractProposalMap = get(contractProposalMapAtom)
-      return contractProposalMap[contractAddress]
-    },
-  set:
-    (contractAddress) =>
-    ({ get, set }, newValue) => {
-      const contractProposalMap = get(contractProposalMapAtom)
-      const updatedMap: ContractProposalMap = {
-        ...contractProposalMap,
-        [contractAddress]: newValue,
-      } as unknown as ContractProposalMap
-      set(contractProposalMapAtom, updatedMap)
-    },
-})
-
-export const draftProposalSelector = selectorFamily<
-  ProposalMapItem | undefined,
-  ProposalKey
->({
-  key: 'draftProposal',
-  get:
-    ({ contractAddress, proposalId }) =>
-    ({ get }) => {
-      const draftProposals = get(proposalMapSelector(contractAddress))
-      return draftProposals ? draftProposals[proposalId] : undefined
-    },
-  set:
-    ({ contractAddress, proposalId }) =>
-    ({ set, get }, newValue) => {
-      if (newValue) {
-        const draftProposals = get(proposalMapSelector(contractAddress))
-        const updatedDraftProposals: ProposalMap = {
-          ...draftProposals,
-          [proposalId]: newValue as any,
-        }
-        set(proposalMapSelector(contractAddress), updatedDraftProposals)
-      }
-    },
-})
-
-export const draftProposalMessageSelector = selectorFamily<
-  MessageMapEntry | undefined,
-  ProposalMessageKey
->({
-  key: 'draftProposalMessage',
-  get:
-    ({ contractAddress, proposalId, messageId }) =>
-    ({ get }) => {
-      const draftProposal = get(
-        draftProposalSelector({ contractAddress, proposalId })
-      )
-      return draftProposal?.messages
-        ? draftProposal.messages[messageId]
-        : undefined
-    },
-  set:
-    ({ contractAddress, proposalId, messageId }) =>
-    ({ set, get }, newValue) => {
-      if (!newValue) {
-        return
-      }
-      const draftProposal = get(
-        draftProposalSelector({ contractAddress, proposalId })
-      )
-      if (draftProposal) {
-        const messages: MessageMap = {
-          ...draftProposal?.messages,
-          [messageId]: newValue,
-        } as any
-        const updatedProposal: ProposalMapItem = {
-          ...draftProposal,
-          messages,
-        }
-        set(
-          draftProposalSelector({ contractAddress, proposalId }),
-          updatedProposal
-        )
-      }
     },
 })

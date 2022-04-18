@@ -1,8 +1,6 @@
 import { atom, atomFamily } from 'recoil'
 
-import { ContractProposalMap, ExtendedProposalResponse } from 'types/proposals'
-
-import { localStorageEffect } from './localStorageEffect'
+import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 
 // By depending on this atom, the selector for retrieving the list
 // of on-chain proposals can know when it's time to actually re-calculate
@@ -22,7 +20,7 @@ export const proposalsRequestStartBeforeAtom = atom<number>({
 })
 
 // The loaded list of proposals.
-export const proposalListAtom = atomFamily<ExtendedProposalResponse[], string>({
+export const proposalListAtom = atomFamily<ProposalResponse[], string>({
   key: 'proposalList',
   default: [],
 })
@@ -53,22 +51,4 @@ export const proposalUpdateCountAtom = atomFamily<
 export const proposalsUpdated = atomFamily<number[], string>({
   key: 'proposalsUpdatedAtom',
   default: [],
-})
-
-// The next numeric ID for creating draft proposals. Saved to localstorage
-// and incremented so that we don't end up with multiple draft proposals and
-// multisigs with the same ID.
-export const nextDraftProposalIdAtom = atom<number>({
-  key: 'nextDraftProposalId',
-  default: 10000,
-  effects_UNSTABLE: [localStorageEffect<number>('nextDraftProposalId')],
-})
-
-// The map of draft proposals associated with a given contract.
-export const contractProposalMapAtom = atom<ContractProposalMap>({
-  key: 'contractProposalMap',
-  default: {},
-  effects_UNSTABLE: [
-    localStorageEffect<ContractProposalMap>('contractProposalMap'),
-  ],
 })

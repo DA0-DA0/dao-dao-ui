@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-import { Button, Modal } from '@dao-dao/ui'
+import { Button } from '../Button'
+import { Modal } from '../Modal'
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import {

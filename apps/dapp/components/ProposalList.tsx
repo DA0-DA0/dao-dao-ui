@@ -4,7 +4,6 @@ import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { ProposalLine } from '@dao-dao/ui'
-
 import { DownloadIcon } from '@heroicons/react/outline'
 
 import {

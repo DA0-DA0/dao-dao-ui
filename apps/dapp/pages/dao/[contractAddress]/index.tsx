@@ -17,10 +17,13 @@ import {
   BalanceCard,
   Breadcrumbs,
 } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  claimAvaliable,
+} from '@dao-dao/utils'
 import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
-import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
+import { ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { ContractProposalsDispaly } from 'components/ContractView'

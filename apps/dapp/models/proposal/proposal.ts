@@ -9,8 +9,6 @@ import {
   Votes,
 } from '@dao-dao/types/contracts/cw3-dao'
 
-import { ProposalMapItem } from 'types/proposals'
-
 export const MEMO_MAX_LEN = 255
 
 const EmptyThreshold: Threshold = {
@@ -41,12 +39,6 @@ export const EmptyProposal: Proposal = {
   threshold: { ...EmptyThreshold },
   total_weight: '',
   votes: { ...EmptyVotes },
-}
-
-export const EmptyProposalItem: ProposalMapItem = {
-  proposal: EmptyProposal,
-  id: '',
-  draft: true,
 }
 
 export const EmptyThresholdResponse: ThresholdResponse = {

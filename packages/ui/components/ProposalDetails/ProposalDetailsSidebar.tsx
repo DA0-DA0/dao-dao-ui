@@ -200,14 +200,23 @@ export const ProposalDetailsVoteStatus: FC<ProposalDetailsVoteStatusProps> = ({
   const totalNoPercent = (noVotes / totalWeight) * 100
   const totalAbstainPercent = (abstainVotes / totalWeight) * 100
 
+  // When only abstain votes have been cast and there is no quorum,
+  // align the abstain progress bar to the right to line up with Abstain
+  // text.
+  const onlyAbstain = yesVotes === 0 && noVotes === 0 && abstainVotes > 0
+
   const expiresInSeconds =
     proposal.expires && 'at_time' in proposal.expires
       ? expirationAtTimeToSecondsFromNow(proposal.expires)
       : undefined
 
+  // TODO: Change this wen v1 contracts launch, since the conditions
+  // will change. In v1, all abstain fails instead of passes.
   const thresholdReached =
     !!threshold &&
-    (quorum ? turnoutYesPercent : totalYesPercent) >= threshold.percent
+    yesVotes >=
+      ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
+        (threshold.percent / 100)
   const quorumMet = !!quorum && turnoutPercent >= quorum.percent
 
   const helpfulStatusText =
@@ -463,6 +472,7 @@ export const ProposalDetailsVoteStatus: FC<ProposalDetailsVoteStatusProps> = ({
 
             <div className="my-2">
               <Progress
+                alignEnd={onlyAbstain}
                 rows={[
                   {
                     thickness: 3,
@@ -584,7 +594,7 @@ export const ProposalDetailsVoteStatus: FC<ProposalDetailsVoteStatusProps> = ({
         </div>
       )}
 
-      {abstainVotes === turnoutTotal && (
+      {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">All abstain clarification</p>
 

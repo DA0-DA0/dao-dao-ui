@@ -73,11 +73,11 @@ function WalletConnect() {
 
   return (
     <StatelessWalletConnect
+      handleConnect={handleConnect}
       walletAddress={walletAddress}
-      walletName={walletName}
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
-      handleConnect={handleConnect}
+      walletName={walletName}
     />
   )
 }
