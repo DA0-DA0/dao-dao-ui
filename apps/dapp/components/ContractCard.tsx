@@ -2,25 +2,19 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 
-import { PlusIcon, StarIcon as StarIconOutline } from '@heroicons/react/outline'
-import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
-
-import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenomWithDecimals,
-} from 'util/conversion'
-
+import { Dao, Pencil, Votes } from '@dao-dao/icons'
+import { Logo } from '@dao-dao/ui'
 import {
   CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-} from '../util/constants'
-import SvgDao from './icons/Dao'
-import SvgPencil from './icons/Pencil'
-import SvgVotes from './icons/Votes'
-import { Logo } from './Logo'
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
+import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
+import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
-function DIYLogo({
+function ContractCardBase({
   title,
   body,
   href,
@@ -42,7 +36,7 @@ function DIYLogo({
   return (
     <Link href={href}>
       <a>
-        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline shadow hover:shadow-md hover:shadow-brand transition-shadow">
+        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline">
           <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="relative">
@@ -68,7 +62,7 @@ function DIYLogo({
           <div className="flex flex-col gap-1 items-left">
             {balance && (
               <p className="text-sm">
-                <SvgDao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+                <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
                 {convertMicroDenomToDenomWithDecimals(
                   balance,
                   NATIVE_DECIMALS
@@ -78,19 +72,13 @@ function DIYLogo({
             )}
             {proposals != undefined && (
               <p className="text-sm">
-                <SvgPencil
-                  className="inline mr-2 mb-1 w-4"
-                  fill="currentColor"
-                />
+                <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
                 {proposals} proposal{weight != 1 && 's'}
               </p>
             )}
             {weight != undefined && (
               <p className="text-sm text-valid text-success">
-                <SvgVotes
-                  className="inline mr-2 mb-1 h-5"
-                  fill="currentColor"
-                />
+                <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
                 {weight} vote{weight != 1 && 's'}
               </p>
             )}
@@ -124,7 +112,7 @@ export function ContractCard({
 }) {
   return (
     <div className="relative">
-      <DIYLogo
+      <ContractCardBase
         balance={balance}
         body={description}
         href={href}
@@ -144,7 +132,7 @@ export function ContractCard({
         ) : (
           <Logo alt={name} height={80} width={80} />
         )}
-      </DIYLogo>
+      </ContractCardBase>
       <button
         className="absolute top-[18px] right-[18px] text-brand"
         onClick={(_e) => onPin()}
@@ -169,35 +157,5 @@ export function LoadingContractCard() {
         </div>
       </div>
     </div>
-  )
-}
-
-const EmptyStateContractCard = ({
-  title,
-  description,
-  backgroundUrl,
-  href,
-}: {
-  title: string
-  description: string
-  backgroundUrl: string
-  href: string
-}) => {
-  return (
-    <Link href={href} passHref>
-      <a className="overflow-hidden w-max max-w-[400px] rounded-md border border-inactive hover:border-brand transition">
-        <div
-          className={'h-72 bg-no-repeat bg-cover opacity-75'}
-          style={{ backgroundImage: `url(${backgroundUrl})` }}
-        />
-        <div className="py-4 px-6">
-          <div className="flex gap-2 items-center mb-2 primary-text">
-            <PlusIcon className="w-4" />
-            {title}
-          </div>
-          <div className="body-text">{description}</div>
-        </div>
-      </a>
-    </Link>
   )
 }

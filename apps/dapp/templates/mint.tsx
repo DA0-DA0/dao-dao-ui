@@ -1,20 +1,18 @@
 import { useRecoilValue } from 'recoil'
 
+import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { NumberInput } from '@components/input/NumberInput'
 import {
   Config,
   contractConfigSelector,
   ContractConfigWrapper,
 } from 'util/contractConfigWrapper'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-} from 'util/conversion'
 import {
   validateAddress,
   validatePositive,

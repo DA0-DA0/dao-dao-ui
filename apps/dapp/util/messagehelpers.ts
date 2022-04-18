@@ -1,5 +1,3 @@
-import { useRecoilValue } from 'recoil'
-
 import { toBase64, toAscii } from '@cosmjs/encoding'
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
@@ -8,7 +6,6 @@ import {
   StakingMsg,
   DistributionMsg,
   CosmosMsgFor_Empty,
-  ExecuteMsg,
   InstantiateMsg as DaoInstantiateMsg,
   Cw20Coin,
   Duration,
@@ -20,21 +17,19 @@ import {
   InstantiateMsg as MultisigInstantiateMsg,
   Member,
 } from '@dao-dao/types/contracts/cw3-multisig'
+import {
+  C4_GROUP_CODE_ID,
+  CW20_CODE_ID,
+  STAKE_CODE_ID,
+  convertDenomToHumanReadableDenom,
+} from '@dao-dao/utils'
 
 import { MintMsg } from 'types/messages'
-import { ProposalMapItem } from 'types/proposals'
 
 import {
   MessageMapEntry,
   ProposalMessageType,
 } from '../models/proposal/messageMap'
-import { cw20TokenInfo } from '../selectors/treasury'
-import { C4_GROUP_CODE_ID, CW20_CODE_ID, STAKE_CODE_ID } from './constants'
-import { convertDenomToContractReadableDenom } from './conversion'
-import {
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-} from './conversion'
 
 const DENOM = convertDenomToHumanReadableDenom(
   process.env.NEXT_PUBLIC_STAKING_DENOM || ''
@@ -355,45 +350,6 @@ export interface MessageAction {
   isEnabled: () => boolean
 }
 
-export function labelForAmount(amount: Coin[]): string {
-  if (!amount?.length) {
-    return ''
-  }
-  return amount
-    .map((coin) => `${coin.amount !== '' ? coin.amount : '0'} ${coin.denom}`)
-    .join(', ')
-}
-
-export function labelForMessage(
-  msg?: CosmosMsgFor_Empty | ExecuteMsg | MintExecuteMsg,
-  defaultMessage = ''
-): string {
-  if (!msg) {
-    return defaultMessage
-  }
-  // TODO(gavin.doughtie): i18n
-  const anyMsg: any = msg
-  let messageString = ''
-  if (anyMsg.bank) {
-    if (anyMsg.bank.send) {
-      messageString = `${labelForAmount(anyMsg.bank.send.amount)} -> ${
-        anyMsg.bank.send.to_address
-      }`
-    } else if (anyMsg.bank.burn) {
-      messageString = `${labelForAmount(anyMsg.bank.burn.amount)} -> 🔥`
-    }
-  } else if (anyMsg.mint) {
-    messageString = `${anyMsg.mint.amount} -> ${anyMsg.mint.recipient}`
-  } else if (anyMsg.custom) {
-    const customMap: { [k: string]: any } = anyMsg.custom
-    messageString = Object.entries(customMap)
-      .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-      .join(', ')
-    messageString = messageString.slice(0, MAX_LABEL_LEN) || ''
-  }
-  return messageString
-}
-
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
     const jsonMessage = decodeURIComponent(escape(atob(base64String)))
@@ -529,80 +485,6 @@ export function isMintMsg(msg: any): msg is MintMsg {
     return msg.execute?.msg?.mint !== undefined
   }
   return false
-}
-
-export function useMessageForDraftProposal(
-  draftProposal: ProposalMapItem,
-  govTokenAddress?: string
-) {
-  const govTokenInfo = useRecoilValue(cw20TokenInfo(govTokenAddress as string))
-  const msgs = draftProposal.messages
-    ? Object.values(draftProposal.messages).map((mapEntry) => {
-        // Spend proposals are inputted in human readable form (ex:
-        // junox). Contracts expect things in the micro form (ex: ujunox)
-        // so we, painfully, do some conversions:
-        if (mapEntry.messageType === ProposalMessageType.Spend) {
-          // Without doing a deep copy here we run the risk of modifying
-          // fields of the message which are displayed in the UI.
-          let microMessage = JSON.parse(JSON.stringify(mapEntry.message))
-          const bank = (microMessage as any).bank as BankMsg
-          if (!bank) {
-            return
-          }
-
-          let amounts: Coin[]
-          let variant: string
-          if ('send' in bank) {
-            amounts = (bank as any).send.amount
-            variant = 'send'
-          } else if ('burn' in bank) {
-            amounts = (bank as any).burn.amount
-            variant = 'burn'
-          } else {
-            console.error(`unexpected bank message: (${JSON.stringify(bank)})`)
-            return
-          }
-
-          const microAmounts = amounts.map((coin) => {
-            const microCoin = coin
-            microCoin.amount = convertDenomToMicroDenomWithDecimals(
-              coin.amount,
-              govTokenInfo.decimals
-            )
-            microCoin.denom = convertDenomToContractReadableDenom(coin.denom)
-            return microCoin
-          }) as Coin[]
-
-          ;(((microMessage as any).bank as any)[variant] as any).amount =
-            microAmounts
-
-          return microMessage
-        }
-        if (mapEntry.messageType === ProposalMessageType.Mint) {
-          const mintMessage = JSON.parse(JSON.stringify(mapEntry.message))
-          console.log(mintMessage)
-          if (mintMessage?.mint?.amount) {
-            mintMessage.mint.amount = convertDenomToMicroDenomWithDecimals(
-              mintMessage.mint.amount,
-              govTokenInfo.decimals
-            )
-          }
-          return makeExecutableMintMessage(
-            mintMessage,
-            govTokenAddress as string
-          )
-        }
-        return mapEntry.message
-      })
-    : []
-  const proposal = draftProposal.proposal
-
-  const msg: Record<string, unknown> = {
-    title: proposal.title,
-    description: proposal.description,
-    msgs,
-  }
-  return msg as any
 }
 
 export const getMintRecipient = (mintMsg?: MessageMapEntry) => {

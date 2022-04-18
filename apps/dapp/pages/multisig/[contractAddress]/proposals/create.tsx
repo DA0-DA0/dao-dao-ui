@@ -7,9 +7,9 @@ import { useRecoilValue } from 'recoil'
 
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { Breadcrumbs } from '@dao-dao/ui'
 import toast from 'react-hot-toast'
 
-import { Breadcrumbs } from '@components/Breadcrumbs'
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import {
   cosmWasmSigningClient,

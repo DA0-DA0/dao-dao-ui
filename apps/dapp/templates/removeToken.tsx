@@ -1,12 +1,10 @@
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { Button } from '@dao-dao/ui'
+import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
-import { Button } from 'ui/Button'
 
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
 import { cw20TokenInfo, cw20TokensList } from 'selectors/treasury'
 import { Config } from 'util/contractConfigWrapper'
 import { validateContractAddress, validateRequired } from 'util/formValidation'

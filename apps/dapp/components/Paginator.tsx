@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { Button } from 'ui'
+import { Button } from '@dao-dao/ui'
 
 function Paginator({
   page,

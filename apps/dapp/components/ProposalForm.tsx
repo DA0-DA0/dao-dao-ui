@@ -2,11 +2,22 @@ import { useState } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
+import { Airplane } from '@dao-dao/icons'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import {
+  Button,
+  Tooltip,
+  MarkdownPreview,
+  CosmosMessageDisplay,
+} from '@dao-dao/ui'
+import {
+  InputErrorMessage,
+  InputLabel,
+  TextareaInput,
+  TextInput,
+} from '@dao-dao/ui'
 import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
-import { Button } from 'ui'
 
 import { walletAddress } from 'selectors/treasury'
 import {
@@ -22,13 +33,6 @@ import {
 import { validateRequired } from 'util/formValidation'
 import { decodedMessagesString } from 'util/messagehelpers'
 
-import { CosmosMessageDisplay } from './CosmosMessageDisplay'
-import SvgAirplane from './icons/Airplane'
-import { InputErrorMessage } from './input/InputErrorMessage'
-import { InputLabel } from './input/InputLabel'
-import { TextareaInput } from './input/TextAreaInput'
-import { TextInput } from './input/TextInput'
-import { MarkdownPreview } from './MarkdownPreview'
 import { ProposalTemplateSelector } from './TemplateSelector'
 
 interface FormProposalData {
@@ -222,7 +226,7 @@ export function ProposalForm({
           >
             <Button loading={loading} type="submit">
               Publish{' '}
-              <SvgAirplane color="currentColor" height="14px" width="14px" />
+              <Airplane color="currentColor" height="14px" width="14px" />
             </Button>
           </Tooltip>
           <Button

@@ -1,14 +1,13 @@
 import { useRecoilValue } from 'recoil'
 
+import { Votes } from '@dao-dao/icons'
+import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
+import { humanReadableDuration, thresholdString } from '@dao-dao/utils'
 import { ClockIcon } from '@heroicons/react/outline'
 
 import { sigSelector } from 'selectors/multisigs'
-import { humanReadableDuration, thresholdString } from 'util/conversion'
 
-import { GovInfoListItem } from './ContractView'
-import { CopyToClipboardAccent } from './CopyToClipboard'
 import { DaoTreasury } from './DaoTreasury'
-import SvgVotes from './icons/Votes'
 
 export function MultisigContractInfo({ address }: { address: string }) {
   const sigInfo = useRecoilValue(sigSelector(address))
@@ -19,7 +18,7 @@ export function MultisigContractInfo({ address }: { address: string }) {
         <h2 className="mb-6 primary-text">Governance Details</h2>
         <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">
           <GovInfoListItem
-            icon={<SvgVotes fill="currentColor" width="16px" />}
+            icon={<Votes fill="currentColor" width="16px" />}
             text="Passing threshold"
             value={thresholdString(sigInfo.config.threshold, true, 0)}
           />

@@ -6,31 +6,38 @@ import { useRouter } from 'next/router'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { Airplane } from '@dao-dao/icons'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
+import { Button, Tooltip } from '@dao-dao/ui'
+import {
+  AddressInput,
+  Breadcrumbs,
+  ImageSelector,
+  ImageSelectorModal,
+  InputErrorMessage,
+  InputLabel,
+  NumberInput,
+  TextareaInput,
+  TextInput,
+  ToggleInput,
+  TokenAmountInput,
+  GradientHero,
+} from '@dao-dao/ui'
+import {
+  DAO_CODE_ID,
+  NATIVE_DECIMALS,
+  convertDenomToMicroDenomWithDecimals,
+  secondsToWdhms,
+} from '@dao-dao/utils'
 import { PlusIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { Button } from 'ui'
 
-import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
-import SvgAirplane from '@components/icons/Airplane'
-import { AddressInput } from '@components/input/AddressInput'
-import { ImageSelector } from '@components/input/ImageSelector'
-import { ImageSelectorModal } from '@components/input/ImageSelector'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { NumberInput } from '@components/input/NumberInput'
-import { TextareaInput } from '@components/input/TextAreaInput'
-import { TextInput } from '@components/input/TextInput'
-import { ToggleInput } from '@components/input/ToggleInput'
-import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
 import { pinnedDaosAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   daoCreateTooltipsGetter,
   daoCreateTooltipsDefault,
@@ -40,11 +47,6 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
-import { DAO_CODE_ID, NATIVE_DECIMALS } from 'util/constants'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  secondsToWdhms,
-} from 'util/conversion'
 import {
   validateContractAddress,
   validateNonNegative,
@@ -651,7 +653,7 @@ const CreateDao: NextPage = () => {
             >
               <Button loading={loading} type="submit">
                 Submit{' '}
-                <SvgAirplane color="currentColor" height="14px" width="14px" />
+                <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
           </div>

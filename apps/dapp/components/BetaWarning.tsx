@@ -1,8 +1,6 @@
+import { Message } from '@dao-dao/icons'
+import { Button } from '@dao-dao/ui'
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
-
-import { Button } from '@components'
-
-import SvgMessage from 'components/icons/Message'
 
 export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
   return (
@@ -50,7 +48,7 @@ export function BetaNotice({ onClose }: { onClose: Function }) {
   return (
     <div className="fixed bottom-3 left-3 z-10 p-3 bg-light rounded-md text-primary-content">
       <div className="flex gap-2 items-center">
-        <SvgMessage />
+        <Message />
         <h2>
           DAO DAO is in <div className="inline text-error">beta!</div>
         </h2>

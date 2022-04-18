@@ -1,17 +1,10 @@
 import { useEffect } from 'react'
 
-import Link from 'next/link'
-
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 
-import {
-  Expiration,
-  ProposalResponse,
-  Status,
-} from '@dao-dao/types/contracts/cw3-dao'
+import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { ProposalLine, Button } from '@dao-dao/ui'
 import { DownloadIcon } from '@heroicons/react/outline'
-
-import { ProposalStatus } from '@components'
 
 import {
   proposalListAtom,
@@ -20,18 +13,7 @@ import {
   proposalsUpdated,
 } from 'atoms/proposals'
 import { proposalCount } from 'selectors/daos'
-import {
-  draftProposalsSelector,
-  onChainProposalsSelector,
-  proposalSelector,
-} from 'selectors/proposals'
-import { ExtendedProposalResponse } from 'types/proposals'
-import {
-  expirationAtTimeToSecondsFromNow,
-  secondsToWdhms,
-} from 'util/conversion'
-
-import { draftProposalsToExtendedResponses } from '../util/proposal'
+import { proposalsSelector, proposalSelector } from 'selectors/proposals'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -49,67 +31,6 @@ const getNewestLoadedProposal = (props: ProposalResponse[]) => {
   return props[0].id
 }
 
-const zeroPad = (num: number, target: number) => {
-  const s = num.toString()
-  if (s.length > target) {
-    return s
-  }
-  return '0'.repeat(target - s.length) + s
-}
-
-export const getEnd = (exp: Expiration, status: Status) => {
-  if (status != 'open' && status != 'pending') {
-    return 'Completed'
-  }
-  if (exp && 'at_time' in exp) {
-    const secondsFromNow = expirationAtTimeToSecondsFromNow(exp)
-    // Type check, but should never happen.
-    if (secondsFromNow === undefined) {
-      return ''
-    }
-
-    if (secondsFromNow <= 0) {
-      return 'Completed'
-    } else {
-      return secondsToWdhms(secondsFromNow)
-    }
-  }
-  // Not much we can say about proposals that expire at a block
-  // height / never.
-  return ''
-}
-
-function ProposalLine({
-  prop,
-  contractAddress,
-  multisig,
-}: {
-  prop: ExtendedProposalResponse
-  contractAddress: string
-  multisig?: boolean
-}) {
-  const proposalKey = prop.draftId ?? prop.id
-  const displayKey = prop.draftId ? prop.draftId : zeroPad(prop.id ?? 0, 6)
-  return (
-    <Link
-      href={`/${
-        multisig ? 'multisig' : 'dao'
-      }/${contractAddress}/proposals/${proposalKey}`}
-    >
-      <a>
-        <div className="grid grid-cols-6 items-center p-4 my-1 text-sm bg-primary rounded-lg">
-          <div className="flex flex-row flex-wrap col-span-2 gap-4 items-center">
-            <p className="font-mono caption-text"># {displayKey}</p>
-            <ProposalStatus status={prop.status} />
-          </div>
-          <p className="col-span-3 truncate link-text">{prop.title}</p>
-          <p className="body-text">{getEnd(prop.expires, prop.status)}</p>
-        </div>
-      </a>
-    </Link>
-  )
-}
-
 export function ProposalList({
   contractAddress,
   multisig,
@@ -121,12 +42,6 @@ export function ProposalList({
   const [startBefore, setStartBefore] = useRecoilState(
     proposalsRequestStartBeforeAtom
   )
-  const draftProposals = useRecoilValue(draftProposalsSelector(contractAddress))
-  // const propList = useRecoilValue(proposalsSelector({
-  //   contractAddress,
-  //   startBefore,
-  //   limit: 10
-  // }))
   // The proposals that we have loaded.
   const [propList, setPropList] = useRecoilState(
     proposalListAtom(contractAddress)
@@ -139,7 +54,7 @@ export function ProposalList({
   // Update the proposal list with any proposals that were created
   // since we were last here.
   const newProps = useRecoilValue(
-    onChainProposalsSelector({
+    proposalsSelector({
       contractAddress,
       startBefore: getNewestLoadedProposal(propList) + propsCreated + 1,
       limit: propsCreated,
@@ -163,7 +78,7 @@ export function ProposalList({
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
   const existingProps = useRecoilValue(
-    onChainProposalsSelector({
+    proposalsSelector({
       contractAddress,
       startBefore,
       limit: PROP_LOAD_LIMIT,
@@ -220,41 +135,40 @@ export function ProposalList({
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal
 
-  const allProposals = (
-    draftProposalsToExtendedResponses(draftProposals) ?? []
-  ).concat(propList)
-
-  if (!allProposals.length) {
+  if (!propList.length) {
     return <p className="body-text">no proposals</p>
   }
 
   return (
     <div>
       <ul>
-        {allProposals.map((prop, idx) => {
-          const key = `prop_${prop.draftId ?? prop.id ?? idx}`
+        {propList.map((proposal) => {
+          const key = `prop_${proposal.id}`
           return (
             <ProposalLine
               key={key}
-              contractAddress={contractAddress}
-              multisig={multisig}
-              prop={prop}
+              proposal={proposal}
+              proposalViewUrl={`/${
+                multisig ? 'multisig' : 'dao'
+              }/${contractAddress}/proposals/${proposal.id}`}
             />
           )
         })}
       </ul>
       {showLoadMore && (
-        <button
-          className="mt-3 font-mono text-sm text-left normal-case btn btn-sm btn-outline"
+        <Button
+          className="mt-3 font-mono border border-inactive"
           onClick={() => {
             const proposal = propList && propList[propList.length - 1]
             if (proposal) {
               setStartBefore(proposal.id)
             }
           }}
+          size="sm"
+          variant="secondary"
         >
           Load more <DownloadIcon className="inline ml-1 w-5 h-5" />
-        </button>
+        </Button>
       )}
     </div>
   )
