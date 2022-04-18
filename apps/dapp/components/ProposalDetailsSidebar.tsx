@@ -271,9 +271,13 @@ export const ProposalDetailsVoteStatus = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expires)
       : undefined
 
+  // TODO: Change this wen v1 contracts launch, since the conditions
+  // will change. In v1, all abstain fails instead of passes.
   const thresholdReached =
     !!threshold &&
-    (quorum ? turnoutYesPercent : totalYesPercent) >= threshold.percent
+    yesVotes >=
+      ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
+        (threshold.percent / 100)
   const quorumMet = !!quorum && turnoutPercent >= quorum.percent
 
   const helpfulStatusText =
@@ -286,6 +290,11 @@ export const ProposalDetailsVoteStatus = ({
         ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
         : undefined
       : undefined
+
+  // When only abstain votes have been cast and there is no quorum,
+  // align the abstain progress bar to the right to line up with Abstain
+  // text.
+  const onlyAbstain = yesVotes === 0 && noVotes === 0 && abstainVotes > 0
 
   return (
     <div className="flex flex-col gap-2 items-stretch">
@@ -530,6 +539,7 @@ export const ProposalDetailsVoteStatus = ({
 
             <div className="my-2">
               <Progress
+                alignEnd={onlyAbstain}
                 rows={[
                   {
                     thickness: 3,
@@ -610,38 +620,40 @@ export const ProposalDetailsVoteStatus = ({
         )
       ) : null}
 
-      {expiresInSeconds !== undefined && expiresInSeconds > 0 && (
-        <>
-          <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
-            Time left
-          </p>
+      {proposal.status === 'open' &&
+        expiresInSeconds !== undefined &&
+        expiresInSeconds > 0 && (
+          <>
+            <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
+              Time left
+            </p>
 
-          <p className="font-mono text-xs text-right text-dark">
-            {secondsToWdhms(expiresInSeconds, 2)}
-          </p>
+            <p className="font-mono text-xs text-right text-dark">
+              {secondsToWdhms(expiresInSeconds, 2)}
+            </p>
 
-          {maxVotingSeconds !== undefined && (
-            <div className="mt-1">
-              <Progress
-                alignEnd
-                rows={[
-                  {
-                    thickness: 3,
-                    data: [
-                      {
-                        value: (expiresInSeconds / maxVotingSeconds) * 100,
-                        color: 'rgb(var(--dark))',
-                      },
-                    ],
-                  },
-                ]}
-              />
-            </div>
-          )}
-        </>
-      )}
+            {maxVotingSeconds !== undefined && (
+              <div className="mt-1">
+                <Progress
+                  alignEnd
+                  rows={[
+                    {
+                      thickness: 3,
+                      data: [
+                        {
+                          value: (expiresInSeconds / maxVotingSeconds) * 100,
+                          color: 'rgb(var(--dark))',
+                        },
+                      ],
+                    },
+                  ]}
+                />
+              </div>
+            )}
+          </>
+        )}
 
-      {threshold?.percent === 50 && yesVotes === noVotes && (
+      {threshold?.percent === 50 && yesVotes === noVotes && yesVotes > 0 && (
         <div className="mt-4 text-sm">
           <p className="font-mono text-tertiary">Tie clarification</p>
 
@@ -655,7 +667,8 @@ export const ProposalDetailsVoteStatus = ({
 
           <p className="mt-2 body-text">
             {/* TODO: Change this to fail wen v1 contracts. */}
-            When all abstain, a proposal will pass.
+            When all abstain{quorum && ' and the quorum is met'}, a proposal
+            will pass.
           </p>
         </div>
       )}
