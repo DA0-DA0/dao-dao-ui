@@ -1,6 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  Client as ExecuteClient,
   ConfigResponse,
   Cw20BalancesResponse,
   Cw721TokenListResponse,
@@ -14,7 +15,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '../../clients/cw-governance'
-import { cosmWasmClient } from './chain'
+import { cosmWasmClient, signingCosmWasmClient } from './chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -29,6 +30,26 @@ const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
       if (!client) return
 
       return new QueryClient(client, contractAddress)
+    },
+})
+
+export type ExecuteClientParams = {
+  contractAddress: string
+  sender: string
+}
+
+export const executeClient = selectorFamily<
+  ExecuteClient | undefined,
+  ExecuteClientParams
+>({
+  key: 'cwGovernanceQueryClient',
+  get:
+    ({ contractAddress, sender }) =>
+    ({ get }) => {
+      const client = get(signingCosmWasmClient)
+      if (!client) return
+
+      return new ExecuteClient(client, sender, contractAddress)
     },
 })
 
