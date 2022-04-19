@@ -47,6 +47,8 @@ export const TokenInfoDisplay = ({
   useEffect(() => {
     if (tokenInfo.state === 'hasError') {
       setError('Failed to get token info')
+    } else if (tokenInfo.state === 'loading') {
+      setError('Loading token')
     } else {
       clearError()
     }
@@ -114,7 +116,7 @@ export const TokenSelector = ({
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />
-        <InputErrorMessage error={errors?.to} />
+        <InputErrorMessage error={errors?.address} />
       </div>
       <TokenInfoDisplay
         address={tokenAddress}

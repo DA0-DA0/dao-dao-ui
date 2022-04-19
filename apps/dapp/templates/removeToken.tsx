@@ -40,7 +40,6 @@ const AddressSelector = ({
   const tokenInfo = useRecoilValue(
     waitForAll(options.map((address) => cw20TokenInfo(address)))
   )
-
   const active = (a: string) => a === selectedAddress
   return (
     <div className="grid grid-cols-5 gap-1">
