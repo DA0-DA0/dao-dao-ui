@@ -62,7 +62,9 @@ function Nav({ onMenuClick }: NavProps) {
             <MenuIcon className="w-8" />
           </div>
         </div>
-        <ConnectWalletButton />
+        <div className="my-4 w-full">
+          <ConnectWalletButton />
+        </div>
         <div className="ml-1 text-sm">
           <div className="mt-[20px]">
             <h3 className="mb-[16px] font-mono caption-text">DAOs</h3>
