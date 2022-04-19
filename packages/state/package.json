@@ -5,12 +5,14 @@
   "license": "MIT",
   "devDependencies": {
     "@dao-dao/config": "*",
+    "@keplr-wallet/types": "^0.10.2",
     "tsconfig": "*",
     "typescript": "^4.5.3"
   },
   "prettier": "@dao-dao/config/prettier",
   "dependencies": {
     "@dao-dao/ui": "*",
+    "react": "^18.0.0",
     "recoil": "^0.7.2"
   }
 }
