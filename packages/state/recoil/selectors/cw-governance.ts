@@ -16,10 +16,14 @@ import {
 } from '../../clients/cw-governance'
 import { cosmWasmClient } from './chain'
 
-const queryClient = selectorFamily<QueryClient | undefined, string>({
+type QueryClientParams = {
+  contractAddress: string
+}
+
+const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
   key: 'cwGovernanceQueryClient',
   get:
-    (contractAddress) =>
+    ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClient)
       if (!client) return
@@ -30,13 +34,13 @@ const queryClient = selectorFamily<QueryClient | undefined, string>({
 
 export const configSelector = selectorFamily<
   ConfigResponse | undefined,
-  string
+  QueryClientParams
 >({
   key: 'cwGovernanceConfig',
   get:
-    (contractAddress) =>
+    (queryClientParams) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
       return await client.config()
@@ -45,13 +49,13 @@ export const configSelector = selectorFamily<
 
 export const votingModuleSelector = selectorFamily<
   VotingModuleResponse | undefined,
-  string
+  QueryClientParams
 >({
   key: 'cwGovernanceVotingModule',
   get:
-    (contractAddress) =>
+    (queryClientParams) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
       return await client.votingModule()
@@ -60,28 +64,28 @@ export const votingModuleSelector = selectorFamily<
 
 export const governanceModulesSelector = selectorFamily<
   GovernanceModulesResponse | undefined,
-  Parameters<QueryClient['governanceModules']>[0] & { contractAddress: string }
+  QueryClientParams & { params: Parameters<QueryClient['governanceModules']> }
 >({
   key: 'cwGovernanceGovernanceModules',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.governanceModules(params)
+      return await client.governanceModules(...params)
     },
 })
 
 export const dumpStateSelector = selectorFamily<
   DumpStateResponse | undefined,
-  string
+  QueryClientParams
 >({
   key: 'cwGovernanceDumpState',
   get:
-    (contractAddress) =>
+    (queryClientParams) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
       return await client.dumpState()
@@ -90,104 +94,103 @@ export const dumpStateSelector = selectorFamily<
 
 export const getItemSelector = selectorFamily<
   GetItemResponse | undefined,
-  Parameters<QueryClient['getItem']>[0] & { contractAddress: string }
+  QueryClientParams & { params: Parameters<QueryClient['getItem']> }
 >({
   key: 'cwGovernanceGetItem',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.getItem(params)
+      return await client.getItem(...params)
     },
 })
 
 export const listItemsSelector = selectorFamily<
   ListItemsResponse | undefined,
-  Parameters<QueryClient['listItems']>[0] & { contractAddress: string }
+  QueryClientParams & { params: Parameters<QueryClient['listItems']> }
 >({
   key: 'cwGovernanceListItems',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.listItems(params)
+      return await client.listItems(...params)
     },
 })
 
 export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse | undefined,
-  Parameters<QueryClient['cw721TokenList']>[0] & { contractAddress: string }
+  QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
 >({
   key: 'cwGovernanceCw721TokenList',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.cw721TokenList(params)
+      return await client.cw721TokenList(...params)
     },
 })
 
 export const cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse | undefined,
-  Parameters<QueryClient['cw20Balances']>[0] & { contractAddress: string }
+  QueryClientParams & { params: Parameters<QueryClient['cw20Balances']> }
 >({
   key: 'cwGovernanceCw20Balances',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.cw20Balances(params)
+      return await client.cw20Balances(...params)
     },
 })
 
 export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse | undefined,
-  Parameters<QueryClient['votingPowerAtHeight']>[0] & {
-    contractAddress: string
-  }
+  QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
 >({
   key: 'cwGovernanceVotingPowerAtHeight',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.votingPowerAtHeight(params)
+      return await client.votingPowerAtHeight(...params)
     },
 })
 
 export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse | undefined,
-  Parameters<QueryClient['totalPowerAtHeight']>[0] & {
-    contractAddress: string
-  }
+  QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
 >({
   key: 'cwGovernanceTotalPowerAtHeight',
   get:
-    ({ contractAddress, ...params }) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.totalPowerAtHeight(params)
+      return await client.totalPowerAtHeight(...params)
     },
 })
 
-export const infoSelector = selectorFamily<InfoResponse | undefined, string>({
+export const infoSelector = selectorFamily<
+  InfoResponse | undefined,
+  QueryClientParams
+>({
   key: 'cwGovernanceInfo',
   get:
-    (contractAddress) =>
+    (queryClientParams) =>
     async ({ get }) => {
-      const client = get(queryClient(contractAddress))
+      const client = get(queryClient(queryClientParams))
       if (!client) return
 
       return await client.info()
