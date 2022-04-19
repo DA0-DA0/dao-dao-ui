@@ -11,7 +11,9 @@
   ],
   "scripts": {
     "storybook": "start-storybook --ci -p 6006 --no-manager-cache",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "lint": "eslint .",
+    "format": "eslint . --fix"
   },
   "dependencies": {
     "@dao-dao/utils": "*",

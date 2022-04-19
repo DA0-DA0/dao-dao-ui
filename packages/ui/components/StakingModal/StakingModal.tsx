@@ -1,17 +1,18 @@
 import { FC, useState } from 'react'
-import { Modal } from '../Modal'
-import { ModeButton } from './ModeButton'
-import { AmountSelector } from './AmountSelector'
-import { PercentSelector } from './PercentSelector'
-import { ActionButton } from './ActionButton'
+
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   durationIsNonZero,
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-
 import { XIcon } from '@heroicons/react/outline'
+
+import { Modal } from '../Modal'
+import { ActionButton } from './ActionButton'
+import { AmountSelector } from './AmountSelector'
+import { ModeButton } from './ModeButton'
+import { PercentSelector } from './PercentSelector'
 
 export enum StakingMode {
   Stake,
@@ -134,18 +135,18 @@ export const StakingModal: FC<StakingModalProps> = ({
         {mode === StakingMode.Stake && (
           <AmountSelectionBody
             amount={amount}
-            setAmount={(amount: number) => setAmount(amount)}
             max={stakableTokens}
+            setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
           />
         )}
         {mode === StakingMode.Unstake && (
           <UnstakingModeBody
             amount={amount}
-            setAmount={(amount: number) => setAmount(amount)}
             max={unstakableTokens}
-            unstakingDuration={unstakingDuration}
+            setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
+            unstakingDuration={unstakingDuration}
           />
         )}
         {mode === StakingMode.Claim && (
@@ -212,8 +213,8 @@ const UnstakingModeBody: FC<
   <>
     <AmountSelectionBody
       amount={amount}
-      setAmount={setAmount}
       max={max}
+      setAmount={setAmount}
       tokenDecimals={tokenDecimals}
     />
     {durationIsNonZero(unstakingDuration) && (

@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "main": "index.ts",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "format": "eslint . --fix"
+  },
   "devDependencies": {
     "@dao-dao/config": "*",
     "@keplr-wallet/types": "^0.10.2",

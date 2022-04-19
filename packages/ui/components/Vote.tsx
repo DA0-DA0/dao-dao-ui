@@ -1,9 +1,8 @@
 import { FC, useState } from 'react'
 
+import { Abstain, Airplane } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
-
-import { Abstain, Airplane } from '@dao-dao/icons'
 
 export enum VoteChoice {
   Yes,

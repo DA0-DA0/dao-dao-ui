@@ -1,5 +1,6 @@
 import { ChangeEventHandler } from 'react'
 
+import { Wallet } from '@dao-dao/icons'
 import {
   FieldError,
   FieldPathValue,
@@ -7,8 +8,6 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
-
-import { Wallet } from '@dao-dao/icons'
 
 export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   label,

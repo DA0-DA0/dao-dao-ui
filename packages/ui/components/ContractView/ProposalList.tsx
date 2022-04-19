@@ -3,7 +3,6 @@ import { FC } from 'react'
 import Link from 'next/link'
 
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
-
 import { getProposalEnd, zeroPad } from '@dao-dao/utils'
 
 import { ProposalStatus } from '../ProposalStatus'
@@ -25,7 +24,7 @@ export const ProposalLine: FC<ProposalLineProps> = ({
           <ProposalStatus status={proposal.status} />
         </div>
         <p className="col-span-3 truncate link-text">{proposal.title}</p>
-        <p className="body-text truncate">
+        <p className="truncate body-text">
           {getProposalEnd(proposal.expires, proposal.status)}
         </p>
       </div>

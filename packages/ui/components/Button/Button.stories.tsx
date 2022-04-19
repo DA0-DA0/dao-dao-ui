@@ -20,7 +20,6 @@ export const Primary = Template.bind({})
 Primary.args = {
   variant: 'primary',
   size: 'md',
-  full: false,
   disabled: false,
   children: 'Connect wallet',
 }

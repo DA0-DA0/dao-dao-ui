@@ -25,6 +25,7 @@
     "@dao-dao/icons": "*",
     "@dao-dao/state": "*",
     "@dao-dao/types": "^0.0.8",
+    "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
@@ -53,8 +54,7 @@
     "react-markdown": "^8.0.0",
     "recoil": "^0.5.2",
     "rich-markdown-editor": "^11.21.3",
-    "styled-components": "^5.3.3",
-    "ui": "*"
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",

@@ -1,4 +1,5 @@
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+
 import { secondsToWdhms } from './time'
 
 export const durationIsNonZero = (d: Duration) => {

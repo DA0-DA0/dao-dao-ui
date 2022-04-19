@@ -1,7 +1,6 @@
 import { FC } from 'react'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
-
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { LogoNoBorder } from '../Logo'

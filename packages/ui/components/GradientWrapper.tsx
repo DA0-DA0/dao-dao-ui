@@ -1,7 +1,6 @@
 import { ReactNode, FC } from 'react'
 
 import { useThemeContext } from '../theme'
-
 import { LogoNoBorder } from './Logo'
 
 export interface GradientWrapperProps {
@@ -16,7 +15,7 @@ export const GradientWrapper: FC<GradientWrapperProps> = ({ children }) => {
       : 'url(/gradients/BG-Gradient-Light@2x.png)'
 
   return (
-    <div className="flex overflow-x-hidden flex-col items-center relative">
+    <div className="flex overflow-x-hidden relative flex-col items-center">
       {CSS.supports('backdrop-filter', 'blur(5px)') && (
         <div
           className="absolute top-0 left-1/2 -z-20 mt-[60px] -ml-[250px] text-[#06090B] animate-spin-slow"

@@ -1,20 +1,22 @@
 import { FC } from 'react'
+
+import { TriangleUp, Abstain } from '@dao-dao/icons'
 import {
   ProposalResponse,
   ProposalTallyResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
-import { ProposalStatus } from '../ProposalStatus'
-import { Tooltip } from '../Tooltip'
-import { Progress } from '../Progress'
-import { CopyToClipboard } from '../CopyToClipboard'
-import { TriangleUp, Abstain } from '@dao-dao/icons'
-import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   expirationAtTimeToSecondsFromNow,
   secondsToWdhms,
 } from '@dao-dao/utils'
+import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
+
+import { CopyToClipboard } from '../CopyToClipboard'
+import { Progress } from '../Progress'
+import { ProposalStatus } from '../ProposalStatus'
+import { Tooltip } from '../Tooltip'
 
 // Need this for now as the `WalletVote` enum is stored in dapp state. TODO:
 // remove once we break state into a package.

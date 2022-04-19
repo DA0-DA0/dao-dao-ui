@@ -1,5 +1,6 @@
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FC, ReactNode } from 'react'
+
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { decodeMessages } from '@dao-dao/utils'
 
 interface ProposalMessageTemplateListProps {
