@@ -42,7 +42,7 @@ export const executeClient = selectorFamily<
   ExecuteClient | undefined,
   ExecuteClientParams
 >({
-  key: 'cwGovernanceQueryClient',
+  key: 'cwGovernanceExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {

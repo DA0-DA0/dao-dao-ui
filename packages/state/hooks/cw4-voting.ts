@@ -4,21 +4,19 @@ import { useCallback } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import { Client as ExecuteClient } from '../clients/cw-governance'
-import { executeClient, ExecuteClientParams } from '../recoil/selectors'
+import { Client as ExecuteClient } from '../clients/cw4-voting'
+import {
+  executeClient,
+  ExecuteClientParams,
+} from '../recoil/selectors/cw4-voting'
 
-export const wrapExecuteHook =
-  <
-    T extends {
-      [K in keyof ExecuteClient]: ExecuteClient[K] extends (
-        ...args: any[]
-      ) => any
-        ? K
-        : never
-    }[keyof ExecuteClient]
-  >(
-    fn: T
-  ) =>
+// Get the keys that are functions.
+type FunctionKeyOf<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
+}[keyof T]
+
+const wrapExecuteHook =
+  <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: ExecuteClientParams) => {
     const client = useRecoilValue(executeClient(params))
 
@@ -35,3 +33,5 @@ export const wrapExecuteHook =
       [client]
     )
   }
+
+export const useMemberChangedHook = wrapExecuteHook('memberChangedHook')
