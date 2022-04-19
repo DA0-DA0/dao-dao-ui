@@ -1,16 +1,21 @@
 import { createContext, ReactNode, useContext } from 'react'
 
-export type UpdateThemeFn = (themeName: string) => void
+export type UpdateThemeFn = (themeName: Theme) => void
 export type SetAccentColorFn = (accentColor: string | undefined) => void
 
+export enum Theme {
+  Light = 'light',
+  Dark = 'dark',
+}
+
 export interface IThemeContext {
-  theme: string
+  theme: Theme
   updateTheme: UpdateThemeFn
   accentColor?: string
   setAccentColor: SetAccentColorFn
 }
 
-export const DEFAULT_THEME_NAME = 'dark'
+export const DEFAULT_THEME_NAME = Theme.Dark
 
 export const DEFAULT_THEME: IThemeContext = {
   theme: DEFAULT_THEME_NAME,
@@ -32,7 +37,7 @@ export function ThemeProvider({
   setAccentColor,
 }: {
   children: ReactNode
-  theme: string
+  theme: Theme
   updateTheme: UpdateThemeFn
   accentColor?: string
   setAccentColor: SetAccentColorFn

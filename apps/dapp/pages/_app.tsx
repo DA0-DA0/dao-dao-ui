@@ -1,5 +1,5 @@
 import '@dao-dao/ui/globals.css'
-import 'styles/app.css'
+
 import { useState, useEffect } from 'react'
 import { Suspense } from 'react'
 
@@ -8,7 +8,12 @@ import { useRouter } from 'next/router'
 
 import { RecoilRoot } from 'recoil'
 
-import { DEFAULT_THEME_NAME, ThemeProvider, LoadingScreen } from '@dao-dao/ui'
+import {
+  DEFAULT_THEME_NAME,
+  Theme,
+  ThemeProvider,
+  LoadingScreen,
+} from '@dao-dao/ui'
 
 import ErrorBoundary from 'components/ErrorBoundary'
 import { HomepageLayout } from 'components/HomepageLayout'
@@ -25,13 +30,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => setLoaded(true), [])
   useEffect(() => {
     setTheme((theme) => {
-      let savedTheme = localStorage.getItem('theme')
-      if (!(savedTheme === 'dark' || savedTheme === 'light')) {
-        // Theme used to be either junoDark or junoLight. We've sinced moved on
+      let savedTheme = localStorage.getItem('theme') as Theme
+      if (!Object.values(Theme).includes(savedTheme)) {
+        // Theme used to be either junoDark or junoLight. We've since moved on
         // to our own theming. This handles case where user has those old themes in
         // local storage.
-        localStorage.setItem('theme', 'dark')
-        savedTheme = 'dark'
+        savedTheme = Theme.Dark
+        localStorage.setItem('theme', savedTheme)
       }
       const themeToUse = savedTheme ? savedTheme : theme
       document.documentElement.classList.add(themeToUse)
@@ -39,10 +44,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     })
   }, [])
 
-  function updateTheme(themeName: string) {
+  function updateTheme(themeName: Theme) {
     setTheme(themeName)
-    const replace = themeName === 'dark' ? 'light' : 'dark'
-    document.documentElement.classList.replace(replace, themeName)
+    Object.values(Theme).forEach((value) =>
+      document.documentElement.classList.toggle(value, value === themeName)
+    )
     localStorage.setItem('theme', themeName)
   }
 
@@ -50,7 +56,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <RecoilRoot>
-      <ErrorBoundary title="An unexpected error occured.">
+      <ErrorBoundary title="An unexpected error occurred.">
         <Suspense fallback={<LoadingScreen />}>
           <ThemeProvider
             accentColor={accentColor}
