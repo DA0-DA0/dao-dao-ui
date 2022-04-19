@@ -1,5 +1,12 @@
 import { ReactNode } from 'react'
 
+import {
+  validateAddress,
+  validatePositive,
+  validateRequired,
+} from 'util/formValidation'
+
+import { FormCard } from '@components/FormCard'
 import { UserIcon, XIcon } from '@heroicons/react/outline'
 import {
   FieldError,
@@ -8,13 +15,6 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
-
-import { FormCard } from '@components/FormCard'
-import {
-  validateAddress,
-  validatePositive,
-  validateRequired,
-} from 'util/formValidation'
 
 import { AddressInput } from './AddressInput'
 import { InputErrorMessage } from './InputErrorMessage'

@@ -1,13 +1,15 @@
-import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { FC, ReactNode, useState } from 'react'
-import { MarkdownPreview } from '../MarkdownPreview'
-import { Button } from '../Button'
-import { Execute } from '../Execute'
-import { Vote, VoteChoice } from '../Vote'
-import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
-import { ProposalMessageTemplateList } from './ProposalMessageTemplateList'
-import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
+
+import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { decodedMessagesString, decodeMessages } from '@dao-dao/utils'
+import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
+
+import { Button } from '../Button'
+import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
+import { Execute } from '../Execute'
+import { MarkdownPreview } from '../MarkdownPreview'
+import { Vote, VoteChoice } from '../Vote'
+import { ProposalMessageTemplateList } from './ProposalMessageTemplateList'
 
 export interface ProposalDetailsProps {
   proposal: ProposalResponse
@@ -58,8 +60,8 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             />
           ) : (
             <ProposalMessageTemplateList
-              msgs={proposal.msgs}
               messageToDisplay={messageToDisplay}
+              msgs={proposal.msgs}
             />
           )
         ) : (

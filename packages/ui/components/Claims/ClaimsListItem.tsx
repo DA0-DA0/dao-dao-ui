@@ -1,17 +1,15 @@
 import { FC, useEffect, useState } from 'react'
 
-import { CheckIcon } from '@heroicons/react/outline'
-
+import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
   claimAvaliable,
 } from '@dao-dao/utils'
+import { CheckIcon } from '@heroicons/react/outline'
 
 import { BalanceIcon } from '../ContractView/BalanceIcon'
-
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
-import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 
 function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
   if (claimAvaliable(claim, blockHeight)) {
@@ -83,8 +81,8 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
   return (
-    <div className="my-2 flex justify-between gap-2 items-center p-4 my-2 bg-primary rounded-lg">
-      <p className="mt-1 flex gap-2 items-center">
+    <div className="flex gap-2 justify-between items-center p-4 my-2 bg-primary rounded-lg">
+      <p className="flex gap-2 items-center mt-1">
         <BalanceIcon />
         {convertMicroDenomToDenomWithDecimals(
           claim.amount,

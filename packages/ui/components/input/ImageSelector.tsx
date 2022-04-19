@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
-import { Button } from '../Button'
-import { Modal } from '../Modal'
+import { Airplane } from '@dao-dao/icons'
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import {
@@ -12,8 +11,8 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import { Airplane } from '@dao-dao/icons'
-
+import { Button } from '../Button'
+import { Modal } from '../Modal'
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'

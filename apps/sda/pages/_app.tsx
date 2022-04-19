@@ -6,13 +6,13 @@ import type { AppProps } from 'next/app'
 
 import { RecoilRoot, useRecoilState } from 'recoil'
 
-import { activeTheme } from '@dao-dao/state'
+import { activeThemeAtom } from '@dao-dao/state'
 import { ThemeProvider, Theme, LoadingScreen } from '@dao-dao/ui'
 
 import { ErrorBoundary, Notifications } from '@/components'
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
-  const [theme, setTheme] = useRecoilState(activeTheme)
+  const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [accentColor, setAccentColor] = useState<string | undefined>()
 
   // Ensure correct theme class is set on document.
@@ -31,6 +31,8 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
     >
       <ErrorBoundary title="An unexpected error occurred.">
         <Suspense fallback={<LoadingScreen />}>
+          <Header />
+
           <Component {...pageProps} />
         </Suspense>
       </ErrorBoundary>

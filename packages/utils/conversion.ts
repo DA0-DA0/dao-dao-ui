@@ -5,6 +5,7 @@ import {
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
+
 import { secondsToWdhms } from './time'
 
 export function convertMicroDenomToDenomWithDecimals(

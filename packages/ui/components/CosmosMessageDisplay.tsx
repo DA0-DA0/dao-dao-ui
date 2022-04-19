@@ -1,13 +1,14 @@
-import { FC } from 'react'
-import { useThemeContext } from '../theme'
-
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-ocean.css'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/material.css'
+
+import { FC } from 'react'
 
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material.css'
+import { useThemeContext } from '../theme'
+
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')

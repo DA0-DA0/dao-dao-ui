@@ -1,9 +1,9 @@
 import { FC } from 'react'
 
-import { EstablishedDate } from './EstablishedDate'
-import { Logo } from '../Logo'
-
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
+
+import { Logo } from '../Logo'
+import { EstablishedDate } from './EstablishedDate'
 
 export interface ContractHeaderProps {
   name: string

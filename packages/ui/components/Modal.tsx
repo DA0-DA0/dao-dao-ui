@@ -5,7 +5,7 @@ export interface ModalProps {
 }
 
 export const Modal: FC<ModalProps> = ({ children }) => (
-  <div className="flex fixed top-0 left-0 z-10 justify-center items-center w-screen h-full backdrop-brightness-50 backdrop-filter transition">
+  <div className="flex fixed top-0 left-0 z-10 justify-center items-center w-screen h-full backdrop-brightness-50 transition backdrop-filter">
     {children}
   </div>
 )

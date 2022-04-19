@@ -2,6 +2,7 @@ import { FC, useState } from 'react'
 
 import { Wallet, Copy } from '@dao-dao/icons'
 import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
+
 import { Button } from './Button'
 import { Tooltip } from './Tooltip'
 
@@ -41,7 +42,6 @@ export const WalletConnect: FC<WalletConnectProps> = ({
     <div className="my-4">
       <Button
         className="py-4 w-full hover:outline-brand hover:outline"
-        full
         onClick={handleConnect}
       >
         <Wallet fill="currentColor" height="20px" width="20px" />
