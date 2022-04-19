@@ -21,10 +21,10 @@ const queryClient = selectorFamily<QueryClient | undefined, string>({
   get:
     (contractAddress) =>
     ({ get }) => {
-      const cwClient = get(cosmWasmClient)
-      if (!cwClient) return
+      const client = get(cosmWasmClient)
+      if (!client) return
 
-      return new QueryClient(cwClient, contractAddress)
+      return new QueryClient(client, contractAddress)
     },
 })
 
