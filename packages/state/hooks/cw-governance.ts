@@ -10,11 +10,6 @@ import {
   ExecuteClientParams,
 } from '../recoil/selectors/cw-governance'
 
-// Get the keys that are functions.
-type FunctionKeyOf<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
-}[keyof T]
-
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: ExecuteClientParams) => {
