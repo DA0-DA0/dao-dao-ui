@@ -9,7 +9,7 @@ import { RecoilRoot, useRecoilState } from 'recoil'
 import { activeThemeAtom } from '@dao-dao/state'
 import { ThemeProvider, Theme, LoadingScreen } from '@dao-dao/ui'
 
-import { ErrorBoundary, Notifications } from '@/components'
+import { ErrorBoundary, Header, Notifications } from '@/components'
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
