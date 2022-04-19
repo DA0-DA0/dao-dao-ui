@@ -6,11 +6,10 @@ import type { AppProps } from 'next/app'
 
 import { RecoilRoot, useRecoilState } from 'recoil'
 
+import { activeTheme } from '@dao-dao/state'
 import { ThemeProvider, Theme, LoadingScreen } from '@dao-dao/ui'
 
-import { activeTheme } from '@/atoms/theme'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { Notifications } from '@/components/Notifications'
+import { ErrorBoundary, Notifications } from '@/components'
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   const [theme, setTheme] = useRecoilState(activeTheme)

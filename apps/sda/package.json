@@ -23,6 +23,7 @@
     "@cosmjs/proto-signing": "^0.28.1",
     "@cosmjs/stargate": "^0.28.1",
     "@dao-dao/icons": "*",
+    "@dao-dao/state": "*",
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/utils": "*",
     "@headlessui/react": "^1.4.2",

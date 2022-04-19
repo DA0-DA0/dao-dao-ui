@@ -9,17 +9,16 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import toast from 'react-hot-toast'
 
-import { proposalsCreatedAtom } from 'atoms/proposals'
+import { proposalsCreatedAtom } from '@/atoms/proposals'
 import {
   cosmWasmSigningClient,
   walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { daoSelector } from 'selectors/daos'
-import { cw20TokenInfo } from 'selectors/treasury'
-import { cleanChainError } from 'util/cleanChainError'
-import { expirationExpired } from 'util/expiration'
-
+} from '@/selectors/cosm'
+import { daoSelector } from '@/selectors/daos'
+import { cw20TokenInfo } from '@/selectors/treasury'
+import { cleanChainError } from '@/util/cleanChainError'
 import { DAO_ADDRESS } from '@/util/constants'
+import { expirationExpired } from '@/util/expiration'
 
 const ProposalCreate: NextPage = () => {
   const router: NextRouter = useRouter()

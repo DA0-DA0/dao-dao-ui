@@ -1,0 +1,16 @@
+{
+  "name": "@dao-dao/state",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@dao-dao/config": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.3"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "dependencies": {
+    "@dao-dao/ui": "*",
+    "recoil": "^0.7.2"
+  }
+}
