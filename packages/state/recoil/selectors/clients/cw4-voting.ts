@@ -8,8 +8,8 @@ import {
   GroupContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '../../clients/cw4-voting'
-import { cosmWasmClient, signingCosmWasmClient } from './chain'
+} from '../../../clients/cw4-voting'
+import { cosmWasmClient, signingCosmWasmClient } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string

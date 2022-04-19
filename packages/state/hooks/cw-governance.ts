@@ -8,7 +8,7 @@ import { Client as ExecuteClient } from '../clients/cw-governance'
 import {
   executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/cw-governance'
+} from '../recoil/selectors/clients/cw-governance'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>

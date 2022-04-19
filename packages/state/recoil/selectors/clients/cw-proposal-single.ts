@@ -13,8 +13,8 @@ import {
   ReverseProposalsResponse,
   VoteHooksResponse,
   VoteResponse,
-} from '../../clients/cw-proposal-single'
-import { cosmWasmClient, signingCosmWasmClient } from './chain'
+} from '../../../clients/cw-proposal-single'
+import { cosmWasmClient, signingCosmWasmClient } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
