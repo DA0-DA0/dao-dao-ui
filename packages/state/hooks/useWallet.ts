@@ -1,16 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
 import { getOfflineSignerAuto, isKeplrInstalled } from '@dao-dao/utils'
 
 import { keplrKeystoreIdAtom } from '../recoil/atoms/keplr'
+import { accountNameAtom, walletAddressAtom } from '../recoil/selectors/keplr'
 
-export const useKeplr = () => {
+export const useWallet = () => {
   const setKeplrKeystoreId = useSetRecoilState(keplrKeystoreIdAtom)
   const [error, setError] = useState<string>()
 
-  const refreshKeplr = useCallback(
+  // Wallet address
+  const { state: walletAddressState, contents: walletAddressContents } =
+    useRecoilValueLoadable(walletAddressAtom)
+  const address =
+    walletAddressState === 'hasValue' ? walletAddressContents : undefined
+  // Wallet account name
+  const { state: accountNameState, contents: accountNameContents } =
+    useRecoilValueLoadable(accountNameAtom)
+  const name = accountNameState === 'hasValue' ? accountNameContents : undefined
+
+  const refresh = useCallback(
     () => setKeplrKeystoreId((id) => id + 1),
     [setKeplrKeystoreId]
   )
@@ -28,7 +39,7 @@ export const useKeplr = () => {
     try {
       await getOfflineSignerAuto()
       // If connection succeeds, propagate client to selector dependencies.
-      refreshKeplr()
+      refresh()
     } catch (error) {
       console.error(error)
       setError(error instanceof Error ? error.message : `${error}`)
@@ -36,7 +47,7 @@ export const useKeplr = () => {
       // Set disconnected so we don't try to connect again without manual action.
       setKeplrKeystoreId(-1)
     }
-  }, [setKeplrKeystoreId, setError, refreshKeplr])
+  }, [setKeplrKeystoreId, setError, refresh])
 
   // Listen for keplr keystore changes and update as needed.
   useEffect(() => {
@@ -51,7 +62,13 @@ export const useKeplr = () => {
   }, [connect])
 
   return {
+    connect,
+    refresh,
     error,
-    refreshKeplr,
+    address,
+    name,
+    connected: !!address,
+    installed: isKeplrInstalled(),
+    loading: walletAddressState === 'loading',
   }
 }

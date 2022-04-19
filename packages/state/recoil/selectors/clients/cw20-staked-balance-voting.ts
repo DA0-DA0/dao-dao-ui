@@ -9,7 +9,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw20-staked-balance-voting'
-import { cosmWasmClient } from '../chain'
+import { cosmWasmClientAtom } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -20,7 +20,7 @@ const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
   get:
     ({ contractAddress }) =>
     ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientAtom)
       if (!client) return
 
       return new QueryClient(client, contractAddress)

@@ -4,7 +4,7 @@ import { CHAIN_ID, getKeplr, getOfflineSignerAuto } from '@dao-dao/utils'
 
 import { keplrConnectedBeforeKey, keplrKeystoreIdAtom } from '../atoms/keplr'
 
-export const keplrOfflineSigner = selector({
+export const keplrOfflineSignerAtom = selector({
   key: 'keplrOfflineSigner',
   get: async ({ get }) => {
     // Subscribe to keystore ID changes so we propagate new wallet selection.
@@ -24,10 +24,10 @@ export const keplrOfflineSigner = selector({
   },
 })
 
-export const walletAddress = selector({
+export const walletAddressAtom = selector({
   key: 'walletAddress',
   get: async ({ get }) => {
-    const client = get(keplrOfflineSigner)
+    const client = get(keplrOfflineSignerAtom)
     if (!client) return
 
     const [{ address }] = await client.getAccounts()
@@ -35,7 +35,7 @@ export const walletAddress = selector({
   },
 })
 
-export const accountName = selector({
+export const accountNameAtom = selector({
   key: 'accountName',
   get: async ({ get }) => {
     // No account name if keplr not connected.
