@@ -10,8 +10,8 @@ import {
   GetConfigResponse,
   GetHooksResponse,
   ClaimsResponse,
-} from '../../clients/stake-cw20'
-import { cosmWasmClient, signingCosmWasmClient } from './chain'
+} from '../../../clients/stake-cw20'
+import { cosmWasmClient, signingCosmWasmClient } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string

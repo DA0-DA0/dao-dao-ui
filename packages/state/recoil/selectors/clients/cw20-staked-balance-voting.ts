@@ -8,8 +8,8 @@ import {
   TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '../../clients/cw20-staked-balance-voting'
-import { cosmWasmClient } from './chain'
+} from '../../../clients/cw20-staked-balance-voting'
+import { cosmWasmClient } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
