@@ -52,7 +52,7 @@
     "react-hot-toast": "^2.1.1",
     "react-json-editor-ajrm": "^2.5.13",
     "react-markdown": "^8.0.0",
-    "recoil": "^0.5.2",
+    "recoil": "^0.7.2",
     "rich-markdown-editor": "^11.21.3",
     "styled-components": "^5.3.3"
   },
