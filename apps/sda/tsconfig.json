@@ -7,8 +7,7 @@
     "baseUrl": ".",
     "sourceMap": true,
     "paths": {
-      "@components/*": ["components/*"],
-      "@components": ["components"]
+      "@/*": ["./*"]
     }
   }
 }
