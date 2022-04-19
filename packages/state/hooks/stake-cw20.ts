@@ -4,11 +4,11 @@ import { useCallback } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import { Client as ExecuteClient } from '../clients/cw4-voting'
+import { Client as ExecuteClient } from '../clients/stake-cw20'
 import {
   executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/cw4-voting'
+} from '../recoil/selectors/stake-cw20'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
@@ -29,4 +29,9 @@ const wrapExecuteHook =
     )
   }
 
-export const useMemberChangedHook = wrapExecuteHook('memberChangedHook')
+export const useReceive = wrapExecuteHook('receive')
+export const useUnstake = wrapExecuteHook('unstake')
+export const useClaim = wrapExecuteHook('claim')
+export const useUpdateConfig = wrapExecuteHook('updateConfig')
+export const useAddHook = wrapExecuteHook('addHook')
+export const useRemoveHook = wrapExecuteHook('removeHook')
