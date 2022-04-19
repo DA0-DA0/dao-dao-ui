@@ -1871,6 +1871,17 @@
   resolved "https://registry.yarnpkg.com/@jsdevtools/ono/-/ono-7.1.3.tgz#9df03bbd7c696a5c58885c34aa06da41c8543796"
   integrity sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==
 
+"@keplr-wallet/types@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.10.2.tgz#f56cf53df9099c5a6c1170f0e336a1d1fcaf4dd0"
+  integrity sha512-p0Nycru1ufAj0Uv1tKLfg2k7uH3u26h6GiEnPFkldFNl16kTdqgPzgf3WiwSOa3ILQAhxzET6cVFNKsP8iU12A==
+  dependencies:
+    "@cosmjs/launchpad" "^0.24.0-alpha.25"
+    "@cosmjs/proto-signing" "^0.24.0-alpha.25"
+    axios "^0.21.4"
+    long "^4.0.0"
+    secretjs "^0.17.0"
+
 "@keplr-wallet/types@^0.9.10":
   version "0.9.12"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.9.12.tgz#5771913343030a491c551a5a2eebb9cb0ad480f7"
@@ -11816,7 +11827,7 @@ react-textarea-autosize@^8.3.0:
     use-composed-ref "^1.0.0"
     use-latest "^1.0.0"
 
-react@^18.0.0-beta-24dd07bd2-20211208:
+react@^18.0.0, react@^18.0.0-beta-24dd07bd2-20211208:
   version "18.0.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.0.0.tgz#b468736d1f4a5891f38585ba8e8fb29f91c3cb96"
   integrity sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A==
