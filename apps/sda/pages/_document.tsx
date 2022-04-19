@@ -2,7 +2,7 @@ import React from 'react'
 
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
-import { SITE_TITLE } from 'util/constants'
+import { SITE_TITLE } from '@/util/constants'
 
 export default class MyDocument extends Document {
   render() {

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 
 import { useRecoilValue } from 'recoil'
 
-import { LoadingScreen } from '@/components/LoadingScreen'
+import { LoadingScreen } from '@/components'
 import { daoSelector } from '@/selectors/daos'
 import { cw20TokenInfo } from '@/selectors/treasury'
 import { DAO_ADDRESS } from '@/util/constants'
