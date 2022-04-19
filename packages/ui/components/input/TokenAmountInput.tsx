@@ -4,9 +4,7 @@ import {
   validateAddress,
   validatePositive,
   validateRequired,
-} from 'util/formValidation'
-
-import { FormCard } from '@components/FormCard'
+} from '@dao-dao/utils/validation'
 import { UserIcon, XIcon } from '@heroicons/react/outline'
 import {
   FieldError,
@@ -16,6 +14,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import { FormCard } from '../FormCard'
 import { AddressInput } from './AddressInput'
 import { InputErrorMessage } from './InputErrorMessage'
 import { NumberInput } from './NumberInput'

@@ -19,7 +19,7 @@ const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />
 export const Primary = Template.bind({})
 Primary.args = {
   variant: 'primary',
-  size: 'md',
+  size: 'lg',
   disabled: false,
   children: 'Connect wallet',
 }
@@ -42,11 +42,11 @@ Small.args = {
   size: 'sm',
 }
 
-export const Medium = Template.bind({})
-Medium.args = {
-  ...Primary.args,
-  size: 'md',
-}
+// export const Medium = Template.bind({})
+// Medium.args = {
+//   ...Primary.args,
+//   size: 'md',
+// }
 
 export const Large = Template.bind({})
 Large.args = {
@@ -99,7 +99,7 @@ Primary.parameters = params
 Secondary.parameters = params
 Ghost.parameters = params
 Small.parameters = params
-Medium.parameters = params
+// Medium.parameters = params
 Large.parameters = params
 // ExtraLarge.parameters = params
 // IconBefore.parameters = params
