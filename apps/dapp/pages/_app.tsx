@@ -1,4 +1,6 @@
 import '@dao-dao/ui/globals.css'
+import '@fontsource/inter/latin.css'
+import '@fontsource/jetbrains-mono/latin.css'
 
 import { useState, useEffect } from 'react'
 import { Suspense } from 'react'
