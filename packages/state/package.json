@@ -2,21 +2,21 @@
   "name": "@dao-dao/state",
   "version": "0.1.0",
   "main": "index.ts",
-  "license": "MIT",
   "scripts": {
-    "lint": "eslint .",
-    "format": "eslint . --fix"
+    "format": "eslint . --fix",
+    "lint": "eslint ."
   },
-  "devDependencies": {
-    "@dao-dao/config": "*",
-    "@keplr-wallet/types": "^0.10.2",
-    "tsconfig": "*",
-    "typescript": "^4.5.3"
-  },
-  "prettier": "@dao-dao/config/prettier",
   "dependencies": {
     "@dao-dao/ui": "*",
     "react": "^18.0.0",
     "recoil": "^0.7.2"
-  }
+  },
+  "devDependencies": {
+    "@dao-dao/config": "*",
+    "@dao-dao/tsconfig": "*",
+    "@keplr-wallet/types": "^0.10.2",
+    "typescript": "^4.5.3"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "private": true
 }
