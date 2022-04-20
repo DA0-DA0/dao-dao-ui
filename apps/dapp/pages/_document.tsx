@@ -1,20 +1,13 @@
-import React from 'react'
-
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 import { SITE_TITLE } from '@dao-dao/utils'
 
-class MyDocument extends Document {
-  static async getInitialProps(ctx: any) {
-    const initialProps = await Document.getInitialProps(ctx)
-    return { ...initialProps }
-  }
+const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
+const image = process.env.NEXT_PUBLIC_SITE_IMAGE
+const url = process.env.NEXT_PUBLIC_SITE_URL
 
+export default class MyDocument extends Document {
   render() {
-    const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
-    const image = process.env.NEXT_PUBLIC_SITE_IMAGE
-    const url = process.env.NEXT_PUBLIC_SITE_URL
-
     return (
       <Html>
         <Head>
@@ -67,7 +60,7 @@ class MyDocument extends Document {
           <meta key="og:type" content="website" property="og:type" />
           <meta key="og:url" content={url} property="og:url" />
         </Head>
-        <body className="bg-white body-text">
+        <body className="subpixel-antialiased bg-white body-text">
           <Main />
           <NextScript />
         </body>
@@ -75,5 +68,3 @@ class MyDocument extends Document {
     )
   }
 }
-
-export default MyDocument
