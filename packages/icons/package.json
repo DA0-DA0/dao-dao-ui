@@ -1,7 +1,6 @@
 {
   "name": "@dao-dao/icons",
   "version": "0.0.0",
-  "main": "dist/index.ts",
   "scripts": {
     "build": "svgr --out-dir dist --typescript --icon --replace-attr-values \"#191D20={props.color}\" -- assets/",
     "clean": "rm -rf dist/",

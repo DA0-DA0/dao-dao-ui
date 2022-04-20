@@ -1,7 +1,6 @@
 {
   "name": "@dao-dao/state",
   "version": "0.1.0",
-  "main": "index.ts",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
