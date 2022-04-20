@@ -1,4 +1,12 @@
 const keyframes = {
+  // Imported from globals.css
+  rumble: {
+    '0%': { transform: 'rotate(0deg)' },
+    '25%': { transform: 'translate(2px, 0px) rotate(-3deg)' },
+    '50%': { transform: 'translate(0px, -2px) rotate(0deg)' },
+    '75%': { transform: 'translate(-2px, 0px) rotate(3deg)' },
+    '100%': { transform: 'translate(0px, 2px) rotate(0deg)' },
+  },
   // Dropdown menu
   'scale-in': {
     '0%': { opacity: 0, transform: 'scale(0)' },
