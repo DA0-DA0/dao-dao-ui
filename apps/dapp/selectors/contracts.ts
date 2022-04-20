@@ -34,7 +34,7 @@ export const allContractsByCodeId = selectorFamily({
         client as any
       ).forceGetQueryClient()
 
-      const all = []
+      const all: string[] = []
 
       try {
         let startAtKey: Uint8Array | undefined = undefined
