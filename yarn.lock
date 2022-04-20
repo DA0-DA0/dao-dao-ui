@@ -1551,6 +1551,16 @@
   dependencies:
     "@figspec/components" "^1.0.0"
 
+"@fontsource/inter@^4.5.7":
+  version "4.5.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-4.5.7.tgz#f0657c52105ed51e04ac636a25d6016896c5ee9d"
+  integrity sha512-25k3thupaOEBexuU+jAkGqieKPbuhSuA+sinDwp1iBNhqQPiJ9QHDvsXgoCgCbZ4sGlE8aCwZmSlDJrPdJHNkw==
+
+"@fontsource/jetbrains-mono@^4.5.5":
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/@fontsource/jetbrains-mono/-/jetbrains-mono-4.5.5.tgz#ebf7a66bab9d2eab000848081d4a62903f42ca32"
+  integrity sha512-i17hJLwH3EaTVxujrZ/Dm4EHugCweHgu9mgyQlnyRpJXQdrK+oQVJqq8xMwQiw5Gck7+0SyuMWIqRiPPP7Vw6w==
+
 "@gar/promisify@^1.0.1":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"

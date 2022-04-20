@@ -24,6 +24,8 @@
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
+    "@fontsource/inter": "^4.5.7",
+    "@fontsource/jetbrains-mono": "^4.5.5",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
     "@keplr-wallet/types": "^0.9.10",
