@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-import { Theme } from 'ui'
+import { Theme } from '@dao-dao/ui'
 
 import { localStorageEffect } from '@/atoms/localStorageEffect'
 
