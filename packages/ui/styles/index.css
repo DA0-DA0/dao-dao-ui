@@ -4,7 +4,6 @@
 
 :root {
   --reach-tooltip: 1;
-  color-scheme: dark;
 }
 
 /* node_modules/@reach/tooltip/styles.css */
@@ -17,10 +16,12 @@
 
 html {
   --logo-fill: #06090b;
+  color-scheme: light;
 }
 
 html[data-theme='dark'] {
   --logo-fill: #fff;
+  color-scheme: dark;
 }
 
 ol,
