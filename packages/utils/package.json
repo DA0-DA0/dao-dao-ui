@@ -9,8 +9,8 @@
   },
   "devDependencies": {
     "@dao-dao/config": "*",
+    "@dao-dao/tsconfig": "*",
     "@keplr-wallet/types": "^0.10.2",
-    "tsconfig": "*",
     "typescript": "^4.5.3"
   },
   "prettier": "@dao-dao/config/prettier"
