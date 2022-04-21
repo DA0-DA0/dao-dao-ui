@@ -9,7 +9,7 @@ import {
   stargateClientRouter,
 } from '@dao-dao/utils'
 
-import { keplrOfflineSignerAtom } from './keplr'
+import { keplrOfflineSignerSelector } from './keplr'
 
 export const stargateClientAtom = selector({
   key: 'stargateClient',
@@ -24,7 +24,7 @@ export const cosmWasmClientAtom = selector({
 export const signingCosmWasmClientAtom = selector({
   key: 'signingCosmWasmClient',
   get: async ({ get }) => {
-    const signer = get(keplrOfflineSignerAtom)
+    const signer = get(keplrOfflineSignerSelector)
     if (!signer) return
 
     return await SigningCosmWasmClient.connectWithSigner(

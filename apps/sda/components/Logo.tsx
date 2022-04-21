@@ -4,8 +4,8 @@ export const Logo = ({
   alt = '',
   invert = false,
 }: {
-  width?: number
-  height?: number
+  width?: number | string
+  height?: number | string
   alt?: string
   invert?: boolean
 }) => {

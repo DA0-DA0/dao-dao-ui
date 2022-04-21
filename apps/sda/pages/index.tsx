@@ -1,184 +1,149 @@
 import React from 'react'
 
-import type { NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
+import { useRouter } from 'next/router'
 
+import { QueryClient } from '@dao-dao/state/clients/cw-governance'
+import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
+
+import { Logo, PageWrapper, PageWrapperProps } from '@/components'
 import { DAO_ADDRESS } from '@/util/constants'
 
-const Home: NextPage = () => {
+const InnerHome: NextPage<PageWrapperProps> = () => {
+  const router = useRouter()
+
+  const tokenName = 'RAW'
+  const tokenDecimals = 6
+
+  const rawPrice = 40.2
+  const treasuryBalance = 1980000
+  const totalStakedBalance = 700000
+  const yourStake = 1025
+  const votingPower = (yourStake / totalStakedBalance) * 100
+  const aprReward = 103
+
+  if (router.isFallback) {
+    throw new Error('Failed to load page data.')
+  }
+
   return (
-    <div className="grid overflow-auto grid-cols-6 mb-3 min-h-screen">
-      <div className="col-span-4 min-h-screen">
-        {DAO_ADDRESS}
-        {/* <GradientHero>
-          <div className="flex justify-between">
-            <Breadcrumbs
-              crumbs={[
-                ['/starred', 'Home'],
-                [router.asPath, daoInfo.config.name],
-              ]}
-            />
-            <div className="flex flex-row gap-4 items-center">
-              {member && (
-                <div className="flex flex-row gap-2 items-center">
-                  <SvgMemberCheck fill="currentColor" width="16px" />
-                  <p className="text-sm text-primary">You{"'"}re a member</p>
-                </div>
-              )}
-              <StarButton
-                onPin={() => {
-                  if (pinned) {
-                    setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-                  } else {
-                    setPinnedDaos((p) => p.concat([contractAddress]))
-                    addToken(daoInfo.gov_token)
-                  }
-                }}
-                pinned={pinned}
-              />
-            </div>
-          </div>
-
-          <HeroContractHeader
-            address={contractAddress}
-            description={daoInfo.config.description}
-            imgUrl={daoInfo.config.image_url}
-            name={daoInfo.config.name}
-          />
-
-          <div className="mt-2">
-            <HeroContractHorizontalInfo>
-              <HeroContractHorizontalInfoSection>
-                <UsersIcon className="inline w-4" />
-                {convertMicroDenomToDenomWithDecimals(
-                  tokenInfo.total_supply,
-                  tokenInfo.decimals
-                ).toLocaleString()}{' '}
-                ${tokenInfo?.symbol} total supply
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
-                <LibraryIcon className="inline w-4" />
-                {stakedPercent}% ${tokenInfo?.symbol} staked
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
-                <SvgPencil className="inline" fill="currentColor" />
-                {proposalsTotal} proposals created
-              </HeroContractHorizontalInfoSection>
-            </HeroContractHorizontalInfo>
-          </div>
-
-          <DaoContractInfo address={contractAddress} />
-        </GradientHero> */}
-        <div className="px-6">
-          {/* <ContractProposalsDispaly
-            contractAddress={contractAddress}
-            proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
-          /> */}
+    <div className="p-8 mx-auto max-w-screen-xl">
+      <div className="flex relative flex-col items-center mt-10 bg-primary rounded-b-lg">
+        <div className="absolute -top-8 bg-light rounded-full border border-default">
+          <Logo height={60} width={60} />
         </div>
-      </div>
-      <div className="col-span-2 col-start-5 p-6 h-full min-h-screen">
-        <h2 className="mt-1 mb-[23px] title-text">Your shares</h2>
-        <ul className="mt-3 list-none">
-          <li>
-            {/* <BalanceCard
-              amount={convertMicroDenomToDenomWithDecimals(
-                govTokenBalance?.amount,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-              denom={tokenInfo?.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title="Balance"
-            /> */}
-          </li>
-          <li>
-            {/* <BalanceCard
-              amount={convertMicroDenomToDenomWithDecimals(
-                stakedGovTokenBalance.amount,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-              denom={tokenInfo?.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title={`Voting power (staked ${tokenInfo?.symbol})`}
-            /> */}
-          </li>
-          {/* {claimsAvaliable ? (
-            <li>
-              <BalanceCard
-                amount={convertMicroDenomToDenomWithDecimals(
-                  claimsAvaliable,
-                  tokenInfo.decimals
-                ).toLocaleString(undefined, {
-                  maximumFractionDigits: 20,
-                })}
-                denom={tokenInfo?.symbol}
-                loading={tokenBalanceLoading}
-                onManage={() => {
-                  setShowStaking(true)
-                }}
-                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
-              />
-            </li>
-          ) : null} */}
-        </ul>
-        {/* {govTokenBalance?.amount ? (
-          <div className="p-6 mt-2 w-full bg-primary rounded-lg">
-            <h3 className="mb-4 link-text">
-              You have{' '}
-              {convertMicroDenomToDenomWithDecimals(
-                govTokenBalance?.amount,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-              unstaked {tokenInfo.symbol}
-            </h3>
-            <p className="secondary-text">
-              Staking them would bring you{' '}
-              {stakedGovTokenBalance &&
-                `${(
-                  (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                  100
-                ).toLocaleString(undefined, {
-                  maximumSignificantDigits: 3,
-                })}%`}{' '}
-              more voting power and help you defend your positions for{' '}
-              {daoInfo.config.name}
-              {"'"}s direction.
+
+        <p className="mt-16 mb-10 text-3xl text-center">
+          1 RAW = $
+          {rawPrice.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{' '}
+          USD
+        </p>
+
+        <div className="flex flex-row justify-evenly items-center mb-6 w-full">
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+              DAO Treasury
             </p>
-            <div className="flex justify-end mt-4">
-              <button
-                className="flex gap-2 items-center rounded link-text"
-                onClick={() => {
-                  setShowStaking(true)
-                }}
-              >
-                Stake tokens
-                <PlusSmIcon className="h-5" />
-              </button>
-            </div>
+
+            <p className="text-xl">
+              {treasuryBalance.toLocaleString(undefined, {
+                maximumFractionDigits: tokenDecimals,
+              })}{' '}
+              {tokenName}
+            </p>
           </div>
-        ) : null} */}
-        {/* <ClaimsPendingList
-          incrementClaimsAvaliable={(n) => setClaimsAvaliable((a) => a + n)}
-          stakingAddress={daoInfo.staking_contract}
-          tokenInfo={tokenInfo}
-        /> */}
-        {/* {showStaking && (
-          <StakingModal
-            afterExecute={() => setTokenBalancesLoading(false)}
-            beforeExecute={() => setTokenBalancesLoading(true)}
-            claimAmount={claimsAvaliable}
-            contractAddress={contractAddress}
-            defaultMode={StakingMode.Stake}
-            onClose={() => setShowStaking(false)}
-          />
-        )} */}
+
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+              Total staked
+            </p>
+
+            <p className="text-xl">
+              {totalStakedBalance.toLocaleString(undefined, {
+                maximumFractionDigits: tokenDecimals,
+              })}{' '}
+              {tokenName}
+            </p>
+          </div>
+
+          <div className="w-[1px] h-6 bg-dark opacity-10"></div>
+
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+              Your stake
+            </p>
+
+            <p className="text-xl">
+              {yourStake.toLocaleString(undefined, {
+                maximumFractionDigits: tokenDecimals,
+              })}{' '}
+              {tokenName}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+              Voting power
+            </p>
+
+            <p className="text-xl">
+              {votingPower.toLocaleString(undefined, {
+                maximumFractionDigits: 4,
+              })}
+              %
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+              APR reward
+            </p>
+
+            <p className="text-xl">
+              +
+              {aprReward.toLocaleString(undefined, {
+                maximumFractionDigits: 4,
+              })}
+              % APR
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
+const Home: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
+  <PageWrapper {...props}>
+    <InnerHome {...props} />
+  </PageWrapper>
+)
+
 export default Home
+
+export const getServerSideProps: GetServerSideProps<
+  PageWrapperProps
+> = async () => {
+  try {
+    const client = new QueryClient(
+      await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
+      DAO_ADDRESS
+    )
+
+    const config = await client.config()
+
+    return {
+      props: {
+        title: config.name,
+        description: config.description,
+        imageUrl: config.image_url || null,
+      },
+    }
+  } catch (error) {
+    console.error(error)
+    return { notFound: true }
+  }
+}

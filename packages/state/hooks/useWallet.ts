@@ -5,7 +5,11 @@ import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 import { getOfflineSignerAuto, isKeplrInstalled } from '@dao-dao/utils'
 
 import { keplrKeystoreIdAtom } from '../recoil/atoms/keplr'
-import { accountNameAtom, walletAddressAtom } from '../recoil/selectors/keplr'
+import {
+  walletAccountNameSelector,
+  walletAddressSelector,
+  walletNativeBalanceSelector,
+} from '../recoil/selectors/keplr'
 
 export const useWallet = () => {
   const setKeplrKeystoreId = useSetRecoilState(keplrKeystoreIdAtom)
@@ -13,13 +17,25 @@ export const useWallet = () => {
 
   // Wallet address
   const { state: walletAddressState, contents: walletAddressContents } =
-    useRecoilValueLoadable(walletAddressAtom)
+    useRecoilValueLoadable(walletAddressSelector)
   const address =
     walletAddressState === 'hasValue' ? walletAddressContents : undefined
   // Wallet account name
-  const { state: accountNameState, contents: accountNameContents } =
-    useRecoilValueLoadable(accountNameAtom)
-  const name = accountNameState === 'hasValue' ? accountNameContents : undefined
+  const { state: walletAccountNameState, contents: walletAccountNameContents } =
+    useRecoilValueLoadable(walletAccountNameSelector)
+  const name =
+    walletAccountNameState === 'hasValue'
+      ? walletAccountNameContents
+      : undefined
+  // Wallet balance
+  const {
+    state: walletNativeBalanceState,
+    contents: walletNativeBalanceContents,
+  } = useRecoilValueLoadable(walletNativeBalanceSelector)
+  const nativeBalance =
+    walletNativeBalanceState == 'hasValue'
+      ? walletNativeBalanceContents
+      : undefined
 
   const refresh = useCallback(
     () => setKeplrKeystoreId((id) => id + 1),
@@ -67,6 +83,7 @@ export const useWallet = () => {
     error,
     address,
     name,
+    nativeBalance,
     connected: !!address,
     installed: isKeplrInstalled(),
     loading: walletAddressState === 'loading',
