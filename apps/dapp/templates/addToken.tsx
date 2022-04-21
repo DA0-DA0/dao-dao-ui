@@ -2,13 +2,15 @@ import { useEffect } from 'react'
 
 import { useRecoilValueLoadable } from 'recoil'
 
+import {
+  AddressInput,
+  InputErrorMessage,
+  InputLabel,
+  LogoNoBorder,
+} from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
-import { AddressInput } from '@components/input/AddressInput'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { LogoNoBorder } from '@components/Logo'
 import { tokenConfig } from 'selectors/daos'
 import { Config } from 'util/contractConfigWrapper'
 import { validateContractAddress, validateRequired } from 'util/formValidation'
@@ -45,6 +47,8 @@ export const TokenInfoDisplay = ({
   useEffect(() => {
     if (tokenInfo.state === 'hasError') {
       setError('Failed to get token info')
+    } else if (tokenInfo.state === 'loading') {
+      setError('Loading token')
     } else {
       clearError()
     }
@@ -112,13 +116,13 @@ export const TokenSelector = ({
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />
-        <InputErrorMessage error={errors?.to} />
+        <InputErrorMessage error={errors?.address} />
       </div>
       <TokenInfoDisplay
         address={tokenAddress}
-        clearError={() => clearErrors(getLabel('to'))}
+        clearError={() => clearErrors(getLabel('address'))}
         setError={(message) =>
-          setError(getLabel('to'), { type: 'manual', message })
+          setError(getLabel('address'), { type: 'manual', message })
         }
       />
     </div>

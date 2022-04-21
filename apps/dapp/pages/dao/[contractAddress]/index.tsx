@@ -3,28 +3,33 @@ import React, { useEffect, useState } from 'react'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
-import { useThemeContext } from 'ui'
-
-import { claimAvaliable, ClaimsPendingList } from '@components/Claims'
-import { DaoContractInfo } from '@components/DaoContractInfo'
-import SvgMemberCheck from '@components/icons/MemberCheck'
-import SvgPencil from '@components/icons/Pencil'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
+import { MemberCheck, Pencil } from '@dao-dao/icons'
 import {
-  BalanceCard,
-  ContractProposalsDispaly,
+  useThemeContext,
+  StakingMode,
   GradientHero,
-  HeroContractHorizontalInfo,
-  HeroContractHeader,
+  HorizontalInfo,
+  ContractHeader,
   StarButton,
-  HeroContractHorizontalInfoSection,
-} from 'components/ContractView'
+  HorizontalInfoSection,
+  BalanceCard,
+  Breadcrumbs,
+} from '@dao-dao/ui'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  claimAvaliable,
+} from '@dao-dao/utils'
+import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
+
+import { ClaimsPendingList } from '@components/Claims'
+import { DaoContractInfo } from '@components/DaoContractInfo'
+import { pinnedDaosAtom } from 'atoms/pinned'
+import { ContractProposalsDispaly } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
-import { StakingModal, StakingMode } from 'components/StakingModal'
+import { StakingModal } from 'components/StakingModal'
+import { contractInstantiateTime } from 'selectors/contracts'
 import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
 import {
   daoSelector,
@@ -39,11 +44,11 @@ import {
   walletStakedTokenBalance,
   walletTokenBalance,
   walletTokenBalanceLoading,
+  walletTokenBalanceUpdateCountAtom,
 } from 'selectors/treasury'
 import { addToken } from 'util/addToken'
 import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
-import { convertMicroDenomToDenomWithDecimals } from 'util/conversion'
 
 function DaoHome() {
   const router = useRouter()
@@ -51,6 +56,9 @@ function DaoHome() {
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
+  const establishedDate = useRecoilValue(
+    contractInstantiateTime(contractAddress)
+  )
   const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const { member } = useRecoilValue(isMemberSelector(contractAddress))
@@ -62,17 +70,16 @@ function DaoHome() {
   )
   const blockHeight = useRecoilValue(getBlockHeight)
   const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const initialClaimsAvaliable = stuff.claims
+  const claimsAvaliable = stuff.claims
     .filter((c) => claimAvaliable(c, blockHeight))
     .reduce((p, n) => p + Number(n.amount), 0)
-
-  // If a claim becomes avaliable while the page is open we need a way to update
-  // the number of claims avaliable.
-  const [claimsAvaliable, setClaimsAvaliable] = useState(initialClaimsAvaliable)
 
   const wallet = useRecoilValue(walletAddress)
   const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
     walletTokenBalanceLoading(wallet)
+  )
+  const setWalletTokenBalanceUpdateCount = useSetRecoilState(
+    walletTokenBalanceUpdateCountAtom(wallet)
   )
 
   const [showStaking, setShowStaking] = useState(false)
@@ -106,7 +113,7 @@ function DaoHome() {
             <div className="flex flex-row gap-4 items-center">
               {member && (
                 <div className="flex flex-row gap-2 items-center">
-                  <SvgMemberCheck fill="currentColor" width="16px" />
+                  <MemberCheck fill="currentColor" width="16px" />
                   <p className="text-sm text-primary">You{"'"}re a member</p>
                 </div>
               )}
@@ -124,32 +131,32 @@ function DaoHome() {
             </div>
           </div>
 
-          <HeroContractHeader
-            address={contractAddress}
+          <ContractHeader
             description={daoInfo.config.description}
-            imgUrl={daoInfo.config.image_url}
+            established={establishedDate}
+            imgUrl={daoInfo.config.image_url || undefined}
             name={daoInfo.config.name}
           />
 
           <div className="mt-2">
-            <HeroContractHorizontalInfo>
-              <HeroContractHorizontalInfoSection>
+            <HorizontalInfo>
+              <HorizontalInfoSection>
                 <UsersIcon className="inline w-4" />
                 {convertMicroDenomToDenomWithDecimals(
                   tokenInfo.total_supply,
                   tokenInfo.decimals
                 ).toLocaleString()}{' '}
                 ${tokenInfo?.symbol} total supply
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
+              </HorizontalInfoSection>
+              <HorizontalInfoSection>
                 <LibraryIcon className="inline w-4" />
                 {stakedPercent}% ${tokenInfo?.symbol} staked
-              </HeroContractHorizontalInfoSection>
-              <HeroContractHorizontalInfoSection>
-                <SvgPencil className="inline" fill="currentColor" />
+              </HorizontalInfoSection>
+              <HorizontalInfoSection>
+                <Pencil className="inline" fill="currentColor" />
                 {proposalsTotal} proposals created
-              </HeroContractHorizontalInfoSection>
-            </HeroContractHorizontalInfo>
+              </HorizontalInfoSection>
+            </HorizontalInfo>
           </div>
 
           <DaoContractInfo address={contractAddress} />
@@ -248,7 +255,9 @@ function DaoHome() {
           </div>
         ) : null}
         <ClaimsPendingList
-          incrementClaimsAvaliable={(n) => setClaimsAvaliable((a) => a + n)}
+          incrementClaimsAvaliable={(_) =>
+            setWalletTokenBalanceUpdateCount((n) => n + 1)
+          }
           stakingAddress={daoInfo.staking_contract}
           tokenInfo={tokenInfo}
         />
@@ -256,7 +265,7 @@ function DaoHome() {
           <StakingModal
             afterExecute={() => setTokenBalancesLoading(false)}
             beforeExecute={() => setTokenBalancesLoading(true)}
-            claimAmount={claimsAvaliable}
+            claimableTokens={claimsAvaliable}
             contractAddress={contractAddress}
             defaultMode={StakingMode.Stake}
             onClose={() => setShowStaking(false)}

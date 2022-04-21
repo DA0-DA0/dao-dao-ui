@@ -1,20 +1,22 @@
 import { Config as DAOConfig } from '@dao-dao/types/contracts/cw3-dao'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
-
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { NumberInput } from '@components/input/NumberInput'
-import { TextInput } from '@components/input/TextInput'
-import { ToggleInput } from '@components/input/ToggleInput'
-import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
-import { Config } from 'util/contractConfigWrapper'
+import {
+  InputErrorMessage,
+  InputLabel,
+  NumberInput,
+  TextInput,
+  ToggleInput,
+} from '@dao-dao/ui'
 import {
   secondsToWdhms,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getDaoThresholdAndQuorum,
-} from 'util/conversion'
+} from '@dao-dao/utils'
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
+import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from 'pages/dao/create'
+import { Config } from 'util/contractConfigWrapper'
 import {
   validatePercent,
   validatePositive,
@@ -28,11 +30,6 @@ import {
   TemplateComponent,
   ToCosmosMsgProps,
 } from './templateList'
-
-enum ThresholdMode {
-  Threshold,
-  ThresholdQuorum,
-}
 
 export interface DAOConfigUpdateData {
   name: string

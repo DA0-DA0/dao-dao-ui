@@ -6,26 +6,28 @@ import { useRouter } from 'next/router'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
 
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { Airplane } from '@dao-dao/icons'
+import { Button, Tooltip } from '@dao-dao/ui'
+import {
+  GradientHero,
+  Breadcrumbs,
+  ImageSelector,
+  InputErrorMessage,
+  InputLabel,
+  NumberInput,
+  TextareaInput,
+  TextInput,
+  TokenAmountInput,
+} from '@dao-dao/ui'
+import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
 import { PlusIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
-import { Button } from 'ui'
 
-import { GradientHero } from '@components/ContractView'
 import { FormCard } from '@components/FormCard'
-import SvgAirplane from '@components/icons/Airplane'
-import { ImageSelector } from '@components/input/ImageSelector'
-import { InputErrorMessage } from '@components/input/InputErrorMessage'
-import { InputLabel } from '@components/input/InputLabel'
-import { NumberInput } from '@components/input/NumberInput'
-import { TextareaInput } from '@components/input/TextAreaInput'
-import { TextInput } from '@components/input/TextInput'
-import { TokenAmountInput } from '@components/input/TokenAmountInput'
 import TooltipsDisplay, {
   useTooltipsRegister,
 } from '@components/TooltipsDisplay'
 import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { Breadcrumbs } from 'components/Breadcrumbs'
 import {
   multisigCreateTooltipsDefault,
   multisigCreateTooltipsGetter,
@@ -35,8 +37,6 @@ import {
   walletAddress as walletAddressSelector,
 } from 'selectors/cosm'
 import { cleanChainError } from 'util/cleanChainError'
-import { MULTISIG_CODE_ID } from 'util/constants'
-import { secondsToWdhms } from 'util/conversion'
 import {
   validatePercent,
   validatePositive,
@@ -296,7 +296,7 @@ const CreateMultisig: NextPage = () => {
           >
             <Button disabled={!walletAddress} loading={loading} type="submit">
               Submit{' '}
-              <SvgAirplane color="currentColor" height="14px" width="14px" />
+              <Airplane color="currentColor" height="14px" width="14px" />
             </Button>
           </Tooltip>
         </div>

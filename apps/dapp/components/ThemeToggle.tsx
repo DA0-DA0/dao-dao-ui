@@ -1,5 +1,5 @@
+import { useThemeContext } from '@dao-dao/ui'
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
-import { useThemeContext } from 'ui'
 
 export const defaultTheme = 'dark'
 

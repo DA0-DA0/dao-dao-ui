@@ -8,6 +8,7 @@ import {
   // Cw20CoinVerified,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
+import { NATIVE_DECIMALS } from '@dao-dao/utils'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
 import {
@@ -50,10 +51,20 @@ export const cw20TokenInfo = selectorFamily({
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClient)
-      const response = (await client.queryContractSmart(address, {
-        token_info: {},
-      })) as TokenInfoResponse
-      return response
+      try {
+        const response = (await client.queryContractSmart(address, {
+          token_info: {},
+        })) as TokenInfoResponse
+        return response
+      } catch (e) {
+        console.error(e)
+        return {
+          decimals: NATIVE_DECIMALS,
+          name: 'unknown',
+          symbol: 'unknown',
+          total_supply: '0',
+        }
+      }
     },
 })
 

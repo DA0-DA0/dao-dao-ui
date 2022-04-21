@@ -42,7 +42,7 @@ export const validateContractAddress = (v: string) =>
 
 export const validateJSON = (v: string) => {
   try {
-    const o = JSON5.parse(v)
+    JSON5.parse(v)
     return true
   } catch (e: any) {
     return e?.message as string

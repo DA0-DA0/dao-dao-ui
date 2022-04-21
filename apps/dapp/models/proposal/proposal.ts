@@ -9,10 +9,6 @@ import {
   Votes,
 } from '@dao-dao/types/contracts/cw3-dao'
 
-import { ProposalMapItem } from 'types/proposals'
-
-import { labelForMessage } from '../../util/messagehelpers'
-
 export const MEMO_MAX_LEN = 255
 
 const EmptyThreshold: Threshold = {
@@ -45,12 +41,6 @@ export const EmptyProposal: Proposal = {
   votes: { ...EmptyVotes },
 }
 
-export const EmptyProposalItem: ProposalMapItem = {
-  proposal: EmptyProposal,
-  id: '',
-  draft: true,
-}
-
 export const EmptyThresholdResponse: ThresholdResponse = {
   absolute_percentage: {
     percentage: '0',
@@ -75,14 +65,4 @@ export const EmptyProposalResponse: ProposalResponse = {
   status: 'Draft' as Status,
   threshold: { ...EmptyThresholdResponse },
   total_weight: '0',
-}
-
-export function memoForProposal(proposal: Proposal): string {
-  const messagesMemo = proposal.msgs
-    ? proposal.msgs.map((msg) => labelForMessage(msg)).join(', ')
-    : ''
-  return `${proposal.title}\n${proposal.description}\n\n${messagesMemo}`.slice(
-    0,
-    MEMO_MAX_LEN
-  )
 }

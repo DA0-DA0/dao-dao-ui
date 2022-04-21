@@ -1,9 +1,8 @@
+import { Modal } from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
 
 import { ContractSupport, MessageTemplate } from 'templates/templateList'
 import { Config } from 'util/contractConfigWrapper'
-
-import { Modal } from './Modal'
 
 export function MessageTemplateDisplayItem({
   template,

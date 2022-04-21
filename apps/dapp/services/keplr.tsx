@@ -1,6 +1,5 @@
+import { convertFromMicroDenom } from '@dao-dao/utils'
 import { Keplr, Window as KeplrWindow } from '@keplr-wallet/types'
-
-import { convertFromMicroDenom } from '../util/conversion'
 
 declare global {
   interface Window extends KeplrWindow {}
