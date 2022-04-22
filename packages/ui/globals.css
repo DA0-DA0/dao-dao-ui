@@ -36,6 +36,17 @@ html[data-theme='dark'] {
   font-style: normal;
 }
 
+@font-face {
+    font-family: 'studiofeixen';
+    src: url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.eot');
+    src: url('https://font.withoutdoing.com/StudioFeixenSansEdgy-Bold.eot') format('embedded-opentype'),
+	 url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.woff2') format('woff2'),
+	 url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold') format('woff'),
+	 url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 html,
 body {
   font-family: 'Inter', sans-serif;
@@ -117,10 +128,11 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .hero-text {
+    font-family: "studiofeixen";
     font-style: normal;
     font-weight: 700;
-    font-size: 26px;
-    line-height: 28px;
+    font-size: 54px;
+    line-height: 1;
     color: rgba(var(--dark, 1));
   }
 
