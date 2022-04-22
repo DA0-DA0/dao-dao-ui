@@ -36,6 +36,7 @@
     "ajv": "^8.9.0",
     "axios": "^0.26.1",
     "chart.js": "^3.7.1",
+    "clsx": "^1.1.1",
     "codemirror": "^5.65.0",
     "dotenv": "^10.0.0",
     "fast-average-color-node": "^2.1.0",

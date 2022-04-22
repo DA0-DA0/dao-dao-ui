@@ -1,6 +1,7 @@
-import { FunctionComponent } from 'react'
+import { ComponentType, FunctionComponent, SVGProps, useMemo } from 'react'
 
-// import { useRouter } from 'next/router'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 import { useWallet } from '@dao-dao/state'
 import { WalletConnect } from '@dao-dao/ui'
@@ -11,11 +12,57 @@ import {
   NATIVE_DENOM,
   SITE_TITLE,
 } from '@dao-dao/utils'
+import clsx from 'clsx'
 
-import { ProfileIcon, Logo } from '@/components'
+import {
+  ProfileIcon,
+  Logo,
+  AirdropIcon,
+  TokenomicsIcon,
+  GovernanceIcon,
+  ProposalIcon,
+} from '@/components'
+
+interface NavItemData {
+  Icon: ComponentType<SVGProps<SVGSVGElement>>
+  label: string
+  href: string
+}
+
+interface NavItemProps {
+  item: NavItemData
+  pathname: string
+}
+
+const NavItem: FunctionComponent<NavItemProps> = ({
+  item: { Icon, label, href },
+  pathname,
+}) => {
+  const isActive = pathname === href
+
+  return (
+    <Link key={href} href={href}>
+      <a
+        className={clsx('flex flex-row gap-2 items-center p-3 rounded-lg', {
+          'text-accent bg-dark-accent': isActive,
+          'text-body hover:bg-card': !isActive,
+        })}
+      >
+        {Icon && (
+          <Icon
+            color={isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)'}
+            height={14}
+            width={14}
+          />
+        )}
+        <p className="hidden lg:block">{label}</p>
+      </a>
+    </Link>
+  )
+}
 
 export const Header: FunctionComponent = () => {
-  // const router = useRouter()
+  const router = useRouter()
   const { connect, connected, address, name, nativeBalance } = useWallet()
 
   const walletBalance =
@@ -25,6 +72,36 @@ export const Header: FunctionComponent = () => {
   const humanDenom =
     convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
 
+  const navItems = useMemo<NavItemData[]>(
+    () => [
+      {
+        Icon: AirdropIcon,
+        label: 'Airdrop',
+        href: '/airdrop',
+      },
+      {
+        Icon: TokenomicsIcon,
+        label: 'Tokenomics',
+        href: '/',
+      },
+      {
+        Icon: GovernanceIcon,
+        label: 'Governance',
+        href: '/governance',
+      },
+      ...(router.pathname.match(/\/proposal\/\d+/)
+        ? [
+            {
+              Icon: ProposalIcon,
+              label: `Proposal ${router.query.proposalId as string}`,
+              href: router.pathname,
+            },
+          ]
+        : []),
+    ],
+    [router.pathname, router.query]
+  )
+
   return (
     <header className="grid grid-cols-3 items-center py-4 px-6">
       <div className="flex flex-row gap-2 items-center w-full md:gap-4">
@@ -32,7 +109,11 @@ export const Header: FunctionComponent = () => {
         <p className="hidden text-xl md:block">{SITE_TITLE}</p>
       </div>
 
-      <div className="justify-self-center"></div>
+      <div className="flex flex-row gap-2 justify-self-center items-center">
+        {navItems.map((item) => (
+          <NavItem key={item.href} item={item} pathname={router.pathname} />
+        ))}
+      </div>
 
       <div className="w-full h-10">
         {connected ? (

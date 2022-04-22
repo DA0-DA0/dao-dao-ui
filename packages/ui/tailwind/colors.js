@@ -28,6 +28,7 @@ const textColor = {
   secondary: generateColorClass('dark', 0.8),
   tertiary: generateColorClass('dark', 0.6),
   disabled: generateColorClass('dark', 0.4),
+  accent: generateColorClass('accent', 1),
 }
 
 const backgroundColor = {
@@ -38,6 +39,7 @@ const backgroundColor = {
   tertiary: generateColorClass('dark', 0.3),
   toast: generateColorClass('dark', 0.85),
   card: generateColorClass('dark', 0.08),
+  'dark-accent': generateColorClass('dark-accent', 1),
 }
 
 const borderColor = {

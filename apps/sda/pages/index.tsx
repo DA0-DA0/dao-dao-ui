@@ -19,6 +19,29 @@ import { DAO_ADDRESS } from '@/util/constants'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement)
 
+const expectedAPRDurations = [
+  {
+    label: '1 week',
+    days: 7,
+  },
+  {
+    label: '2 weeks',
+    days: 14,
+  },
+  {
+    label: 'month',
+    days: 30,
+  },
+  {
+    label: '6 months',
+    days: 182,
+  },
+  {
+    label: '1 year',
+    days: 365,
+  },
+]
+
 const InnerHome: NextPage<PageWrapperProps> = () => {
   const router = useRouter()
   const { theme } = useThemeContext()
@@ -41,8 +64,8 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
     .split('.')[1]
 
   // Earnings only, excluding original value.
-  const projectedEarnings = [...Array(6)].map(
-    (_, i) => yourStake * (1 + aprReward / 100) ** i - yourStake
+  const projectedEarnings = expectedAPRDurations.map(
+    ({ days }) => yourStake * (1 + aprReward / 100) ** (days / 365) - yourStake
   )
 
   // Compute dark color based on stylesheet.
@@ -68,7 +91,7 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
   }
 
   return (
-    <div className="p-8 mx-auto space-y-16 max-w-screen-xl">
+    <div className="p-8 mx-auto space-y-8 max-w-screen-xl">
       <div className="flex relative flex-col items-center mt-10 bg-primary rounded-b-lg">
         <div className="absolute -top-8 bg-light rounded-full border border-default">
           <Logo height={60} width={60} />
@@ -187,11 +210,14 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
 
             <div className="grid grid-cols-[auto_auto] gap-1 items-center gris-rows-2">
               <div className="justify-self-center mr-3 w-3 h-3 bg-tertiary rounded-full"></div>
-              <p className="font-mono text-sm">Returns</p>
+              <p className="font-mono text-sm">1 year projection</p>
               <p className="col-start-2 font-mono text-sm text-tertiary">
-                {projectedEarnings.slice(-1)[0].toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                })}{' '}
+                {(projectedEarnings.slice(-1)[0] + yourStake).toLocaleString(
+                  undefined,
+                  {
+                    maximumFractionDigits: tokenDecimals,
+                  }
+                )}{' '}
                 {tokenName}
               </p>
             </div>
@@ -199,18 +225,16 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
 
           <Bar
             data={{
-              labels: projectedEarnings.map((_, i) =>
-                i === 0 ? 'now' : `year ${i}`
-              ),
+              labels: expectedAPRDurations.map(({ label }) => label),
               datasets: [
-                {
-                  data: [...Array(projectedEarnings.length)].map(
-                    () => yourStake
-                  ),
-                  barPercentage: 0.95,
-                  categoryPercentage: 1,
-                  backgroundColor: `rgba(${barColor}, 0.85)`,
-                },
+                // {
+                //   data: [...Array(projectedEarnings.length)].map(
+                //     () => yourStake
+                //   ),
+                //   barPercentage: 0.95,
+                //   categoryPercentage: 1,
+                //   backgroundColor: `rgba(${barColor}, 0.85)`,
+                // },
                 {
                   data: projectedEarnings,
                   barPercentage: 0.95,
