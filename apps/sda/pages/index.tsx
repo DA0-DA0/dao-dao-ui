@@ -1,16 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import type { GetServerSideProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import { QueryClient } from '@dao-dao/state/clients/cw-governance'
+import { useThemeContext } from '@dao-dao/ui'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
 
 import { Logo, PageWrapper, PageWrapperProps } from '@/components'
 import { DAO_ADDRESS } from '@/util/constants'
 
+ChartJS.register(CategoryScale, LinearScale, BarElement)
+
 const InnerHome: NextPage<PageWrapperProps> = () => {
   const router = useRouter()
+  const { theme } = useThemeContext()
 
   const tokenName = 'RAW'
   const tokenDecimals = 6
@@ -22,12 +33,35 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
   const votingPower = (yourStake / totalStakedBalance) * 100
   const aprReward = 103
 
+  // Earnings only, excluding original value.
+  const projectedEarnings = [...Array(5)].map(
+    (_, i) => yourStake * (1 + aprReward / 100) ** i - yourStake
+  )
+
+  // Compute dark color based on stylesheet.
+  const [barColor, setBarColor] = useState('white')
+  useEffect(() => {
+    // Do nothing if not on browser.
+    if (typeof window === 'undefined') return
+
+    const timeout = setTimeout(() => {
+      // Extract '--dark' variable from CSS.
+      const style = getComputedStyle(document.body)
+      setBarColor(style.getPropertyValue('--dark').trim())
+    }, 100)
+
+    return () => clearTimeout(timeout)
+    // Update bar color when theme changes since we're reading a
+    // dynamically-set CSS variable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme, setBarColor])
+
   if (router.isFallback) {
     throw new Error('Failed to load page data.')
   }
 
   return (
-    <div className="p-8 mx-auto max-w-screen-xl">
+    <div className="p-8 mx-auto space-y-16 max-w-screen-xl">
       <div className="flex relative flex-col items-center mt-10 bg-primary rounded-b-lg">
         <div className="absolute -top-8 bg-light rounded-full border border-default">
           <Logo height={60} width={60} />
@@ -111,6 +145,53 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="absolute">
+        <Bar
+          data={{
+            labels: projectedEarnings.map((_, i) =>
+              i === 0 ? 'now' : `year ${i}`
+            ),
+            datasets: [
+              {
+                data: [...Array(projectedEarnings.length)].map(() => yourStake),
+                barPercentage: 0.95,
+                categoryPercentage: 1,
+                backgroundColor: `rgba(${barColor}, 0.7)`,
+              },
+              {
+                data: projectedEarnings,
+                barPercentage: 0.95,
+                categoryPercentage: 1,
+                backgroundColor: `rgba(${barColor}, 0.3)`,
+              },
+            ],
+          }}
+          options={{
+            // Disable all events (hover, tooltip, etc.)
+            events: [],
+            animation: false,
+            scales: {
+              x: {
+                display: true,
+                stacked: true,
+                ticks: {
+                  color: `rgba(${barColor}, 0.3)`,
+                },
+              },
+              y: {
+                display: false,
+                stacked: true,
+              },
+            },
+            elements: {
+              bar: {
+                backgroundColor: `rgba(${barColor}, 0.3)`,
+              },
+            },
+          }}
+        />
       </div>
     </div>
   )
