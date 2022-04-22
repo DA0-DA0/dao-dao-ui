@@ -9,7 +9,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw4-voting'
-import { cosmWasmClientAtom, signingCosmWasmClientAtom } from '../chain'
+import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -20,7 +20,7 @@ const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
   get:
     ({ contractAddress }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientAtom)
+      const client = get(cosmWasmClientSelector)
       if (!client) return
 
       return new QueryClient(client, contractAddress)
@@ -40,7 +40,7 @@ export const executeClient = selectorFamily<
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientSelector)
       if (!client) return
 
       return new ExecuteClient(client, sender, contractAddress)

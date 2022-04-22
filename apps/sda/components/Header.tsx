@@ -115,7 +115,12 @@ export const Header: FunctionComponent = () => {
         ))}
       </div>
 
-      <div className="w-full h-10">
+      <div
+        className={clsx('h-10', {
+          'w-full': connected,
+          'justify-self-end': !connected,
+        })}
+      >
         {connected ? (
           <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
             <div className="flex flex-col items-end text-right link-text">

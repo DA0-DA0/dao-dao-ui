@@ -1,14 +1,9 @@
 import { selector } from 'recoil'
 
-import {
-  CHAIN_ID,
-  getKeplr,
-  getOfflineSignerAuto,
-  NATIVE_DENOM,
-} from '@dao-dao/utils'
+import { CHAIN_ID, getKeplr, getOfflineSignerAuto } from '@dao-dao/utils'
 
 import { keplrConnectedBeforeKey, keplrKeystoreIdAtom } from '../atoms/keplr'
-import { stargateClientAtom } from './chain'
+import { getLocalStorageNamespacedKey } from '../effects'
 
 export const keplrOfflineSignerSelector = selector({
   key: 'keplrOfflineSigner',
@@ -23,8 +18,14 @@ export const keplrOfflineSignerSelector = selector({
       console.error(error)
 
       // If failed to connect and was previously connected, stop trying to connect automatically in the future.
-      if (localStorage.getItem(keplrConnectedBeforeKey) === 'true') {
-        localStorage.removeItem(keplrConnectedBeforeKey)
+      if (
+        localStorage.getItem(
+          getLocalStorageNamespacedKey(keplrConnectedBeforeKey)
+        ) === 'true'
+      ) {
+        localStorage.removeItem(
+          getLocalStorageNamespacedKey(keplrConnectedBeforeKey)
+        )
       }
     }
   },
@@ -53,17 +54,5 @@ export const walletAccountNameSelector = selector({
 
     const info = await keplr.getKey(CHAIN_ID)
     return info?.name
-  },
-})
-
-export const walletNativeBalanceSelector = selector<number | undefined>({
-  key: 'walletNativeBalance',
-  get: async ({ get }) => {
-    const client = get(stargateClientAtom)
-    const address = get(walletAddressSelector)
-    if (!client || !address) return
-
-    const balance = await client.getBalance(address, NATIVE_DENOM)
-    return Number(balance.amount)
   },
 })

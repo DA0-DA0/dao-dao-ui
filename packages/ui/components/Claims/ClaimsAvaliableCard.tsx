@@ -5,15 +5,15 @@ import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { LogoNoBorder } from '../Logo'
 
-export interface ClaimsAvaliableCardProps {
-  avaliable: number
+export interface ClaimsAvailableCardProps {
+  available: number
   tokenInfo: TokenInfoResponse
   onClaim: () => void
   loading: boolean
 }
 
-export const ClaimsAvaliableCard: FC<ClaimsAvaliableCardProps> = ({
-  avaliable,
+export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
+  available,
   tokenInfo,
   onClaim,
   loading,
@@ -28,7 +28,7 @@ export const ClaimsAvaliableCard: FC<ClaimsAvaliableCardProps> = ({
       </div>
     ) : (
       <p className="mt-2 font-bold">
-        {convertMicroDenomToDenomWithDecimals(avaliable, tokenInfo.decimals)}$
+        {convertMicroDenomToDenomWithDecimals(available, tokenInfo.decimals)}$
         {tokenInfo.symbol}
       </p>
     )}

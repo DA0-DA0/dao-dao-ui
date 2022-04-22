@@ -4,12 +4,12 @@ import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
 import { getOfflineSignerAuto, isKeplrInstalled } from '@dao-dao/utils'
 
-import { keplrKeystoreIdAtom } from '../recoil/atoms/keplr'
 import {
   walletAccountNameSelector,
   walletAddressSelector,
   walletNativeBalanceSelector,
-} from '../recoil/selectors/keplr'
+} from '../recoil'
+import { keplrKeystoreIdAtom } from '../recoil/atoms/keplr'
 
 export const useWallet = () => {
   const setKeplrKeystoreId = useSetRecoilState(keplrKeystoreIdAtom)

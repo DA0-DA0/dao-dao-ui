@@ -2,6 +2,9 @@ import { AtomEffect } from 'recoil'
 
 import { CHAIN_ID } from '@dao-dao/utils'
 
+export const getLocalStorageNamespacedKey = (key: string) =>
+  `${CHAIN_ID}:${key}`
+
 export const localStorageEffect =
   <T>(
     key: string,
@@ -15,7 +18,7 @@ export const localStorageEffect =
     }
 
     // Namespace localStorage keys to prevent collisions.
-    const namespacedKey = `${CHAIN_ID}:${key}`
+    const namespacedKey = getLocalStorageNamespacedKey(key)
 
     const savedValue = localStorage.getItem(namespacedKey)
     if (savedValue !== null) setSelf(parse(savedValue))

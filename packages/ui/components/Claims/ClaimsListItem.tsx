@@ -5,14 +5,14 @@ import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  claimAvaliable,
+  claimAvailable,
 } from '@dao-dao/utils'
 import { CheckIcon } from '@heroicons/react/outline'
 
 import { BalanceIcon } from '../ContractView/BalanceIcon'
 
 function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
-  if (claimAvaliable(claim, blockHeight)) {
+  if (claimAvailable(claim, blockHeight)) {
     return { time: 0 }
   }
   if ('at_height' in claim.release_at) {
@@ -35,7 +35,8 @@ export interface ClaimsListItemProps {
   unstakingDuration: Duration
   blockHeight: number
   tokenInfo: TokenInfoResponse
-  incrementClaimsAvaliable: (n: number) => void
+  incrementClaimsAvailable: (n: number) => void
+  iconURI?: string
 }
 
 export const ClaimsListItem: FC<ClaimsListItemProps> = ({
@@ -43,29 +44,24 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   unstakingDuration,
   blockHeight,
   tokenInfo,
-  incrementClaimsAvaliable,
-}: {
-  claim: Claim
-  unstakingDuration: Duration
-  blockHeight: number
-  tokenInfo: TokenInfoResponse
-  incrementClaimsAvaliable: (n: number) => void
+  incrementClaimsAvailable,
+  iconURI,
 }) => {
-  const avaliable = claimAvaliable(claim, blockHeight)
+  const available = claimAvailable(claim, blockHeight)
 
   const durationForHumans = humanReadableDuration(unstakingDuration)
   const durationRemaining = claimDurationRemaining(claim, blockHeight)
 
-  // Once the claim expires increment claims avaliable.
+  // Once the claim expires increment claims available.
   useEffect(() => {
     if ('time' in durationRemaining) {
       const id = setTimeout(
-        () => incrementClaimsAvaliable(Number(claim.amount)),
+        () => incrementClaimsAvailable(Number(claim.amount)),
         durationRemaining.time * 1000
       )
       return () => clearTimeout(id)
     }
-  }, [claim.amount, durationRemaining, incrementClaimsAvaliable])
+  }, [claim.amount, durationRemaining, incrementClaimsAvailable])
 
   const [durationRemainingForHumans, setDurationRemainingForHumans] = useState(
     humanReadableDuration(durationRemaining)
@@ -81,24 +77,26 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
   return (
-    <div className="flex gap-2 justify-between items-center p-4 my-2 bg-primary rounded-lg">
-      <p className="flex gap-2 items-center mt-1">
-        <BalanceIcon />
+    <div className="flex gap-2 justify-between items-center p-4 my-2 rounded-lg bg-primary">
+      <p className="flex gap-2 items-center">
+        <BalanceIcon iconURI={iconURI} />
         {convertMicroDenomToDenomWithDecimals(
           claim.amount,
           tokenInfo.decimals
-        )}{' '}
+        ).toLocaleString(undefined, {
+          maximumFractionDigits: tokenInfo.decimals,
+        })}{' '}
         ${tokenInfo.symbol}
       </p>
 
-      {avaliable ? (
+      {available ? (
         <p className="font-mono text-sm text-secondary">
-          Avaliable
+          Available
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
         <div className="flex flex-wrap gap-2 text-caption">
-          <p>{durationRemainingForHumans || '0'} left</p>
+          <p>{durationRemainingForHumans || '0'} remaining</p>
           <p>/ {durationForHumans}</p>
         </div>
       )}

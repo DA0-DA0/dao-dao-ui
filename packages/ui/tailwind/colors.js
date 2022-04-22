@@ -40,6 +40,7 @@ const backgroundColor = {
   toast: generateColorClass('dark', 0.85),
   card: generateColorClass('dark', 0.08),
   'dark-accent': generateColorClass('dark-accent', 1),
+  'very-light': generateColorClass('very-light', 1),
 }
 
 const borderColor = {

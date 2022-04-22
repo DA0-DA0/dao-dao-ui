@@ -16,6 +16,10 @@ const tailwindConfig = {
     require('@tailwindcss/typography'),
   ],
   theme: {
+    screens: {
+      xs: '416px',
+      ...defaultTheme.screens,
+    },
     extend: {
       backgroundImage: {
         'gradient-radial-t': `radial-gradient(ellipse at top, var(--tw-gradient-stops))`,

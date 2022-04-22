@@ -1386,6 +1386,14 @@
     dotenv "^10.0.0"
     json-schema-to-typescript "^10.1.5"
 
+"@dao-dao/types@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@dao-dao/types/-/types-1.0.0.tgz#92667749d272d83eb8deca5cc45ccebdca6c8ee2"
+  integrity sha512-2AlFtPiAHfpwlCG/dBJCfUr0xfZUrdUJzVU+4KaES84QJQ+waCzBmhuaoQaL1wsdCMrmufszga3f3xAUYndABw==
+  dependencies:
+    dotenv "^10.0.0"
+    json-schema-to-typescript "^10.1.5"
+
 "@discoveryjs/json-ext@^0.5.3":
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"

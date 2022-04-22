@@ -15,7 +15,7 @@ export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
           </p>
           <p>
             <a
-              className="underline hover:no-underline text-accent"
+              className="text-accent underline hover:no-underline"
               href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
               rel="noreferrer"
               target="_blank"
