@@ -29,12 +29,19 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
   const rawPrice = 40.2
   const treasuryBalance = 1980000
   const totalStakedBalance = 700000
-  const yourStake = 1025
+  const yourStake = 1025.4321
   const votingPower = (yourStake / totalStakedBalance) * 100
   const aprReward = 103
 
+  // Extract decimals only from stake so we can change font size.
+  const yourStakeDecimalsOnly = yourStake
+    .toLocaleString(undefined, {
+      maximumFractionDigits: tokenDecimals,
+    })
+    .split('.')[1]
+
   // Earnings only, excluding original value.
-  const projectedEarnings = [...Array(5)].map(
+  const projectedEarnings = [...Array(6)].map(
     (_, i) => yourStake * (1 + aprReward / 100) ** i - yourStake
   )
 
@@ -147,51 +154,97 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
         </div>
       </div>
 
-      <div className="absolute">
-        <Bar
-          data={{
-            labels: projectedEarnings.map((_, i) =>
-              i === 0 ? 'now' : `year ${i}`
-            ),
-            datasets: [
-              {
-                data: [...Array(projectedEarnings.length)].map(() => yourStake),
-                barPercentage: 0.95,
-                categoryPercentage: 1,
-                backgroundColor: `rgba(${barColor}, 0.7)`,
-              },
-              {
-                data: projectedEarnings,
-                barPercentage: 0.95,
-                categoryPercentage: 1,
-                backgroundColor: `rgba(${barColor}, 0.3)`,
-              },
-            ],
-          }}
-          options={{
-            // Disable all events (hover, tooltip, etc.)
-            events: [],
-            animation: false,
-            scales: {
-              x: {
-                display: true,
-                stacked: true,
-                ticks: {
-                  color: `rgba(${barColor}, 0.3)`,
+      <div className="grid grid-cols-[minmax(0,1fr)] grid-rows-[auto_1px_auto] rounded-lg border border-default lg:grid-cols-[minmax(0,_2fr)_1px_minmax(0,3fr)] lg:grid-rows-1">
+        <div className="p-8">
+          <p className="mb-4 font-mono text-sm">
+            Staked tokens (=voting power)
+          </p>
+
+          <p className="text-2xl">
+            {yourStake.toFixed(0)}
+            <span className="text-xl">
+              {yourStakeDecimalsOnly && `.${yourStakeDecimalsOnly}`} {tokenName}
+            </span>
+          </p>
+        </div>
+
+        <div className="w-full h-full bg-light"></div>
+
+        <div className="p-8">
+          <p className="mb-4 font-mono text-sm">Hypothetical account value</p>
+
+          <div className="flex flex-row gap-8 items-center">
+            <div className="grid grid-cols-[auto_auto] gap-1 items-center gris-rows-2">
+              <div className="justify-self-center mr-3 w-3 h-3 bg-toast rounded-full"></div>
+              <p className="font-mono text-sm">Staked</p>
+              <p className="col-start-2 font-mono text-sm text-tertiary">
+                {yourStake.toLocaleString(undefined, {
+                  maximumFractionDigits: tokenDecimals,
+                })}{' '}
+                {tokenName}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-[auto_auto] gap-1 items-center gris-rows-2">
+              <div className="justify-self-center mr-3 w-3 h-3 bg-tertiary rounded-full"></div>
+              <p className="font-mono text-sm">Returns</p>
+              <p className="col-start-2 font-mono text-sm text-tertiary">
+                {projectedEarnings.slice(-1)[0].toLocaleString(undefined, {
+                  maximumFractionDigits: tokenDecimals,
+                })}{' '}
+                {tokenName}
+              </p>
+            </div>
+          </div>
+
+          <Bar
+            data={{
+              labels: projectedEarnings.map((_, i) =>
+                i === 0 ? 'now' : `year ${i}`
+              ),
+              datasets: [
+                {
+                  data: [...Array(projectedEarnings.length)].map(
+                    () => yourStake
+                  ),
+                  barPercentage: 0.95,
+                  categoryPercentage: 1,
+                  backgroundColor: `rgba(${barColor}, 0.85)`,
+                },
+                {
+                  data: projectedEarnings,
+                  barPercentage: 0.95,
+                  categoryPercentage: 1,
+                  backgroundColor: `rgba(${barColor}, 0.3)`,
+                },
+              ],
+            }}
+            options={{
+              aspectRatio: 2.5,
+              // Disable all events (hover, tooltip, etc.)
+              events: [],
+              animation: false,
+              scales: {
+                x: {
+                  display: true,
+                  stacked: true,
+                  ticks: {
+                    color: `rgba(${barColor}, 0.3)`,
+                  },
+                },
+                y: {
+                  display: false,
+                  stacked: true,
                 },
               },
-              y: {
-                display: false,
-                stacked: true,
+              elements: {
+                bar: {
+                  backgroundColor: `rgba(${barColor}, 0.3)`,
+                },
               },
-            },
-            elements: {
-              bar: {
-                backgroundColor: `rgba(${barColor}, 0.3)`,
-              },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
     </div>
   )
