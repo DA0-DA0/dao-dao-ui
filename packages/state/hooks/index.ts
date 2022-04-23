@@ -1,5 +1,6 @@
 export * as CwGovernance from './cw-governance'
 export * as CwProposalSingle from './cw-proposal-single'
 export * as Cw4Voting from './cw4-voting'
+export * as Cw20Base from './cw20-base'
 export * as StakeCw20 from './stake-cw20'
 export * from './useWallet'

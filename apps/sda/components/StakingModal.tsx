@@ -1,13 +1,13 @@
 import { useState, FunctionComponent } from 'react'
 
-import { constSelector, SetterOrUpdater, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import {
   useWallet,
   blockHeightSelector,
   govTokenInfoSelector,
 } from '@dao-dao/state'
+import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
 import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
 import {
@@ -18,7 +18,6 @@ import {
   claimsSelector,
   getConfigSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
 import {
   claimAvailable,
@@ -28,46 +27,6 @@ import toast from 'react-hot-toast'
 
 import { cleanChainError } from '@/util/cleanChainError'
 import { DAO_ADDRESS } from '@/util/constants'
-
-const executeStakeAction = async (
-  denomAmount: number,
-  tokenAddress: string,
-  tokenInfo: TokenInfoResponse,
-  stakingAddress: string,
-  signingClient: SigningCosmWasmClient,
-  walletAddress: string,
-  setLoading: SetterOrUpdater<boolean>,
-  onDone: Function
-) => {
-  const amount = convertDenomToMicroDenomWithDecimals(
-    denomAmount,
-    tokenInfo.decimals
-  )
-  setLoading(true)
-  signingClient
-    ?.execute(
-      walletAddress,
-      tokenAddress,
-      {
-        send: {
-          owner: walletAddress,
-          contract: stakingAddress,
-          amount: amount,
-          msg: btoa('{"stake": {}}'),
-        },
-      },
-      'auto'
-    )
-    .catch((err) => {
-      toast.error(cleanChainError(err.message))
-      console.log(err.message)
-    })
-    .finally(() => {
-      setLoading(false)
-      toast.success(`Staked ${denomAmount} tokens`)
-      onDone()
-    })
-}
 
 interface StakingModalProps {
   defaultMode: StakingMode
@@ -131,6 +90,10 @@ export const StakingModal: FunctionComponent<StakingModalProps> = ({
           .reduce((p, c) => p + Number(c.amount), 0)
       : 0
 
+  const doStake = useSend({
+    contractAddress: tokenContractAddress ?? '',
+    sender: walletAddress ?? '',
+  })
   const doUnstake = useUnstake({
     contractAddress: stakingContractAddress ?? '',
     sender: walletAddress ?? '',
@@ -153,15 +116,20 @@ export const StakingModal: FunctionComponent<StakingModalProps> = ({
         )
 
         setLoading(true)
+
         try {
-          // await doStake({ amount: microAmount })
-          toast.success(`Unstaked ${amount} tokens`)
+          await doStake({
+            amount: microAmount,
+            contract: stakingContractConfig,
+            msg: btoa('{"stake":{}}'),
+          })
+          toast.success(`Staked ${amount} tokens`)
+          setAmount(0)
         } catch (err) {
           toast.error(cleanChainError(err.message))
         }
 
-        // setLoading(false)
-        // setAmount(0)
+        setLoading(false)
 
         // TODO: Figure out what to do about this.
         // New staking balances will not appear until the next block has been added.
@@ -181,12 +149,12 @@ export const StakingModal: FunctionComponent<StakingModalProps> = ({
         try {
           await doUnstake({ amount: microAmount })
           toast.success(`Unstaked ${amount} tokens`)
+          setAmount(0)
         } catch (err) {
           toast.error(cleanChainError(err.message))
         }
 
-        // setLoading(false)
-        // setAmount(0)
+        setLoading(false)
 
         // TODO: Figure out what to do about this.
         // New staking balances will not appear until the next block has been added.
@@ -206,12 +174,12 @@ export const StakingModal: FunctionComponent<StakingModalProps> = ({
         try {
           await doClaim({ amount: microAmount })
           toast.success(`Unstaked ${amount} tokens`)
+          setAmount(0)
         } catch (err) {
           toast.error(cleanChainError(err.message))
         }
 
-        // setLoading(false)
-        // setAmount(0)
+        setLoading(false)
 
         // TODO: Figure out what to do about this.
         // New staking balances will not appear until the next block has been added.
