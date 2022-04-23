@@ -3,6 +3,7 @@ import { ComponentType, FunctionComponent, SVGProps, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
+import { Profile, Airdrop, Pie, Governance, Hash } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import { WalletConnect } from '@dao-dao/ui'
 import {
@@ -14,14 +15,7 @@ import {
 } from '@dao-dao/utils'
 import clsx from 'clsx'
 
-import {
-  ProfileIcon,
-  Logo,
-  AirdropIcon,
-  TokenomicsIcon,
-  GovernanceIcon,
-  ProposalIcon,
-} from '@/components'
+import { Logo } from '@/components'
 
 interface NavItemData {
   Icon: ComponentType<SVGProps<SVGSVGElement>>
@@ -31,14 +25,14 @@ interface NavItemData {
 
 interface NavItemProps {
   item: NavItemData
-  pathname: string
+  path: string
 }
 
 const NavItem: FunctionComponent<NavItemProps> = ({
   item: { Icon, label, href },
-  pathname,
+  path,
 }) => {
-  const isActive = pathname === href
+  const isActive = path === href
 
   return (
     <Link key={href} href={href}>
@@ -75,31 +69,31 @@ export const Header: FunctionComponent = () => {
   const navItems = useMemo<NavItemData[]>(
     () => [
       {
-        Icon: AirdropIcon,
+        Icon: Airdrop,
         label: 'Airdrop',
         href: '/airdrop',
       },
       {
-        Icon: TokenomicsIcon,
+        Icon: Pie,
         label: 'Tokenomics',
         href: '/',
       },
       {
-        Icon: GovernanceIcon,
+        Icon: Governance,
         label: 'Governance',
         href: '/governance',
       },
-      ...(router.pathname.match(/\/proposal\/\d+/)
+      ...(/^\/proposal\/\d+$/.test(router.asPath)
         ? [
             {
-              Icon: ProposalIcon,
-              label: `Proposal ${router.query.proposalId as string}`,
-              href: router.pathname,
+              Icon: Hash,
+              label: router.query.proposalId as string,
+              href: router.asPath,
             },
           ]
         : []),
     ],
-    [router.pathname, router.query]
+    [router.asPath, router.query]
   )
 
   return (
@@ -111,7 +105,7 @@ export const Header: FunctionComponent = () => {
 
       <div className="flex flex-row gap-2 justify-self-center items-center">
         {navItems.map((item) => (
-          <NavItem key={item.href} item={item} pathname={router.pathname} />
+          <NavItem key={item.href} item={item} path={router.asPath} />
         ))}
       </div>
 
@@ -130,7 +124,7 @@ export const Header: FunctionComponent = () => {
               </span>
             </div>
 
-            <ProfileIcon height={40} width={40} />
+            <Profile height={40} width={40} />
           </div>
         ) : (
           <WalletConnect

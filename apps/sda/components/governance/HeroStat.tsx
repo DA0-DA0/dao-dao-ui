@@ -8,17 +8,15 @@ export interface IconStatsProps {
   children: ReactNode
 }
 
-export function HeroStat({ Icon, size = 'md', children }: IconStatsProps) {
-  return (
-    <div className="flex items-center space-x-2">
-      <Icon
-        className={clsx('text-secondary fill-current', {
-          'w-3 h-3': size == 'sm',
-          'w-4 h-4': size == 'md',
-          'w-5 h-5': size == 'lg',
-        })}
-      />
-      <span>{children}</span>
-    </div>
-  )
-}
+export const HeroStat = ({ Icon, size = 'md', children }: IconStatsProps) => (
+  <div className="flex items-center space-x-2">
+    <Icon
+      className={clsx('text-secondary fill-current', {
+        'w-3 h-3': size == 'sm',
+        'w-4 h-4': size == 'md',
+        'w-5 h-5': size == 'lg',
+      })}
+    />
+    <span>{children}</span>
+  </div>
+)

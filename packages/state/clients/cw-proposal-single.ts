@@ -220,7 +220,13 @@ export type WasmMsg =
       }
     }
 export type Binary = string
-export type Status = 'open' | 'rejected' | 'passed' | 'executed' | 'closed'
+export enum Status {
+  Open = 'open',
+  Rejected = 'rejected',
+  Passed = 'passed',
+  Executed = 'executed',
+  Closed = 'closed',
+}
 export interface ListProposalsResponse {
   proposals: ProposalResponse[]
   [k: string]: unknown
@@ -258,7 +264,11 @@ export interface Votes {
   yes: Uint128
   [k: string]: unknown
 }
-export type Vote = 'yes' | 'no' | 'abstain'
+export enum Vote {
+  Yes = 'yes',
+  No = 'no',
+  Abstain = 'abstain',
+}
 export interface ListVotesResponse {
   votes: VoteInfo[]
   [k: string]: unknown

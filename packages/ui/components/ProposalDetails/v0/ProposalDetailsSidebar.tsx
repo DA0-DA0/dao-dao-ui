@@ -13,10 +13,10 @@ import {
 } from '@dao-dao/utils'
 import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 
-import { CopyToClipboard } from '../CopyToClipboard'
-import { Progress } from '../Progress'
-import { ProposalStatus } from '../ProposalStatus'
-import { Tooltip } from '../Tooltip'
+import { CopyToClipboard } from '../../CopyToClipboard'
+import { Progress } from '../../Progress'
+import { ProposalStatus } from '../../ProposalStatus'
+import { Tooltip } from '../../Tooltip'
 
 // Need this for now as the `WalletVote` enum is stored in dapp state. TODO:
 // remove once we break state into a package.
@@ -89,7 +89,9 @@ export const ProposalDetailsCard: FC<ProposalDetailsCardProps> = ({
         </p>
 
         <p className="font-mono text-sm">
-          <ProposalStatus status={proposal.status} />
+          <ProposalStatus
+            status={proposal.status === 'pending' ? 'open' : proposal.status}
+          />
         </p>
       </div>
 
@@ -212,8 +214,6 @@ export const ProposalDetailsVoteStatus: FC<ProposalDetailsVoteStatusProps> = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expires)
       : undefined
 
-  // TODO: Change this wen v1 contracts launch, since the conditions
-  // will change. In v1, all abstain fails instead of passes.
   const thresholdReached =
     !!threshold &&
     yesVotes >=
@@ -601,7 +601,6 @@ export const ProposalDetailsVoteStatus: FC<ProposalDetailsVoteStatusProps> = ({
           <p className="font-mono text-tertiary">All abstain clarification</p>
 
           <p className="mt-2 body-text">
-            {/* TODO: Change this to fail wen v1 contracts. */}
             When all abstain, a proposal will pass.
           </p>
         </div>

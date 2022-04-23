@@ -43,6 +43,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
 
 interface GetServerSidePropsMakerProps {
   leadingTitle?: string
+  followingTitle?: string
   overrideTitle?: string
   overrideDescription?: string
 }
@@ -50,9 +51,9 @@ type GetServerSidePropsMaker = (
   props?: GetServerSidePropsMakerProps
 ) => GetServerSideProps<PageWrapperProps>
 
-// Computes PageWrapperProps for the DAO. Reused on all DAO pages.
-export const makeDAOGetServerSideProps: GetServerSidePropsMaker =
-  ({ leadingTitle, overrideTitle, overrideDescription } = {}) =>
+// Computes PageWrapperProps for the DAO with optional alterations.
+export const makeGetServerSideProps: GetServerSidePropsMaker =
+  ({ leadingTitle, followingTitle, overrideTitle, overrideDescription } = {}) =>
   async () => {
     try {
       const client = new QueryClient(
@@ -66,7 +67,9 @@ export const makeDAOGetServerSideProps: GetServerSidePropsMaker =
         props: {
           title:
             overrideTitle ??
-            (leadingTitle ? `${leadingTitle} | ${config.name}` : config.name),
+            [leadingTitle?.trim(), config.name.trim(), followingTitle?.trim()]
+              .filter(Boolean)
+              .join(' | '),
           description: overrideDescription ?? config.description,
           imageUrl: config.image_url || null,
         },

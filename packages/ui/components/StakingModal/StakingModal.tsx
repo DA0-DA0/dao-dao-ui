@@ -49,7 +49,7 @@ export interface StakingModalProps {
   // The number of tokens that are stakable.
   stakableTokens: number
   // The duration for unstaking.
-  unstakingDuration: Duration
+  unstakingDuration: Duration | null
   // Symbol for the token that is being staked.
   tokenSymbol: string
   // Decimals for the token that is being staked.
@@ -97,9 +97,9 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   return (
     <Modal onClose={onClose}>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border cursor-auto border-focus">
         <button
-          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+          className="absolute top-2 right-2 p-1 rounded-full transition hover:bg-secondary"
           onClick={onClose}
         >
           <XIcon className="w-4 h-4" />
@@ -207,7 +207,7 @@ const AmountSelectionBody: FC<AmountSelectionProps> = ({
 )
 
 const UnstakingModeBody: FC<
-  AmountSelectionProps & { unstakingDuration: Duration }
+  AmountSelectionProps & { unstakingDuration: Duration | null }
 > = ({ amount, setAmount, max, unstakingDuration, tokenDecimals }) => (
   <>
     <AmountSelectionBody
@@ -216,7 +216,7 @@ const UnstakingModeBody: FC<
       setAmount={setAmount}
       tokenDecimals={tokenDecimals}
     />
-    {durationIsNonZero(unstakingDuration) && (
+    {unstakingDuration && durationIsNonZero(unstakingDuration) && (
       <>
         <hr className="mt-3" />
         <div className="mt-3">

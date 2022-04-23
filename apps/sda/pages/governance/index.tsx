@@ -2,18 +2,36 @@
 
 import { NextPage } from 'next'
 
+import { constSelector, useRecoilValue } from 'recoil'
+
+import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
 
-import { Excerpt } from '@/components/governance/Excerpt'
-import { Hero } from '@/components/governance/Hero'
-import { ProposalList } from '@/components/governance/ProposalList'
+import {
+  makeGetServerSideProps,
+  PageWrapper,
+  PageWrapperProps,
+  ProposalItem,
+} from '@/components'
+import { Excerpt, Hero } from '@/components'
+import { DAO_ADDRESS } from '@/util/constants'
 
-export interface GovernancePageProps {
-  //
-}
+const InnerGovernance = () => {
+  const governanceModuleAddress = useRecoilValue(
+    governanceModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
+  )?.[0]
+  const proposalResponses =
+    useRecoilValue(
+      governanceModuleAddress
+        ? listProposalsSelector({
+            contractAddress: governanceModuleAddress,
+            params: [{}],
+          })
+        : constSelector(undefined)
+    )?.proposals ?? []
 
-const GovernancePage: NextPage<GovernancePageProps> = () => {
   return (
     <section className="p-8 mx-auto space-y-8 max-w-screen-xl">
       <Hero>
@@ -51,10 +69,26 @@ const GovernancePage: NextPage<GovernancePageProps> = () => {
             <PlusIcon className="w-4 h-4" /> New Proposal
           </Button>
         </div>
-        <ProposalList data={ProposalList.PLACEHOLDER_DATA} />
+
+        <div className="space-y-1">
+          {proposalResponses.map((response) => (
+            <ProposalItem key={response.id} proposalResponse={response} />
+          ))}
+        </div>
       </div>
     </section>
   )
 }
 
+const GovernancePage: NextPage<PageWrapperProps> = ({
+  children: _,
+  ...props
+}) => (
+  <PageWrapper {...props}>
+    <InnerGovernance />
+  </PageWrapper>
+)
+
 export default GovernancePage
+
+export const getServerSideProps = makeGetServerSideProps()

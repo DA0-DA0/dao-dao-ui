@@ -2,18 +2,10 @@ import { useState, FunctionComponent, Suspense } from 'react'
 
 import { constSelector, useRecoilValue } from 'recoil'
 
-import {
-  useWallet,
-  blockHeightSelector,
-  govTokenInfoSelector,
-} from '@dao-dao/state'
+import { useWallet, blockHeightSelector } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
-import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
-import {
-  stakingContractSelector,
-  tokenContractSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
+import { stakingContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import {
   claimsSelector,
   getConfigSelector,
@@ -31,8 +23,8 @@ import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
 import { Logo } from '@/components'
+import { useTokenInfo } from '@/hooks'
 import { cleanChainError } from '@/util/cleanChainError'
-import { DAO_ADDRESS } from '@/util/constants'
 
 interface StakingModalProps {
   defaultMode: StakingMode
@@ -56,20 +48,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   const unstakedBalance = 2500.1234
   const stakedBalance = 1025.4321
 
-  // const daoConfig = useRecoilValue(
-  //   configSelector({ contractAddress: DAO_ADDRESS })
-  // )
-  const votingPowerModuleAddress = useRecoilValue(
-    votingModuleSelector({ contractAddress: DAO_ADDRESS })
-  )
-  const tokenContractAddress = useRecoilValue(
-    votingPowerModuleAddress
-      ? tokenContractSelector({ contractAddress: votingPowerModuleAddress })
-      : constSelector(undefined)
-  )
+  const { votingModuleAddress, tokenContractAddress, tokenInfo } =
+    useTokenInfo()
   const stakingContractAddress = useRecoilValue(
-    votingPowerModuleAddress
-      ? stakingContractSelector({ contractAddress: votingPowerModuleAddress })
+    votingModuleAddress
+      ? stakingContractSelector({ contractAddress: votingModuleAddress })
       : constSelector(undefined)
   )
   const stakingContractConfig = useRecoilValue(
@@ -77,13 +60,8 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       ? getConfigSelector({ contractAddress: stakingContractAddress })
       : constSelector(undefined)
   )
-  const tokenInfo = useRecoilValue(
-    tokenContractAddress
-      ? govTokenInfoSelector(tokenContractAddress)
-      : constSelector(undefined)
-  )
 
-  const unstakingDuration = stakingContractConfig?.unstaking_duration
+  const unstakingDuration = stakingContractConfig?.unstaking_duration ?? null
 
   const blockHeight = useRecoilValue(blockHeightSelector)
   const claims =

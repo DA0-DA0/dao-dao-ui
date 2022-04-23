@@ -1,14 +1,11 @@
 import { FC, useState } from 'react'
 
 import { Abstain, Airplane } from '@dao-dao/icons'
+import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 
-export enum VoteChoice {
-  Yes,
-  No,
-  Abstain,
-}
+export { VoteChoice }
 
 export interface VoteProps {
   onVote: (choice: VoteChoice) => void
@@ -25,7 +22,10 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
         <p className="mr-1 text-2xl">🗳</p>
         <p className="primary-text">Casting</p>
         <p className="secondary-text">
-          {voterWeight.toLocaleString()}% voting power
+          {voterWeight.toLocaleString(undefined, {
+            maximumSignificantDigits: 4,
+          })}
+          % voting power
         </p>
       </div>
       <div className="grid grid-cols-3 gap-2">

@@ -1,6 +1,6 @@
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Expiration,
-  Status,
   Threshold as DaoThreshold,
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
@@ -144,8 +144,8 @@ export const zeroPad = (num: number, target: number) => {
   return '0'.repeat(target - s.length) + s
 }
 
-export const getProposalEnd = (exp: Expiration, status: Status) => {
-  if (status != 'open' && status != 'pending') {
+export const getProposalEnd = (exp: Expiration, status: `${Status}`) => {
+  if (status !== Status.Open) {
     return 'Completed'
   }
   if (exp && 'at_time' in exp) {

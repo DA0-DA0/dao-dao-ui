@@ -1,5 +1,0 @@
-export * from './AirdropIcon'
-export * from './GovernanceIcon'
-export * from './TokenomicsIcon'
-export * from './ProposalIcon'
-export * from './ProfileIcon'

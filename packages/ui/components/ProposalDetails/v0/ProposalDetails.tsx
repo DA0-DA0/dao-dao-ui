@@ -4,11 +4,11 @@ import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { decodedMessagesString, decodeMessages } from '@dao-dao/utils'
 import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
 
-import { Button } from '../Button'
-import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
-import { Execute } from '../Execute'
-import { MarkdownPreview } from '../MarkdownPreview'
-import { Vote, VoteChoice } from '../Vote'
+import { Button } from '../../Button'
+import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'
+import { Execute } from '../../Execute'
+import { MarkdownPreview } from '../../MarkdownPreview'
+import { Vote, VoteChoice } from '../../Vote'
 import { ProposalMessageTemplateList } from './ProposalMessageTemplateList'
 
 export interface ProposalDetailsProps {
@@ -120,10 +120,10 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           You must have voting power at the time of proposal creation to vote.{' '}
           {stakingModal && (
             <button className="underline" onClick={() => setShowStaking(true)}>
-              Stake some tokens?
+              Stake some tokens so you can vote next time?
             </button>
           )}
-          {stakingModal && showStaking && stakingModal}
+          {showStaking && stakingModal}
         </p>
       )}
     </div>

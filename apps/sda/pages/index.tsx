@@ -1,8 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
+
 import React, { useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
+import { Pie } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import { Claim } from '@dao-dao/state/clients/stake-cw20'
 import { Button, ClaimsListItem, StakingMode } from '@dao-dao/ui'
@@ -12,8 +15,7 @@ import {
   PageWrapper,
   PageWrapperProps,
   StakingModal,
-  TokenomicsIcon,
-  makeDAOGetServerSideProps,
+  makeGetServerSideProps,
 } from '@/components'
 
 interface Pool {
@@ -31,7 +33,7 @@ interface Pool {
   apr: number
 }
 
-const InnerHome: NextPage<PageWrapperProps> = () => {
+const InnerHome = () => {
   const router = useRouter()
   const { connected } = useWallet()
   // Set to default mode to display, and undefined to hide.
@@ -181,7 +183,7 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
         </div>
 
         <div className="flex flex-row gap-2 items-center text-lg">
-          <TokenomicsIcon color="rgb(var(--dark))" height={22} width={22} />
+          <Pie color="rgb(var(--dark))" height={22} width={22} />
           <p>Your Tokens</p>
         </div>
 
@@ -382,12 +384,12 @@ const InnerHome: NextPage<PageWrapperProps> = () => {
   )
 }
 
-const Home: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
+const HomePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
   <PageWrapper {...props}>
-    <InnerHome {...props} />
+    <InnerHome />
   </PageWrapper>
 )
 
-export default Home
+export default HomePage
 
-export const getServerSideProps = makeDAOGetServerSideProps()
+export const getServerSideProps = makeGetServerSideProps()

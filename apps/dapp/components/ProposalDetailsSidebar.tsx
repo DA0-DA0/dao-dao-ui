@@ -56,7 +56,9 @@ export const ProposalDetailsCard = ({
       proposalExecutionTXHashSelector({ contractAddress, proposalId })
     )
   const proposalExecutionTXHash: string | undefined =
-    proposalExecutionTXHashState === 'hasValue' ? txHashContents : undefined
+    proposalExecutionTXHashState === 'hasValue'
+      ? txHashContents ?? undefined
+      : undefined
 
   if (!proposal) {
     return (
