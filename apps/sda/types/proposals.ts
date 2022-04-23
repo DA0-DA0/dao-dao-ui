@@ -36,3 +36,17 @@ export type ContractProposalMap = {
 export interface ExtendedProposalResponse extends ProposalResponse {
   draftId?: string
 }
+
+export enum ProposalStatus {
+  Open = 'Open',
+  Passed = 'Passed',
+  Approved = 'Approved',
+  Rejected = 'Rejected',
+}
+
+export enum ProposalVote {
+  Undecided,
+  Yes,
+  No,
+  Abstain,
+}
