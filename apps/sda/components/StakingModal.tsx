@@ -1,4 +1,4 @@
-import { useState, FunctionComponent } from 'react'
+import { useState, FunctionComponent, Suspense } from 'react'
 
 import { constSelector, useRecoilValue } from 'recoil'
 
@@ -18,13 +18,19 @@ import {
   claimsSelector,
   getConfigSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
-import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
+import {
+  StakingMode,
+  StakingModal as StatelessStakingModal,
+  Modal,
+} from '@dao-dao/ui'
 import {
   claimAvailable,
   convertDenomToMicroDenomWithDecimals,
 } from '@dao-dao/utils'
+import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
+import { Logo } from '@/components'
 import { cleanChainError } from '@/util/cleanChainError'
 import { DAO_ADDRESS } from '@/util/constants'
 
@@ -33,7 +39,13 @@ interface StakingModalProps {
   onClose: () => void
 }
 
-export const StakingModal: FunctionComponent<StakingModalProps> = ({
+export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
+  <Suspense fallback={<LoadingStakingModal {...props} />}>
+    <InnerStakingModal {...props} />
+  </Suspense>
+)
+
+const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   defaultMode,
   onClose,
 }) => {
@@ -173,7 +185,7 @@ export const StakingModal: FunctionComponent<StakingModalProps> = ({
         setLoading(true)
         try {
           await doClaim({ amount: microAmount })
-          toast.success(`Unstaked ${amount} tokens`)
+          toast.success(`Claimed ${amount} tokens`)
           setAmount(0)
         } catch (err) {
           toast.error(cleanChainError(err.message))
@@ -215,3 +227,22 @@ export const StakingModal: FunctionComponent<StakingModalProps> = ({
     />
   )
 }
+
+const LoadingStakingModal: FunctionComponent<StakingModalProps> = ({
+  onClose,
+}) => (
+  <Modal onClose={onClose}>
+    <div className="relative p-40 bg-white rounded-lg border border-focus cursor-auto">
+      <button
+        className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+        onClick={onClose}
+      >
+        <XIcon className="w-4 h-4" />
+      </button>
+
+      <div className="animate-spin">
+        <Logo height={40} width={40} />
+      </div>
+    </div>
+  </Modal>
+)

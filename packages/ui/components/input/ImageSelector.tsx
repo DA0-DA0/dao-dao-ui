@@ -40,7 +40,8 @@ export function ImageSelectorModal<
       <div
         className={clsx(
           'flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white',
-          'rounded-lg border border-focus'
+          'rounded-lg border border-focus',
+          'cursor-auto'
         )}
       >
         <button
