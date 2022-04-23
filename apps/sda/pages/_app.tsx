@@ -10,8 +10,14 @@ import { RecoilRoot, useRecoilState } from 'recoil'
 
 import { activeThemeAtom } from '@dao-dao/state'
 import { ThemeProvider, Theme, LoadingScreen } from '@dao-dao/ui'
+import { SITE_TITLE } from '@dao-dao/utils'
+import { DefaultSeo } from 'next-seo'
 
 import { ErrorBoundary, Header, Notifications } from '@/components'
+
+const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
+const image = process.env.NEXT_PUBLIC_SITE_IMAGE
+const url = process.env.NEXT_PUBLIC_SITE_URL
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
@@ -45,9 +51,60 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
 }
 
 const MyApp = (props: AppProps) => (
-  <RecoilRoot>
-    <InnerApp {...props} />
-  </RecoilRoot>
+  <>
+    <DefaultSeo
+      additionalLinkTags={[
+        {
+          href: '/apple-touch-icon.png',
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          type: 'image/png',
+        },
+        {
+          href: '/favicon-32x32.png',
+          rel: 'icon',
+          sizes: '32x32',
+          type: 'image/png',
+        },
+        {
+          href: '/favicon-16x16.png',
+          rel: 'icon',
+          sizes: '16x16',
+          type: 'image/png',
+        },
+        {
+          href: '/site.webmanifest',
+          rel: 'manifest',
+        },
+      ]}
+      additionalMetaTags={[
+        {
+          name: 'msapplication-TileColor',
+          content: '#da532c',
+        },
+        {
+          name: 'theme-color',
+          content: '#ffffff',
+        },
+      ]}
+      description={description}
+      openGraph={{
+        url,
+        type: 'website',
+        title: SITE_TITLE,
+        description,
+        images: image ? [{ url: image }] : [],
+      }}
+      title={SITE_TITLE}
+      twitter={{
+        cardType: 'summary_large_image',
+      }}
+    />
+
+    <RecoilRoot>
+      <InnerApp {...props} />
+    </RecoilRoot>
+  </>
 )
 
 export default MyApp

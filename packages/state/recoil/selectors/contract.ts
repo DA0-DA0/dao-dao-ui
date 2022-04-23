@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { cosmWasmClientAtom } from './chain'
+import { cosmWasmClientSelector } from './chain'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -10,7 +10,7 @@ export const contractInstantiateTimeSelector = selectorFamily<
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientAtom)
+      const client = get(cosmWasmClientSelector)
       if (!client) return
 
       const events = await client.searchTx({

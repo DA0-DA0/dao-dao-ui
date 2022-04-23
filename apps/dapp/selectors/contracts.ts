@@ -70,8 +70,8 @@ export const contractInstantiateTime = selectorFamily<Date, string>({
       if (events.length == 0) {
         return new Date()
       }
-      // The timestamp field is avaliable when running this query via the
-      // command line but is not avaliable from CosmJS so we need to run a
+      // The timestamp field is available when running this query via the
+      // command line but is not available from CosmJS so we need to run a
       // second query to get the block info.
       const height = events[0].height
       const block = await client.getBlock(height)

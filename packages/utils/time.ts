@@ -1,7 +1,8 @@
 const secPerDay = 24 * 60 * 60
 export const secondsToWdhms = (
   seconds: string | number,
-  numUnits = 5
+  // Set to 5 or more to display all units.
+  numUnits = 2
 ): string => {
   const secondsInt = Number(seconds)
   const w = Math.floor(secondsInt / (secPerDay * 7))

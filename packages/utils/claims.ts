@@ -1,6 +1,6 @@
 import { Claim } from '@dao-dao/types/contracts/stake-cw20'
 
-export function claimAvaliable(claim: Claim, blockHeight: number) {
+export function claimAvailable(claim: Claim, blockHeight: number) {
   if ('at_height' in claim.release_at) {
     return blockHeight >= claim.release_at.at_height
   } else if ('at_time' in claim.release_at) {
@@ -9,5 +9,5 @@ export function claimAvaliable(claim: Claim, blockHeight: number) {
   }
 
   // Unreachable.
-  return true
+  return false
 }

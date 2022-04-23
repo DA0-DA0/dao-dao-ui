@@ -55,7 +55,7 @@ export interface StakingModalProps {
   // Decimals for the token that is being staked.
   tokenDecimals: number
   // Is there an error?
-  error: string | undefined
+  error?: string | undefined
   // Are we ready to stake? Ex: is wallet connected?
   loading: boolean
   // Triggered when the stake / unstake / claim button is pressed.
@@ -84,21 +84,20 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0 ? undefined : "Can't claim zero tokens"
+      return claimableTokens > 0 ? undefined : "Can't claim zero tokens."
     }
     if (amount <= 0) {
       return `Can't ${stakingModeString(mode)} zero tokens.`
     }
     if (amount > maxTx) {
-      return "Can't ${stakingModeString(mode)} more tokens than you own."
+      return `Can't ${stakingModeString(mode)} more tokens than you own.`
     }
-    return undefined
   }
   error = error || invalidAmount()
 
   return (
-    <Modal>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
+    <Modal onClose={onClose}>
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
