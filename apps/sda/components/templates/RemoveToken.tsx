@@ -13,10 +13,10 @@ import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-
 import {
   RemoveTokenComponent as StatelessRemoveTokenComponent,
   TemplateComponent,
+  TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
 import { useFormContext } from 'react-hook-form'
 
-import { Logo } from '../Logo'
 import { DAO_ADDRESS } from '@/util/constants'
 
 const InnerRemoveTokenComponent: TemplateComponent = (props) => {
@@ -90,15 +90,7 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
 }
 
 export const RemoveTokenComponent: TemplateComponent = (props) => (
-  <Suspense
-    fallback={
-      <div className="p-3 my-2 bg-primary rounded-lg">
-        <div className="animate-spin">
-          <Logo height={40} width={40} />
-        </div>
-      </div>
-    }
-  >
+  <Suspense fallback={<TemplateComponentLoader />}>
     <InnerRemoveTokenComponent {...props} />
   </Suspense>
 )

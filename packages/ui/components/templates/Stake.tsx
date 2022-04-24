@@ -86,27 +86,36 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
     denom: string,
     amount: string
   ): string | boolean => {
+    const humanReadableDenom =
+      convertDenomToHumanReadableDenom(denom).toUpperCase()
+
     const native = nativeBalances.find((coin) => coin.denom === denom)
     if (native) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
         native.amount,
         NATIVE_DECIMALS
-      )
+      ).toLocaleString()
       const microAmount = convertDenomToMicroDenomWithDecimals(
         amount,
         NATIVE_DECIMALS
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't stake more tokens than are in the DAO treasury (${humanReadableAmount}).`
+        `The DAO treasury ${
+          Number(native.amount) === 0
+            ? 'has no'
+            : `only has ${humanReadableAmount}`
+        } ${humanReadableDenom}, which is insufficient.`
       )
     }
+
     // If there are no native tokens in the treasury the native balances
-    // query will return an empty list.
-    const nativeHumanReadable = convertDenomToHumanReadableDenom(NATIVE_DENOM)
-    if (denom === nativeHumanReadable) {
-      return `Can't stake more tokens than are in the DAO treasury (0 ${nativeHumanReadable}).`
+    // query will return an empty list, so check explicitly if the
+    // native currency is selected.
+    if (denom === NATIVE_DENOM) {
+      return `The DAO treasury has no ${humanReadableDenom}, so you can't stake any tokens.`
     }
+
     return 'Unrecognized denom.'
   }
 

@@ -9,9 +9,9 @@ import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-
 import {
   SpendComponent as StatelessSpendComponent,
   TemplateComponent,
+  TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
 
-import { Logo } from '../Logo'
 import { DAO_ADDRESS } from '@/util/constants'
 
 const InnerSpendComponent: TemplateComponent = (props) => {
@@ -55,15 +55,7 @@ const InnerSpendComponent: TemplateComponent = (props) => {
 }
 
 export const SpendComponent: TemplateComponent = (props) => (
-  <Suspense
-    fallback={
-      <div className="p-3 my-2 bg-primary rounded-lg">
-        <div className="animate-spin">
-          <Logo height={40} width={40} />
-        </div>
-      </div>
-    }
-  >
+  <Suspense fallback={<TemplateComponentLoader />}>
     <InnerSpendComponent {...props} />
   </Suspense>
 )

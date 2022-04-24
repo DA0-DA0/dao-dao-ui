@@ -66,11 +66,11 @@ export const CustomComponent: TemplateComponent = ({
         {errors?.message ? (
           <p className="flex gap-1 items-center text-sm text-error">
             <XIcon className="inline w-5" />{' '}
-            {errors?.message.message === 'Invalid cosmos message' ? (
+            {errors.message.message === 'Invalid cosmos message' ? (
               <>
                 Invalid{' '}
                 <a
-                  className="inline link"
+                  className="inline underline link"
                   href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
                   rel="noreferrer"
                   target="_blank"
@@ -78,7 +78,9 @@ export const CustomComponent: TemplateComponent = ({
                   cosmos message
                 </a>
               </>
-            ) : null}
+            ) : (
+              <span>{errors.message.message}</span>
+            )}
           </p>
         ) : (
           <p className="flex gap-1 items-center text-sm text-success">
@@ -94,9 +96,9 @@ export const transformCustomToCosmos = (data: CustomData) => {
   let msg
   try {
     msg = JSON5.parse(data.message)
-  } catch (e: any) {
-    // Should never hit this as a valid cosmos message is a requirement for submission.
-    console.log(`internal error. unparsable message: (${data.message})`)
+  } catch (err) {
+    console.error(`internal error. unparsable message: (${data.message})`, err)
+    return
   }
   // Convert the wasm message component to base64
   if (msg.wasm) msg = makeWasmMessage(msg)

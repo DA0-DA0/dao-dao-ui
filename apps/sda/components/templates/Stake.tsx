@@ -6,9 +6,9 @@ import { nativeBalancesSelector } from '@dao-dao/state'
 import {
   StakeComponent as StatelessStakeComponent,
   TemplateComponent,
+  TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
 
-import { Logo } from '../Logo'
 import { DAO_ADDRESS } from '@/util/constants'
 
 const InnerStakeComponent: TemplateComponent = (props) => {
@@ -26,15 +26,7 @@ const InnerStakeComponent: TemplateComponent = (props) => {
 }
 
 export const StakeComponent: TemplateComponent = (props) => (
-  <Suspense
-    fallback={
-      <div className="p-3 my-2 bg-primary rounded-lg">
-        <div className="animate-spin">
-          <Logo height={40} width={40} />
-        </div>
-      </div>
-    }
-  >
+  <Suspense fallback={<TemplateComponentLoader />}>
     <InnerStakeComponent {...props} />
   </Suspense>
 )

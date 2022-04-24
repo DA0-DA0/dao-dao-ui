@@ -1,11 +1,13 @@
 import { FunctionComponent, Suspense } from 'react'
 
 import { CosmosMessageDisplay } from '@dao-dao/ui'
-import { TemplateRendererComponentProps } from '@dao-dao/ui/components/templates'
+import {
+  TemplateRendererComponentProps,
+  TemplateComponentLoader,
+} from '@dao-dao/ui/components/templates'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { templateAndDataForDecodedCosmosMsg } from '.'
-import { Loader } from '../Loader'
 import { useGovernanceTokenInfo } from '@/hooks'
 
 const InnerTemplateRendererComponent: FunctionComponent<
@@ -42,13 +44,7 @@ const InnerTemplateRendererComponent: FunctionComponent<
 export const TemplateRendererComponent: FunctionComponent<
   TemplateRendererComponentProps
 > = (props) => (
-  <Suspense
-    fallback={
-      <div className="p-3 my-2 bg-primary rounded-lg">
-        <Loader />
-      </div>
-    }
-  >
+  <Suspense fallback={<TemplateComponentLoader />}>
     <InnerTemplateRendererComponent {...props} />
   </Suspense>
 )

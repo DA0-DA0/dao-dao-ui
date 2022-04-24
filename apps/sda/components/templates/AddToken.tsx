@@ -30,7 +30,7 @@ export const AddTokenComponent: TemplateComponent = (props) => {
     } else {
       clearErrors(getLabel('address'))
     }
-  }, [tokenInfoLoadable, setError, clearErrors, getLabel])
+  }, [tokenInfoLoadable.state, setError, clearErrors, getLabel])
 
   return (
     <StatelessAddTokenComponent

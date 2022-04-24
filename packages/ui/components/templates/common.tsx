@@ -5,7 +5,7 @@ import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
 
 import { InputLabel } from '../input'
-import { LogoNoBorder } from '../Logo'
+import { Loader } from '../Loader'
 
 export enum TemplateKey {
   Spend = 'spend',
@@ -82,9 +82,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = (
 ) => (
   <>
     {props.loadingTokenInfo ? (
-      <div className="inline-block p-2 mt-2 animate-spin-medium">
-        <LogoNoBorder />
-      </div>
+      <Loader />
     ) : props.loadingTokenInfo === false ? (
       <div>
         <InputLabel name="Token info" />
@@ -94,4 +92,10 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = (
       </div>
     ) : null}
   </>
+)
+
+export const TemplateComponentLoader = () => (
+  <div className="p-3 my-2 bg-primary rounded-lg">
+    <Loader />
+  </div>
 )

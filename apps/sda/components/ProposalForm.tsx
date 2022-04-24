@@ -53,7 +53,9 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const { governanceTokenContractAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
 
-  const formMethods = useForm<FormProposalData>()
+  const formMethods = useForm<FormProposalData>({
+    mode: 'onChange',
+  })
 
   // Unpack here because we use these at the top level as well as
   // inside of nested components.
@@ -161,9 +163,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
               return (
                 <li key={index}>
                   <Component
-                    errors={
-                      (errors.templateData && errors.templateData[index]) || {}
-                    }
+                    errors={errors.templateData?.[index]?.data || {}}
                     getLabel={(fieldName) =>
                       `templateData.${index}.data.${fieldName}`
                     }
@@ -218,7 +218,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
           onSelectTemplate={({ key, getDefaults }) => {
             append({
               key,
-              ...getDefaults({ walletAddress: walletAddress ?? '' }),
+              data: getDefaults({ walletAddress: walletAddress ?? '' }),
             })
             setShowTemplateSelector(false)
           }}

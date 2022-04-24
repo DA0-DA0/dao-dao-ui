@@ -48,12 +48,12 @@ export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
         <InputLabel name="Token address" />
         <AddressInput
           disabled={readOnly}
-          error={errors?.to}
+          error={errors?.address}
           label={getLabel('address')}
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />
-        <InputErrorMessage error={errors?.to} />
+        <InputErrorMessage error={errors?.address} />
       </div>
 
       <TokenInfoDisplay {...options} />
