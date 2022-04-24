@@ -99,7 +99,7 @@ const InnerHome = () => {
             <Logo height={60} width={60} />
           </div>
 
-          <p className="p-4 mt-16 mb-10 text-3xl text-center">
+          <p className="p-4 mt-16 mb-10 text-3xl text-center font-studiofeixen">
             1 RAW = $
             {rawPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -253,8 +253,8 @@ const InnerHome = () => {
           }
         >
           <ClaimsView
-            showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
             governanceTokenInfo={governanceTokenInfo}
+            showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
           />
         </Suspense>
       </div>

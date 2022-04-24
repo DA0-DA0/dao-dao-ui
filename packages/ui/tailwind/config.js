@@ -33,6 +33,7 @@ const tailwindConfig = {
       fontFamily: {
         mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
         sans: ['inter', ...defaultTheme.fontFamily.sans],
+        studiofeixen: ['studiofeixen', ...defaultTheme.fontFamily.sans],
       },
       animation,
       backgroundColor,
