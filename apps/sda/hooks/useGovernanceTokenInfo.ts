@@ -6,24 +6,24 @@ import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/c
 
 import { DAO_ADDRESS } from '@/util/constants'
 
-export const useTokenInfo = () => {
+export const useGovernanceTokenInfo = () => {
   const votingModuleAddress = useRecoilValue(
     votingModuleSelector({ contractAddress: DAO_ADDRESS })
   )
-  const tokenContractAddress = useRecoilValue(
+  const governanceTokenContractAddress = useRecoilValue(
     votingModuleAddress
       ? tokenContractSelector({ contractAddress: votingModuleAddress })
       : constSelector(undefined)
   )
-  const tokenInfo = useRecoilValue(
-    tokenContractAddress
-      ? govTokenInfoSelector(tokenContractAddress)
+  const governanceTokenInfo = useRecoilValue(
+    governanceTokenContractAddress
+      ? govTokenInfoSelector(governanceTokenContractAddress)
       : constSelector(undefined)
   )
 
   return {
     votingModuleAddress,
-    tokenContractAddress,
-    tokenInfo,
+    governanceTokenContractAddress,
+    governanceTokenInfo,
   }
 }

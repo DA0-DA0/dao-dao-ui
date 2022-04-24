@@ -1,3 +1,3 @@
 export * from './useGovernanceModule'
 export * from './useThresholdQuorum'
-export * from './useTokenInfo'
+export * from './useGovernanceTokenInfo'

@@ -31,7 +31,11 @@ import {
   PageWrapperProps,
   StakingModal,
 } from '@/components'
-import { useGovernanceModule, useThresholdQuorum, useTokenInfo } from '@/hooks'
+import {
+  useGovernanceModule,
+  useThresholdQuorum,
+  useGovernanceTokenInfo,
+} from '@/hooks'
 import { cleanChainError } from '@/util/cleanChainError'
 import { DAO_ADDRESS } from '@/util/constants'
 
@@ -48,7 +52,7 @@ const InnerProposal = () => {
       ? Number(proposalIdQuery)
       : undefined
 
-  const { tokenInfo } = useTokenInfo()
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
   const { governanceModuleAddress, governanceModuleConfig } =
     useGovernanceModule()
 
@@ -149,7 +153,7 @@ const InnerProposal = () => {
     !connected ||
     !votingPowerAtHeight ||
     !voteResponse ||
-    !tokenInfo ||
+    !governanceTokenInfo ||
     !governanceModuleConfig
   )
     return <LoadingScreen />
@@ -201,7 +205,7 @@ const InnerProposal = () => {
             proposal={proposalResponse.proposal}
             quorum={quorum}
             threshold={threshold}
-            tokenDecimals={tokenInfo.decimals}
+            tokenDecimals={governanceTokenInfo.decimals}
           />
         </div>
       </div>
@@ -225,7 +229,7 @@ const InnerProposal = () => {
           proposal={proposalResponse.proposal}
           quorum={quorum}
           threshold={threshold}
-          tokenDecimals={tokenInfo.decimals}
+          tokenDecimals={governanceTokenInfo.decimals}
         />
       </div>
     </div>

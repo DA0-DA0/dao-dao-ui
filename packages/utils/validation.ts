@@ -1,5 +1,7 @@
+import Ajv from 'ajv'
 import JSON5 from 'json5'
 
+import cosmosMsgSchema from './cosmos_msg.json'
 import {
   isValidAddress,
   isValidContractAddress,
@@ -48,3 +50,11 @@ export const validateJSON = (v: string) => {
     return e?.message as string
   }
 }
+
+const ajv = new Ajv()
+const _validateCosmosMsg = ajv.compile(cosmosMsgSchema)
+
+export const validateCosmosMsg = (msg: any) => ({
+  valid: _validateCosmosMsg(msg),
+  errors: _validateCosmosMsg.errors,
+})

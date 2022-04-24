@@ -4,6 +4,7 @@ import {
   Client as ExecuteClient,
   ConfigResponse,
   Cw20BalancesResponse,
+  Cw20TokenListResponse,
   Cw721TokenListResponse,
   DumpStateResponse,
   GetItemResponse,
@@ -140,6 +141,21 @@ export const listItemsSelector = selectorFamily<
       if (!client) return
 
       return await client.listItems(...params)
+    },
+})
+
+export const cw20TokenListSelector = selectorFamily<
+  Cw20TokenListResponse | undefined,
+  QueryClientParams & { params: Parameters<QueryClient['cw20TokenList']> }
+>({
+  key: 'cwGovernanceCw20TokenList',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      return await client.cw20TokenList(...params)
     },
 })
 

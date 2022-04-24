@@ -23,7 +23,7 @@ import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
 import { Logo } from '@/components'
-import { useTokenInfo } from '@/hooks'
+import { useGovernanceTokenInfo } from '@/hooks'
 import { cleanChainError } from '@/util/cleanChainError'
 
 interface StakingModalProps {
@@ -48,8 +48,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   const unstakedBalance = 2500.1234
   const stakedBalance = 1025.4321
 
-  const { votingModuleAddress, tokenContractAddress, tokenInfo } =
-    useTokenInfo()
+  const {
+    votingModuleAddress,
+    governanceTokenContractAddress,
+    governanceTokenInfo,
+  } = useGovernanceTokenInfo()
   const stakingContractAddress = useRecoilValue(
     votingModuleAddress
       ? stakingContractSelector({ contractAddress: votingModuleAddress })
@@ -81,7 +84,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       : 0
 
   const doStake = useSend({
-    contractAddress: tokenContractAddress ?? '',
+    contractAddress: governanceTokenContractAddress ?? '',
     sender: walletAddress ?? '',
   })
   const doUnstake = useUnstake({
@@ -94,7 +97,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   })
 
   const onAction = async (mode: StakingMode, amount: number) => {
-    if (!connected || !tokenInfo || !stakingContractAddress) return
+    if (!connected || !governanceTokenInfo || !stakingContractAddress) return
 
     setLoading(true)
 
@@ -102,7 +105,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       case StakingMode.Stake: {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          tokenInfo.decimals
+          governanceTokenInfo.decimals
         )
 
         setLoading(true)
@@ -132,7 +135,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       case StakingMode.Unstake: {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          tokenInfo.decimals
+          governanceTokenInfo.decimals
         )
 
         setLoading(true)
@@ -157,7 +160,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       case StakingMode.Claim: {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          tokenInfo.decimals
+          governanceTokenInfo.decimals
         )
 
         setLoading(true)
@@ -185,7 +188,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   }
 
   // Don't render until ready.
-  if (!tokenInfo) return null
+  if (!governanceTokenInfo) return null
 
   return (
     <StatelessStakingModal
@@ -198,8 +201,8 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       onClose={onClose}
       setAmount={(newAmount) => setAmount(newAmount)}
       stakableTokens={unstakedBalance}
-      tokenDecimals={tokenInfo.decimals}
-      tokenSymbol={tokenInfo.symbol}
+      tokenDecimals={governanceTokenInfo.decimals}
+      tokenSymbol={governanceTokenInfo.symbol}
       unstakableTokens={stakedBalance}
       unstakingDuration={unstakingDuration}
     />
