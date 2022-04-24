@@ -1,19 +1,30 @@
 import { ReactNode } from 'react'
 
+import { Theme, useThemeContext } from '@dao-dao/ui'
+import clsx from 'clsx'
+
 export interface ExcerptProps {
   children: ReactNode
 }
 
-export const Excerpt = ({ children }: ExcerptProps) => (
-  <article className="p-8 max-w-none bg-gray-500/10 rounded-lg prose prose-invert prose-sm">
-    {children}
-  </article>
-)
+export const Excerpt = ({ children }: ExcerptProps) => {
+  const { theme } = useThemeContext()
+
+  return (
+    <article
+      className={clsx('p-8 max-w-none bg-disabled rounded-lg prose prose-sm', {
+        'prose-invert': theme === Theme.Dark,
+      })}
+    >
+      {children}
+    </article>
+  )
+}
 
 const ExcerptPlaceholder = () => (
   <>
-    <h1>Raw DAO’s mission statement</h1>
-    <h2>A Vision of Coordination</h2>
+    <h2>Raw DAO&apos;s mission statement</h2>
+    <h3>A Vision of Coordination</h3>
     <p>
       The Coordination Game is a game-theory optimised Keeper protocol that
       provides a solution to the MEV incentive structure problem on Ethereum. By

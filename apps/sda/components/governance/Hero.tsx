@@ -10,7 +10,7 @@ export interface HeroProps {
 }
 
 export const Hero = ({ children }: HeroProps) => (
-  <div className="overflow-hidden relative bg-gray-500/10 rounded-lg border border-gray-500/20">
+  <div className="overflow-hidden relative bg-disabled rounded-lg">
     {children}
   </div>
 )

@@ -64,7 +64,7 @@ const InnerGovernance = () => {
       </Excerpt>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Raw DAO’s Proposals</h3>
+        <h3 className="text-lg font-medium">Proposals</h3>
         <div className="flex justify-between items-center">
           <Button type="button" variant="secondary">
             <ChevronDownIcon className="w-4 h-4" /> Open - 9 items

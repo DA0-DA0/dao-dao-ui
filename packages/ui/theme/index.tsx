@@ -52,6 +52,4 @@ export function ThemeProvider({
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
-export function useThemeContext() {
-  return useContext(ThemeContext)
-}
+export const useThemeContext = () => useContext(ThemeContext)
