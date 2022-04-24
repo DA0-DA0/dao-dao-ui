@@ -83,37 +83,6 @@ const InnerHome = () => {
     },
   ]
 
-  const pools: Pool[] = [
-    {
-      asset1: {
-        name: 'JUNO',
-        iconURI: '/juno.svg',
-      },
-      asset2: {
-        name: 'RAW',
-        iconURI: '/yin_yang.png',
-      },
-      liquidity: 9000209342,
-      staked: 0,
-      rewardURIs: ['/juno.svg', '/daotoken.jpg', '/juno.svg', '/daotoken.jpg'],
-      apr: 175,
-    },
-    {
-      asset1: {
-        name: 'JUNO',
-        iconURI: '/juno.svg',
-      },
-      asset2: {
-        name: 'RAW',
-        iconURI: '/yin_yang.png',
-      },
-      liquidity: 9000209342,
-      staked: 50000,
-      rewardURIs: ['/juno.svg', '/daotoken.jpg', '/juno.svg', '/daotoken.jpg'],
-      apr: 175,
-    },
-  ]
-
   if (router.isFallback) {
     throw new Error('Failed to load page data.')
   }
@@ -277,100 +246,12 @@ const InnerHome = () => {
               key={idx}
               blockHeight={blockHeight}
               claim={claim}
-              iconURI={'/juno.svg'}
+              iconURI="/juno.svg"
               incrementClaimsAvailable={console.log}
               tokenInfo={tokenInfo}
               unstakingDuration={unstakingDuration}
             />
           ))}
-        </div>
-
-        <p className="text-lg">Pools</p>
-
-        <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 sm:flex-row">
-          {pools.map(
-            ({ asset1, asset2, liquidity, staked, rewardURIs, apr }, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col flex-1 items-stretch bg-card rounded-lg"
-              >
-                <div className="flex flex-col gap-4 justify-center items-center p-8 border-b border-inactive">
-                  <div className="flex flex-row justify-center items-center">
-                    <img
-                      alt=""
-                      className="relative -right-1 z-20 rounded-full"
-                      height={40}
-                      src={asset1.iconURI}
-                      width={40}
-                    />
-                    <img
-                      alt=""
-                      className="relative -left-1 z-10 rounded-full"
-                      height={40}
-                      src={asset2.iconURI}
-                      width={40}
-                    />
-                  </div>
-
-                  <p className="text-base font-medium">
-                    {asset1.name} • {asset2.name}
-                  </p>
-                </div>
-
-                <div className="p-6">
-                  <p className="font-mono text-sm text-tertiary">
-                    Total liquidity
-                  </p>
-                  <p className="mt-2 text-base">
-                    $
-                    {liquidity.toLocaleString(undefined, {
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
-
-                  <div className="grid grid-cols-3 gap-2 mt-6 gris-rows-2">
-                    <p className="justify-self-start font-mono text-sm text-tertiary">
-                      Staked
-                    </p>
-                    <p className="justify-self-center font-mono text-sm text-tertiary">
-                      Rewards
-                    </p>
-                    <p className="justify-self-end font-mono text-sm text-tertiary">
-                      APR
-                    </p>
-
-                    <p className="justify-self-start text-base">
-                      {(staked &&
-                        staked.toLocaleString(undefined, {
-                          maximumFractionDigits: tokenDecimals,
-                        })) ||
-                        '--'}
-                    </p>
-                    <div
-                      className="flex relative flex-row justify-self-center items-center"
-                      style={{ width: 24 + (rewardURIs.length - 1) * (24 - 8) }}
-                    >
-                      {rewardURIs.map((uri, idx) => (
-                        <img
-                          key={uri}
-                          alt=""
-                          className="relative rounded-full"
-                          height={24}
-                          src={uri}
-                          style={{
-                            left: -(idx * 8),
-                            zIndex: rewardURIs.length - idx,
-                          }}
-                          width={24}
-                        />
-                      ))}
-                    </div>
-                    <p className="justify-self-end text-base">{apr}%</p>
-                  </div>
-                </div>
-              </div>
-            )
-          )}
         </div>
       </div>
 

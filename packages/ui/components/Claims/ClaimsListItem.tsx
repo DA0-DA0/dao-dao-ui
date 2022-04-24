@@ -77,17 +77,20 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
   return (
-    <div className="flex gap-2 justify-between items-center p-4 my-2 rounded-lg bg-primary">
-      <p className="flex gap-2 items-center">
+    <div className="flex gap-2 justify-between items-center p-4 my-2 bg-primary rounded-lg">
+      <div className="flex flex-row gap-2 items-center">
         <BalanceIcon iconURI={iconURI} />
-        {convertMicroDenomToDenomWithDecimals(
-          claim.amount,
-          tokenInfo.decimals
-        ).toLocaleString(undefined, {
-          maximumFractionDigits: tokenInfo.decimals,
-        })}{' '}
-        ${tokenInfo.symbol}
-      </p>
+
+        <p>
+          {convertMicroDenomToDenomWithDecimals(
+            claim.amount,
+            tokenInfo.decimals
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: tokenInfo.decimals,
+          })}{' '}
+          ${tokenInfo.symbol}
+        </p>
+      </div>
 
       {available ? (
         <p className="font-mono text-sm text-secondary">

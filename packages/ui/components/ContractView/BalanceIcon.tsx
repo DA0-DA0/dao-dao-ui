@@ -11,7 +11,7 @@ export const BalanceIcon: FC<BalanceIconProps> = ({ iconURI }) => {
 
   return (
     <div
-      className="w-4 h-4 bg-center bg-cover rounded-full bg-brand"
+      className="w-4 h-4 bg-brand bg-center bg-cover rounded-full"
       style={{
         ...(!!accentColor && { backgroundColor: accentColor }),
         backgroundImage: iconURI ? `url(${iconURI})` : '',
