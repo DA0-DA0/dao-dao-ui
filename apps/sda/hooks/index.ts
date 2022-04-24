@@ -1,3 +1,4 @@
 export * from './useGovernanceModule'
-export * from './useThresholdQuorum'
 export * from './useGovernanceTokenInfo'
+export * from './useStaking'
+export * from './useThresholdQuorum'

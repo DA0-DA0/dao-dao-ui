@@ -1,29 +1,19 @@
 import { useState, FunctionComponent, Suspense } from 'react'
 
-import { constSelector, useRecoilValue } from 'recoil'
-
-import { useWallet, blockHeightSelector } from '@dao-dao/state'
+import { useWallet } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
-import { stakingContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
-import {
-  claimsSelector,
-  getConfigSelector,
-} from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import {
   StakingMode,
   StakingModal as StatelessStakingModal,
   Modal,
 } from '@dao-dao/ui'
-import {
-  claimAvailable,
-  convertDenomToMicroDenomWithDecimals,
-} from '@dao-dao/utils'
+import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
 import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
 import { Logo } from '.'
-import { useGovernanceTokenInfo } from '@/hooks'
+import { useGovernanceTokenInfo, useStaking } from '@/hooks'
 import { cleanChainError } from '@/util'
 
 interface StakingModalProps {
@@ -48,40 +38,10 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   const unstakedBalance = 2500.1234
   const stakedBalance = 1025.4321
 
-  const {
-    votingModuleAddress,
-    governanceTokenContractAddress,
-    governanceTokenInfo,
-  } = useGovernanceTokenInfo()
-  const stakingContractAddress = useRecoilValue(
-    votingModuleAddress
-      ? stakingContractSelector({ contractAddress: votingModuleAddress })
-      : constSelector(undefined)
-  )
-  const stakingContractConfig = useRecoilValue(
-    stakingContractAddress
-      ? getConfigSelector({ contractAddress: stakingContractAddress })
-      : constSelector(undefined)
-  )
-
-  const unstakingDuration = stakingContractConfig?.unstaking_duration ?? null
-
-  const blockHeight = useRecoilValue(blockHeightSelector)
-  const claims =
-    useRecoilValue(
-      walletAddress && stakingContractAddress
-        ? claimsSelector({
-            contractAddress: stakingContractAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    )?.claims ?? []
-  const sumClaimsAvailable =
-    blockHeight !== undefined
-      ? claims
-          .filter((c) => claimAvailable(c, blockHeight))
-          .reduce((p, c) => p + Number(c.amount), 0)
-      : 0
+  const { governanceTokenContractAddress, governanceTokenInfo } =
+    useGovernanceTokenInfo()
+  const { stakingContractAddress, unstakingDuration, sumClaimsAvailable } =
+    useStaking()
 
   const doStake = useSend({
     contractAddress: governanceTokenContractAddress ?? '',

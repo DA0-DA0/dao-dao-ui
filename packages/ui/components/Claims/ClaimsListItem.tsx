@@ -32,7 +32,7 @@ function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
 
 export interface ClaimsListItemProps {
   claim: Claim
-  unstakingDuration: Duration
+  unstakingDuration?: Duration | null
   blockHeight: number
   tokenInfo: TokenInfoResponse
   incrementClaimsAvailable: (n: number) => void
@@ -49,7 +49,8 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
 }) => {
   const available = claimAvailable(claim, blockHeight)
 
-  const durationForHumans = humanReadableDuration(unstakingDuration)
+  const durationForHumans =
+    unstakingDuration && humanReadableDuration(unstakingDuration)
   const durationRemaining = claimDurationRemaining(claim, blockHeight)
 
   // Once the claim expires increment claims available.
@@ -77,7 +78,7 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
   return (
-    <div className="flex gap-2 justify-between items-center p-4 my-2 bg-primary rounded-lg">
+    <div className="flex gap-2 justify-between items-center p-4 rounded-lg bg-primary">
       <div className="flex flex-row gap-2 items-center">
         <BalanceIcon iconURI={iconURI} />
 
@@ -100,7 +101,7 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
       ) : (
         <div className="flex flex-wrap gap-2 text-caption">
           <p>{durationRemainingForHumans || '0'} remaining</p>
-          <p>/ {durationForHumans}</p>
+          {durationForHumans && <p>/ {durationForHumans}</p>}
         </div>
       )}
     </div>

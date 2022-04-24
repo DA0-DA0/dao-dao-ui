@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import { Pie } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
-import { Claim } from '@dao-dao/state/clients/stake-cw20'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { Button, ClaimsListItem, StakingMode } from '@dao-dao/ui'
 
 import {
@@ -16,17 +16,66 @@ import {
   PageWrapperProps,
   StakingModal,
   makeGetServerSideProps,
+  Loader,
 } from '@/components'
+import { useGovernanceTokenInfo, useStaking } from '@/hooks'
+
+interface ClaimViewProps {
+  showClaim: () => void
+  governanceTokenInfo?: TokenInfoResponse
+}
+const ClaimsView = ({ showClaim, governanceTokenInfo }: ClaimViewProps) => {
+  const { connected } = useWallet()
+  const { unstakingDuration, blockHeight, claims, sumClaimsAvailable } =
+    useStaking()
+
+  if (!blockHeight || !governanceTokenInfo) return null
+
+  return (
+    <>
+      <div className="flex flex-row justify-between items-center">
+        <p className="text-lg">Unstaking {governanceTokenInfo.name} tokens</p>
+
+        {sumClaimsAvailable > 0 && (
+          <Button disabled={!connected} onClick={showClaim} variant="secondary">
+            Claim
+          </Button>
+        )}
+      </div>
+
+      {claims.length ? (
+        <div className="flex flex-col gap-1 items-stretch !mt-4">
+          {claims.map((claim, idx) => (
+            <ClaimsListItem
+              key={idx}
+              blockHeight={blockHeight}
+              claim={claim}
+              iconURI="/juno.svg"
+              // TODO: Fix.
+              incrementClaimsAvailable={console.log}
+              tokenInfo={governanceTokenInfo}
+              unstakingDuration={unstakingDuration}
+            />
+          ))}
+        </div>
+      ) : connected ? (
+        <p>You are not waiting for any tokens to unstake.</p>
+      ) : (
+        <p>Connect your wallet to view unstaking tokens.</p>
+      )}
+    </>
+  )
+}
 
 const InnerHome = () => {
   const router = useRouter()
+
   const { connected } = useWallet()
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
+
   // Set to default mode to display, and undefined to hide.
   const [showStakingDefaultMode, setShowStakingDefaultMode] =
     useState<StakingMode>()
-
-  const tokenName = 'RAW'
-  const tokenDecimals = 6
 
   const rawPrice = 40.2
   const treasuryBalance = 1980000
@@ -36,39 +85,9 @@ const InnerHome = () => {
   const votingPower = (stakedBalance / totalStakedBalance) * 100
   const aprReward = 103
 
-  const unstakingDuration = { time: 3600 * 24 * 7 }
-  const blockHeight = 1231234
-  const tokenInfo = {
-    decimals: 6,
-    name: 'RAW',
-    symbol: 'RAW',
-    total_supply: '1000000000',
-  }
-
   const convertToUSD = (token: number) => token * rawPrice
 
-  const claims: Claim[] = [
-    {
-      amount: '100000000',
-      release_at: {
-        at_time: ((new Date().getTime() + 100000) * 1000000).toString(),
-      },
-    },
-    {
-      amount: '2050000000',
-      release_at: {
-        at_time: ((new Date().getTime() + 3200000) * 1000000).toString(),
-      },
-    },
-    {
-      amount: '20500009000',
-      release_at: {
-        at_time: ((new Date().getTime() + 32005000) * 1000000).toString(),
-      },
-    },
-  ]
-
-  if (router.isFallback) {
+  if (router.isFallback || !governanceTokenInfo) {
     throw new Error('Failed to load page data.')
   }
 
@@ -97,9 +116,9 @@ const InnerHome = () => {
 
               <p className="text-base lg:text-xl">
                 {treasuryBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
+                  maximumFractionDigits: governanceTokenInfo.decimals,
                 })}{' '}
-                {tokenName}
+                {governanceTokenInfo.name}
               </p>
             </div>
 
@@ -112,9 +131,9 @@ const InnerHome = () => {
 
               <p className="text-base lg:text-xl">
                 {totalStakedBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
+                  maximumFractionDigits: governanceTokenInfo.decimals,
                 })}{' '}
-                {tokenName}
+                {governanceTokenInfo.name}
               </p>
             </div>
 
@@ -144,16 +163,16 @@ const InnerHome = () => {
         <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
           <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
             <p className="mb-2 font-mono text-sm text-tertiary">
-              Balance (unstaked {tokenName})
+              Balance (unstaked {governanceTokenInfo.name})
             </p>
 
             <div className="flex flex-row gap-2 items-center mb-4">
               <Logo height={20} width={20} />
               <p className="text-base">
                 {unstakedBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
+                  maximumFractionDigits: governanceTokenInfo.decimals,
                 })}{' '}
-                {tokenName}
+                {governanceTokenInfo.name}
               </p>
             </div>
 
@@ -178,7 +197,7 @@ const InnerHome = () => {
 
           <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
             <p className="mb-2 font-mono text-sm text-tertiary">
-              Voting power (staked {tokenName})
+              Voting power (staked {governanceTokenInfo.name})
             </p>
 
             <div className="flex flex-row justify-between items-center mb-4">
@@ -186,9 +205,9 @@ const InnerHome = () => {
                 <Logo height={20} width={20} />
                 <p className="text-base">
                   {stakedBalance.toLocaleString(undefined, {
-                    maximumFractionDigits: tokenDecimals,
+                    maximumFractionDigits: governanceTokenInfo.decimals,
                   })}{' '}
-                  {tokenName}
+                  {governanceTokenInfo.name}
                 </p>
               </div>
 
@@ -223,21 +242,20 @@ const InnerHome = () => {
           </div>
         </div>
 
-        <p className="text-lg">Unstaking {tokenName} tokens</p>
-
-        <div className="flex flex-col items-stretch !mt-4">
-          {claims.map((claim, idx) => (
-            <ClaimsListItem
-              key={idx}
-              blockHeight={blockHeight}
-              claim={claim}
-              iconURI="/juno.svg"
-              incrementClaimsAvailable={console.log}
-              tokenInfo={tokenInfo}
-              unstakingDuration={unstakingDuration}
-            />
-          ))}
-        </div>
+        <Suspense
+          fallback={
+            <>
+              <p className="text-lg">
+                Unstaking {governanceTokenInfo.name} tokens
+              </p>
+              <Loader />
+            </>
+          }
+        >
+          <ClaimsView
+            showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
+          />
+        </Suspense>
       </div>
 
       {showStakingDefaultMode !== undefined && (
