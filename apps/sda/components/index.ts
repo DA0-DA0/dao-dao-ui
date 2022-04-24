@@ -1,6 +1,7 @@
 export * from './governance'
 export * from './templates'
 
+export * from './DAODAOLogo'
 export * from './ErrorBoundary'
 export * from './Footer'
 export * from './Header'

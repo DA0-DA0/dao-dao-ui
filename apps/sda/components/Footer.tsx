@@ -1,6 +1,6 @@
 import { Theme, useThemeContext } from '@dao-dao/ui'
 
-import { Logo } from '@/components'
+import { DAODAOLogo } from '@/components'
 
 export const Footer = () => {
   const { theme, updateTheme } = useThemeContext()
@@ -10,7 +10,7 @@ export const Footer = () => {
   return (
     <div className="flex flex-col justify-start items-center my-10">
       <div className="cursor-pointer" onClick={toggleTheme}>
-        <Logo height={32} width={32} />
+        <DAODAOLogo height={32} width={32} />
       </div>
       <p className="mt-4 font-studiofeixen">
         Powered by{' '}
