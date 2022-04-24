@@ -9,6 +9,7 @@ import {
   executeClient,
   ExecuteClientParams,
 } from '../recoil/selectors/clients/cw-governance'
+import { FunctionKeyOf } from '../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>

@@ -30,15 +30,14 @@ import {
   PageWrapper,
   PageWrapperProps,
   StakingModal,
+  TemplateRendererComponent,
 } from '@/components'
-import { TemplateRendererComponent } from '@/components/templates/TemplateRendererComponent'
 import {
   useGovernanceModule,
   useThresholdQuorum,
   useGovernanceTokenInfo,
 } from '@/hooks'
-import { cleanChainError } from '@/util/cleanChainError'
-import { DAO_ADDRESS } from '@/util/constants'
+import { cleanChainError, DAO_ADDRESS } from '@/util'
 
 const InnerProposal = () => {
   const router = useRouter()
@@ -115,7 +114,7 @@ const InnerProposal = () => {
       setLoading(true)
 
       try {
-        await executeProposal({
+        await castVote({
           proposalId,
           vote,
         })
@@ -126,7 +125,7 @@ const InnerProposal = () => {
 
       setLoading(false)
     },
-    [executeProposal, connected, proposalId, setLoading]
+    [castVote, connected, proposalId, setLoading]
   )
 
   const onExecute = useCallback(async () => {

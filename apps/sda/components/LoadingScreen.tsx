@@ -1,4 +1,4 @@
-import { Logo } from '@/components/Logo'
+import { Logo } from '@/components'
 
 export const LoadingScreen = () => (
   <div className="flex justify-center items-center w-screen h-screen">

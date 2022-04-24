@@ -6,8 +6,8 @@ import { QueryClient } from '@dao-dao/state/clients/cw-governance'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 import { NextSeo } from 'next-seo'
 
-import { LoadingScreen } from '@/components/LoadingScreen'
-import { DAO_ADDRESS } from '@/util/constants'
+import { LoadingScreen } from '.'
+import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string

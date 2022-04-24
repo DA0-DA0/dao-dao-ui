@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/ui/components/templates'
 import { useFormContext } from 'react-hook-form'
 
-import { DAO_ADDRESS } from '@/util/constants'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerRemoveTokenComponent: TemplateComponent = (props) => {
   const { getLabel } = props
@@ -70,20 +70,11 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
       {...props}
       options={{
         existingTokens,
-        ...(tokenInfoLoadable.state === 'loading'
-          ? {
-              loadingTokenInfo: true,
-              tokenInfo: undefined,
-            }
-          : tokenInfoLoadable.state === 'hasValue' && tokenInfoLoadable.contents
-          ? {
-              loadingTokenInfo: false,
-              tokenInfo: tokenInfoLoadable.contents,
-            }
-          : {
-              loadingTokenInfo: null,
-              tokenInfo: undefined,
-            }),
+        loadingTokenInfo: tokenInfoLoadable.state === 'loading',
+        tokenInfo:
+          tokenInfoLoadable.state === 'hasValue'
+            ? tokenInfoLoadable.contents
+            : undefined,
       }}
     />
   )

@@ -1,6 +1,6 @@
 import { Toaster } from 'react-hot-toast'
 
-import { successOptions, errorOptions } from 'util/toast'
+import { successOptions, errorOptions } from '@/util'
 
 export const Notifications = () => (
   <Toaster

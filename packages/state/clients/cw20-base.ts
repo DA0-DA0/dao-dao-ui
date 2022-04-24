@@ -256,7 +256,7 @@ export interface Interface extends ReadOnlyInterface {
   }: {
     amount: Uint128
     contract: string
-    msg: BinaryType
+    msg: Binary
   }) => Promise<ExecuteResult>
   increaseAllowance: ({
     amount,
@@ -293,7 +293,7 @@ export interface Interface extends ReadOnlyInterface {
   }: {
     amount: Uint128
     contract: string
-    msg: BinaryType
+    msg: Binary
     owner: string
   }) => Promise<ExecuteResult>
   burnFrom: ({
@@ -386,7 +386,7 @@ export class Client extends QueryClient implements Interface {
   }: {
     amount: Uint128
     contract: string
-    msg: BinaryType
+    msg: Binary
   }): Promise<ExecuteResult> => {
     return await this.client.execute(
       this.sender,
@@ -475,7 +475,7 @@ export class Client extends QueryClient implements Interface {
   }: {
     amount: Uint128
     contract: string
-    msg: BinaryType
+    msg: Binary
     owner: string
   }): Promise<ExecuteResult> => {
     return await this.client.execute(

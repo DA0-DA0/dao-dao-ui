@@ -3,7 +3,7 @@ import { useRecoilValue, constSelector } from 'recoil'
 import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
-import { DAO_ADDRESS } from '@/util/constants'
+import { DAO_ADDRESS } from '@/util'
 
 export const useGovernanceModule = () => {
   const governanceModuleAddress = useRecoilValue(

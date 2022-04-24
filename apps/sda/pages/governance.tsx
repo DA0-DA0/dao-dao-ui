@@ -11,13 +11,14 @@ import { Button } from '@dao-dao/ui'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
 
 import {
+  Excerpt,
+  Hero,
   makeGetServerSideProps,
   PageWrapper,
   PageWrapperProps,
   ProposalItem,
 } from '@/components'
-import { Excerpt, Hero } from '@/components'
-import { DAO_ADDRESS } from '@/util/constants'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerGovernance = () => {
   const router = useRouter()

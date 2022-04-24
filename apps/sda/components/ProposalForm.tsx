@@ -23,10 +23,10 @@ import {
   useForm,
 } from 'react-hook-form'
 
+import { TemplateSelector } from '.'
 import { templateMap, templateToCosmosMsg } from './templates'
-import { TemplateSelector } from './TemplateSelector'
 import { useGovernanceTokenInfo } from '@/hooks'
-import { DAO_ADDRESS } from '@/util/constants'
+import { DAO_ADDRESS } from '@/util'
 
 interface TemplateKeyAndData {
   key: TemplateKey

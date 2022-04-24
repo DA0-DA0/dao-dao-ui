@@ -18,21 +18,6 @@ import {
   makeGetServerSideProps,
 } from '@/components'
 
-interface Pool {
-  asset1: {
-    name: string
-    iconURI: string
-  }
-  asset2: {
-    name: string
-    iconURI: string
-  }
-  liquidity: number
-  staked: number
-  rewardURIs: string[]
-  apr: number
-}
-
 const InnerHome = () => {
   const router = useRouter()
   const { connected } = useWallet()

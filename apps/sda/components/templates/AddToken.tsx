@@ -35,22 +35,13 @@ export const AddTokenComponent: TemplateComponent = (props) => {
   return (
     <StatelessAddTokenComponent
       {...props}
-      options={
-        tokenInfoLoadable.state === 'loading'
-          ? {
-              loadingTokenInfo: true,
-              tokenInfo: undefined,
-            }
-          : tokenInfoLoadable.state === 'hasValue' && tokenInfoLoadable.contents
-          ? {
-              loadingTokenInfo: false,
-              tokenInfo: tokenInfoLoadable.contents,
-            }
-          : {
-              loadingTokenInfo: null,
-              tokenInfo: undefined,
-            }
-      }
+      options={{
+        loadingTokenInfo: tokenInfoLoadable.state === 'loading',
+        tokenInfo:
+          tokenInfoLoadable.state === 'hasValue'
+            ? tokenInfoLoadable.contents
+            : undefined,
+      }}
     />
   )
 }

@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
 
@@ -67,27 +67,23 @@ export interface TemplateRendererComponentProps {
   message: { [key: string]: any }
 }
 
-export type TokenInfoDisplayProps =
-  | {
-      loadingTokenInfo: null | true
-      tokenInfo: undefined
-    }
-  | {
-      loadingTokenInfo: false
-      tokenInfo: TokenInfoResponse
-    }
+export type TokenInfoDisplayProps = {
+  loadingTokenInfo?: boolean
+  tokenInfo?: TokenInfoResponse
+}
 
-export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = (
-  props
-) => (
+export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
+  loadingTokenInfo,
+  tokenInfo,
+}) => (
   <>
-    {props.loadingTokenInfo ? (
+    {loadingTokenInfo ? (
       <Loader />
-    ) : props.loadingTokenInfo === false ? (
+    ) : tokenInfo ? (
       <div>
         <InputLabel name="Token info" />
         <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
-          {JSON.stringify(props.tokenInfo, null, 2)}
+          {JSON.stringify(tokenInfo, null, 2)}
         </pre>
       </div>
     ) : null}

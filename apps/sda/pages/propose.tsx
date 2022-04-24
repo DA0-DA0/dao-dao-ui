@@ -18,12 +18,10 @@ import {
   makeGetServerSideProps,
   PageWrapper,
   PageWrapperProps,
+  ProposalForm,
 } from '@/components'
-import { ProposalForm } from '@/components/ProposalForm'
 import { useGovernanceModule } from '@/hooks'
-import { cleanChainError } from '@/util/cleanChainError'
-import { DAO_ADDRESS } from '@/util/constants'
-import { expirationExpired } from '@/util/expiration'
+import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
@@ -62,7 +60,8 @@ const InnerProposalCreate = () => {
       !connected ||
       !blockHeight ||
       proposalDeposit === -1 ||
-      !currentAllowance
+      !currentAllowance ||
+      !governanceModuleAddress
     )
       return
 

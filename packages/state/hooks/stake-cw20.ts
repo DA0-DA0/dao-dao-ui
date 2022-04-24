@@ -9,6 +9,7 @@ import {
   executeClient,
   ExecuteClientParams,
 } from '../recoil/selectors/clients/stake-cw20'
+import { FunctionKeyOf } from '../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>

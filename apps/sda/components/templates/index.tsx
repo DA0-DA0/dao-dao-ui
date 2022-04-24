@@ -136,3 +136,5 @@ export const templateAndDataForDecodedCosmosMsg = (
   }
   return null
 }
+
+export * from './TemplateRendererComponent'

@@ -1,11 +1,12 @@
 import { selector } from 'recoil'
 
+import { OfflineSigner } from '@cosmjs/proto-signing'
 import { CHAIN_ID, getKeplr, getOfflineSignerAuto } from '@dao-dao/utils'
 
 import { keplrConnectedBeforeKey, keplrKeystoreIdAtom } from '../atoms/keplr'
 import { getLocalStorageNamespacedKey } from '../effects'
 
-export const keplrOfflineSignerSelector = selector({
+export const keplrOfflineSignerSelector = selector<OfflineSigner | undefined>({
   key: 'keplrOfflineSigner',
   get: async ({ get }) => {
     // Subscribe to keystore ID changes so we propagate new wallet selection.

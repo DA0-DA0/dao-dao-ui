@@ -6,8 +6,7 @@ import {
   Vote,
 } from '@dao-dao/state/clients/cw-proposal-single'
 import { StatusIcons } from '@dao-dao/ui/components/StatusIcons'
-import { getProposalEnd } from '@dao-dao/utils'
-import { pad } from '@dao-dao/utils/string'
+import { getProposalEnd, pad } from '@dao-dao/utils'
 import { CheckIcon, XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 

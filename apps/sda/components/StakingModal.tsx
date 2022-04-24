@@ -22,9 +22,9 @@ import {
 import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
-import { Logo } from '@/components'
+import { Logo } from '.'
 import { useGovernanceTokenInfo } from '@/hooks'
-import { cleanChainError } from '@/util/cleanChainError'
+import { cleanChainError } from '@/util'
 
 interface StakingModalProps {
   defaultMode: StakingMode
@@ -113,7 +113,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         try {
           await doStake({
             amount: microAmount,
-            contract: stakingContractConfig,
+            contract: stakingContractAddress,
             msg: btoa('{"stake":{}}'),
           })
           toast.success(`Staked ${amount} tokens`)
@@ -158,15 +158,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         break
       }
       case StakingMode.Claim: {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          governanceTokenInfo.decimals
-        )
+        if (sumClaimsAvailable === 0) {
+          return toast.error('No claims available.')
+        }
 
         setLoading(true)
         try {
-          await doClaim({ amount: microAmount })
-          toast.success(`Claimed ${amount} tokens`)
+          await doClaim()
+          toast.success(`Claimed ${sumClaimsAvailable} tokens`)
           setAmount(0)
         } catch (err) {
           toast.error(cleanChainError(err.message))

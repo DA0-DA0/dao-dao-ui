@@ -4,7 +4,7 @@ import { govTokenInfoSelector } from '@dao-dao/state'
 import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
 import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 
-import { DAO_ADDRESS } from '@/util/constants'
+import { DAO_ADDRESS } from '@/util'
 
 export const useGovernanceTokenInfo = () => {
   const votingModuleAddress = useRecoilValue(

@@ -9,7 +9,7 @@ import {
   TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
 
-import { DAO_ADDRESS } from '@/util/constants'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerStakeComponent: TemplateComponent = (props) => {
   const nativeBalances =

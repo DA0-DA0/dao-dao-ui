@@ -61,8 +61,8 @@ export function convertToFixedDecimals(amount: number | string): string {
 export const getDaoThresholdAndQuorum = (
   t: DaoThreshold
 ): { threshold: string | undefined; quorum: string | undefined } => {
-  let threshold = undefined
-  let quorum = undefined
+  let threshold: string | undefined
+  let quorum: string | undefined
 
   if ('absolute_percentage' in t) {
     threshold = (Number(t.absolute_percentage.percentage) * 100).toString()
