@@ -21,11 +21,11 @@ export interface ConfigResponse {
 }
 export type Addr = string
 export type Uint128 = string
-export interface Cw20BalancesResponse {
+export type Cw20BalancesResponse = {
   addr: Addr
   balance: Uint128
   [k: string]: unknown
-}
+}[]
 export type Cw20TokenListResponse = Addr[]
 export type Cw721TokenListResponse = Addr[]
 export interface DumpStateResponse {

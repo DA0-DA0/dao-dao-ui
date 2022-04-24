@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -47,14 +48,11 @@ export const spendDefaults = ({
 })
 
 interface SpendOptions {
-  nativeBalances: {
-    denom: string
-    balance: number
-  }[]
+  nativeBalances: readonly Coin[]
   cw20Balances: {
     address: string
+    balance: string
     info: TokenInfoResponse
-    balance: number
   }[]
 }
 
@@ -77,7 +75,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
     const native = nativeBalances.find((coin) => coin.denom === id)
     if (native) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.balance,
+        native.amount,
         NATIVE_DECIMALS
       )
       const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -85,7 +83,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
         NATIVE_DECIMALS
       )
       return (
-        Number(microAmount) <= Number(native.balance) ||
+        Number(microAmount) <= Number(native.amount) ||
         `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount}).`
       )
     }

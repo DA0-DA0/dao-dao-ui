@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/stargate'
 import {
   AddressInput,
   InputErrorMessage,
@@ -67,10 +68,7 @@ export const stakeDefaults = (): StakeData => {
 }
 
 interface StakeOptions {
-  nativeBalances: {
-    denom: string
-    balance: number
-  }[]
+  nativeBalances: readonly Coin[]
 }
 
 export const StakeComponent: TemplateComponent<StakeOptions> = ({
@@ -93,7 +91,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
     const native = nativeBalances.find((coin) => coin.denom === denom)
     if (native) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.balance,
+        native.amount,
         NATIVE_DECIMALS
       )
       const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -101,7 +99,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
         NATIVE_DECIMALS
       )
       return (
-        Number(microAmount) <= Number(native.balance) ||
+        Number(microAmount) <= Number(native.amount) ||
         `Can't stake more tokens than are in the DAO treasury (${humanReadableAmount}).`
       )
     }

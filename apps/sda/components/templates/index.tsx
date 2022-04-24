@@ -25,23 +25,22 @@ import {
   transformCosmosToRemoveToken,
   transformRemoveTokenToCosmos,
 } from '@dao-dao/ui/components/templates/RemoveToken'
+import {
+  spendDefaults,
+  transformCosmosToSpend,
+  transformSpendToCosmos,
+} from '@dao-dao/ui/components/templates/Spend'
+import {
+  stakeDefaults,
+  transformCosmosToStake,
+  transformStakeToCosmos,
+} from '@dao-dao/ui/components/templates/Stake'
 
 import { AddTokenComponent } from './AddToken'
 import { MintComponent } from './Mint'
 import { RemoveTokenComponent } from './RemoveToken'
-// TODO: Make stateful versions of these like AddToken, Mint, and RemoveToken.
-import {
-  SpendComponent,
-  spendDefaults,
-  transformCosmosToSpend,
-  transformSpendToCosmos,
-} from './Spend'
-import {
-  StakeComponent,
-  stakeDefaults,
-  transformCosmosToStake,
-  transformStakeToCosmos,
-} from './Stake'
+import { SpendComponent } from './Spend'
+import { StakeComponent } from './Stake'
 
 export const templates: Template[] = [
   {

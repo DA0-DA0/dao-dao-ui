@@ -1,4 +1,4 @@
-import { selector } from 'recoil'
+import { selector, selectorFamily } from 'recoil'
 
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { GasPrice } from '@cosmjs/stargate'
@@ -49,4 +49,16 @@ export const blockHeightSelector = selector({
 
     return await client.getHeight()
   },
+})
+
+export const nativeBalancesSelector = selectorFamily({
+  key: 'nativeBalances',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(stargateClientSelector)
+      if (!client) return
+
+      return await client.getAllBalances(address)
+    },
 })
