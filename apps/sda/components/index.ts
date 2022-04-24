@@ -2,6 +2,7 @@ export * from './governance'
 export * from './templates'
 
 export * from './ErrorBoundary'
+export * from './Footer'
 export * from './Header'
 export * from './Loader'
 export * from './LoadingScreen'

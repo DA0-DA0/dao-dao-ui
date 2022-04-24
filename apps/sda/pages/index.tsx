@@ -254,6 +254,7 @@ const InnerHome = () => {
         >
           <ClaimsView
             showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
+            governanceTokenInfo={governanceTokenInfo}
           />
         </Suspense>
       </div>

@@ -13,7 +13,7 @@ import { ThemeProvider, Theme, LoadingScreen } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { DefaultSeo } from 'next-seo'
 
-import { ErrorBoundary, Header, Notifications } from '@/components'
+import { ErrorBoundary, Footer, Header, Notifications } from '@/components'
 
 const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
 const image = process.env.NEXT_PUBLIC_SITE_IMAGE
@@ -42,6 +42,8 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
           <Header />
 
           <Component {...pageProps} />
+
+          <Footer />
         </Suspense>
       </ErrorBoundary>
 
