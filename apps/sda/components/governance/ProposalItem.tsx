@@ -28,7 +28,7 @@ export const ProposalItem = ({
         className={clsx(
           'block rounded',
           'grid gap-x-4 items-center',
-          'grid-cols-[auto_12ch_16ch_1fr_12ch_6ch_6ch_12ch]',
+          'grid-cols-[auto_12ch_16ch_12ch_6ch_6ch_12ch]',
           'py-3 px-4 text-xs sm:text-sm',
           {
             'bg-card': proposal.status === Status.Open,
@@ -49,20 +49,21 @@ export const ProposalItem = ({
           {StatusIcon && <StatusIcon className="w-4 h-4" />}{' '}
           <span>{proposal.status}</span>
         </div>
-        {/* 1fr */}
+        {/* 16ch */}
         <div className="truncate">{proposal.title}</div>
-        {/* 2fr */}
-        <div className="text-secondary truncate">{proposal.description}</div>
-        {/*  */}
+        {/* 12ch */}
         <div>{walletVote ? VOTE_MAP[walletVote] : 'Not voted'}</div>
+        {/* 6ch */}
         <div className="flex items-center space-x-2 text-valid">
           <span>{proposal.votedYesPercent}%</span>{' '}
           <CheckIcon className="w-4 h-4 fill-current" />
         </div>
+        {/* 6ch */}
         <div className="flex items-center space-x-2 text-error">
           <span>{proposal.votedNoPercent}%</span>{' '}
           <XIcon className="w-4 h-4 fill-current" />
         </div>
+        {/* 12ch */}
         <div>{getProposalEnd(proposal.expiration, proposal.status)}</div>
       </a>
     </Link>
