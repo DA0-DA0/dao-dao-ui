@@ -123,18 +123,18 @@ export const RemoveTokenComponent: TemplateComponent<RemoveTokenOptions> = ({
 }
 
 export const transformRemoveTokenToCosmos = (
-  self: RemoveTokenData,
-  { sigAddress }: ToCosmosMsgProps
+  data: RemoveTokenData,
+  { daoAddress }: ToCosmosMsgProps
 ) =>
   makeWasmMessage({
     wasm: {
       execute: {
-        contract_addr: sigAddress,
+        contract_addr: daoAddress,
         funds: [],
         msg: {
           update_cw20_token_list: {
             to_add: [],
-            to_remove: [self.address],
+            to_remove: [data.address],
           },
         },
       },

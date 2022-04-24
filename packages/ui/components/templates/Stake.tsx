@@ -55,9 +55,7 @@ export interface StakeData {
 }
 
 export const stakeDefaults = (): StakeData => {
-  const denom = convertDenomToHumanReadableDenom(
-    process.env.NEXT_PUBLIC_FEE_DENOM as string
-  )
+  const denom = convertDenomToHumanReadableDenom(NATIVE_DENOM)
 
   return {
     stakeType: stakeActions[0].type,

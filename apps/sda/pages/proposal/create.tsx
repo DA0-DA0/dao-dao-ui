@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -10,15 +10,19 @@ import { blockHeightSelector, useWallet } from '@dao-dao/state'
 import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
 import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
 import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+import { CopyToClipboard } from '@dao-dao/ui'
 import toast from 'react-hot-toast'
 
 import {
+  Loader,
   makeGetServerSideProps,
   PageWrapper,
   PageWrapperProps,
 } from '@/components'
+import { ProposalForm } from '@/components/ProposalForm'
 import { useGovernanceModule } from '@/hooks'
 import { cleanChainError } from '@/util/cleanChainError'
+import { DAO_ADDRESS } from '@/util/constants'
 import { expirationExpired } from '@/util/expiration'
 
 const InnerProposalCreate = () => {
@@ -112,32 +116,26 @@ const InnerProposalCreate = () => {
   return (
     <div className="grid grid-cols-6">
       <div className="col-span-4 p-6 w-full">
-        {/* <ProposalForm
-          contractAddress={contractAddress}
-          loading={proposalLoading}
-          onSubmit={onProposalSubmit}
-          toCosmosMsgProps={{
-            sigAddress: contractAddress,
-            govAddress: daoInfo.gov_token,
-            govDecimals: tokenInfo.decimals,
-          }}
-        /> */}
+        <Suspense fallback={<Loader />}>
+          <ProposalForm loading={loading} onSubmit={onProposalSubmit} />
+        </Suspense>
       </div>
+
       <div className="col-span-2 p-6">
         <h2 className="mb-6 font-medium text-medium">Info</h2>
         <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
           <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
           <div className="col-span-2">
-            {/* <CopyToClipboard value={contractAddress} /> */}
+            <CopyToClipboard value={DAO_ADDRESS} />
           </div>
-          <p className="font-mono text-sm text-tertiary">Gov Token</p>
+          {/* <p className="font-mono text-sm text-tertiary">Gov Token</p>
           <div className="col-span-2">
-            {/* <CopyToClipboard value={daoInfo.gov_token} /> */}
+            <CopyToClipboard value={daoInfo.gov_token} />
           </div>
           <p className="font-mono text-sm text-tertiary">Staking</p>
           <div className="col-span-2">
-            {/* <CopyToClipboard value={daoInfo.staking_contract} /> */}
-          </div>
+            <CopyToClipboard value={daoInfo.staking_contract} />
+          </div> */}
         </div>
       </div>
     </div>

@@ -2,6 +2,8 @@ import { Modal } from '@dao-dao/ui'
 import { Template } from '@dao-dao/ui/components/templates'
 import { XIcon } from '@heroicons/react/outline'
 
+import { templates } from './templates'
+
 export const TemplateDisplayItem = ({
   template,
   onClick,
@@ -32,15 +34,13 @@ export const TemplateDisplayItem = ({
 }
 
 interface TemplateSelectorProps {
-  templates: Template[]
-  onLabelSelect: (label: string, getDefaults: (props: any) => any) => void
   onClose: () => void
+  onSelectTemplate: (template: Template) => void
 }
 
 export const TemplateSelector = ({
-  templates,
-  onLabelSelect,
   onClose,
+  onSelectTemplate,
 }: TemplateSelectorProps) => (
   <Modal>
     <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
@@ -58,9 +58,7 @@ export const TemplateSelector = ({
         {templates.map((template, index) => (
           <li key={index}>
             <TemplateDisplayItem
-              onClick={() =>
-                onLabelSelect(template.label, template.getDefaults)
-              }
+              onClick={() => onSelectTemplate(template)}
               template={template}
             />
           </li>

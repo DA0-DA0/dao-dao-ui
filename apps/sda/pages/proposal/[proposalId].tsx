@@ -31,6 +31,7 @@ import {
   PageWrapperProps,
   StakingModal,
 } from '@/components'
+import { TemplateRendererComponent } from '@/components/templates/TemplateRendererComponent'
 import {
   useGovernanceModule,
   useThresholdQuorum,
@@ -173,6 +174,7 @@ const InnerProposal = () => {
         </div>
 
         <V1ProposalDetails
+          TemplateRendererComponent={TemplateRendererComponent}
           loading={loading}
           onExecute={onExecute}
           onVote={onVote}

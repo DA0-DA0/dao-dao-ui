@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from 'react'
+import { ComponentType, FC, ReactNode, useState } from 'react'
 
 import {
   Proposal,
@@ -12,8 +12,9 @@ import { Button } from '../../Button'
 import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'
 import { Execute } from '../../Execute'
 import { MarkdownPreview } from '../../MarkdownPreview'
+import { TemplateRendererComponentProps } from '../../templates'
 import { Vote } from '../../Vote'
-import { ProposalMessageTemplateList } from '../v0/ProposalMessageTemplateList'
+import { V1ProposalMessageTemplateList } from './V1ProposalMessageTemplateList'
 
 interface V1ProposalDetailsProps {
   proposal: Proposal
@@ -23,11 +24,7 @@ interface V1ProposalDetailsProps {
   showStaking: boolean
   setShowStaking: (value: boolean) => void
   stakingModal?: ReactNode
-  // Transformer to convert a decoded message into a displayable ReactNode. The
-  // caller will likely use this to transform these messages into template
-  // components. Once we have a state package we will want to move
-  // templates into their own package and then this can likely be removed.
-  messageToDisplay: (message: { [key: string]: any }) => ReactNode
+  TemplateRendererComponent: ComponentType<TemplateRendererComponentProps>
   onExecute: () => void
   onVote: (choice: VoteChoice) => void
 }
@@ -40,7 +37,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
   stakingModal,
   showStaking,
   setShowStaking,
-  messageToDisplay,
+  TemplateRendererComponent,
   onExecute,
   onVote,
 }) => {
@@ -63,8 +60,8 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
               value={decodedMessagesString(proposal.msgs)}
             />
           ) : (
-            <ProposalMessageTemplateList
-              messageToDisplay={messageToDisplay}
+            <V1ProposalMessageTemplateList
+              TemplateRendererComponent={TemplateRendererComponent}
               msgs={proposal.msgs}
             />
           )

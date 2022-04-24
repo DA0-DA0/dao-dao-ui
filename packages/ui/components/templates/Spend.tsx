@@ -27,6 +27,7 @@ import { useFormContext } from 'react-hook-form'
 
 import {
   FromCosmosMsgProps,
+  GetDefaultsProps,
   TemplateComponent,
   ToCosmosMsgProps,
 } from './common'
@@ -39,9 +40,7 @@ export interface SpendData {
 
 export const spendDefaults = ({
   walletAddress,
-}: {
-  walletAddress: string
-}): SpendData => ({
+}: GetDefaultsProps): SpendData => ({
   to: walletAddress,
   amount: 1,
   denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
@@ -205,7 +204,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
 
 export const transformSpendToCosmos = (
   data: SpendData,
-  { govDecimals }: ToCosmosMsgProps
+  { govTokenDecimals }: ToCosmosMsgProps
 ) => {
   if (data.denom === NATIVE_DENOM || data.denom.startsWith('ibc/')) {
     const decimals = nativeTokenDecimals(data.denom)!
@@ -214,7 +213,10 @@ export const transformSpendToCosmos = (
     return { bank }
   }
 
-  const amount = convertDenomToMicroDenomWithDecimals(data.amount, govDecimals)
+  const amount = convertDenomToMicroDenomWithDecimals(
+    data.amount,
+    govTokenDecimals
+  )
 
   return makeWasmMessage({
     wasm: {
@@ -234,7 +236,7 @@ export const transformSpendToCosmos = (
 
 export const transformCosmosToSpend = (
   msg: Record<string, any>,
-  { govDecimals }: FromCosmosMsgProps
+  { govTokenDecimals }: FromCosmosMsgProps
 ): SpendData | null => {
   if (
     'bank' in msg &&
@@ -270,7 +272,7 @@ export const transformCosmosToSpend = (
       to: msg.wasm.execute.msg.transfer.recipient,
       amount: convertMicroDenomToDenomWithDecimals(
         msg.wasm.execute.msg.transfer.amount,
-        govDecimals
+        govTokenDecimals
       ),
       denom: msg.wasm.execute.contract_addr,
     }

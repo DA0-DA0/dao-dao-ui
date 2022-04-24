@@ -3,6 +3,7 @@ import {
   FromCosmosMsgProps,
   Template,
   ToCosmosMsgProps,
+  TemplateKey,
 } from '@dao-dao/ui/components/templates'
 import {
   addTokenDefaults,
@@ -42,88 +43,94 @@ import { RemoveTokenComponent } from './RemoveToken'
 import { SpendComponent } from './Spend'
 import { StakeComponent } from './Stake'
 
-export const templates: Template[] = [
-  {
+export const templateMap: Record<TemplateKey, Template> = {
+  [TemplateKey.Spend]: {
+    key: TemplateKey.Spend,
     label: '💵 Spend',
     description: 'Spend native or cw20 tokens from the treasury.',
-    component: SpendComponent,
+    Component: SpendComponent,
     getDefaults: spendDefaults,
     toCosmosMsg: transformSpendToCosmos,
     fromCosmosMsg: transformCosmosToSpend,
   },
-  {
+  [TemplateKey.Mint]: {
+    key: TemplateKey.Mint,
     label: '🌿 Mint',
     description: 'Mint new governance tokens.',
-    component: MintComponent,
+    Component: MintComponent,
     getDefaults: mintDefaults,
     toCosmosMsg: transformMintToCosmos,
     fromCosmosMsg: transformCosmosToMint,
   },
-  {
+  [TemplateKey.Stake]: {
+    key: TemplateKey.Stake,
     label: '📤 Staking',
     description: 'Manage native token staking.',
-    component: StakeComponent,
+    Component: StakeComponent,
     getDefaults: stakeDefaults,
     toCosmosMsg: transformStakeToCosmos,
     fromCosmosMsg: transformCosmosToStake,
   },
-  {
+  [TemplateKey.AddToken]: {
+    key: TemplateKey.AddToken,
     label: '🔘 Add Treasury Token',
     description: 'Add a token to your treasury.',
-    component: AddTokenComponent,
+    Component: AddTokenComponent,
     getDefaults: addTokenDefaults,
     toCosmosMsg: transformAddTokenToCosmos,
     fromCosmosMsg: transformCosmosToAddToken,
   },
-  {
+  [TemplateKey.RemoveToken]: {
+    key: TemplateKey.RemoveToken,
     label: '⭕️ Remove Treasury Token',
     description: 'Remove a token from your treasury.',
-    component: RemoveTokenComponent,
+    Component: RemoveTokenComponent,
     getDefaults: removeTokenDefaults,
     toCosmosMsg: transformRemoveTokenToCosmos,
     fromCosmosMsg: transformCosmosToRemoveToken,
   },
-  {
+  [TemplateKey.Custom]: {
+    key: TemplateKey.Custom,
     label: '🤖 Custom',
     description: 'Perform any custom action a wallet can.',
-    component: CustomComponent,
+    Component: CustomComponent,
     getDefaults: customDefaults,
     toCosmosMsg: transformCustomToCosmos,
     fromCosmosMsg: transformCosmosToCustom,
   },
-]
+}
 
-// Ensure custom is always sorted last for two reasons:
-// 1. It should display last since it is a catch-all.
-// 2. It should be the last template type matched against when listing proposals in the UI since it will match any message (see messageTemplateAndValuesForDecodedCosmosMsg).
-templates.sort((a, b) => {
-  if (a.component === CustomComponent) {
-    return 1
-  } else if (b.component === CustomComponent) {
-    return -1
-  }
-  return 0
-})
+export const templates: Template[] = [
+  TemplateKey.Spend,
+  TemplateKey.Mint,
+  TemplateKey.Stake,
+  TemplateKey.AddToken,
+  TemplateKey.RemoveToken,
+  // Ensure custom is always last for two reasons:
+  // 1. It should display last since it is a catch-all.
+  // 2. It should be the last template type matched against when listing proposals in the UI since it will match any message (see templateAndDataForDecodedCosmosMsg below).
+  TemplateKey.Custom,
+].map((key) => templateMap[key])
 
-export const templateToCosmosMsg = (
-  templateLabel: string,
+export const templateToCosmosMsg = <T extends TemplateKey>(
+  templateKey: T,
   data: any,
   props: ToCosmosMsgProps
 ): CosmosMsgFor_Empty | undefined =>
-  templates.find((t) => t.label === templateLabel)?.toCosmosMsg?.(data, props)
+  templateMap[templateKey].toCosmosMsg?.(data, props)
 
-export const templateAndValuesForDecodedCosmosMsg = (
+export const templateAndDataForDecodedCosmosMsg = (
   msg: Record<string, any>,
   props: FromCosmosMsgProps
 ) => {
-  // Ensure custom is the last message template since it will match most
-  // proposals and we return the first successful message match.
+  // Note: Ensure custom is the last message template since it will match
+  // most proposals and we return the first successful message match.
   for (const template of templates) {
-    const values = template.fromCosmosMsg(msg, props)
-    if (values) {
+    const data = template.fromCosmosMsg(msg, props)
+    if (data) {
       return {
         template,
-        values,
+        data,
       }
     }
   }

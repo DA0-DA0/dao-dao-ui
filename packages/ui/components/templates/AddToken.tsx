@@ -63,12 +63,12 @@ export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
 
 export const transformAddTokenToCosmos = (
   data: AddTokenData,
-  { sigAddress }: ToCosmosMsgProps
+  { daoAddress }: ToCosmosMsgProps
 ) =>
   makeWasmMessage({
     wasm: {
       execute: {
-        contract_addr: sigAddress,
+        contract_addr: daoAddress,
         funds: [],
         msg: {
           update_cw20_token_list: {

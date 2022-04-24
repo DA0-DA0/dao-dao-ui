@@ -15,6 +15,7 @@ import { useFormContext } from 'react-hook-form'
 
 import {
   FromCosmosMsgProps,
+  GetDefaultsProps,
   TemplateComponent,
   ToCosmosMsgProps,
 } from './common'
@@ -26,9 +27,7 @@ export interface MintData {
 
 export const mintDefaults = ({
   walletAddress,
-}: {
-  walletAddress: string
-}): MintData => ({
+}: GetDefaultsProps): MintData => ({
   to: walletAddress,
   amount: 1,
 })
@@ -100,16 +99,22 @@ export const MintComponent: TemplateComponent<MintOptions> = ({
 }
 
 export const transformMintToCosmos = (
-  self: MintData,
-  { govDecimals, govAddress }: ToCosmosMsgProps
+  data: MintData,
+  { govTokenDecimals, govTokenAddress }: ToCosmosMsgProps
 ) => {
-  const amount = convertDenomToMicroDenomWithDecimals(self.amount, govDecimals)
-  return makeExecutableMintMessage(makeMintMessage(amount, self.to), govAddress)
+  const amount = convertDenomToMicroDenomWithDecimals(
+    data.amount,
+    govTokenDecimals
+  )
+  return makeExecutableMintMessage(
+    makeMintMessage(amount, data.to),
+    govTokenAddress
+  )
 }
 
 export const transformCosmosToMint = (
   msg: Record<string, any>,
-  { govDecimals }: FromCosmosMsgProps
+  { govTokenDecimals }: FromCosmosMsgProps
 ): MintData | null =>
   'wasm' in msg &&
   'execute' in msg.wasm &&
@@ -120,7 +125,7 @@ export const transformCosmosToMint = (
         to: msg.wasm.execute.msg.mint.recipient,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.wasm.execute.msg.mint.amount,
-          govDecimals
+          govTokenDecimals
         ),
       }
     : null

@@ -7,9 +7,17 @@ import { FieldErrors } from 'react-hook-form'
 import { InputLabel } from '../input'
 import { LogoNoBorder } from '../Logo'
 
+export enum TemplateKey {
+  Spend = 'spend',
+  Mint = 'mint',
+  Stake = 'stake',
+  AddToken = 'addToken',
+  RemoveToken = 'removeToken',
+  Custom = 'custom',
+}
+
 // A component which will render a template's input form.
 export type TemplateComponentProps<T = undefined> = {
-  contractAddress: string
   getLabel: (field: string) => string
   onRemove?: () => void
   errors?: FieldErrors
@@ -21,42 +29,42 @@ export type TemplateComponent<T = undefined> = FunctionComponent<
 >
 
 // Defines a new template.
-export interface Template<
-  O extends {} = any,
-  P extends {} = any,
-  D extends {} = any
-> {
+export interface Template<O extends {} = any, D extends {} = any> {
+  key: TemplateKey
   label: string
   description: string
-  component: TemplateComponent<O>
+  Component: TemplateComponent<O>
   // Get default for fields in form display.
-  getDefaults: (props: P) => D
+  getDefaults: (props: GetDefaultsProps) => D
   // Convert template data to CosmosMsgFor_Empty.
   toCosmosMsg: (data: D, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
   // Convert decoded msg data to fields in form display.
   fromCosmosMsg: (msg: Record<string, any>, props: FromCosmosMsgProps) => D
 }
 
+// The contextual information provided to templates when getting
+// default values for the template data.
+export interface GetDefaultsProps {
+  walletAddress: string
+}
+
 // The contextual information provided to templates when transforming
 // from form inputs to cosmos messages.
 export interface ToCosmosMsgProps {
-  sigAddress: string
-  govAddress: string
-  govDecimals: number
-  multisig: boolean
+  daoAddress: string
+  govTokenAddress: string
+  govTokenDecimals: number
 }
 
 // The contextual information provided to templates when transforming
 // from cosmos messages to values.
 export interface FromCosmosMsgProps {
-  govDecimals: number
+  govTokenDecimals: number
 }
 
-// When template data is being passed around in a form it must carry
-// a label with it so that we can find it's component and
-// transformation function later. This type just encodes that.
-export interface TemplateMessage {
-  label: string
+// The props needed to render a template from a message.
+export interface TemplateRendererComponentProps {
+  message: { [key: string]: any }
 }
 
 export type TokenInfoDisplayProps =

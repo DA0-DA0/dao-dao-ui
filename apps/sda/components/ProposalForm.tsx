@@ -8,50 +8,50 @@ import {
   Tooltip,
   MarkdownPreview,
   CosmosMessageDisplay,
-} from '@dao-dao/ui'
-import {
   InputErrorMessage,
   InputLabel,
   TextareaInput,
   TextInput,
 } from '@dao-dao/ui'
-import { ToCosmosMsgProps } from '@dao-dao/ui/components/templates'
+import { TemplateKey, ToCosmosMsgProps } from '@dao-dao/ui/components/templates'
 import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
-import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
+import {
+  FormProvider,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form'
 
-import { templates, templateToCosmosMsg } from './templates'
+import { templateMap, templateToCosmosMsg } from './templates'
 import { TemplateSelector } from './TemplateSelector'
+import { useGovernanceTokenInfo } from '@/hooks'
+import { DAO_ADDRESS } from '@/util/constants'
 
-interface TemplateLabelAndData {
-  label: string
+interface TemplateKeyAndData {
+  key: TemplateKey
   data: any
 }
 
 interface FormProposalData {
   title: string
   description: string
-  messages: TemplateLabelAndData[]
+  templateData: TemplateKeyAndData[]
 }
 
-export interface ProposalData extends Omit<FormProposalData, 'messages'> {
+export interface ProposalData extends Omit<FormProposalData, 'templateData'> {
   messages: CosmosMsgFor_Empty[]
 }
 
 interface ProposalFormProps {
   onSubmit: (data: ProposalData) => void
-  contractAddress: string
   loading: boolean
-  toCosmosMsgProps: ToCosmosMsgProps
 }
 
-export const ProposalForm = ({
-  onSubmit,
-  contractAddress,
-  loading,
-  toCosmosMsgProps,
-}: ProposalFormProps) => {
+export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const { connected, address: walletAddress } = useWallet()
+  const { governanceTokenContractAddress, governanceTokenInfo } =
+    useGovernanceTokenInfo()
 
   const formMethods = useForm<FormProposalData>()
 
@@ -70,33 +70,51 @@ export const ProposalForm = ({
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
-  const proposalMessages = watch('messages')
+  const proposalTemplateData = watch('templateData')
 
   const {
-    fields: messageFields,
+    fields: templateDataFields,
     append,
     remove,
   } = useFieldArray({
-    name: 'messages',
+    name: 'templateData',
     control,
     shouldUnregister: true,
   })
+
+  const toCosmosMsgProps: ToCosmosMsgProps | undefined =
+    governanceTokenContractAddress && governanceTokenInfo
+      ? {
+          daoAddress: DAO_ADDRESS,
+          govTokenAddress: governanceTokenContractAddress,
+          govTokenDecimals: governanceTokenInfo.decimals,
+        }
+      : undefined
+
+  // Need these props to convert data to the expected message format.
+  // Should be defined at this point since useRecoilValue suspends.
+  if (!toCosmosMsgProps)
+    throw new Error('Failed to retrieve governance token info')
+
+  const onSubmitForm: SubmitHandler<FormProposalData> = ({
+    templateData,
+    ...data
+  }) =>
+    onSubmit({
+      ...data,
+      messages: templateData
+        .map(({ key, data }) =>
+          templateToCosmosMsg(key, data, toCosmosMsgProps)
+        )
+        // Filter out undefined messages.
+        .filter(Boolean) as CosmosMsgFor_Empty[],
+    })
 
   return (
     <FormProvider {...formMethods}>
       <form
         className="mx-auto max-w-[800px]"
-        onSubmit={handleSubmit((d) =>
-          onSubmit({
-            ...d,
-            messages: d.messages
-              .map(({ label, data }) =>
-                templateToCosmosMsg(label, data, toCosmosMsgProps)
-              )
-              // Filter out undefined messages.
-              .filter(Boolean) as CosmosMsgFor_Empty[],
-          })
-        )}
+        onSubmit={handleSubmit(onSubmitForm)}
       >
         {showPreview && (
           <>
@@ -108,9 +126,9 @@ export const ProposalForm = ({
             </div>
             <CosmosMessageDisplay
               value={decodedMessagesString(
-                proposalMessages
-                  .map(({ label, data }) =>
-                    templateToCosmosMsg(label, data, toCosmosMsgProps)
+                proposalTemplateData
+                  .map(({ key, data }) =>
+                    templateToCosmosMsg(key, data, toCosmosMsgProps)
                   )
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
@@ -119,20 +137,6 @@ export const ProposalForm = ({
           </>
         )}
         <div className={showPreview ? 'hidden' : ''}>
-          {showTemplateSelector && (
-            <TemplateSelector
-              onClose={() => setShowTemplateSelector(false)}
-              onLabelSelect={(label, getDefaults) => {
-                append({
-                  ...getDefaults({ walletAddress }),
-                  label,
-                })
-                setShowTemplateSelector(false)
-              }}
-              templates={templates}
-            />
-          )}
-
           <div className="flex flex-col gap-1 my-3">
             <InputLabel name="Title" />
             <TextInput
@@ -154,31 +158,17 @@ export const ProposalForm = ({
             <InputErrorMessage error={errors.description} />
           </div>
           <ul className="list-none">
-            {messageFields.map((data, index) => {
-              const label = (data as any).label
-              const template = templates.find(
-                (template) => template.label === label
-              )
-              if (!template) {
-                // We guarantee by construction that this should never
-                // happen but might as well make it pretty if it does.
-                return (
-                  <div className="flex justify-between items-center p-2 my-3 text-error rounded-lg border border-error">
-                    <p>Internal error finding template for message.</p>
-                    <button onClick={() => remove(index)} type="button">
-                      <XIcon className="h-4" />
-                    </button>
-                  </div>
-                )
-              }
-              const Component = template.component
+            {templateDataFields.map(({ key }, index) => {
+              const { Component } = templateMap[key]
+
               return (
                 <li key={index}>
                   <Component
-                    contractAddress={contractAddress}
-                    errors={(errors.messages && errors.messages[index]) || {}}
+                    errors={
+                      (errors.templateData && errors.templateData[index]) || {}
+                    }
                     getLabel={(fieldName) =>
-                      `messages.${index}.data.${fieldName}`
+                      `templateData.${index}.data.${fieldName}`
                     }
                     onRemove={() => remove(index)}
                   />
@@ -194,19 +184,6 @@ export const ProposalForm = ({
             >
               <PlusIcon className="inline h-4" /> Add component
             </Button>
-            {showTemplateSelector && (
-              <TemplateSelector
-                onClose={() => setShowTemplateSelector(false)}
-                onLabelSelect={(label, getDefaults) => {
-                  append({
-                    ...getDefaults({ walletAddress }),
-                    label,
-                  })
-                  setShowTemplateSelector(false)
-                }}
-                templates={templates}
-              />
-            )}
           </div>
         </div>
         <div className="flex gap-2 justify-end mt-4">
@@ -237,6 +214,19 @@ export const ProposalForm = ({
           </Button>
         </div>
       </form>
+
+      {showTemplateSelector && (
+        <TemplateSelector
+          onClose={() => setShowTemplateSelector(false)}
+          onSelectTemplate={({ key, getDefaults }) => {
+            append({
+              key,
+              ...getDefaults({ walletAddress: walletAddress ?? '' }),
+            })
+            setShowTemplateSelector(false)
+          }}
+        />
+      )}
     </FormProvider>
   )
 }
