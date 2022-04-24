@@ -42,7 +42,7 @@ export const TemplateSelector = ({
   onClose,
   onSelectTemplate,
 }: TemplateSelectorProps) => (
-  <Modal>
+  <Modal onClose={onClose}>
     <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
       <button
         className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
@@ -52,7 +52,7 @@ export const TemplateSelector = ({
         <XIcon className="w-4 h-4" />
       </button>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="header-text">Proposal templates</h1>
+        <h1 className="header-text">Proposal message templates</h1>
       </div>
       <ul className="flex flex-col gap-3 list-none">
         {templates.map((template, index) => (

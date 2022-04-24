@@ -1,4 +1,4 @@
-import { ComponentType, FunctionComponent, SVGProps, useMemo } from 'react'
+import { FunctionComponent, ReactNode, useMemo } from 'react'
 
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -13,12 +13,13 @@ import {
   NATIVE_DENOM,
   SITE_TITLE,
 } from '@dao-dao/utils'
+import { PlusIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 
 import { Logo } from '@/components'
 
 interface NavItemData {
-  Icon: ComponentType<SVGProps<SVGSVGElement>>
+  renderIcon: (color: string) => ReactNode
   label: string
   href: string
 }
@@ -29,7 +30,7 @@ interface NavItemProps {
 }
 
 const NavItem: FunctionComponent<NavItemProps> = ({
-  item: { Icon, label, href },
+  item: { renderIcon, label, href },
   path,
 }) => {
   const isActive = path === href
@@ -42,12 +43,8 @@ const NavItem: FunctionComponent<NavItemProps> = ({
           'text-body hover:bg-card': !isActive,
         })}
       >
-        {Icon && (
-          <Icon
-            color={isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)'}
-            height={14}
-            width={14}
-          />
+        {renderIcon(
+          isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)'
         )}
         <p className="hidden lg:block">{label}</p>
       </a>
@@ -69,25 +66,40 @@ export const Header: FunctionComponent = () => {
   const navItems = useMemo<NavItemData[]>(
     () => [
       {
-        Icon: Airdrop,
+        renderIcon: (color) => <Airdrop color={color} height={14} width={14} />,
         label: 'Airdrop',
         href: '/airdrop',
       },
       {
-        Icon: Pie,
+        renderIcon: (color) => <Pie color={color} height={14} width={14} />,
         label: 'Tokenomics',
         href: '/',
       },
       {
-        Icon: Governance,
+        renderIcon: (color) => (
+          <Governance color={color} height={14} width={14} />
+        ),
         label: 'Governance',
         href: '/governance',
       },
       ...(/^\/proposal\/\d+$/.test(router.asPath)
         ? [
             {
-              Icon: Hash,
+              renderIcon: (color) => (
+                <Hash color={color} height={14} width={14} />
+              ),
               label: router.query.proposalId as string,
+              href: router.asPath,
+            },
+          ]
+        : []),
+      ...(/^\/propose/.test(router.asPath)
+        ? [
+            {
+              renderIcon: (color) => (
+                <PlusIcon color={color} height={17} width={17} />
+              ),
+              label: 'Propose',
               href: router.asPath,
             },
           ]

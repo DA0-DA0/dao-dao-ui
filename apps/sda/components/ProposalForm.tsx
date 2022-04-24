@@ -112,10 +112,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
 
   return (
     <FormProvider {...formMethods}>
-      <form
-        className="mx-auto max-w-[800px]"
-        onSubmit={handleSubmit(onSubmitForm)}
-      >
+      <form onSubmit={handleSubmit(onSubmitForm)}>
         {showPreview && (
           <>
             <div className="max-w-prose">

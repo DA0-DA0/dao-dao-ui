@@ -114,15 +114,18 @@ const InnerProposalCreate = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+    <div className="flex flex-col gap-14 justify-center p-8 mx-auto md:flex-row md:gap-8 md:max-w-screen-lg">
+      <div className="md:w-2/3">
+        <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
+
         <Suspense fallback={<Loader />}>
           <ProposalForm loading={loading} onSubmit={onProposalSubmit} />
         </Suspense>
       </div>
 
-      <div className="col-span-2 p-6">
-        <h2 className="mb-6 font-medium text-medium">Info</h2>
+      <div className="flex-1">
+        <h2 className="mb-4 font-medium text-medium">Addresses</h2>
+
         <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
           <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
           <div className="col-span-2">

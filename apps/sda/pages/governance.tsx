@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
 
 import { constSelector, useRecoilValue } from 'recoil'
 
@@ -19,6 +20,8 @@ import { Excerpt, Hero } from '@/components'
 import { DAO_ADDRESS } from '@/util/constants'
 
 const InnerGovernance = () => {
+  const router = useRouter()
+
   const governanceModuleAddress = useRecoilValue(
     governanceModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
   )?.[0]
@@ -65,7 +68,11 @@ const InnerGovernance = () => {
           <Button type="button" variant="secondary">
             <ChevronDownIcon className="w-4 h-4" /> Open - 9 items
           </Button>
-          <Button type="button" variant="secondary">
+          <Button
+            onClick={() => router.push('/propose')}
+            type="button"
+            variant="secondary"
+          >
             <PlusIcon className="w-4 h-4" /> New Proposal
           </Button>
         </div>
