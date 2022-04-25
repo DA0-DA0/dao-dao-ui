@@ -3,11 +3,13 @@ import { selectorFamily } from 'recoil'
 import {
   DaoResponse,
   InfoResponse,
-  QueryClient,
+  Cw20StakedBalanceVotingQueryClient as QueryClient,
   StakingContractResponse,
   TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
+  ActiveThresholdResponse,
+  IsActiveResponse,
 } from '../../../clients/cw20-staked-balance-voting'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector } from '../chain'
@@ -55,6 +57,23 @@ export const daoSelector = selectorFamily<
       if (!client) return
 
       return await client.dao()
+    },
+})
+
+export const activeThresholdSelector = selectorFamily<
+  ActiveThresholdResponse | undefined,
+  QueryClientParams & {
+    params: Parameters<QueryClient['activeThreshold']>
+  }
+>({
+  key: 'cw20StakedBalanceVotingActiveThreshold',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      return await client.activeThreshold(...params)
     },
 })
 
@@ -119,5 +138,22 @@ export const tokenContractSelector = selectorFamily<
       if (!client) return
 
       return await client.tokenContract()
+    },
+})
+
+export const isActiveSelector = selectorFamily<
+  IsActiveResponse | undefined,
+  QueryClientParams & {
+    params: Parameters<QueryClient['isActive']>
+  }
+>({
+  key: 'cw20StakedBalanceVotingIsActive',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      return await client.isActive(...params)
     },
 })

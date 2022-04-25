@@ -1,8 +1,8 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  Client as ExecuteClient,
-  QueryClient,
+  StakeCw20Client as ExecuteClient,
+  StakeCw20QueryClient as QueryClient,
   StakedBalanceAtHeightResponse,
   StakedValueResponse,
   TotalStakedAtHeightResponse,

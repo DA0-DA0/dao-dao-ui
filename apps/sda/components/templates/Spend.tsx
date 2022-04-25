@@ -2,7 +2,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { cw20BalancesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { cw20BalancesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import {
   SpendComponent as StatelessSpendComponent,

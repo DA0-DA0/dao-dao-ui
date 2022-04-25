@@ -4,11 +4,11 @@ import { useCallback } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import { Client as ExecuteClient } from '../clients/cw-governance'
+import { CwCoreClient as ExecuteClient } from '../clients/cw-core'
 import {
   executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/clients/cw-governance'
+} from '../recoil/selectors/clients/cw-core'
 import { FunctionKeyOf } from '../types'
 
 const wrapExecuteHook =

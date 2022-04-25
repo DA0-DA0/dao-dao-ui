@@ -11,7 +11,7 @@ import {
   useCastVote,
   useExecute,
 } from '@dao-dao/state/hooks/cw-proposal-single'
-import { votingPowerAtHeightSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { votingPowerAtHeightSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   getVoteSelector,
   proposalSelector,

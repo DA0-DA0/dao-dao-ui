@@ -2,7 +2,7 @@ import { useRecoilValue, constSelector } from 'recoil'
 
 import { ConfigResponse } from '@dao-dao/state/clients/cw-proposal-single'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 

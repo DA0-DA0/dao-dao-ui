@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import { Client as ExecuteClient } from '../clients/cw-proposal-single'
+import { CwProposalSingleClient as ExecuteClient } from '../clients/cw-proposal-single'
 import {
   executeClient,
   ExecuteClientParams,

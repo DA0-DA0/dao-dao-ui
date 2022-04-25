@@ -4,14 +4,6 @@
  * and run the cosmwasm-typescript-gen generate command to regenerate this file.
  */
 
-/**
- * This file was modified by hand to fix a name duplication issue:
- *   ExecuteMsg::Vote and QueryMsg::Vote both exist, so the
- *   ReadOnlyInterface and Interface had overlapping `vote` methods.
- *   This was fixed by changing `ReadOnlyInterface`'s `vote` to `getVote`,
- *   and `Interface`'s `vote` to `castVote`.
- */
-
 import {
   CosmWasmClient,
   ExecuteResult,
@@ -296,7 +288,7 @@ export interface VoteResponse {
   vote?: VoteInfo | null
   [k: string]: unknown
 }
-export interface ReadOnlyInterface {
+export interface CwProposalSingleReadOnlyInterface {
   contractAddress: string
   config: () => Promise<ConfigResponse>
   proposal: ({
@@ -340,7 +332,9 @@ export interface ReadOnlyInterface {
   voteHooks: () => Promise<VoteHooksResponse>
   info: () => Promise<InfoResponse>
 }
-export class QueryClient implements ReadOnlyInterface {
+export class CwProposalSingleQueryClient
+  implements CwProposalSingleReadOnlyInterface
+{
   client: CosmWasmClient
   contractAddress: string
 
@@ -457,17 +451,16 @@ export class QueryClient implements ReadOnlyInterface {
     })
   }
 }
-export interface Interface extends ReadOnlyInterface {
+export interface CwProposalSingleInterface
+  extends CwProposalSingleReadOnlyInterface {
   contractAddress: string
   sender: string
   propose: ({
     description,
-    latest,
     msgs,
     title,
   }: {
     description: string
-    latest?: Expiration
     msgs: CosmosMsgFor_Empty[]
     title: string
   }) => Promise<ExecuteResult>
@@ -503,7 +496,10 @@ export interface Interface extends ReadOnlyInterface {
   addVoteHook: ({ address }: { address: string }) => Promise<ExecuteResult>
   removeVoteHook: ({ address }: { address: string }) => Promise<ExecuteResult>
 }
-export class Client extends QueryClient implements Interface {
+export class CwProposalSingleClient
+  extends CwProposalSingleQueryClient
+  implements CwProposalSingleInterface
+{
   client: SigningCosmWasmClient
   sender: string
   contractAddress: string
@@ -531,12 +527,10 @@ export class Client extends QueryClient implements Interface {
 
   propose = async ({
     description,
-    latest,
     msgs,
     title,
   }: {
     description: string
-    latest?: Expiration
     msgs: CosmosMsgFor_Empty[]
     title: string
   }): Promise<ExecuteResult> => {
@@ -546,7 +540,6 @@ export class Client extends QueryClient implements Interface {
       {
         propose: {
           description,
-          latest,
           msgs,
           title,
         },

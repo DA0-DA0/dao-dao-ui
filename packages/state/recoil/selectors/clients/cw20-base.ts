@@ -9,8 +9,8 @@ import {
   MinterResponse,
   MarketingInfoResponse,
   TokenInfoResponse,
-  QueryClient,
-  Client as ExecuteClient,
+  Cw20QueryClient as QueryClient,
+  Cw20Client as ExecuteClient,
 } from '../../../clients/cw20-base'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'

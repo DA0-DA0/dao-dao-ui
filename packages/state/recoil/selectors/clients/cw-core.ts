@@ -1,7 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  Client as ExecuteClient,
+  CwCoreClient as ExecuteClient,
   ConfigResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
@@ -11,11 +11,11 @@ import {
   GovernanceModulesResponse,
   InfoResponse,
   ListItemsResponse,
-  QueryClient,
+  CwCoreQueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../clients/cw-governance'
+} from '../../../clients/cw-core'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
@@ -24,7 +24,7 @@ type QueryClientParams = {
 }
 
 const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
-  key: 'cwGovernanceQueryClient',
+  key: 'cwCoreQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
@@ -44,7 +44,7 @@ export const executeClient = selectorFamily<
   ExecuteClient | undefined,
   ExecuteClientParams
 >({
-  key: 'cwGovernanceExecuteClient',
+  key: 'cwCoreExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
@@ -59,7 +59,7 @@ export const configSelector = selectorFamily<
   ConfigResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwGovernanceConfig',
+  key: 'cwCoreConfig',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -74,7 +74,7 @@ export const votingModuleSelector = selectorFamily<
   VotingModuleResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwGovernanceVotingModule',
+  key: 'cwCoreVotingModule',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -89,7 +89,7 @@ export const governanceModulesSelector = selectorFamily<
   GovernanceModulesResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['governanceModules']> }
 >({
-  key: 'cwGovernanceGovernanceModules',
+  key: 'cwCoreGovernanceModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -104,7 +104,7 @@ export const dumpStateSelector = selectorFamily<
   DumpStateResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwGovernanceDumpState',
+  key: 'cwCoreDumpState',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -119,7 +119,7 @@ export const getItemSelector = selectorFamily<
   GetItemResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['getItem']> }
 >({
-  key: 'cwGovernanceGetItem',
+  key: 'cwCoreGetItem',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -134,7 +134,7 @@ export const listItemsSelector = selectorFamily<
   ListItemsResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['listItems']> }
 >({
-  key: 'cwGovernanceListItems',
+  key: 'cwCoreListItems',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -149,7 +149,7 @@ export const cw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw20TokenList']> }
 >({
-  key: 'cwGovernanceCw20TokenList',
+  key: 'cwCoreCw20TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -164,7 +164,7 @@ export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
 >({
-  key: 'cwGovernanceCw721TokenList',
+  key: 'cwCoreCw721TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -176,10 +176,10 @@ export const cw721TokenListSelector = selectorFamily<
 })
 
 export const cw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse | undefined,
+  Cw20BalancesResponse[] | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw20Balances']> }
 >({
-  key: 'cwGovernanceCw20Balances',
+  key: 'cwCoreCw20Balances',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -196,7 +196,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
 >({
-  key: 'cwGovernanceVotingPowerAtHeight',
+  key: 'cwCoreVotingPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -213,7 +213,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
 >({
-  key: 'cwGovernanceTotalPowerAtHeight',
+  key: 'cwCoreTotalPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -230,7 +230,7 @@ export const infoSelector = selectorFamily<
   InfoResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwGovernanceInfo',
+  key: 'cwCoreInfo',
   get:
     (queryClientParams) =>
     async ({ get }) => {

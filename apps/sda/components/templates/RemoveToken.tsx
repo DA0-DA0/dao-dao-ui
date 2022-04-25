@@ -8,7 +8,7 @@ import {
 } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { cw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { cw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import {
   RemoveTokenComponent as StatelessRemoveTokenComponent,

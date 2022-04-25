@@ -1,7 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  Client as ExecuteClient,
+  CwProposalSingleClient as ExecuteClient,
   ConfigResponse,
   InfoResponse,
   ListProposalsResponse,
@@ -9,7 +9,7 @@ import {
   ProposalCountResponse,
   ProposalHooksResponse,
   ProposalResponse,
-  QueryClient,
+  CwProposalSingleQueryClient as QueryClient,
   ReverseProposalsResponse,
   VoteHooksResponse,
   VoteResponse,

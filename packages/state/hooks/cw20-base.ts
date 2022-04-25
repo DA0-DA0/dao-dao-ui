@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import { Client as ExecuteClient } from '../clients/cw20-base'
+import { Cw20Client as ExecuteClient } from '../clients/cw20-base'
 import {
   executeClient,
   ExecuteClientParams,

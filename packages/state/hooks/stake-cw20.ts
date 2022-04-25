@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 
 import { useRecoilValue } from 'recoil'
 
-import { Client as ExecuteClient } from '../clients/stake-cw20'
+import { StakeCw20Client as ExecuteClient } from '../clients/stake-cw20'
 import {
   executeClient,
   ExecuteClientParams,

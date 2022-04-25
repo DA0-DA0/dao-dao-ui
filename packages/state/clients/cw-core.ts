@@ -9,8 +9,7 @@ import {
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-
-import { CosmosMsgFor_Empty } from './cw-proposal-single'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 export interface ConfigResponse {
   automatically_add_cw20s: boolean
   automatically_add_cw721s: boolean
@@ -21,11 +20,11 @@ export interface ConfigResponse {
 }
 export type Addr = string
 export type Uint128 = string
-export type Cw20BalancesResponse = {
+export interface Cw20BalancesResponse {
   addr: Addr
   balance: Uint128
   [k: string]: unknown
-}[]
+}
 export type Cw20TokenListResponse = Addr[]
 export type Cw721TokenListResponse = Addr[]
 export interface DumpStateResponse {
@@ -123,7 +122,7 @@ export interface VotingPowerAtHeightResponse {
   power: Uint128
   [k: string]: unknown
 }
-export interface ReadOnlyInterface {
+export interface CwCoreReadOnlyInterface {
   contractAddress: string
   config: () => Promise<ConfigResponse>
   votingModule: () => Promise<VotingModuleResponse>
@@ -163,7 +162,7 @@ export interface ReadOnlyInterface {
   }: {
     limit?: number
     startAt?: string
-  }) => Promise<Cw20BalancesResponse>
+  }) => Promise<Cw20BalancesResponse[]>
   votingPowerAtHeight: ({
     address,
     height,
@@ -178,7 +177,7 @@ export interface ReadOnlyInterface {
   }) => Promise<TotalPowerAtHeightResponse>
   info: () => Promise<InfoResponse>
 }
-export class QueryClient implements ReadOnlyInterface {
+export class CwCoreQueryClient implements CwCoreReadOnlyInterface {
   client: CosmWasmClient
   contractAddress: string
 
@@ -283,7 +282,7 @@ export class QueryClient implements ReadOnlyInterface {
   }: {
     limit?: number
     startAt?: string
-  }): Promise<Cw20BalancesResponse> => {
+  }): Promise<Cw20BalancesResponse[]> => {
     return this.client.queryContractSmart(this.contractAddress, {
       cw20_balances: {
         limit,
@@ -322,7 +321,7 @@ export class QueryClient implements ReadOnlyInterface {
     })
   }
 }
-export interface Interface extends ReadOnlyInterface {
+export interface CwCoreInterface extends CwCoreReadOnlyInterface {
   contractAddress: string
   sender: string
   executeProposalHook: ({
@@ -368,7 +367,7 @@ export interface Interface extends ReadOnlyInterface {
     toRemove: string[]
   }) => Promise<ExecuteResult>
 }
-export class Client extends QueryClient implements Interface {
+export class CwCoreClient extends CwCoreQueryClient implements CwCoreInterface {
   client: SigningCosmWasmClient
   sender: string
   contractAddress: string

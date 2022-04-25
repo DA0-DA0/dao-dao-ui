@@ -4,7 +4,30 @@
  * and run the cosmwasm-typescript-gen generate command to regenerate this file.
  */
 
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import {
+  CosmWasmClient,
+  ExecuteResult,
+  SigningCosmWasmClient,
+} from '@cosmjs/cosmwasm-stargate'
+export type ActiveThreshold =
+  | {
+      absolute_count: {
+        count: Uint128
+        [k: string]: unknown
+      }
+    }
+  | {
+      percentage: {
+        percent: Decimal
+        [k: string]: unknown
+      }
+    }
+export type Uint128 = string
+export type Decimal = string
+export interface ActiveThresholdResponse {
+  active_threshold?: ActiveThreshold | null
+  [k: string]: unknown
+}
 export type DaoResponse = string
 export interface InfoResponse {
   info: ContractVersion
@@ -15,7 +38,6 @@ export interface ContractVersion {
   version: string
   [k: string]: unknown
 }
-export type Uint128 = string
 export type TokenInfo =
   | {
       existing: {
@@ -29,6 +51,7 @@ export type TokenInfo =
         code_id: number
         decimals: number
         initial_balances: Cw20Coin[]
+        initial_dao_balance?: Uint128 | null
         label: string
         marketing?: InstantiateMarketingInfo | null
         name: string
@@ -75,7 +98,7 @@ export type EmbeddedLogo =
     }
 export type Binary = string
 export interface InstantiateMsg {
-  initial_dao_balance?: Uint128 | null
+  active_threshold?: ActiveThreshold | null
   token_info: TokenInfo
   [k: string]: unknown
 }
@@ -91,6 +114,10 @@ export interface InstantiateMarketingInfo {
   project?: string | null
   [k: string]: unknown
 }
+export interface IsActiveResponse {
+  active: boolean
+  [k: string]: unknown
+}
 export type StakingContractResponse = string
 export type TokenContractResponse = string
 export interface TotalPowerAtHeightResponse {
@@ -103,10 +130,11 @@ export interface VotingPowerAtHeightResponse {
   power: Uint128
   [k: string]: unknown
 }
-export interface ReadOnlyInterface {
+export interface Cw20StakedBalanceVotingReadOnlyInterface {
   contractAddress: string
   stakingContract: () => Promise<StakingContractResponse>
   dao: () => Promise<DaoResponse>
+  activeThreshold: () => Promise<ActiveThresholdResponse>
   votingPowerAtHeight: ({
     address,
     height,
@@ -121,8 +149,11 @@ export interface ReadOnlyInterface {
   }) => Promise<TotalPowerAtHeightResponse>
   info: () => Promise<InfoResponse>
   tokenContract: () => Promise<TokenContractResponse>
+  isActive: () => Promise<IsActiveResponse>
 }
-export class QueryClient implements ReadOnlyInterface {
+export class Cw20StakedBalanceVotingQueryClient
+  implements Cw20StakedBalanceVotingReadOnlyInterface
+{
   client: CosmWasmClient
   contractAddress: string
 
@@ -131,10 +162,12 @@ export class QueryClient implements ReadOnlyInterface {
     this.contractAddress = contractAddress
     this.stakingContract = this.stakingContract.bind(this)
     this.dao = this.dao.bind(this)
+    this.activeThreshold = this.activeThreshold.bind(this)
     this.votingPowerAtHeight = this.votingPowerAtHeight.bind(this)
     this.totalPowerAtHeight = this.totalPowerAtHeight.bind(this)
     this.info = this.info.bind(this)
     this.tokenContract = this.tokenContract.bind(this)
+    this.isActive = this.isActive.bind(this)
   }
 
   stakingContract = async (): Promise<StakingContractResponse> => {
@@ -145,6 +178,11 @@ export class QueryClient implements ReadOnlyInterface {
   dao = async (): Promise<DaoResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dao: {},
+    })
+  }
+  activeThreshold = async (): Promise<ActiveThresholdResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      active_threshold: {},
     })
   }
   votingPowerAtHeight = async ({
@@ -181,5 +219,57 @@ export class QueryClient implements ReadOnlyInterface {
     return this.client.queryContractSmart(this.contractAddress, {
       token_contract: {},
     })
+  }
+  isActive = async (): Promise<IsActiveResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      is_active: {},
+    })
+  }
+}
+export interface Cw20StakedBalanceVotingInterface
+  extends Cw20StakedBalanceVotingReadOnlyInterface {
+  contractAddress: string
+  sender: string
+  updateActiveThreshold: ({
+    newThreshold,
+  }: {
+    newThreshold?: ActiveThreshold
+  }) => Promise<ExecuteResult>
+}
+export class Cw20StakedBalanceVotingClient
+  extends Cw20StakedBalanceVotingQueryClient
+  implements Cw20StakedBalanceVotingInterface
+{
+  client: SigningCosmWasmClient
+  sender: string
+  contractAddress: string
+
+  constructor(
+    client: SigningCosmWasmClient,
+    sender: string,
+    contractAddress: string
+  ) {
+    super(client, contractAddress)
+    this.client = client
+    this.sender = sender
+    this.contractAddress = contractAddress
+    this.updateActiveThreshold = this.updateActiveThreshold.bind(this)
+  }
+
+  updateActiveThreshold = async ({
+    newThreshold,
+  }: {
+    newThreshold?: ActiveThreshold
+  }): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        update_active_threshold: {
+          new_threshold: newThreshold,
+        },
+      },
+      'auto'
+    )
   }
 }

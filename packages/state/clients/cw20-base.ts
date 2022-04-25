@@ -53,46 +53,6 @@ export interface DownloadLogoResponse {
   mime_type: string
   [k: string]: unknown
 }
-export type Logo =
-  | {
-      url: string
-    }
-  | {
-      embedded: EmbeddedLogo
-    }
-export type EmbeddedLogo =
-  | {
-      svg: Binary
-    }
-  | {
-      png: Binary
-    }
-export interface InstantiateMsg {
-  decimals: number
-  initial_balances: Coin[]
-  marketing?: InstantiateMarketingInfo | null
-  mint?: MinterResponse | null
-  name: string
-  symbol: string
-  [k: string]: unknown
-}
-export interface Coin {
-  address: string
-  amount: Uint128
-  [k: string]: unknown
-}
-export interface InstantiateMarketingInfo {
-  description?: string | null
-  logo?: Logo | null
-  marketing?: string | null
-  project?: string | null
-  [k: string]: unknown
-}
-export interface MinterResponse {
-  cap?: Uint128 | null
-  minter: string
-  [k: string]: unknown
-}
 export type LogoInfo =
   | 'embedded'
   | {
@@ -106,6 +66,11 @@ export interface MarketingInfoResponse {
   project?: string | null
   [k: string]: unknown
 }
+export interface MinterResponse {
+  cap?: Uint128 | null
+  minter: string
+  [k: string]: unknown
+}
 export interface TokenInfoResponse {
   decimals: number
   name: string
@@ -113,11 +78,10 @@ export interface TokenInfoResponse {
   total_supply: Uint128
   [k: string]: unknown
 }
-export interface ReadOnlyInterface {
+export interface Cw20ReadOnlyInterface {
   contractAddress: string
   balance: ({ address }: { address: string }) => Promise<BalanceResponse>
   tokenInfo: () => Promise<TokenInfoResponse>
-  minter: () => Promise<MinterResponse>
   allowance: ({
     owner,
     spender,
@@ -125,6 +89,9 @@ export interface ReadOnlyInterface {
     owner: string
     spender: string
   }) => Promise<AllowanceResponse>
+  minter: () => Promise<MinterResponse>
+  marketingInfo: () => Promise<MarketingInfoResponse>
+  downloadLogo: () => Promise<DownloadLogoResponse>
   allAllowances: ({
     limit,
     owner,
@@ -141,10 +108,8 @@ export interface ReadOnlyInterface {
     limit?: number
     startAfter?: string
   }) => Promise<AllAccountsResponse>
-  marketingInfo: () => Promise<MarketingInfoResponse>
-  downloadLogo: () => Promise<DownloadLogoResponse>
 }
-export class QueryClient implements ReadOnlyInterface {
+export class Cw20QueryClient implements Cw20ReadOnlyInterface {
   client: CosmWasmClient
   contractAddress: string
 
@@ -153,12 +118,12 @@ export class QueryClient implements ReadOnlyInterface {
     this.contractAddress = contractAddress
     this.balance = this.balance.bind(this)
     this.tokenInfo = this.tokenInfo.bind(this)
-    this.minter = this.minter.bind(this)
     this.allowance = this.allowance.bind(this)
-    this.allAllowances = this.allAllowances.bind(this)
-    this.allAccounts = this.allAccounts.bind(this)
+    this.minter = this.minter.bind(this)
     this.marketingInfo = this.marketingInfo.bind(this)
     this.downloadLogo = this.downloadLogo.bind(this)
+    this.allAllowances = this.allAllowances.bind(this)
+    this.allAccounts = this.allAccounts.bind(this)
   }
 
   balance = async ({
@@ -177,11 +142,6 @@ export class QueryClient implements ReadOnlyInterface {
       token_info: {},
     })
   }
-  minter = async (): Promise<MinterResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      minter: {},
-    })
-  }
   allowance = async ({
     owner,
     spender,
@@ -194,6 +154,21 @@ export class QueryClient implements ReadOnlyInterface {
         owner,
         spender,
       },
+    })
+  }
+  minter = async (): Promise<MinterResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      minter: {},
+    })
+  }
+  marketingInfo = async (): Promise<MarketingInfoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      marketing_info: {},
+    })
+  }
+  downloadLogo = async (): Promise<DownloadLogoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      download_logo: {},
     })
   }
   allAllowances = async ({
@@ -227,18 +202,8 @@ export class QueryClient implements ReadOnlyInterface {
       },
     })
   }
-  marketingInfo = async (): Promise<MarketingInfoResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      marketing_info: {},
-    })
-  }
-  downloadLogo = async (): Promise<DownloadLogoResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      download_logo: {},
-    })
-  }
 }
-export interface Interface extends ReadOnlyInterface {
+export interface Cw20Interface extends Cw20ReadOnlyInterface {
   contractAddress: string
   sender: string
   transfer: ({
@@ -321,7 +286,7 @@ export interface Interface extends ReadOnlyInterface {
   }) => Promise<ExecuteResult>
   uploadLogo: () => Promise<ExecuteResult>
 }
-export class Client extends QueryClient implements Interface {
+export class Cw20Client extends Cw20QueryClient implements Cw20Interface {
   client: SigningCosmWasmClient
   sender: string
   contractAddress: string

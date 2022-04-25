@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 
 import { useRecoilValue, constSelector } from 'recoil'
 
-import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'

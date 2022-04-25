@@ -2,7 +2,7 @@
 
 import { useRecoilValue } from 'recoil'
 
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-governance'
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,

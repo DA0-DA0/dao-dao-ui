@@ -3,7 +3,7 @@ import { FunctionComponent, PropsWithChildren } from 'react'
 import type { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 
-import { QueryClient } from '@dao-dao/state/clients/cw-governance'
+import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 import { NextSeo } from 'next-seo'
 
