@@ -29,8 +29,8 @@ export const HeroContent = () => {
   const daoConfig = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })
   )
-  const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo()
+  const { governanceTokenAddress, governanceTokenInfo, apr } =
+    useGovernanceTokenInfo({ fetchPriceInfo: true })
   const { stakingContractConfig, totalStaked } = useStakingInfo({
     fetchTotalStaked: true,
   })
@@ -45,6 +45,7 @@ export const HeroContent = () => {
     !daoConfig ||
     !governanceTokenAddress ||
     !governanceTokenInfo ||
+    apr === undefined ||
     !stakingContractConfig ||
     totalStaked === undefined ||
     !governanceModuleConfig ||
@@ -74,7 +75,7 @@ export const HeroContent = () => {
           ),
           stakedPercent:
             (totalStaked / Number(governanceTokenInfo.total_supply)) * 100,
-          aprPercent: 103, // TODO: Retrieve.
+          aprReward: apr,
           unstakingDuration: stakingContractConfig.unstaking_duration
             ? humanReadableDuration(stakingContractConfig.unstaking_duration)
             : 'None',

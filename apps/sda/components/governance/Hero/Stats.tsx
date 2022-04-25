@@ -9,7 +9,7 @@ export interface HeroStatsProps {
     denom: string
     totalSupply: number
     stakedPercent: number
-    aprPercent: number
+    aprReward: number
     unstakingDuration: string
     proposalDeposit: number
     depositRefund: string
@@ -34,7 +34,7 @@ export const HeroStats = ({ data }: HeroStatsProps) => (
       <HeroStat Icon={Apr} size="sm">
         {data && (
           <>
-            <b>{data.aprPercent}%</b> APR
+            <b>{data.aprReward}%</b> APR
           </>
         )}
       </HeroStat>
