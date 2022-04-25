@@ -3,10 +3,14 @@ import { useCallback, useState } from 'react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { blockHeightSelector, useWallet } from '@dao-dao/state'
+import {
+  blockHeightSelector,
+  refreshProposalsIdAtom,
+  useWallet,
+} from '@dao-dao/state'
 import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
 import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
 import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
@@ -31,9 +35,6 @@ const InnerProposalCreate = () => {
 
   const { governanceModuleAddress, governanceModuleConfig } =
     useGovernanceModule()
-  const proposalDeposit = Number(
-    governanceModuleConfig?.deposit_info?.deposit ?? '-1'
-  )
 
   const currentAllowance = useRecoilValue(
     governanceModuleConfig?.deposit_info &&
@@ -46,6 +47,12 @@ const InnerProposalCreate = () => {
       : constSelector(undefined)
   )
   const blockHeight = useRecoilValue(blockHeightSelector)
+
+  const setRefrehProposalsId = useSetRecoilState(refreshProposalsIdAtom)
+  const refreshProposals = useCallback(
+    () => setRefrehProposalsId((id) => id + 1),
+    [setRefrehProposalsId]
+  )
 
   const increaseAllowance = useIncreaseAllowance({
     contractAddress: governanceModuleConfig?.deposit_info?.token ?? '',
@@ -61,17 +68,22 @@ const InnerProposalCreate = () => {
       if (
         !connected ||
         !blockHeight ||
-        proposalDeposit === -1 ||
-        !currentAllowance ||
+        !governanceModuleConfig ||
+        (governanceModuleConfig.deposit_info && !currentAllowance) ||
         !governanceModuleAddress
       )
-        return
+        throw new Error('Required info not loaded to create a proposal.')
+
+      const proposalDeposit = Number(
+        governanceModuleConfig?.deposit_info?.deposit ?? '0'
+      )
 
       setLoading(true)
 
       // Request to increase the contract's allowance for the proposal deposit if needed.
       if (
-        proposalDeposit > 0 &&
+        proposalDeposit &&
+        currentAllowance &&
         // Ensure current allowance is insufficient or expired.
         (expirationExpired(currentAllowance.expires, blockHeight) ||
           Number(currentAllowance.allowance) < proposalDeposit)
@@ -109,7 +121,8 @@ const InnerProposalCreate = () => {
           'wasm',
           'proposal_id'
         ).value
-        router.push(`/proposals/${proposalId}`)
+        refreshProposals()
+        router.push(`/proposal/${proposalId}`)
       } catch (err) {
         console.error(err)
         toast.error(cleanChainError(err.message))
@@ -124,9 +137,10 @@ const InnerProposalCreate = () => {
       currentAllowance,
       governanceModuleAddress,
       increaseAllowance,
-      proposalDeposit,
+      governanceModuleConfig,
       refreshBalances,
       router,
+      refreshProposals,
     ]
   )
 

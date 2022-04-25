@@ -3,9 +3,14 @@ import { useCallback, useState } from 'react'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { proposalExecutionTXHashSelector, useWallet } from '@dao-dao/state'
+import {
+  proposalExecutionTXHashSelector,
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+  useWallet,
+} from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   useCastVote,
@@ -92,6 +97,15 @@ const InnerProposal = () => {
       : constSelector(undefined)
   )
 
+  const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
+  const setRefreshProposalId = useSetRecoilState(
+    refreshProposalIdAtom(proposalId ?? -1)
+  )
+  const refreshProposalAndAll = useCallback(() => {
+    setRefreshProposalsId((id) => id + 1)
+    setRefreshProposalId((id) => id + 1)
+  }, [setRefreshProposalsId, setRefreshProposalId])
+
   const castVote = useCastVote({
     contractAddress: governanceModuleAddress ?? '',
     sender: walletAddress ?? '',
@@ -112,6 +126,8 @@ const InnerProposal = () => {
           proposalId,
           vote,
         })
+
+        refreshProposalAndAll()
         toast.success('Vote successfully cast.')
       } catch (err) {
         console.error(err)
@@ -120,7 +136,7 @@ const InnerProposal = () => {
 
       setLoading(false)
     },
-    [castVote, connected, proposalId, setLoading]
+    [castVote, connected, proposalId, setLoading, refreshProposalAndAll]
   )
 
   const onExecute = useCallback(async () => {
@@ -132,6 +148,8 @@ const InnerProposal = () => {
       const response = await executeProposal({
         proposalId,
       })
+
+      refreshProposalAndAll()
       toast.success(
         `Executed successfully. Transaction hash (${response.transactionHash}) can be found in the proposal details.`
       )
@@ -141,7 +159,13 @@ const InnerProposal = () => {
     }
 
     setLoading(false)
-  }, [executeProposal, connected, proposalId, setLoading])
+  }, [
+    executeProposal,
+    connected,
+    proposalId,
+    setLoading,
+    refreshProposalAndAll,
+  ])
 
   if (
     !proposalResponse ||

@@ -1,4 +1,4 @@
-import { atomFamily } from 'recoil'
+import { atom, atomFamily } from 'recoil'
 
 // Change this to refresh claims for the given wallet.
 export const refreshClaimsIdAtom = atomFamily<number, string | undefined>({
@@ -12,5 +12,17 @@ export const refreshWalletBalancesIdAtom = atomFamily<
   string | undefined
 >({
   key: 'refreshWalletBalancesId',
+  default: 0,
+})
+
+// Change this to refresh information for the given proposal.
+export const refreshProposalIdAtom = atomFamily<number, number>({
+  key: 'refreshProposalId',
+  default: 0,
+})
+
+// Change this to refresh all proposals.
+export const refreshProposalsIdAtom = atom<number>({
+  key: 'refreshProposalsId',
   default: 0,
 })

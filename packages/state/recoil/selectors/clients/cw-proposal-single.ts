@@ -14,6 +14,10 @@ import {
   VoteHooksResponse,
   VoteResponse,
 } from '../../../clients/cw-proposal-single'
+import {
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+} from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
@@ -78,6 +82,8 @@ export const proposalSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshProposalIdAtom(params[0].proposalId))
+
       return await client.proposal(...params)
     },
 })
@@ -92,6 +98,8 @@ export const listProposalsSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshProposalsIdAtom)
 
       return await client.listProposals(...params)
     },
@@ -108,6 +116,8 @@ export const reverseProposalsSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshProposalsIdAtom)
+
       return await client.reverseProposals(...params)
     },
 })
@@ -122,6 +132,8 @@ export const proposalCountSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshProposalsIdAtom)
 
       return await client.proposalCount()
     },
@@ -138,6 +150,8 @@ export const getVoteSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshProposalIdAtom(params[0].proposalId))
+
       return await client.getVote(...params)
     },
 })
@@ -152,6 +166,8 @@ export const listVotesSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshProposalIdAtom(params[0].proposalId))
 
       return await client.listVotes(...params)
     },

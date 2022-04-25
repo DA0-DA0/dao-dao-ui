@@ -14,14 +14,27 @@ export const convertThresholdDataToTQ = (
   }
 } => {
   if ('absolute_percentage' in data) {
-    const threshold = Number(data.absolute_percentage.percentage) * 100
+    // TODO: Handle majority.
+    if ('majority' in data.absolute_percentage.percentage) {
+      throw new Error('Majority not implemented.')
+    }
+
+    const threshold = Number(data.absolute_percentage.percentage.percent) * 100
 
     return {
       threshold: { percent: threshold, display: `${threshold}%` },
     }
   } else if ('threshold_quorum' in data) {
-    const quorum = Number(data.threshold_quorum.quorum) * 100
-    const threshold = Number(data.threshold_quorum.threshold) * 100
+    // TODO: Handle majority.
+    if (
+      'majority' in data.threshold_quorum.threshold ||
+      'majority' in data.threshold_quorum.quorum
+    ) {
+      throw new Error('Majority not implemented.')
+    }
+
+    const quorum = Number(data.threshold_quorum.quorum.percent) * 100
+    const threshold = Number(data.threshold_quorum.threshold.percent) * 100
 
     return {
       threshold: { percent: threshold, display: `${threshold}%` },

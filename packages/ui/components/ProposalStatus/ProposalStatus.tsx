@@ -7,9 +7,9 @@ type ProposalStatusProps = { status: `${Status}` }
 export const ProposalStatus = ({ status }: ProposalStatusProps) => {
   const Icon = StatusIcons[status]
   return (
-    <div>
+    <div className="flex flex-row gap-1 items-center">
       {Icon && <Icon style={{ display: 'inline' }} />}
-      <span className="ml-1 capitalize align-middle">{status}</span>
+      <span className="capitalize align-middle">{status}</span>
     </div>
   )
 }

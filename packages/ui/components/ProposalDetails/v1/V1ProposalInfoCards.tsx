@@ -78,9 +78,9 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
           Status
         </p>
 
-        <p className="font-mono text-sm">
+        <div className="font-mono text-sm">
           <ProposalStatus status={proposal.status} />
-        </p>
+        </div>
       </div>
 
       <div className="w-[1px] bg-light"></div>
