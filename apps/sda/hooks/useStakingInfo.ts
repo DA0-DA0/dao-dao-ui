@@ -1,11 +1,19 @@
-import { useRecoilValue, constSelector } from 'recoil'
+import { useCallback } from 'react'
 
-import { blockHeightSelector, useWallet } from '@dao-dao/state'
+import { useRecoilValue, constSelector, useSetRecoilState } from 'recoil'
+
+import {
+  blockHeightSelector,
+  refreshClaimsIdAtom,
+  refreshWalletBalancesIdAtom,
+  useWallet,
+} from '@dao-dao/state'
 import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
 import { stakingContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import {
   getConfigSelector,
   claimsSelector,
+  stakedBalanceAtHeightSelector,
   totalStakedAtHeightSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import { claimAvailable } from '@dao-dao/utils'
@@ -15,23 +23,29 @@ import { useGovernanceTokenInfo } from '.'
 interface UseStakingOptions {
   fetchClaims?: boolean
   fetchTotalStaked?: boolean
+  fetchWalletBalance?: boolean
 }
 
 interface UseStakingResponse {
   stakingContractAddress?: string
   stakingContractConfig?: GetConfigResponse
+  refreshTotals: () => void
   /// Optional
   // Claims
   blockHeight?: number
   claims?: Claim[]
+  refreshClaims?: () => void
   sumClaimsAvailable?: number
   // Total staked
   totalStaked?: number
+  // Wallet balance
+  walletBalance?: number
 }
 
 export const useStakingInfo = ({
   fetchClaims = false,
   fetchTotalStaked = false,
+  fetchWalletBalance = false,
 }: UseStakingOptions = {}): UseStakingResponse => {
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useGovernanceTokenInfo()
@@ -47,42 +61,31 @@ export const useStakingInfo = ({
       : constSelector(undefined)
   )
 
+  const setRefreshTotalBalancesId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(undefined)
+  )
+  // Refresh totals, mostly for total staked power.
+  const refreshTotals = useCallback(
+    () => setRefreshTotalBalancesId((id) => id + 1),
+    [setRefreshTotalBalancesId]
+  )
+
   /// Optional
 
   // Claims
   const blockHeight = useRecoilValue(
     fetchClaims ? blockHeightSelector : constSelector(undefined)
   )
-  const _claims = useRecoilValue(
+  const _claimsSelector =
     fetchClaims && walletAddress && stakingContractAddress
       ? claimsSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
-  )?.claims
-  // TODO: Remove.
-  const claims = [
-    {
-      amount: '100000000',
-      release_at: {
-        at_time: ((new Date().getTime() + 10000) * 1000000).toString(),
-      },
-    },
-    {
-      amount: '2050000000',
-      release_at: {
-        at_time: ((new Date().getTime() + 3200000) * 1000000).toString(),
-      },
-    },
-    {
-      amount: '20500009000',
-      release_at: {
-        at_time: ((new Date().getTime() + 32005000) * 1000000).toString(),
-      },
-    },
-  ]
-
+  const claims = useRecoilValue(_claimsSelector)?.claims
+  const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
+  const refreshClaims = () => _setClaimsId((id) => id + 1)
   const sumClaimsAvailable =
     fetchClaims && blockHeight !== undefined
       ? claims
@@ -100,15 +103,29 @@ export const useStakingInfo = ({
       : constSelector(undefined)
   )
 
+  // Wallet balance
+  const walletBalance = useRecoilValue(
+    fetchWalletBalance && stakingContractAddress && walletAddress
+      ? stakedBalanceAtHeightSelector({
+          contractAddress: stakingContractAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined)
+  )?.balance
+
   return {
     stakingContractAddress,
     stakingContractConfig,
+    refreshTotals,
     /// Optional
     // Claims
     blockHeight,
     claims,
+    refreshClaims: fetchClaims ? refreshClaims : undefined,
     sumClaimsAvailable,
     // Total staked
     totalStaked: totalStakedAtHeight && Number(totalStakedAtHeight.total),
+    // Wallet balance
+    walletBalance: walletBalance ? Number(walletBalance) : undefined,
   }
 }

@@ -8,7 +8,10 @@ import {
   StakingModal as StatelessStakingModal,
   Modal,
 } from '@dao-dao/ui'
-import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
@@ -31,20 +34,32 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   defaultMode,
   onClose,
 }) => {
-  const { address: walletAddress, connected } = useWallet()
+  const { address: walletAddress, connected, refreshBalances } = useWallet()
+
   const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState(0)
 
-  const unstakedBalance = 2500.1234
-  const stakedBalance = 1025.4321
-
-  const { governanceTokenContractAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo()
-  const { stakingContractAddress, stakingContractConfig, sumClaimsAvailable } =
-    useStakingInfo({ fetchClaims: true })
+  const {
+    governanceTokenAddress,
+    governanceTokenInfo,
+    walletBalance: unstakedBalance,
+  } = useGovernanceTokenInfo({
+    fetchWalletBalance: true,
+  })
+  const {
+    stakingContractAddress,
+    stakingContractConfig,
+    refreshTotals,
+    sumClaimsAvailable,
+    walletBalance: stakedBalance,
+    refreshClaims,
+  } = useStakingInfo({
+    fetchClaims: true,
+    fetchWalletBalance: true,
+  })
 
   const doStake = useSend({
-    contractAddress: governanceTokenContractAddress ?? '',
+    contractAddress: governanceTokenAddress ?? '',
     sender: walletAddress ?? '',
   })
   const doUnstake = useUnstake({
@@ -63,57 +78,57 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
     switch (mode) {
       case StakingMode.Stake: {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          governanceTokenInfo.decimals
-        )
-
         setLoading(true)
 
         try {
           await doStake({
-            amount: microAmount,
+            amount: convertDenomToMicroDenomWithDecimals(
+              amount,
+              governanceTokenInfo.decimals
+            ),
             contract: stakingContractAddress,
             msg: btoa('{"stake":{}}'),
           })
           toast.success(`Staked ${amount} tokens`)
           setAmount(0)
+          // New staking balances will not appear until the next block has been added.
+          setTimeout(() => {
+            refreshBalances()
+            refreshTotals()
+            setLoading(false)
+          }, 6500)
         } catch (err) {
+          console.error(err)
           toast.error(cleanChainError(err.message))
+          setLoading(false)
         }
-
-        setLoading(false)
-
-        // TODO: Figure out what to do about this.
-        // New staking balances will not appear until the next block has been added.
-        // setTimeout(() => {
-        //   setWalletTokenBalanceUpdateCount((p) => p + 1)
-        // }, 6500)
 
         break
       }
       case StakingMode.Unstake: {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          governanceTokenInfo.decimals
-        )
-
         setLoading(true)
+
         try {
-          await doUnstake({ amount: microAmount })
+          await doUnstake({
+            amount: convertDenomToMicroDenomWithDecimals(
+              amount,
+              governanceTokenInfo.decimals
+            ),
+          })
           toast.success(`Unstaked ${amount} tokens`)
+
           setAmount(0)
+          // New staking balances will not appear until the next block has been added.
+          setTimeout(() => {
+            refreshBalances()
+            refreshTotals()
+            setLoading(false)
+          }, 6500)
         } catch (err) {
+          console.error(err)
           toast.error(cleanChainError(err.message))
+          setLoading(false)
         }
-
-        setLoading(false)
-
-        // TODO: Figure out what to do about this.
-        // New staking balances will not appear until the next block has been added.
-        // setTimeout(() => {
-        //   setWalletTokenBalanceUpdateCount((p) => p + 1)
-        // }, 6500)
 
         break
       }
@@ -126,18 +141,20 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         try {
           await doClaim()
           toast.success(`Claimed ${sumClaimsAvailable} tokens`)
+
           setAmount(0)
+          // New staking balances will not appear until the next block has been added.
+          setTimeout(() => {
+            refreshBalances()
+            refreshTotals()
+            refreshClaims?.()
+            setLoading(false)
+          }, 6500)
         } catch (err) {
+          console.error(err)
           toast.error(cleanChainError(err.message))
+          setLoading(false)
         }
-
-        setLoading(false)
-
-        // TODO: Figure out what to do about this.
-        // New staking balances will not appear until the next block has been added.
-        // setTimeout(() => {
-        //   setWalletTokenBalanceUpdateCount((p) => p + 1)
-        // }, 6500)
 
         break
       }
@@ -150,7 +167,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   if (
     !governanceTokenInfo ||
     !stakingContractConfig ||
-    sumClaimsAvailable === undefined
+    sumClaimsAvailable === undefined ||
+    unstakedBalance === undefined ||
+    stakedBalance === undefined
   )
     return null
 
@@ -164,10 +183,16 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       onAction={onAction}
       onClose={onClose}
       setAmount={(newAmount) => setAmount(newAmount)}
-      stakableTokens={unstakedBalance}
+      stakableTokens={convertMicroDenomToDenomWithDecimals(
+        unstakedBalance,
+        governanceTokenInfo.decimals
+      )}
       tokenDecimals={governanceTokenInfo.decimals}
       tokenSymbol={governanceTokenInfo.symbol}
-      unstakableTokens={stakedBalance}
+      unstakableTokens={convertMicroDenomToDenomWithDecimals(
+        stakedBalance,
+        governanceTokenInfo.decimals
+      )}
       unstakingDuration={stakingContractConfig.unstaking_duration ?? null}
     />
   )

@@ -67,8 +67,11 @@ export const StakingModal: FC<StakingModalProps> = ({
   amount,
   setAmount,
   onClose,
+  // microdenom
   claimableTokens,
+  // macrodenom
   stakableTokens,
+  // macrodenom
   unstakableTokens,
   unstakingDuration,
   tokenSymbol,
@@ -248,7 +251,7 @@ const ClaimBody: FC<ClaimBodyProps> = ({
   <div className="flex flex-col py-3 px-6 mt-3">
     <h2 className="font-medium">
       {convertMicroDenomToDenomWithDecimals(amount, tokenDecimals)} $
-      {tokenSymbol} avaliable
+      {tokenSymbol} available
     </h2>
     <p className="mt-3 mb-3 text-sm">
       Claim them to receive your unstaked tokens.

@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { ComponentProps, ReactNode } from 'react'
 
 export interface HeroHeaderProps extends ComponentProps<'div'> {

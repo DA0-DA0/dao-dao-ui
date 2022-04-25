@@ -3,85 +3,28 @@
 import React, { useState } from 'react'
 
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
 
 import { Pie } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { Button, ClaimsListItem, StakingMode } from '@dao-dao/ui'
+import { StakingMode } from '@dao-dao/ui'
 
 import {
-  Logo,
+  TokenomicsHeader,
   PageWrapper,
   PageWrapperProps,
   StakingModal,
   makeGetStaticProps,
   Loader,
   SuspenseLoader,
+  StakedBalanceCard,
+  UnstakedBalanceCard,
+  ClaimsList,
+  TokenomicsHeaderLoader,
+  BalanceCardLoader,
 } from '@/components'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
+import { useGovernanceTokenInfo } from '@/hooks'
 
-interface ClaimViewProps {
-  showClaim: () => void
-  governanceTokenInfo?: TokenInfoResponse
-}
-const ClaimsView = ({ showClaim, governanceTokenInfo }: ClaimViewProps) => {
-  const { connected } = useWallet()
-  const { stakingContractConfig, blockHeight, claims, sumClaimsAvailable } =
-    useStakingInfo({
-      fetchClaims: true,
-    })
-
-  if (
-    !governanceTokenInfo ||
-    !stakingContractConfig ||
-    !blockHeight ||
-    !claims ||
-    sumClaimsAvailable === undefined
-  )
-    return null
-
-  return (
-    <>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-lg">Unstaking {governanceTokenInfo.name} tokens</p>
-
-        {sumClaimsAvailable > 0 && (
-          <Button disabled={!connected} onClick={showClaim} variant="secondary">
-            Claim
-          </Button>
-        )}
-      </div>
-
-      {claims.length ? (
-        <div className="flex flex-col gap-1 items-stretch !mt-4">
-          {claims.map((claim, idx) => (
-            <ClaimsListItem
-              key={idx}
-              blockHeight={blockHeight}
-              claim={claim}
-              iconURI="/juno.svg"
-              // TODO: Fix.
-              incrementClaimsAvailable={console.log}
-              tokenInfo={governanceTokenInfo}
-              unstakingDuration={
-                stakingContractConfig.unstaking_duration ?? null
-              }
-            />
-          ))}
-        </div>
-      ) : connected ? (
-        <p>You are not waiting for any tokens to unstake.</p>
-      ) : (
-        <p>Connect your wallet to view unstaking tokens.</p>
-      )}
-    </>
-  )
-}
-
-const InnerHome = () => {
-  const router = useRouter()
-
+const InnerTokenomics = () => {
   const { connected } = useWallet()
   const { governanceTokenInfo } = useGovernanceTokenInfo()
 
@@ -89,82 +32,22 @@ const InnerHome = () => {
   const [showStakingDefaultMode, setShowStakingDefaultMode] =
     useState<StakingMode>()
 
+  // TODO: Retrieve.
   const rawPrice = 40.2
-  const treasuryBalance = 1980000
-  const totalStakedBalance = 700000
-  const unstakedBalance = 2500.1234
-  const stakedBalance = 1025.4321
-  const votingPower = (stakedBalance / totalStakedBalance) * 100
-  const aprReward = 103
 
-  const convertToUSD = (token: number) => token * rawPrice
-
-  if (router.isFallback || !governanceTokenInfo) {
+  if (!governanceTokenInfo) {
     throw new Error('Failed to load page data.')
   }
+
+  const convertToUSD = (token: number) => token * rawPrice
 
   return (
     <>
       <div className="p-8 mx-auto space-y-8 max-w-screen-xl">
         <div className="flex relative flex-col items-center mt-10 bg-primary rounded-b-lg">
-          <div className="absolute -top-8 bg-light rounded-full border border-default">
-            <Logo height={60} width={60} />
-          </div>
-
-          <p className="p-4 mt-16 mb-10 font-studiofeixen text-3xl text-center">
-            1 RAW = $
-            {rawPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{' '}
-            USD
-          </p>
-
-          <div className="flex flex-row justify-around items-center mb-6 w-full text-center md:gap-12 md:justify-center">
-            <div className="flex flex-col gap-2 items-center p-2">
-              <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-                DAO Treasury
-              </p>
-
-              <p className="text-base lg:text-xl">
-                {treasuryBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: governanceTokenInfo.decimals,
-                })}{' '}
-                {governanceTokenInfo.name}
-              </p>
-            </div>
-
-            <div className="w-[1px] h-6 bg-dark opacity-10"></div>
-
-            <div className="flex flex-col gap-2 items-center p-2">
-              <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-                Total staked
-              </p>
-
-              <p className="text-base lg:text-xl">
-                {totalStakedBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: governanceTokenInfo.decimals,
-                })}{' '}
-                {governanceTokenInfo.name}
-              </p>
-            </div>
-
-            <div className="w-[1px] h-6 bg-dark opacity-10"></div>
-
-            <div className="flex flex-col gap-2 items-center p-2">
-              <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-                APR Reward
-              </p>
-
-              <p className="text-base lg:text-xl">
-                +
-                {aprReward.toLocaleString(undefined, {
-                  maximumFractionDigits: 4,
-                })}
-                % APR
-              </p>
-            </div>
-          </div>
+          <SuspenseLoader fallback={<TokenomicsHeaderLoader />}>
+            <TokenomicsHeader />
+          </SuspenseLoader>
         </div>
 
         <div className="flex flex-row gap-2 items-center text-lg">
@@ -178,33 +61,15 @@ const InnerHome = () => {
               Balance (unstaked {governanceTokenInfo.name})
             </p>
 
-            <div className="flex flex-row gap-2 items-center mb-4">
-              <Logo height={20} width={20} />
-              <p className="text-base">
-                {unstakedBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: governanceTokenInfo.decimals,
-                })}{' '}
-                {governanceTokenInfo.name}
-              </p>
-            </div>
-
-            <div className="flex flex-row justify-between items-center">
-              <p className="text-lg font-medium">
-                ${' '}
-                {convertToUSD(unstakedBalance).toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}{' '}
-                USD
-              </p>
-
-              <Button
-                disabled={!connected}
-                onClick={() => setShowStakingDefaultMode(StakingMode.Stake)}
-                variant="secondary"
-              >
-                Manage
-              </Button>
-            </div>
+            <SuspenseLoader fallback={<BalanceCardLoader />}>
+              <UnstakedBalanceCard
+                connected={connected}
+                convertToUSD={convertToUSD}
+                setShowStakingMode={() =>
+                  setShowStakingDefaultMode(StakingMode.Stake)
+                }
+              />
+            </SuspenseLoader>
           </div>
 
           <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
@@ -212,45 +77,15 @@ const InnerHome = () => {
               Voting power (staked {governanceTokenInfo.name})
             </p>
 
-            <div className="flex flex-row justify-between items-center mb-4">
-              <div className="flex flex-row gap-2 items-center">
-                <Logo height={20} width={20} />
-                <p className="text-base">
-                  {stakedBalance.toLocaleString(undefined, {
-                    maximumFractionDigits: governanceTokenInfo.decimals,
-                  })}{' '}
-                  {governanceTokenInfo.name}
-                </p>
-              </div>
-
-              <p className="text-base text-secondary">
-                {votingPower.toLocaleString(undefined, {
-                  maximumFractionDigits: 4,
-                })}
-                %{' '}
-                <span className="text-xs text-tertiary">
-                  of all voting power
-                </span>
-              </p>
-            </div>
-
-            <div className="flex flex-row justify-between items-center">
-              <p className="text-lg font-medium">
-                ${' '}
-                {convertToUSD(stakedBalance).toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}{' '}
-                USD
-              </p>
-
-              <Button
-                disabled={!connected}
-                onClick={() => setShowStakingDefaultMode(StakingMode.Unstake)}
-                variant="secondary"
-              >
-                Manage
-              </Button>
-            </div>
+            <SuspenseLoader fallback={<BalanceCardLoader />}>
+              <StakedBalanceCard
+                connected={connected}
+                convertToUSD={convertToUSD}
+                setShowStakingMode={() =>
+                  setShowStakingDefaultMode(StakingMode.Unstake)
+                }
+              />
+            </SuspenseLoader>
           </div>
         </div>
 
@@ -264,7 +99,7 @@ const InnerHome = () => {
             </>
           }
         >
-          <ClaimsView
+          <ClaimsList
             governanceTokenInfo={governanceTokenInfo}
             showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
           />
@@ -281,12 +116,15 @@ const InnerHome = () => {
   )
 }
 
-const HomePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
+const TokenomicsPage: NextPage<PageWrapperProps> = ({
+  children: _,
+  ...props
+}) => (
   <PageWrapper {...props}>
-    <InnerHome />
+    <InnerTokenomics />
   </PageWrapper>
 )
 
-export default HomePage
+export default TokenomicsPage
 
 export const getStaticProps = makeGetStaticProps()

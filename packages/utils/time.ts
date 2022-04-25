@@ -4,7 +4,11 @@ export const secondsToWdhms = (
   // Set to 5 or more to display all units.
   numUnits = 2
 ): string => {
-  const secondsInt = Number(seconds)
+  const secondsInt = Math.ceil(Number(seconds))
+  if (secondsInt === 0) {
+    return '0 secs'
+  }
+
   const w = Math.floor(secondsInt / (secPerDay * 7))
   const d = Math.floor((secondsInt % (secPerDay * 7)) / secPerDay)
   const h = Math.floor((secondsInt % secPerDay) / 3600)

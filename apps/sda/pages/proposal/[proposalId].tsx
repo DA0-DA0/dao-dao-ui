@@ -115,6 +115,7 @@ const InnerProposal = () => {
         })
         toast.success('Vote successfully cast.')
       } catch (err) {
+        console.error(err)
         toast.error(cleanChainError(err.message))
       }
 
@@ -136,6 +137,7 @@ const InnerProposal = () => {
         `Executed successfully. Transaction hash (${response.transactionHash}) can be found in the proposal details.`
       )
     } catch (err) {
+      console.error(err)
       toast.error(cleanChainError(err.message))
     }
 

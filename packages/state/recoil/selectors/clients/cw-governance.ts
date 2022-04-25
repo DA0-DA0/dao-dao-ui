@@ -16,6 +16,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw-governance'
+import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
@@ -185,6 +186,8 @@ export const cw20BalancesSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
+
       return await client.cw20Balances(...params)
     },
 })
@@ -200,6 +203,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshWalletBalancesIdAtom(params[0].address))
+
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -214,6 +219,8 @@ export const totalPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(undefined))
 
       return await client.totalPowerAtHeight(...params)
     },

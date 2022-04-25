@@ -32,50 +32,48 @@ function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
 
 export interface ClaimsListItemProps {
   claim: Claim
-  unstakingDuration?: Duration | null
   blockHeight: number
   tokenInfo: TokenInfoResponse
-  incrementClaimsAvailable: (n: number) => void
+  onClaimAvailable: () => void
   iconURI?: string
 }
 
 export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   claim,
-  unstakingDuration,
   blockHeight,
   tokenInfo,
-  incrementClaimsAvailable,
+  onClaimAvailable,
   iconURI,
 }) => {
   const available = claimAvailable(claim, blockHeight)
+  const initialDurationRemaining = claimDurationRemaining(claim, blockHeight)
 
-  const durationForHumans =
-    unstakingDuration && humanReadableDuration(unstakingDuration)
-  const durationRemaining = claimDurationRemaining(claim, blockHeight)
-
-  // Once the claim expires increment claims available.
+  // Format for humans each second to count down.
+  const [durationRemainingForHumans, setDurationRemainingForHumans] = useState(
+    humanReadableDuration(initialDurationRemaining)
+  )
   useEffect(() => {
-    if ('time' in durationRemaining) {
+    const update = () => setDurationRemainingForHumans((_) =>
+      humanReadableDuration(claimDurationRemaining(claim, blockHeight))
+    )
+    // Run on claim update.
+    update()
+
+    const id = setInterval(update, 1000)
+
+    return () => clearInterval(id)
+  }, [claim, blockHeight, setDurationRemainingForHumans])
+
+  // Notify when the claim expires.
+  useEffect(() => {
+    if ('time' in initialDurationRemaining) {
       const id = setTimeout(
-        () => incrementClaimsAvailable(Number(claim.amount)),
-        durationRemaining.time * 1000
+        onClaimAvailable,
+        initialDurationRemaining.time * 1000
       )
       return () => clearTimeout(id)
     }
-  }, [claim.amount, durationRemaining, incrementClaimsAvailable])
-
-  const [durationRemainingForHumans, setDurationRemainingForHumans] = useState(
-    humanReadableDuration(durationRemaining)
-  )
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setDurationRemainingForHumans((_) =>
-        humanReadableDuration(claimDurationRemaining(claim, blockHeight))
-      )
-    }, 1000)
-    return () => clearInterval(id)
-  }, [claim, blockHeight, setDurationRemainingForHumans])
+  }, [initialDurationRemaining, onClaimAvailable])
 
   return (
     <div className="flex gap-2 justify-between items-center p-4 rounded-lg bg-primary">
@@ -99,10 +97,7 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
-        <div className="flex flex-wrap gap-2 text-caption">
-          <p>{durationRemainingForHumans || '0'} remaining</p>
-          {durationForHumans && <p>/ {durationForHumans}</p>}
-        </div>
+        <p className="text-caption">{durationRemainingForHumans} remaining</p>
       )}
     </div>
   )

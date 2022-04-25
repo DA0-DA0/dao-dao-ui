@@ -12,6 +12,7 @@ import {
   QueryClient,
   Client as ExecuteClient,
 } from '../../../clients/cw20-base'
+import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
@@ -60,6 +61,9 @@ export const balanceSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(params[0].address))
+
       return await client.balance(...params)
     },
 })
@@ -108,6 +112,9 @@ export const allowanceSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(params[0].owner))
+
       return await client.allowance(...params)
     },
 })
@@ -124,6 +131,9 @@ export const allAllowancesSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(params[0].owner))
+
       return await client.allAllowances(...params)
     },
 })

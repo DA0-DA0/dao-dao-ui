@@ -11,6 +11,10 @@ import {
   GetHooksResponse,
   ClaimsResponse,
 } from '../../../clients/stake-cw20'
+import {
+  refreshClaimsIdAtom,
+  refreshWalletBalancesIdAtom,
+} from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
@@ -62,6 +66,8 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshWalletBalancesIdAtom(params[0].address))
+
       return await client.stakedBalanceAtHeight(...params)
     },
 })
@@ -78,6 +84,8 @@ export const totalStakedAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(undefined))
 
       return await client.totalStakedAtHeight(...params)
     },
@@ -96,6 +104,8 @@ export const stakedValueSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshWalletBalancesIdAtom(params[0].address))
+
       return await client.stakedValue(...params)
     },
 })
@@ -110,6 +120,8 @@ export const totalValueSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(undefined))
 
       return await client.totalValue()
     },
@@ -142,6 +154,8 @@ export const claimsSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshClaimsIdAtom(params[0].address))
 
       return await client.claims(...params)
     },

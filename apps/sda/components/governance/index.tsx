@@ -1,2 +1,3 @@
 export * from './Hero'
-export * from './ProposalItem'
+export * from './HeroContent'
+export * from './ProposalsContent'

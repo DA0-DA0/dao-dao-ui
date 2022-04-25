@@ -50,7 +50,7 @@ interface ProposalFormProps {
 
 export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const { connected, address: walletAddress } = useWallet()
-  const { governanceTokenContractAddress, governanceTokenInfo } =
+  const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
 
   const formMethods = useForm<FormProposalData>({
@@ -85,10 +85,10 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   })
 
   const toCosmosMsgProps: ToCosmosMsgProps | undefined =
-    governanceTokenContractAddress && governanceTokenInfo
+    governanceTokenAddress && governanceTokenInfo
       ? {
           daoAddress: DAO_ADDRESS,
-          govTokenAddress: governanceTokenContractAddress,
+          govTokenAddress: governanceTokenAddress,
           govTokenDecimals: governanceTokenInfo.decimals,
         }
       : undefined

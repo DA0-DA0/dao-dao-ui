@@ -13,8 +13,5 @@ export const humanReadableDuration = (d: Duration) => {
   if ('height' in d) {
     return `${d.height} blocks`
   }
-  if (d.time == 0) {
-    return '0 seconds'
-  }
-  return `${secondsToWdhms(d.time.toString())}`
+  return `${secondsToWdhms(d.time)}`
 }

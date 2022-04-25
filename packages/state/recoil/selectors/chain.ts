@@ -9,6 +9,7 @@ import {
   stargateClientRouter,
 } from '@dao-dao/utils'
 
+import { refreshWalletBalancesIdAtom } from '../atoms/refresh'
 import { keplrOfflineSignerSelector } from './keplr'
 
 export const stargateClientSelector = selector({
@@ -58,6 +59,8 @@ export const nativeBalancesSelector = selectorFamily({
     async ({ get }) => {
       const client = get(stargateClientSelector)
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(address))
 
       return await client.getAllBalances(address)
     },

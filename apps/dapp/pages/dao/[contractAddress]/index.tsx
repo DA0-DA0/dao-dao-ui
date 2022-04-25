@@ -255,7 +255,7 @@ function DaoHome() {
           </div>
         ) : null}
         <ClaimsPendingList
-          incrementClaimsAvailable={(_) =>
+          onClaimAvailable={() =>
             setWalletTokenBalanceUpdateCount((n) => n + 1)
           }
           stakingAddress={daoInfo.staking_contract}

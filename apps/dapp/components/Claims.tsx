@@ -7,19 +7,17 @@ import {
 } from '@dao-dao/ui'
 import { claimAvailable } from '@dao-dao/utils'
 
-import { unstakingDuration } from 'selectors/daos'
 import { getBlockHeight, walletClaims } from 'selectors/treasury'
 
 export function ClaimsPendingList({
   stakingAddress,
   tokenInfo,
-  incrementClaimsAvailable,
+  onClaimAvailable,
 }: {
   stakingAddress: string
   tokenInfo: TokenInfoResponse
-  incrementClaimsAvailable: (n: number) => void
+  onClaimAvailable: () => void
 }) {
-  const unstakeDuration = useRecoilValue(unstakingDuration(stakingAddress))
   const blockHeight = useRecoilValue(getBlockHeight)
   const claimsPending = useRecoilValue(
     walletClaims(stakingAddress)
@@ -37,9 +35,8 @@ export function ClaimsPendingList({
                   key={idx}
                   blockHeight={blockHeight}
                   claim={claim}
-                  incrementClaimsAvailable={incrementClaimsAvailable}
+                  onClaimAvailable={onClaimAvailable}
                   tokenInfo={tokenInfo}
-                  unstakingDuration={unstakeDuration}
                 />
               )
             })}

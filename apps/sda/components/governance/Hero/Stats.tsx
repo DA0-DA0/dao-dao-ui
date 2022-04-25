@@ -1,6 +1,6 @@
 import { Dollar, Staked, Apr, Submitted } from '@dao-dao/icons'
 
-import { HeroStat } from './HeroStat'
+import { HeroStat } from './Stat'
 
 const formatZeroes = (num: number) => new Intl.NumberFormat().format(num)
 

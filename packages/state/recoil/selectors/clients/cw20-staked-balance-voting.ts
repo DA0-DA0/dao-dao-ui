@@ -9,6 +9,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw20-staked-balance-voting'
+import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
@@ -68,6 +69,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
+      get(refreshWalletBalancesIdAtom(params[0].address))
+
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -82,6 +85,8 @@ export const totalPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       if (!client) return
+
+      get(refreshWalletBalancesIdAtom(undefined))
 
       return await client.totalPowerAtHeight(...params)
     },

@@ -26,7 +26,7 @@ import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
-  const { address: walletAddress, connected } = useWallet()
+  const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
   const { governanceModuleAddress, governanceModuleConfig } =
@@ -82,6 +82,9 @@ const InnerProposalCreate = () => {
           ).toString(),
           spender: governanceModuleAddress,
         })
+
+        // Allowances will not update until the next block has been added.
+        setTimeout(refreshBalances, 6500)
       } catch (err) {
         console.error(err)
         toast.error(
@@ -107,6 +110,7 @@ const InnerProposalCreate = () => {
       ).value
       router.push(`/proposals/${proposalId}`)
     } catch (err) {
+      console.error(err)
       toast.error(cleanChainError(err.message))
     }
 

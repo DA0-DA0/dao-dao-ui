@@ -1,5 +1,6 @@
 export * from './governance'
 export * from './templates'
+export * from './tokenomics'
 
 export * from './DAODAOLogo'
 export * from './ErrorBoundary'

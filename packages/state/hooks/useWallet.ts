@@ -5,6 +5,7 @@ import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 import { getOfflineSignerAuto, isKeplrInstalled } from '@dao-dao/utils'
 
 import {
+  refreshWalletBalancesIdAtom,
   walletAccountNameSelector,
   walletAddressSelector,
   walletNativeBalanceSelector,
@@ -37,7 +38,7 @@ export const useWallet = () => {
       ? walletNativeBalanceContents
       : undefined
 
-  const refresh = useCallback(
+  const refreshConnection = useCallback(
     () => setKeplrKeystoreId((id) => id + 1),
     [setKeplrKeystoreId]
   )
@@ -55,7 +56,7 @@ export const useWallet = () => {
     try {
       await getOfflineSignerAuto()
       // If connection succeeds, propagate client to selector dependencies.
-      refresh()
+      refreshConnection()
     } catch (error) {
       console.error(error)
       setError(error instanceof Error ? error.message : `${error}`)
@@ -63,7 +64,7 @@ export const useWallet = () => {
       // Set disconnected so we don't try to connect again without manual action.
       setKeplrKeystoreId(-1)
     }
-  }, [setKeplrKeystoreId, setError, refresh])
+  }, [setKeplrKeystoreId, setError, refreshConnection])
 
   // Listen for keplr keystore changes and update as needed.
   useEffect(() => {
@@ -77,9 +78,18 @@ export const useWallet = () => {
       window.removeEventListener('keplr_keystorechange', keplrListener)
   }, [connect])
 
+  const setRefreshWalletBalancesId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(address ?? '')
+  )
+  const refreshBalances = useCallback(
+    () => setRefreshWalletBalancesId((id) => id + 1),
+    [setRefreshWalletBalancesId]
+  )
+
   return {
     connect,
-    refresh,
+    refreshConnection,
+    refreshBalances,
     error,
     address,
     name,
