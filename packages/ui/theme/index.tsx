@@ -29,27 +29,32 @@ export const DEFAULT_THEME: IThemeContext = {
 
 export const ThemeContext = createContext<IThemeContext>(DEFAULT_THEME)
 
-export function ThemeProvider({
-  children,
-  theme,
-  updateTheme,
-  accentColor,
-  setAccentColor,
-}: {
+interface ThemeProviderProps {
   children: ReactNode
   theme: Theme
   updateTheme: UpdateThemeFn
   accentColor?: string
   setAccentColor: SetAccentColorFn
-}) {
-  let value = {
-    ...DEFAULT_THEME,
-    theme,
-    updateTheme,
-    accentColor,
-    setAccentColor,
-  }
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
+
+export const ThemeProvider = ({
+  children,
+  theme,
+  updateTheme,
+  accentColor,
+  setAccentColor,
+}: ThemeProviderProps) => (
+  <ThemeContext.Provider
+    value={{
+      ...DEFAULT_THEME,
+      theme,
+      updateTheme,
+      accentColor,
+      setAccentColor,
+    }}
+  >
+    {children}
+  </ThemeContext.Provider>
+)
 
 export const useThemeContext = () => useContext(ThemeContext)

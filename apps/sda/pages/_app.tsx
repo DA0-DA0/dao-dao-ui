@@ -58,7 +58,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-const MyApp = (props: AppProps) => (
+const SDA = (props: AppProps) => (
   <>
     <DefaultSeo
       additionalLinkTags={[
@@ -115,4 +115,4 @@ const MyApp = (props: AppProps) => (
   </>
 )
 
-export default MyApp
+export default SDA
