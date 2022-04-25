@@ -28,18 +28,18 @@ export const signingCosmWasmClientSelector = selector({
     const signer = get(keplrOfflineSignerSelector)
     if (!signer) return
 
-    return await SigningCosmWasmClient.connectWithSigner(
+    const client = await SigningCosmWasmClient.connectWithSigner(
       CHAIN_RPC_ENDPOINT,
       signer,
       {
         gasPrice: GasPrice.fromString(GAS_PRICE),
       }
     )
+    // Load client ID before becoming immutable.
+    await client.getChainId()
+
+    return client
   },
-  // DAO DAO:
-  // We have to do this because of how SigningCosmWasmClient
-  // will update its internal chainId
-  dangerouslyAllowMutability: true,
 })
 
 export const blockHeightSelector = selector({

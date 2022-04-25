@@ -28,15 +28,16 @@ function ButtonComponent(
   }: ButtonProps,
   ref?: ForwardedRef<any>
 ) {
+  const isDisabled = disabled || loading
   if (variant === 'primary') {
     return (
       <button
         className={`relative link-text text-light bg-btn rounded-md py-[6px] px-[16px] transition ${
-          !disabled ? 'hover:bg-dark active:bg-toast' : 'bg-btn-disabled'
+          !isDisabled ? 'hover:bg-dark active:bg-toast' : 'bg-btn-disabled'
         } ${size === 'lg' ? 'py-[10px]' : ''} ${
           size === 'sm' ? 'py-[4px] px-[8px]' : ''
         } ${className}`}
-        disabled={disabled || loading}
+        disabled={isDisabled}
         ref={ref}
         {...rest}
       >
@@ -63,13 +64,13 @@ function ButtonComponent(
     return (
       <button
         className={`relative link-text bg-primary rounded-md py-[6px] px-[16px] transition ${
-          !disabled
+          !isDisabled
             ? 'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed'
             : 'bg-btn-disabled'
         } ${size === 'lg' ? 'py-[10px]' : ''} ${
           size === 'sm' ? 'py-[4px] px-[8px]' : ''
         } ${className}`}
-        disabled={disabled || loading}
+        disabled={isDisabled}
         ref={ref}
         {...rest}
       >
@@ -96,7 +97,7 @@ function ButtonComponent(
     return (
       <button
         className={`link-text text-secondary transition hover:text-primary flex flex-row items-center gap-2 ${className}`}
-        disabled={disabled || loading}
+        disabled={isDisabled}
         ref={ref}
         {...rest}
       >

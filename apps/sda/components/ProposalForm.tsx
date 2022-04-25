@@ -95,8 +95,9 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
 
   // Need these props to convert data to the expected message format.
   // Should be defined at this point since useRecoilValue suspends.
-  if (!toCosmosMsgProps)
-    throw new Error('Failed to retrieve governance token info')
+  if (!toCosmosMsgProps) {
+    throw new Error('Failed to retrieve governance token info.')
+  }
 
   const onSubmitForm: SubmitHandler<FormProposalData> = ({
     templateData,

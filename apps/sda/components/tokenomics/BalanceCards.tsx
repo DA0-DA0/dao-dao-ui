@@ -9,21 +9,27 @@ import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 
 interface CardProps {
   connected: boolean
-  convertToUSD: (amount: number) => number
   setShowStakingMode: () => void
 }
 
 export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
   connected,
-  convertToUSD,
   setShowStakingMode,
 }) => {
-  const { governanceTokenInfo, walletBalance: _unstakedBalance } =
-    useGovernanceTokenInfo({
-      fetchWalletBalance: true,
-    })
+  const {
+    governanceTokenInfo,
+    walletBalance: _unstakedBalance,
+    price,
+  } = useGovernanceTokenInfo({
+    fetchWalletBalance: true,
+    fetchPriceInfo: true,
+  })
 
-  if (!governanceTokenInfo || _unstakedBalance === undefined) {
+  if (
+    !governanceTokenInfo ||
+    _unstakedBalance === undefined ||
+    price === undefined
+  ) {
     return null
   }
 
@@ -47,7 +53,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
       <div className="flex flex-row justify-between items-center">
         <p className="text-lg font-medium">
           ${' '}
-          {convertToUSD(unstakedBalance).toLocaleString(undefined, {
+          {(unstakedBalance * price).toLocaleString(undefined, {
             maximumFractionDigits: 2,
           })}{' '}
           USD
@@ -68,10 +74,11 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
 
 export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   connected,
-  convertToUSD,
   setShowStakingMode,
 }) => {
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { governanceTokenInfo, price } = useGovernanceTokenInfo({
+    fetchPriceInfo: true,
+  })
   const { totalStaked: _totalStakedBalance, walletBalance: _stakedBalance } =
     useStakingInfo({
       fetchTotalStaked: true,
@@ -81,7 +88,8 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   if (
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
-    _stakedBalance === undefined
+    _stakedBalance === undefined ||
+    price === undefined
   ) {
     return null
   }
@@ -118,7 +126,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
       <div className="flex flex-row justify-between items-center">
         <p className="text-lg font-medium">
           ${' '}
-          {convertToUSD(stakedBalance).toLocaleString(undefined, {
+          {(stakedBalance * price).toLocaleString(undefined, {
             maximumFractionDigits: 2,
           })}{' '}
           USD

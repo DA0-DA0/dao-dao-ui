@@ -12,9 +12,7 @@ export const TokenomicsHeaderLoader: FunctionComponent = () => (
       <Loader size={60} />
     </div>
 
-    <p className="p-4 mt-16 mb-10 font-studiofeixen text-3xl text-center">
-      1 RAW = ?
-    </p>
+    <div className="mt-16 mb-10 h-[4.25rem]"></div>
 
     <div className="flex flex-row justify-around items-center mb-6 w-full text-center md:gap-12 md:justify-center">
       <div className="flex flex-col gap-2 items-center p-2">
@@ -53,9 +51,12 @@ export const TokenomicsHeader: FunctionComponent = () => {
     governanceTokenInfo,
     treasuryBalance: _treasuryBalance,
     walletBalance: _unstakedBalance,
+    price: governanceTokenPrice,
+    apr,
   } = useGovernanceTokenInfo({
     fetchTreasuryBalance: true,
     fetchWalletBalance: true,
+    fetchPriceInfo: true,
   })
   const { totalStaked: _totalStakedBalance, walletBalance: _stakedBalance } =
     useStakingInfo({
@@ -63,16 +64,14 @@ export const TokenomicsHeader: FunctionComponent = () => {
       fetchWalletBalance: true,
     })
 
-  // TODO: Retrieve.
-  const aprReward = 103
-  const rawPrice = 40.2
-
   if (
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
     _treasuryBalance === undefined ||
     _unstakedBalance === undefined ||
-    _stakedBalance === undefined
+    _stakedBalance === undefined ||
+    governanceTokenPrice === undefined ||
+    apr === undefined
   ) {
     return null
   }
@@ -93,8 +92,8 @@ export const TokenomicsHeader: FunctionComponent = () => {
       </div>
 
       <p className="p-4 mt-16 mb-10 font-studiofeixen text-3xl text-center">
-        1 RAW = $
-        {rawPrice.toLocaleString(undefined, {
+        1 {governanceTokenInfo.symbol} = $
+        {governanceTokenPrice.toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}{' '}
@@ -139,7 +138,7 @@ export const TokenomicsHeader: FunctionComponent = () => {
 
           <p className="text-base lg:text-xl">
             +
-            {aprReward.toLocaleString(undefined, {
+            {apr.toLocaleString(undefined, {
               maximumFractionDigits: 4,
             })}
             % APR

@@ -26,7 +26,6 @@ import { convertThresholdDataToTQ } from '@dao-dao/utils/v1'
 import toast from 'react-hot-toast'
 
 import {
-  Loader,
   makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
@@ -145,15 +144,15 @@ const InnerProposal = () => {
   }, [executeProposal, connected, proposalId, setLoading])
 
   if (
-    !router.isReady ||
     !proposalResponse ||
     !connected ||
     !votingPowerAtHeight ||
     !voteResponse ||
     !governanceTokenInfo ||
     !governanceModuleConfig
-  )
-    return <Loader />
+  ) {
+    throw new Error('Failed to load page data.')
+  }
 
   const { threshold, quorum } = convertThresholdDataToTQ(
     proposalResponse.proposal.threshold

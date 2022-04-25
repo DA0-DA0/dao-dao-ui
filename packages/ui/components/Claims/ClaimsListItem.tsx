@@ -53,9 +53,10 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
     humanReadableDuration(initialDurationRemaining)
   )
   useEffect(() => {
-    const update = () => setDurationRemainingForHumans((_) =>
-      humanReadableDuration(claimDurationRemaining(claim, blockHeight))
-    )
+    const update = () =>
+      setDurationRemainingForHumans((_) =>
+        humanReadableDuration(claimDurationRemaining(claim, blockHeight))
+      )
     // Run on claim update.
     update()
 
@@ -65,15 +66,17 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
   // Notify when the claim expires.
+  const initialDurationRemainingTime =
+    'time' in initialDurationRemaining && initialDurationRemaining.time
   useEffect(() => {
-    if ('time' in initialDurationRemaining) {
+    if (initialDurationRemainingTime) {
       const id = setTimeout(
         onClaimAvailable,
-        initialDurationRemaining.time * 1000
+        initialDurationRemainingTime * 1000
       )
       return () => clearTimeout(id)
     }
-  }, [initialDurationRemaining, onClaimAvailable])
+  }, [initialDurationRemainingTime, onClaimAvailable])
 
   return (
     <div className="flex gap-2 justify-between items-center p-4 rounded-lg bg-primary">

@@ -1,21 +1,19 @@
 import { FunctionComponent } from 'react'
 
 import { useWallet } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
-import { useStakingInfo } from '@/hooks'
+import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 
 interface ClaimsListProps {
   showClaim: () => void
-  governanceTokenInfo?: TokenInfoResponse
 }
 
 export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   showClaim,
-  governanceTokenInfo,
 }) => {
   const { connected } = useWallet()
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
   const {
     stakingContractConfig,
     blockHeight,

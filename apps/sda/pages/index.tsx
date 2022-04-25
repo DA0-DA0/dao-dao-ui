@@ -32,14 +32,9 @@ const InnerTokenomics = () => {
   const [showStakingDefaultMode, setShowStakingDefaultMode] =
     useState<StakingMode>()
 
-  // TODO: Retrieve.
-  const rawPrice = 40.2
-
   if (!governanceTokenInfo) {
     throw new Error('Failed to load page data.')
   }
-
-  const convertToUSD = (token: number) => token * rawPrice
 
   return (
     <>
@@ -64,7 +59,6 @@ const InnerTokenomics = () => {
             <SuspenseLoader fallback={<BalanceCardLoader />}>
               <UnstakedBalanceCard
                 connected={connected}
-                convertToUSD={convertToUSD}
                 setShowStakingMode={() =>
                   setShowStakingDefaultMode(StakingMode.Stake)
                 }
@@ -80,7 +74,6 @@ const InnerTokenomics = () => {
             <SuspenseLoader fallback={<BalanceCardLoader />}>
               <StakedBalanceCard
                 connected={connected}
-                convertToUSD={convertToUSD}
                 setShowStakingMode={() =>
                   setShowStakingDefaultMode(StakingMode.Unstake)
                 }
@@ -100,7 +93,6 @@ const InnerTokenomics = () => {
           }
         >
           <ClaimsList
-            governanceTokenInfo={governanceTokenInfo}
             showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
           />
         </SuspenseLoader>

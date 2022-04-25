@@ -89,13 +89,16 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
             contract: stakingContractAddress,
             msg: btoa('{"stake":{}}'),
           })
-          toast.success(`Staked ${amount} tokens`)
-          setAmount(0)
-          // New staking balances will not appear until the next block has been added.
+
+          // TODO: Figure out better solution for detecting block.
+          // New balances will not appear until the next block.
           setTimeout(() => {
             refreshBalances()
             refreshTotals()
+
+            setAmount(0)
             setLoading(false)
+            toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
           }, 6500)
         } catch (err) {
           console.error(err)
@@ -115,14 +118,16 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
               governanceTokenInfo.decimals
             ),
           })
-          toast.success(`Unstaked ${amount} tokens`)
 
-          setAmount(0)
-          // New staking balances will not appear until the next block has been added.
+          // TODO: Figure out better solution for detecting block.
+          // New balances will not appear until the next block.
           setTimeout(() => {
             refreshBalances()
             refreshTotals()
+
+            setAmount(0)
             setLoading(false)
+            toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
           }, 6500)
         } catch (err) {
           console.error(err)
@@ -140,15 +145,21 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         setLoading(true)
         try {
           await doClaim()
-          toast.success(`Claimed ${sumClaimsAvailable} tokens`)
 
-          setAmount(0)
-          // New staking balances will not appear until the next block has been added.
+          // TODO: Figure out better solution for detecting block.
+          // New balances will not appear until the next block.
           setTimeout(() => {
             refreshBalances()
             refreshTotals()
             refreshClaims?.()
+
+            setAmount(0)
             setLoading(false)
+            toast.success(
+              `Claimed ${sumClaimsAvailable} token${
+                sumClaimsAvailable === 1 ? '' : 's'
+              }`
+            )
           }, 6500)
         } catch (err) {
           console.error(err)

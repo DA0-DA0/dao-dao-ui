@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -56,66 +56,79 @@ const InnerProposalCreate = () => {
     sender: walletAddress ?? '',
   })
 
-  const onProposalSubmit = async (d: any) => {
-    if (
-      !connected ||
-      !blockHeight ||
-      proposalDeposit === -1 ||
-      !currentAllowance ||
-      !governanceModuleAddress
-    )
-      return
+  const onProposalSubmit = useCallback(
+    async (d: any) => {
+      if (
+        !connected ||
+        !blockHeight ||
+        proposalDeposit === -1 ||
+        !currentAllowance ||
+        !governanceModuleAddress
+      )
+        return
 
-    setLoading(true)
+      setLoading(true)
 
-    // Request to increase the contract's allowance for the proposal deposit if needed.
-    if (
-      proposalDeposit > 0 &&
-      // Ensure current allowance is insufficient or expired.
-      (expirationExpired(currentAllowance.expires, blockHeight) ||
-        Number(currentAllowance.allowance) < proposalDeposit)
-    ) {
+      // Request to increase the contract's allowance for the proposal deposit if needed.
+      if (
+        proposalDeposit > 0 &&
+        // Ensure current allowance is insufficient or expired.
+        (expirationExpired(currentAllowance.expires, blockHeight) ||
+          Number(currentAllowance.allowance) < proposalDeposit)
+      ) {
+        try {
+          await increaseAllowance({
+            amount: (
+              proposalDeposit - Number(currentAllowance.allowance)
+            ).toString(),
+            spender: governanceModuleAddress,
+          })
+
+          // Allowances will not update until the next block has been added.
+          setTimeout(refreshBalances, 6500)
+        } catch (err) {
+          console.error(err)
+          toast.error(
+            `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
+              err.message
+            )})`
+          )
+          return
+        }
+      }
+
       try {
-        await increaseAllowance({
-          amount: (
-            proposalDeposit - Number(currentAllowance.allowance)
-          ).toString(),
-          spender: governanceModuleAddress,
+        const response = await createProposal({
+          title: d.title,
+          description: d.description,
+          msgs: d.messages,
         })
 
-        // Allowances will not update until the next block has been added.
-        setTimeout(refreshBalances, 6500)
+        const proposalId = findAttribute(
+          response.logs,
+          'wasm',
+          'proposal_id'
+        ).value
+        router.push(`/proposals/${proposalId}`)
       } catch (err) {
         console.error(err)
-        toast.error(
-          `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
-            err.message
-          )})`
-        )
-        return
+        toast.error(cleanChainError(err.message))
       }
-    }
 
-    try {
-      const response = await createProposal({
-        title: d.title,
-        description: d.description,
-        msgs: d.messages,
-      })
-
-      const proposalId = findAttribute(
-        response.logs,
-        'wasm',
-        'proposal_id'
-      ).value
-      router.push(`/proposals/${proposalId}`)
-    } catch (err) {
-      console.error(err)
-      toast.error(cleanChainError(err.message))
-    }
-
-    setLoading(false)
-  }
+      setLoading(false)
+    },
+    [
+      blockHeight,
+      connected,
+      createProposal,
+      currentAllowance,
+      governanceModuleAddress,
+      increaseAllowance,
+      proposalDeposit,
+      refreshBalances,
+      router,
+    ]
+  )
 
   return (
     <div className="flex flex-col gap-14 justify-center p-8 mx-auto md:flex-row md:gap-8 md:max-w-screen-lg">

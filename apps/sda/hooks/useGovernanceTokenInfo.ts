@@ -11,6 +11,7 @@ import { DAO_ADDRESS } from '@/util'
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
   fetchTreasuryBalance?: boolean
+  fetchPriceInfo?: boolean
 }
 
 interface UseGovernanceTokenInfoResponse {
@@ -22,11 +23,15 @@ interface UseGovernanceTokenInfoResponse {
   walletBalance?: number
   // Treasury balance
   treasuryBalance?: number
+  // Price info
+  price?: number
+  apr?: number
 }
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
+  fetchPriceInfo = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
 
@@ -66,6 +71,11 @@ export const useGovernanceTokenInfo = ({
       : constSelector(undefined)
   )?.balance
 
+  // Price info
+  // TODO: Retrieve.
+  const price = fetchPriceInfo ? 40.2 : undefined
+  const apr = fetchPriceInfo ? 103 : undefined
+
   return {
     votingModuleAddress,
     governanceTokenAddress,
@@ -75,5 +85,8 @@ export const useGovernanceTokenInfo = ({
     walletBalance: walletBalance ? Number(walletBalance) : undefined,
     // Treasury balance
     treasuryBalance: treasuryBalance ? Number(treasuryBalance) : undefined,
+    // Price info
+    price,
+    apr,
   }
 }
