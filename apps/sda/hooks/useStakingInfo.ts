@@ -29,6 +29,7 @@ interface UseStakingOptions {
 interface UseStakingResponse {
   stakingContractAddress?: string
   stakingContractConfig?: GetConfigResponse
+  refreshStakingContractBalances: () => void
   refreshTotals: () => void
   /// Optional
   // Claims
@@ -59,6 +60,14 @@ export const useStakingInfo = ({
     stakingContractAddress
       ? getConfigSelector({ contractAddress: stakingContractAddress })
       : constSelector(undefined)
+  )
+
+  const setRefreshStakingContractBalancesId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(stakingContractAddress ?? '')
+  )
+  const refreshStakingContractBalances = useCallback(
+    () => setRefreshStakingContractBalancesId((id) => id + 1),
+    [setRefreshStakingContractBalancesId]
   )
 
   const setRefreshTotalBalancesId = useSetRecoilState(
@@ -116,6 +125,7 @@ export const useStakingInfo = ({
   return {
     stakingContractAddress,
     stakingContractConfig,
+    refreshStakingContractBalances,
     refreshTotals,
     /// Optional
     // Claims

@@ -49,6 +49,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   const {
     stakingContractAddress,
     stakingContractConfig,
+    refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
     walletBalance: stakedBalance,
@@ -95,6 +96,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           setTimeout(() => {
             refreshBalances()
             refreshTotals()
+            refreshStakingContractBalances()
 
             setAmount(0)
             setLoading(false)
@@ -124,6 +126,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           setTimeout(() => {
             refreshBalances()
             refreshTotals()
+            refreshStakingContractBalances()
 
             setAmount(0)
             setLoading(false)
@@ -152,6 +155,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
             refreshBalances()
             refreshTotals()
             refreshClaims?.()
+            refreshStakingContractBalances()
 
             setAmount(0)
             setLoading(false)
