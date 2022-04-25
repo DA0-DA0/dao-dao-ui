@@ -1,4 +1,10 @@
-import { FunctionComponent, PropsWithChildren, Suspense } from 'react'
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  Suspense,
+  useEffect,
+  useState,
+} from 'react'
 
 import type { GetServerSideProps } from 'next'
 
@@ -6,7 +12,7 @@ import { QueryClient } from '@dao-dao/state/clients/cw-governance'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 import { NextSeo } from 'next-seo'
 
-import { LoadingScreen } from '.'
+import { Loader } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
@@ -22,24 +28,37 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
   description,
   imageUrl,
   children,
-}) => (
-  <>
-    <NextSeo
-      description={description}
-      openGraph={{
-        ...(!!url && { url }),
-        type: 'website',
-        title,
-        description,
-        ...(!!imageUrl && { images: [{ url: imageUrl }] }),
-      }}
-      title={title}
-    />
+}) => {
+  // Prevent loading any page data on the server since Next.js cannot
+  // just prerender Suspenses when a Suspense is supposed to be displayed.
+  const [load, setLoad] = useState(false)
+  useEffect(() => setLoad(true), [setLoad])
 
-    {/* Suspend children so SEO stays intact while page loads. */}
-    <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
-  </>
-)
+  return (
+    <>
+      <NextSeo
+        description={description}
+        openGraph={{
+          ...(!!url && { url }),
+          type: 'website',
+          title,
+          description,
+          ...(!!imageUrl && { images: [{ url: imageUrl }] }),
+        }}
+        title={title}
+      />
+
+      {/* Suspend children so SEO stays intact while page loads. */}
+      {load ? (
+        <Suspense fallback={<Loader fillScreen size={64} />}>
+          {children}
+        </Suspense>
+      ) : (
+        <Loader fillScreen size={64} />
+      )}
+    </>
+  )
+}
 
 interface GetServerSidePropsMakerProps {
   leadingTitle?: string

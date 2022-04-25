@@ -9,11 +9,17 @@ import type { AppProps } from 'next/app'
 import { RecoilRoot, useRecoilState } from 'recoil'
 
 import { activeThemeAtom } from '@dao-dao/state'
-import { ThemeProvider, Theme, LoadingScreen } from '@dao-dao/ui'
+import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { DefaultSeo } from 'next-seo'
 
-import { ErrorBoundary, Footer, Header, Notifications } from '@/components'
+import {
+  ErrorBoundary,
+  Footer,
+  Header,
+  Notifications,
+  Loader,
+} from '@/components'
 
 const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
 const image = process.env.NEXT_PUBLIC_SITE_IMAGE
@@ -37,15 +43,15 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       theme={theme}
       updateTheme={setTheme}
     >
+      <Header />
+
       <ErrorBoundary title="An unexpected error occurred.">
-        <Suspense fallback={<LoadingScreen />}>
-          <Header />
-
+        <Suspense fallback={<Loader fillScreen size={64} />}>
           <Component {...pageProps} />
-
-          <Footer />
         </Suspense>
       </ErrorBoundary>
+
+      <Footer />
 
       <Notifications />
     </ThemeProvider>

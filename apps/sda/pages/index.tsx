@@ -99,7 +99,7 @@ const InnerHome = () => {
             <Logo height={60} width={60} />
           </div>
 
-          <p className="p-4 mt-16 mb-10 text-3xl text-center font-studiofeixen">
+          <p className="p-4 mt-16 mb-10 font-studiofeixen text-3xl text-center">
             1 RAW = $
             {rawPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,

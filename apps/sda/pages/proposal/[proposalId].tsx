@@ -25,7 +25,7 @@ import {
 import toast from 'react-hot-toast'
 
 import {
-  LoadingScreen,
+  Loader,
   makeGetServerSideProps,
   PageWrapper,
   PageWrapperProps,
@@ -156,7 +156,7 @@ const InnerProposal = () => {
     !governanceTokenInfo ||
     !governanceModuleConfig
   )
-    return <LoadingScreen />
+    return <Loader />
 
   const memberWhenProposalCreated = Number(votingPowerAtHeight.power) > 0
 

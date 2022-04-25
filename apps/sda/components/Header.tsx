@@ -112,7 +112,7 @@ export const Header: FunctionComponent = () => {
     <header className="grid grid-cols-3 items-center py-4 px-6">
       <div className="flex flex-row gap-2 items-center w-full md:gap-4">
         <Logo height={40} width={40} />
-        <p className="hidden text-xl md:block font-studiofeixen">
+        <p className="hidden font-studiofeixen text-xl md:block">
           {SITE_TITLE}
         </p>
       </div>
