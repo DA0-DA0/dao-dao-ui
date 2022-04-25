@@ -10,6 +10,8 @@ import { getProposalEnd, pad } from '@dao-dao/utils'
 import { CheckIcon, XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 
+import { useProposalInfo } from '@/hooks'
+
 interface ProposalItemProps {
   proposalResponse: ProposalResponse
   walletVote?: Vote
@@ -19,6 +21,9 @@ export const ProposalItem = ({
   proposalResponse: { id, proposal },
   walletVote,
 }: ProposalItemProps) => {
+  // TODO: Fill in correct proposal info.
+  const { proposalResponse, voteResponse } = useProposalInfo(id)
+
   const StatusIcon = StatusIcons[proposal.status]
 
   return (
@@ -27,7 +32,7 @@ export const ProposalItem = ({
         className={clsx(
           'block rounded',
           'grid gap-x-4 items-center',
-          'grid-cols-[auto_12ch_16ch_12ch_6ch_6ch_12ch]',
+          'grid-cols-[10ch_12ch_auto_12ch_6ch_6ch_12ch]',
           'py-3 px-4 text-xs sm:text-sm',
           {
             'bg-card': proposal.status === Status.Open,
@@ -36,7 +41,7 @@ export const ProposalItem = ({
           'hover:bg-secondary'
         )}
       >
-        {/* auto */}
+        {/* 10ch */}
         <div className="font-mono text-secondary"># {pad(id, 6)}</div>
         {/* 12ch */}
         <div
@@ -46,10 +51,13 @@ export const ProposalItem = ({
           })}
         >
           {StatusIcon && <StatusIcon className="w-4 h-4" />}{' '}
-          <span>{proposal.status}</span>
+          <span>
+            {proposal.status[0].toUpperCase()}
+            {proposal.status.slice(1).toLowerCase()}
+          </span>
         </div>
-        {/* 16ch */}
-        <div className="truncate">{proposal.title}</div>
+        {/* auto */}
+        <div className="truncate overflow-ellipsis">{proposal.title}</div>
         {/* 12ch */}
         <div>{walletVote ? VOTE_MAP[walletVote] : 'Not voted'}</div>
         {/* 6ch */}
@@ -63,7 +71,9 @@ export const ProposalItem = ({
           <XIcon className="w-4 h-4 fill-current" />
         </div>
         {/* 12ch */}
-        <div>{getProposalEnd(proposal.expiration, proposal.status)}</div>
+        <p className="text-right">
+          {getProposalEnd(proposal.expiration, proposal.status)}
+        </p>
       </a>
     </Link>
   )

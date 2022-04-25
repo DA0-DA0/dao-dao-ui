@@ -3,24 +3,12 @@ import { useCallback, useState } from 'react'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
-
-import {
-  proposalExecutionTXHashSelector,
-  refreshProposalIdAtom,
-  refreshProposalsIdAtom,
-  useWallet,
-} from '@dao-dao/state'
+import { useWallet } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   useCastVote,
   useExecute,
 } from '@dao-dao/state/hooks/cw-proposal-single'
-import { votingPowerAtHeightSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import {
-  getVoteSelector,
-  proposalSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { StakingMode } from '@dao-dao/ui'
 import {
   V1ProposalDetails,
@@ -37,8 +25,12 @@ import {
   StakingModal,
   TemplateRendererComponent,
 } from '@/components'
-import { useGovernanceModule, useGovernanceTokenInfo } from '@/hooks'
-import { cleanChainError, DAO_ADDRESS } from '@/util'
+import {
+  useGovernanceModule,
+  useGovernanceTokenInfo,
+  useProposalInfo,
+} from '@/hooks'
+import { cleanChainError } from '@/util'
 
 const InnerProposal = () => {
   const router = useRouter()
@@ -57,54 +49,13 @@ const InnerProposal = () => {
   const { governanceModuleAddress, governanceModuleConfig } =
     useGovernanceModule()
 
-  const proposalResponse = useRecoilValue(
-    governanceModuleAddress && proposalId !== undefined
-      ? proposalSelector({
-          contractAddress: governanceModuleAddress,
-          params: [{ proposalId }],
-        })
-      : constSelector(undefined)
-  )
-  const voteResponse = useRecoilValue(
-    governanceModuleAddress && proposalId !== undefined && walletAddress
-      ? getVoteSelector({
-          contractAddress: governanceModuleAddress,
-          params: [{ proposalId, voter: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
-
-  const votingPowerAtHeight = useRecoilValue(
-    walletAddress && proposalResponse
-      ? votingPowerAtHeightSelector({
-          contractAddress: DAO_ADDRESS,
-          params: [
-            {
-              address: walletAddress,
-              height: proposalResponse.proposal.start_height,
-            },
-          ],
-        })
-      : constSelector(undefined)
-  )
-
-  const txHash = useRecoilValue(
-    governanceModuleAddress && proposalId !== undefined
-      ? proposalExecutionTXHashSelector({
-          contractAddress: governanceModuleAddress,
-          proposalId,
-        })
-      : constSelector(undefined)
-  )
-
-  const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
-  const setRefreshProposalId = useSetRecoilState(
-    refreshProposalIdAtom(proposalId ?? -1)
-  )
-  const refreshProposalAndAll = useCallback(() => {
-    setRefreshProposalsId((id) => id + 1)
-    setRefreshProposalId((id) => id + 1)
-  }, [setRefreshProposalsId, setRefreshProposalId])
+  const {
+    proposalResponse,
+    voteResponse,
+    votingPowerAtHeight,
+    txHash,
+    refreshProposalAndAll,
+  } = useProposalInfo(proposalId)
 
   const castVote = useCastVote({
     contractAddress: governanceModuleAddress ?? '',
