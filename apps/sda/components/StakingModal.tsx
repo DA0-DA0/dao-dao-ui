@@ -25,7 +25,7 @@ interface StakingModalProps {
 }
 
 export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
-  <SuspenseLoader fallback={<LoadingStakingModal {...props} />}>
+  <SuspenseLoader fallback={<StakingModalLoader {...props} />}>
     <InnerStakingModal {...props} />
   </SuspenseLoader>
 )
@@ -182,7 +182,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     unstakedBalance === undefined ||
     stakedBalance === undefined
   )
-    return null
+    return <StakingModalLoader onClose={onClose} />
 
   return (
     <StatelessStakingModal
@@ -209,9 +209,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   )
 }
 
-const LoadingStakingModal: FunctionComponent<StakingModalProps> = ({
-  onClose,
-}) => (
+const StakingModalLoader: FunctionComponent<
+  Pick<StakingModalProps, 'onClose'>
+> = ({ onClose }) => (
   <Modal onClose={onClose}>
     <div className="relative p-40 bg-white rounded-lg border border-focus cursor-auto">
       <button

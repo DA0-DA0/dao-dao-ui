@@ -73,6 +73,7 @@ function WalletConnect() {
 
   return (
     <StatelessWalletConnect
+      className="w-full"
       handleConnect={handleConnect}
       walletAddress={walletAddress}
       walletBalance={walletBalanceHuman}

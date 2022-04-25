@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 
 import { Profile, Airdrop, Pie, Governance, Hash } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
-import { WalletConnect } from '@dao-dao/ui'
 import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
@@ -16,7 +15,7 @@ import {
 import { PlusIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 
-import { Logo } from '@/components'
+import { Logo, WalletConnectButton } from '@/components'
 
 interface NavItemData {
   renderIcon: (color: string) => ReactNode
@@ -54,7 +53,7 @@ const NavItem: FunctionComponent<NavItemProps> = ({
 
 export const Header: FunctionComponent = () => {
   const router = useRouter()
-  const { connect, connected, address, name, nativeBalance } = useWallet()
+  const { connected, name, nativeBalance } = useWallet()
 
   const walletBalance =
     nativeBalance !== undefined
@@ -141,13 +140,7 @@ export const Header: FunctionComponent = () => {
             <Profile height={40} width={40} />
           </div>
         ) : (
-          <WalletConnect
-            handleConnect={connect}
-            walletAddress={address ?? ''}
-            walletBalance={walletBalance}
-            walletBalanceDenom={humanDenom}
-            walletName={name}
-          />
+          <WalletConnectButton />
         )}
       </div>
     </header>

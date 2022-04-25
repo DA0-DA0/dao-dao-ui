@@ -51,7 +51,7 @@ export const HeroContent = () => {
     !governanceModuleConfig ||
     !threshold
   )
-    return null
+    return <HeroContentLoader />
 
   return (
     <>

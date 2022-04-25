@@ -58,22 +58,18 @@ export const TokenomicsHeader: FunctionComponent = () => {
     fetchWalletBalance: true,
     fetchPriceInfo: true,
   })
-  const { totalStaked: _totalStakedBalance, walletBalance: _stakedBalance } =
-    useStakingInfo({
-      fetchTotalStaked: true,
-      fetchWalletBalance: true,
-    })
+  const { totalStaked: _totalStakedBalance } = useStakingInfo({
+    fetchTotalStaked: true,
+  })
 
   if (
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
     _treasuryBalance === undefined ||
-    _unstakedBalance === undefined ||
-    _stakedBalance === undefined ||
     governanceTokenPrice === undefined ||
     apr === undefined
   ) {
-    return null
+    return <TokenomicsHeaderLoader />
   }
 
   const totalStakedBalance = convertMicroDenomToDenomWithDecimals(

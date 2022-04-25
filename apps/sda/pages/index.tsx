@@ -21,6 +21,7 @@ import {
   ClaimsList,
   TokenomicsHeaderLoader,
   BalanceCardLoader,
+  WalletConnectButton,
 } from '@/components'
 import { useGovernanceTokenInfo } from '@/hooks'
 
@@ -50,52 +51,56 @@ const InnerTokenomics = () => {
           <p>Your Tokens</p>
         </div>
 
-        <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
-          <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
-            <p className="mb-2 font-mono text-sm text-tertiary">
-              Balance (unstaked {governanceTokenInfo.name})
-            </p>
+        {connected ? (
+          <>
+            <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
+              <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
+                <p className="mb-2 font-mono text-sm text-tertiary">
+                  Balance (unstaked {governanceTokenInfo.name})
+                </p>
 
-            <SuspenseLoader fallback={<BalanceCardLoader />}>
-              <UnstakedBalanceCard
-                connected={connected}
-                setShowStakingMode={() =>
-                  setShowStakingDefaultMode(StakingMode.Stake)
-                }
+                <SuspenseLoader fallback={<BalanceCardLoader />}>
+                  <UnstakedBalanceCard
+                    setShowStakingMode={() =>
+                      setShowStakingDefaultMode(StakingMode.Stake)
+                    }
+                  />
+                </SuspenseLoader>
+              </div>
+
+              <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
+                <p className="mb-2 font-mono text-sm text-tertiary">
+                  Voting power (staked {governanceTokenInfo.name})
+                </p>
+
+                <SuspenseLoader fallback={<BalanceCardLoader />}>
+                  <StakedBalanceCard
+                    setShowStakingMode={() =>
+                      setShowStakingDefaultMode(StakingMode.Unstake)
+                    }
+                  />
+                </SuspenseLoader>
+              </div>
+            </div>
+
+            <SuspenseLoader
+              fallback={
+                <>
+                  <p className="text-lg">
+                    Unstaking {governanceTokenInfo.name} tokens
+                  </p>
+                  <Loader />
+                </>
+              }
+            >
+              <ClaimsList
+                showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
               />
             </SuspenseLoader>
-          </div>
-
-          <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
-            <p className="mb-2 font-mono text-sm text-tertiary">
-              Voting power (staked {governanceTokenInfo.name})
-            </p>
-
-            <SuspenseLoader fallback={<BalanceCardLoader />}>
-              <StakedBalanceCard
-                connected={connected}
-                setShowStakingMode={() =>
-                  setShowStakingDefaultMode(StakingMode.Unstake)
-                }
-              />
-            </SuspenseLoader>
-          </div>
-        </div>
-
-        <SuspenseLoader
-          fallback={
-            <>
-              <p className="text-lg">
-                Unstaking {governanceTokenInfo.name} tokens
-              </p>
-              <Loader />
-            </>
-          }
-        >
-          <ClaimsList
-            showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
-          />
-        </SuspenseLoader>
+          </>
+        ) : (
+          <WalletConnectButton />
+        )}
       </div>
 
       {showStakingDefaultMode !== undefined && (

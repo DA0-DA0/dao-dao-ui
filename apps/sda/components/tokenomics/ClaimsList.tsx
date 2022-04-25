@@ -28,9 +28,8 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
     !governanceTokenInfo ||
     !stakingContractConfig ||
     !blockHeight ||
-    !claims ||
     !refreshClaims ||
-    sumClaimsAvailable === undefined
+    (connected && (!claims || sumClaimsAvailable === undefined))
   ) {
     return null
   }
@@ -40,14 +39,14 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
       <div className="flex flex-row justify-between items-center">
         <p className="text-lg">Unstaking {governanceTokenInfo.name} tokens</p>
 
-        {sumClaimsAvailable > 0 && (
+        {!!sumClaimsAvailable && (
           <Button disabled={!connected} onClick={showClaim} variant="secondary">
             Claim
           </Button>
         )}
       </div>
 
-      {claims.length ? (
+      {claims?.length ? (
         <div className="flex flex-col gap-1 items-stretch !mt-4">
           {claims.map((claim, idx) => (
             <ClaimsListItem

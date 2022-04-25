@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 
+import { useWallet } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
@@ -8,14 +9,13 @@ import { Logo } from '../Logo'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 
 interface CardProps {
-  connected: boolean
   setShowStakingMode: () => void
 }
 
 export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
-  connected,
   setShowStakingMode,
 }) => {
+  const { connected } = useWallet()
   const {
     governanceTokenInfo,
     walletBalance: _unstakedBalance,
@@ -27,14 +27,14 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
 
   if (
     !governanceTokenInfo ||
-    _unstakedBalance === undefined ||
-    price === undefined
+    price === undefined ||
+    (connected && _unstakedBalance === undefined)
   ) {
-    return null
+    return <BalanceCardLoader />
   }
 
   const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-    _unstakedBalance,
+    _unstakedBalance ?? 0,
     governanceTokenInfo.decimals
   )
 
@@ -73,9 +73,9 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
 }
 
 export const StakedBalanceCard: FunctionComponent<CardProps> = ({
-  connected,
   setShowStakingMode,
 }) => {
+  const { connected } = useWallet()
   const { governanceTokenInfo, price } = useGovernanceTokenInfo({
     fetchPriceInfo: true,
   })
@@ -88,17 +88,19 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   if (
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
-    _stakedBalance === undefined ||
-    price === undefined
+    price === undefined ||
+    (connected && _stakedBalance === undefined)
   ) {
-    return null
+    return <BalanceCardLoader />
   }
 
   const votingPower =
-    _totalStakedBalance === 0 ? 0 : (_stakedBalance / _totalStakedBalance) * 100
+    _totalStakedBalance === 0
+      ? 0
+      : ((_stakedBalance ?? 0) / _totalStakedBalance) * 100
 
   const stakedBalance = convertMicroDenomToDenomWithDecimals(
-    _stakedBalance,
+    _stakedBalance ?? 0,
     governanceTokenInfo.decimals
   )
 
