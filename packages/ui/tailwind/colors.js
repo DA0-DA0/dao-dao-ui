@@ -39,7 +39,7 @@ const backgroundColor = {
   tertiary: generateColorClass('dark', 0.3),
   toast: generateColorClass('dark', 0.85),
   card: generateColorClass('dark', 0.08),
-  'dark-accent': generateColorClass('dark-accent', 1),
+  'accent-transparent': generateColorClass('accent', 0.08),
   'very-light': generateColorClass('very-light', 1),
 }
 

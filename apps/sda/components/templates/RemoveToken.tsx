@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import {
   constSelector,
@@ -17,6 +17,7 @@ import {
 } from '@dao-dao/ui/components/templates'
 import { useFormContext } from 'react-hook-form'
 
+import { SuspenseLoader } from '..'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerRemoveTokenComponent: TemplateComponent = (props) => {
@@ -81,7 +82,7 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
 }
 
 export const RemoveTokenComponent: TemplateComponent = (props) => (
-  <Suspense fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerRemoveTokenComponent {...props} />
-  </Suspense>
+  </SuspenseLoader>
 )

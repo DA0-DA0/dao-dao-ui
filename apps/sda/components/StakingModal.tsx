@@ -1,4 +1,4 @@
-import { useState, FunctionComponent, Suspense } from 'react'
+import { useState, FunctionComponent } from 'react'
 
 import { useWallet } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
@@ -12,8 +12,8 @@ import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
 import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
-import { Logo } from '.'
-import { useGovernanceTokenInfo, useStaking } from '@/hooks'
+import { Logo, SuspenseLoader } from '.'
+import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 import { cleanChainError } from '@/util'
 
 interface StakingModalProps {
@@ -22,9 +22,9 @@ interface StakingModalProps {
 }
 
 export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
-  <Suspense fallback={<LoadingStakingModal {...props} />}>
+  <SuspenseLoader fallback={<LoadingStakingModal {...props} />}>
     <InnerStakingModal {...props} />
-  </Suspense>
+  </SuspenseLoader>
 )
 
 const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
@@ -40,8 +40,8 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
   const { governanceTokenContractAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
-  const { stakingContractAddress, unstakingDuration, sumClaimsAvailable } =
-    useStaking()
+  const { stakingContractAddress, stakingContractConfig, sumClaimsAvailable } =
+    useStakingInfo({ fetchClaims: true })
 
   const doStake = useSend({
     contractAddress: governanceTokenContractAddress ?? '',
@@ -147,7 +147,12 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   }
 
   // Don't render until ready.
-  if (!governanceTokenInfo) return null
+  if (
+    !governanceTokenInfo ||
+    !stakingContractConfig ||
+    sumClaimsAvailable === undefined
+  )
+    return null
 
   return (
     <StatelessStakingModal
@@ -163,7 +168,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       tokenDecimals={governanceTokenInfo.decimals}
       tokenSymbol={governanceTokenInfo.symbol}
       unstakableTokens={stakedBalance}
-      unstakingDuration={unstakingDuration}
+      unstakingDuration={stakingContractConfig.unstaking_duration ?? null}
     />
   )
 }

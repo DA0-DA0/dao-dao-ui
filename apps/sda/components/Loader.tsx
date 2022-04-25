@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { Logo } from '@/components'
 
 interface LoaderProps {
-  size?: number
+  size?: number | string
   fillScreen?: boolean
 }
 

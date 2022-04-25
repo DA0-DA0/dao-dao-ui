@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import type { GetServerSideProps, NextPage } from 'next'
+import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import { constSelector, useRecoilValue } from 'recoil'
@@ -22,21 +22,18 @@ import {
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
+import { convertThresholdDataToTQ } from '@dao-dao/utils/v1'
 import toast from 'react-hot-toast'
 
 import {
   Loader,
-  makeGetServerSideProps,
+  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
   StakingModal,
   TemplateRendererComponent,
 } from '@/components'
-import {
-  useGovernanceModule,
-  useThresholdQuorum,
-  useGovernanceTokenInfo,
-} from '@/hooks'
+import { useGovernanceModule, useGovernanceTokenInfo } from '@/hooks'
 import { cleanChainError, DAO_ADDRESS } from '@/util'
 
 const InnerProposal = () => {
@@ -95,8 +92,6 @@ const InnerProposal = () => {
         })
       : constSelector(undefined)
   )
-
-  const { threshold, quorum } = useThresholdQuorum(proposalResponse?.proposal)
 
   const castVote = useCastVote({
     contractAddress: governanceModuleAddress ?? '',
@@ -157,6 +152,10 @@ const InnerProposal = () => {
     !governanceModuleConfig
   )
     return <Loader />
+
+  const { threshold, quorum } = convertThresholdDataToTQ(
+    proposalResponse.proposal.threshold
+  )
 
   const memberWhenProposalCreated = Number(votingPowerAtHeight.power) > 0
 
@@ -248,14 +247,21 @@ const ProposalPage: NextPage<PageWrapperProps> = ({
 
 export default ProposalPage
 
-export const getServerSideProps: GetServerSideProps = async (...props) => {
-  const proposalIdQuery = props[0].query.proposalId
+// Fallback to loading screen if page has not yet been statically
+// generated.
+export const getStaticPaths: GetStaticPaths = () => ({
+  paths: [],
+  fallback: true,
+})
+
+export const getStaticProps: GetStaticProps = async (...props) => {
+  const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
     return { notFound: true }
   }
 
   const proposalId = Number(proposalIdQuery)
-  return await makeGetServerSideProps({
+  return await makeGetStaticProps({
     followingTitle: `Proposal #${proposalId}`,
   })(...props)
 }

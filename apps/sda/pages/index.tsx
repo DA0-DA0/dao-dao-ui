@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React, { Suspense, useState } from 'react'
+import React, { useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -15,10 +15,11 @@ import {
   PageWrapper,
   PageWrapperProps,
   StakingModal,
-  makeGetServerSideProps,
+  makeGetStaticProps,
   Loader,
+  SuspenseLoader,
 } from '@/components'
-import { useGovernanceTokenInfo, useStaking } from '@/hooks'
+import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 
 interface ClaimViewProps {
   showClaim: () => void
@@ -26,10 +27,19 @@ interface ClaimViewProps {
 }
 const ClaimsView = ({ showClaim, governanceTokenInfo }: ClaimViewProps) => {
   const { connected } = useWallet()
-  const { unstakingDuration, blockHeight, claims, sumClaimsAvailable } =
-    useStaking()
+  const { stakingContractConfig, blockHeight, claims, sumClaimsAvailable } =
+    useStakingInfo({
+      fetchClaims: true,
+    })
 
-  if (!blockHeight || !governanceTokenInfo) return null
+  if (
+    !governanceTokenInfo ||
+    !stakingContractConfig ||
+    !blockHeight ||
+    !claims ||
+    sumClaimsAvailable === undefined
+  )
+    return null
 
   return (
     <>
@@ -54,7 +64,9 @@ const ClaimsView = ({ showClaim, governanceTokenInfo }: ClaimViewProps) => {
               // TODO: Fix.
               incrementClaimsAvailable={console.log}
               tokenInfo={governanceTokenInfo}
-              unstakingDuration={unstakingDuration}
+              unstakingDuration={
+                stakingContractConfig.unstaking_duration ?? null
+              }
             />
           ))}
         </div>
@@ -242,7 +254,7 @@ const InnerHome = () => {
           </div>
         </div>
 
-        <Suspense
+        <SuspenseLoader
           fallback={
             <>
               <p className="text-lg">
@@ -256,7 +268,7 @@ const InnerHome = () => {
             governanceTokenInfo={governanceTokenInfo}
             showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
           />
-        </Suspense>
+        </SuspenseLoader>
       </div>
 
       {showStakingDefaultMode !== undefined && (
@@ -277,4 +289,4 @@ const HomePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
 
 export default HomePage
 
-export const getServerSideProps = makeGetServerSideProps()
+export const getStaticProps = makeGetStaticProps()

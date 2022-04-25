@@ -39,7 +39,7 @@ const NavItem: FunctionComponent<NavItemProps> = ({
     <Link key={href} href={href}>
       <a
         className={clsx('flex flex-row gap-2 items-center p-3 rounded-lg', {
-          'text-accent bg-dark-accent': isActive,
+          'text-accent bg-accent-transparent': isActive,
           'text-body hover:bg-card': !isActive,
         })}
       >

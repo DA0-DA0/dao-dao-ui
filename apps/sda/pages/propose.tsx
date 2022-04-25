@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { useState } from 'react'
 
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -15,10 +15,11 @@ import toast from 'react-hot-toast'
 
 import {
   Loader,
-  makeGetServerSideProps,
+  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
   ProposalForm,
+  SuspenseLoader,
 } from '@/components'
 import { useGovernanceModule } from '@/hooks'
 import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
@@ -117,9 +118,9 @@ const InnerProposalCreate = () => {
       <div className="md:w-2/3">
         <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
 
-        <Suspense fallback={<Loader />}>
+        <SuspenseLoader fallback={<Loader />}>
           <ProposalForm loading={loading} onSubmit={onProposalSubmit} />
-        </Suspense>
+        </SuspenseLoader>
       </div>
 
       <div className="flex-1">
@@ -155,6 +156,6 @@ const ProposalCreatePage: NextPage<PageWrapperProps> = ({
 
 export default ProposalCreatePage
 
-export const getServerSideProps = makeGetServerSideProps({
+export const getStaticProps = makeGetStaticProps({
   followingTitle: `Create Proposal`,
 })

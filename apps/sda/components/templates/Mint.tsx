@@ -1,11 +1,10 @@
-import { Suspense } from 'react'
-
 import {
   MintComponent as StatelessMintComponent,
   TemplateComponent,
   TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
 
+import { SuspenseLoader } from '..'
 import { useGovernanceTokenInfo } from '@/hooks'
 
 const InnerMintComponent: TemplateComponent = (props) => {
@@ -22,7 +21,7 @@ const InnerMintComponent: TemplateComponent = (props) => {
 }
 
 export const MintComponent: TemplateComponent = (props) => (
-  <Suspense fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerMintComponent {...props} />
-  </Suspense>
+  </SuspenseLoader>
 )

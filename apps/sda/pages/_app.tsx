@@ -2,13 +2,13 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 
 import type { AppProps } from 'next/app'
 
-import { RecoilRoot, useRecoilState } from 'recoil'
+import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { activeThemeAtom } from '@dao-dao/state'
+import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { DefaultSeo } from 'next-seo'
@@ -19,6 +19,7 @@ import {
   Header,
   Notifications,
   Loader,
+  SuspenseLoader,
 } from '@/components'
 
 const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
@@ -26,8 +27,12 @@ const image = process.env.NEXT_PUBLIC_SITE_IMAGE
 const url = process.env.NEXT_PUBLIC_SITE_URL
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
+  const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [accentColor, setAccentColor] = useState<string | undefined>()
+
+  // Indicate that we are mounted.
+  useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
   // Ensure correct theme class is set on document.
   useEffect(() => {
@@ -46,9 +51,9 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       <Header />
 
       <ErrorBoundary title="An unexpected error occurred.">
-        <Suspense fallback={<Loader fillScreen size={64} />}>
+        <SuspenseLoader fallback={<Loader fillScreen size={64} />}>
           <Component {...pageProps} />
-        </Suspense>
+        </SuspenseLoader>
       </ErrorBoundary>
 
       <Footer />

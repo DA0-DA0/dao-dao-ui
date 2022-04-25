@@ -49,7 +49,7 @@ interface YouTooltipProps {
 
 const YouTooltip: FC<YouTooltipProps> = ({ label }) => (
   <Tooltip label={label}>
-    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs text-tertiary rounded-full border cursor-pointer border-tertiary">
+    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
       ?
     </p>
   </Tooltip>
@@ -64,7 +64,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
   <div className="rounded-md border border-light">
     <div className="flex flex-row justify-evenly items-stretch py-5">
       <div className="flex flex-col gap-2 items-center">
-        <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+        <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
           Proposal
         </p>
 
@@ -74,7 +74,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
       <div className="w-[1px] bg-light"></div>
 
       <div className="flex flex-col gap-2 items-center">
-        <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+        <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
           Status
         </p>
 
@@ -86,7 +86,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
       <div className="w-[1px] bg-light"></div>
 
       <div className="flex flex-col gap-2 items-center">
-        <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+        <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
           You
         </p>
 
@@ -109,7 +109,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
             <Abstain fill="currentColor" /> Abstain
           </p>
         ) : walletVote ? (
-          <p className="font-mono text-sm text-secondary break-all">
+          <p className="font-mono text-sm break-all text-secondary">
             Unknown: {walletVote}
           </p>
         ) : proposal.status === Status.Open ? (
@@ -225,8 +225,8 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
         </p>
       )}
 
-      {threshold ? (
-        quorum ? (
+      {threshold &&
+        (quorum ? (
           <>
             <p className="mb-3 text-sm body-text">Ratio of votes</p>
 
@@ -315,7 +315,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label="A proposal must attain this proportion of 'Yes' votes to pass.">
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     Passing threshold:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -393,7 +393,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label="This proportion of voting weight must vote on a proposal for it to pass.">
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     Quorum: <span className="font-mono">{quorum.display}</span>
                   </p>
@@ -509,7 +509,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label="A proposal must attain this proportion of 'Yes' votes to pass.">
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     Passing threshold:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -538,14 +538,13 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
               </Tooltip>
             </div>
           </>
-        )
-      ) : null}
+        ))}
 
       {proposal.status === Status.Open &&
         expiresInSeconds !== undefined &&
         expiresInSeconds > 0 && (
           <>
-            <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
+            <p className="overflow-hidden mt-4 font-mono text-sm text-ellipsis text-tertiary">
               Time left
             </p>
 

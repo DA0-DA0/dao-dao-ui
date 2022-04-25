@@ -1,18 +1,13 @@
-import {
-  FunctionComponent,
-  PropsWithChildren,
-  Suspense,
-  useEffect,
-  useState,
-} from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 
-import type { GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 
 import { QueryClient } from '@dao-dao/state/clients/cw-governance'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 import { NextSeo } from 'next-seo'
 
-import { Loader } from '.'
+import { Loader, SuspenseLoader } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
@@ -29,10 +24,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
   imageUrl,
   children,
 }) => {
-  // Prevent loading any page data on the server since Next.js cannot
-  // just prerender Suspenses when a Suspense is supposed to be displayed.
-  const [load, setLoad] = useState(false)
-  useEffect(() => setLoad(true), [setLoad])
+  const { isFallback, isReady } = useRouter()
 
   return (
     <>
@@ -49,29 +41,28 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
       />
 
       {/* Suspend children so SEO stays intact while page loads. */}
-      {load ? (
-        <Suspense fallback={<Loader fillScreen size={64} />}>
-          {children}
-        </Suspense>
-      ) : (
-        <Loader fillScreen size={64} />
-      )}
+      <SuspenseLoader
+        fallback={<Loader fillScreen size={64} />}
+        forceFallback={isFallback || !isReady}
+      >
+        {children}
+      </SuspenseLoader>
     </>
   )
 }
 
-interface GetServerSidePropsMakerProps {
+interface GetStaticPropsMakerProps {
   leadingTitle?: string
   followingTitle?: string
   overrideTitle?: string
   overrideDescription?: string
 }
-type GetServerSidePropsMaker = (
-  props?: GetServerSidePropsMakerProps
-) => GetServerSideProps<PageWrapperProps>
+type GetStaticPropsMaker = (
+  props?: GetStaticPropsMakerProps
+) => GetStaticProps<PageWrapperProps>
 
 // Computes PageWrapperProps for the DAO with optional alterations.
-export const makeGetServerSideProps: GetServerSidePropsMaker =
+export const makeGetStaticProps: GetStaticPropsMaker =
   ({ leadingTitle, followingTitle, overrideTitle, overrideDescription } = {}) =>
   async () => {
     try {
@@ -92,6 +83,9 @@ export const makeGetServerSideProps: GetServerSidePropsMaker =
           description: overrideDescription ?? config.description,
           imageUrl: config.image_url || null,
         },
+        // Regenerate the page at most once per second.
+        // Should serve cached copy and update after a refresh.
+        revalidate: 1,
       }
     } catch (error) {
       console.error(error)

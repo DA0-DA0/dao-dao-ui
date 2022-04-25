@@ -1,5 +1,3 @@
-import { Suspense } from 'react'
-
 import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
@@ -9,6 +7,7 @@ import {
   TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
 
+import { SuspenseLoader } from '..'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerStakeComponent: TemplateComponent = (props) => {
@@ -26,7 +25,7 @@ const InnerStakeComponent: TemplateComponent = (props) => {
 }
 
 export const StakeComponent: TemplateComponent = (props) => (
-  <Suspense fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerStakeComponent {...props} />
-  </Suspense>
+  </SuspenseLoader>
 )

@@ -67,8 +67,10 @@ input[type='number']::-webkit-outer-spin-button {
     --valid: 57, 166, 153;
     --brand: 77, 76, 185;
     --active: 87, 86, 213;
-    --accent: 253, 67, 107;
-    --dark-accent: 36, 22, 26;
+    /* Decreased L in HSL of .dark's --accent from 63% to 53% to improve
+     * contrast on light mode.
+     */
+    --accent: 253, 18, 69;
     --very-light: 255, 255, 255;
   }
 
@@ -81,6 +83,7 @@ input[type='number']::-webkit-outer-spin-button {
     --valid: 57, 166, 153;
     --brand: 95, 94, 255;
     --active: 77, 76, 185;
+    --accent: 253, 67, 107;
     --very-light: 9, 13, 16;
   }
 
