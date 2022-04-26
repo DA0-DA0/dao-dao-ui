@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { constSelector, useRecoilValue } from 'recoil'
+
 import { Airplane } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
@@ -15,6 +17,7 @@ import {
 import { TemplateKey, ToCosmosMsgProps } from '@dao-dao/ui/components/templates'
 import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import {
   FormProvider,
   SubmitHandler,
@@ -25,6 +28,7 @@ import {
 import { TemplateSelector } from '.'
 import { templateMap, templateToCosmosMsg } from './templates'
 import { WalletConnectButton } from './WalletConnectButton'
+import { votingPowerAtHeightSelector } from '@/../../packages/state/recoil/selectors/clients/cw-core'
 import { useGovernanceTokenInfo } from '@/hooks'
 import { DAO_ADDRESS } from '@/util'
 
@@ -52,6 +56,20 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const { connected, address: walletAddress } = useWallet()
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
+
+  const votingPowerAtHeight = useRecoilValue(
+    walletAddress
+      ? votingPowerAtHeightSelector({
+          contractAddress: DAO_ADDRESS,
+          params: [
+            {
+              address: walletAddress,
+            },
+          ],
+        })
+      : constSelector(undefined)
+  )
+  const canPropose = votingPowerAtHeight && votingPowerAtHeight.power !== '0'
 
   const formMethods = useForm<FormProposalData>({
     mode: 'onChange',
@@ -186,10 +204,18 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
         </div>
         <div className="flex gap-2 justify-end mt-4">
           {connected ? (
-            <Button loading={loading} type="submit">
-              Publish{' '}
-              <Airplane color="currentColor" height="14px" width="14px" />
-            </Button>
+            <Tooltip
+              label={
+                !canPropose
+                  ? 'You must have staked governance tokens to create a proposal'
+                  : undefined
+              }
+            >
+              <Button disabled={!canPropose} loading={loading} type="submit">
+                Publish{' '}
+                <Airplane color="currentColor" height="14px" width="14px" />
+              </Button>
+            </Tooltip>
           ) : (
             <WalletConnectButton />
           )}
