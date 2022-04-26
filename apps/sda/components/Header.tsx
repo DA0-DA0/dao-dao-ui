@@ -119,7 +119,7 @@ export const Header: FunctionComponent = () => {
       <Link href="/">
         <a className="flex flex-row gap-2 items-center w-full md:gap-4">
           <Logo height={32} width={32} />
-          <p className="hidden md:block font-studiofeixen text-[18p]">
+          <p className="hidden font-studiofeixen md:block text-[18p]">
             {SITE_TITLE}
           </p>
         </a>
@@ -141,7 +141,7 @@ export const Header: FunctionComponent = () => {
           <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
             <div className="flex flex-col items-end text-right link-text">
               <span>{name}</span>
-              <span className="capitalize text-secondary">
+              <span className="text-secondary capitalize">
                 {walletBalance} {humanDenom}
               </span>
             </div>
