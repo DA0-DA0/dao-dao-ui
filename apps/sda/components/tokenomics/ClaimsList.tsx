@@ -55,6 +55,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
               key={idx}
               blockHeight={blockHeight}
               claim={claim}
+              // TODO: Replace image.
               iconURI="/juno.svg"
               onClaimAvailable={refreshClaims}
               tokenInfo={governanceTokenInfo}

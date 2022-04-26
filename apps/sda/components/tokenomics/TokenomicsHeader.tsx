@@ -1,10 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
+
 import { FunctionComponent } from 'react'
 
+import { useRecoilValue } from 'recoil'
+
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
-import { Logo } from '../Logo'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
+import { DAO_ADDRESS } from '@/util'
 
 export const TokenomicsHeaderLoader: FunctionComponent = () => (
   <>
@@ -52,6 +57,9 @@ export const TokenomicsHeaderLoader: FunctionComponent = () => (
 )
 
 export const TokenomicsHeader: FunctionComponent = () => {
+  const daoConfig = useRecoilValue(
+    configSelector({ contractAddress: DAO_ADDRESS })
+  )
   const {
     governanceTokenInfo,
     treasuryBalance: _treasuryBalance,
@@ -68,6 +76,7 @@ export const TokenomicsHeader: FunctionComponent = () => {
   })
 
   if (
+    !daoConfig ||
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
     _treasuryBalance === undefined ||
@@ -93,7 +102,13 @@ export const TokenomicsHeader: FunctionComponent = () => {
 
       <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
         <div className="bg-light rounded-full border border-default">
-          <Logo height={80} width={80} />
+          <img
+            alt="logo"
+            height="80px"
+            // TODO: Replace placeholder image.
+            src={daoConfig.image_url ?? '/daotoken.jpg'}
+            width="80px"
+          />
         </div>
       </div>
 

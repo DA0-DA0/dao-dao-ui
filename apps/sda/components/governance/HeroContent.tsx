@@ -62,6 +62,7 @@ export const HeroContent = () => {
           <img
             alt="logo"
             className="w-full h-full"
+            // TODO: Replace placeholder image.
             src={daoConfig.image_url ?? '/daotoken.jpg'}
           />
         }
