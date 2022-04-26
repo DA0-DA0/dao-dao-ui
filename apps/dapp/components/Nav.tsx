@@ -1,15 +1,14 @@
-import Link from 'next/link'
-
-import { useRecoilValue, waitForAll } from 'recoil'
-
-import { Logo } from '@dao-dao/ui'
-import { SITE_TITLE } from '@dao-dao/utils'
 import {
   ArrowRightIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
 import { MenuIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
+import { useRecoilValue, waitForAll } from 'recoil'
+
+import { Logo } from '@dao-dao/ui'
+import { SITE_TITLE } from '@dao-dao/utils'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import { showBetaNoticeAtom } from 'atoms/status'

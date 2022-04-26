@@ -1,4 +1,7 @@
 import { Coin } from '@cosmjs/stargate'
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -22,8 +25,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   FromCosmosMsgProps,

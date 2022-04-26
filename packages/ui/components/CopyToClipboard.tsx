@@ -1,9 +1,9 @@
+import { CheckCircleIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 import { Copy } from '@dao-dao/icons'
 import { useThemeContext } from '@dao-dao/ui'
-import { CheckCircleIcon } from '@heroicons/react/outline'
-import toast from 'react-hot-toast'
 
 function concatAddressImpl(
   address: string,

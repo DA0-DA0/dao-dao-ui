@@ -1,3 +1,4 @@
+import { CheckIcon } from '@heroicons/react/outline'
 import { FC, useEffect, useState } from 'react'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -7,7 +8,6 @@ import {
   humanReadableDuration,
   claimAvailable,
 } from '@dao-dao/utils'
-import { CheckIcon } from '@heroicons/react/outline'
 
 import { BalanceIcon } from '../ContractView/BalanceIcon'
 

@@ -6667,6 +6667,11 @@ eslint-plugin-react@7.29.1:
     semver "^6.3.0"
     string.prototype.matchall "^4.0.6"
 
+eslint-plugin-regex@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-regex/-/eslint-plugin-regex-1.9.0.tgz#4eb4f903edeeec3d641a7fcc10ad4d5209cb783d"
+  integrity sha512-T7/Rn6qp/Wp9VlLraimUvGW81wkJ661wFicHyHrm4iSJfl33yyUFJEwknYjFjrUTXAsYA6wCCvPpBss/gOlVNA==
+
 eslint-plugin-tailwindcss@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.5.0.tgz#861b2c3bc7c058fa24e72ca49910e2ad487cda33"

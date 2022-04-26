@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-
+import { useFormContext } from 'react-hook-form'
 import {
   constSelector,
   useRecoilValue,
@@ -15,7 +15,6 @@ import {
   TemplateComponent,
   TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
-import { useFormContext } from 'react-hook-form'
 
 import { SuspenseLoader } from '..'
 import { DAO_ADDRESS } from '@/util'

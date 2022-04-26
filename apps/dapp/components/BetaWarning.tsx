@@ -1,6 +1,7 @@
+import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
+
 import { Message } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
-import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
 
 export function BetaWarningModal({ onAccept }: { onAccept: Function }) {
   return (

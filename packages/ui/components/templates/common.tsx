@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react'
+import { FieldErrors } from 'react-hook-form'
 
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { FieldErrors } from 'react-hook-form'
 
 import { InputLabel } from '../input'
 import { Loader } from '../Loader'

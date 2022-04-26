@@ -1,11 +1,10 @@
-import { useCallback, useState } from 'react'
-
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import { useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 import {
   blockHeightSelector,
   refreshProposalsIdAtom,
@@ -15,7 +14,6 @@ import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
 import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
 import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { CopyToClipboard } from '@dao-dao/ui'
-import toast from 'react-hot-toast'
 
 import {
   Loader,

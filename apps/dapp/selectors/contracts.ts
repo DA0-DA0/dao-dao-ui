@@ -1,8 +1,7 @@
-import { selectorFamily } from 'recoil'
-
 import { WasmExtension } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@cosmjs/stargate'
 import { QueryContractsByCodeResponse } from 'cosmjs-types/cosmwasm/wasm/v1/query'
+import { selectorFamily } from 'recoil'
 
 import { cosmWasmClient } from 'selectors/cosm'
 

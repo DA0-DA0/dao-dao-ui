@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-
 import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs } from '@dao-dao/ui'

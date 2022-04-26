@@ -1,8 +1,6 @@
-import { useState } from 'react'
-
-import { Airplane } from '@dao-dao/icons'
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useState } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -10,6 +8,8 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+
+import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'
 import { Modal } from '../Modal'

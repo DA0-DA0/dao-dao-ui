@@ -1,8 +1,8 @@
+import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useState } from 'react'
 
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { decodedMessagesString, decodeMessages } from '@dao-dao/utils'
-import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
 
 import { Button } from '../../Button'
 import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'

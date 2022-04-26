@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { CosmosMessageDisplay } from '@dao-dao/ui'
 import {
   TemplateRendererComponentProps,
   TemplateComponentLoader,
 } from '@dao-dao/ui/components/templates'
-import { FormProvider, useForm } from 'react-hook-form'
 
 import { templateAndDataForDecodedCosmosMsg } from '.'
 import { SuspenseLoader } from '..'

@@ -1,8 +1,9 @@
-import { CodeMirrorInput } from '@dao-dao/ui'
-import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
+
+import { CodeMirrorInput } from '@dao-dao/ui'
+import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { TemplateComponent } from './common'
 

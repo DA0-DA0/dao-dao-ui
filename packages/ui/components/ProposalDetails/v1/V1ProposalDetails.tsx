@@ -1,3 +1,4 @@
+import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
 import { ComponentType, FC, ReactNode, useState } from 'react'
 
 import {
@@ -6,7 +7,6 @@ import {
   Vote as VoteChoice,
 } from '@dao-dao/state/clients/cw-proposal-single'
 import { decodedMessagesString, decodeMessages } from '@dao-dao/utils'
-import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
 
 import { Button } from '../../Button'
 import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'

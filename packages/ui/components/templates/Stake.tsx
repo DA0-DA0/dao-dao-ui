@@ -1,4 +1,7 @@
 import { Coin } from '@cosmjs/stargate'
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
 import {
   AddressInput,
   InputErrorMessage,
@@ -22,8 +25,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import { TemplateComponent } from './common'
 

@@ -1,6 +1,5 @@
-import { FC, ReactNode } from 'react'
-
 import ReachTooltip from '@reach/tooltip'
+import { FC, ReactNode } from 'react'
 
 export interface TooltipProps {
   label: ReactNode | undefined

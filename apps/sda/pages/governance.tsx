@@ -1,13 +1,12 @@
-import { FunctionComponent } from 'react'
-
-import { GetStaticProps, NextPage } from 'next'
-import { useRouter } from 'next/router'
-
 import fs from 'fs'
 import path from 'path'
 
-import { Button } from '@dao-dao/ui'
 import { PlusIcon } from '@heroicons/react/outline'
+import { GetStaticProps, NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { FunctionComponent } from 'react'
+
+import { Button } from '@dao-dao/ui'
 
 import {
   HeroContent,

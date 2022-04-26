@@ -1,6 +1,6 @@
+import { OfflineSigner } from '@cosmjs/proto-signing'
 import { selector } from 'recoil'
 
-import { OfflineSigner } from '@cosmjs/proto-signing'
 import {
   CHAIN_ID,
   getKeplr,

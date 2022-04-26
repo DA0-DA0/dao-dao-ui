@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { FunctionComponent } from 'react'
-
 import { useRecoilValue } from 'recoil'
 
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'

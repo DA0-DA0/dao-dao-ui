@@ -1,9 +1,9 @@
+import clsx from 'clsx'
 import { FC } from 'react'
 
 import { Dollar, Pie } from '@dao-dao/icons'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
-import clsx from 'clsx'
 
 import { HeroStat } from './Hero/Stat'
 import { useGovernanceModule } from '@/hooks'

@@ -1,6 +1,7 @@
+import { XIcon } from '@heroicons/react/outline'
+
 import { Modal } from '@dao-dao/ui'
 import { Template } from '@dao-dao/ui/components/templates'
-import { XIcon } from '@heroicons/react/outline'
 
 import { templates } from './templates'
 

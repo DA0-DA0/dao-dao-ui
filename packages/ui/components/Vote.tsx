@@ -1,9 +1,9 @@
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 
 import { Abstain, Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
 
 export { VoteChoice }
 

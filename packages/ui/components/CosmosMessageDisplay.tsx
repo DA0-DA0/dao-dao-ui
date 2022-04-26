@@ -4,7 +4,6 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
 import { FC } from 'react'
-
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
 import { useThemeContext } from '../theme'

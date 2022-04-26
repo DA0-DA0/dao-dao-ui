@@ -9,6 +9,7 @@ import {
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
+
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 export interface ConfigResponse {
   automatically_add_cw20s: boolean

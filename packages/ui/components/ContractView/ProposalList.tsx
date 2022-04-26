@@ -1,6 +1,5 @@
-import { FC } from 'react'
-
 import Link from 'next/link'
+import { FC } from 'react'
 
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'

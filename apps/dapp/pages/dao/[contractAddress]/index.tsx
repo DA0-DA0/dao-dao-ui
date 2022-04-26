@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
-
+import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { MemberCheck, Pencil } from '@dao-dao/icons'
@@ -21,7 +20,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   claimAvailable,
 } from '@dao-dao/utils'
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'

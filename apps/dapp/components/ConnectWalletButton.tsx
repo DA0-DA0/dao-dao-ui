@@ -1,5 +1,4 @@
 import { useCallback } from 'react'
-
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { WalletConnect as StatelessWalletConnect } from '@dao-dao/ui'

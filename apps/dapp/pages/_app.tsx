@@ -2,12 +2,10 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { useState, useEffect } from 'react'
-import { Suspense } from 'react'
-
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-
+import { useState, useEffect } from 'react'
+import { Suspense } from 'react'
 import { RecoilRoot } from 'recoil'
 
 import {

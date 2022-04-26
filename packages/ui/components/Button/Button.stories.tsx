@@ -1,8 +1,8 @@
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import React from 'react'
 
 // import { ChevronDownIcon } from '@heroicons/react/outline'
 // import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 // import SvgConnect from '@components/icons/Connect'
 // import SvgWallet from '@components/icons/Wallet'

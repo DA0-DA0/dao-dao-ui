@@ -1,5 +1,4 @@
 import { FunctionComponent, SuspenseProps, Suspense } from 'react'
-
 import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'

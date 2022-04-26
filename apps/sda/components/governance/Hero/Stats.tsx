@@ -1,7 +1,7 @@
+import { ArrowUpIcon, LinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
 import { Dollar, Staked, Apr } from '@dao-dao/icons'
-import { ArrowUpIcon, LinkIcon } from '@heroicons/react/outline'
 
 import { HeroStat, HeroStatLink } from './Stat'
 

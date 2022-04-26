@@ -1,14 +1,12 @@
-import { useState } from 'react'
-
-import type { NextPage } from 'next'
-import { NextRouter, useRouter } from 'next/router'
-
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { CopyToClipboard, Breadcrumbs } from '@dao-dao/ui'
+import type { NextPage } from 'next'
+import { NextRouter, useRouter } from 'next/router'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { CopyToClipboard, Breadcrumbs } from '@dao-dao/ui'
 
 import { ProposalData, ProposalForm } from '@components/ProposalForm'
 import { proposalsCreatedAtom } from 'atoms/proposals'

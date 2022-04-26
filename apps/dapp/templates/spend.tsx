@@ -1,3 +1,5 @@
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
@@ -15,8 +17,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   cw20TokensList,

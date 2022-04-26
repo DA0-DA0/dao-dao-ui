@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { useCallback } from 'react'
-
 import { useRecoilValue } from 'recoil'
 
 import { CwProposalSingleClient as ExecuteClient } from '../clients/cw-proposal-single'

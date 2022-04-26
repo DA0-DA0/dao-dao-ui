@@ -1,5 +1,6 @@
-import { Button, Modal } from '@dao-dao/ui'
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
+
+import { Button, Modal } from '@dao-dao/ui'
 
 export function InstallKeplr({ onClose }: { onClose: () => void }) {
   return (

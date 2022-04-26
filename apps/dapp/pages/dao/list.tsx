@@ -1,9 +1,13 @@
-import { useState } from 'react'
-
+import {
+  LibraryIcon,
+  PlusIcon,
+  SparklesIcon,
+  UserIcon,
+} from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-
+import { useState } from 'react'
 import {
   useRecoilState,
   useRecoilValue,
@@ -18,12 +22,6 @@ import {
   LEGACY_DAO_CODE_ID,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import {
-  LibraryIcon,
-  PlusIcon,
-  SparklesIcon,
-  UserIcon,
-} from '@heroicons/react/outline'
 
 import { EmptyDaoCard } from '@components/EmptyDaoCard'
 import { pinnedDaosAtom } from 'atoms/pinned'

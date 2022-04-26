@@ -1,11 +1,12 @@
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
 import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 import {
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   TemplateComponent,

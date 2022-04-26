@@ -1,4 +1,6 @@
+import { XIcon } from '@heroicons/react/outline'
 import { useState, FunctionComponent } from 'react'
+import toast from 'react-hot-toast'
 
 import { useWallet } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
@@ -12,8 +14,6 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import toast from 'react-hot-toast'
 
 import { Logo, SuspenseLoader, WalletConnectButton } from '.'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'

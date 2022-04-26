@@ -1,9 +1,9 @@
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FunctionComponent } from 'react'
 
 import { Abstain } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import clsx from 'clsx'
 
 export const VoteDisplay: FunctionComponent<{
   vote: Vote

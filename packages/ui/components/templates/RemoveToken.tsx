@@ -1,3 +1,6 @@
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { Button } from '@dao-dao/ui'
 import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
@@ -6,8 +9,6 @@ import {
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   TemplateComponent,

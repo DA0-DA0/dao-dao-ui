@@ -1,4 +1,5 @@
 import { toBase64, toAscii } from '@cosmjs/encoding'
+
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   BankMsg,

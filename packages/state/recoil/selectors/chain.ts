@@ -1,7 +1,7 @@
-import { selector, selectorFamily } from 'recoil'
-
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { GasPrice } from '@cosmjs/stargate'
+import { selector, selectorFamily } from 'recoil'
+
 import {
   CHAIN_RPC_ENDPOINT,
   cosmWasmClientRouter,

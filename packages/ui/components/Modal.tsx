@@ -1,6 +1,5 @@
-import { ReactNode, FC } from 'react'
-
 import clsx from 'clsx'
+import { ReactNode, FC } from 'react'
 
 export interface ModalProps {
   children: ReactNode

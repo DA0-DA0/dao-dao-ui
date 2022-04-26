@@ -1,6 +1,6 @@
+import { IndexedTx, Coin } from '@cosmjs/stargate'
 import { atomFamily, selector, selectorFamily } from 'recoil'
 
-import { IndexedTx, Coin } from '@cosmjs/stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   // Cw20Coin,

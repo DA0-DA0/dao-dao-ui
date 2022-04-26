@@ -1,7 +1,6 @@
-import { FC } from 'react'
-
 import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
+import { FC } from 'react'
 
 import { useThemeContext } from '../../theme'
 

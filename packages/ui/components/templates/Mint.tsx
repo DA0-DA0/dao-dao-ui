@@ -1,3 +1,6 @@
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
+
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -10,8 +13,6 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   FromCosmosMsgProps,

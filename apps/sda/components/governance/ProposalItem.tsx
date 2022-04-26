@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import Link from 'next/link'
 
 import {
@@ -7,7 +8,6 @@ import {
 import { VoteDisplay } from '@dao-dao/ui/components/ProposalDetails/v1/VoteDisplay'
 import { StatusIcons } from '@dao-dao/ui/components/StatusIcons'
 import { getProposalEnd, pad, titlecase } from '@dao-dao/utils'
-import clsx from 'clsx'
 
 import { useProposalInfo } from '@/hooks'
 

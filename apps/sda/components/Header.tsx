@@ -1,7 +1,8 @@
-import { FunctionComponent, ReactNode, useMemo } from 'react'
-
+import { PlusIcon } from '@heroicons/react/solid'
+import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { FunctionComponent, ReactNode, useMemo } from 'react'
 
 import { Airdrop, Pie, Governance, Hash, WalletAvatar } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
@@ -12,8 +13,6 @@ import {
   NATIVE_DENOM,
   SITE_TITLE,
 } from '@dao-dao/utils'
-import { PlusIcon } from '@heroicons/react/solid'
-import clsx from 'clsx'
 
 import { Logo, WalletConnectButton } from '@/components'
 

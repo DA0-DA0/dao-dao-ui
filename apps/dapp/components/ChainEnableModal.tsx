@@ -1,5 +1,6 @@
-import { Button, Modal } from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
+
+import { Button, Modal } from '@dao-dao/ui'
 
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 const CHAIN_NAME = process.env.NEXT_PUBLIC_CHAIN_NAME

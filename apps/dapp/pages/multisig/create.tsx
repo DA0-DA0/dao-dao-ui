@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-
+import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { PlusIcon } from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import React, { useEffect, useState } from 'react'
+import { useFieldArray, useForm, Validate } from 'react-hook-form'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
 
-import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { Airplane } from '@dao-dao/icons'
 import { Button, Tooltip } from '@dao-dao/ui'
 import {
@@ -20,8 +20,6 @@ import {
   TokenAmountInput,
 } from '@dao-dao/ui'
 import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
-import { PlusIcon } from '@heroicons/react/outline'
-import { useFieldArray, useForm, Validate } from 'react-hook-form'
 
 import { FormCard } from '@components/FormCard'
 import TooltipsDisplay, {

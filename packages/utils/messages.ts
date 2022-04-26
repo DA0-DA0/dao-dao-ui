@@ -1,4 +1,5 @@
 import { toBase64, toAscii } from '@cosmjs/encoding'
+
 import {
   BankMsg,
   DistributionMsg,

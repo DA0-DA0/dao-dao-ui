@@ -1,3 +1,5 @@
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
@@ -5,8 +7,6 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   Config,

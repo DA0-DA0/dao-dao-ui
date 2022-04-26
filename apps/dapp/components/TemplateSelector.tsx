@@ -1,5 +1,6 @@
-import { Modal } from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
+
+import { Modal } from '@dao-dao/ui'
 
 import { ContractSupport, MessageTemplate } from 'templates/templateList'
 import { Config } from 'util/contractConfigWrapper'

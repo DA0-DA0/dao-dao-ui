@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-
+import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
@@ -7,7 +7,6 @@ import {
   AddTokenComponent as StatelessAddTokenComponent,
   TemplateComponent,
 } from '@dao-dao/ui/components/templates'
-import { useFormContext } from 'react-hook-form'
 
 export const AddTokenComponent: TemplateComponent = (props) => {
   const { getLabel } = props

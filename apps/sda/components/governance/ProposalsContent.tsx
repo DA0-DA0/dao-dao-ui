@@ -1,12 +1,11 @@
+import { ChevronDownIcon } from '@heroicons/react/solid'
+import clsx from 'clsx'
 import { useMemo } from 'react'
-
 import { useRecoilValue, constSelector } from 'recoil'
 
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
-import { ChevronDownIcon } from '@heroicons/react/solid'
-import clsx from 'clsx'
 
 import { ProposalItem } from './ProposalItem'
 import { DAO_ADDRESS } from '@/util'

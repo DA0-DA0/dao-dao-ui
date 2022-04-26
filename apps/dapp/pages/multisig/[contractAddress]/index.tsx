@@ -1,8 +1,11 @@
-import { useEffect } from 'react'
-
+import {
+  ScaleIcon,
+  UserGroupIcon,
+  VariableIcon,
+} from '@heroicons/react/outline'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import { useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
@@ -17,11 +20,6 @@ import {
   BalanceIcon,
   Breadcrumbs,
 } from '@dao-dao/ui'
-import {
-  ScaleIcon,
-  UserGroupIcon,
-  VariableIcon,
-} from '@heroicons/react/outline'
 
 import { MultisigContractInfo } from '@components/MultisigContractInfo'
 import { pinnedMultisigsAtom } from 'atoms/pinned'

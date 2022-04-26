@@ -1,6 +1,5 @@
-import { ChangeEvent, FC } from 'react'
-
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/outline'
+import { ChangeEvent, FC } from 'react'
 
 export interface AmountSelectorProps {
   setAmount: (newValue: number) => void

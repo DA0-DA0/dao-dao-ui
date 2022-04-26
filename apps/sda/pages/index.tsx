@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useState } from 'react'
-
 import type { NextPage } from 'next'
+import React, { useState } from 'react'
 
 import { Pie } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'

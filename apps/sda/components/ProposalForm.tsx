@@ -1,9 +1,17 @@
+import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
+import Tooltip from '@reach/tooltip'
 import { useState } from 'react'
-
+import {
+  FormProvider,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
+import { votingPowerAtHeightSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -16,19 +24,10 @@ import {
 } from '@dao-dao/ui'
 import { TemplateKey, ToCosmosMsgProps } from '@dao-dao/ui/components/templates'
 import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
-import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
-import {
-  FormProvider,
-  SubmitHandler,
-  useFieldArray,
-  useForm,
-} from 'react-hook-form'
 
 import { TemplateSelector } from '.'
 import { templateMap, templateToCosmosMsg } from './templates'
 import { WalletConnectButton } from './WalletConnectButton'
-import { votingPowerAtHeightSelector } from '@/../../packages/state/recoil/selectors/clients/cw-core'
 import { useGovernanceTokenInfo } from '@/hooks'
 import { DAO_ADDRESS } from '@/util'
 

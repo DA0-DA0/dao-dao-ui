@@ -1,7 +1,7 @@
-import { useCallback, useState } from 'react'
-
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import { useWallet } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
@@ -15,7 +15,6 @@ import {
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
-import toast from 'react-hot-toast'
 
 import {
   makeGetStaticProps,

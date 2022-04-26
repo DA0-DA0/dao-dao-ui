@@ -2,16 +2,14 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { useState, useEffect } from 'react'
-
+import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-
+import { useState, useEffect } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
-import { DefaultSeo } from 'next-seo'
 
 import { ErrorBoundary, Footer, Header, Notifications } from '@/components'
 

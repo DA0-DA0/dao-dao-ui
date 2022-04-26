@@ -1,6 +1,5 @@
-import { FunctionComponent } from 'react'
-
 import { ArcElement, Chart as ChartJS } from 'chart.js'
+import { FunctionComponent } from 'react'
 import { Pie } from 'react-chartjs-2'
 
 ChartJS.register(ArcElement)

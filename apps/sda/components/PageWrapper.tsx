@@ -1,11 +1,10 @@
-import { FunctionComponent, PropsWithChildren } from 'react'
-
 import type { GetStaticProps } from 'next'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
+import { FunctionComponent, PropsWithChildren } from 'react'
 
 import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
-import { NextSeo } from 'next-seo'
 
 import { Loader, SuspenseLoader } from '.'
 import { DAO_ADDRESS } from '@/util'

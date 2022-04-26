@@ -1,3 +1,4 @@
+import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
 import { TriangleUp } from '@dao-dao/icons'
@@ -14,7 +15,6 @@ import {
   secondsToWdhms,
 } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
-import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 
 import { CopyToClipboard } from '../../CopyToClipboard'
 import { Progress } from '../../Progress'

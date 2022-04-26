@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { useCallback } from 'react'
-
 import { useRecoilValue } from 'recoil'
 
 import { StakeCw20Client as ExecuteClient } from '../clients/stake-cw20'

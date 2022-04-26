@@ -1,17 +1,16 @@
-import { ReactNode } from 'react'
-
-import type { NextPage } from 'next'
-import Link from 'next/link'
-
-import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
-import { Button, GradientWrapper, Logo } from '@dao-dao/ui'
-import { SITE_TITLE } from '@dao-dao/utils'
 import { ScaleIcon } from '@heroicons/react/outline'
 import {
   ArrowNarrowRightIcon,
   PlusSmIcon,
   StarIcon,
 } from '@heroicons/react/solid'
+import type { NextPage } from 'next'
+import Link from 'next/link'
+import { ReactNode } from 'react'
+
+import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
+import { Button, GradientWrapper, Logo } from '@dao-dao/ui'
+import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 

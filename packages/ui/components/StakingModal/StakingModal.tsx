@@ -1,3 +1,4 @@
+import { XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -6,7 +7,6 @@ import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
 
 import { Modal } from '../Modal'
 import { ActionButton } from './ActionButton'

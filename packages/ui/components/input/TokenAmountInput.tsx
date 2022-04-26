@@ -1,11 +1,5 @@
-import { ReactNode } from 'react'
-
-import {
-  validateAddress,
-  validatePositive,
-  validateRequired,
-} from '@dao-dao/utils/validation'
 import { UserIcon, XIcon } from '@heroicons/react/outline'
+import { ReactNode } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -13,6 +7,12 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+
+import {
+  validateAddress,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils/validation'
 
 import { FormCard } from '../FormCard'
 import { AddressInput } from './AddressInput'
