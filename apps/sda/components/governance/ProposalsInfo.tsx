@@ -1,12 +1,8 @@
 import { FC } from 'react'
 
-import { useRouter } from 'next/router'
-
 import { Dollar, Pie } from '@dao-dao/icons'
-import { Button } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
-import { PlusIcon } from '@heroicons/react/outline'
 
 import { HeroStat } from './Hero/Stat'
 import { useGovernanceModule } from '@/hooks'
@@ -21,36 +17,28 @@ export interface ProposalsInfoProps {
   }
 }
 
-const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data }) => {
-  const router = useRouter()
+const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data }) => (
+  <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive">
+    <HeroStat
+      Icon={Dollar}
+      title="Proposal deposit:"
+      value={data?.macroDeposit ?? ''}
+    />
+    <HeroStat
+      Icon={Dollar}
+      title="Deposit refund:"
+      value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
+    />
+    <HeroStat
+      Icon={Pie}
+      title="Passing threshold:"
+      value={data?.passingThresholdString ?? ''}
+    />
+    <HeroStat Icon={Pie} title="Quorum:" value={data?.quorumString ?? ''} />
+  </div>
+)
 
-  return (
-    <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive">
-      <HeroStat
-        Icon={Dollar}
-        title="Proposal deposit:"
-        value={data?.macroDeposit ?? ''}
-      />
-      <HeroStat
-        Icon={Dollar}
-        title="Deposit refund:"
-        value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
-      />
-      <HeroStat
-        Icon={Pie}
-        title="Passing threshold:"
-        value={data?.passingThresholdString ?? ''}
-      />
-      <HeroStat Icon={Pie} title="Quorum:" value={data?.quorumString ?? ''} />
-
-      <Button onClick={() => router.push('/propose')} size="sm" type="button">
-        New proposal <PlusIcon className="w-[10px]" />
-      </Button>
-    </div>
-  )
-}
-
-export const ProposalsInfo: FC<{}> = () => {
+export const ProposalsInfo: FC = () => {
   const { governanceModuleConfig, proposalDepositTokenInfo } =
     useGovernanceModule({
       fetchProposalDepositTokenInfo: true,

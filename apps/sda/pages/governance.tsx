@@ -1,9 +1,13 @@
 import { FunctionComponent } from 'react'
 
 import { GetStaticProps, NextPage } from 'next'
+import { useRouter } from 'next/router'
 
 import fs from 'fs'
 import path from 'path'
+
+import { Button } from '@dao-dao/ui'
+import { PlusIcon } from '@heroicons/react/outline'
 
 import {
   HeroContent,
@@ -19,35 +23,50 @@ import {
   ProposalsInfo,
   ProposalsInfoLoader,
 } from '@/components'
-
 interface InnerGovernanceProps {
   missionMarkdown: string
 }
 
 const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
   missionMarkdown,
-}) => (
-  <section className="p-8 mx-auto space-y-8 max-w-page">
-    <Hero>
-      <SuspenseLoader fallback={<HeroContentLoader />}>
-        <HeroContent />
-      </SuspenseLoader>
-    </Hero>
+}) => {
+  const router = useRouter()
 
-    <DescriptionAndAirdropAllocation missionMarkdown={missionMarkdown} />
+  return (
+    <section className="p-8 mx-auto space-y-8 max-w-page">
+      <Hero>
+        <SuspenseLoader fallback={<HeroContentLoader />}>
+          <HeroContent />
+        </SuspenseLoader>
+      </Hero>
 
-    <div className="space-y-4">
-      <h3 className="title-text">Proposals</h3>
-      <SuspenseLoader fallback={<ProposalsInfoLoader />}>
-        <ProposalsInfo />
-      </SuspenseLoader>
+      <DescriptionAndAirdropAllocation missionMarkdown={missionMarkdown} />
+
+      <div className="flex flex-row justify-between items-center">
+        <h3 className="title-text">Proposals</h3>
+
+        <Button
+          className="shrink-0"
+          onClick={() => router.push('/propose')}
+          size="sm"
+          type="button"
+        >
+          New proposal <PlusIcon className="w-[10px]" />
+        </Button>
+      </div>
+
+      <div className="!mt-4 !mb-6">
+        <SuspenseLoader fallback={<ProposalsInfoLoader />}>
+          <ProposalsInfo />
+        </SuspenseLoader>
+      </div>
 
       <SuspenseLoader fallback={<Loader />}>
         <ProposalsContent />
       </SuspenseLoader>
-    </div>
-  </section>
-)
+    </section>
+  )
+}
 
 type GovernancePageProps = PageWrapperProps & {
   innerProps: InnerGovernanceProps
