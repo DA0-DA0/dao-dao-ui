@@ -16,7 +16,7 @@ import {
   useStakingInfo,
   useGovernanceModule,
 } from '@/hooks'
-import { DAO_ADDRESS } from '@/util'
+import { DAO_ADDRESS, EXTERNAL_HREF } from '@/util'
 
 export const HeroContentLoader = () => (
   <>
@@ -34,8 +34,9 @@ export const HeroContent = () => {
   const { stakingContractConfig, totalStaked } = useStakingInfo({
     fetchTotalStaked: true,
   })
-  const { governanceModuleConfig, proposalDepositTokenInfo } =
-    useGovernanceModule({ fetchProposalDepositTokenInfo: true })
+  const { governanceModuleConfig } = useGovernanceModule({
+    fetchProposalDepositTokenInfo: true,
+  })
 
   const { threshold } = governanceModuleConfig
     ? processThresholdData(governanceModuleConfig.threshold)
@@ -73,26 +74,17 @@ export const HeroContent = () => {
             governanceTokenInfo.total_supply,
             governanceTokenInfo.decimals
           ),
-          stakedPercent:
-            (totalStaked / Number(governanceTokenInfo.total_supply)) * 100,
+          stakedPercent: Number(
+            (
+              (totalStaked / Number(governanceTokenInfo.total_supply)) *
+              100
+            ).toLocaleString()
+          ),
           aprReward: apr,
           unstakingDuration: stakingContractConfig.unstaking_duration
             ? humanReadableDuration(stakingContractConfig.unstaking_duration)
             : 'None',
-          proposalDeposit:
-            governanceModuleConfig.deposit_info?.deposit &&
-            proposalDepositTokenInfo
-              ? convertMicroDenomToDenomWithDecimals(
-                  governanceModuleConfig.deposit_info.deposit,
-                  proposalDepositTokenInfo.decimals
-                )
-              : 0,
-          depositRefund:
-            governanceModuleConfig.deposit_info?.refund_failed_proposals ??
-            false
-              ? 'Yes'
-              : 'No',
-          passingThreshold: threshold.display,
+          link: EXTERNAL_HREF,
         }}
       />
     </>

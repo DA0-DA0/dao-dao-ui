@@ -10,7 +10,7 @@ export interface HeroProps {
 
 export const Hero = ({ children }: HeroProps) => (
   <div className="overflow-hidden relative bg-disabled rounded-lg">
-    <HeroOverlay imageUrl="/daotoken.jpg" />
+    <HeroOverlay />
     {children}
   </div>
 )

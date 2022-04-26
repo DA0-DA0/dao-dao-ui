@@ -29,7 +29,7 @@ export const ProposalItem = ({
           'block rounded',
           'grid gap-x-4 items-center',
           'grid-cols-[10ch_12ch_auto_12ch_12ch]',
-          'py-3 px-4 text-xs sm:text-sm',
+          'py-5 px-4 text-xs sm:text-sm',
           {
             'bg-card': proposal.status === Status.Open,
             'bg-disabled': proposal.status !== Status.Open,

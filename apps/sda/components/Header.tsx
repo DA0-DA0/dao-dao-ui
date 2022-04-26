@@ -37,10 +37,13 @@ const NavItem: FunctionComponent<NavItemProps> = ({
   return (
     <Link key={href} href={href}>
       <a
-        className={clsx('flex flex-row gap-2 items-center p-3 rounded-lg', {
-          'text-accent bg-accent-transparent': isActive,
-          'text-body hover:bg-card': !isActive,
-        })}
+        className={clsx(
+          'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
+          {
+            'text-accent bg-accent-transparent': isActive,
+            'text-body hover:bg-card': !isActive,
+          }
+        )}
       >
         {renderIcon(
           isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)'
@@ -110,8 +113,8 @@ export const Header: FunctionComponent = () => {
   return (
     <header className="grid grid-cols-3 items-center py-4 px-6">
       <div className="flex flex-row gap-2 items-center w-full md:gap-4">
-        <Logo height={40} width={40} />
-        <p className="hidden font-studiofeixen text-xl md:block">
+        <Logo height={32} width={32} />
+        <p className="hidden font-studiofeixen md:block text-[18p]">
           {SITE_TITLE}
         </p>
       </div>

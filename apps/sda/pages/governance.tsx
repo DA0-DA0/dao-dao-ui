@@ -18,6 +18,7 @@ import {
   Hero,
 } from '@/components'
 import { HeroContentLoader } from '@/components/governance/HeroContent'
+import { ProposalsInfo } from '@/components/governance/ProposalsInfo'
 
 interface InnerGovernanceProps {
   missionMarkdown: string
@@ -26,7 +27,7 @@ interface InnerGovernanceProps {
 const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
   missionMarkdown,
 }) => (
-  <section className="p-8 mx-auto space-y-8 max-w-screen-xl">
+  <section className="p-8 mx-auto space-y-8 max-w-[1118px]">
     <Hero>
       <SuspenseLoader fallback={<HeroContentLoader />}>
         <HeroContent />
@@ -35,13 +36,14 @@ const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
 
     <div className="p-8 max-w-none bg-disabled rounded-lg">
       <MarkdownPreview
-        className="max-w-full text-base"
+        className="prose-h2:mb-6 prose-h3:mb-4 max-w-full body-text prose-h2:header-text prose-h3:title-text"
         markdown={missionMarkdown}
       />
     </div>
 
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Proposals</h3>
+      <h3 className="title-text">Proposals</h3>
+      <ProposalsInfo />
 
       <SuspenseLoader fallback={<Loader />}>
         <ProposalsContent />

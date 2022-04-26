@@ -36,7 +36,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
         <div className="link-text">
           <span>{walletName}</span>
           <br />
-          <span className="text-secondary capitalize">
+          <span className="caption-text capitalize">
             {walletBalance} {walletBalanceDenom}
           </span>
         </div>

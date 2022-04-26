@@ -35,3 +35,4 @@ export const CHAIN_TXN_URL_PREFIX = process.env.NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX
 
 export const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_ADDRESS as string
 export const LP_ADDRESS = process.env.NEXT_PUBLIC_LP_ADDRESS as string
+export const EXTERNAL_HREF = process.env.NEXT_PUBLIC_EXTERNAL_HREF as string

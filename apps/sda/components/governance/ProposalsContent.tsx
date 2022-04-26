@@ -1,7 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
 
-import { useRouter } from 'next/router'
-
 import { useRecoilValue, constSelector } from 'recoil'
 
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
@@ -9,7 +7,7 @@ import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clien
 import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
 import { titlecase } from '@dao-dao/utils'
-import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 
 import { ProposalItem } from './ProposalItem'
 import { DAO_ADDRESS } from '@/util'
@@ -17,8 +15,6 @@ import { DAO_ADDRESS } from '@/util'
 const StatusValues = Object.values(Status)
 
 export const ProposalsContent = () => {
-  const router = useRouter()
-
   const [filter, setFilter] = useState<Status>()
   const cycleFilter = useCallback(
     () =>
@@ -59,14 +55,6 @@ export const ProposalsContent = () => {
       <div className="flex justify-between items-center">
         <Button onClick={cycleFilter} type="button" variant="secondary">
           <ChevronDownIcon className="w-4 h-4" /> {titlecase(filter ?? 'All')}
-        </Button>
-
-        <Button
-          onClick={() => router.push('/propose')}
-          type="button"
-          variant="secondary"
-        >
-          <PlusIcon className="w-4 h-4" /> New Proposal
         </Button>
       </div>
 

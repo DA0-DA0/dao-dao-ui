@@ -1,22 +1,31 @@
-import { ComponentProps, ReactNode } from 'react'
-
-import clsx from 'clsx'
+import { ComponentProps } from 'react'
 
 export interface IconStatsProps {
   Icon: (props: ComponentProps<any>) => JSX.Element
-  size?: 'sm' | 'md' | 'lg'
-  children: ReactNode
+  title: string
+  value: string
 }
 
-export const HeroStat = ({ Icon, size = 'md', children }: IconStatsProps) => (
-  <div className="flex items-center space-x-2">
-    <Icon
-      className={clsx('text-secondary fill-current', {
-        'w-3 h-3': size == 'sm',
-        'w-4 h-4': size == 'md',
-        'w-5 h-5': size == 'lg',
-      })}
-    />
-    <span>{children}</span>
+export const HeroStat = ({ Icon, value, title }: IconStatsProps) => (
+  <div className="flex gap-3 items-center">
+    <Icon className="h-3 fill-current secondary-text" />
+    <div className="flex gap-2 items-center">
+      <span className="secondary-text">{title}</span>
+      <span className="link-text">{value ? value : '..'}</span>
+    </div>
+  </div>
+)
+
+export const HeroStatLink = ({ value, Icon, title }: IconStatsProps) => (
+  <div className="flex gap-3 items-center">
+    <Icon className="h-3 secondary-text" />
+    <a
+      className="link-text"
+      href={value}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {title}
+    </a>
   </div>
 )
