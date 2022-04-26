@@ -128,7 +128,7 @@ export const TokenomicsHeader: FunctionComponent = () => {
 
           <p className="text-base lg:text-xl header-text">
             {treasuryBalance.toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
+              maximumFractionDigits: 0,
             })}{' '}
             {governanceTokenInfo.name}
           </p>
@@ -142,7 +142,10 @@ export const TokenomicsHeader: FunctionComponent = () => {
           </p>
 
           <p className="text-base lg:text-xl header-text">
-            {totalStakedBalance.toFixed(0)} {governanceTokenInfo.name}
+            {totalStakedBalance.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}{' '}
+            {governanceTokenInfo.name}
           </p>
         </div>
 
@@ -156,7 +159,7 @@ export const TokenomicsHeader: FunctionComponent = () => {
           <p className="text-base lg:text-xl header-text">
             +
             {apr.toLocaleString(undefined, {
-              maximumFractionDigits: 4,
+              maximumFractionDigits: 2,
             })}
             % APR
           </p>
