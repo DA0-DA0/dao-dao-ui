@@ -19,7 +19,7 @@ export interface HeroStatsProps {
 }
 
 export const HeroStats: FC<HeroStatsProps> = ({ data }) => (
-  <div className="flex justify-around items-center py-8 px-6 w-full">
+  <div className="flex flex-wrap justify-around items-center py-8 px-6 w-full">
     <HeroStat
       Icon={Dollar}
       title="Total supply:"

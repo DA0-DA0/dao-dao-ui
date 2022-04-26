@@ -24,7 +24,7 @@ export interface ProposalsInfoProps {
 const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data }) => {
   const router = useRouter()
   return (
-    <div className="flex justify-between items-center py-5 px-4 rounded border border-inactive">
+    <div className="flex flex-wrap justify-between items-center py-5 px-4 rounded border border-inactive">
       <HeroStat
         Icon={Dollar}
         title="Proposal deposit:"
@@ -62,14 +62,16 @@ export const ProposalsInfo: FC<{}> = () => {
 
   const data = !dontHaveData
     ? {
-        denom: 'hmm',
+        denom: proposalDepositTokenInfo?.symbol || '',
         macroDeposit:
           governanceModuleConfig.deposit_info?.deposit &&
           proposalDepositTokenInfo
             ? convertMicroDenomToDenomWithDecimals(
                 governanceModuleConfig.deposit_info.deposit,
                 proposalDepositTokenInfo.decimals
-              ).toLocaleString()
+              ).toLocaleString() +
+              ' ' +
+              proposalDepositTokenInfo?.symbol
             : 'None',
         depositRefunds:
           governanceModuleConfig.deposit_info?.refund_failed_proposals || true,
