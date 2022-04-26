@@ -37,7 +37,9 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   return (
     <>
       <div className="flex flex-row justify-between items-center">
-        <p className="text-lg">Unstaking {governanceTokenInfo.name} tokens</p>
+        <p className="text-lg title-text">
+          Unstaking {governanceTokenInfo.name} tokens
+        </p>
 
         {!!sumClaimsAvailable && (
           <Button disabled={!connected} onClick={showClaim} variant="secondary">

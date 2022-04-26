@@ -8,13 +8,18 @@ import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 
 export const TokenomicsHeaderLoader: FunctionComponent = () => (
   <>
-    <div className="absolute -top-8 bg-light rounded-full border border-default">
-      <Loader size={60} />
+    <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
+    <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
+
+    <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
+      <div className="bg-light rounded-full border border-default">
+        <Loader size={80} />
+      </div>
     </div>
 
-    <div className="mt-16 mb-10 h-[4.25rem]"></div>
+    <div className="mt-12 w-full h-[4.5rem] border-t border-inactive"></div>
 
-    <div className="flex flex-row justify-around items-center mb-6 w-full text-center md:gap-12 md:justify-center">
+    <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
       <div className="flex flex-col gap-2 items-center p-2">
         <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
           DAO Treasury
@@ -83,11 +88,16 @@ export const TokenomicsHeader: FunctionComponent = () => {
 
   return (
     <>
-      <div className="absolute -top-8 bg-light rounded-full border border-default">
-        <Logo height={60} width={60} />
+      <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
+      <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
+
+      <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
+        <div className="bg-light rounded-full border border-default">
+          <Logo height={80} width={80} />
+        </div>
       </div>
 
-      <p className="p-4 mt-16 mb-10 font-studiofeixen text-3xl text-center">
+      <p className="p-5 mt-12 w-full font-studiofeixen text-2xl  text-center border-t border-inactive">
         1 {governanceTokenInfo.symbol} = $
         {governanceTokenPrice.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -96,13 +106,13 @@ export const TokenomicsHeader: FunctionComponent = () => {
         USD
       </p>
 
-      <div className="flex flex-row justify-around items-center mb-6 w-full text-center md:gap-12 md:justify-center">
+      <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             DAO Treasury
           </p>
 
-          <p className="text-base lg:text-xl">
+          <p className="text-base lg:text-xl header-text">
             {treasuryBalance.toLocaleString(undefined, {
               maximumFractionDigits: governanceTokenInfo.decimals,
             })}{' '}
@@ -117,11 +127,8 @@ export const TokenomicsHeader: FunctionComponent = () => {
             Total staked
           </p>
 
-          <p className="text-base lg:text-xl">
-            {totalStakedBalance.toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })}{' '}
-            {governanceTokenInfo.name}
+          <p className="text-base lg:text-xl header-text">
+            {totalStakedBalance.toFixed(0)} {governanceTokenInfo.name}
           </p>
         </div>
 
@@ -132,7 +139,7 @@ export const TokenomicsHeader: FunctionComponent = () => {
             APR Reward
           </p>
 
-          <p className="text-base lg:text-xl">
+          <p className="text-base lg:text-xl header-text">
             +
             {apr.toLocaleString(undefined, {
               maximumFractionDigits: 4,

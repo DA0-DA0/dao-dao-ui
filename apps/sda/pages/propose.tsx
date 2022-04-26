@@ -145,7 +145,7 @@ const InnerProposalCreate = () => {
   )
 
   return (
-    <div className="flex flex-col gap-14 justify-center p-8 mx-auto md:flex-row md:gap-8 md:max-w-screen-lg">
+    <div className="flex flex-col gap-14 justify-center p-8 mx-auto max-w-page md:flex-row md:gap-8">
       <div className="md:w-2/3">
         <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
 

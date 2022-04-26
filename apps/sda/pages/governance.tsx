@@ -5,8 +5,6 @@ import { GetStaticProps, NextPage } from 'next'
 import fs from 'fs'
 import path from 'path'
 
-import { MarkdownPreview } from '@dao-dao/ui'
-
 import {
   HeroContent,
   Loader,
@@ -16,10 +14,11 @@ import {
   SuspenseLoader,
   ProposalsContent,
   Hero,
+  HeroContentLoader,
+  DescriptionAndAirdropAllocation,
+  ProposalsInfo,
+  ProposalsInfoLoader,
 } from '@/components'
-import { HeroContentLoader } from '@/components/governance/HeroContent'
-import { ProposalsInfo } from '@/components/governance/ProposalsInfo'
-import { DescriptionAndAirdropAllocation } from '@/components/DescriptionAndAirdropAllocation'
 
 interface InnerGovernanceProps {
   missionMarkdown: string
@@ -28,7 +27,7 @@ interface InnerGovernanceProps {
 const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
   missionMarkdown,
 }) => (
-  <section className="p-8 mx-auto space-y-8 max-w-[1118px]">
+  <section className="p-8 mx-auto space-y-8 max-w-page">
     <Hero>
       <SuspenseLoader fallback={<HeroContentLoader />}>
         <HeroContent />
@@ -39,7 +38,9 @@ const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
 
     <div className="space-y-4">
       <h3 className="title-text">Proposals</h3>
-      <ProposalsInfo />
+      <SuspenseLoader fallback={<ProposalsInfoLoader />}>
+        <ProposalsInfo />
+      </SuspenseLoader>
 
       <SuspenseLoader fallback={<Loader />}>
         <ProposalsContent />

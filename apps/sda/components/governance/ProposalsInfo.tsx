@@ -2,13 +2,13 @@ import { FC } from 'react'
 
 import { useRouter } from 'next/router'
 
+import { Dollar, Pie } from '@dao-dao/icons'
+import { Button } from '@dao-dao/ui'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import { processThresholdData } from '@dao-dao/utils/v1'
 import { PlusIcon } from '@heroicons/react/outline'
 
 import { HeroStat } from './Hero/Stat'
-import { Dollar, Pie } from '@/../../packages/icons'
-import { Button } from '@/../../packages/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@/../../packages/utils'
-import { processThresholdData } from '@/../../packages/utils/v1'
 import { useGovernanceModule } from '@/hooks'
 
 export interface ProposalsInfoProps {
@@ -23,26 +23,26 @@ export interface ProposalsInfoProps {
 
 const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data }) => {
   const router = useRouter()
+
   return (
-    <div className="flex flex-wrap justify-between items-center py-5 px-4 rounded border border-inactive">
+    <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive">
       <HeroStat
         Icon={Dollar}
         title="Proposal deposit:"
-        value={data ? data.macroDeposit : ''}
+        value={data?.macroDeposit ?? ''}
       />
       <HeroStat
         Icon={Dollar}
         title="Deposit refund:"
-        value={data ? (data.depositRefunds ? 'True' : 'False') : ''}
+        value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
       />
       <HeroStat
         Icon={Pie}
         title="Passing threshold:"
-        value={data ? data.passingThresholdString : ''}
+        value={data?.passingThresholdString ?? ''}
       />
-      {data && data.quorumString && (
-        <HeroStat Icon={Pie} title="Quorum:" value={data.quorumString} />
-      )}
+      <HeroStat Icon={Pie} title="Quorum:" value={data?.quorumString ?? ''} />
+
       <Button onClick={() => router.push('/propose')} size="sm" type="button">
         New proposal <PlusIcon className="w-[10px]" />
       </Button>
@@ -82,5 +82,8 @@ export const ProposalsInfo: FC<{}> = () => {
           .quorum?.display,
       }
     : undefined
+
   return <ProposalsInfoInternal data={data} />
 }
+
+export const ProposalsInfoLoader: FC = () => <ProposalsInfoInternal />

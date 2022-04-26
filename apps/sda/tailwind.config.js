@@ -5,7 +5,14 @@ const tailwindConfig = {
     '../../packages/ui/**/*.{js,jsx,ts,tsx}',
   ],
   presets: [require('@dao-dao/ui/tailwind/config')],
-  theme: {},
+  theme: {
+    extend: {
+      maxWidth: {
+        // From Figma
+        page: '1118px',
+      },
+    },
+  },
 }
 
 module.exports = tailwindConfig

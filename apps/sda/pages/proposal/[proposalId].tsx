@@ -131,7 +131,7 @@ const InnerProposal = () => {
   const memberWhenProposalCreated = Number(votingPowerAtHeight.power) > 0
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:p-8 lg:max-w-screen-xl">
+    <div className="grid grid-cols-2 gap-4 p-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:p-8 lg:max-w-page">
       <div className="col-span-2">
         <div className="px-6 lg:hidden">
           <V1ProposalInfoCard

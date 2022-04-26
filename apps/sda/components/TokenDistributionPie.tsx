@@ -41,7 +41,7 @@ export const TokenDistributionPie: FunctionComponent = () => {
   ]
 
   return (
-    <div className="flex flex-col gap-8 items-center">
+    <div className="flex flex-row flex-wrap gap-8 justify-center items-center md:flex-col md:h-full">
       <Pie
         className="self-center !w-48 !h-48"
         data={{
@@ -62,38 +62,39 @@ export const TokenDistributionPie: FunctionComponent = () => {
 
       {/* Legend */}
       <div className="flex flex-col gap-3">
-        {allocationSections.map((account) => (
-          <TopAccountDisplay key={account.name} account={account} />
+        {allocationSections.map((allocation) => (
+          <LegendItem key={allocation.name} data={allocation} />
         ))}
       </div>
     </div>
   )
 }
 
-interface TopAccountDisplayProps {
-  account: AllocationSection
+interface LegendItemProps {
+  data: AllocationSection
 }
 
-const TopAccountDisplay: FunctionComponent<TopAccountDisplayProps> = ({
-  account: { name, percent, color },
+const LegendItem: FunctionComponent<LegendItemProps> = ({
+  data: { name, percent, color },
 }) => {
   return (
-    <div key={name} className="flex flex-row gap-5 items-center">
+    <div
+      key={name}
+      className="grid grid-cols-[0.25rem_6ch_auto] gap-3 items-center"
+    >
       <div
         className="w-2 h-2 rounded-full shrink-02"
         style={{ backgroundColor: color }}
       ></div>
 
-      <div className="flex flex-row gap-2 items-center">
-        <p className="caption-text font-mono text-tertiary">
-          {percent.toLocaleString(undefined, {
-            minimumFractionDigits: 1,
-            maximumFractionDigits: 1,
-          })}
-          %
-        </p>
-        <p className="primary-text">{name}</p>
-      </div>
+      <p className="font-mono text-right text-tertiary caption-text">
+        {percent.toLocaleString(undefined, {
+          maximumFractionDigits: 1,
+        })}
+        <span className="ml-[2px]">%</span>
+      </p>
+
+      <p className="primary-text">{name}</p>
     </div>
   )
 }

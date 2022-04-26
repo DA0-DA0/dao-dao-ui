@@ -3,6 +3,7 @@ export * from './templates'
 export * from './tokenomics'
 
 export * from './DAODAOLogo'
+export * from './DescriptionAndAirdropAllocation'
 export * from './ErrorBoundary'
 export * from './Footer'
 export * from './Header'

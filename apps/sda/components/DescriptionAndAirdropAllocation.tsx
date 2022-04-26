@@ -1,5 +1,7 @@
-import { MarkdownPreview } from '@/../../packages/ui'
 import { FC } from 'react'
+
+import { MarkdownPreview } from '@dao-dao/ui'
+
 import { TokenDistributionPie } from './TokenDistributionPie'
 
 export interface DescriptionAndAidropAllocationProps {
@@ -9,11 +11,12 @@ export interface DescriptionAndAidropAllocationProps {
 export const DescriptionAndAirdropAllocation: FC<
   DescriptionAndAidropAllocationProps
 > = ({ missionMarkdown }) => (
-  <div className="bg-disabled rounded-lg md:grid grid-cols-5 md:gap-3 gap-8 flex flex-wrap">
+  <div className="flex flex-wrap grid-cols-5 bg-disabled rounded-lg md:grid md:gap-3">
     <MarkdownPreview
+      className="col-span-3 p-10 prose-h2:mb-6 prose-h3:mb-4 max-w-full border-b border-inactive md:border-r body-text prose-h2:header-text prose-h3:title-text"
       markdown={missionMarkdown}
-      className="prose-h2:mb-6 prose-h3:mb-4 max-w-full body-text prose-h2:header-text prose-h3:title-text col-span-3 p-10 border-r  border-inactive"
     />
+
     <div className="col-span-2 p-10">
       <TokenDistributionPie />
     </div>

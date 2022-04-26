@@ -39,14 +39,14 @@ const InnerTokenomics = () => {
 
   return (
     <>
-      <div className="p-8 mx-auto space-y-8 max-w-screen-xl">
-        <div className="flex relative flex-col items-center mt-10 bg-primary rounded-b-lg">
+      <div className="p-8 mx-auto space-y-8 max-w-page">
+        <div className="flex relative flex-col items-center mt-14 bg-primary rounded-b-lg border-t border-inactive">
           <SuspenseLoader fallback={<TokenomicsHeaderLoader />}>
             <TokenomicsHeader />
           </SuspenseLoader>
         </div>
 
-        <div className="flex flex-row gap-2 items-center text-lg">
+        <div className="flex flex-row gap-2 items-center text-lg title-text">
           <Pie color="rgb(var(--dark))" height={22} width={22} />
           <p>Your Tokens</p>
         </div>
@@ -86,7 +86,7 @@ const InnerTokenomics = () => {
             <SuspenseLoader
               fallback={
                 <>
-                  <p className="text-lg">
+                  <p className="text-lg title-text">
                     Unstaking {governanceTokenInfo.name} tokens
                   </p>
                   <Loader />
