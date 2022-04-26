@@ -131,9 +131,9 @@ const InnerProposal = () => {
   const memberWhenProposalCreated = Number(votingPowerAtHeight.power) > 0
 
   return (
-    <div className="grid grid-cols-4 lg:grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
-        <div className="px-6 mt-6 lg:hidden">
+    <div className="grid grid-cols-2 gap-4 p-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:p-8 lg:max-w-screen-xl">
+      <div className="col-span-2">
+        <div className="px-6 lg:hidden">
           <V1ProposalInfoCard
             memberWhenProposalCreated={memberWhenProposalCreated}
             proposalExecutionTXHash={txHash}
@@ -179,7 +179,7 @@ const InnerProposal = () => {
         </div>
       </div>
 
-      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
+      <div className="hidden min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">Details</h2>
         <V1ProposalInfoCard
           memberWhenProposalCreated={memberWhenProposalCreated}

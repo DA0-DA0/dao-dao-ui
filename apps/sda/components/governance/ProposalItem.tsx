@@ -3,26 +3,22 @@ import Link from 'next/link'
 import {
   ProposalResponse,
   Status,
-  Vote,
 } from '@dao-dao/state/clients/cw-proposal-single'
+import { VoteDisplay } from '@dao-dao/ui/components/ProposalDetails/v1/VoteDisplay'
 import { StatusIcons } from '@dao-dao/ui/components/StatusIcons'
-import { getProposalEnd, pad } from '@dao-dao/utils'
-import { CheckIcon, XIcon } from '@heroicons/react/solid'
+import { getProposalEnd, pad, titlecase } from '@dao-dao/utils'
 import clsx from 'clsx'
 
 import { useProposalInfo } from '@/hooks'
 
 interface ProposalItemProps {
   proposalResponse: ProposalResponse
-  walletVote?: Vote
 }
 
 export const ProposalItem = ({
   proposalResponse: { id, proposal },
-  walletVote,
 }: ProposalItemProps) => {
-  // TODO: Fill in correct proposal info.
-  const { proposalResponse, voteResponse } = useProposalInfo(id)
+  const { voteResponse } = useProposalInfo(id)
 
   const StatusIcon = StatusIcons[proposal.status]
 
@@ -32,7 +28,7 @@ export const ProposalItem = ({
         className={clsx(
           'block rounded',
           'grid gap-x-4 items-center',
-          'grid-cols-[10ch_12ch_auto_12ch_6ch_6ch_12ch]',
+          'grid-cols-[10ch_12ch_auto_12ch_12ch]',
           'py-3 px-4 text-xs sm:text-sm',
           {
             'bg-card': proposal.status === Status.Open,
@@ -41,9 +37,7 @@ export const ProposalItem = ({
           'hover:bg-secondary'
         )}
       >
-        {/* 10ch */}
         <div className="font-mono text-secondary"># {pad(id, 6)}</div>
-        {/* 12ch */}
         <div
           className={clsx('flex items-center space-x-2', {
             'text-valid': proposal.status == Status.Passed,
@@ -51,36 +45,18 @@ export const ProposalItem = ({
           })}
         >
           {StatusIcon && <StatusIcon className="w-4 h-4" />}{' '}
-          <span>
-            {proposal.status[0].toUpperCase()}
-            {proposal.status.slice(1).toLowerCase()}
-          </span>
+          <span>{titlecase(proposal.status)}</span>
         </div>
-        {/* auto */}
         <div className="truncate overflow-ellipsis">{proposal.title}</div>
-        {/* 12ch */}
-        <div>{walletVote ? VOTE_MAP[walletVote] : 'Not voted'}</div>
-        {/* 6ch */}
-        <div className="flex items-center space-x-2 text-valid">
-          <span>{proposal.votedYesPercent}%</span>{' '}
-          <CheckIcon className="w-4 h-4 fill-current" />
-        </div>
-        {/* 6ch */}
-        <div className="flex items-center space-x-2 text-error">
-          <span>{proposal.votedNoPercent}%</span>{' '}
-          <XIcon className="w-4 h-4 fill-current" />
-        </div>
-        {/* 12ch */}
+        {voteResponse?.vote ? (
+          <VoteDisplay className="justify-end" vote={voteResponse.vote.vote} />
+        ) : (
+          <div></div>
+        )}
         <p className="text-right">
           {getProposalEnd(proposal.expiration, proposal.status)}
         </p>
       </a>
     </Link>
   )
-}
-
-const VOTE_MAP: Record<Vote, string> = {
-  [Vote.Abstain]: 'Voted abstain',
-  [Vote.Yes]: 'Voted yes',
-  [Vote.No]: 'Voted no',
 }

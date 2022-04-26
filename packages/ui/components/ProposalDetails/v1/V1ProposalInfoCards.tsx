@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { TriangleUp, Abstain } from '@dao-dao/icons'
+import { TriangleUp } from '@dao-dao/icons'
 import {
   Proposal,
   ProposalResponse,
@@ -20,6 +20,7 @@ import { CopyToClipboard } from '../../CopyToClipboard'
 import { Progress } from '../../Progress'
 import { ProposalStatus } from '../../ProposalStatus'
 import { Tooltip } from '../../Tooltip'
+import { VoteDisplay } from './VoteDisplay'
 
 interface V1ProposalInfoCardProps {
   proposalResponse: ProposalResponse
@@ -88,22 +89,8 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
               proposal.status === Status.Open ? 'are' : 'were'
             } unable to vote on this proposal because you didn't have any voting power at the time of proposal creation.`}
           />
-        ) : walletVote === Vote.Yes ? (
-          <p className="flex gap-1 items-center font-mono text-sm text-valid">
-            <CheckIcon className="inline w-4" /> Yes
-          </p>
-        ) : walletVote === Vote.No ? (
-          <p className="flex gap-1 items-center font-mono text-sm text-error">
-            <XIcon className="inline w-4" /> No
-          </p>
-        ) : walletVote === Vote.Abstain ? (
-          <p className="flex gap-1 items-center font-mono text-sm text-secondary">
-            <Abstain fill="currentColor" /> Abstain
-          </p>
         ) : walletVote ? (
-          <p className="font-mono text-sm break-all text-secondary">
-            Unknown: {walletVote}
-          </p>
+          <VoteDisplay vote={walletVote} />
         ) : proposal.status === Status.Open ? (
           <YouTooltip label="You have not yet cast a vote." />
         ) : (

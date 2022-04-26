@@ -15,6 +15,7 @@ import { MarkdownPreview } from '../../MarkdownPreview'
 import { TemplateRendererComponentProps } from '../../templates'
 import { Vote } from '../../Vote'
 import { V1ProposalMessageTemplateList } from './V1ProposalMessageTemplateList'
+import { VoteDisplay } from './VoteDisplay'
 
 interface V1ProposalDetailsProps {
   proposal: Proposal
@@ -100,6 +101,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
           />
         </>
       )}
+
       <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
       {proposal.status === Status.Open &&
         !walletVote &&
@@ -111,7 +113,9 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
           />
         )}
       {walletVote && (
-        <p className="body-text">You voted {walletVote} on this proposal.</p>
+        <p className="flex flex-row gap-2 items-center body-text">
+          You voted <VoteDisplay vote={walletVote} /> on this proposal.
+        </p>
       )}
       {proposal.status !== Status.Open && !walletVote && (
         <p className="body-text">You did not vote on this proposal.</p>
