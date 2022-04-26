@@ -1,7 +1,12 @@
 import { selector } from 'recoil'
 
 import { OfflineSigner } from '@cosmjs/proto-signing'
-import { CHAIN_ID, getKeplr, getOfflineSignerAuto } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getKeplr,
+  getOfflineSignerAuto,
+  KeplrNotInstalledError,
+} from '@dao-dao/utils'
 
 import { keplrConnectedBeforeKey, keplrKeystoreIdAtom } from '../atoms/keplr'
 import { getLocalStorageNamespacedKey } from '../effects'
@@ -17,6 +22,13 @@ export const keplrOfflineSignerSelector = selector<OfflineSigner | undefined>({
       return await getOfflineSignerAuto()
     } catch (error) {
       console.error(error)
+
+      if (error instanceof KeplrNotInstalledError) {
+        // If Keplr isn't installed, page might still be loading, so don't
+        // yet clear localStorage. Ideally, only clear on Keplr failure or
+        // connect request rejection.
+        return
+      }
 
       // If failed to connect and was previously connected, stop trying to connect automatically in the future.
       if (
