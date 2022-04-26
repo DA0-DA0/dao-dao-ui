@@ -70,9 +70,9 @@ export const useWallet = () => {
       }
 
       // Set disconnected so we don't try to connect again without manual action.
-      setKeplrKeystoreId(-1)
+      disconnect()
     }
-  }, [setKeplrKeystoreId, refreshConnection])
+  }, [disconnect, refreshConnection])
 
   // Listen for keplr keystore changes and update as needed.
   useEffect(() => {
