@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 
 import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
@@ -18,7 +18,6 @@ import { keplrKeystoreIdAtom } from '../recoil/atoms/keplr'
 
 export const useWallet = () => {
   const setKeplrKeystoreId = useSetRecoilState(keplrKeystoreIdAtom)
-  const [error, setError] = useState<string>()
 
   // Wallet address
   const { state: walletAddressState, contents: walletAddressContents } =
@@ -53,13 +52,8 @@ export const useWallet = () => {
   )
 
   const connect = useCallback(async () => {
-    // Set install message error if keplr not installed.
-    if (!isKeplrInstalled()) {
-      setKeplrKeystoreId(-1)
-      return setError('Keplr is not installed.')
-    }
-
-    setError(undefined)
+    // Cannot connect if Keplr not installed.
+    if (!isKeplrInstalled()) return
 
     // Attempt to connect and update keystore accordingly.
     try {
@@ -68,7 +62,6 @@ export const useWallet = () => {
       refreshConnection()
     } catch (error) {
       console.error(error)
-      setError(error instanceof Error ? error.message : `${error}`)
 
       if (error instanceof KeplrNotInstalledError) {
         // If Keplr isn't installed, page might still be loading, so don't
@@ -80,7 +73,7 @@ export const useWallet = () => {
       // Set disconnected so we don't try to connect again without manual action.
       setKeplrKeystoreId(-1)
     }
-  }, [setKeplrKeystoreId, setError, refreshConnection])
+  }, [setKeplrKeystoreId, refreshConnection])
 
   // Listen for keplr keystore changes and update as needed.
   useEffect(() => {
@@ -107,7 +100,6 @@ export const useWallet = () => {
     disconnect,
     refreshConnection,
     refreshBalances,
-    error,
     address,
     name,
     nativeBalance,

@@ -127,7 +127,7 @@ export const Header: FunctionComponent = () => {
 
       <div className="flex flex-row gap-2 justify-self-center items-center">
         {navItems.map((item) => (
-          <NavItem key={item.href} item={item} path={router.asPath} />
+          <NavItem key={item.href} item={item} path={router.asPath || '/'} />
         ))}
       </div>
 
