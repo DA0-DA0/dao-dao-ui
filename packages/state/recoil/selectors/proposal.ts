@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { Status } from '../../clients/cw-proposal-single'
 import { cosmWasmClientSelector } from './chain'
 import { proposalSelector } from './clients/cw-proposal-single'
 
@@ -17,7 +18,7 @@ export const proposalExecutionTXHashSelector = selectorFamily<
       )
 
       // No TX Hash if proposal not yet executed.
-      if (!client || proposal?.status !== 'executed') return
+      if (!client || proposal?.proposal.status !== Status.Executed) return
 
       const events = await client.searchTx({
         tags: [
