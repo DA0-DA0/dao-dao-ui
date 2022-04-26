@@ -15,7 +15,6 @@ import {
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
-import { convertThresholdDataToTQ } from '@dao-dao/utils/v1'
 import toast from 'react-hot-toast'
 
 import {
@@ -129,10 +128,6 @@ const InnerProposal = () => {
     throw new Error('Failed to load page data.')
   }
 
-  const { threshold, quorum } = convertThresholdDataToTQ(
-    proposalResponse.proposal.threshold
-  )
-
   const memberWhenProposalCreated = Number(votingPowerAtHeight.power) > 0
 
   return (
@@ -179,8 +174,6 @@ const InnerProposal = () => {
                 : undefined
             }
             proposal={proposalResponse.proposal}
-            quorum={quorum}
-            threshold={threshold}
             tokenDecimals={governanceTokenInfo.decimals}
           />
         </div>
@@ -203,8 +196,6 @@ const InnerProposal = () => {
               : undefined
           }
           proposal={proposalResponse.proposal}
-          quorum={quorum}
-          threshold={threshold}
           tokenDecimals={governanceTokenInfo.decimals}
         />
       </div>

@@ -7,7 +7,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
 } from '@dao-dao/utils'
-import { convertThresholdDataToTQ } from '@dao-dao/utils/v1'
+import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { Loader } from '../Loader'
 import { Hero } from './Hero'
@@ -38,7 +38,7 @@ export const HeroContent = () => {
     useGovernanceModule({ fetchProposalDepositTokenInfo: true })
 
   const { threshold } = governanceModuleConfig
-    ? convertThresholdDataToTQ(governanceModuleConfig.threshold)
+    ? processThresholdData(governanceModuleConfig.threshold)
     : { threshold: undefined }
 
   if (

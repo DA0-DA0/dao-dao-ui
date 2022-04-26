@@ -1,47 +1,68 @@
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 
-export const convertThresholdDataToTQ = (
-  data: Threshold
-): {
-  threshold?: {
-    absolute?: number
-    percent: number
+type MajorityOrPercent =
+  | { majority: true }
+  | { majority: false; percent: number }
+
+export type ProcessedThresholdQuorum = {
+  threshold: {
+    value: MajorityOrPercent
     display: string
   }
   quorum?: {
-    percent: number
+    value: MajorityOrPercent
     display: string
   }
-} => {
-  if ('absolute_percentage' in data) {
-    // TODO: Handle majority.
-    if ('majority' in data.absolute_percentage.percentage) {
-      throw new Error('Majority not implemented.')
+}
+
+export const processThresholdData = (
+  data: Threshold
+): ProcessedThresholdQuorum => {
+  const thresholdSource =
+    'absolute_percentage' in data
+      ? data.absolute_percentage.percentage
+      : data.threshold_quorum.threshold
+  const quorumSource =
+    'absolute_percentage' in data ? undefined : data.threshold_quorum.quorum
+
+  // Threshold
+  let threshold: ProcessedThresholdQuorum['threshold']
+  if ('majority' in thresholdSource) {
+    threshold = {
+      value: {
+        majority: true,
+      },
+      display: 'Majority',
     }
-
-    const threshold = Number(data.absolute_percentage.percentage.percent) * 100
-
-    return {
-      threshold: { percent: threshold, display: `${threshold}%` },
-    }
-  } else if ('threshold_quorum' in data) {
-    // TODO: Handle majority.
-    if (
-      'majority' in data.threshold_quorum.threshold ||
-      'majority' in data.threshold_quorum.quorum
-    ) {
-      throw new Error('Majority not implemented.')
-    }
-
-    const quorum = Number(data.threshold_quorum.quorum.percent) * 100
-    const threshold = Number(data.threshold_quorum.threshold.percent) * 100
-
-    return {
-      threshold: { percent: threshold, display: `${threshold}%` },
-      quorum: { percent: quorum, display: `${quorum}%` },
+  } else {
+    const percent = Number(thresholdSource.percent) * 100
+    threshold = {
+      value: { majority: false, percent },
+      display: `${percent}%`,
     }
   }
 
-  // Unreachable.
-  return {}
+  // Quorum
+  let quorum: ProcessedThresholdQuorum['quorum']
+  if (quorumSource) {
+    if ('majority' in quorumSource) {
+      quorum = {
+        value: {
+          majority: true,
+        },
+        display: 'Majority',
+      }
+    } else {
+      const percent = Number(quorumSource.percent) * 100
+      quorum = {
+        value: { majority: false, percent },
+        display: `${percent}%`,
+      }
+    }
+  }
+
+  return {
+    threshold,
+    ...(quorum && { quorum }),
+  }
 }

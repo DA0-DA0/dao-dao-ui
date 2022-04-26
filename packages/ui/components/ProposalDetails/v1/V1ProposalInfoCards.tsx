@@ -13,6 +13,7 @@ import {
   expirationAtTimeToSecondsFromNow,
   secondsToWdhms,
 } from '@dao-dao/utils'
+import { processThresholdData } from '@dao-dao/utils/v1'
 import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 
 import { CopyToClipboard } from '../../CopyToClipboard'
@@ -32,15 +33,6 @@ interface V1ProposalInfoVoteStatusProps {
   tokenDecimals: number
   // Undefined if max voting period is in blocks.
   maxVotingSeconds?: number
-  threshold?: {
-    absolute?: number
-    percent: number
-    display: string
-  }
-  quorum?: {
-    percent: number
-    display: string
-  }
 }
 
 interface YouTooltipProps {
@@ -156,8 +148,6 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
   proposal,
   tokenDecimals,
   maxVotingSeconds,
-  threshold,
-  quorum,
 }) => {
   const localeOptions = { maximumSignificantDigits: 3 }
 
@@ -197,14 +187,26 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expiration)
       : undefined
 
+  const { threshold, quorum } = processThresholdData(proposal.threshold)
+
   const thresholdReached =
     !!threshold &&
     // All abstain fails, so we need at least 1 yes vote to reach threshold.
     yesVotes > 0 &&
-    yesVotes >=
-      ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
-        (threshold.percent / 100)
-  const quorumMet = !!quorum && turnoutPercent >= quorum.percent
+    (threshold.value.majority
+      ? // Majority
+        yesVotes > (quorum ? turnoutTotal : totalWeight) / 2
+      : // Percent
+        yesVotes >=
+        ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
+          (threshold.value.percent / 100))
+  const quorumMet =
+    !!quorum &&
+    (quorum.value.majority
+      ? // Majority
+        turnoutTotal > totalWeight / 2
+      : // Percent
+        turnoutPercent >= quorum.value.percent)
 
   const helpfulStatusText =
     proposal.status === Status.Open && threshold && quorum
@@ -290,7 +292,9 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 verticalBars={
                   threshold && [
                     {
-                      value: threshold.percent,
+                      value: threshold.value.majority
+                        ? 50
+                        : threshold.value.percent,
                       color: 'rgba(var(--dark), 0.5)',
                     },
                   ]
@@ -305,11 +309,16 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 height="36px"
                 style={{
                   left:
-                    threshold.percent < 10
+                    !threshold.value.majority && threshold.value.percent < 10
                       ? '0'
-                      : threshold.percent > 90
+                      : !threshold.value.majority &&
+                        threshold.value.percent > 90
                       ? 'calc(100% - 32px)'
-                      : `calc(${threshold.percent}% - 17px)`,
+                      : `calc(${
+                          threshold.value.majority
+                            ? 50
+                            : threshold.value.percent
+                        }% - 17px)`,
                 }}
                 width="36px"
               />
@@ -369,7 +378,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 ]}
                 verticalBars={[
                   {
-                    value: quorum.percent,
+                    value: quorum.value.majority ? 50 : quorum.value.percent,
                     color: 'rgba(var(--dark), 0.5)',
                   },
                 ]}
@@ -383,11 +392,13 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 height="36px"
                 style={{
                   left:
-                    quorum.percent < 10
+                    !quorum.value.majority && quorum.value.percent < 10
                       ? '0'
-                      : quorum.percent > 90
+                      : !quorum.value.majority && quorum.value.percent > 90
                       ? 'calc(100% - 32px)'
-                      : `calc(${quorum.percent}% - 17px)`,
+                      : `calc(${
+                          quorum.value.majority ? 50 : quorum.value.percent
+                        }% - 17px)`,
                 }}
                 width="36px"
               />
@@ -485,7 +496,9 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 ]}
                 verticalBars={[
                   {
-                    value: threshold.percent,
+                    value: threshold.value.majority
+                      ? 50
+                      : threshold.value.percent,
                     color: 'rgba(var(--dark), 0.5)',
                   },
                 ]}
@@ -499,11 +512,16 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 height="36px"
                 style={{
                   left:
-                    threshold.percent < 10
+                    !threshold.value.majority && threshold.value.percent < 10
                       ? '0'
-                      : threshold.percent > 90
+                      : !threshold.value.majority &&
+                        threshold.value.percent > 90
                       ? 'calc(100% - 32px)'
-                      : `calc(${threshold.percent}% - 17px)`,
+                      : `calc(${
+                          threshold.value.majority
+                            ? 50
+                            : threshold.value.percent
+                        }% - 17px)`,
                 }}
                 width="36px"
               />
@@ -573,13 +591,19 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
           </>
         )}
 
-      {threshold?.percent === 50 && yesVotes === noVotes && (
-        <div className="mt-4 text-sm">
-          <p className="font-mono text-tertiary">Tie clarification</p>
+      {/* Provide clarification for what happens in the event of a tie
+       * when the threshold is exactly 50%.
+       */}
+      {!!threshold &&
+        !threshold.value.majority &&
+        threshold.value.percent === 50 &&
+        yesVotes === noVotes && (
+          <div className="mt-4 text-sm">
+            <p className="font-mono text-tertiary">Tie clarification</p>
 
-          <p className="mt-2 body-text">{"'Yes' will win a tie vote."}</p>
-        </div>
-      )}
+            <p className="mt-2 body-text">{"'Yes' will win a tie vote."}</p>
+          </div>
+        )}
 
       {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
