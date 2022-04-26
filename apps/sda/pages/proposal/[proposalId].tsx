@@ -117,18 +117,12 @@ const InnerProposal = () => {
     refreshProposalAndAll,
   ])
 
-  if (
-    !proposalResponse ||
-    !connected ||
-    !votingPowerAtHeight ||
-    !voteResponse ||
-    !governanceTokenInfo ||
-    !governanceModuleConfig
-  ) {
+  if (!proposalResponse || !governanceTokenInfo || !governanceModuleConfig) {
     throw new Error('Failed to load page data.')
   }
 
-  const memberWhenProposalCreated = Number(votingPowerAtHeight.power) > 0
+  const memberWhenProposalCreated =
+    !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
 
   return (
     <div className="grid grid-cols-2 gap-4 p-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:p-8 lg:max-w-page">
@@ -138,7 +132,7 @@ const InnerProposal = () => {
             memberWhenProposalCreated={memberWhenProposalCreated}
             proposalExecutionTXHash={txHash}
             proposalResponse={proposalResponse}
-            walletVote={voteResponse.vote?.vote ?? undefined}
+            walletVote={voteResponse?.vote?.vote ?? undefined}
           />
         </div>
 
@@ -156,11 +150,13 @@ const InnerProposal = () => {
               onClose={() => setShowStaking(false)}
             />
           }
-          walletVote={voteResponse.vote?.vote ?? undefined}
+          walletVote={voteResponse?.vote?.vote ?? undefined}
           walletWeightPercent={
-            (Number(votingPowerAtHeight.power) /
-              Number(proposalResponse.proposal.total_power)) *
-            100
+            votingPowerAtHeight
+              ? (Number(votingPowerAtHeight.power) /
+                  Number(proposalResponse.proposal.total_power)) *
+                100
+              : 0
           }
         />
 
@@ -185,7 +181,7 @@ const InnerProposal = () => {
           memberWhenProposalCreated={memberWhenProposalCreated}
           proposalExecutionTXHash={txHash}
           proposalResponse={proposalResponse}
-          walletVote={voteResponse.vote?.vote ?? undefined}
+          walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
