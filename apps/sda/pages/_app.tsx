@@ -13,14 +13,7 @@ import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { DefaultSeo } from 'next-seo'
 
-import {
-  ErrorBoundary,
-  Footer,
-  Header,
-  Notifications,
-  Loader,
-  SuspenseLoader,
-} from '@/components'
+import { ErrorBoundary, Footer, Header, Notifications } from '@/components'
 
 const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
 const image = process.env.NEXT_PUBLIC_SITE_IMAGE
@@ -51,9 +44,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       <Header />
 
       <ErrorBoundary title="An unexpected error occurred.">
-        <SuspenseLoader fallback={<Loader fillScreen size={64} />}>
-          <Component {...pageProps} />
-        </SuspenseLoader>
+        <Component {...pageProps} />
       </ErrorBoundary>
 
       <Footer />

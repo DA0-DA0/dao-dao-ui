@@ -5,9 +5,8 @@ import { successOptions, errorOptions } from '@/util'
 export const Notifications = () => (
   <Toaster
     toastOptions={{
-      // https://github.com/timolins/react-hot-toast/issues/110
       style: {
-        wordBreak: 'break-all',
+        wordBreak: 'break-word',
       },
       success: successOptions,
       error: errorOptions,

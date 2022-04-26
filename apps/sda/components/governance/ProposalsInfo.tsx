@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { Dollar, Pie } from '@dao-dao/icons'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
+import clsx from 'clsx'
 
 import { HeroStat } from './Hero/Stat'
 import { useGovernanceModule } from '@/hooks'
@@ -15,10 +16,16 @@ export interface ProposalsInfoProps {
     passingThresholdString: string
     quorumString?: string
   }
+  className?: string
 }
 
-const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data }) => (
-  <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive">
+const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data, className }) => (
+  <div
+    className={clsx(
+      'flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive',
+      className
+    )}
+  >
     <HeroStat
       Icon={Dollar}
       title="Proposal deposit:"
@@ -38,7 +45,7 @@ const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data }) => (
   </div>
 )
 
-export const ProposalsInfo: FC = () => {
+export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
   const { governanceModuleConfig, proposalDepositTokenInfo } =
     useGovernanceModule({
       fetchProposalDepositTokenInfo: true,
@@ -71,7 +78,7 @@ export const ProposalsInfo: FC = () => {
       }
     : undefined
 
-  return <ProposalsInfoInternal data={data} />
+  return <ProposalsInfoInternal {...props} data={data} />
 }
 
 export const ProposalsInfoLoader: FC = () => <ProposalsInfoInternal />

@@ -116,12 +116,14 @@ export const Header: FunctionComponent = () => {
 
   return (
     <header className="grid grid-cols-3 items-center py-4 px-6">
-      <div className="flex flex-row gap-2 items-center w-full md:gap-4">
-        <Logo height={32} width={32} />
-        <p className="hidden font-studiofeixen md:block text-[18p]">
-          {SITE_TITLE}
-        </p>
-      </div>
+      <Link href="/">
+        <a className="flex flex-row gap-2 items-center w-full md:gap-4">
+          <Logo height={32} width={32} />
+          <p className="hidden font-studiofeixen md:block text-[18p]">
+            {SITE_TITLE}
+          </p>
+        </a>
+      </Link>
 
       <div className="flex flex-row gap-2 justify-self-center items-center">
         {navItems.map((item) => (

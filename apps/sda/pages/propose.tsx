@@ -23,6 +23,7 @@ import {
   PageWrapper,
   PageWrapperProps,
   ProposalForm,
+  ProposalsInfo,
   SuspenseLoader,
 } from '@/components'
 import { useGovernanceModule } from '@/hooks'
@@ -157,7 +158,7 @@ const InnerProposalCreate = () => {
       <div className="flex-1">
         <h2 className="mb-4 font-medium text-medium">Addresses</h2>
 
-        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
+        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
           <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
           <div className="col-span-2">
             <CopyToClipboard value={DAO_ADDRESS} />
@@ -171,6 +172,9 @@ const InnerProposalCreate = () => {
             <CopyToClipboard value={daoInfo.staking_contract} />
           </div> */}
         </div>
+
+        <h2 className="mb-4 font-medium text-medium">Proposal Info</h2>
+        <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
       </div>
     </div>
   )
