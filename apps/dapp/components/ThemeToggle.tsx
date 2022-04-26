@@ -1,4 +1,5 @@
 import { useThemeContext } from '@dao-dao/ui'
+import { Theme } from '@dao-dao/ui'
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
 
 export const defaultTheme = 'dark'
@@ -13,7 +14,7 @@ function ThemeToggle() {
       <SunIcon className="inline mr-2 w-5 h-5" />
     )
 
-  const nextTheme = themeContext.theme === 'dark' ? 'light' : 'dark'
+  const nextTheme = themeContext.theme === 'dark' ? Theme.Light : Theme.Dark
 
   const text = themeContext.theme === 'light' ? 'Dark theme' : 'Light theme'
 

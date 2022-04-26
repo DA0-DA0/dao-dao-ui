@@ -79,7 +79,7 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [initialDurationRemainingTime, onClaimAvailable])
 
   return (
-    <div className="flex gap-2 justify-between items-center p-4 rounded-lg bg-primary">
+    <div className="flex gap-2 justify-between items-center p-4 bg-primary rounded-lg">
       <div className="flex flex-row gap-2 items-center">
         <BalanceIcon iconURI={iconURI} />
 

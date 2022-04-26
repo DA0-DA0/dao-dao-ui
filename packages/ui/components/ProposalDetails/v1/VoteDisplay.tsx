@@ -28,7 +28,7 @@ export const VoteDisplay: FunctionComponent<{
     </p>
   ) : (
     // Should never happen.
-    <p className={clsx(commonClassNames, 'inline break-all text-secondary')}>
+    <p className={clsx(commonClassNames, 'inline text-secondary break-all')}>
       {vote}
     </p>
   )

@@ -100,9 +100,9 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   return (
     <Modal onClose={onClose}>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border cursor-auto border-focus">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
         <button
-          className="absolute top-2 right-2 p-1 rounded-full transition hover:bg-secondary"
+          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
         >
           <XIcon className="w-4 h-4" />

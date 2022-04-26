@@ -82,7 +82,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
     ) : tokenInfo ? (
       <div>
         <InputLabel name="Token info" />
-        <pre className="overflow-auto p-2 rounded-lg border text-secondary border-secondary">
+        <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
           {JSON.stringify(tokenInfo, null, 2)}
         </pre>
       </div>
@@ -91,7 +91,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
 )
 
 export const TemplateComponentLoader = () => (
-  <div className="p-3 my-2 rounded-lg bg-primary">
+  <div className="p-3 my-2 bg-primary rounded-lg">
     <Loader />
   </div>
 )

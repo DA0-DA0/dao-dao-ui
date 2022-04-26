@@ -27,7 +27,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   walletAddress ? (
     <div
       className={clsx(
-        'group relative py-2 px-4 rounded-lg hover:outline bg-primary hover:outline-brand',
+        'group relative py-2 px-4 bg-primary rounded-lg hover:outline-brand hover:outline',
         className
       )}
     >
@@ -36,7 +36,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
         <div className="link-text">
           <span>{walletName}</span>
           <br />
-          <span className="capitalize text-secondary">
+          <span className="text-secondary capitalize">
             {walletBalance} {walletBalanceDenom}
           </span>
         </div>
@@ -48,7 +48,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
     </div>
   ) : (
     <Button
-      className={clsx('py-4 hover:outline hover:outline-brand', className)}
+      className={clsx('py-4 hover:outline-brand hover:outline', className)}
       onClick={handleConnect}
     >
       <Wallet fill="currentColor" height="20px" width="20px" />

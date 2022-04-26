@@ -19,7 +19,7 @@ export const ProposalLine: FC<ProposalLineProps> = ({
 }) => (
   <Link href={proposalViewUrl}>
     <a>
-      <div className="grid grid-cols-6 items-center p-4 my-1 text-sm rounded-lg bg-primary">
+      <div className="grid grid-cols-6 items-center p-4 my-1 text-sm bg-primary rounded-lg">
         <div className="flex flex-row flex-wrap col-span-2 gap-4 items-center">
           <p className="font-mono caption-text"># {zeroPad(proposal.id, 6)}</p>
           <ProposalStatus
