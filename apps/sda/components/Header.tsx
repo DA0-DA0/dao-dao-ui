@@ -84,7 +84,11 @@ export const Header: FunctionComponent = () => {
         label: 'Governance',
         href: '/governance',
       },
-      ...(/^\/proposal\/\d+$/.test(router.asPath)
+      // Dynamic parameters are only available once isReady is true and
+      // we are not displaying a fallback page.
+      ...(router.isReady &&
+      !router.isFallback &&
+      /^\/proposal\/\d+$/.test(router.asPath)
         ? [
             {
               renderIcon: (color) => (
@@ -107,7 +111,7 @@ export const Header: FunctionComponent = () => {
           ]
         : []),
     ],
-    [router.asPath, router.query]
+    [router.asPath, router.query, router.isReady, router.isFallback]
   )
 
   return (
