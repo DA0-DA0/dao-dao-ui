@@ -151,7 +151,9 @@ export const Header: FunctionComponent = () => {
             </div>
           </div>
         ) : (
-          <WalletConnectButton />
+          <div className="hidden md:block">
+            <WalletConnectButton />
+          </div>
         )}
       </div>
     </header>

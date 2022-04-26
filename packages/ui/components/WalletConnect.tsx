@@ -36,7 +36,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
         <div className="link-text">
           <span>{walletName}</span>
           <br />
-          <span className="caption-text capitalize">
+          <span className="capitalize caption-text">
             {walletBalance} {walletBalanceDenom}
           </span>
         </div>
@@ -50,6 +50,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
     <Button
       className={clsx('py-4 hover:outline-brand hover:outline', className)}
       onClick={handleConnect}
+      type="button"
     >
       <Wallet fill="currentColor" height="20px" width="20px" />
       <p className="text-light link-text">Connect wallet</p>

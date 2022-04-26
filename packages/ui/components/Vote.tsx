@@ -17,7 +17,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+    <div className="flex flex-wrap gap-2 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">🗳</p>
         <p className="primary-text">Casting</p>
@@ -28,7 +28,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
           % voting power
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="flex flex-wrap grid-cols-3 gap-2 md:grid">
         <Button
           className={`group transition ${
             selected === VoteChoice.Yes ? 'bg-valid hover:bg-valid' : ''

@@ -5,7 +5,6 @@ import { useWallet } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
-  Tooltip,
   MarkdownPreview,
   CosmosMessageDisplay,
   InputErrorMessage,
@@ -25,6 +24,7 @@ import {
 
 import { TemplateSelector } from '.'
 import { templateMap, templateToCosmosMsg } from './templates'
+import { WalletConnectButton } from './WalletConnectButton'
 import { useGovernanceTokenInfo } from '@/hooks'
 import { DAO_ADDRESS } from '@/util'
 
@@ -185,14 +185,14 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
           </div>
         </div>
         <div className="flex gap-2 justify-end mt-4">
-          <Tooltip
-            label={!connected ? 'Connect your wallet to submit' : undefined}
-          >
+          {connected ? (
             <Button loading={loading} type="submit">
               Publish{' '}
               <Airplane color="currentColor" height="14px" width="14px" />
             </Button>
-          </Tooltip>
+          ) : (
+            <WalletConnectButton />
+          )}
           <Button
             onClick={() => setShowPreview((p) => !p)}
             type="button"

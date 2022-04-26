@@ -163,14 +163,6 @@ const InnerProposalCreate = () => {
           <div className="col-span-2">
             <CopyToClipboard value={DAO_ADDRESS} />
           </div>
-          {/* <p className="font-mono text-sm text-tertiary">Gov Token</p>
-          <div className="col-span-2">
-            <CopyToClipboard value={daoInfo.gov_token} />
-          </div>
-          <p className="font-mono text-sm text-tertiary">Staking</p>
-          <div className="col-span-2">
-            <CopyToClipboard value={daoInfo.staking_contract} />
-          </div> */}
         </div>
 
         <h2 className="mb-4 font-medium text-medium">Proposal Info</h2>
