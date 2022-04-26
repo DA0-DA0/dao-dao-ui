@@ -2,7 +2,11 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
-import { getOfflineSignerAuto, isKeplrInstalled } from '@dao-dao/utils'
+import {
+  getOfflineSignerAuto,
+  isKeplrInstalled,
+  KeplrNotInstalledError,
+} from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -65,6 +69,13 @@ export const useWallet = () => {
     } catch (error) {
       console.error(error)
       setError(error instanceof Error ? error.message : `${error}`)
+
+      if (error instanceof KeplrNotInstalledError) {
+        // If Keplr isn't installed, page might still be loading, so don't
+        // yet clear localStorage. Ideally, only clear on Keplr failure or
+        // connect request rejection.
+        return
+      }
 
       // Set disconnected so we don't try to connect again without manual action.
       setKeplrKeystoreId(-1)
