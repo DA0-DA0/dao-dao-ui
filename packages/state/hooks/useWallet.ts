@@ -43,6 +43,11 @@ export const useWallet = () => {
     [setKeplrKeystoreId]
   )
 
+  const disconnect = useCallback(
+    () => setKeplrKeystoreId(-1),
+    [setKeplrKeystoreId]
+  )
+
   const connect = useCallback(async () => {
     // Set install message error if keplr not installed.
     if (!isKeplrInstalled()) {
@@ -88,6 +93,7 @@ export const useWallet = () => {
 
   return {
     connect,
+    disconnect,
     refreshConnection,
     refreshBalances,
     error,

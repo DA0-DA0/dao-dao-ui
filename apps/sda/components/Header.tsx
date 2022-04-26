@@ -3,7 +3,7 @@ import { FunctionComponent, ReactNode, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { Profile, Airdrop, Pie, Governance, Hash } from '@dao-dao/icons'
+import { Airdrop, Pie, Governance, Hash, WalletAvatar } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
   convertDenomToHumanReadableDenom,
@@ -56,7 +56,7 @@ const NavItem: FunctionComponent<NavItemProps> = ({
 
 export const Header: FunctionComponent = () => {
   const router = useRouter()
-  const { connected, name, nativeBalance } = useWallet()
+  const { connected, name, nativeBalance, disconnect } = useWallet()
 
   const walletBalance =
     nativeBalance !== undefined
@@ -119,7 +119,7 @@ export const Header: FunctionComponent = () => {
       <Link href="/">
         <a className="flex flex-row gap-2 items-center w-full md:gap-4">
           <Logo height={32} width={32} />
-          <p className="hidden font-studiofeixen md:block text-[18p]">
+          <p className="hidden md:block font-studiofeixen text-[18p]">
             {SITE_TITLE}
           </p>
         </a>
@@ -141,12 +141,14 @@ export const Header: FunctionComponent = () => {
           <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
             <div className="flex flex-col items-end text-right link-text">
               <span>{name}</span>
-              <span className="text-secondary capitalize">
+              <span className="capitalize text-secondary">
                 {walletBalance} {humanDenom}
               </span>
             </div>
 
-            <Profile height={40} width={40} />
+            <div className="cursor-pointer" onClick={disconnect}>
+              <WalletAvatar height={40} width={40} />
+            </div>
           </div>
         ) : (
           <WalletConnectButton />
