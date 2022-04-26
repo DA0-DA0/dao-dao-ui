@@ -15,7 +15,7 @@ import {
 import { XIcon } from '@heroicons/react/outline'
 import toast from 'react-hot-toast'
 
-import { Logo, SuspenseLoader } from '.'
+import { Logo, SuspenseLoader, WalletConnectButton } from '.'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 import { cleanChainError } from '@/util'
 
@@ -178,6 +178,15 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     }
   }
 
+  // If not connected, show connect button.
+  if (!connected) {
+    return (
+      <StakingModalWrapper onClose={onClose}>
+        <WalletConnectButton />
+      </StakingModalWrapper>
+    )
+  }
+
   // Don't render until ready.
   if (
     !governanceTokenInfo ||
@@ -185,8 +194,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
     stakedBalance === undefined
-  )
+  ) {
     return <StakingModalLoader onClose={onClose} />
+  }
 
   return (
     <StatelessStakingModal
@@ -213,9 +223,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   )
 }
 
-const StakingModalLoader: FunctionComponent<
-  Pick<StakingModalProps, 'onClose'>
-> = ({ onClose }) => (
+type StakingModalWrapperProps = Pick<StakingModalProps, 'onClose'>
+const StakingModalWrapper: FunctionComponent<StakingModalWrapperProps> = ({
+  children,
+  onClose,
+}) => (
   <Modal onClose={onClose}>
     <div className="relative p-40 bg-white rounded-lg border border-focus cursor-auto">
       <button
@@ -225,9 +237,17 @@ const StakingModalLoader: FunctionComponent<
         <XIcon className="w-4 h-4" />
       </button>
 
-      <div className="animate-spin">
-        <Logo height={40} width={40} />
-      </div>
+      {children}
     </div>
   </Modal>
+)
+
+const StakingModalLoader: FunctionComponent<
+  Omit<StakingModalWrapperProps, 'children'>
+> = (props) => (
+  <StakingModalWrapper {...props}>
+    <div className="animate-spin">
+      <Logo height={40} width={40} />
+    </div>
+  </StakingModalWrapper>
 )

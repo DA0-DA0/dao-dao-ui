@@ -28,6 +28,8 @@ interface V1ProposalDetailsProps {
   TemplateRendererComponent: ComponentType<TemplateRendererComponentProps>
   onExecute: () => void
   onVote: (choice: VoteChoice) => void
+  connected: boolean
+  connectWalletButton?: ReactNode
 }
 
 export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
@@ -41,6 +43,8 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
   TemplateRendererComponent,
   onExecute,
   onVote,
+  connected,
+  connectWalletButton,
 }) => {
   const decodedMessages = decodeMessages(proposal.msgs)
   const [showRaw, setShowRaw] = useState(false)
@@ -103,33 +107,44 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
       )}
 
       <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
-      {proposal.status === Status.Open &&
-        !walletVote &&
-        walletWeightPercent !== 0 && (
-          <Vote
-            loading={loading}
-            onVote={onVote}
-            voterWeight={walletWeightPercent}
-          />
-        )}
-      {walletVote && (
-        <p className="flex flex-row gap-2 items-center body-text">
-          You voted <VoteDisplay vote={walletVote} /> on this proposal.
-        </p>
-      )}
-      {proposal.status !== Status.Open && !walletVote && (
-        <p className="body-text">You did not vote on this proposal.</p>
-      )}
-      {walletWeightPercent === 0 && (
-        <p className="max-w-prose body-text">
-          You must have voting power at the time of proposal creation to vote.{' '}
-          {stakingModal && (
-            <button className="underline" onClick={() => setShowStaking(true)}>
-              Stake some tokens so you can vote next time?
-            </button>
+
+      {connected ? (
+        <>
+          {proposal.status === Status.Open &&
+            !walletVote &&
+            walletWeightPercent !== 0 && (
+              <Vote
+                loading={loading}
+                onVote={onVote}
+                voterWeight={walletWeightPercent}
+              />
+            )}
+          {walletVote && (
+            <p className="flex flex-row gap-2 items-center body-text">
+              You voted <VoteDisplay vote={walletVote} /> on this proposal.
+            </p>
           )}
-          {showStaking && stakingModal}
-        </p>
+          {proposal.status !== Status.Open && !walletVote && (
+            <p className="body-text">You did not vote on this proposal.</p>
+          )}
+          {walletWeightPercent === 0 && (
+            <p className="max-w-prose body-text">
+              You must have voting power at the time of proposal creation to
+              vote.{' '}
+              {stakingModal && (
+                <button
+                  className="underline"
+                  onClick={() => setShowStaking(true)}
+                >
+                  Stake some tokens so you can vote next time?
+                </button>
+              )}
+              {showStaking && stakingModal}
+            </p>
+          )}
+        </>
+      ) : (
+        connectWalletButton
       )}
     </div>
   )

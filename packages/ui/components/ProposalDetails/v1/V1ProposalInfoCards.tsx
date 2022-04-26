@@ -27,6 +27,7 @@ interface V1ProposalInfoCardProps {
   memberWhenProposalCreated: boolean
   walletVote?: Vote
   proposalExecutionTXHash: string | undefined
+  connected: boolean
 }
 
 interface V1ProposalInfoVoteStatusProps {
@@ -53,6 +54,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
   memberWhenProposalCreated,
   walletVote,
   proposalExecutionTXHash,
+  connected,
 }) => (
   <div className="rounded-md border border-light">
     <div className="flex flex-row justify-evenly items-stretch py-5">
@@ -83,18 +85,22 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
           You
         </p>
 
-        {!memberWhenProposalCreated ? (
-          <YouTooltip
-            label={`You ${
-              proposal.status === Status.Open ? 'are' : 'were'
-            } unable to vote on this proposal because you didn't have any voting power at the time of proposal creation.`}
-          />
-        ) : walletVote ? (
-          <VoteDisplay vote={walletVote} />
-        ) : proposal.status === Status.Open ? (
-          <YouTooltip label="You have not yet cast a vote." />
+        {connected ? (
+          !memberWhenProposalCreated ? (
+            <YouTooltip
+              label={`You ${
+                proposal.status === Status.Open ? 'are' : 'were'
+              } unable to vote on this proposal because you didn't have any voting power at the time of proposal creation.`}
+            />
+          ) : walletVote ? (
+            <VoteDisplay vote={walletVote} />
+          ) : proposal.status === Status.Open ? (
+            <YouTooltip label="You have not yet cast a vote." />
+          ) : (
+            <YouTooltip label="You didn't cast a vote when this proposal was open." />
+          )
         ) : (
-          <YouTooltip label="You didn't cast a vote when this proposal was open." />
+          <YouTooltip label="Connect your wallet to view your vote." />
         )}
       </div>
     </div>

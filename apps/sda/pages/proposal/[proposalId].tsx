@@ -23,6 +23,7 @@ import {
   PageWrapperProps,
   StakingModal,
   TemplateRendererComponent,
+  WalletConnectButton,
 } from '@/components'
 import {
   useGovernanceModule,
@@ -129,6 +130,7 @@ const InnerProposal = () => {
       <div className="col-span-2">
         <div className="px-6 lg:hidden">
           <V1ProposalInfoCard
+            connected={connected}
             memberWhenProposalCreated={memberWhenProposalCreated}
             proposalExecutionTXHash={txHash}
             proposalResponse={proposalResponse}
@@ -138,6 +140,8 @@ const InnerProposal = () => {
 
         <V1ProposalDetails
           TemplateRendererComponent={TemplateRendererComponent}
+          connectWalletButton={<WalletConnectButton />}
+          connected={connected}
           loading={loading}
           onExecute={onExecute}
           onVote={onVote}
@@ -178,6 +182,7 @@ const InnerProposal = () => {
       <div className="hidden min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">Details</h2>
         <V1ProposalInfoCard
+          connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
           proposalExecutionTXHash={txHash}
           proposalResponse={proposalResponse}
