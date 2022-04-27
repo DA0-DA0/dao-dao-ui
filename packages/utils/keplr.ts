@@ -21,13 +21,6 @@ export class KeplrNotInstalledError extends Error {
   }
 }
 
-// Keplr extension injects the offline signer that is compatible with cosmJS.
-// You can get this offline signer from `window.getOfflineSigner(chainId:string)` after load event.
-// And it also injects the helper function to `window.keplr`.
-// If `window.getOfflineSigner` or `window.keplr` is null, Keplr extension may be not installed on browser.
-export const isKeplrInstalled = () =>
-  typeof window !== 'undefined' && !!(window.getOfflineSigner || window.keplr)
-
 // Returns Keplr as soon as possible, possibly undefined if not injected
 // onto the page.
 export const getKeplr = async (): Promise<Keplr | undefined> => {
@@ -52,8 +45,6 @@ export const getKeplr = async (): Promise<Keplr | undefined> => {
 export const getOfflineSignerAuto = async (): Promise<
   Awaited<ReturnType<Keplr['getOfflineSignerAuto']>>
 > => {
-  if (!isKeplrInstalled()) throw new KeplrNotInstalledError()
-
   const keplr = await getKeplr()
   if (!keplr) throw new KeplrNotInstalledError()
 

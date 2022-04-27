@@ -3,7 +3,6 @@ import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
 import {
   getOfflineSignerAuto,
-  isKeplrInstalled,
   KeplrNotInstalledError,
 } from '@dao-dao/utils'
 
@@ -51,9 +50,6 @@ export const useWallet = () => {
   )
 
   const connect = useCallback(async () => {
-    // Cannot connect if Keplr not installed.
-    if (!isKeplrInstalled()) return
-
     // Attempt to connect and update keystore accordingly.
     try {
       await getOfflineSignerAuto()
@@ -103,7 +99,6 @@ export const useWallet = () => {
     name,
     nativeBalance,
     connected: !!address,
-    installed: isKeplrInstalled(),
     loading: walletAddressState === 'loading',
   }
 }
