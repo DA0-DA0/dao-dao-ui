@@ -23,14 +23,14 @@ interface NavItemData {
 
 interface NavItemProps {
   item: NavItemData
-  path: string
+  pathname: string
 }
 
 const NavItem: FunctionComponent<NavItemProps> = ({
   item: { renderIcon, label, href },
-  path,
+  pathname,
 }) => {
-  const isActive = path === href
+  const isActive = pathname === href
 
   return (
     <Link key={href} href={href}>
@@ -87,7 +87,7 @@ export const Header: FunctionComponent = () => {
       // we are not displaying a fallback page.
       ...(router.isReady &&
       !router.isFallback &&
-      /^\/proposal\/\d+$/.test(router.asPath)
+      router.pathname === '/proposal/[proposalId]'
         ? [
             {
               renderIcon: (color) => (
@@ -98,7 +98,7 @@ export const Header: FunctionComponent = () => {
             },
           ]
         : []),
-      ...(/^\/propose/.test(router.asPath)
+      ...(router.pathname === '/propose'
         ? [
             {
               renderIcon: (color) => (
@@ -110,7 +110,13 @@ export const Header: FunctionComponent = () => {
           ]
         : []),
     ],
-    [router.asPath, router.query, router.isReady, router.isFallback]
+    [
+      router.asPath,
+      router.pathname,
+      router.query,
+      router.isReady,
+      router.isFallback,
+    ]
   )
 
   return (
@@ -127,7 +133,7 @@ export const Header: FunctionComponent = () => {
 
       <div className="flex flex-row gap-2 justify-self-center items-center">
         {navItems.map((item) => (
-          <NavItem key={item.href} item={item} path={router.asPath || '/'} />
+          <NavItem key={item.href} item={item} pathname={router.pathname} />
         ))}
       </div>
 
