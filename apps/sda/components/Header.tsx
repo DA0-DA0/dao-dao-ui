@@ -145,7 +145,7 @@ export const Header: FunctionComponent = () => {
           <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
             <div className="flex flex-col items-end text-right link-text">
               <span>{walletName}</span>
-              <span className="text-secondary capitalize">
+              <span className="text-secondary capitalize gradient-text">
                 {walletBalance} {humanDenom}
               </span>
             </div>
