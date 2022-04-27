@@ -1,10 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
-import {
-  getOfflineSignerAuto,
-  KeplrNotInstalledError,
-} from '@dao-dao/utils'
+import { getOfflineSignerAuto, KeplrNotInstalledError } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
