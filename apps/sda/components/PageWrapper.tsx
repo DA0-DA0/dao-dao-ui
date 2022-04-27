@@ -6,7 +6,14 @@ import { FunctionComponent, PropsWithChildren } from 'react'
 import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 
-import { Header, Loader, SuspenseLoader, DAOInfoContext, DAOInfo } from '.'
+import {
+  Header,
+  Loader,
+  SuspenseLoader,
+  DAOInfoContext,
+  DAOInfo,
+  DefaultDAOInfo,
+} from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
@@ -34,12 +41,12 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
           type: 'website',
           title,
           description,
-          ...(!!daoInfo.imageUrl && { images: [{ url: daoInfo.imageUrl }] }),
+          ...(!!daoInfo?.imageUrl && { images: [{ url: daoInfo.imageUrl }] }),
         }}
         title={title}
       />
 
-      <DAOInfoContext.Provider value={daoInfo}>
+      <DAOInfoContext.Provider value={daoInfo || DefaultDAOInfo}>
         <Header />
 
         {/* Suspend children so SEO stays intact while page loads. */}

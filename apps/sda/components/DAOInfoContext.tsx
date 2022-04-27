@@ -5,9 +5,11 @@ export interface DAOInfo {
   imageUrl?: string | null
 }
 
-export const DAOInfoContext = createContext<DAOInfo>({
+export const DefaultDAOInfo: DAOInfo = {
   name: '',
   imageUrl: null,
-})
+}
+
+export const DAOInfoContext = createContext<DAOInfo>(DefaultDAOInfo)
 
 export const useDAOInfoContext = () => useContext(DAOInfoContext)
