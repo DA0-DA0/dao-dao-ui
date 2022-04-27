@@ -1,5 +1,7 @@
+import { FunctionComponent } from 'react'
+
 import { useWallet } from '@dao-dao/state'
-import { WalletConnect } from '@dao-dao/ui'
+import { WalletConnect, WalletConnectProps } from '@dao-dao/ui'
 import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
@@ -7,7 +9,9 @@ import {
   NATIVE_DENOM,
 } from '@dao-dao/utils'
 
-export const WalletConnectButton = () => {
+export const WalletConnectButton: FunctionComponent<
+  Partial<WalletConnectProps>
+> = (props) => {
   const { connect, address, name, nativeBalance } = useWallet()
 
   const walletBalance =
@@ -24,6 +28,7 @@ export const WalletConnectButton = () => {
       walletBalance={walletBalance}
       walletBalanceDenom={humanDenom}
       walletName={name}
+      {...props}
     />
   )
 }

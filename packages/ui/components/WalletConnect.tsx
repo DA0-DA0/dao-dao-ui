@@ -5,9 +5,10 @@ import { FC, useState } from 'react'
 import { Wallet, Copy } from '@dao-dao/icons'
 
 import { Button } from './Button'
+import { ButtonProps } from './Button/Button'
 import { Tooltip } from './Tooltip'
 
-export interface WalletConnectProps {
+export interface WalletConnectProps extends Partial<ButtonProps> {
   walletAddress: string
   walletName: string | undefined
   walletBalance: number
@@ -23,11 +24,12 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   walletBalanceDenom,
   handleConnect,
   className,
+  ...buttonProps
 }) =>
   walletAddress ? (
     <div
       className={clsx(
-        'group relative py-2 px-4 bg-primary rounded-lg hover:outline-brand hover:outline',
+        'group relative py-2 px-4 rounded-lg hover:outline bg-primary hover:outline-brand',
         className
       )}
     >
@@ -48,9 +50,10 @@ export const WalletConnect: FC<WalletConnectProps> = ({
     </div>
   ) : (
     <Button
-      className={clsx('py-4 hover:outline-brand hover:outline', className)}
+      className={clsx('py-4 hover:outline hover:outline-brand', className)}
       onClick={handleConnect}
       type="button"
+      {...buttonProps}
     >
       <Wallet fill="currentColor" height="20px" width="20px" />
       <p className="text-light link-text">Connect wallet</p>

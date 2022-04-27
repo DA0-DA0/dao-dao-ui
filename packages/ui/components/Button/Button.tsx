@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import {
   ReactNode,
   ComponentPropsWithoutRef,
@@ -14,6 +15,7 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   disabled?: boolean
   className?: string
   loading?: boolean
+  contentContainerClassName?: string
 }
 
 function ButtonComponent(
@@ -23,90 +25,71 @@ function ButtonComponent(
     size = 'lg',
     disabled = false,
     loading = false,
-    className = '',
+    className,
+    contentContainerClassName,
     ...rest
   }: ButtonProps,
   ref?: ForwardedRef<any>
 ) {
   const isDisabled = disabled || loading
-  if (variant === 'primary') {
-    return (
-      <button
-        className={`relative link-text text-light bg-btn rounded-md py-[6px] px-[16px] transition ${
-          !isDisabled ? 'hover:bg-dark active:bg-toast' : 'bg-btn-disabled'
-        } ${size === 'lg' ? 'py-[10px]' : ''} ${
-          size === 'sm' ? 'py-[4px] px-[8px]' : ''
-        } ${className}`}
-        disabled={isDisabled}
-        ref={ref}
-        {...rest}
-      >
-        <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
-          <div
-            className={`animate-spin inline-block mx-auto ${
-              loading ? '' : 'invisible'
-            }`}
-          >
-            <Logo height={20} invert width={20} />
-          </div>
-        </div>
+
+  return variant === 'primary' || variant === 'secondary' ? (
+    <button
+      className={clsx('relative py-[6px] px-[16px] rounded-md transition', {
+        // Primary
+        'text-light bg-btn link-text': variant === 'primary',
+        'hover:bg-dark active:bg-toast': variant === 'primary' && !isDisabled,
+        // Secondary
+        'bg-primary link-text': variant === 'secondary',
+        'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
+          variant === 'secondary' && !isDisabled,
+        // Shared
+        'bg-btn-disabled': isDisabled,
+        'py-[10px]': size === 'lg',
+        'py-[4px] px-[8px]': size === 'sm',
+        className,
+      })}
+      disabled={isDisabled}
+      ref={ref}
+      {...rest}
+    >
+      <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
         <div
-          className={`${
-            loading ? 'invisible' : ''
-          } flex flex-row items-center gap-2`}
+          className={clsx('mx-auto animate-spin', {
+            invisible: !loading,
+            'inline-block': loading,
+          })}
         >
-          {children}
+          <Logo height={20} invert width={20} />
         </div>
-      </button>
-    )
-  }
-  if (variant == 'secondary') {
-    return (
-      <button
-        className={`relative link-text bg-primary rounded-md py-[6px] px-[16px] transition ${
-          !isDisabled
-            ? 'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed'
-            : 'bg-btn-disabled'
-        } ${size === 'lg' ? 'py-[10px]' : ''} ${
-          size === 'sm' ? 'py-[4px] px-[8px]' : ''
-        } ${className}`}
-        disabled={isDisabled}
-        ref={ref}
-        {...rest}
-      >
-        <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
-          <div
-            className={`animate-spin inline-block mx-auto ${
-              loading ? '' : 'invisible'
-            }`}
-          >
-            <Logo height={20} invert width={20} />
-          </div>
-        </div>
-        <div
-          className={`${
-            loading ? 'invisible' : ''
-          } flex flex-row items-center gap-2`}
-        >
-          {children}
-        </div>
-      </button>
-    )
-  }
-  if (variant === 'ghost') {
-    return (
-      <button
-        className={`link-text text-secondary transition hover:text-primary flex flex-row items-center gap-2 ${className}`}
-        disabled={isDisabled}
-        ref={ref}
-        {...rest}
+      </div>
+      <div
+        className={clsx(
+          'flex-row gap-2 items-center',
+          {
+            invisible: loading,
+            flex: !loading,
+          },
+          contentContainerClassName
+        )}
       >
         {children}
-      </button>
-    )
-  }
-
-  return null
+      </div>
+    </button>
+  ) : variant === 'ghost' ? (
+    <button
+      className={clsx(
+        'flex flex-row gap-2 items-center transition text-secondary hover:text-primary link-text',
+        className,
+        contentContainerClassName
+      )}
+      disabled={isDisabled}
+      ref={ref}
+      {...rest}
+    >
+      {children}
+    </button>
+  ) : null
 }
 
 export const Button = forwardRef(ButtonComponent)

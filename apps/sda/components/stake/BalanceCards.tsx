@@ -119,7 +119,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
 
         <p className="text-base text-secondary">
           {votingPower.toLocaleString(undefined, {
-            maximumFractionDigits: 4,
+            maximumSignificantDigits: 4,
           })}
           % <span className="text-xs text-tertiary">of all voting power</span>
         </p>
