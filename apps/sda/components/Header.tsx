@@ -14,12 +14,14 @@ import {
 } from '@dao-dao/utils'
 
 import { Logo, WalletConnectButton, useDAOInfoContext } from '@/components'
+import { AIRDROP_URL } from '@/util'
 
 interface NavItemData {
   renderIcon: (color: string) => ReactNode
   label: string
   href: string
-  isActive: boolean
+  active: boolean
+  external: boolean
 }
 
 interface NavItemProps {
@@ -27,23 +29,37 @@ interface NavItemProps {
 }
 
 const NavItem: FunctionComponent<NavItemProps> = ({
-  item: { renderIcon, label, href, isActive },
-}) => (
-  <Link key={href} href={href}>
-    <a
-      className={clsx(
-        'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
-        {
-          'text-accent bg-accent-transparent': isActive,
-          'text-body hover:bg-card': !isActive,
-        }
-      )}
-    >
-      {renderIcon(isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)')}
+  item: { renderIcon, label, href, active, external },
+}) => {
+  const aClassName = clsx(
+    'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
+    {
+      'text-accent bg-accent-transparent': active,
+      'text-body hover:bg-card': !active,
+    }
+  )
+  const contents = (
+    <>
+      {renderIcon(active ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)')}
       <p className="hidden lg:block">{label}</p>
+    </>
+  )
+
+  return external ? (
+    <a
+      className={aClassName}
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {contents}
     </a>
-  </Link>
-)
+  ) : (
+    <Link href={href}>
+      <a className={aClassName}>{contents}</a>
+    </Link>
+  )
+}
 
 export const Header: FunctionComponent = () => {
   const router = useRouter()
@@ -59,17 +75,25 @@ export const Header: FunctionComponent = () => {
 
   const navItems = useMemo<NavItemData[]>(
     () => [
-      {
-        renderIcon: (color) => <Airdrop color={color} height={14} width={14} />,
-        label: 'Airdrop',
-        href: '/airdrop',
-        isActive: router.pathname === '/airdrop',
-      },
+      ...(AIRDROP_URL
+        ? [
+            {
+              renderIcon: (color) => (
+                <Airdrop color={color} height={14} width={14} />
+              ),
+              label: 'Airdrop',
+              href: AIRDROP_URL,
+              active: false,
+              external: true,
+            },
+          ]
+        : []),
       {
         renderIcon: (color) => <Pie color={color} height={14} width={14} />,
         label: 'Stake',
         href: '/',
-        isActive: router.pathname === '/',
+        active: router.pathname === '/',
+        external: false,
       },
       {
         renderIcon: (color) => (
@@ -77,7 +101,8 @@ export const Header: FunctionComponent = () => {
         ),
         label: 'Vote',
         href: '/vote',
-        isActive: router.pathname === '/vote',
+        active: router.pathname === '/vote',
+        external: false,
       },
       // Dynamic parameters are only available once isReady is true and
       // we are not displaying a fallback page.
@@ -91,7 +116,8 @@ export const Header: FunctionComponent = () => {
               ),
               label: router.query.proposalId as string,
               href: router.asPath,
-              isActive: true,
+              active: true,
+              external: false,
             },
           ]
         : []),
@@ -103,7 +129,8 @@ export const Header: FunctionComponent = () => {
               ),
               label: 'Propose',
               href: '/propose',
-              isActive: true,
+              active: true,
+              external: false,
             },
           ]
         : []),
@@ -118,7 +145,7 @@ export const Header: FunctionComponent = () => {
   )
 
   return (
-    <header className="grid grid-cols-3 items-center py-4 px-6">
+    <header className="grid grid-cols-3 items-center py-4 px-6 border-b border-inactive">
       <Link href="/">
         <a className="flex flex-row gap-2 items-center w-full md:gap-4">
           <Logo size={32} />

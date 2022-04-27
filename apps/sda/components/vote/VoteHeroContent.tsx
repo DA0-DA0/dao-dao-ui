@@ -16,7 +16,7 @@ import {
   useStakingInfo,
   useGovernanceModule,
 } from '@/hooks'
-import { DAO_ADDRESS, EXTERNAL_HREF } from '@/util'
+import { DAO_ADDRESS, VOTE_EXTERNAL_URL } from '@/util'
 
 export const VoteHeroContentLoader = () => (
   <>
@@ -85,7 +85,7 @@ export const VoteHeroContent = () => {
           unstakingDuration: stakingContractConfig.unstaking_duration
             ? humanReadableDuration(stakingContractConfig.unstaking_duration)
             : 'None',
-          link: EXTERNAL_HREF,
+          link: VOTE_EXTERNAL_URL,
         }}
       />
     </>
