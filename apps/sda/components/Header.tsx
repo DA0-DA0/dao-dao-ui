@@ -112,7 +112,6 @@ export const Header: FunctionComponent = () => {
     ],
     [router.asPath, router.query, router.isReady, router.isFallback]
   )
-  console.log(router)
 
   return (
     <header className="grid grid-cols-3 items-center py-4 px-6">
