@@ -19,38 +19,31 @@ interface NavItemData {
   renderIcon: (color: string) => ReactNode
   label: string
   href: string
+  isActive: boolean
 }
 
 interface NavItemProps {
   item: NavItemData
-  pathname: string
 }
 
 const NavItem: FunctionComponent<NavItemProps> = ({
-  item: { renderIcon, label, href },
-  pathname,
-}) => {
-  const isActive = pathname === href
-
-  return (
-    <Link key={href} href={href}>
-      <a
-        className={clsx(
-          'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
-          {
-            'text-accent bg-accent-transparent': isActive,
-            'text-body hover:bg-card': !isActive,
-          }
-        )}
-      >
-        {renderIcon(
-          isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)'
-        )}
-        <p className="hidden lg:block">{label}</p>
-      </a>
-    </Link>
-  )
-}
+  item: { renderIcon, label, href, isActive },
+}) => (
+  <Link key={href} href={href}>
+    <a
+      className={clsx(
+        'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
+        {
+          'text-accent bg-accent-transparent': isActive,
+          'text-body hover:bg-card': !isActive,
+        }
+      )}
+    >
+      {renderIcon(isActive ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)')}
+      <p className="hidden lg:block">{label}</p>
+    </a>
+  </Link>
+)
 
 export const Header: FunctionComponent = () => {
   const router = useRouter()
@@ -70,11 +63,13 @@ export const Header: FunctionComponent = () => {
         renderIcon: (color) => <Airdrop color={color} height={14} width={14} />,
         label: 'Airdrop',
         href: '/airdrop',
+        isActive: router.pathname === '/airdrop',
       },
       {
         renderIcon: (color) => <Pie color={color} height={14} width={14} />,
         label: 'Stake',
         href: '/',
+        isActive: router.pathname === '/',
       },
       {
         renderIcon: (color) => (
@@ -82,6 +77,7 @@ export const Header: FunctionComponent = () => {
         ),
         label: 'Vote',
         href: '/vote',
+        isActive: router.pathname === '/vote',
       },
       // Dynamic parameters are only available once isReady is true and
       // we are not displaying a fallback page.
@@ -95,6 +91,7 @@ export const Header: FunctionComponent = () => {
               ),
               label: router.query.proposalId as string,
               href: router.asPath,
+              isActive: true,
             },
           ]
         : []),
@@ -105,7 +102,8 @@ export const Header: FunctionComponent = () => {
                 <PlusIcon color={color} height={17} width={17} />
               ),
               label: 'Propose',
-              href: router.asPath,
+              href: '/propose',
+              isActive: true,
             },
           ]
         : []),
@@ -133,7 +131,7 @@ export const Header: FunctionComponent = () => {
 
       <div className="flex flex-row gap-2 justify-self-center items-center">
         {navItems.map((item) => (
-          <NavItem key={item.href} item={item} pathname={router.pathname} />
+          <NavItem key={item.href} item={item} />
         ))}
       </div>
 
