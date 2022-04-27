@@ -161,7 +161,17 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .gradient-text {
-    background: radial-gradient(146.53% 281.23% at 4.24% 23.36%, #F99974 0%, #FE4366 16.67%, #F43D88 40.23%, #D72DE5 55.27%, #3B7BEA 68.75%, #30B1CD 82.81%, #40CAD7 92.71%, #09ACA2 100%);
+    background: radial-gradient(
+      146.53% 281.23% at 4.24% 23.36%,
+      #f99974 0%,
+      #fe4366 16.67%,
+      #f43d88 40.23%,
+      #d72de5 55.27%,
+      #3b7bea 68.75%,
+      #30b1cd 82.81%,
+      #40cad7 92.71%,
+      #09aca2 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
