@@ -101,6 +101,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
             setAmount(0)
             setLoading(false)
             toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
+
+            // Close once done.
+            onClose()
           }, 6500)
         } catch (err) {
           console.error(err)
@@ -131,6 +134,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
             setAmount(0)
             setLoading(false)
             toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
+
+            // Close once done.
+            onClose()
           }, 6500)
         } catch (err) {
           console.error(err)
@@ -164,6 +170,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
                 sumClaimsAvailable === 1 ? '' : 's'
               }`
             )
+
+            // Close once done.
+            onClose()
           }, 6500)
         } catch (err) {
           console.error(err)
