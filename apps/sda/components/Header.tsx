@@ -11,10 +11,9 @@ import {
   convertMicroDenomToDenomWithDecimals,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  SITE_TITLE,
 } from '@dao-dao/utils'
 
-import { Logo, WalletConnectButton } from '@/components'
+import { Logo, WalletConnectButton, useDAOInfoContext } from '@/components'
 
 interface NavItemData {
   renderIcon: (color: string) => ReactNode
@@ -55,7 +54,8 @@ const NavItem: FunctionComponent<NavItemProps> = ({
 
 export const Header: FunctionComponent = () => {
   const router = useRouter()
-  const { connected, name, nativeBalance, disconnect } = useWallet()
+  const { connected, name: walletName, nativeBalance, disconnect } = useWallet()
+  const { name: daoName } = useDAOInfoContext()
 
   const walletBalance =
     nativeBalance !== undefined
@@ -73,15 +73,15 @@ export const Header: FunctionComponent = () => {
       },
       {
         renderIcon: (color) => <Pie color={color} height={14} width={14} />,
-        label: 'Tokenomics',
+        label: 'Stake',
         href: '/',
       },
       {
         renderIcon: (color) => (
           <Governance color={color} height={14} width={14} />
         ),
-        label: 'Governance',
-        href: '/governance',
+        label: 'Vote',
+        href: '/vote',
       },
       // Dynamic parameters are only available once isReady is true and
       // we are not displaying a fallback page.
@@ -117,9 +117,10 @@ export const Header: FunctionComponent = () => {
     <header className="grid grid-cols-3 items-center py-4 px-6">
       <Link href="/">
         <a className="flex flex-row gap-2 items-center w-full md:gap-4">
-          <Logo height={32} width={32} />
+          <Logo size={32} />
+
           <p className="hidden font-studiofeixen md:block text-[18p]">
-            {SITE_TITLE}
+            {daoName}
           </p>
         </a>
       </Link>
@@ -139,7 +140,7 @@ export const Header: FunctionComponent = () => {
         {connected ? (
           <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
             <div className="flex flex-col items-end text-right link-text">
-              <span>{name}</span>
+              <span>{walletName}</span>
               <span className="text-secondary capitalize">
                 {walletBalance} {humanDenom}
               </span>

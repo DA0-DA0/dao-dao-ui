@@ -125,9 +125,9 @@ const InnerProposal = () => {
     !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:p-8 lg:max-w-page">
+    <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">
       <div className="col-span-2">
-        <div className="px-6 lg:hidden">
+        <div className="mb-6 lg:hidden">
           <V1ProposalInfoCard
             connected={connected}
             memberWhenProposalCreated={memberWhenProposalCreated}
@@ -163,7 +163,7 @@ const InnerProposal = () => {
           }
         />
 
-        <div className="px-6 pb-6 mt-6 lg:hidden">
+        <div className="pb-6 mt-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
           <V1ProposalInfoVoteStatus

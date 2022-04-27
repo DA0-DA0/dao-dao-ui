@@ -41,7 +41,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
   return (
     <>
       <div className="flex flex-row gap-2 items-center mb-4">
-        <Logo height={20} width={20} />
+        <Logo size={20} />
         <p className="text-base">
           {unstakedBalance.toLocaleString(undefined, {
             maximumFractionDigits: governanceTokenInfo.decimals,
@@ -108,7 +108,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
     <>
       <div className="flex flex-row justify-between items-center mb-4">
         <div className="flex flex-row gap-2 items-center">
-          <Logo height={20} width={20} />
+          <Logo size={20} />
           <p className="text-base">
             {stakedBalance.toLocaleString(undefined, {
               maximumFractionDigits: governanceTokenInfo.decimals,

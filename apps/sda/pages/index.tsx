@@ -8,7 +8,7 @@ import { useWallet } from '@dao-dao/state'
 import { StakingMode } from '@dao-dao/ui'
 
 import {
-  TokenomicsHeader,
+  StakeHeader,
   PageWrapper,
   PageWrapperProps,
   StakingModal,
@@ -18,13 +18,13 @@ import {
   StakedBalanceCard,
   UnstakedBalanceCard,
   ClaimsList,
-  TokenomicsHeaderLoader,
+  StakeHeaderLoader,
   BalanceCardLoader,
   WalletConnectButton,
 } from '@/components'
 import { useGovernanceTokenInfo } from '@/hooks'
 
-const InnerTokenomics = () => {
+const InnerStake = () => {
   const { connected } = useWallet()
   const { governanceTokenInfo } = useGovernanceTokenInfo()
 
@@ -38,10 +38,10 @@ const InnerTokenomics = () => {
 
   return (
     <>
-      <div className="p-8 mx-auto space-y-8 max-w-page">
-        <div className="flex relative flex-col items-center mt-14 bg-primary rounded-b-lg border-t border-inactive">
-          <SuspenseLoader fallback={<TokenomicsHeaderLoader />}>
-            <TokenomicsHeader />
+      <div className="space-y-8">
+        <div className="flex relative flex-col items-center mt-16 bg-primary rounded-b-lg border-t border-inactive lg:mt-32">
+          <SuspenseLoader fallback={<StakeHeaderLoader />}>
+            <StakeHeader />
           </SuspenseLoader>
         </div>
 
@@ -53,7 +53,7 @@ const InnerTokenomics = () => {
         {connected ? (
           <>
             <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
-              <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
+              <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
                   Balance (unstaked {governanceTokenInfo.name})
                 </p>
@@ -67,7 +67,7 @@ const InnerTokenomics = () => {
                 </SuspenseLoader>
               </div>
 
-              <div className="flex-1 p-6 bg-very-light rounded-lg border border-default">
+              <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
                   Voting power (staked {governanceTokenInfo.name})
                 </p>
@@ -112,15 +112,12 @@ const InnerTokenomics = () => {
   )
 }
 
-const TokenomicsPage: NextPage<PageWrapperProps> = ({
-  children: _,
-  ...props
-}) => (
+const StakePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
   <PageWrapper {...props}>
-    <InnerTokenomics />
+    <InnerStake />
   </PageWrapper>
 )
 
-export default TokenomicsPage
+export default StakePage
 
 export const getStaticProps = makeGetStaticProps()

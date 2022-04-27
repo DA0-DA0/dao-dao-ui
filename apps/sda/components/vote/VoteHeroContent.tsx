@@ -10,7 +10,7 @@ import {
 import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { Loader } from '../Loader'
-import { Hero } from './Hero'
+import { VoteHero } from './Hero'
 import {
   useGovernanceTokenInfo,
   useStakingInfo,
@@ -18,14 +18,14 @@ import {
 } from '@/hooks'
 import { DAO_ADDRESS, EXTERNAL_HREF } from '@/util'
 
-export const HeroContentLoader = () => (
+export const VoteHeroContentLoader = () => (
   <>
-    <Hero.Header image={<Loader size="6rem" />} />
-    <Hero.Stats />
+    <VoteHero.Header image={<Loader size="100%" />} />
+    <VoteHero.Stats />
   </>
 )
 
-export const HeroContent = () => {
+export const VoteHeroContent = () => {
   const daoConfig = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })
   )
@@ -52,11 +52,11 @@ export const HeroContent = () => {
     !governanceModuleConfig ||
     !threshold
   )
-    return <HeroContentLoader />
+    return <VoteHeroContentLoader />
 
   return (
     <>
-      <Hero.Header
+      <VoteHero.Header
         description={daoConfig.description}
         image={
           <img
@@ -68,7 +68,7 @@ export const HeroContent = () => {
         }
         title={daoConfig.name}
       />
-      <Hero.Stats
+      <VoteHero.Stats
         data={{
           denom: governanceTokenInfo.name,
           totalSupply: convertMicroDenomToDenomWithDecimals(

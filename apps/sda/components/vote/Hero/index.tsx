@@ -8,12 +8,12 @@ export interface HeroProps {
   children: ReactNode
 }
 
-export const Hero = ({ children }: HeroProps) => (
+export const VoteHero = ({ children }: HeroProps) => (
   <div className="overflow-hidden relative bg-disabled rounded-lg">
     <HeroOverlay />
     {children}
   </div>
 )
 
-Hero.Header = HeroHeader
-Hero.Stats = HeroStats
+VoteHero.Header = HeroHeader
+VoteHero.Stats = HeroStats

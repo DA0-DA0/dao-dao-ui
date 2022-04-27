@@ -144,7 +144,7 @@ const InnerProposalCreate = () => {
   )
 
   return (
-    <div className="flex flex-col gap-14 justify-center p-8 mx-auto max-w-page md:flex-row md:gap-8">
+    <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
       <div className="md:w-2/3">
         <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
 
@@ -182,5 +182,5 @@ const ProposalCreatePage: NextPage<PageWrapperProps> = ({
 export default ProposalCreatePage
 
 export const getStaticProps = makeGetStaticProps({
-  followingTitle: `Create Proposal`,
+  followingTitle: 'Create Proposal',
 })

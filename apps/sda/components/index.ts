@@ -1,8 +1,9 @@
-export * from './governance'
+export * from './stake'
 export * from './templates'
-export * from './tokenomics'
+export * from './vote'
 
 export * from './DAODAOLogo'
+export * from './DAOInfoContext'
 export * from './DescriptionAndAirdropAllocation'
 export * from './ErrorBoundary'
 export * from './Footer'

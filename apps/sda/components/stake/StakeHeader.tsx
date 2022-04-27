@@ -10,14 +10,14 @@ import { Loader } from '../Loader'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 import { DAO_ADDRESS } from '@/util'
 
-export const TokenomicsHeaderLoader: FunctionComponent = () => (
+export const StakeHeaderLoader: FunctionComponent = () => (
   <>
     <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
     <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
 
     <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
-      <div className="bg-light rounded-full border border-default">
-        <Loader size={80} />
+      <div className="w-24 h-24 bg-light rounded-full border border-default">
+        <Loader size="100%" />
       </div>
     </div>
 
@@ -55,7 +55,7 @@ export const TokenomicsHeaderLoader: FunctionComponent = () => (
   </>
 )
 
-export const TokenomicsHeader: FunctionComponent = () => {
+export const StakeHeader: FunctionComponent = () => {
   const daoConfig = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })
   )
@@ -82,7 +82,7 @@ export const TokenomicsHeader: FunctionComponent = () => {
     governanceTokenPrice === undefined ||
     apr === undefined
   ) {
-    return <TokenomicsHeaderLoader />
+    return <StakeHeaderLoader />
   }
 
   const totalStakedBalance = convertMicroDenomToDenomWithDecimals(
@@ -100,13 +100,12 @@ export const TokenomicsHeader: FunctionComponent = () => {
       <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
 
       <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
-        <div className="bg-light rounded-full border border-default">
+        <div className="w-24 h-24 bg-light rounded-full border border-default">
           <img
             alt="logo"
-            height="80px"
+            className="w-full h-full"
             // TODO: Replace placeholder image.
             src={daoConfig.image_url ?? '/daotoken.jpg'}
-            width="80px"
           />
         </div>
       </div>

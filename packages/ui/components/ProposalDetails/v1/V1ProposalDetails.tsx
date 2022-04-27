@@ -50,7 +50,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
   const [showRaw, setShowRaw] = useState(false)
 
   return (
-    <div className="p-6">
+    <div>
       <div className="max-w-prose">
         <h1 className="header-text">{proposal.title}</h1>
       </div>

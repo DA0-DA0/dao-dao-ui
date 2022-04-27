@@ -6,21 +6,21 @@ import { FunctionComponent, PropsWithChildren } from 'react'
 import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
 import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 
-import { Loader, SuspenseLoader } from '.'
+import { Header, Loader, SuspenseLoader, DAOInfoContext, DAOInfo } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string
   title: string
   description: string
-  imageUrl: string | null
+  daoInfo: DAOInfo
 }>
 
 export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
   url,
   title,
   description,
-  imageUrl,
+  daoInfo,
   children,
 }) => {
   const { isFallback, isReady } = useRouter()
@@ -34,18 +34,22 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
           type: 'website',
           title,
           description,
-          ...(!!imageUrl && { images: [{ url: imageUrl }] }),
+          ...(!!daoInfo.imageUrl && { images: [{ url: daoInfo.imageUrl }] }),
         }}
         title={title}
       />
 
-      {/* Suspend children so SEO stays intact while page loads. */}
-      <SuspenseLoader
-        fallback={<Loader fillScreen size={64} />}
-        forceFallback={isFallback || !isReady}
-      >
-        {children}
-      </SuspenseLoader>
+      <DAOInfoContext.Provider value={daoInfo}>
+        <Header />
+
+        {/* Suspend children so SEO stays intact while page loads. */}
+        <SuspenseLoader
+          fallback={<Loader fillScreen size={64} />}
+          forceFallback={isFallback || !isReady}
+        >
+          <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
+        </SuspenseLoader>
+      </DAOInfoContext.Provider>
     </>
   )
 }
@@ -80,7 +84,10 @@ export const makeGetStaticProps: GetStaticPropsMaker =
               .filter(Boolean)
               .join(' | '),
           description: overrideDescription ?? config.description,
-          imageUrl: config.image_url || null,
+          daoInfo: {
+            name: config.name,
+            imageUrl: config.image_url ?? null,
+          },
         },
         // Regenerate the page at most once per second.
         // Should serve cached copy and update after a refresh.

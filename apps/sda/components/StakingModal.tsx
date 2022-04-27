@@ -15,7 +15,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { Logo, SuspenseLoader, WalletConnectButton } from '.'
+import { Loader, SuspenseLoader, WalletConnectButton } from '.'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 import { cleanChainError } from '@/util'
 
@@ -247,7 +247,7 @@ const StakingModalLoader: FunctionComponent<
 > = (props) => (
   <StakingModalWrapper {...props}>
     <div className="animate-spin">
-      <Logo height={40} width={40} />
+      <Loader size={40} />
     </div>
   </StakingModalWrapper>
 )

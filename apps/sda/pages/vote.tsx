@@ -9,37 +9,34 @@ import { FunctionComponent } from 'react'
 import { Button } from '@dao-dao/ui'
 
 import {
-  HeroContent,
+  VoteHeroContent,
   Loader,
   makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
   SuspenseLoader,
   ProposalsContent,
-  Hero,
-  HeroContentLoader,
-  DescriptionAndAirdropAllocation,
+  VoteHero,
+  VoteHeroContentLoader,
   ProposalsInfo,
   ProposalsInfoLoader,
+  DescriptionAndAirdropAllocation,
 } from '@/components'
-interface InnerGovernanceProps {
+
+interface InnerVoteProps {
   missionMarkdown: string
 }
 
-const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
-  missionMarkdown,
-}) => {
+const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
   const router = useRouter()
 
   return (
-    <section className="p-8 mx-auto space-y-8 max-w-page">
-      <Hero>
-        <SuspenseLoader fallback={<HeroContentLoader />}>
-          <HeroContent />
+    <div className="space-y-8">
+      <VoteHero>
+        <SuspenseLoader fallback={<VoteHeroContentLoader />}>
+          <VoteHeroContent />
         </SuspenseLoader>
-      </Hero>
-
-      <DescriptionAndAirdropAllocation missionMarkdown={missionMarkdown} />
+      </VoteHero>
 
       <div className="flex flex-row justify-between items-center">
         <h3 className="title-text">Proposals</h3>
@@ -63,27 +60,29 @@ const InnerGovernance: FunctionComponent<InnerGovernanceProps> = ({
       <SuspenseLoader fallback={<Loader />}>
         <ProposalsContent />
       </SuspenseLoader>
-    </section>
+
+      <DescriptionAndAirdropAllocation missionMarkdown={missionMarkdown} />
+    </div>
   )
 }
 
-type GovernancePageProps = PageWrapperProps & {
-  innerProps: InnerGovernanceProps
+type VotePageProps = PageWrapperProps & {
+  innerProps: InnerVoteProps
 }
 
-const GovernancePage: NextPage<GovernancePageProps> = ({
+const VotePage: NextPage<VotePageProps> = ({
   children: _,
   innerProps,
   ...props
 }) => (
   <PageWrapper {...props}>
-    <InnerGovernance {...innerProps} />
+    <InnerVote {...innerProps} />
   </PageWrapper>
 )
 
-export default GovernancePage
+export default VotePage
 
-export const getStaticProps: GetStaticProps<GovernancePageProps> = async (
+export const getStaticProps: GetStaticProps<VotePageProps> = async (
   ...props
 ) => {
   const [staticProps, missionMarkdown] = await Promise.all([

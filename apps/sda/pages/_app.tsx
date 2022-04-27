@@ -11,7 +11,7 @@ import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
-import { ErrorBoundary, Footer, Header, Notifications } from '@/components'
+import { ErrorBoundary, Footer, Notifications } from '@/components'
 
 const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
 const image = process.env.NEXT_PUBLIC_SITE_IMAGE
@@ -39,8 +39,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       theme={theme}
       updateTheme={setTheme}
     >
-      <Header />
-
       <ErrorBoundary title="An unexpected error occurred.">
         <Component {...pageProps} />
       </ErrorBoundary>
