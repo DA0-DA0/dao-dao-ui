@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { useRecoilValue, constSelector } from 'recoil'
 
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { proposalModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
 import { ProposalItem } from './ProposalItem'
@@ -12,8 +12,9 @@ import { DAO_ADDRESS } from '@/util'
 
 export const ProposalsContent = () => {
   const governanceModuleAddress = useRecoilValue(
-    governanceModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
+    proposalModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
   )?.[0]
+
   const allProposalResponses = useRecoilValue(
     governanceModuleAddress
       ? listProposalsSelector({

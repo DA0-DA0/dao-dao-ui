@@ -9,8 +9,6 @@ import {
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
-
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 export interface ConfigResponse {
   automatically_add_cw20s: boolean
   automatically_add_cw721s: boolean
@@ -19,18 +17,161 @@ export interface ConfigResponse {
   name: string
   [k: string]: unknown
 }
-export type Addr = string
+export type CosmosMsgFor_Empty =
+  | {
+      bank: BankMsg
+    }
+  | {
+      custom: Empty
+    }
+  | {
+      staking: StakingMsg
+    }
+  | {
+      distribution: DistributionMsg
+    }
+  | {
+      wasm: WasmMsg
+    }
+export type BankMsg =
+  | {
+      send: {
+        amount: Coin[]
+        to_address: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      burn: {
+        amount: Coin[]
+        [k: string]: unknown
+      }
+    }
 export type Uint128 = string
-export interface Cw20BalancesResponse {
+export type StakingMsg =
+  | {
+      delegate: {
+        amount: Coin
+        validator: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      undelegate: {
+        amount: Coin
+        validator: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      redelegate: {
+        amount: Coin
+        dst_validator: string
+        src_validator: string
+        [k: string]: unknown
+      }
+    }
+export type DistributionMsg =
+  | {
+      set_withdraw_address: {
+        address: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      withdraw_delegator_reward: {
+        validator: string
+        [k: string]: unknown
+      }
+    }
+export type WasmMsg =
+  | {
+      execute: {
+        contract_addr: string
+        funds: Coin[]
+        msg: Binary
+        [k: string]: unknown
+      }
+    }
+  | {
+      instantiate: {
+        admin?: string | null
+        code_id: number
+        funds: Coin[]
+        label: string
+        msg: Binary
+        [k: string]: unknown
+      }
+    }
+  | {
+      migrate: {
+        contract_addr: string
+        msg: Binary
+        new_code_id: number
+        [k: string]: unknown
+      }
+    }
+  | {
+      update_admin: {
+        admin: string
+        contract_addr: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      clear_admin: {
+        contract_addr: string
+        [k: string]: unknown
+      }
+    }
+export type Binary = string
+export interface Coin {
+  amount: Uint128
+  denom: string
+  [k: string]: unknown
+}
+export interface Empty {
+  [k: string]: unknown
+}
+export type Addr = string
+export type Cw20BalancesResponse = Cw20BalanceResponse[]
+export interface Cw20BalanceResponse {
   addr: Addr
   balance: Uint128
   [k: string]: unknown
 }
 export type Cw20TokenListResponse = Addr[]
 export type Cw721TokenListResponse = Addr[]
+export type PauseInfoResponse =
+  | {
+      Paused: {
+        expiration: Expiration
+        [k: string]: unknown
+      }
+    }
+  | {
+      Unpaused: {
+        [k: string]: unknown
+      }
+    }
+export type Expiration =
+  | {
+      at_height: number
+    }
+  | {
+      at_time: Timestamp
+    }
+  | {
+      never: {
+        [k: string]: unknown
+      }
+    }
+export type Timestamp = Uint64
+export type Uint64 = string
 export interface DumpStateResponse {
   config: Config
   governance_modules: Addr[]
+  pause_info: PauseInfoResponse
   version: ContractVersion
   voting_module: Addr
   [k: string]: unknown
@@ -48,33 +189,21 @@ export interface ContractVersion {
   version: string
   [k: string]: unknown
 }
+export type Duration =
+  | {
+      height: number
+    }
+  | {
+      time: number
+    }
 export interface GetItemResponse {
   item?: Addr | null
   [k: string]: unknown
 }
-export type GovernanceModulesResponse = Addr[]
 export interface InfoResponse {
   info: ContractVersion
   [k: string]: unknown
 }
-export type Admin =
-  | {
-      address: {
-        addr: string
-        [k: string]: unknown
-      }
-    }
-  | {
-      governance_contract: {
-        [k: string]: unknown
-      }
-    }
-  | {
-      none: {
-        [k: string]: unknown
-      }
-    }
-export type Binary = string
 export type InitialItemInfo =
   | {
       Existing: {
@@ -88,15 +217,37 @@ export type InitialItemInfo =
         [k: string]: unknown
       }
     }
+export type Admin =
+  | {
+      address: {
+        addr: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      core_contract: {
+        [k: string]: unknown
+      }
+    }
+  | {
+      none: {
+        [k: string]: unknown
+      }
+    }
 export interface InstantiateMsg {
   automatically_add_cw20s: boolean
   automatically_add_cw721s: boolean
   description: string
-  governance_modules_instantiate_info: ModuleInstantiateInfo[]
   image_url?: string | null
   initial_items?: InitialItem[] | null
   name: string
+  proposal_modules_instantiate_info: ModuleInstantiateInfo[]
   voting_module_instantiate_info: ModuleInstantiateInfo
+  [k: string]: unknown
+}
+export interface InitialItem {
+  info: InitialItemInfo
+  name: string
   [k: string]: unknown
 }
 export interface ModuleInstantiateInfo {
@@ -106,12 +257,8 @@ export interface ModuleInstantiateInfo {
   msg: Binary
   [k: string]: unknown
 }
-export interface InitialItem {
-  info: InitialItemInfo
-  name: string
-  [k: string]: unknown
-}
 export type ListItemsResponse = string[]
+export type ProposalModulesResponse = Addr[]
 export interface TotalPowerAtHeightResponse {
   height: number
   power: Uint128
@@ -126,14 +273,15 @@ export interface VotingPowerAtHeightResponse {
 export interface CwCoreReadOnlyInterface {
   contractAddress: string
   config: () => Promise<ConfigResponse>
+  pauseInfo: () => Promise<PauseInfoResponse>
   votingModule: () => Promise<VotingModuleResponse>
-  governanceModules: ({
+  proposalModules: ({
     limit,
     startAt,
   }: {
     limit?: number
     startAt?: string
-  }) => Promise<GovernanceModulesResponse>
+  }) => Promise<ProposalModulesResponse>
   dumpState: () => Promise<DumpStateResponse>
   getItem: ({ key }: { key: string }) => Promise<GetItemResponse>
   listItems: ({
@@ -163,7 +311,7 @@ export interface CwCoreReadOnlyInterface {
   }: {
     limit?: number
     startAt?: string
-  }) => Promise<Cw20BalancesResponse[]>
+  }) => Promise<Cw20BalancesResponse>
   votingPowerAtHeight: ({
     address,
     height,
@@ -186,8 +334,9 @@ export class CwCoreQueryClient implements CwCoreReadOnlyInterface {
     this.client = client
     this.contractAddress = contractAddress
     this.config = this.config.bind(this)
+    this.pauseInfo = this.pauseInfo.bind(this)
     this.votingModule = this.votingModule.bind(this)
-    this.governanceModules = this.governanceModules.bind(this)
+    this.proposalModules = this.proposalModules.bind(this)
     this.dumpState = this.dumpState.bind(this)
     this.getItem = this.getItem.bind(this)
     this.listItems = this.listItems.bind(this)
@@ -204,20 +353,25 @@ export class CwCoreQueryClient implements CwCoreReadOnlyInterface {
       config: {},
     })
   }
+  pauseInfo = async (): Promise<PauseInfoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      pause_info: {},
+    })
+  }
   votingModule = async (): Promise<VotingModuleResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       voting_module: {},
     })
   }
-  governanceModules = async ({
+  proposalModules = async ({
     limit,
     startAt,
   }: {
     limit?: number
     startAt?: string
-  }): Promise<GovernanceModulesResponse> => {
+  }): Promise<ProposalModulesResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      governance_modules: {
+      proposal_modules: {
         limit,
         start_at: startAt,
       },
@@ -283,7 +437,7 @@ export class CwCoreQueryClient implements CwCoreReadOnlyInterface {
   }: {
     limit?: number
     startAt?: string
-  }): Promise<Cw20BalancesResponse[]> => {
+  }): Promise<Cw20BalancesResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       cw20_balances: {
         limit,
@@ -336,13 +490,14 @@ export interface CwCoreInterface extends CwCoreReadOnlyInterface {
   }: {
     module: ModuleInstantiateInfo
   }) => Promise<ExecuteResult>
-  updateGovernanceModules: ({
+  updateProposalModules: ({
     toAdd,
     toRemove,
   }: {
     toAdd: ModuleInstantiateInfo[]
     toRemove: string[]
   }) => Promise<ExecuteResult>
+  pause: ({ duration }: { duration: Duration }) => Promise<ExecuteResult>
   setItem: ({
     addr,
     key,
@@ -385,7 +540,8 @@ export class CwCoreClient extends CwCoreQueryClient implements CwCoreInterface {
     this.executeProposalHook = this.executeProposalHook.bind(this)
     this.updateConfig = this.updateConfig.bind(this)
     this.updateVotingModule = this.updateVotingModule.bind(this)
-    this.updateGovernanceModules = this.updateGovernanceModules.bind(this)
+    this.updateProposalModules = this.updateProposalModules.bind(this)
+    this.pause = this.pause.bind(this)
     this.setItem = this.setItem.bind(this)
     this.removeItem = this.removeItem.bind(this)
     this.receive = this.receive.bind(this)
@@ -442,7 +598,7 @@ export class CwCoreClient extends CwCoreQueryClient implements CwCoreInterface {
       'auto'
     )
   }
-  updateGovernanceModules = async ({
+  updateProposalModules = async ({
     toAdd,
     toRemove,
   }: {
@@ -453,9 +609,25 @@ export class CwCoreClient extends CwCoreQueryClient implements CwCoreInterface {
       this.sender,
       this.contractAddress,
       {
-        update_governance_modules: {
+        update_proposal_modules: {
           to_add: toAdd,
           to_remove: toRemove,
+        },
+      },
+      'auto'
+    )
+  }
+  pause = async ({
+    duration,
+  }: {
+    duration: Duration
+  }): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        pause: {
+          duration,
         },
       },
       'auto'

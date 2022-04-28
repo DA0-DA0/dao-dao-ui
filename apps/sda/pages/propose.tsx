@@ -24,7 +24,7 @@ import {
   ProposalsInfo,
   SuspenseLoader,
 } from '@/components'
-import { useGovernanceModule } from '@/hooks'
+import { useProposalModule } from '@/hooks'
 import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
 
 const InnerProposalCreate = () => {
@@ -33,7 +33,7 @@ const InnerProposalCreate = () => {
   const [loading, setLoading] = useState(false)
 
   const { governanceModuleAddress, governanceModuleConfig } =
-    useGovernanceModule()
+    useProposalModule()
 
   const currentAllowance = useRecoilValue(
     governanceModuleConfig?.deposit_info &&

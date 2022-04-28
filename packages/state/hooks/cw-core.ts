@@ -32,9 +32,7 @@ const wrapExecuteHook =
 export const useExecuteProposalHook = wrapExecuteHook('executeProposalHook')
 export const useUpdateConfig = wrapExecuteHook('updateConfig')
 export const useUpdateVotingModule = wrapExecuteHook('updateVotingModule')
-export const useUpdateGovernanceModules = wrapExecuteHook(
-  'updateGovernanceModules'
-)
+export const useUpdateProposalModules = wrapExecuteHook('updateProposalModules')
 export const useSetItem = wrapExecuteHook('setItem')
 export const useRemoveItem = wrapExecuteHook('removeItem')
 export const useReceive = wrapExecuteHook('receive')

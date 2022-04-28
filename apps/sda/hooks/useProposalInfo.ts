@@ -13,13 +13,13 @@ import {
   getVoteSelector,
 } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
-import { useGovernanceModule } from '.'
+import { useProposalModule } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export const useProposalInfo = (proposalId: number | undefined) => {
   const { address: walletAddress } = useWallet()
 
-  const { governanceModuleAddress } = useGovernanceModule()
+  const { governanceModuleAddress } = useProposalModule()
 
   const proposalResponse = useRecoilValue(
     governanceModuleAddress && proposalId !== undefined

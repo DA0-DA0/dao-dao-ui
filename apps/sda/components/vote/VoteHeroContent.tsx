@@ -14,7 +14,7 @@ import { VoteHero } from './Hero'
 import {
   useGovernanceTokenInfo,
   useStakingInfo,
-  useGovernanceModule,
+  useProposalModule,
 } from '@/hooks'
 import { DAO_ADDRESS, VOTE_EXTERNAL_URL } from '@/util'
 
@@ -34,7 +34,7 @@ export const VoteHeroContent = () => {
   const { stakingContractConfig, totalStaked } = useStakingInfo({
     fetchTotalStaked: true,
   })
-  const { governanceModuleConfig } = useGovernanceModule({
+  const { governanceModuleConfig } = useProposalModule({
     fetchProposalDepositTokenInfo: true,
   })
 

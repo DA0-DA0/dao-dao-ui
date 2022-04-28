@@ -2,11 +2,12 @@ import { useRecoilValue, constSelector } from 'recoil'
 
 import { govTokenInfoSelector, useWallet } from '@dao-dao/state'
 import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { balanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
-import { DAO_ADDRESS } from '@/util'
+import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
 
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
@@ -71,9 +72,18 @@ export const useGovernanceTokenInfo = ({
       : constSelector(undefined)
   )?.balance
 
+  const price = useRecoilValue(
+    fetchPriceInfo
+      ? tokenUSDPriceSelector({
+          tokenSwapAddress: TOKEN_SWAP_ADDRESS,
+          tokenDecimals: governanceTokenInfo?.decimals || 6,
+        })
+      : constSelector(undefined)
+  )
+  // const price = fetchPriceInfo ? 42.2 : undefined
+
   // Price info
-  // TODO: Retrieve.
-  const price = fetchPriceInfo ? 40.2 : undefined
+  // TODO: Retrieve APR.
   const apr = fetchPriceInfo ? 103 : undefined
 
   return {

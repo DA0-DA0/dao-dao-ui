@@ -25,7 +25,7 @@ import {
   WalletConnectButton,
 } from '@/components'
 import {
-  useGovernanceModule,
+  useProposalModule,
   useGovernanceTokenInfo,
   useProposalInfo,
 } from '@/hooks'
@@ -46,7 +46,7 @@ const InnerProposal = () => {
 
   const { governanceTokenInfo } = useGovernanceTokenInfo()
   const { governanceModuleAddress, governanceModuleConfig } =
-    useGovernanceModule()
+    useProposalModule()
 
   const {
     proposalResponse,

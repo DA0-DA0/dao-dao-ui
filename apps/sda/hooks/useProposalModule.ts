@@ -2,17 +2,17 @@ import { useRecoilValue, constSelector } from 'recoil'
 
 import { ConfigResponse } from '@dao-dao/state/clients/cw-proposal-single'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { governanceModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { proposalModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 
 import { DAO_ADDRESS } from '@/util'
 
-interface UseGovernanceModuleOptions {
+interface UseProposalModuleOptions {
   fetchProposalDepositTokenInfo?: boolean
 }
 
-interface UseGovernanceModuleResponse {
+interface UseProposalModuleResponse {
   governanceModuleAddress?: string
   governanceModuleConfig?: ConfigResponse
   /// Optional
@@ -20,11 +20,11 @@ interface UseGovernanceModuleResponse {
   proposalDepositTokenInfo?: TokenInfoResponse
 }
 
-export const useGovernanceModule = ({
+export const useProposalModule = ({
   fetchProposalDepositTokenInfo = false,
-}: UseGovernanceModuleOptions = {}): UseGovernanceModuleResponse => {
+}: UseProposalModuleOptions = {}): UseProposalModuleResponse => {
   const governanceModuleAddress = useRecoilValue(
-    governanceModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
+    proposalModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
   )?.[0]
   const governanceModuleConfig = useRecoilValue(
     governanceModuleAddress

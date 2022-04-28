@@ -6,7 +6,7 @@ import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { HeroStat } from './Hero/Stat'
-import { useGovernanceModule } from '@/hooks'
+import { useProposalModule } from '@/hooks'
 
 export interface ProposalsInfoProps {
   data?: {
@@ -47,7 +47,7 @@ const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data, className }) => (
 
 export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
   const { governanceModuleConfig, proposalDepositTokenInfo } =
-    useGovernanceModule({
+    useProposalModule({
       fetchProposalDepositTokenInfo: true,
     })
 

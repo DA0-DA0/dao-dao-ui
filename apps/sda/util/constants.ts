@@ -37,3 +37,5 @@ export const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_ADDRESS as string
 export const VOTE_EXTERNAL_URL = process.env
   .NEXT_PUBLIC_VOTE_EXTERNAL_URL as string
 export const AIRDROP_URL = process.env.NEXT_PUBLIC_AIRDROP_URL as string
+export const TOKEN_SWAP_ADDRESS = process.env
+  .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string

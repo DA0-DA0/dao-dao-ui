@@ -8,7 +8,7 @@ import {
   Cw721TokenListResponse,
   DumpStateResponse,
   GetItemResponse,
-  GovernanceModulesResponse,
+  ProposalModulesResponse,
   InfoResponse,
   ListItemsResponse,
   CwCoreQueryClient as QueryClient,
@@ -85,9 +85,9 @@ export const votingModuleSelector = selectorFamily<
     },
 })
 
-export const governanceModulesSelector = selectorFamily<
-  GovernanceModulesResponse | undefined,
-  QueryClientParams & { params: Parameters<QueryClient['governanceModules']> }
+export const proposalModulesSelector = selectorFamily<
+  ProposalModulesResponse | undefined,
+  QueryClientParams & { params: Parameters<QueryClient['proposalModules']> }
 >({
   key: 'cwCoreGovernanceModules',
   get:
@@ -96,7 +96,7 @@ export const governanceModulesSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      return await client.governanceModules(...params)
+      return await client.proposalModules(...params)
     },
 })
 
@@ -176,7 +176,7 @@ export const cw721TokenListSelector = selectorFamily<
 })
 
 export const cw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse[] | undefined,
+  Cw20BalancesResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw20Balances']> }
 >({
   key: 'cwCoreCw20Balances',
