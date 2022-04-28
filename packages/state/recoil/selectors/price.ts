@@ -1,5 +1,7 @@
-import { NATIVE_DECIMALS } from '@dao-dao/utils'
 import { selectorFamily } from 'recoil'
+
+import { NATIVE_DECIMALS } from '@dao-dao/utils'
+
 import { cosmWasmClientSelector } from './chain'
 
 export const tokenUSDPriceSelector = selectorFamily<
