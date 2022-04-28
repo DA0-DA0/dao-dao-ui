@@ -2,9 +2,9 @@ import { useRecoilValue, constSelector } from 'recoil'
 
 import { govTokenInfoSelector, useWallet } from '@dao-dao/state'
 import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { balanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
+import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
 import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
