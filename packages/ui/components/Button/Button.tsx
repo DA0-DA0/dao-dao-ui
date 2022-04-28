@@ -65,10 +65,9 @@ function ButtonComponent(
       </div>
       <div
         className={clsx(
-          'flex-row gap-2 items-center',
+          'flex flex-row gap-2 items-center',
           {
             invisible: loading,
-            flex: !loading,
           },
           contentContainerClassName
         )}
