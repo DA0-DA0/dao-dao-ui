@@ -67,7 +67,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
           <MinusIcon className="w-4" />
         </button>
         <input
-          className="w-full text-right bg-transparent border-none outline-none ring-none"
+          className="w-full text-right bg-transparent border-none outline-none ring-none body-text"
           defaultValue={defaultValue}
           disabled={disabled}
           step={step}

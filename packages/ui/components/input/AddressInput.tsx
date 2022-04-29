@@ -35,7 +35,7 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
     >
       <Wallet color="currentColor" width="24px" />
       <input
-        className="w-full bg-transparent border-none outline-none ring-none"
+        className="w-full bg-transparent border-none outline-none ring-none body-text"
         disabled={disabled}
         placeholder="Juno address"
         type="text"
