@@ -55,9 +55,8 @@ function ButtonComponent(
     >
       <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
         <div
-          className={clsx('mx-auto animate-spin', {
+          className={clsx('inline-block mx-auto animate-spin', {
             invisible: !loading,
-            'inline-block': loading,
           })}
         >
           <Logo height={20} invert width={20} />
