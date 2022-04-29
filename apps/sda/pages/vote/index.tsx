@@ -94,17 +94,15 @@ export const getStaticProps: GetStaticProps<VotePageProps> = async (
     }),
   ])
 
-  if (!('props' in staticProps)) {
-    return staticProps
-  }
-
-  return {
-    ...staticProps,
-    props: {
-      ...staticProps.props,
-      innerProps: {
-        missionMarkdown,
-      },
-    },
-  }
+  return 'props' in staticProps
+    ? {
+        ...staticProps,
+        props: {
+          ...staticProps.props,
+          innerProps: {
+            missionMarkdown,
+          },
+        },
+      }
+    : staticProps
 }

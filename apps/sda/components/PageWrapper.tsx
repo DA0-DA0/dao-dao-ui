@@ -102,6 +102,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
       }
     } catch (error) {
       console.error(error)
-      return { notFound: true }
+      // Throw error to trigger 500.
+      throw new Error('An unexpected error occurred. Please try again later.')
     }
   }

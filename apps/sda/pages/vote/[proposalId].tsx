@@ -1,10 +1,15 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { useWallet } from '@dao-dao/state'
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+import { CwCoreQueryClient } from '@dao-dao/state/clients/cw-core'
+import {
+  CwProposalSingleQueryClient,
+  Vote,
+} from '@dao-dao/state/clients/cw-proposal-single'
 import {
   useCastVote,
   useExecute,
@@ -15,6 +20,7 @@ import {
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
+import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 
 import {
   makeGetStaticProps,
@@ -29,7 +35,7 @@ import {
   useGovernanceTokenInfo,
   useProposalInfo,
 } from '@/hooks'
-import { cleanChainError } from '@/util'
+import { cleanChainError, DAO_ADDRESS } from '@/util'
 
 const InnerProposal = () => {
   const router = useRouter()
@@ -203,12 +209,36 @@ const InnerProposal = () => {
   )
 }
 
-const ProposalPage: NextPage<PageWrapperProps> = ({
+const ProposalNotFound = () => (
+  <div className="mx-auto mt-4 max-w-prose text-center break-words">
+    <h1 className="text-3xl font-bold">Proposal Not Found</h1>
+    <p className="mt-3">
+      We couldn{"'"}t find a proposal with that ID. See all proposals on the{' '}
+      <Link href="/vote">
+        <a className="underline link-text">Vote</a>
+      </Link>{' '}
+      page.
+    </p>
+  </div>
+)
+
+interface ProposalInnerProps {
+  exists: boolean
+}
+
+type ProposalPageProps = PageWrapperProps & {
+  innerProps: ProposalInnerProps
+}
+
+const ProposalPage: NextPage<ProposalPageProps> = ({
   children: _,
   ...props
 }) => (
   <PageWrapper {...props}>
-    <InnerProposal />
+    {/* Need optional chaining due to static path generation.
+     *  Fallback page renders without any props on the server.
+     */}
+    {props?.innerProps?.exists ? <InnerProposal /> : <ProposalNotFound />}
   </PageWrapper>
 )
 
@@ -221,14 +251,76 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps: GetStaticProps = async (...props) => {
+export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
+  ...props
+) => {
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    return { notFound: true }
+    const staticProps = await makeGetStaticProps({
+      followingTitle: 'Proposal not found',
+    })(...props)
+
+    return 'props' in staticProps
+      ? {
+          ...staticProps,
+          props: {
+            ...staticProps.props,
+            innerProps: {
+              exists: false,
+            },
+          },
+        }
+      : staticProps
   }
 
   const proposalId = Number(proposalIdQuery)
-  return await makeGetStaticProps({
-    followingTitle: `Proposal #${proposalId}`,
-  })(...props)
+
+  try {
+    // Verify proposal exists.
+    const rpcClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
+    // Get proposal module address.
+    const daoClient = new CwCoreQueryClient(rpcClient, DAO_ADDRESS)
+    const proposalAddress = (await daoClient.proposalModules({}))[0]
+    // Get proposal.
+    const proposalClient = new CwProposalSingleQueryClient(
+      rpcClient,
+      proposalAddress
+    )
+
+    let exists = false
+    try {
+      exists = !!(await proposalClient.proposal({ proposalId })).proposal
+    } catch (err) {
+      // If proposal doesn't exist, handle 404 manually on frontend.
+      // Rethrow all other errors.
+      if (
+        !(err instanceof Error) ||
+        !err.message.includes('Proposal not found')
+      ) {
+        throw err
+      }
+
+      console.error(err)
+    }
+
+    const staticProps = await makeGetStaticProps({
+      followingTitle: `Proposal ${exists ? '#' + proposalId : 'not found'}`,
+    })(...props)
+
+    return 'props' in staticProps
+      ? {
+          ...staticProps,
+          props: {
+            ...staticProps.props,
+            innerProps: {
+              exists,
+            },
+          },
+        }
+      : staticProps
+  } catch (error) {
+    console.error(error)
+    // Throw error to trigger 500.
+    throw new Error('An unexpected error occurred. Please try again later.')
+  }
 }

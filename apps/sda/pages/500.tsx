@@ -11,6 +11,11 @@ const Custom500: NextPage = () => {
     <>
       <Header />
 
+      {/* Only render page once mounted in browser (via SuspenseLoader) to
+       * prevent hydration error. Server renders router.asPath as `/404`
+       * but client renders router.asPath as the redirected/invalid
+       * route.
+       */}
       <SuspenseLoader fallback={null}>
         <div className="mx-auto mt-4 max-w-prose text-center break-words">
           <h1 className="text-3xl font-bold">500 - Internal Server Error</h1>
