@@ -112,7 +112,7 @@ export const StakeHeader: FunctionComponent = () => {
       <p className="p-5 mt-12 w-full font-studiofeixen text-2xl  text-center border-t border-inactive">
         1 {governanceTokenInfo.symbol} =
         {governanceTokenPrice
-          ? '$' +
+          ? ' $' +
             governanceTokenPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,

@@ -80,11 +80,9 @@ export const useGovernanceTokenInfo = ({
         })
       : constSelector(undefined)
   )
-  // const price = fetchPriceInfo ? 42.2 : undefined
-
   // Price info
   // TODO: Retrieve APR.
-  const apr = fetchPriceInfo ? 103 : undefined
+  const apr = fetchPriceInfo ? 0 : undefined
 
   return {
     votingModuleAddress,
