@@ -25,11 +25,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
     fetchPriceInfo: true,
   })
 
-  if (
-    !governanceTokenInfo ||
-    price === undefined ||
-    (connected && _unstakedBalance === undefined)
-  ) {
+  if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
     return <BalanceCardLoader />
   }
 
@@ -51,13 +47,15 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
       </div>
 
       <div className="flex flex-row flex-wrap justify-between items-center">
-        <p className="text-lg font-medium">
-          ${' '}
-          {(unstakedBalance * price).toLocaleString(undefined, {
-            maximumFractionDigits: 2,
-          })}{' '}
-          USD
-        </p>
+        {price && (
+          <p className="text-lg font-medium">
+            ${' '}
+            {(unstakedBalance * price).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}{' '}
+            USD
+          </p>
+        )}
 
         <Button
           className="text-base"
@@ -88,7 +86,6 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   if (
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
-    price === undefined ||
     (connected && _stakedBalance === undefined)
   ) {
     return <BalanceCardLoader />
@@ -126,13 +123,15 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
       </div>
 
       <div className="flex flex-row flex-wrap justify-between items-center">
-        <p className="text-lg font-medium">
-          ${' '}
-          {(stakedBalance * price).toLocaleString(undefined, {
-            maximumFractionDigits: 2,
-          })}{' '}
-          USD
-        </p>
+        {price && (
+          <p className="text-lg font-medium">
+            ${' '}
+            {(stakedBalance * price).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}{' '}
+            USD
+          </p>
+        )}
 
         <Button
           className="text-base"

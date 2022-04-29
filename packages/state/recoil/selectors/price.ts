@@ -5,7 +5,7 @@ import { NATIVE_DECIMALS } from '@dao-dao/utils'
 import { cosmWasmClientSelector } from './chain'
 
 export const tokenUSDPriceSelector = selectorFamily<
-  number,
+  number | undefined,
   { tokenSwapAddress: string; tokenDecimals: number }
 >({
   key: 'tokenUSDPriceSelector',
@@ -16,7 +16,7 @@ export const tokenUSDPriceSelector = selectorFamily<
       if (!client) return 0
 
       // Likely means we're on the testnet. Just make up a number.
-      if (!tokenSwapAddress.length) return 0.5
+      if (!tokenSwapAddress.length) return undefined
 
       const junoUSD = (
         await client.queryContractSmart(

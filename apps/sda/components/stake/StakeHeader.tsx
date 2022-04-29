@@ -79,7 +79,6 @@ export const StakeHeader: FunctionComponent = () => {
     !governanceTokenInfo ||
     _totalStakedBalance === undefined ||
     _treasuryBalance === undefined ||
-    governanceTokenPrice === undefined ||
     apr === undefined
   ) {
     return <StakeHeaderLoader />
@@ -111,12 +110,15 @@ export const StakeHeader: FunctionComponent = () => {
       </div>
 
       <p className="p-5 mt-12 w-full font-studiofeixen text-2xl  text-center border-t border-inactive">
-        1 {governanceTokenInfo.symbol} = $
-        {governanceTokenPrice.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}{' '}
-        USD
+        1 {governanceTokenInfo.symbol} =
+        {governanceTokenPrice
+          ? '$' +
+            governanceTokenPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }) +
+            ' USD'
+          : ' $ ??'}
       </p>
 
       <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
