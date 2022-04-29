@@ -13,8 +13,8 @@ interface UseProposalModuleOptions {
 }
 
 interface UseProposalModuleResponse {
-  governanceModuleAddress?: string
-  governanceModuleConfig?: ConfigResponse
+  proposalModuleAddress?: string
+  proposalModuleConfig?: ConfigResponse
   /// Optional
   // Proposal deposit token info
   proposalDepositTokenInfo?: TokenInfoResponse
@@ -23,13 +23,13 @@ interface UseProposalModuleResponse {
 export const useProposalModule = ({
   fetchProposalDepositTokenInfo = false,
 }: UseProposalModuleOptions = {}): UseProposalModuleResponse => {
-  const governanceModuleAddress = useRecoilValue(
+  const proposalModuleAddress = useRecoilValue(
     proposalModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
   )?.[0]
-  const governanceModuleConfig = useRecoilValue(
-    governanceModuleAddress
+  const proposalModuleConfig = useRecoilValue(
+    proposalModuleAddress
       ? configSelector({
-          contractAddress: governanceModuleAddress,
+          contractAddress: proposalModuleAddress,
         })
       : constSelector(undefined)
   )
@@ -38,17 +38,17 @@ export const useProposalModule = ({
 
   // Proposal deposit token info
   const proposalDepositTokenInfo = useRecoilValue(
-    fetchProposalDepositTokenInfo && governanceModuleConfig?.deposit_info?.token
+    fetchProposalDepositTokenInfo && proposalModuleConfig?.deposit_info?.token
       ? tokenInfoSelector({
-          contractAddress: governanceModuleConfig.deposit_info.token,
+          contractAddress: proposalModuleConfig.deposit_info.token,
           params: [],
         })
       : constSelector(undefined)
   )
 
   return {
-    governanceModuleAddress,
-    governanceModuleConfig,
+    proposalModuleAddress,
+    proposalModuleConfig,
     proposalDepositTokenInfo,
   }
 }

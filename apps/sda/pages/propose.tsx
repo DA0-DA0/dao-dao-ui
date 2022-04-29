@@ -32,16 +32,13 @@ const InnerProposalCreate = () => {
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
-  const { governanceModuleAddress, governanceModuleConfig } =
-    useProposalModule()
+  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule()
 
   const currentAllowance = useRecoilValue(
-    governanceModuleConfig?.deposit_info &&
-      governanceModuleAddress &&
-      walletAddress
+    proposalModuleConfig?.deposit_info && proposalModuleAddress && walletAddress
       ? allowanceSelector({
-          contractAddress: governanceModuleConfig.deposit_info.token,
-          params: [{ owner: walletAddress, spender: governanceModuleAddress }],
+          contractAddress: proposalModuleConfig.deposit_info.token,
+          params: [{ owner: walletAddress, spender: proposalModuleAddress }],
         })
       : constSelector(undefined)
   )
@@ -54,11 +51,11 @@ const InnerProposalCreate = () => {
   )
 
   const increaseAllowance = useIncreaseAllowance({
-    contractAddress: governanceModuleConfig?.deposit_info?.token ?? '',
+    contractAddress: proposalModuleConfig?.deposit_info?.token ?? '',
     sender: walletAddress ?? '',
   })
   const createProposal = usePropose({
-    contractAddress: governanceModuleAddress ?? '',
+    contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
 
@@ -67,14 +64,14 @@ const InnerProposalCreate = () => {
       if (
         !connected ||
         !blockHeight ||
-        !governanceModuleConfig ||
-        (governanceModuleConfig.deposit_info && !currentAllowance) ||
-        !governanceModuleAddress
+        !proposalModuleConfig ||
+        (proposalModuleConfig.deposit_info && !currentAllowance) ||
+        !proposalModuleAddress
       )
         throw new Error('Required info not loaded to create a proposal.')
 
       const proposalDeposit = Number(
-        governanceModuleConfig?.deposit_info?.deposit ?? '0'
+        proposalModuleConfig?.deposit_info?.deposit ?? '0'
       )
 
       setLoading(true)
@@ -92,7 +89,7 @@ const InnerProposalCreate = () => {
             amount: (
               proposalDeposit - Number(currentAllowance.allowance)
             ).toString(),
-            spender: governanceModuleAddress,
+            spender: proposalModuleAddress,
           })
 
           // Allowances will not update until the next block has been added.
@@ -134,9 +131,9 @@ const InnerProposalCreate = () => {
       connected,
       createProposal,
       currentAllowance,
-      governanceModuleAddress,
+      proposalModuleAddress,
       increaseAllowance,
-      governanceModuleConfig,
+      proposalModuleConfig,
       refreshBalances,
       router,
       refreshProposals,

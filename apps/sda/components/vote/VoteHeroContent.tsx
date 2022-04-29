@@ -34,12 +34,12 @@ export const VoteHeroContent = () => {
   const { stakingContractConfig, totalStaked } = useStakingInfo({
     fetchTotalStaked: true,
   })
-  const { governanceModuleConfig } = useProposalModule({
+  const { proposalModuleConfig } = useProposalModule({
     fetchProposalDepositTokenInfo: true,
   })
 
-  const { threshold } = governanceModuleConfig
-    ? processThresholdData(governanceModuleConfig.threshold)
+  const { threshold } = proposalModuleConfig
+    ? processThresholdData(proposalModuleConfig.threshold)
     : { threshold: undefined }
 
   if (
@@ -49,7 +49,7 @@ export const VoteHeroContent = () => {
     apr === undefined ||
     !stakingContractConfig ||
     totalStaked === undefined ||
-    !governanceModuleConfig ||
+    !proposalModuleConfig ||
     !threshold
   )
     return <VoteHeroContentLoader />

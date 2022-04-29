@@ -46,34 +46,32 @@ const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data, className }) => (
 )
 
 export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
-  const { governanceModuleConfig, proposalDepositTokenInfo } =
-    useProposalModule({
-      fetchProposalDepositTokenInfo: true,
-    })
+  const { proposalModuleConfig, proposalDepositTokenInfo } = useProposalModule({
+    fetchProposalDepositTokenInfo: true,
+  })
 
   const dontHaveData =
-    !governanceModuleConfig ||
-    (governanceModuleConfig.deposit_info && proposalDepositTokenInfo)
+    !proposalModuleConfig ||
+    (proposalModuleConfig.deposit_info && proposalDepositTokenInfo)
 
   const data = !dontHaveData
     ? {
         denom: proposalDepositTokenInfo?.symbol || '',
         macroDeposit:
-          governanceModuleConfig.deposit_info?.deposit &&
-          proposalDepositTokenInfo
+          proposalModuleConfig.deposit_info?.deposit && proposalDepositTokenInfo
             ? convertMicroDenomToDenomWithDecimals(
-                governanceModuleConfig.deposit_info.deposit,
+                proposalModuleConfig.deposit_info.deposit,
                 proposalDepositTokenInfo.decimals
               ).toLocaleString() +
               ' ' +
               proposalDepositTokenInfo?.symbol
             : 'None',
         depositRefunds:
-          governanceModuleConfig.deposit_info?.refund_failed_proposals || true,
+          proposalModuleConfig.deposit_info?.refund_failed_proposals || true,
         passingThresholdString: processThresholdData(
-          governanceModuleConfig.threshold
+          proposalModuleConfig.threshold
         ).threshold.display,
-        quorumString: processThresholdData(governanceModuleConfig.threshold)
+        quorumString: processThresholdData(proposalModuleConfig.threshold)
           .quorum?.display,
       }
     : undefined

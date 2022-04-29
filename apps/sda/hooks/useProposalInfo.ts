@@ -19,21 +19,21 @@ import { DAO_ADDRESS } from '@/util'
 export const useProposalInfo = (proposalId: number | undefined) => {
   const { address: walletAddress } = useWallet()
 
-  const { governanceModuleAddress } = useProposalModule()
+  const { proposalModuleAddress } = useProposalModule()
 
   const proposalResponse = useRecoilValue(
-    governanceModuleAddress && proposalId !== undefined
+    proposalModuleAddress && proposalId !== undefined
       ? proposalSelector({
-          contractAddress: governanceModuleAddress,
+          contractAddress: proposalModuleAddress,
           params: [{ proposalId }],
         })
       : constSelector(undefined)
   )
 
   const voteResponse = useRecoilValue(
-    governanceModuleAddress && proposalId !== undefined && walletAddress
+    proposalModuleAddress && proposalId !== undefined && walletAddress
       ? getVoteSelector({
-          contractAddress: governanceModuleAddress,
+          contractAddress: proposalModuleAddress,
           params: [{ proposalId, voter: walletAddress }],
         })
       : constSelector(undefined)
@@ -54,9 +54,9 @@ export const useProposalInfo = (proposalId: number | undefined) => {
   )
 
   const txHash = useRecoilValue(
-    governanceModuleAddress && proposalId !== undefined
+    proposalModuleAddress && proposalId !== undefined
       ? proposalExecutionTXHashSelector({
-          contractAddress: governanceModuleAddress,
+          contractAddress: proposalModuleAddress,
           proposalId,
         })
       : constSelector(undefined)

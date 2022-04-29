@@ -11,14 +11,14 @@ import { ProposalItem } from './ProposalItem'
 import { DAO_ADDRESS } from '@/util'
 
 export const ProposalsContent = () => {
-  const governanceModuleAddress = useRecoilValue(
+  const proposalModuleAddress = useRecoilValue(
     proposalModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
   )?.[0]
 
   const allProposalResponses = useRecoilValue(
-    governanceModuleAddress
+    proposalModuleAddress
       ? listProposalsSelector({
-          contractAddress: governanceModuleAddress,
+          contractAddress: proposalModuleAddress,
           params: [{}],
         })
       : constSelector(undefined)

@@ -51,8 +51,7 @@ const InnerProposal = () => {
       : undefined
 
   const { governanceTokenInfo } = useGovernanceTokenInfo()
-  const { governanceModuleAddress, governanceModuleConfig } =
-    useProposalModule()
+  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule()
 
   const {
     proposalResponse,
@@ -63,11 +62,11 @@ const InnerProposal = () => {
   } = useProposalInfo(proposalId)
 
   const castVote = useCastVote({
-    contractAddress: governanceModuleAddress ?? '',
+    contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
   const executeProposal = useExecute({
-    contractAddress: governanceModuleAddress ?? '',
+    contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
 
@@ -123,7 +122,7 @@ const InnerProposal = () => {
     refreshProposalAndAll,
   ])
 
-  if (!proposalResponse || !governanceTokenInfo || !governanceModuleConfig) {
+  if (!proposalResponse || !governanceTokenInfo || !proposalModuleConfig) {
     throw new Error('Failed to load page data.')
   }
 
@@ -174,8 +173,8 @@ const InnerProposal = () => {
 
           <V1ProposalInfoVoteStatus
             maxVotingSeconds={
-              'time' in governanceModuleConfig.max_voting_period
-                ? governanceModuleConfig.max_voting_period.time
+              'time' in proposalModuleConfig.max_voting_period
+                ? proposalModuleConfig.max_voting_period.time
                 : undefined
             }
             proposal={proposalResponse.proposal}
@@ -197,8 +196,8 @@ const InnerProposal = () => {
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
         <V1ProposalInfoVoteStatus
           maxVotingSeconds={
-            'time' in governanceModuleConfig.max_voting_period
-              ? governanceModuleConfig.max_voting_period.time
+            'time' in proposalModuleConfig.max_voting_period
+              ? proposalModuleConfig.max_voting_period.time
               : undefined
           }
           proposal={proposalResponse.proposal}
