@@ -35,7 +35,7 @@ import {
   useGovernanceTokenInfo,
   useProposalInfo,
 } from '@/hooks'
-import { cleanChainError, DAO_ADDRESS } from '@/util'
+import { CI, cleanChainError, DAO_ADDRESS } from '@/util'
 
 const InnerProposal = () => {
   const router = useRouter()
@@ -253,6 +253,11 @@ export const getStaticPaths: GetStaticPaths = () => ({
 export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
   ...props
 ) => {
+  // Don't query chain if running in CI.
+  if (CI) {
+    return { notFound: true }
+  }
+
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
     const staticProps = await makeGetStaticProps({

@@ -14,7 +14,7 @@ import {
   DAOInfo,
   DefaultDAOInfo,
 } from '.'
-import { DAO_ADDRESS } from '@/util'
+import { CI, DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string
@@ -75,6 +75,11 @@ type GetStaticPropsMaker = (
 export const makeGetStaticProps: GetStaticPropsMaker =
   ({ leadingTitle, followingTitle, overrideTitle, overrideDescription } = {}) =>
   async () => {
+    // Don't query chain if running in CI.
+    if (CI) {
+      return { notFound: true }
+    }
+
     try {
       const client = new QueryClient(
         await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),

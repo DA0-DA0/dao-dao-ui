@@ -22,6 +22,7 @@ import {
   ProposalsInfoLoader,
   DescriptionAndAirdropAllocation,
 } from '@/components'
+import { CI } from '@/util'
 
 interface InnerVoteProps {
   missionMarkdown: string
@@ -85,6 +86,11 @@ export default VotePage
 export const getStaticProps: GetStaticProps<VotePageProps> = async (
   ...props
 ) => {
+  // Don't query chain if running in CI.
+  if (CI) {
+    return { notFound: true }
+  }
+
   const [staticProps, missionMarkdown] = await Promise.all([
     // Get normal props for DAO info.
     makeGetStaticProps()(...props),
