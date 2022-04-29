@@ -23,7 +23,7 @@ export const ProposalItem = ({
   const StatusIcon = StatusIcons[proposal.status]
 
   return (
-    <Link href={`/proposal/${id}`}>
+    <Link href={`/vote/${id}`}>
       <a
         className={clsx(
           'block overflow-hidden rounded',

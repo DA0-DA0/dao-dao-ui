@@ -143,7 +143,7 @@ export const Header: FunctionComponent = () => {
       // we are not displaying a fallback page.
       ...(router.isReady &&
       !router.isFallback &&
-      router.pathname === '/proposal/[proposalId]'
+      router.pathname === '/vote/[proposalId]'
         ? [
             {
               renderIcon: (color, mobile) => (

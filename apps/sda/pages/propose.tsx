@@ -121,7 +121,7 @@ const InnerProposalCreate = () => {
           'proposal_id'
         ).value
         refreshProposals()
-        router.push(`/proposal/${proposalId}`)
+        router.push(`/vote/${proposalId}`)
       } catch (err) {
         console.error(err)
         toast.error(cleanChainError(err.message))
