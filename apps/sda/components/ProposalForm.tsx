@@ -1,5 +1,4 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import Tooltip from '@reach/tooltip'
 import { useState } from 'react'
 import {
   FormProvider,
@@ -10,8 +9,11 @@ import {
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
-import { useWallet } from '@dao-dao/state'
-import { votingPowerAtHeightSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { useWallet, walletCw20BalanceSelector } from '@dao-dao/state'
+import {
+  pauseInfoSelector,
+  votingPowerAtHeightSelector,
+} from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -20,6 +22,7 @@ import {
   InputErrorMessage,
   InputLabel,
   TextareaInput,
+  Tooltip,
   TextInput,
 } from '@dao-dao/ui'
 import { TemplateKey, ToCosmosMsgProps } from '@dao-dao/ui/components/templates'
@@ -28,7 +31,7 @@ import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
 import { TemplateSelector } from '.'
 import { templateMap, templateToCosmosMsg } from './templates'
 import { WalletConnectButton } from './WalletConnectButton'
-import { useGovernanceTokenInfo } from '@/hooks'
+import { useGovernanceTokenInfo, useProposalModule } from '@/hooks'
 import { DAO_ADDRESS } from '@/util'
 
 interface TemplateKeyAndData {
@@ -56,6 +59,23 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
 
+  const { proposalModuleConfig } = useProposalModule()
+
+  // Info about if deposit can be paid.
+  const depositTokenBalance = useRecoilValue(
+    proposalModuleConfig?.deposit_info?.deposit !== '0'
+      ? walletCw20BalanceSelector(
+          proposalModuleConfig?.deposit_info?.token as string
+        )
+      : constSelector(undefined)
+  )
+
+  const canPayDeposit =
+    proposalModuleConfig?.deposit_info?.deposit &&
+    Number(depositTokenBalance?.balance) >=
+      Number(proposalModuleConfig?.deposit_info?.deposit)
+
+  // Info about if sufficent voting power to create a proposal.
   const votingPowerAtHeight = useRecoilValue(
     walletAddress
       ? votingPowerAtHeightSelector({
@@ -69,6 +89,12 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
       : constSelector(undefined)
   )
   const canPropose = votingPowerAtHeight && votingPowerAtHeight.power !== '0'
+
+  // Info about if the DAO is paused.
+  const pauseInfo = useRecoilValue(
+    pauseInfoSelector({ contractAddress: DAO_ADDRESS })
+  )
+  const isPaused = pauseInfo && 'Paused' in pauseInfo
 
   const formMethods = useForm<FormProposalData>({
     mode: 'onChange',
@@ -207,10 +233,18 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
               label={
                 !canPropose
                   ? 'You must have staked governance tokens to create a proposal'
+                  : !canPayDeposit
+                  ? 'You do not have enough unstaked tokens to pay the proposal deposit'
+                  : isPaused
+                  ? 'The DAO is paused'
                   : undefined
               }
             >
-              <Button disabled={!canPropose} loading={loading} type="submit">
+              <Button
+                disabled={!canPropose || !canPayDeposit || isPaused}
+                loading={loading}
+                type="submit"
+              >
                 Publish{' '}
                 <Airplane color="currentColor" height="14px" width="14px" />
               </Button>

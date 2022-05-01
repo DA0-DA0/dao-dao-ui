@@ -47,7 +47,7 @@ function ButtonComponent(
         'bg-btn-disabled': isDisabled,
         'py-[10px]': size === 'lg',
         'py-[4px] px-[8px]': size === 'sm',
-        className,
+        [className as string]: true,
       })}
       disabled={isDisabled}
       ref={ref}
@@ -78,8 +78,10 @@ function ButtonComponent(
     <button
       className={clsx(
         'flex flex-row gap-2 items-center text-secondary hover:text-primary transition link-text',
-        className,
-        contentContainerClassName
+        {
+          [className as string]: true,
+          [contentContainerClassName as string]: true,
+        }
       )}
       disabled={isDisabled}
       ref={ref}

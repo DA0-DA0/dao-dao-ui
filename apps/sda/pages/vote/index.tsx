@@ -22,6 +22,7 @@ import {
   ProposalsInfoLoader,
   DescriptionAndAirdropAllocation,
 } from '@/components'
+import { PausedBanner } from '@/components/PausedBanner'
 import { CI } from '@/util'
 
 interface InnerVoteProps {
@@ -57,6 +58,7 @@ const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
           <ProposalsInfo />
         </SuspenseLoader>
       </div>
+      <PausedBanner />
 
       <SuspenseLoader fallback={<Loader />}>
         <ProposalsContent />

@@ -14,6 +14,7 @@ import {
   CwCoreQueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
+  PauseInfoResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw-core'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
@@ -82,6 +83,21 @@ export const votingModuleSelector = selectorFamily<
       if (!client) return
 
       return await client.votingModule()
+    },
+})
+
+export const pauseInfoSelector = selectorFamily<
+  PauseInfoResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCorePauseInfo',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      return await client.pauseInfo()
     },
 })
 

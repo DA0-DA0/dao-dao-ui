@@ -3,6 +3,7 @@ import { FunctionComponent } from 'react'
 import { useWallet } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
+import { useDAOInfoContext } from '../DAOInfoContext'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
 
 interface ClaimsListProps {
@@ -23,6 +24,8 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   } = useStakingInfo({
     fetchClaims: true,
   })
+
+  const { imageUrl } = useDAOInfoContext()
 
   if (
     !governanceTokenInfo ||
@@ -56,7 +59,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
               blockHeight={blockHeight}
               claim={claim}
               // TODO: Replace image.
-              iconURI="/juno.svg"
+              iconURI={imageUrl as string}
               onClaimAvailable={refreshClaims}
               tokenInfo={governanceTokenInfo}
             />

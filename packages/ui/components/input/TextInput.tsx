@@ -37,7 +37,7 @@ export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
   )
   return (
     <input
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full body-text 
+      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full body-text
         ${error ? ' ring-error ring-1' : ''} ${className}`}
       disabled={disabled}
       type="text"
