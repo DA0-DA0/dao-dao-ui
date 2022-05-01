@@ -72,7 +72,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   )
 
   const canPayDeposit =
-    proposalModuleConfig?.deposit_info?.deposit &&
+    !proposalModuleConfig?.deposit_info?.deposit ||
     Number(depositTokenBalance?.balance) >=
       Number(proposalModuleConfig?.deposit_info?.deposit)
 
