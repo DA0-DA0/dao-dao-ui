@@ -5,6 +5,7 @@ import { Button, ClaimsListItem } from '@dao-dao/ui'
 
 import { useDAOInfoContext } from '../DAOInfoContext'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
+import { DEFAULT_IMAGE_URL } from '@/util'
 
 interface ClaimsListProps {
   showClaim: () => void
@@ -58,8 +59,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
               key={idx}
               blockHeight={blockHeight}
               claim={claim}
-              // TODO: Replace image.
-              iconURI={imageUrl as string}
+              iconURI={imageUrl ?? DEFAULT_IMAGE_URL}
               onClaimAvailable={refreshClaims}
               tokenInfo={governanceTokenInfo}
             />

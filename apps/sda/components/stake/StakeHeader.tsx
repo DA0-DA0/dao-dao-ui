@@ -8,7 +8,7 @@ import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
 import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
-import { DAO_ADDRESS } from '@/util'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 export const StakeHeaderLoader: FunctionComponent = () => (
   <>
@@ -103,8 +103,7 @@ export const StakeHeader: FunctionComponent = () => {
           <img
             alt="logo"
             className="w-full h-full"
-            // TODO: Replace placeholder image.
-            src={daoConfig.image_url ?? '/daotoken.jpg'}
+            src={daoConfig.image_url ?? DEFAULT_IMAGE_URL}
           />
         </div>
       </div>
