@@ -52,7 +52,7 @@ export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
 
   const dontHaveData =
     !proposalModuleConfig ||
-    !(proposalModuleConfig.deposit_info && proposalDepositTokenInfo)
+    (proposalModuleConfig.deposit_info && !proposalDepositTokenInfo)
 
   const data = !dontHaveData
     ? {

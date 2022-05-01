@@ -63,7 +63,8 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
 
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(
-    proposalModuleConfig?.deposit_info?.deposit !== '0'
+    proposalModuleConfig?.deposit_info?.deposit &&
+      proposalModuleConfig?.deposit_info?.deposit !== '0'
       ? walletCw20BalanceSelector(
           proposalModuleConfig?.deposit_info?.token as string
         )
