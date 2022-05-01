@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react'
 
-import { Airdrop, Pie, Governance, Hash, WalletAvatar } from '@dao-dao/icons'
+import { Airdrop, Pie, Governance, Hash } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
   convertDenomToHumanReadableDenom,
@@ -26,6 +26,7 @@ import {
   WalletConnectButton,
   useDAOInfoContext,
   Footer,
+  WalletAvatarIcon,
 } from '@/components'
 import { AIRDROP_URL } from '@/util'
 
@@ -235,7 +236,7 @@ export const Header: FunctionComponent = () => {
             </div>
 
             <div className="cursor-pointer" onClick={disconnect}>
-              <WalletAvatar height={40} width={40} />
+              <WalletAvatarIcon height={40} width={40} />
             </div>
           </div>
         ) : (
@@ -309,7 +310,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
             </div>
 
             <div className="cursor-pointer" onClick={disconnect}>
-              <WalletAvatar height={40} width={40} />
+              <WalletAvatarIcon height={40} width={40} />
             </div>
           </div>
         ) : (
