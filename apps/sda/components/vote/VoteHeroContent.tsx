@@ -16,7 +16,7 @@ import {
   useStakingInfo,
   useProposalModule,
 } from '@/hooks'
-import { DAO_ADDRESS, VOTE_EXTERNAL_URL } from '@/util'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL, VOTE_EXTERNAL_URL } from '@/util'
 
 export const VoteHeroContentLoader = () => (
   <>
@@ -62,8 +62,7 @@ export const VoteHeroContent = () => {
           <img
             alt="logo"
             className="w-full h-full"
-            // TODO: Replace placeholder image.
-            src={daoConfig.image_url ?? '/daotoken.jpg'}
+            src={daoConfig.image_url ?? DEFAULT_IMAGE_URL}
           />
         }
         title={daoConfig.name}

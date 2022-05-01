@@ -13,6 +13,7 @@ export const MarkdownPreview: FC<MarkdownPreviewProps> = ({
 }) => (
   <ReactMarkdown
     className={clsx('prose prose-sm dark:prose-invert', className)}
+    linkTarget="_blank"
   >
     {markdown}
   </ReactMarkdown>

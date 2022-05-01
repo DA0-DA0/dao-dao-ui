@@ -39,5 +39,7 @@ export const VOTE_EXTERNAL_URL = process.env
 export const AIRDROP_URL = process.env.NEXT_PUBLIC_AIRDROP_URL as string
 export const TOKEN_SWAP_ADDRESS = process.env
   .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string
+export const DEFAULT_IMAGE_URL = process.env
+  .NEXT_PUBLIC_DEFAULT_IMAGE_URL as string
 
 export const CI = process.env.CI === 'true'
