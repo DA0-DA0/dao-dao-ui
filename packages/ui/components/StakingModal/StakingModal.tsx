@@ -100,9 +100,9 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   return (
     <Modal onClose={onClose}>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border cursor-auto border-focus">
         <button
-          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+          className="absolute top-2 right-2 p-1 rounded-full transition hover:bg-secondary"
           onClick={onClose}
         >
           <XIcon className="w-4 h-4" />
@@ -135,15 +135,16 @@ export const StakingModal: FC<StakingModalProps> = ({
           )}
         </div>
         {mode === StakingMode.Stake && (
-          <AmountSelectionBody
+          <StakeUnstakeModesBody
             amount={amount}
             max={stakableTokens}
             setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
+            unstakingDuration={unstakingDuration}
           />
         )}
         {mode === StakingMode.Unstake && (
-          <UnstakingModeBody
+          <StakeUnstakeModesBody
             amount={amount}
             max={unstakableTokens}
             setAmount={(amount: number) => setAmount(amount)}
@@ -152,7 +153,7 @@ export const StakingModal: FC<StakingModalProps> = ({
           />
         )}
         {mode === StakingMode.Claim && (
-          <ClaimBody
+          <ClaimModeBody
             amount={claimableTokens}
             tokenDecimals={tokenDecimals}
             tokenSymbol={tokenSymbol}
@@ -176,74 +177,57 @@ export const StakingModal: FC<StakingModalProps> = ({
   )
 }
 
-interface AmountSelectionProps {
+interface StakeUnstakeModesBodyProps {
   amount: number
   max: number
   setAmount: (newAmount: number) => void
   tokenDecimals: number
+  unstakingDuration: Duration | null
 }
 
-const AmountSelectionBody: FC<AmountSelectionProps> = ({
+const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   amount,
   setAmount,
   max,
   tokenDecimals,
+  unstakingDuration,
 }) => (
-  <div className="flex flex-col mt-5">
-    <h2 className="mb-3 primary-text">Choose your token amount</h2>
-    <AmountSelector amount={amount} max={max} setAmount={setAmount} />
-    {amount > max && (
-      <span className="mt-1 ml-1 text-error caption-text">
-        Can{"'"}t stake more tokens than you own.
-      </span>
-    )}
-    <span className="mt-4 font-mono caption-text">Max available {max}</span>
-    <div className="mt-4">
-      <PercentSelector
-        amount={amount}
-        max={max}
-        setAmount={setAmount}
-        tokenDecimals={tokenDecimals}
-      />
-    </div>
-  </div>
-)
-
-const UnstakingModeBody: FC<
-  AmountSelectionProps & { unstakingDuration: Duration | null }
-> = ({ amount, setAmount, max, unstakingDuration, tokenDecimals }) => (
   <>
-    <AmountSelectionBody
-      amount={amount}
-      max={max}
-      setAmount={setAmount}
-      tokenDecimals={tokenDecimals}
-    />
+    <div className="flex flex-col mt-5">
+      <h2 className="mb-3 primary-text">Choose your token amount</h2>
+      <AmountSelector amount={amount} max={max} setAmount={setAmount} />
+      {amount > max && (
+        <span className="mt-1 ml-1 text-error caption-text">
+          Can{"'"}t stake more tokens than you own.
+        </span>
+      )}
+      <span className="mt-4 font-mono caption-text">Max available {max}</span>
+      <div className="mt-4">
+        <PercentSelector
+          amount={amount}
+          max={max}
+          setAmount={setAmount}
+          tokenDecimals={tokenDecimals}
+        />
+      </div>
+    </div>
+
     {unstakingDuration && durationIsNonZero(unstakingDuration) && (
       <>
         <hr className="mt-3" />
-        <div className="mt-3">
-          <h2 className="link-text">
-            Unstaking period: {humanReadableDuration(unstakingDuration)}
-          </h2>
-          <p className="mt-3 secondary-text">
-            There will be {humanReadableDuration(unstakingDuration)} between the
-            time you decide to unstake your tokens and the time you can redeem
-            them.
-          </p>
-        </div>
+        <UnstakingDurationDisplay unstakingDuration={unstakingDuration} />
       </>
     )}
   </>
 )
 
-interface ClaimBodyProps {
+interface ClaimModeBodyProps {
   amount: number
   tokenDecimals: number
   tokenSymbol: string
 }
 
-const ClaimBody: FC<ClaimBodyProps> = ({
+const ClaimModeBody: FC<ClaimModeBodyProps> = ({
   amount,
   tokenSymbol,
   tokenDecimals,
@@ -255,6 +239,24 @@ const ClaimBody: FC<ClaimBodyProps> = ({
     </h2>
     <p className="mt-3 mb-3 text-sm">
       Claim them to receive your unstaked tokens.
+    </p>
+  </div>
+)
+
+interface UnstakingDurationDisplayProps {
+  unstakingDuration: Duration
+}
+
+const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
+  unstakingDuration,
+}) => (
+  <div className="mt-3">
+    <h2 className="link-text">
+      Unstaking period: {humanReadableDuration(unstakingDuration)}
+    </h2>
+    <p className="mt-3 secondary-text">
+      There will be {humanReadableDuration(unstakingDuration)} between the time
+      you decide to unstake your tokens and the time you can redeem them.
     </p>
   </div>
 )
