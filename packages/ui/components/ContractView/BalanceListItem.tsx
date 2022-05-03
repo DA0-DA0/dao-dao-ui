@@ -5,7 +5,7 @@ export interface BalanceListItemProps {
 }
 
 export const BalanceListItem: FC<BalanceListItemProps> = ({ children }) => (
-  <li className="flex flex-row flex-wrap gap-2 items-center caption-text">
+  <li className="flex flex-row gap-2 items-center caption-text overflow-scroll whitespace-nowrap">
     {children}
   </li>
 )
