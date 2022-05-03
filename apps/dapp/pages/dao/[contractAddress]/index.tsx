@@ -272,7 +272,7 @@ function DaoHome() {
               </HorizontalInfoSection>
             </HorizontalInfo>
           </div>
-          <div className="block mt-4 md:hidden">
+          <div className="block mt-4 lg:hidden">
             <YourShares />
           </div>
           <DaoContractInfo address={contractAddress} />
@@ -284,7 +284,7 @@ function DaoHome() {
           />
         </div>
       </div>
-      <div className="hidden p-6 max-w-sm h-full min-h-screen md:block">
+      <div className="hidden p-6 max-w-sm h-full min-h-screen lg:block">
         <YourShares />
       </div>
     </div>
