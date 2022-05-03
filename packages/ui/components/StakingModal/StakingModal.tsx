@@ -250,13 +250,21 @@ interface UnstakingDurationDisplayProps {
 const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   unstakingDuration,
 }) => (
-  <div className="mt-3">
+  <div className="mt-3 secondary-text">
     <h2 className="link-text">
       Unstaking period: {humanReadableDuration(unstakingDuration)}
     </h2>
-    <p className="mt-3 secondary-text">
+    <p className="mt-3">
       There will be {humanReadableDuration(unstakingDuration)} between the time
       you decide to unstake your tokens and the time you can redeem them.
     </p>
+    <p className="mt-2">During that time you will</p>
+    <ul className="mt-2 ml-4">
+      <li>Not receive staking rewards.</li>
+      <li>Not be able to cancel the unbonding.</li>
+      <li>
+        Need to wait for the unstaking period for the tokens to become liquid.
+      </li>
+    </ul>
   </div>
 )
