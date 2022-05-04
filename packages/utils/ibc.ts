@@ -9,7 +9,7 @@ export function nativeTokenLabel(denom: string): string {
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   // If no asset, assume it's already a microdenom.
-  return asset?.symbol || convertFromMicroDenom(denom)
+  return asset?.symbol || denom
 }
 
 export function nativeTokenLogoURI(denom: string): string | undefined {
