@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 
 import { Pie } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
-import { StakingMode } from '@dao-dao/ui'
+import { StakingMode, TooltipIcon } from '@dao-dao/ui'
 
 import {
   StakeHeader,
@@ -68,8 +68,9 @@ const InnerStake = () => {
               </div>
 
               <div className="flex-1 p-6 rounded-lg border border-default">
-                <p className="mb-2 font-mono text-sm text-tertiary">
-                  Voting power (staked {governanceTokenInfo.name})
+                <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
+                  <span>Voting power (staked {governanceTokenInfo.name})</span>
+                  <TooltipIcon label="Your staked balance will automatically compound as staking rewards are paid out." />
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>

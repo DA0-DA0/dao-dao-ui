@@ -77,24 +77,24 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   const { governanceTokenInfo, price } = useGovernanceTokenInfo({
     fetchPriceInfo: true,
   })
-  const { totalStaked: _totalStakedBalance, walletBalance: _stakedBalance } =
+  const { totalStakedValue: totalStakedValue, walletBalance: _stakedBalance } =
     useStakingInfo({
-      fetchTotalStaked: true,
+      fetchTotalStakedValue: true,
       fetchWalletBalance: true,
     })
 
   if (
     !governanceTokenInfo ||
-    _totalStakedBalance === undefined ||
+    totalStakedValue === undefined ||
     (connected && _stakedBalance === undefined)
   ) {
     return <BalanceCardLoader />
   }
 
   const votingPower =
-    _totalStakedBalance === 0
+    totalStakedValue === 0
       ? 0
-      : ((_stakedBalance ?? 0) / _totalStakedBalance) * 100
+      : ((_stakedBalance ?? 0) / totalStakedValue) * 100
 
   const stakedBalance = convertMicroDenomToDenomWithDecimals(
     _stakedBalance ?? 0,

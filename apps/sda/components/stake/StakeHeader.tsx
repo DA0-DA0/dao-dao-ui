@@ -70,14 +70,14 @@ export const StakeHeader: FunctionComponent = () => {
     fetchWalletBalance: true,
     fetchPriceInfo: true,
   })
-  const { totalStaked: _totalStakedBalance } = useStakingInfo({
-    fetchTotalStaked: true,
+  const { totalStakedValue: totalStakedValue } = useStakingInfo({
+    fetchTotalStakedValue: true,
   })
 
   if (
     !daoConfig ||
     !governanceTokenInfo ||
-    _totalStakedBalance === undefined ||
+    totalStakedValue === undefined ||
     _treasuryBalance === undefined ||
     apr === undefined
   ) {
@@ -85,7 +85,7 @@ export const StakeHeader: FunctionComponent = () => {
   }
 
   const totalStakedBalance = convertMicroDenomToDenomWithDecimals(
-    _totalStakedBalance,
+    totalStakedValue,
     governanceTokenInfo.decimals
   )
   const treasuryBalance = convertMicroDenomToDenomWithDecimals(

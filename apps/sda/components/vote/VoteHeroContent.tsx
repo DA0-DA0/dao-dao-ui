@@ -31,8 +31,8 @@ export const VoteHeroContent = () => {
   )
   const { governanceTokenAddress, governanceTokenInfo, apr } =
     useGovernanceTokenInfo({ fetchPriceInfo: true })
-  const { stakingContractConfig, totalStaked } = useStakingInfo({
-    fetchTotalStaked: true,
+  const { stakingContractConfig, totalStakedValue } = useStakingInfo({
+    fetchTotalStakedValue: true,
   })
   const { proposalModuleConfig } = useProposalModule({
     fetchProposalDepositTokenInfo: true,
@@ -48,7 +48,7 @@ export const VoteHeroContent = () => {
     !governanceTokenInfo ||
     apr === undefined ||
     !stakingContractConfig ||
-    totalStaked === undefined ||
+    totalStakedValue === undefined ||
     !proposalModuleConfig ||
     !threshold
   )
@@ -76,7 +76,7 @@ export const VoteHeroContent = () => {
           ),
           stakedPercent: Number(
             (
-              (totalStaked / Number(governanceTokenInfo.total_supply)) *
+              (totalStakedValue / Number(governanceTokenInfo.total_supply)) *
               100
             ).toLocaleString()
           ),

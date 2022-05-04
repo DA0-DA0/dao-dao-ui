@@ -12,8 +12,9 @@ import { stakingContractSelector } from '@dao-dao/state/recoil/selectors/clients
 import {
   getConfigSelector,
   claimsSelector,
-  stakedBalanceAtHeightSelector,
   totalStakedAtHeightSelector,
+  stakedValueSelector,
+  totalValueSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import { claimAvailable } from '@dao-dao/utils'
 
@@ -23,6 +24,7 @@ interface UseStakingOptions {
   fetchClaims?: boolean
   fetchTotalStaked?: boolean
   fetchWalletBalance?: boolean
+  fetchTotalStakedValue?: boolean
 }
 
 interface UseStakingResponse {
@@ -38,6 +40,8 @@ interface UseStakingResponse {
   sumClaimsAvailable?: number
   // Total staked
   totalStaked?: number
+  // The total staked value.
+  totalStakedValue?: number
   // Wallet balance
   walletBalance?: number
 }
@@ -46,6 +50,7 @@ export const useStakingInfo = ({
   fetchClaims = false,
   fetchTotalStaked = false,
   fetchWalletBalance = false,
+  fetchTotalStakedValue = false,
 }: UseStakingOptions = {}): UseStakingResponse => {
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useGovernanceTokenInfo()
@@ -111,15 +116,21 @@ export const useStakingInfo = ({
       : constSelector(undefined)
   )
 
+  const totalStakedValue = useRecoilValue(
+    fetchTotalStakedValue && stakingContractAddress
+      ? totalValueSelector({ contractAddress: stakingContractAddress })
+      : constSelector(undefined)
+  )
+
   // Wallet balance
   const walletBalance = useRecoilValue(
     fetchWalletBalance && stakingContractAddress && walletAddress
-      ? stakedBalanceAtHeightSelector({
+      ? stakedValueSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
-  )?.balance
+  )?.value
 
   return {
     stakingContractAddress,
@@ -134,6 +145,7 @@ export const useStakingInfo = ({
     sumClaimsAvailable,
     // Total staked
     totalStaked: totalStakedAtHeight && Number(totalStakedAtHeight.total),
+    totalStakedValue: totalStakedValue && Number(totalStakedValue.total),
     // Wallet balance
     walletBalance: walletBalance ? Number(walletBalance) : undefined,
   }

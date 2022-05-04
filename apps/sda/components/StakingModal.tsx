@@ -1,10 +1,15 @@
 import { XIcon } from '@heroicons/react/outline'
 import { useState, FunctionComponent } from 'react'
 import toast from 'react-hot-toast'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
+import {
+  totalStakedAtHeightSelector,
+  totalValueSelector,
+} from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import {
   StakingMode,
   StakingModal as StatelessStakingModal,
@@ -59,6 +64,21 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     fetchWalletBalance: true,
   })
 
+  const totalStaked = useRecoilValue(
+    stakingContractAddress
+      ? totalStakedAtHeightSelector({
+          contractAddress: stakingContractAddress,
+          params: [{}],
+        })
+      : constSelector(undefined)
+  )
+
+  const totalValue = useRecoilValue(
+    stakingContractAddress
+      ? totalValueSelector({ contractAddress: stakingContractAddress })
+      : constSelector(undefined)
+  )
+
   const doStake = useSend({
     contractAddress: governanceTokenAddress ?? '',
     sender: walletAddress ?? '',
@@ -73,7 +93,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   })
 
   const onAction = async (mode: StakingMode, amount: number) => {
-    if (!connected || !governanceTokenInfo || !stakingContractAddress) return
+    if (
+      !connected ||
+      !governanceTokenInfo ||
+      !stakingContractAddress ||
+      !totalValue ||
+      !totalStaked
+    )
+      return
 
     setLoading(true)
 
@@ -116,10 +143,21 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       case StakingMode.Unstake: {
         setLoading(true)
 
+        // In the UI we display staked value as this is `amount_staked +
+        // rewards` and is the value used to compute voting power. When we actually
+        // process an unstake call the contract expects this value in terms of
+        // amount_staked.
+        //
+        // value = amount_staked * total_value / staked_total
+        //
+        // => amount_staked = staked_total * value / total_value
+        const amountToUnstake =
+          (Number(totalStaked.total) * amount) / Number(totalValue.total)
+
         try {
           await doUnstake({
             amount: convertDenomToMicroDenomWithDecimals(
-              amount,
+              amountToUnstake.toString(),
               governanceTokenInfo.decimals
             ),
           })

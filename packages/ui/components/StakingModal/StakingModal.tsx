@@ -137,6 +137,7 @@ export const StakingModal: FC<StakingModalProps> = ({
         {mode === StakingMode.Stake && (
           <StakeUnstakeModesBody
             amount={amount}
+            mode={mode}
             max={stakableTokens}
             setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
@@ -146,6 +147,7 @@ export const StakingModal: FC<StakingModalProps> = ({
         {mode === StakingMode.Unstake && (
           <StakeUnstakeModesBody
             amount={amount}
+            mode={mode}
             max={unstakableTokens}
             setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
@@ -179,6 +181,7 @@ export const StakingModal: FC<StakingModalProps> = ({
 
 interface StakeUnstakeModesBodyProps {
   amount: number
+  mode: StakingMode
   max: number
   setAmount: (newAmount: number) => void
   tokenDecimals: number
@@ -188,6 +191,7 @@ interface StakeUnstakeModesBodyProps {
 const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   amount,
   setAmount,
+  mode,
   max,
   tokenDecimals,
   unstakingDuration,
@@ -215,7 +219,10 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
     {unstakingDuration && durationIsNonZero(unstakingDuration) && (
       <>
         <hr className="mt-3" />
-        <UnstakingDurationDisplay unstakingDuration={unstakingDuration} />
+        <UnstakingDurationDisplay
+          unstakingDuration={unstakingDuration}
+          mode={mode}
+        />
       </>
     )}
   </>
@@ -245,14 +252,18 @@ const ClaimModeBody: FC<ClaimModeBodyProps> = ({
 
 interface UnstakingDurationDisplayProps {
   unstakingDuration: Duration
+  mode: StakingMode
 }
 
 const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   unstakingDuration,
+  mode,
 }) => (
   <div className="mt-3 secondary-text">
     <h2 className="link-text">
-      Unstaking period: {humanReadableDuration(unstakingDuration)}
+      {mode == StakingMode.Unstake
+        ? 'You are about to unstake your tokens.'
+        : `Unstaking period: ${humanReadableDuration(unstakingDuration)}`}
     </h2>
     <p className="mt-3">
       There will be {humanReadableDuration(unstakingDuration)} between the time
