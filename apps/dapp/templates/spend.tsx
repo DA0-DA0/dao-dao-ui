@@ -41,6 +41,11 @@ import {
 export interface SpendData {
   to: string
   amount: number
+
+  // This is either a native denom or a JSON encoded object in the form {
+  // address: string, decimals: number }. Its a bit of a hack to do it this way,
+  // but we need to do it because we can only fetch data while we're rendering the
+  // component.
   denom: string
 }
 
@@ -50,9 +55,7 @@ export const spendDefaults = (
 ): SpendData => ({
   to: walletAddress,
   amount: 1,
-  denom: convertDenomToHumanReadableDenom(
-    process.env.NEXT_PUBLIC_FEE_DENOM as string
-  ),
+  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
 })
 
 export const SpendComponent: TemplateComponent = ({
@@ -163,8 +166,13 @@ export const SpendComponent: TemplateComponent = ({
           validation={[
             validateRequired,
             validatePositive,
-            (amount: string) =>
-              validatePossibleSpendWrapper(spendDenom, amount),
+            (amount: string) => {
+              if (spendDenom.startsWith('{')) {
+                const { address } = JSON.parse(spendDenom)
+                return validatePossibleSpendWrapper(address, amount)
+              }
+              return validatePossibleSpend(spendDenom, amount)
+            },
           ]}
         />
         <SelectInput
@@ -174,7 +182,13 @@ export const SpendComponent: TemplateComponent = ({
           label={getLabel('denom')}
           register={register}
           validation={[
-            (denom: string) => validatePossibleSpendWrapper(denom, spendAmount),
+            (denom: string) => {
+              if (denom.startsWith('{')) {
+                const { address } = JSON.parse(denom)
+                return validatePossibleSpendWrapper(address, spendAmount)
+              }
+              return validatePossibleSpendWrapper(denom, spendAmount)
+            },
           ]}
         >
           {nativeBalances.map(({ denom }, idx) => {
@@ -185,7 +199,13 @@ export const SpendComponent: TemplateComponent = ({
             )
           })}
           {cw20Info.map(({ symbol }, idx) => (
-            <option key={tokenList[idx]} value={tokenList[idx]}>
+            <option
+              key={tokenList[idx]}
+              value={JSON.stringify({
+                address: tokenList[idx],
+                decimals: cw20Info[idx].decimals,
+              })}
+            >
               ${symbol}
             </option>
           ))}
@@ -227,14 +247,16 @@ export const transformSpendToCosmos = (
     const bank = makeBankMessage(amount, self.to, props.sigAddress, self.denom)
     return { bank }
   }
-  const amount = convertDenomToMicroDenomWithDecimals(
-    self.amount,
-    props.govDecimals
-  )
+
+  // We are dealing with a cw20. Because we can't fetch data in this function we
+  // store a JSON encoded object with address and decimals in this case.
+
+  const { address, decimals } = JSON.parse(self.denom)
+  const amount = convertDenomToMicroDenomWithDecimals(self.amount, decimals)
   return makeWasmMessage({
     wasm: {
       execute: {
-        contract_addr: self.denom,
+        contract_addr: address,
         funds: [],
         msg: {
           transfer: {
@@ -249,7 +271,7 @@ export const transformSpendToCosmos = (
 
 export const transformCosmosToSpend = (
   msg: Record<string, any>,
-  { govDecimals }: FromCosmosMsgProps
+  _: FromCosmosMsgProps
 ): SpendData | null => {
   if (
     'bank' in msg &&
@@ -285,9 +307,12 @@ export const transformCosmosToSpend = (
       to: msg.wasm.execute.msg.transfer.recipient,
       amount: convertMicroDenomToDenomWithDecimals(
         msg.wasm.execute.msg.transfer.amount,
-        govDecimals
+        NATIVE_DECIMALS
       ),
-      denom: msg.wasm.execute.contract_addr,
+      denom: JSON.stringify({
+        address: msg.wasm.execute.contract_addr,
+        decimals: NATIVE_DECIMALS,
+      }),
     }
   }
 
