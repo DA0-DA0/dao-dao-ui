@@ -158,7 +158,7 @@ export const StakeHeader: FunctionComponent = () => {
 
           <p className="text-base lg:text-xl header-text">
             +
-            {apr.toLocaleString(undefined, {
+            {(apr * 100).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}
             % APR

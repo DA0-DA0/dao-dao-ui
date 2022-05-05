@@ -34,6 +34,7 @@ export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 export const CHAIN_TXN_URL_PREFIX = process.env.NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX
 
 export const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_ADDRESS as string
+export const REWARDS_ADDRESS = process.env.NEXT_PUBLIC_REWARDS_ADDRESS as string
 export const VOTE_EXTERNAL_URL = process.env
   .NEXT_PUBLIC_VOTE_EXTERNAL_URL as string
 export const AIRDROP_URL = process.env.NEXT_PUBLIC_AIRDROP_URL as string

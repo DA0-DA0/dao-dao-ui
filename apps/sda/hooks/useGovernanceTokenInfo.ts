@@ -2,12 +2,17 @@ import { useRecoilValue, constSelector } from 'recoil'
 
 import { govTokenInfoSelector, useWallet } from '@dao-dao/state'
 import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { rewardsRateSelector } from '@dao-dao/state/recoil/selectors/clients/cw-rewards'
 import { balanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
+import {
+  stakingContractSelector,
+  tokenContractSelector,
+} from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
-import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
+import { DAO_ADDRESS, REWARDS_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
+import { totalValueSelector } from '@/../../packages/state/recoil/selectors/clients/stake-cw20'
 
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
@@ -39,6 +44,13 @@ export const useGovernanceTokenInfo = ({
   const votingModuleAddress = useRecoilValue(
     votingModuleSelector({ contractAddress: DAO_ADDRESS })
   )
+
+  const stakingContractAddress = useRecoilValue(
+    votingModuleAddress
+      ? stakingContractSelector({ contractAddress: votingModuleAddress })
+      : constSelector(undefined)
+  )
+
   const governanceTokenAddress = useRecoilValue(
     votingModuleAddress
       ? tokenContractSelector({ contractAddress: votingModuleAddress })
@@ -49,6 +61,23 @@ export const useGovernanceTokenInfo = ({
       ? govTokenInfoSelector(governanceTokenAddress)
       : constSelector(undefined)
   )
+
+  // rate * blocks_per_year / total_value_staked
+  const rate = useRecoilValue(
+    REWARDS_ADDRESS
+      ? rewardsRateSelector(REWARDS_ADDRESS)
+      : constSelector(undefined)
+  )
+  const blocks_per_year = 5086451
+  const totalValueStaked = useRecoilValue(
+    stakingContractAddress
+      ? totalValueSelector({ contractAddress: stakingContractAddress })
+      : constSelector(undefined)
+  )
+  const apr =
+    totalValueStaked && rate
+      ? (Number(rate) * blocks_per_year) / Number(totalValueStaked.total)
+      : 0
 
   /// Optional
 
@@ -80,9 +109,6 @@ export const useGovernanceTokenInfo = ({
         })
       : constSelector(undefined)
   )
-  // Price info
-  // TODO: Retrieve APR.
-  const apr = fetchPriceInfo ? 0 : undefined
 
   return {
     votingModuleAddress,
