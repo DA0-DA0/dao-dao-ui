@@ -7,6 +7,7 @@ import { useWallet } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
 import {
+  stakedBalanceAtHeightSelector,
   totalStakedAtHeightSelector,
   totalValueSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
@@ -57,7 +58,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
-    walletBalance: stakedBalance,
+    walletBalance: stakedValue,
     refreshClaims,
   } = useStakingInfo({
     fetchClaims: true,
@@ -69,6 +70,15 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       ? totalStakedAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{}],
+        })
+      : constSelector(undefined)
+  )
+
+  const stakedBalance = useRecoilValue(
+    stakingContractAddress && walletAddress
+      ? stakedBalanceAtHeightSelector({
+          contractAddress: stakingContractAddress,
+          params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
   )
@@ -98,7 +108,8 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       !governanceTokenInfo ||
       !stakingContractAddress ||
       !totalValue ||
-      !totalStaked
+      !totalStaked ||
+      !stakedBalance
     )
       return
 
@@ -151,13 +162,35 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         // value = amount_staked * total_value / staked_total
         //
         // => amount_staked = staked_total * value / total_value
-        const amountToUnstake =
+        let amountToUnstake =
           (Number(totalStaked.total) * amount) / Number(totalValue.total)
+
+        // We have limited percision and on the contract side division rounds
+        // down so division and multiplication don't commute. Handle the common
+        // case here where someone is attempting to unstake all of their funds.
+        if (
+          Math.abs(
+            Number(stakedBalance.balance) -
+              Number(
+                convertDenomToMicroDenomWithDecimals(
+                  amountToUnstake,
+                  governanceTokenInfo.decimals
+                )
+              )
+          ) <= 1
+        ) {
+          amountToUnstake = Number(
+            convertMicroDenomToDenomWithDecimals(
+              stakedBalance.balance,
+              governanceTokenInfo.decimals
+            )
+          )
+        }
 
         try {
           await doUnstake({
             amount: convertDenomToMicroDenomWithDecimals(
-              amountToUnstake.toString(),
+              amountToUnstake,
               governanceTokenInfo.decimals
             ),
           })
@@ -240,7 +273,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     !stakingContractConfig ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
-    stakedBalance === undefined
+    stakedValue === undefined
   ) {
     return <StakingModalLoader onClose={onClose} />
   }
@@ -262,7 +295,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       tokenDecimals={governanceTokenInfo.decimals}
       tokenSymbol={governanceTokenInfo.symbol}
       unstakableTokens={convertMicroDenomToDenomWithDecimals(
-        stakedBalance,
+        stakedValue,
         governanceTokenInfo.decimals
       )}
       unstakingDuration={stakingContractConfig.unstaking_duration ?? null}

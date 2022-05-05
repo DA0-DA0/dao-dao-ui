@@ -69,8 +69,10 @@ const InnerStake = () => {
 
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
-                  <span>Voting power (staked {governanceTokenInfo.name})</span>
-                  <TooltipIcon label="Your staked balance will automatically compound as staking rewards are paid out." />
+                  <span>
+                    Voting power (staked {governanceTokenInfo.name} + rewards)
+                  </span>
+                  <TooltipIcon label="This will automatically compound as staking rewards are distributed." />
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
