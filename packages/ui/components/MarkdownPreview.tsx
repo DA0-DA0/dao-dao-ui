@@ -6,7 +6,7 @@ export interface MarkdownPreviewProps {
 }
 
 export const MarkdownPreview: FC<MarkdownPreviewProps> = ({ markdown }) => (
-  <ReactMarkdown className="prose prose-sm dark:prose-invert">
+  <ReactMarkdown className="prose prose-sm dark:prose-invert break-all">
     {markdown}
   </ReactMarkdown>
 )
