@@ -35,11 +35,14 @@ export const CHAIN_TXN_URL_PREFIX = process.env.NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX
 
 export const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_ADDRESS as string
 export const REWARDS_ADDRESS = process.env.NEXT_PUBLIC_REWARDS_ADDRESS as string
+export const TOKEN_SWAP_ADDRESS = process.env
+  .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string
+export const OLD_PROPOSALS_ADDRESS = process.env
+  .NEXT_PUBLIC_OLD_PROPOSALS_ADDRESS as string
+
 export const VOTE_EXTERNAL_URL = process.env
   .NEXT_PUBLIC_VOTE_EXTERNAL_URL as string
 export const AIRDROP_URL = process.env.NEXT_PUBLIC_AIRDROP_URL as string
-export const TOKEN_SWAP_ADDRESS = process.env
-  .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string
 export const DEFAULT_IMAGE_URL = process.env
   .NEXT_PUBLIC_DEFAULT_IMAGE_URL as string
 

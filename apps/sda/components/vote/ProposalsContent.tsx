@@ -8,7 +8,7 @@ import { proposalModulesSelector } from '@dao-dao/state/recoil/selectors/clients
 import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
 import { ProposalItem } from './ProposalItem'
-import { DAO_ADDRESS } from '@/util'
+import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 export const ProposalsContent = () => {
   const proposalModuleAddress = useRecoilValue(
@@ -19,6 +19,15 @@ export const ProposalsContent = () => {
     proposalModuleAddress
       ? listProposalsSelector({
           contractAddress: proposalModuleAddress,
+          params: [{}],
+        })
+      : constSelector(undefined)
+  )?.proposals
+
+  const oldModuleResponses = useRecoilValue(
+    OLD_PROPOSALS_ADDRESS
+      ? listProposalsSelector({
+          contractAddress: OLD_PROPOSALS_ADDRESS,
           params: [{}],
         })
       : constSelector(undefined)
@@ -80,6 +89,19 @@ export const ProposalsContent = () => {
             <ProposalItem key={response.id} proposalResponse={response} />
           ))}
         </div>
+      )}
+
+      {oldModuleResponses && (
+        <>
+          <h2 className="flex gap-2 items-center mt-8 caption-text">
+            <ChevronDownIcon className="w-4 h-4" /> Previous proposal module
+          </h2>
+          <div className="mt-4 space-y-1">
+            {oldModuleResponses.map((response) => (
+              <ProposalItem key={response.id} old proposalResponse={response} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

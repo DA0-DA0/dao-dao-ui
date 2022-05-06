@@ -13,17 +13,19 @@ import { useProposalInfo } from '@/hooks'
 
 interface ProposalItemProps {
   proposalResponse: ProposalResponse
+  old?: boolean
 }
 
 export const ProposalItem = ({
   proposalResponse: { id, proposal },
+  old,
 }: ProposalItemProps) => {
-  const { voteResponse } = useProposalInfo(id)
+  const { voteResponse } = useProposalInfo(id, old)
 
   const StatusIcon = StatusIcons[proposal.status]
 
   return (
-    <Link href={`/vote/${id}`}>
+    <Link href={`/vote/${id}${old ? '?old=true' : ''}`}>
       <a
         className={clsx(
           'block overflow-hidden rounded',

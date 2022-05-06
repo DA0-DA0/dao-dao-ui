@@ -16,10 +16,13 @@ import {
 import { useProposalModule } from '.'
 import { DAO_ADDRESS } from '@/util'
 
-export const useProposalInfo = (proposalId: number | undefined) => {
+export const useProposalInfo = (
+  proposalId: number | undefined,
+  old?: boolean
+) => {
   const { address: walletAddress } = useWallet()
 
-  const { proposalModuleAddress } = useProposalModule()
+  const { proposalModuleAddress } = useProposalModule({ old })
 
   const proposalResponse = useRecoilValue(
     proposalModuleAddress && proposalId !== undefined

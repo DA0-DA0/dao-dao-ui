@@ -39,19 +39,24 @@ import { CI, cleanChainError, DAO_ADDRESS } from '@/util'
 
 const InnerProposal = () => {
   const router = useRouter()
+
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const oldQuery = router.query.old
   const proposalIdQuery = router.query.proposalId
+
   const proposalId =
     typeof proposalIdQuery === 'string' && !isNaN(Number(proposalIdQuery))
       ? Number(proposalIdQuery)
       : undefined
 
   const { governanceTokenInfo } = useGovernanceTokenInfo()
-  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule()
+  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule({
+    old: !!oldQuery,
+  })
 
   const {
     proposalResponse,
@@ -59,7 +64,7 @@ const InnerProposal = () => {
     votingPowerAtHeight,
     txHash,
     refreshProposalAndAll,
-  } = useProposalInfo(proposalId)
+  } = useProposalInfo(proposalId, !!oldQuery)
 
   const castVote = useCastVote({
     contractAddress: proposalModuleAddress ?? '',

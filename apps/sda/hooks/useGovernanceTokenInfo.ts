@@ -8,11 +8,11 @@ import {
   stakingContractSelector,
   tokenContractSelector,
 } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
+import { totalValueSelector } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
 import { DAO_ADDRESS, REWARDS_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
-import { totalValueSelector } from '@/../../packages/state/recoil/selectors/clients/stake-cw20'
 
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
