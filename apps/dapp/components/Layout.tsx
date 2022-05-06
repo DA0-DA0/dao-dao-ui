@@ -12,7 +12,7 @@ import { LoadingScreen } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 import { Keplr } from '@keplr-wallet/types'
 
-import { betaWarningAcceptedAtom, showBetaNoticeAtom } from 'atoms/status'
+import { betaWarningAcceptedAtom } from 'atoms/status'
 import { SidebarLayout } from 'components/SidebarLayout'
 import {
   kelprOfflineSigner,
@@ -26,7 +26,7 @@ import {
 } from 'selectors/cosm'
 import { getKeplr, connectKeplrWithoutAlerts } from 'services/keplr'
 
-import { BetaNotice, BetaWarningModal } from './BetaWarning'
+import { BetaWarningModal } from './BetaWarning'
 import ChainEnableModal from './ChainEnableModal'
 import { InstallKeplr } from './InstallKeplr'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
@@ -86,7 +86,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
-  const [showBetaNotice, setShowBetaNotice] = useRecoilState(showBetaNoticeAtom)
 
   return (
     <>
@@ -125,9 +124,6 @@ export default function Layout({ children }: { children: ReactNode }) {
       {!loaded && !error && <LoadingScreen />}
       {!betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
-      )}
-      {loaded && betaWarningAccepted && showBetaNotice && (
-        <BetaNotice onClose={() => setShowBetaNotice(false)} />
       )}
 
       {loaded && <SidebarLayout>{children}</SidebarLayout>}
