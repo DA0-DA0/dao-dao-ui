@@ -80,7 +80,7 @@ export const VoteHeroContent = () => {
               100
             ).toLocaleString()
           ),
-          aprReward: apr,
+          aprReward: apr * 100,
           unstakingDuration: stakingContractConfig.unstaking_duration
             ? humanReadableDuration(stakingContractConfig.unstaking_duration)
             : 'None',
