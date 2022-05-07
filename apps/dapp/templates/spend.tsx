@@ -194,7 +194,9 @@ export const SpendComponent: TemplateComponent = ({
           {nativeBalances.map(({ denom }, idx) => {
             return (
               <option key={idx} value={denom}>
-                ${nativeTokenLabel(denom)}
+                {convertDenomToHumanReadableDenom(
+                  nativeTokenLabel(denom)
+                ).toUpperCase()}
               </option>
             )
           })}
