@@ -103,11 +103,11 @@ export function ContractCard({
   name: string
   description: string
   href: string
-  weight: number
+  weight?: number
   proposals: number
   balance: string
-  pinned: boolean
-  onPin: Function
+  pinned?: boolean
+  onPin?: Function
   imgUrl?: string | null
 }) {
   return (
@@ -135,13 +135,15 @@ export function ContractCard({
       </ContractCardBase>
       <button
         className="absolute top-[18px] right-[18px] text-brand"
-        onClick={(_e) => onPin()}
+        onClick={onPin ? (_) => onPin() : undefined}
       >
-        {pinned ? (
-          <StarIconSolid className="w-[18px] h-[18px]" />
-        ) : (
-          <StarIconOutline className="w-[18px] h-[18px]" />
-        )}
+        {pinned !== undefined ? (
+          pinned ? (
+            <StarIconSolid className="w-[18px] h-[18px]" />
+          ) : (
+            <StarIconOutline className="w-[18px] h-[18px]" />
+          )
+        ) : undefined}
       </button>
     </div>
   )
