@@ -52,3 +52,6 @@ export const STATUS_COLORS: { [key: string]: string } = {
 
 export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 export const CHAIN_TXN_URL_PREFIX = process.env.NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX
+
+export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
+export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
