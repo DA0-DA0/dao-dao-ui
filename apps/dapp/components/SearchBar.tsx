@@ -1,6 +1,5 @@
-import { FC } from 'react'
-
 import { SearchIcon } from '@heroicons/react/outline'
+import { FC } from 'react'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
 interface SearchBoxInternalProps {

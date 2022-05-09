@@ -1,10 +1,13 @@
-let config = require('@dao-dao/ui/tailwind.config')
-
-module.exports = {
-  ...config,
+/** @type {import("tailwindcss/tailwind-config").TailwindConfig} */
+const tailwindConfig = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-    '../../packages/ui/**/*.{js,ts,jsx,tsx}',
+    './{components,pages,services,templates}/**/*.{js,jsx,ts,tsx}',
+    '../../packages/ui/**/*.{js,jsx,ts,tsx}',
   ],
+  presets: [require('@dao-dao/ui/tailwind/config')],
+  theme: {
+    //
+  },
 }
+
+module.exports = tailwindConfig

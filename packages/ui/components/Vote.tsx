@@ -1,15 +1,11 @@
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 
-import { Button } from '@dao-dao/ui'
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
-
 import { Abstain, Airplane } from '@dao-dao/icons'
+import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
+import { Button } from '@dao-dao/ui'
 
-export enum VoteChoice {
-  Yes,
-  No,
-  Abstain,
-}
+export { VoteChoice }
 
 export interface VoteProps {
   onVote: (choice: VoteChoice) => void
@@ -21,15 +17,18 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+    <div className="flex flex-wrap gap-2 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">🗳</p>
         <p className="primary-text">Casting</p>
         <p className="secondary-text">
-          {voterWeight.toLocaleString()}% voting power
+          {voterWeight.toLocaleString(undefined, {
+            maximumSignificantDigits: 4,
+          })}
+          % voting power
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="flex flex-wrap grid-cols-3 gap-2 md:grid">
         <Button
           className={`group transition ${
             selected === VoteChoice.Yes ? 'bg-valid hover:bg-valid' : ''

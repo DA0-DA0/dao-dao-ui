@@ -1,6 +1,7 @@
-import { ReactNode } from 'react'
-
+import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
+import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 import Link from 'next/link'
+import { ReactNode } from 'react'
 
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'
@@ -11,8 +12,6 @@ import {
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
-import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
 
 function ContractCardBase({
   title,

@@ -1,5 +1,6 @@
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { FieldErrors } from 'react-hook-form'
+
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 
 import { Config } from 'util/contractConfigWrapper'
 

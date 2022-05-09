@@ -1,10 +1,11 @@
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Expiration,
-  Status,
   Threshold as DaoThreshold,
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'
+
 import { secondsToWdhms } from './time'
 
 export function convertMicroDenomToDenomWithDecimals(
@@ -60,8 +61,8 @@ export function convertToFixedDecimals(amount: number | string): string {
 export const getDaoThresholdAndQuorum = (
   t: DaoThreshold
 ): { threshold: string | undefined; quorum: string | undefined } => {
-  let threshold = undefined
-  let quorum = undefined
+  let threshold: string | undefined
+  let quorum: string | undefined
 
   if ('absolute_percentage' in t) {
     threshold = (Number(t.absolute_percentage.percentage) * 100).toString()
@@ -143,8 +144,8 @@ export const zeroPad = (num: number, target: number) => {
   return '0'.repeat(target - s.length) + s
 }
 
-export const getProposalEnd = (exp: Expiration, status: Status) => {
-  if (status != 'open' && status != 'pending') {
+export const getProposalEnd = (exp: Expiration, status: `${Status}`) => {
+  if (status !== Status.Open) {
     return 'Completed'
   }
   if (exp && 'at_time' in exp) {

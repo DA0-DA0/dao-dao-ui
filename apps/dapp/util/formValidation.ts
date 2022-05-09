@@ -1,9 +1,10 @@
+import JSON5 from 'json5'
+
 import {
   isValidAddress,
   isValidContractAddress,
   isValidValidatorAddress,
 } from '@dao-dao/utils'
-import JSON5 from 'json5'
 
 import { isValidUrl } from './isValidUrl'
 

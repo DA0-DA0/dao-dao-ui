@@ -1,20 +1,18 @@
+import { CheckIcon } from '@heroicons/react/outline'
 import { FC, useEffect, useState } from 'react'
 
-import { CheckIcon } from '@heroicons/react/outline'
-
+import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  claimAvaliable,
+  claimAvailable,
 } from '@dao-dao/utils'
 
 import { BalanceIcon } from '../ContractView/BalanceIcon'
 
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
-import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
-
 function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
-  if (claimAvaliable(claim, blockHeight)) {
+  if (claimAvailable(claim, blockHeight)) {
     return { time: 0 }
   }
   if ('at_height' in claim.release_at) {
@@ -34,75 +32,75 @@ function claimDurationRemaining(claim: Claim, blockHeight: number): Duration {
 
 export interface ClaimsListItemProps {
   claim: Claim
-  unstakingDuration: Duration
   blockHeight: number
   tokenInfo: TokenInfoResponse
-  incrementClaimsAvaliable: (n: number) => void
+  onClaimAvailable: () => void
+  iconURI?: string
 }
 
 export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   claim,
-  unstakingDuration,
   blockHeight,
   tokenInfo,
-  incrementClaimsAvaliable,
-}: {
-  claim: Claim
-  unstakingDuration: Duration
-  blockHeight: number
-  tokenInfo: TokenInfoResponse
-  incrementClaimsAvaliable: (n: number) => void
+  onClaimAvailable,
+  iconURI,
 }) => {
-  const avaliable = claimAvaliable(claim, blockHeight)
+  const available = claimAvailable(claim, blockHeight)
+  const initialDurationRemaining = claimDurationRemaining(claim, blockHeight)
 
-  const durationForHumans = humanReadableDuration(unstakingDuration)
-  const durationRemaining = claimDurationRemaining(claim, blockHeight)
-
-  // Once the claim expires increment claims avaliable.
-  useEffect(() => {
-    if ('time' in durationRemaining) {
-      const id = setTimeout(
-        () => incrementClaimsAvaliable(Number(claim.amount)),
-        durationRemaining.time * 1000
-      )
-      return () => clearTimeout(id)
-    }
-  }, [claim.amount, durationRemaining, incrementClaimsAvaliable])
-
+  // Format for humans each second to count down.
   const [durationRemainingForHumans, setDurationRemainingForHumans] = useState(
-    humanReadableDuration(durationRemaining)
+    humanReadableDuration(initialDurationRemaining)
   )
-
   useEffect(() => {
-    const id = setInterval(() => {
+    const update = () =>
       setDurationRemainingForHumans((_) =>
         humanReadableDuration(claimDurationRemaining(claim, blockHeight))
       )
-    }, 1000)
+    // Run on claim update.
+    update()
+
+    const id = setInterval(update, 1000)
+
     return () => clearInterval(id)
   }, [claim, blockHeight, setDurationRemainingForHumans])
 
-  return (
-    <div className="my-2 flex justify-between gap-2 items-center p-4 my-2 bg-primary rounded-lg">
-      <p className="mt-1 flex gap-2 items-center">
-        <BalanceIcon />
-        {convertMicroDenomToDenomWithDecimals(
-          claim.amount,
-          tokenInfo.decimals
-        )}{' '}
-        ${tokenInfo.symbol}
-      </p>
+  // Notify when the claim expires.
+  const initialDurationRemainingTime =
+    'time' in initialDurationRemaining && initialDurationRemaining.time
+  useEffect(() => {
+    if (initialDurationRemainingTime) {
+      const id = setTimeout(
+        onClaimAvailable,
+        initialDurationRemainingTime * 1000
+      )
+      return () => clearTimeout(id)
+    }
+  }, [initialDurationRemainingTime, onClaimAvailable])
 
-      {avaliable ? (
+  return (
+    <div className="flex gap-2 justify-between items-center p-4 bg-primary rounded-lg">
+      <div className="flex flex-row gap-2 items-center">
+        <BalanceIcon iconURI={iconURI} />
+
+        <p>
+          {convertMicroDenomToDenomWithDecimals(
+            claim.amount,
+            tokenInfo.decimals
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: tokenInfo.decimals,
+          })}{' '}
+          ${tokenInfo.symbol}
+        </p>
+      </div>
+
+      {available ? (
         <p className="font-mono text-sm text-secondary">
-          Avaliable
+          Available
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
-        <div className="flex flex-wrap gap-2 text-caption">
-          <p>{durationRemainingForHumans || '0'} left</p>
-          <p>/ {durationForHumans}</p>
-        </div>
+        <p className="text-caption">{durationRemainingForHumans} remaining</p>
       )}
     </div>
   )

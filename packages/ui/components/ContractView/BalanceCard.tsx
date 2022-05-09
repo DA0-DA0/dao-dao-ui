@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
-import { LogoNoBorder } from '../Logo'
 import { Button } from '../Button'
+import { LogoNoBorder } from '../Logo'
 import { BalanceIcon } from './BalanceIcon'
 
 export interface BalanceCardProps {

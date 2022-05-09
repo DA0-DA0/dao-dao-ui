@@ -1,3 +1,5 @@
+import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 
 import {
@@ -15,8 +17,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import { nativeBalance as nativeBalanceSelector } from 'selectors/treasury'
 import { Config } from 'util/contractConfigWrapper'

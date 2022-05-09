@@ -1,5 +1,6 @@
-import { Button, Modal } from '@dao-dao/ui'
 import { XIcon } from '@heroicons/react/outline'
+
+import { Button, Modal } from '@dao-dao/ui'
 
 const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
 const CHAIN_NAME = process.env.NEXT_PUBLIC_CHAIN_NAME
@@ -13,7 +14,7 @@ function ChainEnableModal({
 }) {
   return (
     <Modal>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}

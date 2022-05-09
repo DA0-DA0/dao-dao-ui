@@ -1,6 +1,5 @@
-import { ReactNode } from 'react'
-
 import Head from 'next/head'
+import { ReactNode } from 'react'
 
 import { SITE_TITLE } from '@dao-dao/utils'
 

@@ -51,7 +51,18 @@ export const STATUS_COLORS: { [key: string]: string } = {
 }
 
 export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
-export const CHAIN_TXN_URL_PREFIX = process.env.NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX
+export const CHAIN_NAME = process.env.NEXT_PUBLIC_CHAIN_NAME as string
+export const CHAIN_TXN_URL_PREFIX = process.env
+  .NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX as string
+export const CHAIN_RPC_ENDPOINT = process.env
+  .NEXT_PUBLIC_CHAIN_RPC_ENDPOINT as string
+export const CHAIN_REST_ENDPOINT = process.env
+  .NEXT_PUBLIC_CHAIN_REST_ENDPOINT as string
+export const CHAIN_BECH32_PREFIX = process.env
+  .NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
+
+export const MICRO_STAKING_DENOM = process.env
+  .NEXT_PUBLIC_STAKING_DENOM as string
 
 export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string

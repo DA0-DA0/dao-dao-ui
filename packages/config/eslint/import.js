@@ -2,7 +2,7 @@
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
-  plugins: ['import', 'unused-imports'],
+  plugins: ['import', 'unused-imports', 'regex'],
   rules: {
     'import/order': [
       'error',
@@ -10,28 +10,12 @@ const eslintConfig = {
         groups: ['builtin', 'external', 'internal'],
         pathGroups: [
           {
-            pattern: 'recoil',
-            group: 'builtin',
-            position: 'before',
-          },
-          {
-            pattern: '{next,next/**}',
-            group: 'builtin',
-            position: 'before',
-          },
-          {
-            pattern: 'react',
-            group: 'builtin',
-            position: 'before',
-            patternOptions: { nocomment: false },
-          },
-          {
-            pattern: '@components',
+            pattern: '@dao-dao/**',
             group: 'external',
             position: 'after',
           },
         ],
-        pathGroupsExcludedImportTypes: ['react', '{next,next/**}', 'recoil'],
+        pathGroupsExcludedImportTypes: ['@dao-dao/**'],
         'newlines-between': 'always',
         alphabetize: {
           order: 'asc',
@@ -48,6 +32,21 @@ const eslintConfig = {
         args: 'after-used',
         argsIgnorePattern: '^_',
       },
+    ],
+    'regex/invalid': [
+      'error',
+      [
+        {
+          regex: '@/../../packages',
+          replacement: '@dao-dao',
+          // Don't replace in this file since the pattern appears above.
+          files: {
+            ignore: 'import.js',
+          },
+          message:
+            'Import from @dao-dao/* instead of using a relative path (i.e. replace "@/../../packages" with "@dao-dao").',
+        },
+      ],
     ],
   },
 }

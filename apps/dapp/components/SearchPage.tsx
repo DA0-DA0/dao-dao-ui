@@ -1,13 +1,12 @@
-import { FC } from 'react'
-
-import Link from 'next/link'
-
-import SvgDecorativeTriangle from '@dao-dao/icons/dist/DecorativeTriangle'
-import { Button } from '@dao-dao/ui'
-import { SEARCH_API_KEY, SEARCH_URL } from '@dao-dao/utils'
 import { PlusIcon } from '@heroicons/react/outline'
 import { instantMeiliSearch } from '@meilisearch/instant-meilisearch'
+import Link from 'next/link'
+import { FC } from 'react'
 import { InstantSearch } from 'react-instantsearch-dom'
+
+import { DecorativeTriangle } from '@dao-dao/icons'
+import { Button } from '@dao-dao/ui'
+import { SEARCH_API_KEY, SEARCH_URL } from '@dao-dao/utils'
 
 import { SearchBox } from '@components/SearchBar'
 import { SearchHits } from '@components/SearchHits'
@@ -36,11 +35,7 @@ export const SearchPage: FC<SearchPageProps> = ({ multisig }) => (
         </div>
         <div className="px-2 mt-6 mb-3">
           <div className="flex gap-1.5 items-center mb-5">
-            <SvgDecorativeTriangle
-              color="currentcolor"
-              height={24}
-              width={24}
-            />
+            <DecorativeTriangle color="currentcolor" height={24} width={24} />
             <h2 className="primary-text">
               Search for a {multisig ? 'Multisig' : 'DAO'}
             </h2>

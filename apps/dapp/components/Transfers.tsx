@@ -1,6 +1,6 @@
+import { IndexedTx } from '@cosmjs/stargate'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { IndexedTx } from '@cosmjs/stargate'
 import {
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,

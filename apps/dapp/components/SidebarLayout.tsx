@@ -1,11 +1,10 @@
+import { MenuIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
 import { ReactNode } from 'react'
 import { useState } from 'react'
 
-import Link from 'next/link'
-
 import { Logo } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
-import { MenuIcon } from '@heroicons/react/outline'
 
 import Nav from './Nav'
 

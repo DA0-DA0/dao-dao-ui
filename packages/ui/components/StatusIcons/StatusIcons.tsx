@@ -1,8 +1,15 @@
-import { Executed, Open, Passed, Rejected } from '@dao-dao/icons'
+import { SVGProps } from 'react'
 
-export const StatusIcons: { [key: string]: JSX.Element } = {
-  open: <Open color="currentColor" style={{ display: 'inline' }} />,
-  executed: <Executed color="currentColor" style={{ display: 'inline' }} />,
-  passed: <Passed color="currentColor" style={{ display: 'inline' }} />,
-  rejected: <Rejected color="currentColor" style={{ display: 'inline' }} />,
+import { Executed, Open, Passed, Rejected } from '@dao-dao/icons'
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+
+export const StatusIcons: Record<
+  Status,
+  ((props: SVGProps<SVGSVGElement>) => JSX.Element) | null
+> = {
+  [Status.Open]: Open,
+  [Status.Executed]: Executed,
+  [Status.Passed]: Passed,
+  [Status.Rejected]: Rejected,
+  [Status.Closed]: null,
 }

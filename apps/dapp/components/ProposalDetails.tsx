@@ -1,18 +1,16 @@
-import { useState } from 'react'
-
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { useRouter } from 'next/router'
-
+import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import {
   StakingMode,
   ProposalDetails as StatelessProposalDetails,
   CosmosMessageDisplay,
 } from '@dao-dao/ui'
 import { VoteChoice } from '@dao-dao/ui'
-import { FormProvider, useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 
 import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
 import {

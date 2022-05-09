@@ -1,16 +1,20 @@
+import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC, useState } from 'react'
 
 import { Wallet, Copy } from '@dao-dao/icons'
-import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
+
 import { Button } from './Button'
+import { ButtonProps } from './Button/Button'
 import { Tooltip } from './Tooltip'
 
-export interface WalletConnectProps {
+export interface WalletConnectProps extends Partial<ButtonProps> {
   walletAddress: string
   walletName: string | undefined
   walletBalance: number
   walletBalanceDenom: string
   handleConnect: () => void
+  className?: string
 }
 
 export const WalletConnect: FC<WalletConnectProps> = ({
@@ -19,15 +23,22 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   walletBalance,
   walletBalanceDenom,
   handleConnect,
+  className,
+  ...buttonProps
 }) =>
   walletAddress ? (
-    <div className="group relative py-2 px-4 my-4 w-full bg-primary rounded-lg hover:outline-brand hover:outline">
+    <div
+      className={clsx(
+        'group relative py-2 px-4 bg-primary rounded-lg hover:outline-brand hover:outline',
+        className
+      )}
+    >
       <div className="flex gap-4 items-center w-full h-full justify-left">
         <Wallet fill="currentColor" height="20px" width="20px" />
         <div className="link-text">
           <span>{walletName}</span>
           <br />
-          <span className="text-secondary capitalize">
+          <span className="capitalize caption-text">
             {walletBalance} {walletBalanceDenom}
           </span>
         </div>
@@ -38,16 +49,15 @@ export const WalletConnect: FC<WalletConnectProps> = ({
       </div>
     </div>
   ) : (
-    <div className="my-4">
-      <Button
-        className="py-4 w-full hover:outline-brand hover:outline"
-        full
-        onClick={handleConnect}
-      >
-        <Wallet fill="currentColor" height="20px" width="20px" />
-        <p className="text-light link-text">Connect wallet</p>
-      </Button>
-    </div>
+    <Button
+      className={clsx('py-4 hover:outline-brand hover:outline', className)}
+      onClick={handleConnect}
+      type="button"
+      {...buttonProps}
+    >
+      <Wallet fill="currentColor" height="20px" width="20px" />
+      <p className="text-light link-text">Connect wallet</p>
+    </Button>
   )
 
 interface CopyButtonProps {

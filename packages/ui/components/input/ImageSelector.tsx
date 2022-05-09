@@ -1,9 +1,6 @@
-import { useState } from 'react'
-
-import { Button } from '../Button'
-import { Modal } from '../Modal'
 import { PlusIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useState } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -14,6 +11,8 @@ import {
 
 import { Airplane } from '@dao-dao/icons'
 
+import { Button } from '../Button'
+import { Modal } from '../Modal'
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'
@@ -41,7 +40,8 @@ export function ImageSelectorModal<
       <div
         className={clsx(
           'flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white',
-          'rounded-lg border border-focus'
+          'rounded-lg border border-focus',
+          'cursor-auto'
         )}
       >
         <button

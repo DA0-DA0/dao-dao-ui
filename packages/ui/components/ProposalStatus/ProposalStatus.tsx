@@ -1,12 +1,14 @@
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { titlecase } from '@dao-dao/utils'
+
 import { StatusIcons } from '../StatusIcons'
 
-type ProposalStatusProps = { status: string }
-
-export function ProposalStatus({ status }: ProposalStatusProps) {
+export const ProposalStatus = ({ status }: { status: `${Status}` }) => {
+  const Icon = StatusIcons[status]
   return (
-    <div>
-      {StatusIcons[status]}
-      <span className="ml-1 capitalize align-middle">{status}</span>
+    <div className="flex flex-row gap-1 items-center">
+      {Icon && <Icon style={{ display: 'inline' }} />}
+      <span className="capitalize align-middle">{titlecase(status)}</span>
     </div>
   )
 }

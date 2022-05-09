@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
-
+import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { MemberCheck, Pencil } from '@dao-dao/icons'
@@ -19,9 +18,8 @@ import {
 } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
-  claimAvaliable,
+  claimAvailable,
 } from '@dao-dao/utils'
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 
 import { ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
@@ -64,8 +62,8 @@ function YourShares() {
   )
   const blockHeight = useRecoilValue(getBlockHeight)
   const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const claimsAvaliable = stuff.claims
-    .filter((c) => claimAvaliable(c, blockHeight))
+  const claimsAvailable = stuff.claims
+    .filter((c) => claimAvailable(c, blockHeight))
     .reduce((p, n) => p + Number(n.amount), 0)
 
   const wallet = useRecoilValue(walletAddress)
@@ -109,11 +107,11 @@ function YourShares() {
             title={`Voting power (staked ${tokenInfo?.symbol})`}
           />
         </li>
-        {claimsAvaliable ? (
+        {claimsAvailable ? (
           <li className="basis-0 grow min-w-max">
             <BalanceCard
               amount={convertMicroDenomToDenomWithDecimals(
-                claimsAvaliable,
+                claimsAvailable,
                 tokenInfo.decimals
               ).toLocaleString(undefined, {
                 maximumFractionDigits: 20,
@@ -165,9 +163,7 @@ function YourShares() {
         </div>
       ) : null}
       <ClaimsPendingList
-        incrementClaimsAvaliable={(_) =>
-          setWalletTokenBalanceUpdateCount((n) => n + 1)
-        }
+        onClaimAvailable={() => setWalletTokenBalanceUpdateCount((n) => n + 1)}
         stakingAddress={daoInfo.staking_contract}
         tokenInfo={tokenInfo}
       />
@@ -175,7 +171,7 @@ function YourShares() {
         <StakingModal
           afterExecute={() => setTokenBalancesLoading(false)}
           beforeExecute={() => setTokenBalancesLoading(true)}
-          claimableTokens={claimsAvaliable}
+          claimableTokens={claimsAvailable}
           contractAddress={contractAddress}
           defaultMode={StakingMode.Stake}
           onClose={() => setShowStaking(false)}

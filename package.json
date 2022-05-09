@@ -1,17 +1,22 @@
 {
   "name": "dao-dao",
   "version": "0.3.0",
-  "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint && prettier --check \"**/*.{css,json,md}\"",
+    "dev": "turbo run dev",
     "format": "turbo run format && prettier --write \"**/*.{css,json,md}\"",
-    "test": "turbo run test"
+    "lint": "turbo run lint && prettier --check \"**/*.{css,json,md}\"",
+    "test": "turbo run test",
+    "dapp": "yarn workspace @dao-dao/dapp",
+    "sda": "yarn workspace @dao-dao/sda",
+    "icons": "yarn workspace @dao-dao/icons",
+    "state": "yarn workspace @dao-dao/state",
+    "ui": "yarn workspace @dao-dao/ui",
+    "utils": "yarn workspace @dao-dao/utils"
   },
   "devDependencies": {
     "turbo": "latest"
@@ -22,7 +27,5 @@
   },
   "prettier": "@dao-dao/config/prettier",
   "packageManager": "yarn@1.22.11",
-  "dependencies": {
-    "@types/react-instantsearch-dom": "^6.12.3"
-  }
+  "private": true
 }

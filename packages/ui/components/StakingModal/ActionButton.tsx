@@ -1,7 +1,8 @@
 import { FC } from 'react'
-import { StakingMode, stakingModeString } from './StakingModal'
+
 import { Button } from '../Button'
 import { Tooltip } from '../Tooltip'
+import { StakingMode, stakingModeString } from './StakingModal'
 
 export interface ActionButtonProps {
   error: string | undefined

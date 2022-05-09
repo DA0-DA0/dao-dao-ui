@@ -3,43 +3,40 @@ import { useRecoilValue } from 'recoil'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
   ClaimsListItem,
-  ClaimsAvaliableCard as StatelessClaimsAvaliableCard,
+  ClaimsAvailableCard as StatelessClaimsAvailableCard,
 } from '@dao-dao/ui'
-import { claimAvaliable } from '@dao-dao/utils'
+import { claimAvailable } from '@dao-dao/utils'
 
-import { unstakingDuration } from 'selectors/daos'
 import { getBlockHeight, walletClaims } from 'selectors/treasury'
 
 export function ClaimsPendingList({
   stakingAddress,
   tokenInfo,
-  incrementClaimsAvaliable,
+  onClaimAvailable,
 }: {
   stakingAddress: string
   tokenInfo: TokenInfoResponse
-  incrementClaimsAvaliable: (n: number) => void
+  onClaimAvailable: () => void
 }) {
-  const unstakeDuration = useRecoilValue(unstakingDuration(stakingAddress))
   const blockHeight = useRecoilValue(getBlockHeight)
   const claimsPending = useRecoilValue(
     walletClaims(stakingAddress)
-  ).claims.filter((c) => !claimAvaliable(c, blockHeight))
+  ).claims.filter((c) => !claimAvailable(c, blockHeight))
 
   return (
     <>
       {claimsPending.length ? (
         <>
           <h2 className="mt-4">Currently unstaking</h2>
-          <ul className="ml-1">
+          <ul className="ml-1 space-y-2">
             {claimsPending.map((claim, idx) => {
               return (
                 <ClaimsListItem
                   key={idx}
                   blockHeight={blockHeight}
                   claim={claim}
-                  incrementClaimsAvaliable={incrementClaimsAvaliable}
+                  onClaimAvailable={onClaimAvailable}
                   tokenInfo={tokenInfo}
-                  unstakingDuration={unstakeDuration}
                 />
               )
             })}
@@ -50,7 +47,7 @@ export function ClaimsPendingList({
   )
 }
 
-export function ClaimAvaliableCard({
+export function ClaimAvailableCard({
   stakingAddress,
   tokenInfo,
   onClaim,
@@ -62,13 +59,13 @@ export function ClaimAvaliableCard({
   loading: boolean
 }) {
   const blockHeight = useRecoilValue(getBlockHeight)
-  const claimsAvaliable = useRecoilValue(walletClaims(stakingAddress))
-    .claims.filter((c) => claimAvaliable(c, blockHeight))
+  const claimsAvailable = useRecoilValue(walletClaims(stakingAddress))
+    .claims.filter((c) => claimAvailable(c, blockHeight))
     .reduce((p, n) => p + Number(n.amount), 0)
 
   return (
-    <StatelessClaimsAvaliableCard
-      avaliable={claimsAvaliable}
+    <StatelessClaimsAvailableCard
+      available={claimsAvailable}
       loading={loading}
       onClaim={onClaim}
       tokenInfo={tokenInfo}

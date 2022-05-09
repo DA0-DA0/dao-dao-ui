@@ -1,9 +1,9 @@
+import { ClockIcon } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
 import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
 import { humanReadableDuration, thresholdString } from '@dao-dao/utils'
-import { ClockIcon } from '@heroicons/react/outline'
 
 import { sigSelector } from 'selectors/multisigs'
 

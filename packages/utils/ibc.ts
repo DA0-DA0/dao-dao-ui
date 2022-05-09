@@ -1,6 +1,5 @@
-import ibcAssets from './ibc_assets.json'
-import { convertFromMicroDenom } from './conversion'
 import { NATIVE_DENOM, NATIVE_DECIMALS } from './constants'
+import ibcAssets from './ibc_assets.json'
 
 export function nativeTokenLabel(denom: string): string {
   // Search IBC asset strings (junoDenom) if denom is in IBC format.
