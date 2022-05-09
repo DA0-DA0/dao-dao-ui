@@ -47,7 +47,7 @@ export function CopyToClipboard({
       ) : (
         <Copy color="currentColor" height="18px" width="18px" />
       )}
-      <span className="inline hover:bg-btn-secondary-hover transition py-1">
+      <span className="inline py-1 hover:bg-btn-secondary-hover transition">
         {concatAddress(value, takeN)}
       </span>
     </button>

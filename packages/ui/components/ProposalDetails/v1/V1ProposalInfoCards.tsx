@@ -104,24 +104,24 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
         )}
       </div>
     </div>
-    <div className="flex flex-col gap-3 p-5 md:p-7 border-t border-light">
-      <div className="grid grid-cols-10 md:flex md:flex-col gap-2 items-center md:items-start">
-        <p className="font-mono text-sm text-tertiary col-span-3">Proposer</p>
+    <div className="flex flex-col gap-3 p-5 border-t border-light md:p-7">
+      <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
+        <p className="col-span-3 font-mono text-sm text-tertiary">Proposer</p>
         <div className="col-span-7">
           <CopyToClipboard takeN={9} value={proposal.proposer} />
         </div>
       </div>
 
       {proposal.status === Status.Executed && !proposalExecutionTXHash ? (
-        <div className="grid grid-cols-10 md:flex md:flex-col gap-2 items-center md:items-start">
-          <p className="font-mono text-sm text-tertiary col-span-3">TX</p>
+        <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
+          <p className="col-span-3 font-mono text-sm text-tertiary">TX</p>
           <p className="col-span-7">Loading...</p>
         </div>
       ) : !!proposalExecutionTXHash ? (
-        <div className="grid grid-cols-10 md:flex md:flex-col gap-2 items-center md:items-start">
+        <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
           {CHAIN_TXN_URL_PREFIX ? (
             <a
-              className="flex flex-row gap-1 items-center font-mono text-sm text-tertiary col-span-3"
+              className="flex flex-row col-span-3 gap-1 items-center font-mono text-sm text-tertiary"
               href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
               rel="noopener noreferrer"
               target="_blank"
@@ -130,7 +130,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
               <ExternalLinkIcon width={16} />
             </a>
           ) : (
-            <p className="font-mono text-sm text-tertiary col-span-3">TX</p>
+            <p className="col-span-3 font-mono text-sm text-tertiary">TX</p>
           )}
           <div className="col-span-7">
             <CopyToClipboard takeN={9} value={proposalExecutionTXHash} />

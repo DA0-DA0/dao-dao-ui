@@ -2,8 +2,8 @@ import { selectorFamily } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
-import { cosmWasmClientSelector } from './chain'
 import { Cw20BalanceResponse } from '../../clients/cw-core'
+import { cosmWasmClientSelector } from './chain'
 import { walletAddressSelector } from './keplr'
 
 export const govTokenInfoSelector = selectorFamily<TokenInfoResponse, string>({

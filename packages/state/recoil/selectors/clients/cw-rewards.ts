@@ -1,4 +1,5 @@
 import { selectorFamily } from 'recoil'
+
 import { cosmWasmClientSelector } from '../chain'
 
 export const rewardsRateSelector = selectorFamily<string, string>({
