@@ -6,7 +6,12 @@ import { InstantSearch } from 'react-instantsearch-dom'
 
 import { DecorativeTriangle } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
-import { SEARCH_API_KEY, SEARCH_URL } from '@dao-dao/utils'
+import {
+  SEARCH_API_KEY,
+  SEARCH_URL,
+  MULTISIG_INDEX,
+  DAO_INDEX,
+} from '@dao-dao/utils'
 
 import { SearchBox } from '@components/SearchBar'
 import { SearchHits } from '@components/SearchHits'
@@ -19,7 +24,7 @@ export interface SearchPageProps {
 
 export const SearchPage: FC<SearchPageProps> = ({ multisig }) => (
   <InstantSearch
-    indexName={multisig ? 'multisigs' : 'daos'}
+    indexName={multisig ? MULTISIG_INDEX : DAO_INDEX}
     searchClient={searchClient}
   >
     <div className="grid grid-cols-6">
