@@ -12,5 +12,8 @@
     "typescript": "^4.5.3"
   },
   "prettier": "@dao-dao/config/prettier",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cosmodal": "^0.3.1"
+  }
 }
