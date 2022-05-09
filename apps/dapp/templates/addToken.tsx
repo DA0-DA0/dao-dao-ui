@@ -61,12 +61,12 @@ export const TokenInfoDisplay = ({
         </div>
       )}
       {tokenInfo.state === 'hasValue' && (
-        <>
+        <div className="flex flex-col gap-1">
           <InputLabel name="Token info" />
-          <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
+          <pre className="overflow-auto p-2 text-secondary rounded-lg border border-default">
             {JSON.stringify(tokenInfo.getValue(), null, 2)}
           </pre>
-        </>
+        </div>
       )}
     </div>
   )
@@ -94,7 +94,7 @@ export const TokenSelector = ({
   const tokenAddress = watch(getLabel('address'))
 
   return (
-    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
+    <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
       <div className="flex gap-2 justify-between items-center">
         <div className="flex gap-2 items-center">
           <h2 className="text-3xl">{symbol}</h2>
@@ -106,7 +106,7 @@ export const TokenSelector = ({
           </button>
         )}
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1">
         <InputLabel name="Token address" />
         <AddressInput
           disabled={readOnly}

@@ -33,8 +33,3 @@ export const betaWarningAcceptedAtom = atom<boolean>({
   default: false,
   effects_UNSTABLE: [localStorageEffect<boolean>('betaWarningAccepted')],
 })
-
-export const showBetaNoticeAtom = atom<boolean>({
-  key: 'showBetaNotice',
-  default: true,
-})

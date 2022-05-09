@@ -2,11 +2,7 @@ import { IndexedTx, Coin } from '@cosmjs/stargate'
 import { atomFamily, selector, selectorFamily } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import {
-  // Cw20Coin,
-  Cw20BalancesResponse,
-  // Cw20CoinVerified,
-} from '@dao-dao/types/contracts/cw3-dao'
+import { Cw20CoinVerified } from '@dao-dao/types/contracts/cw3-dao'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { NATIVE_DECIMALS } from '@dao-dao/utils'
 
@@ -38,10 +34,24 @@ export const cw20Balances = selectorFamily({
       // Invalidate state if the token list has been updated.
       get(treasuryTokenListUpdates(address))
       const client = get(cosmWasmClient)
-      const response = (await client.queryContractSmart(address, {
-        cw20_balances: {},
-      })) as Cw20BalancesResponse
-      return response.cw20_balances
+
+      const balances: Cw20CoinVerified[] = []
+      let more = true
+      while (more) {
+        const latest = balances.length
+          ? balances[balances.length - 1].address
+          : undefined
+        const response = await client.queryContractSmart(address, {
+          cw20_balances: {
+            limit: 5,
+            ...(latest ? { start_after: latest } : {}),
+          },
+        })
+        more = response.cw20_balances.length === 5
+        balances.push(...response.cw20_balances)
+      }
+
+      return balances
     },
 })
 

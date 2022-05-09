@@ -11,7 +11,6 @@ import { Logo } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { showBetaNoticeAtom } from 'atoms/status'
 import ThemeToggle from 'components/ThemeToggle'
 import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
@@ -45,8 +44,6 @@ function Nav({ onMenuClick }: NavProps) {
     sig: s,
     address: pinnedSigs[idx],
   }))
-
-  const betaWarningShowing = useRecoilValue(showBetaNoticeAtom)
 
   return (
     <nav className="flex sticky top-0 flex-col justify-between p-6 w-full h-screen text-lg border-r border-inactive">
@@ -120,11 +117,7 @@ function Nav({ onMenuClick }: NavProps) {
           dao dao <div className="inline text-error">beta</div> v
           {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
         </h3>
-        <ul
-          className={`text-sm list-none link-text ${
-            betaWarningShowing ? ' text-secondary' : ''
-          }`}
-        >
+        <ul className="text-sm list-none link-text">
           <li className="mb-2">
             <ThemeToggle />
           </li>

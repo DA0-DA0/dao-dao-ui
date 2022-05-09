@@ -48,18 +48,12 @@ import { addToken } from 'util/addToken'
 import { cosmWasmClientRouter } from 'util/chainClientRouter'
 import { getFastAverageColor } from 'util/colors'
 
-function DaoHome() {
+function YourShares() {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-  const establishedDate = useRecoilValue(
-    contractInstantiateTime(contractAddress)
-  )
-  const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
-  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
-  const { member } = useRecoilValue(isMemberSelector(contractAddress))
 
   // Balances for the visitor
   const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
@@ -81,6 +75,124 @@ function DaoHome() {
   )
 
   const [showStaking, setShowStaking] = useState(false)
+  return (
+    <>
+      <h2 className="mb-2 title-text">Your shares</h2>
+      <ul className="flex flex-row flex-wrap gap-2 list-none">
+        <li className="basis-0 grow min-w-max">
+          <BalanceCard
+            amount={convertMicroDenomToDenomWithDecimals(
+              govTokenBalance?.amount,
+              tokenInfo.decimals
+            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
+            denom={tokenInfo?.symbol}
+            loading={tokenBalanceLoading}
+            onManage={() => {
+              setShowStaking(true)
+            }}
+            title="Balance"
+          />
+        </li>
+        <li className="basis-0 grow min-w-max">
+          <BalanceCard
+            amount={convertMicroDenomToDenomWithDecimals(
+              stakedGovTokenBalance.amount,
+              tokenInfo.decimals
+            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
+            denom={tokenInfo?.symbol}
+            loading={tokenBalanceLoading}
+            onManage={() => {
+              setShowStaking(true)
+            }}
+            title={`Voting power (staked ${tokenInfo?.symbol})`}
+          />
+        </li>
+        {claimsAvailable ? (
+          <li className="basis-0 grow min-w-max">
+            <BalanceCard
+              amount={convertMicroDenomToDenomWithDecimals(
+                claimsAvailable,
+                tokenInfo.decimals
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: 20,
+              })}
+              denom={tokenInfo?.symbol}
+              loading={tokenBalanceLoading}
+              onManage={() => {
+                setShowStaking(true)
+              }}
+              title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+            />
+          </li>
+        ) : null}
+      </ul>
+      {govTokenBalance?.amount ? (
+        <div className="p-6 mt-2 w-full bg-primary rounded-lg">
+          <h3 className="mb-4 link-text">
+            You have{' '}
+            {convertMicroDenomToDenomWithDecimals(
+              govTokenBalance?.amount,
+              tokenInfo.decimals
+            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
+            unstaked {tokenInfo.symbol}
+          </h3>
+          <p className="secondary-text">
+            Staking them would bring you{' '}
+            {stakedGovTokenBalance &&
+              `${(
+                (govTokenBalance.amount / stakedGovTokenBalance.amount) *
+                100
+              ).toLocaleString(undefined, {
+                maximumSignificantDigits: 3,
+              })}%`}{' '}
+            more voting power and help you defend your positions for{' '}
+            {daoInfo.config.name}
+            {"'"}s direction.
+          </p>
+          <div className="flex justify-end mt-4">
+            <button
+              className="flex gap-2 items-center rounded link-text"
+              onClick={() => {
+                setShowStaking(true)
+              }}
+            >
+              Stake tokens
+              <PlusSmIcon className="h-5" />
+            </button>
+          </div>
+        </div>
+      ) : null}
+      <ClaimsPendingList
+        onClaimAvailable={() => setWalletTokenBalanceUpdateCount((n) => n + 1)}
+        stakingAddress={daoInfo.staking_contract}
+        tokenInfo={tokenInfo}
+      />
+      {showStaking && (
+        <StakingModal
+          afterExecute={() => setTokenBalancesLoading(false)}
+          beforeExecute={() => setTokenBalancesLoading(true)}
+          claimableTokens={claimsAvailable}
+          contractAddress={contractAddress}
+          defaultMode={StakingMode.Stake}
+          onClose={() => setShowStaking(false)}
+        />
+      )}
+    </>
+  )
+}
+
+function DaoHome() {
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
+
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
+  const establishedDate = useRecoilValue(
+    contractInstantiateTime(contractAddress)
+  )
+  const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
+  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
 
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
@@ -98,8 +210,8 @@ function DaoHome() {
   }, [shouldAddToken, daoInfo.gov_token])
 
   return (
-    <div className="grid overflow-auto grid-cols-6 mb-3 min-h-screen">
-      <div className="col-span-4 min-h-screen">
+    <div className="flex overflow-auto flex-row grid-cols-6 justify-around mb-3 min-h-screen">
+      <div className="min-h-screen">
         <GradientHero>
           <div className="flex justify-between">
             <Breadcrumbs
@@ -156,7 +268,9 @@ function DaoHome() {
               </HorizontalInfoSection>
             </HorizontalInfo>
           </div>
-
+          <div className="block mt-4 lg:hidden">
+            <YourShares />
+          </div>
           <DaoContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
@@ -166,109 +280,8 @@ function DaoHome() {
           />
         </div>
       </div>
-      <div className="col-span-2 col-start-5 p-6 h-full min-h-screen">
-        <h2 className="mt-1 mb-[23px] title-text">Your shares</h2>
-        <ul className="mt-3 list-none">
-          <li>
-            <BalanceCard
-              amount={convertMicroDenomToDenomWithDecimals(
-                govTokenBalance?.amount,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-              denom={tokenInfo?.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title="Balance"
-            />
-          </li>
-          <li>
-            <BalanceCard
-              amount={convertMicroDenomToDenomWithDecimals(
-                stakedGovTokenBalance.amount,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-              denom={tokenInfo?.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title={`Voting power (staked ${tokenInfo?.symbol})`}
-            />
-          </li>
-          {claimsAvailable ? (
-            <li>
-              <BalanceCard
-                amount={convertMicroDenomToDenomWithDecimals(
-                  claimsAvailable,
-                  tokenInfo.decimals
-                ).toLocaleString(undefined, {
-                  maximumFractionDigits: 20,
-                })}
-                denom={tokenInfo?.symbol}
-                loading={tokenBalanceLoading}
-                onManage={() => {
-                  setShowStaking(true)
-                }}
-                title={`Pending (unclaimed ${tokenInfo?.symbol})`}
-              />
-            </li>
-          ) : null}
-        </ul>
-        {govTokenBalance?.amount ? (
-          <div className="p-6 mt-2 w-full bg-primary rounded-lg">
-            <h3 className="mb-4 link-text">
-              You have{' '}
-              {convertMicroDenomToDenomWithDecimals(
-                govTokenBalance?.amount,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-              unstaked {tokenInfo.symbol}
-            </h3>
-            <p className="secondary-text">
-              Staking them would bring you{' '}
-              {stakedGovTokenBalance &&
-                `${(
-                  (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                  100
-                ).toLocaleString(undefined, {
-                  maximumSignificantDigits: 3,
-                })}%`}{' '}
-              more voting power and help you defend your positions for{' '}
-              {daoInfo.config.name}
-              {"'"}s direction.
-            </p>
-            <div className="flex justify-end mt-4">
-              <button
-                className="flex gap-2 items-center rounded link-text"
-                onClick={() => {
-                  setShowStaking(true)
-                }}
-              >
-                Stake tokens
-                <PlusSmIcon className="h-5" />
-              </button>
-            </div>
-          </div>
-        ) : null}
-        <ClaimsPendingList
-          onClaimAvailable={() =>
-            setWalletTokenBalanceUpdateCount((n) => n + 1)
-          }
-          stakingAddress={daoInfo.staking_contract}
-          tokenInfo={tokenInfo}
-        />
-        {showStaking && (
-          <StakingModal
-            afterExecute={() => setTokenBalancesLoading(false)}
-            beforeExecute={() => setTokenBalancesLoading(true)}
-            claimableTokens={claimsAvailable}
-            contractAddress={contractAddress}
-            defaultMode={StakingMode.Stake}
-            onClose={() => setShowStaking(false)}
-          />
-        )}
+      <div className="hidden p-6 max-w-sm h-full min-h-screen lg:block">
+        <YourShares />
       </div>
     </div>
   )
