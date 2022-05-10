@@ -1,14 +1,15 @@
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { Keplr } from '@keplr-wallet/types'
-import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client'
 import WalletConnect from '@walletconnect/client'
-import { useWalletManager, WalletInfo } from 'cosmodal'
+import { KeplrWalletConnectV1, useWalletManager, WalletInfo } from 'cosmodal'
 import { useCallback, useEffect } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
+
+import { NativeChainInfo } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -153,7 +154,8 @@ export const WalletInfoList: WalletInfo[] = [
     description: 'Keplr Mobile',
     logoImgUrl: '/walletconnect-keplr.png',
     getWallet: async (connector?: WalletConnect) => {
-      if (connector?.connected) return new KeplrWalletConnectV1(connector)
+      if (connector?.connected)
+        return new KeplrWalletConnectV1(connector, [NativeChainInfo])
       throw new Error('Mobile wallet not connected.')
     },
   },

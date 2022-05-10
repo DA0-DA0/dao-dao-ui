@@ -40,6 +40,7 @@ export const signingCosmWasmClientSelector = selector({
 
     return client
   },
+  dangerouslyAllowMutability: true,
 })
 
 export const blockHeightSelector = selector({

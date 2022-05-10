@@ -1,5 +1,5 @@
 import { Keplr } from '@keplr-wallet/types'
-import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client'
+import { KeplrWalletConnectV1 } from 'cosmodal'
 import { atom } from 'recoil'
 
 import { localStorageEffectJSON } from '../effects'
