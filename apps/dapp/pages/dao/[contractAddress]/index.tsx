@@ -15,6 +15,8 @@ import {
   HorizontalInfoSection,
   BalanceCard,
   Breadcrumbs,
+  MobileHeader,
+  MobileMenuTab,
 } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -23,6 +25,7 @@ import {
 
 import { ClaimsPendingList } from '@components/Claims'
 import { DaoContractInfo } from '@components/DaoContractInfo'
+import { DaoTreasury } from '@components/DaoTreasury'
 import { pinnedDaosAtom } from 'atoms/pinned'
 import { ContractProposalsDispaly } from 'components/ContractView'
 import ErrorBoundary from 'components/ErrorBoundary'
@@ -181,6 +184,90 @@ function YourShares() {
   )
 }
 
+enum MobileMenuTabSelection {
+  Proposal,
+  Staking,
+  Treasury,
+  Info,
+}
+
+function MobileDaoHome() {
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
+
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
+
+  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
+  const pinned = pinnedDaos.includes(contractAddress)
+
+  const imageUrl = daoInfo.config.image_url
+
+  const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
+  const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
+
+  return (
+    <div className="flex flex-col gap-2">
+      <MobileHeader
+        contractAddress={contractAddress}
+        imageUrl={imageUrl || ''}
+        member={member}
+        name={daoInfo.config.name}
+        onPin={() => {
+          if (pinned) {
+            setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+          } else {
+            setPinnedDaos((p) => p.concat([contractAddress]))
+            addToken(daoInfo.gov_token)
+          }
+        }}
+        pinned={pinned}
+      />
+      <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
+        <MobileMenuTab
+          icon="🗳"
+          onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
+          selected={tab === MobileMenuTabSelection.Proposal}
+          text="Proposal"
+        />
+        <MobileMenuTab
+          icon="💵"
+          onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
+          selected={tab === MobileMenuTabSelection.Staking}
+          text="Staking"
+        />
+        <MobileMenuTab
+          icon="🏛"
+          onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
+          selected={tab === MobileMenuTabSelection.Treasury}
+          text="Treasury"
+        />
+        <MobileMenuTab
+          icon="⚙️"
+          onClick={makeTabSetter(MobileMenuTabSelection.Info)}
+          selected={tab === MobileMenuTabSelection.Info}
+          text="Info"
+        />
+      </div>
+      <div className="py-5 px-6">
+        {tab === MobileMenuTabSelection.Staking && <YourShares />}
+        {tab === MobileMenuTabSelection.Proposal && (
+          <ContractProposalsDispaly
+            contractAddress={contractAddress}
+            proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
+          />
+        )}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <DaoTreasury address={contractAddress} />
+        )}
+        {tab === MobileMenuTabSelection.Info && (
+          <DaoContractInfo address={contractAddress} hideTreasury />
+        )}
+      </div>
+    </div>
+  )
+}
+
 function DaoHome() {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
@@ -271,7 +358,9 @@ function DaoHome() {
           <div className="block mt-4 lg:hidden">
             <YourShares />
           </div>
-          <DaoContractInfo address={contractAddress} />
+          <div className="pt-[22px] pb-[28px] border-b border-inactive">
+            <DaoContractInfo address={contractAddress} />
+          </div>
         </GradientHero>
         <div className="px-6">
           <ContractProposalsDispaly
@@ -322,7 +411,12 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
 
   return (
     <ErrorBoundary title="DAO Not Found">
-      <DaoHome />
+      <div className="block md:hidden">
+        <MobileDaoHome />
+      </div>
+      <div className="hidden md:block">
+        <DaoHome />
+      </div>
     </ErrorBoundary>
   )
 }

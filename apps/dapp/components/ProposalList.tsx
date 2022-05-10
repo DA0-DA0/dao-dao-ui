@@ -72,7 +72,7 @@ export function ProposalList({
     })
     // We've now handled all the newly created proposals.
     setPropsCreated(0)
-  }, [newProps, setPropList, setPropsCreated, propList])
+  }, [setPropList, setPropsCreated, newProps])
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
@@ -102,7 +102,7 @@ export function ProposalList({
         return p
       })
     }
-  })
+  }, [existingProps, setPropList])
 
   // Update the proposals in our list that need updating
   const [needUpdating, setNeedsUpdating] = useRecoilState(
@@ -129,7 +129,7 @@ export function ProposalList({
     )
   }
 
-  useEffect(() => setNeedsUpdating([]))
+  useEffect(() => setNeedsUpdating([]), [setNeedsUpdating])
 
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal

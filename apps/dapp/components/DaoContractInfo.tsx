@@ -17,7 +17,13 @@ import {
 
 import { DaoTreasury } from './DaoTreasury'
 
-export function DaoContractInfo({ address }: { address: string }) {
+export function DaoContractInfo({
+  address,
+  hideTreasury,
+}: {
+  address: string
+  hideTreasury?: boolean
+}) {
   const daoInfo = useRecoilValue(daoSelector(address))
   const govTokenInfo = useRecoilValue(tokenConfig(daoInfo.gov_token))
 
@@ -32,10 +38,10 @@ export function DaoContractInfo({ address }: { address: string }) {
   )
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b border-inactive md:grid md:grid-cols-3">
-      <div>
-        <h2 className="mb-6 primary-text">Governance Details</h2>
-        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">
+    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
+      <div className="mb-4 md:mb-0">
+        <h2 className="mb-4 md:mb-6 primary-text">Governance Details</h2>
+        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           <GovInfoListItem
             icon={<ChartPieIcon className="inline w-4" />}
             text="Unstaking period"
@@ -71,8 +77,8 @@ export function DaoContractInfo({ address }: { address: string }) {
         </ul>
       </div>
       <div>
-        <h2 className="mb-6 primary-text">Addresses</h2>
-        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none caption-text">
+        <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
+        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
           <li>
             DAO <CopyToClipboardAccent value={address} />
           </li>
@@ -84,7 +90,7 @@ export function DaoContractInfo({ address }: { address: string }) {
           </li>
         </ul>
       </div>
-      <DaoTreasury address={address} />
+      {!hideTreasury && <DaoTreasury address={address} />}
     </div>
   )
 }

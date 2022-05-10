@@ -81,7 +81,7 @@ export function ContractProposalsDispaly({
           </a>
         </Link>
       </div>
-      <div className="px-4 mt-4">
+      <div className="mt-4 md:px-4">
         <ProposalList contractAddress={contractAddress} multisig={multisig} />
       </div>
     </>
