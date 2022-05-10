@@ -10,7 +10,7 @@ import Nav from './Nav'
 
 const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
-    <div className="flex sticky top-0 flex-row justify-between items-center p-6 pb-2 w-full text-lg">
+    <div className="flex sticky top-0 flex-row justify-between items-center p-6 pb-2 w-full text-lg border-b border-inactive">
       <Link href="/starred">
         <a>
           <Logo alt={`${SITE_TITLE} Logo`} height={38} width={38} />
