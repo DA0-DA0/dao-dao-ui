@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/outline'
 import { MenuIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import { Logo } from '@dao-dao/ui'
@@ -16,15 +17,7 @@ import { daoSelector } from 'selectors/daos'
 import { sigSelector } from 'selectors/multisigs'
 
 import ConnectWalletButton from './ConnectWalletButton'
-
-function MemberDisplay({ name }: { name: string }) {
-  return (
-    <div className="truncate link-text">
-      <LibraryIcon className="inline mr-2 mb-1 w-5 h-5" />
-      {name}
-    </div>
-  )
-}
+import { NavListItem } from './NavListItem'
 
 type NavProps = {
   onMenuClick?: () => void
@@ -44,6 +37,9 @@ function Nav({ onMenuClick }: NavProps) {
     sig: s,
     address: pinnedSigs[idx],
   }))
+
+  const router = useRouter()
+  const path = router.asPath
 
   return (
     <nav className="flex sticky top-0 flex-col justify-between p-6 w-full h-screen text-lg border-r border-inactive">
@@ -66,22 +62,22 @@ function Nav({ onMenuClick }: NavProps) {
             <h3 className="mb-[16px] font-mono caption-text">DAOs</h3>
             <ul className="ml-2 list-none">
               {daoAddresses.map(({ dao, address }) => (
-                <li key={address} className="mt-1">
-                  <Link href={`/dao/${address}`}>
-                    <a>
-                      <MemberDisplay name={dao.config.name} />
-                    </a>
-                  </Link>
-                </li>
+                <NavListItem
+                  key={address}
+                  currentUrl={path}
+                  href={`/dao/${address}`}
+                  icon={LibraryIcon}
+                  text={dao.config.name}
+                />
               ))}
             </ul>
             <ul className="mt-2 ml-2 list-none">
-              <li className="mt-1 link-text">
-                <ArrowRightIcon className="inline mr-2 mb-1 w-4" />
-                <Link href="/dao/list">
-                  <a>All DAOs</a>
-                </Link>
-              </li>
+              <NavListItem
+                currentUrl={path}
+                href="/dao/list"
+                icon={ArrowRightIcon}
+                text="All DAOs"
+              />
             </ul>
           </div>
           <div className="mt-3">
@@ -91,23 +87,23 @@ function Nav({ onMenuClick }: NavProps) {
             <ul className="ml-2 list-none">
               {sigAddresses &&
                 sigAddresses.map(({ sig, address }) => (
-                  <li key={sig.config.name} className="mt-1">
-                    <Link href={`/multisig/${address}`}>
-                      <a>
-                        <MemberDisplay name={sig.config.name} />
-                      </a>
-                    </Link>
-                  </li>
+                  <NavListItem
+                    key={address}
+                    currentUrl={path}
+                    href={`/multisig/${address}`}
+                    icon={LibraryIcon}
+                    text={sig.config.name}
+                  />
                 ))}
             </ul>
 
-            <ul className="ml-2 list-none">
-              <li className="mt-1 link-text">
-                <ArrowRightIcon className="inline mr-2 mb-1 w-4" />
-                <Link href="/multisig/list">
-                  <a>All Multisigs</a>
-                </Link>
-              </li>
+            <ul className="mt-2 ml-2 list-none">
+              <NavListItem
+                currentUrl={path}
+                href="/multisig/list"
+                icon={ArrowRightIcon}
+                text="All Multisigs"
+              />
             </ul>
           </div>
         </div>
