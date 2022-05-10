@@ -1,9 +1,13 @@
 import clsx from 'clsx'
 import Head from 'next/head'
 import { FC, useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { useWallet, WalletNotInstalledError } from '@dao-dao/state'
+import {
+  mountedInBrowserAtom,
+  useWallet,
+  WalletNotInstalledError,
+} from '@dao-dao/state'
 import { SITE_TITLE } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
@@ -15,6 +19,7 @@ import { noKeplrAccountAtom } from '@/selectors/cosm'
 import { installWarningVisibleAtom } from '@/selectors/cosm'
 
 export const SidebarLayout: FC = ({ children }) => {
+  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
     installWarningVisibleAtom
   )
@@ -47,7 +52,7 @@ export const SidebarLayout: FC = ({ children }) => {
       {noKeplrAccount && (
         <NoKeplrAccountModal onClose={() => setNoKeplrAccount(false)} />
       )}
-      {!betaWarningAccepted && (
+      {mountedInBrowser && !betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}
 
