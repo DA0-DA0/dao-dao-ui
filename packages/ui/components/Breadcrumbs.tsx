@@ -6,8 +6,9 @@ export interface BreadcrumbsProps {
   crumbs: Array<[string, string]>
 }
 
+// Navigation breadcrumbs. We hide these on small screens prefering the nav bar.
 export const Breadcrumbs: FC<BreadcrumbsProps> = ({ crumbs }) => (
-  <ul className="flex list-none link-text">
+  <ul className="md:flex list-none link-text hidden">
     <li key="icon">
       <Link href={crumbs[crumbs.length - 2][0]}>
         <a>

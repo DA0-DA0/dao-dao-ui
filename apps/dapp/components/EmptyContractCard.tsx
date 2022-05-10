@@ -14,7 +14,7 @@ export const EmptyContractCard = ({
 }) => {
   return (
     <Link href={href} passHref>
-      <a className="overflow-hidden w-max max-w-[400px] rounded-md border border-inactive hover:border-brand transition">
+      <a className="overflow-hidden max-w-[400px] rounded-md border border-inactive hover:border-brand transition md:w-max">
         <div
           className={'h-72 bg-no-repeat bg-cover opacity-75'}
           style={{ backgroundImage: `url(${backgroundUrl})` }}

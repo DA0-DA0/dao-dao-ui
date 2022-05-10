@@ -28,7 +28,7 @@ const Proposal: NextPage = () => {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+      <div className="col-span-4 w-full md:p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],

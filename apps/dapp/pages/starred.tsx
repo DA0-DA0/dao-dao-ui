@@ -92,9 +92,9 @@ const ActionItem = ({
   icon: ReactNode
   text: string
 }) => (
-  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md">
+  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md transition-all link-text">
     <Link href={href}>
-      <a className="block">
+      <a className="flex gap-2 items-center">
         {icon}
         {text}
       </a>
@@ -103,27 +103,26 @@ const ActionItem = ({
 )
 
 const ActionMenu = () => (
-  <div className="p-6 bg-primary rounded-md hover:border hover:border-focus">
-    <h2 className="mb-1 text-lg font-semibold">Actions</h2>
+  <div className="p-6 bg-primary rounded-md hover:outline-btn-secondary hover:outline">
     <ul className="-mx-1 font-medium list-none text-md">
       <ActionItem
         href="/dao/create"
-        icon={<PlusIcon className="inline mr-2 mb-1 w-5 h-5" />}
+        icon={<PlusIcon className="w-4" />}
         text={'Create a DAO'}
       />
       <ActionItem
         href="/multisig/create"
-        icon={<PlusIcon className="inline mr-2 mb-1 w-5 h-5" />}
+        icon={<PlusIcon className="w-4" />}
         text={'Create a multisig'}
       />
       <ActionItem
         href="/dao/list"
-        icon={<MapIcon className="inline mr-2 mb-1 w-5 h-5" />}
+        icon={<MapIcon className="w-4" />}
         text={'Explore all DAOs'}
       />
       <ActionItem
         href="/multisig/list"
-        icon={<MapIcon className="inline mr-2 mb-1 w-5 h-5" />}
+        icon={<MapIcon className="w-4" />}
         text={'Explore all multisigs'}
       />
     </ul>
@@ -142,7 +141,7 @@ const Starred: NextPage = () => {
         </div>
 
         <h1 className="header-text">Starred</h1>
-        <h2 className="flex gap-1 items-center mt-6 mb-2 primary-text">
+        <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
           <StarIcon className="inline w-4 " />
           DAOs
         </h2>
@@ -172,7 +171,7 @@ const Starred: NextPage = () => {
         </div>
       </div>
 
-      <div className="hidden basis-1/3 p-6 min-h-screen border-l border-inactive lg:block">
+      <div className="hidden basis-1/3 p-6 mb-4 min-h-screen border-l border-inactive lg:block">
         <ActionMenu />
       </div>
     </div>

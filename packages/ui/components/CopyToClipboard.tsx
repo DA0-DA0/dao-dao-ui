@@ -1,9 +1,9 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
+import { useState, FC } from 'react'
 import toast from 'react-hot-toast'
 
 import { Copy } from '@dao-dao/icons'
-import { useThemeContext } from '@dao-dao/ui'
+import { useThemeContext, Button } from '@dao-dao/ui'
 
 function concatAddressImpl(
   address: string,
@@ -71,5 +71,39 @@ export function CopyToClipboardAccent({
     >
       {concatAddressImpl(value, 12, 7)}
     </button>
+  )
+}
+
+export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
+  value,
+  success = 'Copied to clipboard',
+  takeN = 7,
+}) => {
+  const [copied, setCopied] = useState(false)
+  return (
+    <div className="border border-inactive rounded-md flex justify-between p-1">
+      <div className="px-2 secondary-text text-tertiary flex gap-2 items-center">
+        {copied ? (
+          <CheckCircleIcon className="w-[18px]" />
+        ) : (
+          <Copy color="currentColor" height="18px" width="18px" />
+        )}
+        <span className="inline py-1 hover:bg-btn-secondary-hover transition">
+          {concatAddress(value, takeN)}
+        </span>
+      </div>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => {
+          navigator.clipboard.writeText(value)
+          setTimeout(() => setCopied(false), 2000)
+          setCopied(true)
+          toast.success(success)
+        }}
+      >
+        <p className="caption-text text-body">Copy</p>
+      </Button>
+    </div>
   )
 }

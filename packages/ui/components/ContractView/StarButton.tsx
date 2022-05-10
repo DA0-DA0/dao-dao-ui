@@ -14,7 +14,7 @@ export const StarButton: FC<StarButtonProps> = ({ pinned, onPin }) => {
 
   return (
     <button
-      className="flex flex-row items-center w-20 text-left text-brand link-text"
+      className="flex flex-row items-center text-left text-brand link-text"
       onClick={(_e) => onPin()}
       style={accentColor ? { color: accentColor } : {}}
     >
@@ -26,7 +26,9 @@ export const StarButton: FC<StarButtonProps> = ({ pinned, onPin }) => {
       ) : (
         <StarOutline className="inline mr-1 w-[20px]" />
       )}
-      {pinned ? 'Starred' : 'Star'}
+      <span className="inline hidden md:block">
+        {pinned ? 'Starred' : 'Star'}
+      </span>
     </button>
   )
 }
