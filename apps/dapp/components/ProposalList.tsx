@@ -1,5 +1,5 @@
 import { DownloadIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
@@ -30,13 +30,15 @@ const getNewestLoadedProposal = (props: ProposalResponse[]) => {
   return props[0].id
 }
 
-export function ProposalList({
-  contractAddress,
-  multisig,
-}: {
+interface ProposalListProps {
   contractAddress: string
   multisig?: boolean
-}) {
+}
+
+export const ProposalList: FC<ProposalListProps> = ({
+  contractAddress,
+  multisig,
+}) => {
   // Our position in the DAO's list of proposals.
   const [startBefore, setStartBefore] = useRecoilState(
     proposalsRequestStartBeforeAtom

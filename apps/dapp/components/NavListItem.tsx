@@ -1,23 +1,22 @@
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FC } from 'react'
 
-export const NavListItem = ({
-  key,
-  currentUrl,
-  href,
-  icon,
-  text,
-}: {
-  key?: string
-  currentUrl: string
+interface NavListItemProps {
   href: string
   icon: FC<{}>
   text: string
+}
+
+export const NavListItem: FC<NavListItemProps> = ({
+  href,
+  icon: Icon,
+  text,
 }) => {
-  const Icon = icon
+  const { asPath: currentUrl } = useRouter()
+
   return (
     <li
-      key={key}
       className={
         currentUrl == href ? 'underline' : 'hover:underline transition-all'
       }

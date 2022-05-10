@@ -13,8 +13,8 @@ import {
   DAO_INDEX,
 } from '@dao-dao/utils'
 
-import { SearchBox } from '@components/SearchBar'
-import { SearchHits } from '@components/SearchHits'
+import { SearchBox } from './SearchBar'
+import { SearchHits } from './SearchHits'
 
 const searchClient = instantMeiliSearch(SEARCH_URL, SEARCH_API_KEY)
 

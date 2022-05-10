@@ -1,18 +1,21 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { Breadcrumbs } from '@dao-dao/ui'
+import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
-import { ProposalDetails } from 'components/ProposalDetails'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { ProposalDetails } from '@/components/ProposalDetails'
 import {
   ProposalDetailsSidebar,
   ProposalDetailsCard,
   ProposalDetailsVoteStatus,
-} from 'components/ProposalDetailsSidebar'
-import { sigSelector } from 'selectors/multisigs'
+} from '@/components/ProposalDetailsSidebar'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { sigSelector } from '@/selectors/multisigs'
 
-const MultisigProposal: NextPage = () => {
+const InnerMultisigProposal: FC = () => {
   const router = useRouter()
   const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
@@ -61,4 +64,12 @@ const MultisigProposal: NextPage = () => {
   )
 }
 
-export default MultisigProposal
+const MultisigProposalPage: NextPage = () => (
+  <ErrorBoundary title="Proposal Not Found">
+    <SuspenseLoader fallback={<LoadingScreen />}>
+      <InnerMultisigProposal />
+    </SuspenseLoader>
+  </ErrorBoundary>
+)
+
+export default MultisigProposalPage

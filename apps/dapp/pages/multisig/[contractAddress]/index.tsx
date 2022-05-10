@@ -10,31 +10,32 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
-  CopyToClipboard,
   useThemeContext,
   GradientHero,
   HorizontalInfo,
   HorizontalInfoSection,
   ContractHeader,
   StarButton,
-  BalanceIcon,
   Breadcrumbs,
+  LoadingScreen,
 } from '@dao-dao/ui'
+import { CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 
-import { MultisigContractInfo } from '@components/MultisigContractInfo'
-import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { ContractProposalsDispaly } from 'components/ContractView'
-import ErrorBoundary from 'components/ErrorBoundary'
-import { contractInstantiateTime } from 'selectors/contracts'
-import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
+import { pinnedMultisigsAtom } from '@/atoms/pinned'
+import { ContractProposalsDisplay } from '@/components/ContractView'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { VoteBalanceCard } from '@/components/multisig'
+import { MultisigContractInfo } from '@/components/MultisigContractInfo'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { contractInstantiateTime } from '@/selectors/contracts'
 import {
-  listMembers,
-  memberWeight,
   sigSelector,
   totalWeight,
-} from 'selectors/multisigs'
-import { cosmWasmClientRouter } from 'util/chainClientRouter'
-import { getFastAverageColor } from 'util/colors'
+  memberWeight,
+  listMembers,
+} from '@/selectors/multisigs'
+import { cosmWasmClientRouter } from '@/util/chainClientRouter'
+import { getFastAverageColor } from '@/util/colors'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -52,39 +53,7 @@ const thresholdString = (t: Threshold) => {
   }
 }
 
-function VoteBalanceCard({
-  weight,
-  title,
-  weightTotal,
-  addrTitle,
-}: {
-  weight: number
-  title: string
-  weightTotal: number
-  addrTitle?: boolean
-}) {
-  return (
-    <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
-      {addrTitle ? (
-        <CopyToClipboard value={title} />
-      ) : (
-        <h2 className="font-mono caption-text">{title}</h2>
-      )}
-      <div className="flex flex-row flex-wrap gap-2 items-center mt-2 mt-5 mb-[22px] title-text">
-        <BalanceIcon />
-        {weight}
-        <span className="inline secondary-text">
-          {((weight / weightTotal) * 100).toLocaleString(undefined, {
-            maximumSignificantDigits: 3,
-          })}
-          %
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function MultisigHome() {
+const InnerMultisigHome = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -148,7 +117,7 @@ function MultisigHome() {
           <MultisigContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
-          <ContractProposalsDispaly
+          <ContractProposalsDisplay
             contractAddress={contractAddress}
             multisig
             proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
@@ -206,12 +175,11 @@ const MultisigHomePage: NextPage<StaticProps> = ({ accentColor }) => {
     setAccentColor(accentColor)
   }, [accentColor, setAccentColor, isReady, isFallback])
 
-  // Trigger Suspense.
-  if (!isReady || isFallback) throw new Promise((_) => {})
-
   return (
     <ErrorBoundary title="Multisig Not Found">
-      <MultisigHome />
+      <SuspenseLoader fallback={<LoadingScreen />}>
+        <InnerMultisigHome />
+      </SuspenseLoader>
     </ErrorBoundary>
   )
 }

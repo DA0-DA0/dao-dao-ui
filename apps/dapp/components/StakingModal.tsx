@@ -3,6 +3,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { useWallet } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
 import {
@@ -10,10 +11,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
 import {
   daoSelector,
   unstakingDuration as unstakingDurationSelector,
@@ -31,13 +28,14 @@ function executeUnstakeAction(
   denomAmount: number,
   tokenInfo: TokenInfoResponse,
   stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
   onDone: Function
 ) {
-  if (!signingClient) {
+  if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
+    return
   }
 
   const amount = convertDenomToMicroDenomWithDecimals(
@@ -72,14 +70,16 @@ function executeStakeAction(
   tokenAddress: string,
   tokenInfo: TokenInfoResponse,
   stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
   onDone: Function
 ) {
-  if (!signingClient) {
+  if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
+    return
   }
+
   const amount = convertDenomToMicroDenomWithDecimals(
     denomAmount,
     tokenInfo.decimals
@@ -113,14 +113,16 @@ function executeStakeAction(
 function executeClaimAction(
   denomAmount: number,
   stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
   onDone: Function
 ) {
-  if (!signingClient) {
+  if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
+    return
   }
+
   setLoading(true)
   signingClient
     ?.execute(
@@ -158,8 +160,7 @@ export function StakingModal({
 }) {
   const [amount, setAmount] = useState(0)
 
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const { address: walletAddress, signingClient } = useWallet()
   const [loading, setLoading] = useState(false)
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
@@ -169,7 +170,7 @@ export function StakingModal({
     tokenInfo.decimals
   )
   const tokenBalanceLoading = useRecoilValue(
-    walletTokenBalanceLoading(walletAddress)
+    walletTokenBalanceLoading(walletAddress ?? '')
   )
 
   const stakedGovTokenBalance = convertMicroDenomToDenomWithDecimals(
@@ -180,7 +181,7 @@ export function StakingModal({
     unstakingDurationSelector(daoInfo.staking_contract)
   )
   const setWalletTokenBalanceUpdateCount = useSetRecoilState(
-    walletTokenBalanceUpdateCountAtom(walletAddress)
+    walletTokenBalanceUpdateCountAtom(walletAddress ?? '')
   )
 
   const walletDisconnected = (): string | undefined => {

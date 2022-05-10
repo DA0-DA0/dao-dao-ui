@@ -9,25 +9,25 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 
 import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
-import { Button, GradientWrapper, Logo } from '@dao-dao/ui'
+import { Button, GradientWrapper, LoadingScreen, Logo } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 
-function EnterAppButton({ small }: { small?: boolean }) {
-  return (
-    <Link href="/starred" passHref>
-      <a>
-        <Button size={small ? 'sm' : 'lg'}>
-          Enter the app{' '}
-          <ArrowUpRight color="currentColor" height="10px" width="10px" />
-        </Button>
-      </a>
-    </Link>
-  )
-}
+import { SuspenseLoader } from '@/components/SuspenseLoader'
 
-function InfoCard({
+const EnterAppButton = ({ small }: { small?: boolean }) => (
+  <Link href="/starred">
+    <a>
+      <Button size={small ? 'sm' : 'lg'}>
+        Enter the app{' '}
+        <ArrowUpRight color="currentColor" height="10px" width="10px" />
+      </Button>
+    </a>
+  </Link>
+)
+
+const InfoCard = ({
   title,
   body,
   children,
@@ -35,22 +35,20 @@ function InfoCard({
   title: string
   body: string
   children: ReactNode
-}) {
-  return (
-    <div className="flex flex-col justify-around py-4 px-6 mt-2 w-80 h-48 bg-clip-padding bg-primary bg-opacity-60 rounded-lg backdrop-blur-2xl backdrop-filter">
-      <div className="flex justify-center items-center p-2 w-fit w-9 h-fit h-8 bg-secondary rounded">
-        {children}
-      </div>
-      <div>
-        <h3 className="header-text">{title}</h3>
-        <p className="mt-[12px] body-text">{body}</p>
-      </div>
+}) => (
+  <div className="flex flex-col justify-around py-4 px-6 mt-2 w-80 h-48 bg-clip-padding bg-primary bg-opacity-60 rounded-lg backdrop-blur-2xl backdrop-filter">
+    <div className="flex justify-center items-center p-2 w-fit w-9 h-fit h-8 bg-secondary rounded">
+      {children}
     </div>
-  )
-}
+    <div>
+      <h3 className="header-text">{title}</h3>
+      <p className="mt-[12px] body-text">{body}</p>
+    </div>
+  </div>
+)
 
-const Home: NextPage = () => {
-  return (
+const Home: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
     <GradientWrapper>
       <nav className="py-4 px-6 w-full bg-clip-padding bg-opacity-40 border-b border-inactive backdrop-blur-xl backdrop-filter">
         <div className="flex justify-between items-center mx-auto max-w-screen-lg">
@@ -161,7 +159,7 @@ const Home: NextPage = () => {
         </div>
       </div>
     </GradientWrapper>
-  )
-}
+  </SuspenseLoader>
+)
 
 export default Home

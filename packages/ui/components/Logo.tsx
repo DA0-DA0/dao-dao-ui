@@ -4,8 +4,8 @@ export function Logo({
   alt = '',
   invert = false,
 }: {
-  width?: number
-  height?: number
+  width?: number | string
+  height?: number | string
   alt?: string
   invert?: boolean
 }) {
@@ -47,8 +47,8 @@ export function LogoNoBorder({
   height = 28,
   alt = '',
 }: {
-  width?: number
-  height?: number
+  width?: number | string
+  height?: number | string
   alt?: string
 }) {
   return (

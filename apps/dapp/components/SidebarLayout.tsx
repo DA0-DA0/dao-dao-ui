@@ -1,56 +1,80 @@
-import { MenuIcon } from '@heroicons/react/outline'
-import Link from 'next/link'
-import { ReactNode } from 'react'
-import { useState } from 'react'
+import clsx from 'clsx'
+import Head from 'next/head'
+import { FC, useEffect, useState } from 'react'
+import { useRecoilState } from 'recoil'
 
-import { Logo } from '@dao-dao/ui'
+import { useWallet, WalletNotInstalledError } from '@dao-dao/state'
 import { SITE_TITLE } from '@dao-dao/utils'
 
-import Nav from './Nav'
+import { BetaWarningModal } from './BetaWarning'
+import { InstallKeplr } from './InstallKeplr'
+import { Nav, SmallScreenNav } from './Nav'
+import { NoKeplrAccountModal } from './NoKeplrAccountModal'
+import { betaWarningAcceptedAtom } from '@/atoms/status'
+import { noKeplrAccountAtom } from '@/selectors/cosm'
+import { installWarningVisibleAtom } from '@/selectors/cosm'
 
-const SmallScreenNav = ({ onMenuClick }: { onMenuClick: () => void }) => {
-  return (
-    <div className="flex sticky top-0 flex-row justify-between items-center p-6 pb-2 w-full text-lg">
-      <Link href="/starred">
-        <a>
-          <Logo alt={`${SITE_TITLE} Logo`} height={38} width={38} />
-        </a>
-      </Link>
-      <div className="font-mono text-error">Beta</div>
-
-      <div className="cursor-pointer lg:hidden" onClick={onMenuClick}>
-        <MenuIcon className="w-8" />
-      </div>
-    </div>
+export const SidebarLayout: FC = ({ children }) => {
+  const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
+    installWarningVisibleAtom
   )
-}
-
-export function SidebarLayout({ children }: { children: ReactNode }) {
+  const [noKeplrAccount, setNoKeplrAccount] = useRecoilState(noKeplrAccountAtom)
+  const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
+    betaWarningAcceptedAtom
+  )
   const [mobileMenuOpened, setMenuOpened] = useState(false)
 
+  const { connectError } = useWallet()
+  useEffect(() => {
+    setInstallWarningVisible(connectError instanceof WalletNotInstalledError)
+    setNoKeplrAccount(
+      connectError instanceof Error &&
+        connectError.message === "key doesn't exist"
+    )
+  }, [connectError, setInstallWarningVisible, setNoKeplrAccount])
+
   return (
-    <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
-      <div className="hidden lg:block lg:w-[264px]">
-        <Nav />
+    <>
+      <Head>
+        <title>{SITE_TITLE}</title>
+        <link href="/daodao-dark.svg" rel="icon" type="image/svg+xml" />
+        <link href="/yin_yang.png" rel="icon" />
+      </Head>
+
+      {installWarningVisible && (
+        <InstallKeplr onClose={() => setInstallWarningVisible(false)} />
+      )}
+      {noKeplrAccount && (
+        <NoKeplrAccountModal onClose={() => setNoKeplrAccount(false)} />
+      )}
+      {!betaWarningAccepted && (
+        <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
+      )}
+
+      <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
+        <div className="hidden lg:block lg:w-[264px]">
+          <Nav />
+        </div>
+        <div className="lg:hidden">
+          {mobileMenuOpened ? (
+            <div className="fixed z-10 w-screen h-screen bg-clip-padding bg-opacity-60 backdrop-blur-xl backdrop-filter overflow-none">
+              <Nav onMenuClick={() => setMenuOpened(!mobileMenuOpened)} />
+            </div>
+          ) : (
+            <SmallScreenNav
+              onMenuClick={() => setMenuOpened(!mobileMenuOpened)}
+            />
+          )}
+        </div>
+
+        <main
+          className={clsx('lg:col-span-4 lg:col-start-2', {
+            'overflow-hidden w-screen h-screen': mobileMenuOpened,
+          })}
+        >
+          {children}
+        </main>
       </div>
-      <div className="lg:hidden">
-        {mobileMenuOpened ? (
-          <div className="fixed z-10 w-screen h-screen bg-clip-padding bg-opacity-60 backdrop-blur-xl backdrop-filter overflow-none">
-            <Nav onMenuClick={() => setMenuOpened(!mobileMenuOpened)} />
-          </div>
-        ) : (
-          <SmallScreenNav
-            onMenuClick={() => setMenuOpened(!mobileMenuOpened)}
-          />
-        )}
-      </div>
-      <main
-        className={`lg:col-start-2 lg:col-span-4 ${
-          mobileMenuOpened ? 'w-screen h-screen overflow-hidden' : ''
-        }`}
-      >
-        {children}
-      </main>
-    </div>
+    </>
   )
 }

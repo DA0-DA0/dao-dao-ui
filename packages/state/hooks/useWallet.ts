@@ -2,7 +2,7 @@ import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { Keplr } from '@keplr-wallet/types'
 import WalletConnect from '@walletconnect/client'
 import { KeplrWalletConnectV1, useWalletManager, WalletInfo } from 'cosmodal'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
@@ -13,6 +13,7 @@ import { NativeChainInfo } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
+  signingCosmWasmClientSelector,
   walletAccountNameSelector,
   walletAddressSelector,
   walletNativeBalanceSelector,
@@ -22,6 +23,13 @@ import {
   walletConnectedAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
+
+export class WalletNotInstalledError extends Error {
+  constructor() {
+    super("Wallet extension isn't installed.")
+    this.name = 'WalletNotInstalled'
+  }
+}
 
 export const useWallet = () => {
   const [walletConnected, setWalletConnected] =
@@ -34,6 +42,7 @@ export const useWallet = () => {
     connectionType,
     clearLastUsedWallet,
   } = useWalletManager()
+  const [connectError, setConnectError] = useState<any>()
 
   // Clear all state.
   const disconnect = useCallback(() => {
@@ -41,26 +50,34 @@ export const useWallet = () => {
     setWalletClient(undefined)
     setDefaultConnectionType(undefined)
     clearLastUsedWallet()
+    setConnectError(undefined)
   }, [
     setWalletConnected,
     setWalletClient,
     setDefaultConnectionType,
     clearLastUsedWallet,
+    setConnectError,
   ])
 
   const connect = useCallback(async () => {
+    setConnectError(undefined)
+
     // Attempt to connect and update keystore accordingly.
     try {
       const wallet: Keplr | KeplrWalletConnectV1 | undefined = await getWallet()
-
       setWalletClient(wallet)
+
+      if (!wallet) {
+        throw new WalletNotInstalledError()
+      }
     } catch (error) {
       console.error(error)
+      setConnectError(error)
 
       // Set disconnected so we don't try to connect again without manual action.
       disconnect()
     }
-  }, [disconnect, getWallet, setWalletClient])
+  }, [disconnect, getWallet, setWalletClient, setConnectError])
 
   // Attempt connection if should be connected.
   const walletClientDisconnected = walletClient === undefined
@@ -119,6 +136,11 @@ export const useWallet = () => {
     walletNativeBalanceState == 'hasValue'
       ? walletNativeBalanceContents
       : undefined
+  // Wallet signing client
+  const { state: signingClientState, contents: signingClientContents } =
+    useRecoilValueLoadable(signingCosmWasmClientSelector)
+  const signingClient =
+    signingClientState === 'hasValue' ? signingClientContents : undefined
 
   const setRefreshWalletBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(address ?? '')
@@ -137,6 +159,8 @@ export const useWallet = () => {
     nativeBalance,
     connected: !!address,
     loading: walletAddressState === 'loading',
+    connectError,
+    signingClient,
   }
 }
 

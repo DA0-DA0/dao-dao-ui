@@ -2,31 +2,28 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { CopyToClipboard, Breadcrumbs } from '@dao-dao/ui'
+import { useWallet } from '@dao-dao/state'
+import { CopyToClipboard, Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
-import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import { proposalsCreatedAtom } from 'atoms/proposals'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { daoSelector } from 'selectors/daos'
-import { cw20TokenInfo } from 'selectors/treasury'
-import { cleanChainError } from 'util/cleanChainError'
-import { expirationExpired } from 'util/expiration'
+import { proposalsCreatedAtom } from '@/atoms/proposals'
+import { ProposalData, ProposalForm } from '@/components/ProposalForm'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { daoSelector } from '@/selectors/daos'
+import { cw20TokenInfo } from '@/selectors/treasury'
+import { cleanChainError } from '@/util/cleanChainError'
+import { expirationExpired } from '@/util/expiration'
 
-const ProposalCreate: NextPage = () => {
+const InnerProposalCreate: FC = () => {
   const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
   const tokenInfo = useRecoilValue(cw20TokenInfo(daoInfo.gov_token))
 
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-  const walletAddress = useRecoilValue(walletAddressSelector)
+  const { address: walletAddress, signingClient } = useWallet()
 
   const setProposalsCreated = useSetRecoilState(
     proposalsCreatedAtom(contractAddress)
@@ -37,8 +34,9 @@ const ProposalCreate: NextPage = () => {
   const onProposalSubmit = async (d: ProposalData) => {
     setProposalLoading(true)
 
-    if (signingClient == null) {
-      toast.error('No signing client. Is your wallet connected?')
+    if (!signingClient || !walletAddress) {
+      toast.error('Please connect your wallet.')
+      return
     }
 
     if (daoInfo.config.proposal_deposit !== '0') {
@@ -158,4 +156,10 @@ const ProposalCreate: NextPage = () => {
   )
 }
 
-export default ProposalCreate
+const ProposalCreatePage: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
+    <InnerProposalCreate />
+  </SuspenseLoader>
+)
+
+export default ProposalCreatePage

@@ -2,35 +2,37 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import type { NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useRecoilValue } from 'recoil'
 
-import { Breadcrumbs } from '@dao-dao/ui'
+import { useWallet } from '@dao-dao/state'
+import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
-import { ProposalData, ProposalForm } from '@components/ProposalForm'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { sigSelector } from 'selectors/multisigs'
-import { cleanChainError } from 'util/cleanChainError'
+import { ProposalData, ProposalForm } from '@/components/ProposalForm'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { sigSelector } from '@/selectors/multisigs'
+import { cleanChainError } from '@/util/cleanChainError'
 
-const MultisigProposalCreate: NextPage = () => {
+const InnerMultisigProposalCreate: FC = () => {
   const router: NextRouter = useRouter()
   const contractAddress = router.query.contractAddress as string
 
   const sigInfo = useRecoilValue(sigSelector(contractAddress))
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
-  const walletAddress = useRecoilValue(walletAddressSelector)
+  const { address: walletAddress, signingClient } = useWallet()
 
   const [proposalLoading, setProposalLoading] = useState(false)
 
   const onProposalSubmit = async (d: ProposalData) => {
+    if (!signingClient || !walletAddress) {
+      toast.error('Please connect your wallet.')
+      return
+    }
+
     setProposalLoading(true)
 
     await signingClient
-      ?.execute(
+      .execute(
         walletAddress,
         contractAddress,
         {
@@ -86,4 +88,10 @@ const MultisigProposalCreate: NextPage = () => {
   )
 }
 
-export default MultisigProposalCreate
+const MultisigProposalCreatePage: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
+    <InnerMultisigProposalCreate />
+  </SuspenseLoader>
+)
+
+export default MultisigProposalCreatePage

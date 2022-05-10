@@ -1,12 +1,11 @@
 import { selectorFamily } from 'recoil'
 
+import { cosmWasmClientSelector, walletAddressSelector } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/types/contracts/cw3-multisig'
 import { MULTISIG_CODE_ID } from '@dao-dao/utils'
 
 import { contractsByCodeId } from 'selectors/contracts'
-import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
-
-import { walletAddress } from './treasury'
+import { isMemberSelector } from 'selectors/cosm'
 
 export interface MultisigListType {
   address: string
@@ -47,7 +46,7 @@ export const sigSelector = selectorFamily<ConfigResponse, string>({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       return await client?.queryContractSmart(address, {
         get_config: {},
       })
@@ -60,7 +59,7 @@ export const totalWeight = selectorFamily<number, string>({
     (address: string) =>
     async ({ get }) => {
       const sigInfo = get(sigSelector(address))
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const total_votes = await client.queryContractSmart(
         sigInfo.group_address,
         { total_weight: {} }
@@ -75,8 +74,8 @@ export const memberWeight = selectorFamily<number, string>({
     (address: string) =>
     async ({ get }) => {
       const sigInfo = get(sigSelector(address))
-      const client = get(cosmWasmClient)
-      const memberAddress = get(walletAddress)
+      const client = get(cosmWasmClientSelector)
+      const memberAddress = get(walletAddressSelector)
       if (!memberAddress) {
         return 0
       }
@@ -93,7 +92,7 @@ export const listMembers = selectorFamily<MultisigMemberInfo[], string>({
     (address: string) =>
     async ({ get }) => {
       const sigInfo = get(sigSelector(address))
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const members = await client.queryContractSmart(sigInfo.group_address, {
         list_members: {},
       })

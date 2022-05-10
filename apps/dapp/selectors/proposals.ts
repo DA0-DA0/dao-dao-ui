@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { cosmWasmClientSelector, walletAddressSelector } from '@dao-dao/state'
 import {
   ProposalResponse,
   ProposalTallyResponse,
@@ -13,13 +14,9 @@ import {
 } from 'atoms/proposals'
 
 import { EmptyProposalTallyResponse } from '../models/proposal/proposal'
-import { cosmWasmClient } from './cosm'
 import { daoSelector } from './daos'
 import { sigSelector } from './multisigs'
-import {
-  walletAddress,
-  walletStakedTokenBalanceAtHeightSelector,
-} from './treasury'
+import { walletStakedTokenBalanceAtHeightSelector } from './treasury'
 
 export type ProposalIdInput = string | number
 
@@ -63,7 +60,7 @@ export const proposalsSelector = selectorFamily<
       // a re-fetch after creating a new propossal.
       get(proposalsRequestIdAtom)
 
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const { proposals } = await client.queryContractSmart(contractAddress, {
         reverse_proposals: {
           ...(startBefore && { start_before: startBefore }),
@@ -90,7 +87,7 @@ export const proposalSelector = selectorFamily<
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       try {
         const proposal = await client.queryContractSmart(contractAddress, {
           proposal: { proposal_id: proposalId },
@@ -111,7 +108,7 @@ export const proposalStartBlockSelector = selectorFamily<
   get:
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       if (!client) {
         return 0
       }
@@ -141,8 +138,8 @@ export const walletVoteSelector = selectorFamily<
   get:
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
-      const wallet = get(walletAddress)
+      const client = get(cosmWasmClientSelector)
+      const wallet = get(walletAddressSelector)
       if (!client || !wallet) {
         return undefined
       }
@@ -170,7 +167,7 @@ export const proposalExecutionTXHashSelector = selectorFamily<
       // Refresh when new updates occur.
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
 
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const proposal = get(proposalSelector({ contractAddress, proposalId }))
       // No TX Hash if proposal not yet executed.
       if (!client || proposal?.status !== 'executed') return null
@@ -209,7 +206,7 @@ export const proposalVotesSelector = selectorFamily<
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
       try {
-        const client = get(cosmWasmClient)
+        const client = get(cosmWasmClientSelector)
         const votes = await client.queryContractSmart(contractAddress, {
           list_votes: {
             proposal_id: proposalId,
@@ -241,7 +238,7 @@ export const proposalTallySelector = selectorFamily<
     async ({ get }) => {
       get(proposalUpdateCountAtom({ contractAddress, proposalId }))
       try {
-        const client = get(cosmWasmClient)
+        const client = get(cosmWasmClientSelector)
         const tally = await client.queryContractSmart(contractAddress, {
           tally: { proposal_id: proposalId },
         })
@@ -261,8 +258,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ contractAddress, height, multisig }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
-      const wallet = get(walletAddress)
+      const client = get(cosmWasmClientSelector)
+      const wallet = get(walletAddressSelector)
 
       if (!client || !wallet) {
         return 0

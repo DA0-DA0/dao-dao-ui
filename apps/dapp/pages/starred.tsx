@@ -1,88 +1,17 @@
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
-import {
-  NATIVE_DENOM,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
+import { LoadingScreen } from '@dao-dao/ui'
 
-import { EmptyDaoCard } from '@components/EmptyDaoCard'
-import { EmptyMultisigCard } from '@components/EmptyMultisigCard'
-import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
-import { ContractCard } from 'components/ContractCard'
-import { isMemberSelector } from 'selectors/cosm'
-import { memberDaoSelector, proposalCount } from 'selectors/daos'
-import { sigSelector } from 'selectors/multisigs'
-import { cw20TokenInfo, nativeBalance } from 'selectors/treasury'
-import { addToken } from 'util/addToken'
+import { pinnedDaosAtom, pinnedMultisigsAtom } from '@/atoms/pinned'
+import { EmptyDaoCard } from '@/components/EmptyDaoCard'
+import { EmptyMultisigCard } from '@/components/EmptyMultisigCard'
+import { PinnedDaoCard, PinnedMultisigCard } from '@/components/starred'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
 
-function PinnedDaoCard({ address }: { address: string }) {
-  const listInfo = useRecoilValue(memberDaoSelector(address))
-  const tokenInfo = useRecoilValue(cw20TokenInfo(listInfo.gov_token))
-
-  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
-  const pinned = pinnedDaos.includes(address)
-
-  return (
-    <ContractCard
-      balance={listInfo.balance}
-      description={listInfo.dao.description}
-      href={`/dao/${address}`}
-      imgUrl={listInfo.dao.image_url}
-      name={listInfo.dao.name}
-      onPin={() => {
-        if (pinned) {
-          setPinnedDaos((p) => p.filter((a) => a !== address))
-        } else {
-          setPinnedDaos((p) => p.concat([address]))
-          addToken(listInfo.gov_token)
-        }
-      }}
-      pinned={pinned}
-      proposals={listInfo.proposals}
-      weight={convertMicroDenomToDenomWithDecimals(
-        listInfo.weight,
-        tokenInfo.decimals
-      )}
-    />
-  )
-}
-
-function PinnedMultisigCard({ address }: { address: string }) {
-  const config = useRecoilValue(sigSelector(address)).config
-  const weight = useRecoilValue(isMemberSelector(address)).weight
-  const proposals = useRecoilValue(proposalCount(address))
-  const balance = useRecoilValue(nativeBalance(address))
-  const chainBalance = balance.find((coin) => coin.denom == NATIVE_DENOM)
-  const chainNativeBalance = chainBalance?.amount || '0'
-
-  const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
-  const pinned = pinnedSigs.includes(address)
-
-  return (
-    <ContractCard
-      balance={chainNativeBalance}
-      description={config.description}
-      href={`/multisig/${address}`}
-      imgUrl={config.image_url}
-      name={config.name}
-      onPin={() => {
-        if (pinned) {
-          setPinnedSigs((p) => p.filter((a) => a !== address))
-        } else {
-          setPinnedSigs((p) => p.concat([address]))
-        }
-      }}
-      pinned={pinned}
-      proposals={proposals}
-      weight={weight}
-    />
-  )
-}
-
-const Starred: NextPage = () => {
+const InnerStarred: NextPage = () => {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
 
@@ -160,4 +89,10 @@ const Starred: NextPage = () => {
   )
 }
 
-export default Starred
+const StarredPage: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
+    <InnerStarred />
+  </SuspenseLoader>
+)
+
+export default StarredPage

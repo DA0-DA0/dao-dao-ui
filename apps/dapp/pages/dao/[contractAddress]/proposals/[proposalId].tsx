@@ -1,19 +1,22 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { Breadcrumbs } from '@dao-dao/ui'
+import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
-import { ProposalDetails } from 'components/ProposalDetails'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { ProposalDetails } from '@/components/ProposalDetails'
 import {
+  ProposalDetailsCard,
   ProposalDetailsSidebar,
   ProposalDetailsVoteStatus,
-  ProposalDetailsCard,
-} from 'components/ProposalDetailsSidebar'
-import { daoSelector } from 'selectors/daos'
-import { cw20TokenInfo } from 'selectors/treasury'
+} from '@/components/ProposalDetailsSidebar'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { daoSelector } from '@/selectors/daos'
+import { cw20TokenInfo } from '@/selectors/treasury'
 
-const Proposal: NextPage = () => {
+const InnerProposal: FC = () => {
   const router = useRouter()
   const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
@@ -62,4 +65,12 @@ const Proposal: NextPage = () => {
   )
 }
 
-export default Proposal
+const ProposalPage: NextPage = () => (
+  <ErrorBoundary title="Proposal Not Found">
+    <SuspenseLoader fallback={<LoadingScreen />}>
+      <InnerProposal />
+    </SuspenseLoader>
+  </ErrorBoundary>
+)
+
+export default ProposalPage

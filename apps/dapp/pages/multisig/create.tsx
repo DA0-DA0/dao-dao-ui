@@ -2,12 +2,13 @@ import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { PlusIcon } from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
-import { Button, Tooltip } from '@dao-dao/ui'
+import { useWallet } from '@dao-dao/state'
+import { Button, LoadingScreen, Tooltip } from '@dao-dao/ui'
 import {
   GradientHero,
   Breadcrumbs,
@@ -19,30 +20,28 @@ import {
   TextInput,
   TokenAmountInput,
 } from '@dao-dao/ui'
-import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
-
-import { FormCard } from '@components/FormCard'
-import TooltipsDisplay, {
-  useTooltipsRegister,
-} from '@components/TooltipsDisplay'
-import { pinnedMultisigsAtom } from 'atoms/pinned'
 import {
-  multisigCreateTooltipsDefault,
-  multisigCreateTooltipsGetter,
-} from 'components/TooltipsDisplay/multisigCreate'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { cleanChainError } from 'util/cleanChainError'
-import {
+  MULTISIG_CODE_ID,
+  secondsToWdhms,
   validatePercent,
   validatePositive,
   validateRequired,
-} from 'util/formValidation'
-import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
-import { errorNotify, successNotify } from 'util/toast'
+} from '@dao-dao/utils'
+
 import '@reach/tooltip/styles.css'
+import { pinnedMultisigsAtom } from '@/atoms/pinned'
+import { FormCard } from '@/components/FormCard'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import TooltipsDisplay, {
+  useTooltipsRegister,
+} from '@/components/TooltipsDisplay'
+import {
+  multisigCreateTooltipsGetter,
+  multisigCreateTooltipsDefault,
+} from '@/components/TooltipsDisplay/multisigCreate'
+import { cleanChainError } from '@/util/cleanChainError'
+import { makeMultisigInstantiateMessage } from '@/util/messagehelpers'
+import { errorNotify, successNotify } from '@/util/toast'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -58,8 +57,9 @@ export interface MultisigCreateData {
   balances: { addr: string; amount: string }[]
 }
 
-const CreateMultisig: NextPage = () => {
+const InnerCreateMultisig: FC = () => {
   const router = useRouter()
+  const { address: walletAddress, signingClient } = useWallet()
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -88,9 +88,6 @@ const CreateMultisig: NextPage = () => {
   const votingPeriodSeconds = watch('duration')
   const imageUrl = watch('imageUrl')
   const threshold = watch('threshold')
-
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
 
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
@@ -309,4 +306,10 @@ const CreateMultisig: NextPage = () => {
   )
 }
 
-export default CreateMultisig
+const CreateMultisigPage: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
+    <InnerCreateMultisig />
+  </SuspenseLoader>
+)
+
+export default CreateMultisigPage

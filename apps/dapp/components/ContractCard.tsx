@@ -148,15 +148,13 @@ export function ContractCard({
   )
 }
 
-export function LoadingContractCard() {
-  return (
-    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
-      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
-      <div className="flex justify-center items-center w-[70px] h-[70px]">
-        <div className="inline-block animate-spin">
-          <Logo height={72} width={72} />
-        </div>
+export const LoadingContractCard = () => (
+  <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
+    <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
+    <div className="flex justify-center items-center w-[70px] h-[70px]">
+      <div className="inline-block animate-spin">
+        <Logo height={72} width={72} />
       </div>
     </div>
-  )
-}
+  </div>
+)

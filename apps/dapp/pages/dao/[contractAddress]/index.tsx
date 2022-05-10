@@ -1,187 +1,44 @@
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
+import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import React, { useEffect } from 'react'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { MemberCheck, Pencil } from '@dao-dao/icons'
 import {
   useThemeContext,
-  StakingMode,
   GradientHero,
   HorizontalInfo,
   ContractHeader,
   StarButton,
   HorizontalInfoSection,
-  BalanceCard,
   Breadcrumbs,
+  LoadingScreen,
 } from '@dao-dao/ui'
 import {
+  CHAIN_RPC_ENDPOINT,
   convertMicroDenomToDenomWithDecimals,
-  claimAvailable,
+  cosmWasmClientRouter,
 } from '@dao-dao/utils'
 
-import { ClaimsPendingList } from '@components/Claims'
-import { DaoContractInfo } from '@components/DaoContractInfo'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import { ContractProposalsDispaly } from 'components/ContractView'
-import ErrorBoundary from 'components/ErrorBoundary'
-import { StakingModal } from 'components/StakingModal'
-import { contractInstantiateTime } from 'selectors/contracts'
-import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
+import { pinnedDaosAtom } from '@/atoms/pinned'
+import { ContractProposalsDisplay } from '@/components/ContractView'
+import { YourShares } from '@/components/dao'
+import { DaoContractInfo } from '@/components/DaoContractInfo'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { contractInstantiateTime } from '@/selectors/contracts'
+import { isMemberSelector } from '@/selectors/cosm'
 import {
   daoSelector,
-  proposalCount,
   tokenConfig,
   totalStaked,
-} from 'selectors/daos'
-import {
-  getBlockHeight,
-  walletAddress,
-  walletClaims,
-  walletStakedTokenBalance,
-  walletTokenBalance,
-  walletTokenBalanceLoading,
-  walletTokenBalanceUpdateCountAtom,
-} from 'selectors/treasury'
-import { addToken } from 'util/addToken'
-import { cosmWasmClientRouter } from 'util/chainClientRouter'
-import { getFastAverageColor } from 'util/colors'
+  proposalCount,
+} from '@/selectors/daos'
+import { addToken } from '@/util/addToken'
+import { getFastAverageColor } from '@/util/colors'
 
-function YourShares() {
-  const router = useRouter()
-  const contractAddress = router.query.contractAddress as string
-
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-
-  // Balances for the visitor
-  const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
-  const stakedGovTokenBalance = useRecoilValue(
-    walletStakedTokenBalance(daoInfo?.staking_contract)
-  )
-  const blockHeight = useRecoilValue(getBlockHeight)
-  const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const claimsAvailable = stuff.claims
-    .filter((c) => claimAvailable(c, blockHeight))
-    .reduce((p, n) => p + Number(n.amount), 0)
-
-  const wallet = useRecoilValue(walletAddress)
-  const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
-    walletTokenBalanceLoading(wallet)
-  )
-  const setWalletTokenBalanceUpdateCount = useSetRecoilState(
-    walletTokenBalanceUpdateCountAtom(wallet)
-  )
-
-  const [showStaking, setShowStaking] = useState(false)
-  return (
-    <>
-      <h2 className="mb-2 title-text">Your shares</h2>
-      <ul className="flex flex-row flex-wrap gap-2 list-none">
-        <li className="basis-0 grow min-w-max">
-          <BalanceCard
-            amount={convertMicroDenomToDenomWithDecimals(
-              govTokenBalance?.amount,
-              tokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-            denom={tokenInfo?.symbol}
-            loading={tokenBalanceLoading}
-            onManage={() => {
-              setShowStaking(true)
-            }}
-            title="Balance"
-          />
-        </li>
-        <li className="basis-0 grow min-w-max">
-          <BalanceCard
-            amount={convertMicroDenomToDenomWithDecimals(
-              stakedGovTokenBalance.amount,
-              tokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-            denom={tokenInfo?.symbol}
-            loading={tokenBalanceLoading}
-            onManage={() => {
-              setShowStaking(true)
-            }}
-            title={`Voting power (staked ${tokenInfo?.symbol})`}
-          />
-        </li>
-        {claimsAvailable ? (
-          <li className="basis-0 grow min-w-max">
-            <BalanceCard
-              amount={convertMicroDenomToDenomWithDecimals(
-                claimsAvailable,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: 20,
-              })}
-              denom={tokenInfo?.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title={`Pending (unclaimed ${tokenInfo?.symbol})`}
-            />
-          </li>
-        ) : null}
-      </ul>
-      {govTokenBalance?.amount ? (
-        <div className="p-6 mt-2 w-full bg-primary rounded-lg">
-          <h3 className="mb-4 link-text">
-            You have{' '}
-            {convertMicroDenomToDenomWithDecimals(
-              govTokenBalance?.amount,
-              tokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-            unstaked {tokenInfo.symbol}
-          </h3>
-          <p className="secondary-text">
-            Staking them would bring you{' '}
-            {stakedGovTokenBalance &&
-              `${(
-                (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                100
-              ).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-              })}%`}{' '}
-            more voting power and help you defend your positions for{' '}
-            {daoInfo.config.name}
-            {"'"}s direction.
-          </p>
-          <div className="flex justify-end mt-4">
-            <button
-              className="flex gap-2 items-center rounded link-text"
-              onClick={() => {
-                setShowStaking(true)
-              }}
-            >
-              Stake tokens
-              <PlusSmIcon className="h-5" />
-            </button>
-          </div>
-        </div>
-      ) : null}
-      <ClaimsPendingList
-        onClaimAvailable={() => setWalletTokenBalanceUpdateCount((n) => n + 1)}
-        stakingAddress={daoInfo.staking_contract}
-        tokenInfo={tokenInfo}
-      />
-      {showStaking && (
-        <StakingModal
-          afterExecute={() => setTokenBalancesLoading(false)}
-          beforeExecute={() => setTokenBalancesLoading(true)}
-          claimableTokens={claimsAvailable}
-          contractAddress={contractAddress}
-          defaultMode={StakingMode.Stake}
-          onClose={() => setShowStaking(false)}
-        />
-      )}
-    </>
-  )
-}
-
-function DaoHome() {
+const InnerDaoHome = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -274,7 +131,7 @@ function DaoHome() {
           <DaoContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
-          <ContractProposalsDispaly
+          <ContractProposalsDisplay
             contractAddress={contractAddress}
             proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
           />
@@ -317,12 +174,11 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
     setAccentColor(accentColor)
   }, [accentColor, setAccentColor, isReady, isFallback])
 
-  // Trigger Suspense.
-  if (!isReady || isFallback) throw new Promise((_resolve) => {})
-
   return (
     <ErrorBoundary title="DAO Not Found">
-      <DaoHome />
+      <SuspenseLoader fallback={<LoadingScreen />}>
+        <InnerDaoHome />
+      </SuspenseLoader>
     </ErrorBoundary>
   )
 }

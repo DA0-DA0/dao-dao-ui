@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import { FC } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { useWallet } from '@dao-dao/state'
 import {
   Button,
   TreasuryBalances as StatelessTreasuryBalances,
@@ -8,16 +10,14 @@ import {
 } from '@dao-dao/ui'
 import { NATIVE_DECIMALS, nativeTokenDecimals } from '@dao-dao/utils'
 
-import { isMemberSelector } from 'selectors/cosm'
+import { ProposalList } from './ProposalList'
+import { isMemberSelector } from '@/selectors/cosm'
 import {
   cw20Balances,
   cw20TokenInfo,
   nativeBalance,
-  walletAddress,
   walletTokenBalanceLoading,
-} from 'selectors/treasury'
-
-import { ProposalList } from './ProposalList'
+} from '@/selectors/treasury'
 
 export function TreasuryBalances({ address }: { address: string }) {
   const nativeBalances = useRecoilValue(nativeBalance(address))
@@ -47,17 +47,19 @@ export function TreasuryBalances({ address }: { address: string }) {
   )
 }
 
-export function ContractProposalsDispaly({
-  contractAddress,
-  proposalCreateLink,
-  multisig,
-}: {
+interface ContractProposalsDisplayProps {
   contractAddress: string
   proposalCreateLink: string
   multisig?: boolean
-}) {
-  const wallet = useRecoilValue(walletAddress)
-  const loading = useRecoilValue(walletTokenBalanceLoading(wallet))
+}
+
+export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
+  contractAddress,
+  proposalCreateLink,
+  multisig,
+}) => {
+  const { address: walletAddress } = useWallet()
+  const loading = useRecoilValue(walletTokenBalanceLoading(walletAddress ?? ''))
 
   const member = useRecoilValue(isMemberSelector(contractAddress)).member
   const tooltip = !member

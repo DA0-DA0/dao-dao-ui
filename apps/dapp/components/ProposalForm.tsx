@@ -4,6 +4,7 @@ import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
+import { useWallet } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -18,7 +19,6 @@ import {
   TextInput,
 } from '@dao-dao/ui'
 
-import { walletAddress } from 'selectors/treasury'
 import {
   messageTemplates,
   ToCosmosMsgProps,
@@ -59,7 +59,7 @@ export function ProposalForm({
   toCosmosMsgProps,
   multisig,
 }: ProposalFormProps) {
-  const wallet = useRecoilValue(walletAddress)
+  const { address: walletAddress } = useWallet()
   const contractConfig = useRecoilValue(
     contractConfigSelector({ contractAddress, multisig: !!multisig })
   )
@@ -134,7 +134,11 @@ export function ProposalForm({
               onClose={() => setShowTemplateSelector(false)}
               onLabelSelect={(label, getDefaults) => {
                 append({
-                  ...getDefaults(wallet, contractConfig, govTokenDecimals),
+                  ...getDefaults(
+                    walletAddress ?? '',
+                    contractConfig,
+                    govTokenDecimals
+                  ),
                   label,
                 })
                 setShowTemplateSelector(false)
@@ -209,7 +213,11 @@ export function ProposalForm({
                 onClose={() => setShowTemplateSelector(false)}
                 onLabelSelect={(label, getDefaults) => {
                   append({
-                    ...getDefaults(wallet, contractConfig, govTokenDecimals),
+                    ...getDefaults(
+                      walletAddress ?? '',
+                      contractConfig,
+                      govTokenDecimals
+                    ),
                     label,
                   })
                   setShowTemplateSelector(false)
@@ -221,9 +229,9 @@ export function ProposalForm({
         </div>
         <div className="flex gap-2 justify-end mt-4">
           <Tooltip
-            label={!wallet ? 'Connect your wallet to submit' : undefined}
+            label={!walletAddress ? 'Connect your wallet to submit' : undefined}
           >
-            <Button loading={loading} type="submit">
+            <Button disabled={!walletAddress} loading={loading} type="submit">
               Publish{' '}
               <Airplane color="currentColor" height="14px" width="14px" />
             </Button>

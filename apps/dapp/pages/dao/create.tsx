@@ -1,15 +1,16 @@
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { PlusIcon } from '@heroicons/react/outline'
-import type { NextPage } from 'next'
+import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
+import { useWallet } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InstantiateMsg } from '@dao-dao/types/contracts/cw3-dao'
-import { Button, Tooltip } from '@dao-dao/ui'
+import { Button, LoadingScreen, Tooltip } from '@dao-dao/ui'
 import {
   AddressInput,
   Breadcrumbs,
@@ -29,36 +30,31 @@ import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   secondsToWdhms,
-} from '@dao-dao/utils'
-
-import { FormCard } from '@components/FormCard'
-import TooltipsDisplay, {
-  useTooltipsRegister,
-} from '@components/TooltipsDisplay'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import {
-  daoCreateTooltipsGetter,
-  daoCreateTooltipsDefault,
-} from 'components/TooltipsDisplay/daoCreate'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { cleanChainError } from 'util/cleanChainError'
-import {
   validateContractAddress,
   validateNonNegative,
   validatePercent,
   validatePositive,
   validateRequired,
   validateUrl,
-} from 'util/formValidation'
-import { isValidName, isValidTicker } from 'util/isValidTicker'
+} from '@dao-dao/utils'
+
+import { pinnedDaosAtom } from '@/atoms/pinned'
+import { FormCard } from '@/components/FormCard'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import TooltipsDisplay, {
+  useTooltipsRegister,
+} from '@/components/TooltipsDisplay'
 import {
-  makeDaoInstantiateWithExistingTokenMessage,
+  daoCreateTooltipsGetter,
+  daoCreateTooltipsDefault,
+} from '@/components/TooltipsDisplay/daoCreate'
+import { cleanChainError } from '@/util/cleanChainError'
+import { isValidTicker, isValidName } from '@/util/isValidTicker'
+import {
   makeDaoInstantiateWithNewTokenMessage,
-} from 'util/messagehelpers'
-import { errorNotify, successNotify } from 'util/toast'
+  makeDaoInstantiateWithExistingTokenMessage,
+} from '@/util/messagehelpers'
+import { errorNotify, successNotify } from '@/util/toast'
 
 export interface DaoCreateData {
   deposit: string
@@ -99,10 +95,9 @@ enum TokenMode {
   Create,
 }
 
-const CreateDao: NextPage = () => {
+const InnerCreateDao: FC = () => {
   const router = useRouter()
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const { address: walletAddress, signingClient } = useWallet()
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -667,4 +662,10 @@ const CreateDao: NextPage = () => {
   )
 }
 
-export default CreateDao
+const CreateDaoPage: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
+    <InnerCreateDao />
+  </SuspenseLoader>
+)
+
+export default CreateDaoPage
