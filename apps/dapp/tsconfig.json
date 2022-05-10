@@ -1,15 +1,12 @@
 {
-  "extends": "../../packages/tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "tools"],
+  "extends": "@dao-dao/tsconfig/nextjs.json",
   "compilerOptions": {
-    "outDir": "dist",
     "baseUrl": ".",
-    "sourceMap": true,
     "paths": {
       "@components/*": ["components/*"],
       "@components": ["components"]
-    },
-    "moduleResolution": "node"
-  }
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "tools"]
 }

@@ -1,7 +1,6 @@
-import { forwardRef } from 'react'
-
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip, { TooltipProps } from '@reach/tooltip'
+import { forwardRef } from 'react'
 
 export type TooltipIconProps = Omit<TooltipProps, 'children'>
 

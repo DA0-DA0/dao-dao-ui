@@ -1,8 +1,8 @@
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import React from 'react'
 
 // import { ChevronDownIcon } from '@heroicons/react/outline'
 // import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 // import SvgConnect from '@components/icons/Connect'
 // import SvgWallet from '@components/icons/Wallet'
@@ -19,8 +19,7 @@ const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />
 export const Primary = Template.bind({})
 Primary.args = {
   variant: 'primary',
-  size: 'md',
-  full: false,
+  size: 'lg',
   disabled: false,
   children: 'Connect wallet',
 }
@@ -43,11 +42,11 @@ Small.args = {
   size: 'sm',
 }
 
-export const Medium = Template.bind({})
-Medium.args = {
-  ...Primary.args,
-  size: 'md',
-}
+// export const Medium = Template.bind({})
+// Medium.args = {
+//   ...Primary.args,
+//   size: 'md',
+// }
 
 export const Large = Template.bind({})
 Large.args = {
@@ -100,7 +99,7 @@ Primary.parameters = params
 Secondary.parameters = params
 Ghost.parameters = params
 Small.parameters = params
-Medium.parameters = params
+// Medium.parameters = params
 Large.parameters = params
 // ExtraLarge.parameters = params
 // IconBefore.parameters = params

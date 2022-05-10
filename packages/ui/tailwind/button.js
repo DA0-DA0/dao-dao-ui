@@ -1,3 +1,4 @@
+/** @type {import("tailwindcss/plugin").TailwindPluginCreator} */
 const plugin = require('tailwindcss/plugin')
 
 module.exports = plugin(function ({ addComponents }) {

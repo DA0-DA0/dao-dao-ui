@@ -1,5 +1,6 @@
+import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
-
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
@@ -16,8 +17,6 @@ import {
   TextareaInput,
   TextInput,
 } from '@dao-dao/ui'
-import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 
 import { walletAddress } from 'selectors/treasury'
 import {

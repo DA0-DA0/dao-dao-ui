@@ -1,6 +1,5 @@
-import Link from 'next/link'
-
 import { PlusIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
 
 export const EmptyContractCard = ({
   title,

@@ -1,2 +1,2 @@
 export * from './ClaimsListItem'
-export * from './ClaimsAvaliableCard'
+export * from './ClaimsAvailableCard'

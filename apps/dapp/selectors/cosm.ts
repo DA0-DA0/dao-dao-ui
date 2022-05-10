@@ -1,7 +1,7 @@
-import { selector, selectorFamily, atom } from 'recoil'
-
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { GasPrice } from '@cosmjs/stargate'
+import { selector, selectorFamily, atom } from 'recoil'
+
 import { NATIVE_DENOM, GAS_PRICE } from '@dao-dao/utils'
 
 import {

@@ -1,5 +1,4 @@
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/outline'
-
 import { ChangeEvent, FC } from 'react'
 
 export interface AmountSelectorProps {
@@ -24,7 +23,7 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
       <ChevronLeftIcon className="w-4 h-4" />
     </button>
     <input
-      className="pr-16 pl-16 w-[392px] h-[56px] bg-btn-secondary rounded"
+      className="pr-16 pl-16 w-full h-[56px] bg-btn-secondary rounded"
       onChange={(e: ChangeEvent<HTMLInputElement>) =>
         setAmount(e.target.valueAsNumber)
       }

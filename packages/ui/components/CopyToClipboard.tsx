@@ -1,9 +1,9 @@
+import { CheckCircleIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 import { Copy } from '@dao-dao/icons'
 import { useThemeContext } from '@dao-dao/ui'
-import { CheckCircleIcon } from '@heroicons/react/outline'
-import toast from 'react-hot-toast'
 
 function concatAddressImpl(
   address: string,
@@ -47,7 +47,9 @@ export function CopyToClipboard({
       ) : (
         <Copy color="currentColor" height="18px" width="18px" />
       )}
-      {concatAddress(value, takeN)}
+      <span className="inline py-1 hover:bg-btn-secondary-hover transition">
+        {concatAddress(value, takeN)}
+      </span>
     </button>
   )
 }

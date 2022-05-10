@@ -80,7 +80,7 @@ const daoCreateTooltips: daoCreateTooltipsType = {
   unstakingDuration: (
     <p>
       The amount of time between unstaking tokens and those tokens being
-      avaliable.
+      available.
     </p>
   ),
   refund: (

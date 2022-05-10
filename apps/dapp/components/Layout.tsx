@@ -1,7 +1,6 @@
-import { ReactNode, useState, useEffect } from 'react'
-
+import { Keplr } from '@keplr-wallet/types'
 import Head from 'next/head'
-
+import { ReactNode, useState, useEffect } from 'react'
 import {
   useRecoilRefresher_UNSTABLE,
   useRecoilState,
@@ -10,7 +9,6 @@ import {
 
 import { LoadingScreen } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
-import { Keplr } from '@keplr-wallet/types'
 
 import { betaWarningAcceptedAtom } from 'atoms/status'
 import { SidebarLayout } from 'components/SidebarLayout'

@@ -1,21 +1,18 @@
 {
   "name": "@dao-dao/dapp",
   "version": "0.3.0",
-  "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build --debug",
     "analyze": "cross-env ANALYZE=true next build",
-    "start": "next start",
+    "build": "next build --debug",
+    "dev": "next dev",
+    "format": "eslint . --fix",
+    "lint": "eslint .",
     "prettier:write": "prettier --write .",
-    "lint": "next lint --no-cache",
-    "format": "next lint --no-cache --fix",
+    "start": "next start",
     "test": "jest",
     "test:watch": "jest --watch",
     "ts": "tsc --noEmit --incremental",
-    "ts:watch": "yarn ts --watch",
-    "svgr:clean": "rm -rf components/icons/*",
-    "svgr": "./node_modules/.bin/svgr --out-dir components/icons --typescript --no-index --icon --replace-attr-values \"#191D20={props.color}\" -- assets/icons"
+    "ts:watch": "ts --watch"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.28.1",
@@ -24,14 +21,18 @@
     "@cosmjs/stargate": "^0.28.1",
     "@dao-dao/icons": "*",
     "@dao-dao/types": "^0.0.8",
-    "@dao-dao/utils": "*",
     "@dao-dao/ui": "*",
+    "@fontsource/inter": "^4.5.7",
+    "@fontsource/jetbrains-mono": "^4.5.5",
+    "@dao-dao/utils": "*",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
     "@keplr-wallet/types": "^0.9.10",
+    "@meilisearch/instant-meilisearch": "^0.7.0",
     "@reach/tooltip": "^0.16.2",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.1",
+    "@types/react-instantsearch-dom": "^6.12.3",
     "@types/react-json-editor-ajrm": "^2.5.2",
     "ajv": "^8.9.0",
     "axios": "^0.26.1",
@@ -50,6 +51,7 @@
     "react-dom": "^18.0.0-beta-24dd07bd2-20211208",
     "react-hook-form": "^7.20.4",
     "react-hot-toast": "^2.1.1",
+    "react-instantsearch-dom": "^6.24.2",
     "react-json-editor-ajrm": "^2.5.13",
     "react-markdown": "^8.0.0",
     "recoil": "^0.5.2",
@@ -59,6 +61,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@dao-dao/config": "*",
+    "@dao-dao/tsconfig": "*",
     "@next/bundle-analyzer": "^12.1.0",
     "@svgr/cli": "^6.1.1",
     "@types/jest": "^27.0.2",
@@ -75,8 +78,8 @@
     "postcss": "^8.4.5",
     "tailwindcss": "^3.0.7",
     "ts-jest": "^27.0.7",
-    "tsconfig": "*",
     "typescript": "4.5.4"
   },
-  "prettier": "@dao-dao/config/prettier"
+  "prettier": "@dao-dao/config/prettier",
+  "private": true
 }

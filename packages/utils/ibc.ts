@@ -1,6 +1,6 @@
-import ibcAssets from './ibc_assets.json'
-import { convertFromMicroDenom } from './conversion'
 import { NATIVE_DENOM, NATIVE_DECIMALS } from './constants'
+import { convertDenomToHumanReadableDenom } from './conversion'
+import ibcAssets from './ibc_assets.json'
 
 export function nativeTokenLabel(denom: string): string {
   // Search IBC asset strings (junoDenom) if denom is in IBC format.
@@ -9,7 +9,7 @@ export function nativeTokenLabel(denom: string): string {
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   // If no asset, assume it's already a microdenom.
-  return asset?.symbol || denom
+  return asset?.symbol || convertDenomToHumanReadableDenom(denom).toUpperCase()
 }
 
 export function nativeTokenLogoURI(denom: string): string | undefined {

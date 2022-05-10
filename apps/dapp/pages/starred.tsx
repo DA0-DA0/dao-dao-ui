@@ -1,13 +1,12 @@
+import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 import { NextPage } from 'next'
 import Link from 'next/link'
-
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 
 import { EmptyDaoCard } from '@components/EmptyDaoCard'
 import { EmptyMultisigCard } from '@components/EmptyMultisigCard'

@@ -1,55 +1,28 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-node_modules
-/.pnp
-.pnp.js
-
-# turbo
-.turbo
-
-# testing
-/coverage
-
-# next.js
-.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
+*.log
 *.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# vercel
-.vercel
-
-# emacs
-.log
-*~
-\#*\#
-.\#*
-*.~undo-tree
-
-# vim
-*.swp
-*.swo
-
-# macos
+*.tsbuildinfo
 .DS_Store
-dist
+.DS_Store
+.idea/
+.next/
+.pnp.js
+.turbo/
+.vercel/
+/.pnp
+coverage/
+dist/
+node_modules/
+out/
 
-.idea
+.env
+.env.development.local
+.env.local
+.env.production.local
+.env.test.local
+
+*.swo
+*.swp
+*.~undo-tree
+*~
+.\#*
+\#*\#

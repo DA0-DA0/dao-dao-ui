@@ -1,5 +1,6 @@
+import { XIcon } from '@heroicons/react/outline'
 import { useEffect } from 'react'
-
+import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable } from 'recoil'
 
 import {
@@ -8,8 +9,6 @@ import {
   InputLabel,
   LogoNoBorder,
 } from '@dao-dao/ui'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import { tokenConfig } from 'selectors/daos'
 import { Config } from 'util/contractConfigWrapper'

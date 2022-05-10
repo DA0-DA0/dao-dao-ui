@@ -1,3 +1,4 @@
+import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
 import { useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
@@ -7,7 +8,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getThresholdAndQuorumDisplay,
 } from '@dao-dao/utils'
-import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
 
 import {
   daoSelector,

@@ -8,8 +8,8 @@ import {
   NATIVE_DENOM,
 } from '@dao-dao/utils'
 
-import { BalanceListItem } from './BalanceListItem'
 import { BalanceIcon } from './BalanceIcon'
+import { BalanceListItem } from './BalanceListItem'
 
 export interface TreasuryBalancesProps {
   nativeTokens: {

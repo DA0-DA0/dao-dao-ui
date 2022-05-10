@@ -1,2 +1,2 @@
-export * from './ProposalDetails'
-export * from './ProposalDetailsSidebar'
+export * from './v0'
+export * from './v1'

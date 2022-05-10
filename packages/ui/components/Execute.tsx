@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { FC } from 'react'
 
-import { Button } from './Button'
-
 import { Airplane } from '@dao-dao/icons'
+
+import { Button } from './Button'
 
 export interface ExecuteProps {
   onExecute: () => void

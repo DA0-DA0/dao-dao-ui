@@ -1,8 +1,6 @@
-import { FC } from 'react'
-
-import Link from 'next/link'
-
 import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
+import { FC } from 'react'
 
 export interface BreadcrumbsProps {
   crumbs: Array<[string, string]>

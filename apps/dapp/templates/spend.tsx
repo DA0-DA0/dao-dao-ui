@@ -1,3 +1,5 @@
+import { XIcon } from '@heroicons/react/outline'
+import { useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
@@ -15,8 +17,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-import { XIcon } from '@heroicons/react/outline'
-import { useFormContext } from 'react-hook-form'
 
 import {
   cw20TokensList,
@@ -194,7 +194,9 @@ export const SpendComponent: TemplateComponent = ({
           {nativeBalances.map(({ denom }, idx) => {
             return (
               <option key={idx} value={denom}>
-                ${nativeTokenLabel(denom)}
+                {convertDenomToHumanReadableDenom(
+                  nativeTokenLabel(denom)
+                ).toUpperCase()}
               </option>
             )
           })}

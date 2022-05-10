@@ -1,15 +1,14 @@
-import Link from 'next/link'
-
-import { useRecoilValue, waitForAll } from 'recoil'
-
-import { Logo } from '@dao-dao/ui'
-import { SITE_TITLE } from '@dao-dao/utils'
 import {
   ArrowRightIcon,
   ExternalLinkIcon,
   LibraryIcon,
 } from '@heroicons/react/outline'
 import { MenuIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
+import { useRecoilValue, waitForAll } from 'recoil'
+
+import { Logo } from '@dao-dao/ui'
+import { SITE_TITLE } from '@dao-dao/utils'
 
 import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import ThemeToggle from 'components/ThemeToggle'
@@ -59,7 +58,9 @@ function Nav({ onMenuClick }: NavProps) {
             <MenuIcon className="w-8" />
           </div>
         </div>
-        <ConnectWalletButton />
+        <div className="my-4 w-full">
+          <ConnectWalletButton />
+        </div>
         <div className="ml-1 text-sm">
           <div className="mt-[20px]">
             <h3 className="mb-[16px] font-mono caption-text">DAOs</h3>

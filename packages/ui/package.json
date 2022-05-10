@@ -1,31 +1,27 @@
 {
   "name": "@dao-dao/ui",
   "version": "0.0.0",
-  "main": "./index.tsx",
-  "types": "./index.tsx",
-  "license": "MIT",
-  "files": [
-    "globals.css",
-    "daisyui-themes.json",
-    "tailwind.config.js"
-  ],
   "scripts": {
-    "storybook": "start-storybook --ci -p 6006 --no-manager-cache",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "format": "eslint . --fix",
+    "lint": "eslint .",
+    "storybook": "start-storybook --ci -p 6006 --no-manager-cache"
   },
   "dependencies": {
-    "@dao-dao/utils": "*",
     "@dao-dao/icons": "*",
-    "@heroicons/react": "^1.0.5",
     "@dao-dao/types": "^0.0.8",
-    "react-markdown": "^8.0.0",
-    "react-hook-form": "^7.20.4",
+    "@dao-dao/utils": "*",
+    "@heroicons/react": "^1.0.5",
     "clsx": "^1.1.1",
-    "codemirror": "^5.65.0"
+    "codemirror": "^5.65.0",
+    "react-hook-form": "^7.20.4",
+    "react-hot-toast": "^2.1.1",
+    "react-markdown": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@dao-dao/config": "*",
+    "@dao-dao/tsconfig": "*",
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-essentials": "^6.4.19",
     "@storybook/addon-interactions": "^6.4.19",
@@ -36,10 +32,11 @@
     "@tailwindcss/typography": "^0.5.1",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "@types/tailwindcss": "^3.0.10",
     "babel-loader": "^8.2.3",
     "storybook-addon-designs": "^6.2.1",
-    "tsconfig": "*",
     "typescript": "^4.5.3"
   },
-  "prettier": "@dao-dao/config/prettier"
+  "prettier": "@dao-dao/config/prettier",
+  "license": "MIT"
 }

@@ -1,15 +1,14 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { useState } from 'react'
-
+import toast from 'react-hot-toast'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
-import toast from 'react-hot-toast'
 
 import {
   cosmWasmSigningClient,

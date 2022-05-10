@@ -1,7 +1,8 @@
-import { CodeMirrorInput } from '@dao-dao/ui'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
+
+import { CodeMirrorInput } from '@dao-dao/ui'
 
 import { Config } from 'util/contractConfigWrapper'
 import { makeWasmMessage } from 'util/messagehelpers'

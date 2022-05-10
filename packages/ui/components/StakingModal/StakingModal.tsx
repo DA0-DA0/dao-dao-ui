@@ -1,9 +1,6 @@
+import { XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
-import { Modal } from '../Modal'
-import { ModeButton } from './ModeButton'
-import { AmountSelector } from './AmountSelector'
-import { PercentSelector } from './PercentSelector'
-import { ActionButton } from './ActionButton'
+
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   durationIsNonZero,
@@ -11,7 +8,11 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { XIcon } from '@heroicons/react/outline'
+import { Modal } from '../Modal'
+import { ActionButton } from './ActionButton'
+import { AmountSelector } from './AmountSelector'
+import { ModeButton } from './ModeButton'
+import { PercentSelector } from './PercentSelector'
 
 export enum StakingMode {
   Stake,
@@ -48,13 +49,13 @@ export interface StakingModalProps {
   // The number of tokens that are stakable.
   stakableTokens: number
   // The duration for unstaking.
-  unstakingDuration: Duration
+  unstakingDuration: Duration | null
   // Symbol for the token that is being staked.
   tokenSymbol: string
   // Decimals for the token that is being staked.
   tokenDecimals: number
   // Is there an error?
-  error: string | undefined
+  error?: string | undefined
   // Are we ready to stake? Ex: is wallet connected?
   loading: boolean
   // Triggered when the stake / unstake / claim button is pressed.
@@ -66,8 +67,11 @@ export const StakingModal: FC<StakingModalProps> = ({
   amount,
   setAmount,
   onClose,
+  // microdenom
   claimableTokens,
+  // macrodenom
   stakableTokens,
+  // macrodenom
   unstakableTokens,
   unstakingDuration,
   tokenSymbol,
@@ -83,21 +87,20 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0 ? undefined : "Can't claim zero tokens"
+      return claimableTokens > 0 ? undefined : "Can't claim zero tokens."
     }
     if (amount <= 0) {
       return `Can't ${stakingModeString(mode)} zero tokens.`
     }
     if (amount > maxTx) {
-      return "Can't ${stakingModeString(mode)} more tokens than you own."
+      return `Can't ${stakingModeString(mode)} more tokens than you own.`
     }
-    return undefined
   }
   error = error || invalidAmount()
 
   return (
-    <Modal>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus">
+    <Modal onClose={onClose}>
+      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
@@ -132,24 +135,27 @@ export const StakingModal: FC<StakingModalProps> = ({
           )}
         </div>
         {mode === StakingMode.Stake && (
-          <AmountSelectionBody
+          <StakeUnstakeModesBody
             amount={amount}
-            setAmount={(amount: number) => setAmount(amount)}
             max={stakableTokens}
+            mode={mode}
+            setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
+            unstakingDuration={unstakingDuration}
           />
         )}
         {mode === StakingMode.Unstake && (
-          <UnstakingModeBody
+          <StakeUnstakeModesBody
             amount={amount}
-            setAmount={(amount: number) => setAmount(amount)}
             max={unstakableTokens}
-            unstakingDuration={unstakingDuration}
+            mode={mode}
+            setAmount={(amount: number) => setAmount(amount)}
             tokenDecimals={tokenDecimals}
+            unstakingDuration={unstakingDuration}
           />
         )}
         {mode === StakingMode.Claim && (
-          <ClaimBody
+          <ClaimModeBody
             amount={claimableTokens}
             tokenDecimals={tokenDecimals}
             tokenSymbol={tokenSymbol}
@@ -173,74 +179,62 @@ export const StakingModal: FC<StakingModalProps> = ({
   )
 }
 
-interface AmountSelectionProps {
+interface StakeUnstakeModesBodyProps {
   amount: number
+  mode: StakingMode
   max: number
   setAmount: (newAmount: number) => void
   tokenDecimals: number
+  unstakingDuration: Duration | null
 }
 
-const AmountSelectionBody: FC<AmountSelectionProps> = ({
+const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   amount,
   setAmount,
+  mode,
   max,
   tokenDecimals,
+  unstakingDuration,
 }) => (
-  <div className="flex flex-col mt-5">
-    <h2 className="mb-3 primary-text">Choose your token amount</h2>
-    <AmountSelector amount={amount} max={max} setAmount={setAmount} />
-    {amount > max && (
-      <span className="mt-1 ml-1 text-error caption-text">
-        Can{"'"}t stake more tokens than you own.
-      </span>
-    )}
-    <span className="mt-4 font-mono caption-text">Max available {max}</span>
-    <div className="mt-4">
-      <PercentSelector
-        amount={amount}
-        max={max}
-        setAmount={setAmount}
-        tokenDecimals={tokenDecimals}
-      />
-    </div>
-  </div>
-)
-
-const UnstakingModeBody: FC<
-  AmountSelectionProps & { unstakingDuration: Duration }
-> = ({ amount, setAmount, max, unstakingDuration, tokenDecimals }) => (
   <>
-    <AmountSelectionBody
-      amount={amount}
-      setAmount={setAmount}
-      max={max}
-      tokenDecimals={tokenDecimals}
-    />
-    {durationIsNonZero(unstakingDuration) && (
+    <div className="flex flex-col mt-5">
+      <h2 className="mb-3 primary-text">Choose your token amount</h2>
+      <AmountSelector amount={amount} max={max} setAmount={setAmount} />
+      {amount > max && (
+        <span className="mt-1 ml-1 text-error caption-text">
+          Can{"'"}t stake more tokens than you own.
+        </span>
+      )}
+      <span className="mt-4 font-mono caption-text">Max available {max}</span>
+      <div className="mt-4">
+        <PercentSelector
+          amount={amount}
+          max={max}
+          setAmount={setAmount}
+          tokenDecimals={tokenDecimals}
+        />
+      </div>
+    </div>
+
+    {unstakingDuration && durationIsNonZero(unstakingDuration) && (
       <>
         <hr className="mt-3" />
-        <div className="mt-3">
-          <h2 className="link-text">
-            Unstaking period: {humanReadableDuration(unstakingDuration)}
-          </h2>
-          <p className="mt-3 secondary-text">
-            There will be {humanReadableDuration(unstakingDuration)} between the
-            time you decide to unstake your tokens and the time you can redeem
-            them.
-          </p>
-        </div>
+        <UnstakingDurationDisplay
+          mode={mode}
+          unstakingDuration={unstakingDuration}
+        />
       </>
     )}
   </>
 )
 
-interface ClaimBodyProps {
+interface ClaimModeBodyProps {
   amount: number
   tokenDecimals: number
   tokenSymbol: string
 }
 
-const ClaimBody: FC<ClaimBodyProps> = ({
+const ClaimModeBody: FC<ClaimModeBodyProps> = ({
   amount,
   tokenSymbol,
   tokenDecimals,
@@ -248,10 +242,40 @@ const ClaimBody: FC<ClaimBodyProps> = ({
   <div className="flex flex-col py-3 px-6 mt-3">
     <h2 className="font-medium">
       {convertMicroDenomToDenomWithDecimals(amount, tokenDecimals)} $
-      {tokenSymbol} avaliable
+      {tokenSymbol} available
     </h2>
     <p className="mt-3 mb-3 text-sm">
       Claim them to receive your unstaked tokens.
     </p>
+  </div>
+)
+
+interface UnstakingDurationDisplayProps {
+  unstakingDuration: Duration
+  mode: StakingMode
+}
+
+const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
+  unstakingDuration,
+  mode,
+}) => (
+  <div className="mt-3 secondary-text">
+    <h2 className="link-text">
+      {mode == StakingMode.Unstake
+        ? 'You are about to unstake your tokens.'
+        : `Unstaking period: ${humanReadableDuration(unstakingDuration)}`}
+    </h2>
+    <p className="mt-3">
+      There will be {humanReadableDuration(unstakingDuration)} between the time
+      you decide to unstake your tokens and the time you can redeem them.
+    </p>
+    <p className="mt-2">During that time you will</p>
+    <ul className="mt-2 ml-4">
+      <li>Not receive staking rewards.</li>
+      <li>Not be able to cancel the unbonding.</li>
+      <li>
+        Need to wait for the unstaking period for the tokens to become liquid.
+      </li>
+    </ul>
   </div>
 )
