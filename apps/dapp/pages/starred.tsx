@@ -1,6 +1,7 @@
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { ReactNode } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
@@ -82,6 +83,25 @@ function PinnedMultisigCard({ address }: { address: string }) {
   )
 }
 
+const ActionItem = ({
+  href,
+  icon,
+  text,
+}: {
+  href: string
+  icon: ReactNode
+  text: string
+}) => (
+  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md">
+    <Link href={href}>
+      <a className="block">
+        {icon}
+        {text}
+      </a>
+    </Link>
+  </li>
+)
+
 const Starred: NextPage = () => {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
@@ -120,42 +140,30 @@ const Starred: NextPage = () => {
         </div>
       </div>
       <div className="col-span-2 col-start-5 p-6 min-h-screen border-l border-inactive">
-        <div className="bg-primary rounded-md p-6">
-        <h2 className="mb-2 font-semibold text-lg">Actions</h2>
-        <ul className="list-none font-medium text-md">
-          <li className="mt-1">
-            <Link href="/dao/create">
-              <a>
-                <PlusIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Create a DAO
-              </a>
-            </Link>
-          </li>
-          <li className="mt-1">
-            <Link href="/multisig/create">
-              <a>
-                <PlusIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Create a multisig
-              </a>
-            </Link>
-          </li>
-          <li className="mt-1">
-            <Link href="/dao/list">
-              <a>
-                <MapIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Explore all DAOs
-              </a>
-            </Link>
-          </li>
-          <li className="mt-1">
-            <Link href="/multisig/list">
-              <a>
-                <MapIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Explore all multisigs
-              </a>
-            </Link>
-          </li>
-        </ul>
+        <div className="p-6 bg-primary rounded-md hover:border hover:border-focus">
+          <h2 className="mb-1 text-lg font-semibold">Actions</h2>
+          <ul className="-mx-1 font-medium list-none text-md">
+            <ActionItem
+              href="/dao/create"
+              icon={<PlusIcon className="inline mr-2 mb-1 w-5 h-5" />}
+              text={'Create a DAO'}
+            />
+            <ActionItem
+              href="/multisig/create"
+              icon={<PlusIcon className="inline mr-2 mb-1 w-5 h-5" />}
+              text={'Create a multisig'}
+            />
+            <ActionItem
+              href="/dao/list"
+              icon={<MapIcon className="inline mr-2 mb-1 w-5 h-5" />}
+              text={'Explore all DAOs'}
+            />
+            <ActionItem
+              href="/multisig/list"
+              icon={<MapIcon className="inline mr-2 mb-1 w-5 h-5" />}
+              text={'Explore all multisigs'}
+            />
+          </ul>
         </div>
       </div>
     </div>
