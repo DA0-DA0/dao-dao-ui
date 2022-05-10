@@ -29,7 +29,7 @@ const Hit = ({ hit, multisig }: { hit: Hit; multisig?: boolean }) => (
 const HitsInternal: FC<any> = ({ hits, multisig }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
     {hits.map((hit: Hit) => (
-      <Hit key={hit.id} hit={hit} multisig />
+      <Hit key={hit.id} hit={hit} multisig={multisig} />
     ))}
   </div>
 )
