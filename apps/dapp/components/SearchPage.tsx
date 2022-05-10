@@ -47,7 +47,7 @@ export const SearchPage: FC<SearchPageProps> = ({ multisig }) => (
           </div>
           <SearchBox />
         </div>
-        <SearchHits multisig />
+        <SearchHits multisig={multisig} />
       </div>
     </div>
   </InstantSearch>
