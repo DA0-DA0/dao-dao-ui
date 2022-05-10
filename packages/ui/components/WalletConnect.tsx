@@ -13,7 +13,8 @@ export interface WalletConnectProps extends Partial<ButtonProps> {
   walletName: string | undefined
   walletBalance: number
   walletBalanceDenom: string
-  handleConnect: () => void
+  onConnect: () => void
+  onDisconnect?: () => void
   className?: string
 }
 
@@ -22,7 +23,8 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   walletName,
   walletBalance,
   walletBalanceDenom,
-  handleConnect,
+  onConnect,
+  onDisconnect,
   className,
   ...buttonProps
 }) =>
@@ -45,13 +47,13 @@ export const WalletConnect: FC<WalletConnectProps> = ({
       </div>
       <div className="flex absolute top-1 right-2 gap-1 opacity-0 group-hover:opacity-100 transition">
         <CopyButton text={walletAddress} />
-        <DisconnectButton onClick={handleConnect} />
+        {onDisconnect && <DisconnectButton onClick={onDisconnect} />}
       </div>
     </div>
   ) : (
     <Button
       className={clsx('py-4 hover:outline-brand hover:outline', className)}
-      onClick={handleConnect}
+      onClick={onConnect}
       type="button"
       {...buttonProps}
     >

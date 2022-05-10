@@ -9,7 +9,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { NativeChainInfo } from '@dao-dao/utils'
+import { CHAIN_ID, NativeChainInfo } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -172,15 +172,20 @@ export const WalletInfoList: WalletInfo[] = [
     logoImgUrl: '/keplr-wallet-extension.png',
     getWallet: getKeplrFromWindow,
   },
-  {
-    id: 'walletconnect-keplr',
-    name: 'WalletConnect',
-    description: 'Keplr Mobile',
-    logoImgUrl: '/walletconnect-keplr.png',
-    getWallet: async (connector?: WalletConnect) => {
-      if (connector?.connected)
-        return new KeplrWalletConnectV1(connector, [NativeChainInfo])
-      throw new Error('Mobile wallet not connected.')
-    },
-  },
+  // WalletConnect only supports mainnet. Not testnet.
+  ...(CHAIN_ID === 'juno-1'
+    ? [
+        {
+          id: 'walletconnect-keplr',
+          name: 'WalletConnect',
+          description: 'Keplr Mobile',
+          logoImgUrl: '/walletconnect-keplr.png',
+          getWallet: async (connector?: WalletConnect) => {
+            if (connector?.connected)
+              return new KeplrWalletConnectV1(connector, [NativeChainInfo])
+            throw new Error('Mobile wallet not connected.')
+          },
+        },
+      ]
+    : []),
 ]

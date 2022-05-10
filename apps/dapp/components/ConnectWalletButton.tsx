@@ -11,7 +11,7 @@ import {
 
 // Connection errors handled in Layout component.
 const ConnectWalletButton: FC = () => {
-  const { connect, address, name, nativeBalance } = useWallet()
+  const { connect, disconnect, address, name, nativeBalance } = useWallet()
 
   const walletBalanceHuman = convertMicroDenomToDenomWithDecimals(
     nativeBalance ?? 0,
@@ -22,7 +22,8 @@ const ConnectWalletButton: FC = () => {
   return (
     <WalletConnect
       className="w-full"
-      handleConnect={connect}
+      onConnect={connect}
+      onDisconnect={disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}

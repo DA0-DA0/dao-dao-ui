@@ -23,7 +23,7 @@ export const WalletConnectButton: FunctionComponent<
 
   return (
     <WalletConnect
-      handleConnect={connect}
+      onConnect={connect}
       walletAddress={address ?? ''}
       walletBalance={walletBalance}
       walletBalanceDenom={humanDenom}
