@@ -1,7 +1,13 @@
 import { OfflineSigner } from '@cosmjs/proto-signing'
+import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client'
 import { selector } from 'recoil'
 
-import { CHAIN_ID, getOfflineSignerAuto, NATIVE_DENOM } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getOfflineSignerAuto,
+  getOfflineSignerOnlyAmino,
+  NATIVE_DENOM,
+} from '@dao-dao/utils'
 
 import { refreshWalletBalancesIdAtom } from '../atoms/refresh'
 import { walletClientAtom, walletConnectionIdAtom } from '../atoms/wallet'
@@ -16,6 +22,11 @@ export const walletOfflineSignerSelector = selector<OfflineSigner | undefined>({
     get(walletConnectionIdAtom)
 
     try {
+      // WalletConnect only supports Amino signing.
+      if (walletClient instanceof KeplrWalletConnectV1) {
+        return await getOfflineSignerOnlyAmino(walletClient)
+      }
+
       return await getOfflineSignerAuto(walletClient)
     } catch (error) {
       console.error(error)

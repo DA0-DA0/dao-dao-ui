@@ -1,15 +1,14 @@
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { Keplr } from '@keplr-wallet/types'
+import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client'
 import WalletConnect from '@walletconnect/client'
-import { KeplrWalletConnectV1, useWalletManager, WalletInfo } from 'cosmodal'
+import { useWalletManager, WalletInfo } from 'cosmodal'
 import { useCallback, useEffect } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
-
-import { NativeChainInfo } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -22,9 +21,6 @@ import {
   walletConnectedAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
-
-// TODO: Implement KeplrWalletConnectV1#signDirect so WalletConnect can
-// execute smart contracts: https://github.com/chainapsis/cosmodal/issues/2
 
 export const useWallet = () => {
   const [walletConnected, setWalletConnected] =
@@ -157,8 +153,7 @@ export const WalletInfoList: WalletInfo[] = [
     description: 'Keplr Mobile',
     logoImgUrl: '/walletconnect-keplr.png',
     getWallet: async (connector?: WalletConnect) => {
-      if (connector?.connected)
-        return new KeplrWalletConnectV1(connector, [NativeChainInfo])
+      if (connector?.connected) return new KeplrWalletConnectV1(connector)
       throw new Error('Mobile wallet not connected.')
     },
   },
