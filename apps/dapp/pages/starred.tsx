@@ -119,9 +119,10 @@ const Starred: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-span-2 col-start-5 p-6 min-h-screen">
-        <h2 className="mb-6 text-[16px] font-semibold body-text">Actions</h2>
-        <ul className="mt-1 ml-2 list-none link-text">
+      <div className="col-span-2 col-start-5 p-6 min-h-screen border-l border-inactive">
+        <div className="bg-primary rounded-md p-6">
+        <h2 className="mb-2 font-semibold text-lg">Actions</h2>
+        <ul className="list-none font-medium text-md">
           <li className="mt-1">
             <Link href="/dao/create">
               <a>
@@ -155,6 +156,7 @@ const Starred: NextPage = () => {
             </Link>
           </li>
         </ul>
+        </div>
       </div>
     </div>
   )
