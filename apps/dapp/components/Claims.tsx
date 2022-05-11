@@ -30,30 +30,37 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
   ).claims.filter((c) => !claimAvailable(c, blockHeight))
 
   return claimsPending.length ? (
-    <ul className="ml-1 space-y-2">
-      {claimsPending.map((claim, idx) => {
-        return (
-          <ClaimsListItem
-            key={idx}
-            blockHeight={blockHeight}
-            claim={claim}
-            onClaimAvailable={onClaimAvailable}
-            tokenInfo={tokenInfo}
-          />
-        )
-      })}
-    </ul>
+    <>
+      <h2 className="mt-4">Currently unstaking</h2>
+
+      <ul className="ml-1 space-y-2">
+        {claimsPending.map((claim, idx) => {
+          return (
+            <ClaimsListItem
+              key={idx}
+              blockHeight={blockHeight}
+              claim={claim}
+              onClaimAvailable={onClaimAvailable}
+              tokenInfo={tokenInfo}
+            />
+          )
+        })}
+      </ul>
+    </>
   ) : null
 }
 
 export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => (
-  <>
-    <h2 className="mt-4">Currently unstaking</h2>
-
-    <SuspenseLoader fallback={<Loader />}>
-      <InnerClaimsPendingList {...props} />
-    </SuspenseLoader>
-  </>
+  <SuspenseLoader
+    fallback={
+      <>
+        <h2 className="mt-4">Currently unstaking</h2>
+        <Loader />
+      </>
+    }
+  >
+    <InnerClaimsPendingList {...props} />
+  </SuspenseLoader>
 )
 
 interface ClaimsAvailableCardProps {
