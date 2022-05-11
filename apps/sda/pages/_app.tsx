@@ -2,16 +2,15 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { WalletManagerProvider } from 'cosmodal'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FC } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   activeThemeAtom,
   mountedInBrowserAtom,
-  WalletInfoList,
+  WalletProvider,
 } from '@dao-dao/state'
 import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
@@ -22,7 +21,7 @@ const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
 const image = process.env.NEXT_PUBLIC_SITE_IMAGE
 const url = process.env.NEXT_PUBLIC_SITE_URL
 
-const InnerApp = ({ Component, pageProps }: AppProps) => {
+const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [accentColor, setAccentColor] = useState<string | undefined>()
@@ -55,7 +54,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-const SDA = (props: AppProps) => (
+const SDA: FC<AppProps> = (props) => (
   <>
     <DefaultSeo
       additionalLinkTags={[
@@ -107,9 +106,9 @@ const SDA = (props: AppProps) => (
     />
 
     <RecoilRoot>
-      <WalletManagerProvider walletInfoList={WalletInfoList}>
+      <WalletProvider>
         <InnerApp {...props} />
-      </WalletManagerProvider>
+      </WalletProvider>
     </RecoilRoot>
   </>
 )

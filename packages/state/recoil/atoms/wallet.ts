@@ -21,3 +21,8 @@ export const walletClientAtom = atom<Keplr | KeplrWalletConnectV1 | undefined>({
   default: undefined,
   dangerouslyAllowMutability: true,
 })
+
+export const walletConnectErrorAtom = atom<any>({
+  key: 'walletConnectError',
+  default: undefined,
+})
