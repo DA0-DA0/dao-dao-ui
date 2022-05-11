@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
 
@@ -6,7 +7,6 @@ import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
 import { getProposalEnd, zeroPad } from '@dao-dao/utils'
 
 import { ProposalStatus } from '../ProposalStatus'
-import clsx from 'clsx'
 
 export interface ProposalLineProps {
   proposal: ProposalResponse
@@ -18,7 +18,7 @@ export interface ProposalLineProps {
 const LargeProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
   <div
     className={clsx(
-      'grid grid-cols-6 items-center p-4 my-1 text-sm bg-primary rounded-lg',
+      'grid grid-cols-6 items-center p-4 my-1 text-sm rounded-lg bg-primary',
       className
     )}
   >
@@ -42,7 +42,7 @@ const LargeProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
 const SmallProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
   <div
     className={clsx(
-      'text-sm bg-primary flex flex-col gap-2 justify-between rounded-lg p-4 my-2 min-h-[150px]',
+      'flex flex-col gap-2 justify-between p-4 my-2 min-h-[150px] text-sm rounded-lg bg-primary',
       className
     )}
   >
@@ -67,7 +67,7 @@ const SmallProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
 export const ProposalLine: FC<ProposalLineProps> = (props) => (
   <Link href={props.proposalViewUrl}>
     <a>
-      <LargeProposalLine {...props} className="hidden md:block" />
+      <LargeProposalLine {...props} className="hidden md:grid" />
       <SmallProposalLine {...props} className="block md:hidden" />
     </a>
   </Link>

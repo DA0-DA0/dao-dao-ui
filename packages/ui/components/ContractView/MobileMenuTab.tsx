@@ -16,15 +16,15 @@ export const MobileMenuTab: FC<MobileMenuTabProps> = ({
 }) => (
   <button
     className={clsx(
-      'rounded p-5 flex flex-col items-center gap-3 min-w-[100px] transition',
+      'flex flex-col flex-1 gap-3 items-center p-5 min-w-[100px] rounded transition',
       selected ? 'bg-tab-hover' : 'bg-tab hover:bg-tab-hover'
     )}
+    onClick={onClick}
     style={{
       backgroundImage: selected
         ? 'radial-gradient(#FF990033, #FFCC001A, transparent 80%)'
         : '',
     }}
-    onClick={onClick}
   >
     <span className="text-[32px]">{icon}</span>
     <h2 className="button-text text-dark">{text}</h2>

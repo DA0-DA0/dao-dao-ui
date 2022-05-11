@@ -13,7 +13,6 @@ import {
   StarButton,
   HorizontalInfoSection,
   Breadcrumbs,
-  LoadingScreen,
   MobileHeader,
   MobileMenuTab,
 } from '@dao-dao/ui'
@@ -29,6 +28,7 @@ import { YourShares } from '@/components/dao'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { Loader } from '@/components/Loader'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
 import { isMemberSelector } from '@/selectors/cosm'
@@ -265,7 +265,9 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
 
   return (
     <ErrorBoundary title="DAO Not Found">
-      <SuspenseLoader fallback={<LoadingScreen />}>
+      <SuspenseLoader
+        fallback={<Loader className="h-[50vh] lg:h-full" size={72} />}
+      >
         <div className="block md:hidden">
           <InnerMobileDaoHome />
         </div>
