@@ -1,8 +1,13 @@
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { Keplr } from '@keplr-wallet/types'
 import WalletConnect from '@walletconnect/client'
-import { KeplrWalletConnectV1, useWalletManager, WalletInfo } from 'cosmodal'
-import { useCallback, useEffect, useState } from 'react'
+import {
+  KeplrWalletConnectV1,
+  useWalletManager,
+  WalletInfo,
+  WalletManagerProvider,
+} from 'cosmodal'
+import { FC, useCallback, useEffect, useState } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
@@ -31,7 +36,16 @@ export class WalletNotInstalledError extends Error {
   }
 }
 
-export const useWallet = () => {
+interface UseWalletProps {
+  // Selectively enable or disable effect hooks. There's no need to run
+  // them everywhere we want to fetch some wallet state (like address or
+  // balance). These effects must be enabled on every page at least
+  // once, and ideally should be enabled on every page exactly once.
+  // Wrapping the app in `WalletProvider` takes care of all of this.
+  effectsEnabled?: boolean
+}
+
+export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
   const [walletConnected, setWalletConnected] =
     useRecoilState(walletConnectedAtom)
   const [walletClient, setWalletClient] = useRecoilState(walletClientAtom)
@@ -82,6 +96,8 @@ export const useWallet = () => {
   // Attempt connection if should be connected.
   const walletClientDisconnected = walletClient === undefined
   useEffect(() => {
+    if (!effectsEnabled) return
+
     if (walletConnected && walletClientDisconnected) {
       setDefaultConnectionType(walletConnected)
       connect()
@@ -91,19 +107,30 @@ export const useWallet = () => {
     walletConnected,
     setDefaultConnectionType,
     connect,
+    effectsEnabled,
   ])
 
   // Save wallet connected ID.
   useEffect(() => {
+    if (!effectsEnabled) return
+
     if (walletClient && connectionType && walletConnected !== connectionType) {
       setWalletConnected(connectionType)
     } else if (!walletClient && walletConnected !== null) {
       setWalletConnected(null)
     }
-  }, [walletClient, connectionType, setWalletConnected, walletConnected])
+  }, [
+    walletClient,
+    connectionType,
+    setWalletConnected,
+    walletConnected,
+    effectsEnabled,
+  ])
 
   // Listen for keplr keystore changes and update as needed.
   useEffect(() => {
+    if (!effectsEnabled) return
+
     const keplrListener = () => {
       console.log('Keplr keystore changed, reloading client.')
       // Force refresh of wallet client/info selectors.
@@ -113,7 +140,12 @@ export const useWallet = () => {
 
     return () =>
       window.removeEventListener('keplr_keystorechange', keplrListener)
-  }, [clearLastUsedWallet, setWalletClient, setWalletConnectionId])
+  }, [
+    clearLastUsedWallet,
+    setWalletClient,
+    setWalletConnectionId,
+    effectsEnabled,
+  ])
 
   // Wallet address
   const { state: walletAddressState, contents: walletAddressContents } =
@@ -164,7 +196,7 @@ export const useWallet = () => {
   }
 }
 
-export const WalletInfoList: WalletInfo[] = [
+const WalletInfoList: WalletInfo[] = [
   {
     id: 'keplr-wallet-extension',
     name: 'Keplr Wallet',
@@ -189,3 +221,16 @@ export const WalletInfoList: WalletInfo[] = [
       ]
     : []),
 ]
+
+const InnerWalletProvider: FC = ({ children }) => {
+  // Wallet effects must be enabled at least once on every page.
+  useWallet({ effectsEnabled: true })
+
+  return <>{children}</>
+}
+
+export const WalletProvider: FC = ({ children }) => (
+  <WalletManagerProvider walletInfoList={WalletInfoList}>
+    <InnerWalletProvider>{children}</InnerWalletProvider>
+  </WalletManagerProvider>
+)

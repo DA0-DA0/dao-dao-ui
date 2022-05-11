@@ -2,7 +2,6 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { WalletManagerProvider } from 'cosmodal'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { useState, useEffect, FC } from 'react'
@@ -11,7 +10,7 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 import {
   activeThemeAtom,
   mountedInBrowserAtom,
-  WalletInfoList,
+  WalletProvider,
 } from '@dao-dao/state'
 import { Theme, ThemeProvider } from '@dao-dao/ui'
 
@@ -59,9 +58,9 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
 
 export const MyApp: FC<AppProps> = (props) => (
   <RecoilRoot>
-    <WalletManagerProvider walletInfoList={WalletInfoList}>
+    <WalletProvider>
       <InnerApp {...props} />
-    </WalletManagerProvider>
+    </WalletProvider>
   </RecoilRoot>
 )
 

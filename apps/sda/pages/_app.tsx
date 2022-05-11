@@ -2,7 +2,6 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { WalletManagerProvider } from 'cosmodal'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useState, useEffect } from 'react'
@@ -11,7 +10,7 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 import {
   activeThemeAtom,
   mountedInBrowserAtom,
-  WalletInfoList,
+  WalletProvider,
 } from '@dao-dao/state'
 import { ThemeProvider, Theme } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
@@ -107,9 +106,9 @@ const SDA = (props: AppProps) => (
     />
 
     <RecoilRoot>
-      <WalletManagerProvider walletInfoList={WalletInfoList}>
+      <WalletProvider>
         <InnerApp {...props} />
-      </WalletManagerProvider>
+      </WalletProvider>
     </RecoilRoot>
   </>
 )

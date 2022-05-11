@@ -126,7 +126,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
               governanceTokenInfo.decimals
             ),
             contract: stakingContractAddress,
-            msg: btoa('{"stake":{}}'),
+            msg: btoa('{"stake": {}}'),
           })
 
           // TODO: Figure out better solution for detecting block.
@@ -154,9 +154,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       case StakingMode.Unstake: {
         setLoading(true)
 
-        // In the UI we display staked value as this is `amount_staked +
+        // In the UI we display staked value as `amount_staked +
         // rewards` and is the value used to compute voting power. When we actually
-        // process an unstake call the contract expects this value in terms of
+        // process an unstake call, the contract expects this value in terms of
         // amount_staked.
         //
         // value = amount_staked * total_value / staked_total
@@ -165,8 +165,8 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         let amountToUnstake =
           (Number(totalStaked.total) * amount) / Number(totalValue.total)
 
-        // We have limited percision and on the contract side division rounds
-        // down so division and multiplication don't commute. Handle the common
+        // We have limited precision and on the contract side division rounds
+        // down, so division and multiplication don't commute. Handle the common
         // case here where someone is attempting to unstake all of their funds.
         if (
           Math.abs(
