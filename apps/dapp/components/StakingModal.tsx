@@ -31,6 +31,7 @@ function executeUnstakeAction(
   signingClient: SigningCosmWasmClient | null | undefined,
   walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
+  onSuccess: Function,
   onDone: Function
 ) {
   if (!signingClient || !walletAddress) {
@@ -55,12 +56,13 @@ function executeUnstakeAction(
       },
       'auto'
     )
+    .then(() => onSuccess())
     .catch((err) => {
       toast.error(cleanChainError(err.message))
+      console.error(err)
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Unstaked ${denomAmount} tokens`)
       onDone()
     })
 }
@@ -73,6 +75,7 @@ function executeStakeAction(
   signingClient: SigningCosmWasmClient | null | undefined,
   walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
+  onSuccess: Function,
   onDone: Function
 ) {
   if (!signingClient || !walletAddress) {
@@ -99,23 +102,23 @@ function executeStakeAction(
       },
       'auto'
     )
+    .then(() => onSuccess())
     .catch((err) => {
       toast.error(cleanChainError(err.message))
-      console.log(err.message)
+      console.error(err)
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Staked ${denomAmount} tokens`)
       onDone()
     })
 }
 
 function executeClaimAction(
-  denomAmount: number,
   stakingAddress: string,
   signingClient: SigningCosmWasmClient | null | undefined,
   walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
+  onSuccess: Function,
   onDone: Function
 ) {
   if (!signingClient || !walletAddress) {
@@ -133,12 +136,13 @@ function executeClaimAction(
       },
       'auto'
     )
+    .then(() => onSuccess())
     .catch((err) => {
       toast.error(cleanChainError(err.message))
+      console.error(err)
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Claimed ${denomAmount} tokens`)
       onDone()
     })
 }
@@ -205,14 +209,15 @@ export function StakingModal({
           signingClient,
           walletAddress,
           setLoading,
-          () => {
-            setAmount(0)
+          async () => {
             // New staking balances will not appear until the next block has been added.
-            setTimeout(() => {
-              setWalletTokenBalanceUpdateCount((p) => p + 1)
-              afterExecute()
-            }, 6000)
-          }
+            await new Promise((resolve) => setTimeout(resolve, 6500))
+
+            setAmount(0)
+            setWalletTokenBalanceUpdateCount((p) => p + 1)
+            toast.success(`Staked ${amount.toLocaleString()} tokens`)
+          },
+          afterExecute
         )
         break
       case StakingMode.Unstake:
@@ -223,29 +228,36 @@ export function StakingModal({
           signingClient,
           walletAddress,
           setLoading,
-          () => {
-            setAmount(0)
+          async () => {
             // New staking balances will not appear until the next block has been added.
-            setTimeout(() => {
-              setWalletTokenBalanceUpdateCount((p) => p + 1)
-              afterExecute()
-            }, 6500)
-          }
+            await new Promise((resolve) => setTimeout(resolve, 6500))
+
+            setAmount(0)
+            setWalletTokenBalanceUpdateCount((p) => p + 1)
+            toast.success(`Unstaked ${amount.toLocaleString()} tokens`)
+          },
+          afterExecute
         )
         break
       case StakingMode.Claim:
         executeClaimAction(
-          convertMicroDenomToDenomWithDecimals(amount, tokenInfo.decimals),
           daoInfo.staking_contract,
           signingClient,
           walletAddress,
           setLoading,
-          () => {
-            setTimeout(() => {
-              setWalletTokenBalanceUpdateCount((p) => p + 1)
-              afterExecute()
-            }, 6500)
-          }
+          async () => {
+            // New staking balances will not appear until the next block has been added.
+            await new Promise((resolve) => setTimeout(resolve, 6500))
+
+            setWalletTokenBalanceUpdateCount((p) => p + 1)
+            toast.success(
+              `Claimed ${convertMicroDenomToDenomWithDecimals(
+                amount,
+                tokenInfo.decimals
+              ).toLocaleString()} tokens`
+            )
+          },
+          afterExecute
         )
         break
       default:
