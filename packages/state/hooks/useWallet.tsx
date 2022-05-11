@@ -7,7 +7,7 @@ import {
   WalletInfo,
   WalletManagerProvider,
 } from 'cosmodal'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
@@ -26,6 +26,7 @@ import {
 import {
   walletClientAtom,
   walletConnectedAtom,
+  walletConnectErrorAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
 
@@ -56,7 +57,7 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
     connectionType,
     clearLastUsedWallet,
   } = useWalletManager()
-  const [connectError, setConnectError] = useState<any>()
+  const [connectError, setConnectError] = useRecoilState(walletConnectErrorAtom)
 
   // Clear all state.
   const disconnect = useCallback(() => {

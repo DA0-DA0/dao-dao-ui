@@ -188,15 +188,6 @@ export function StakingModal({
     walletTokenBalanceUpdateCountAtom(walletAddress ?? '')
   )
 
-  const walletDisconnected = (): string | undefined => {
-    if (!signingClient || !walletAddress) {
-      return 'Please connect your wallet'
-    }
-    return undefined
-  }
-
-  const error = walletDisconnected()
-
   const onAction = (mode: StakingMode, amount: number) => {
     beforeExecute()
     switch (mode) {
@@ -270,7 +261,11 @@ export function StakingModal({
       amount={amount}
       claimableTokens={claimableTokens}
       defaultMode={defaultMode}
-      error={error}
+      error={
+        !signingClient || !walletAddress
+          ? 'Please connect your wallet'
+          : undefined
+      }
       loading={loading || tokenBalanceLoading}
       onAction={onAction}
       onClose={onClose}

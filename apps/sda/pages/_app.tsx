@@ -4,7 +4,7 @@ import '@fontsource/jetbrains-mono/latin.css'
 
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FC } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
@@ -21,7 +21,7 @@ const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
 const image = process.env.NEXT_PUBLIC_SITE_IMAGE
 const url = process.env.NEXT_PUBLIC_SITE_URL
 
-const InnerApp = ({ Component, pageProps }: AppProps) => {
+const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [accentColor, setAccentColor] = useState<string | undefined>()
@@ -54,7 +54,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-const SDA = (props: AppProps) => (
+const SDA: FC<AppProps> = (props) => (
   <>
     <DefaultSeo
       additionalLinkTags={[

@@ -131,21 +131,21 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
           // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
-          setTimeout(() => {
-            refreshBalances()
-            refreshTotals()
-            refreshStakingContractBalances()
+          await new Promise((resolve) => setTimeout(resolve, 6500))
 
-            setAmount(0)
-            setLoading(false)
-            toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
+          refreshBalances()
+          refreshTotals()
+          refreshStakingContractBalances()
 
-            // Close once done.
-            onClose()
-          }, 6500)
+          setAmount(0)
+          toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
+
+          // Close once done.
+          onClose()
         } catch (err) {
           console.error(err)
           toast.error(cleanChainError(err.message))
+        } finally {
           setLoading(false)
         }
 
@@ -197,21 +197,21 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
           // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
-          setTimeout(() => {
-            refreshBalances()
-            refreshTotals()
-            refreshStakingContractBalances()
+          await new Promise((resolve) => setTimeout(resolve, 6500))
 
-            setAmount(0)
-            setLoading(false)
-            toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
+          refreshBalances()
+          refreshTotals()
+          refreshStakingContractBalances()
 
-            // Close once done.
-            onClose()
-          }, 6500)
+          setAmount(0)
+          toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
+
+          // Close once done.
+          onClose()
         } catch (err) {
           console.error(err)
           toast.error(cleanChainError(err.message))
+        } finally {
           setLoading(false)
         }
 
@@ -228,26 +228,26 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
           // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
-          setTimeout(() => {
-            refreshBalances()
-            refreshTotals()
-            refreshClaims?.()
-            refreshStakingContractBalances()
+          await new Promise((resolve) => setTimeout(resolve, 6500))
 
-            setAmount(0)
-            setLoading(false)
-            toast.success(
-              `Claimed ${sumClaimsAvailable} token${
-                sumClaimsAvailable === 1 ? '' : 's'
-              }`
-            )
+          refreshBalances()
+          refreshTotals()
+          refreshClaims?.()
+          refreshStakingContractBalances()
 
-            // Close once done.
-            onClose()
-          }, 6500)
+          setAmount(0)
+          toast.success(
+            `Claimed ${sumClaimsAvailable} token${
+              sumClaimsAvailable === 1 ? '' : 's'
+            }`
+          )
+
+          // Close once done.
+          onClose()
         } catch (err) {
           console.error(err)
           toast.error(cleanChainError(err.message))
+        } finally {
           setLoading(false)
         }
 

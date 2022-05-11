@@ -56,7 +56,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   )
 }
 
-export const MyApp: FC<AppProps> = (props) => (
+const dApp: FC<AppProps> = (props) => (
   <RecoilRoot>
     <WalletProvider>
       <InnerApp {...props} />
@@ -64,4 +64,4 @@ export const MyApp: FC<AppProps> = (props) => (
   </RecoilRoot>
 )
 
-export default MyApp
+export default dApp
