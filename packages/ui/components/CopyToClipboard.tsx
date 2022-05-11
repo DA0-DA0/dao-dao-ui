@@ -81,8 +81,8 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
 }) => {
   const [copied, setCopied] = useState(false)
   return (
-    <div className="border border-inactive rounded-md flex justify-between p-1">
-      <div className="px-2 secondary-text text-tertiary flex gap-2 items-center">
+    <div className="flex justify-between p-1 rounded-md border border-inactive">
+      <div className="flex gap-2 items-center px-2 text-tertiary secondary-text">
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
@@ -93,16 +93,16 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
         </span>
       </div>
       <Button
-        variant="secondary"
-        size="sm"
         onClick={() => {
           navigator.clipboard.writeText(value)
           setTimeout(() => setCopied(false), 2000)
           setCopied(true)
           toast.success(success)
         }}
+        size="sm"
+        variant="secondary"
       >
-        <p className="caption-text text-body">Copy</p>
+        <p className="text-body caption-text">Copy</p>
       </Button>
     </div>
   )

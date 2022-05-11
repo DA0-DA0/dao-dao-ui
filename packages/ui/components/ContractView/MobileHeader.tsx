@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { MemberCheck } from '@dao-dao/icons'
 import {
   GradientHero,
   Logo,
@@ -7,7 +8,6 @@ import {
   CopyToClipboardMobile,
 } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
-import { MemberCheck } from '@dao-dao/icons'
 
 export interface MobileHeaderProps {
   imageUrl?: string
@@ -27,7 +27,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
   contractAddress,
 }) => (
   <GradientHero>
-    <div className="flex flex-row gap-6 justify-around flex-wrap w-full">
+    <div className="flex flex-row flex-wrap gap-6 justify-around w-full">
       <div className="relative">
         {imageUrl && HEADER_IMAGES_ENABLED ? (
           <div
@@ -50,7 +50,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
           }}
         ></div>
       </div>
-      <div className="flex flex-col gap-3 flex-1">
+      <div className="flex flex-col flex-1 gap-3">
         <div className="flex flex-row justify-between">
           <h1 className="header-text">{name}</h1>
           <div className="flex gap-5">

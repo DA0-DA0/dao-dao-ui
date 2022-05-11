@@ -18,7 +18,7 @@ export interface ProposalLineProps {
 const LargeProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
   <div
     className={clsx(
-      'grid grid-cols-6 items-center p-4 my-1 text-sm rounded-lg bg-primary',
+      'grid grid-cols-6 items-center p-4 my-1 text-sm bg-primary rounded-lg',
       className
     )}
   >
@@ -42,7 +42,7 @@ const LargeProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
 const SmallProposalLine: FC<ProposalLineProps> = ({ proposal, className }) => (
   <div
     className={clsx(
-      'flex flex-col gap-2 justify-between p-4 my-2 min-h-[150px] text-sm rounded-lg bg-primary',
+      'flex flex-col gap-2 justify-between p-4 my-2 min-h-[150px] text-sm bg-primary rounded-lg',
       className
     )}
   >

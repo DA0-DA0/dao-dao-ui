@@ -14,6 +14,6 @@
   "prettier": "@dao-dao/config/prettier",
   "license": "MIT",
   "dependencies": {
-    "cosmodal": "https://github.com/DA0-DA0/cosmodal#52261e8e400b1e897bbfb05534659fecb35f7f7e"
+    "cosmodal": "https://github.com/DA0-DA0/cosmodal#noah-build"
   }
 }
