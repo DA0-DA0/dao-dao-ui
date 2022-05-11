@@ -15,8 +15,7 @@ import { InstallKeplr } from './InstallKeplr'
 import { Nav, SmallScreenNav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import { betaWarningAcceptedAtom } from '@/atoms/status'
-import { noKeplrAccountAtom } from '@/selectors/cosm'
-import { installWarningVisibleAtom } from '@/selectors/cosm'
+import { noKeplrAccountAtom, installWarningVisibleAtom } from '@/selectors/cosm'
 
 export const SidebarLayout: FC = ({ children }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
