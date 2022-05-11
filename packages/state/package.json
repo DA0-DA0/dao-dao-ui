@@ -9,7 +9,7 @@
     "@dao-dao/ui": "*",
     "@keplr-wallet/stores": "^0.10.3",
     "@walletconnect/client": "^1.7.8",
-    "cosmodal": "https://github.com/DA0-DA0/cosmodal#noah-build",
+    "cosmodal": "https://github.com/DA0-DA0/cosmodal#e21d90b1121990af5de262ee790e8c29b47c004f",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },

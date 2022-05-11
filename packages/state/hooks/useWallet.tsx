@@ -231,7 +231,21 @@ const InnerWalletProvider: FC = ({ children }) => {
 }
 
 export const WalletProvider: FC = ({ children }) => (
-  <WalletManagerProvider walletInfoList={WalletInfoList}>
+  <WalletManagerProvider
+    classNames={{
+      modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
+      modalContent:
+        '!p-6 !max-w-md !bg-white !rounded-lg !border !border-focus',
+      modalCloseButton:
+        '!p-1 hover:!bg-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
+      modalHeader: '!header-text',
+      wallet: '!rounded-lg !bg-card !p-4 !shadow-none',
+      walletIconImg: '!rounded-full',
+      walletName: '!primary-text',
+      walletDescription: '!caption-text',
+    }}
+    walletInfoList={WalletInfoList}
+  >
     <InnerWalletProvider>{children}</InnerWalletProvider>
   </WalletManagerProvider>
 )
