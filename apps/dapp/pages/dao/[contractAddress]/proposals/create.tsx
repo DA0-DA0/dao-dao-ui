@@ -122,6 +122,7 @@ const InnerProposalCreate: FC = () => {
             [router.asPath, `New proposal`],
           ]}
         />
+        <h2 className="my-3 md:hidden primary-text">New proposal</h2>
         <ProposalForm
           contractAddress={contractAddress}
           loading={proposalLoading}

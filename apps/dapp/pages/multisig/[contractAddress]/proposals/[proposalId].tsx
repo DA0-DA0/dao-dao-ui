@@ -12,6 +12,7 @@ import {
   ProposalDetailsCard,
   ProposalDetailsVoteStatus,
 } from '@/components/ProposalDetailsSidebar'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { sigSelector } from '@/selectors/multisigs'
 
@@ -29,7 +30,7 @@ const InnerMultisigProposal: FC = () => {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+      <div className="col-span-4 w-full md:p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -38,7 +39,11 @@ const InnerMultisigProposal: FC = () => {
           ]}
         />
 
-        <div className="px-6 mt-6 lg:hidden">
+        <div className="mb-4 md:hidden">
+          <SmallScreenNav />
+        </div>
+
+        <div className="px-6 md:mt-6 lg:hidden">
           <ProposalDetailsCard {...proposalDetailsProps} />
         </div>
 

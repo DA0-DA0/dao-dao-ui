@@ -1,6 +1,5 @@
-import clsx from 'clsx'
 import Head from 'next/head'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
@@ -12,7 +11,7 @@ import { SITE_TITLE } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
-import { Nav, SmallScreenNav } from './Nav'
+import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import { betaWarningAcceptedAtom } from '@/atoms/status'
 import { noKeplrAccountAtom } from '@/selectors/cosm'
@@ -27,7 +26,6 @@ export const SidebarLayout: FC = ({ children }) => {
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
-  const [mobileMenuOpened, setMenuOpened] = useState(false)
 
   const { connectError } = useWallet()
   useEffect(() => {
@@ -60,23 +58,8 @@ export const SidebarLayout: FC = ({ children }) => {
         <div className="hidden lg:block lg:w-[264px]">
           <Nav />
         </div>
-        <div className="lg:hidden">
-          {mobileMenuOpened ? (
-            <div className="fixed z-10 w-screen h-screen bg-clip-padding bg-opacity-60 backdrop-blur-xl backdrop-filter overflow-none">
-              <Nav onMenuClick={() => setMenuOpened(!mobileMenuOpened)} />
-            </div>
-          ) : (
-            <SmallScreenNav
-              onMenuClick={() => setMenuOpened(!mobileMenuOpened)}
-            />
-          )}
-        </div>
 
-        <main
-          className={clsx('lg:col-span-4 lg:col-start-2', {
-            'overflow-hidden w-screen h-screen': mobileMenuOpened,
-          })}
-        >
+        <main className="overflow-hidden w-screen min-h-screen lg:col-span-4 lg:col-start-2">
           {children}
         </main>
       </div>

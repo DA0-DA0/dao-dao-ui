@@ -52,13 +52,13 @@ const InnerProposal: FC = () => {
           proposalId={Number(proposalKey)}
         />
 
-        <div className="px-6 pb-6 mt-6 lg:hidden">
+        <div className="px-4 pb-6 mt-6 md:px-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
           <ProposalDetailsVoteStatus {...proposalDetailsProps} />
         </div>
       </div>
-      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
+      <div className="hidden col-span-2 p-4 min-h-screen md:p-6 lg:block bg-base-200">
         <ProposalDetailsSidebar {...proposalDetailsProps} />
       </div>
     </div>

@@ -35,20 +35,23 @@ function ButtonComponent(
 
   return variant === 'primary' || variant === 'secondary' ? (
     <button
-      className={clsx('relative py-[6px] px-[16px] rounded-md transition', {
-        // Primary
-        'text-light bg-btn link-text': variant === 'primary',
-        'hover:bg-dark active:bg-toast': variant === 'primary' && !isDisabled,
-        // Secondary
-        'bg-primary link-text': variant === 'secondary',
-        'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
-          variant === 'secondary' && !isDisabled,
-        // Shared
-        'bg-btn-disabled': isDisabled,
-        'py-[10px]': size === 'lg',
-        'py-[4px] px-[8px]': size === 'sm',
-        [className as string]: true,
-      })}
+      className={clsx(
+        'relative py-[6px] px-[16px] rounded-md transition',
+        {
+          // Primary
+          'text-light bg-btn link-text': variant === 'primary',
+          'hover:bg-dark active:bg-toast': variant === 'primary' && !isDisabled,
+          // Secondary
+          'bg-primary link-text': variant === 'secondary',
+          'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
+            variant === 'secondary' && !isDisabled,
+          // Shared
+          'bg-btn-disabled': isDisabled,
+          'py-[10px]': size === 'lg',
+          'py-[4px] px-[8px]': size === 'sm',
+        },
+        className
+      )}
       disabled={isDisabled}
       ref={ref}
       {...rest}
@@ -78,10 +81,8 @@ function ButtonComponent(
     <button
       className={clsx(
         'flex flex-row gap-2 items-center text-secondary hover:text-primary transition link-text',
-        {
-          [className as string]: true,
-          [contentContainerClassName as string]: true,
-        }
+        className,
+        contentContainerClassName
       )}
       disabled={isDisabled}
       ref={ref}

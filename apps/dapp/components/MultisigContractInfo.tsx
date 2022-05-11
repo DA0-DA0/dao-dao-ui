@@ -9,14 +9,20 @@ import { sigSelector } from 'selectors/multisigs'
 
 import { DaoTreasury } from './DaoTreasury'
 
-export function MultisigContractInfo({ address }: { address: string }) {
+export function MultisigContractInfo({
+  address,
+  hideTreasury,
+}: {
+  address: string
+  hideTreasury?: boolean
+}) {
   const sigInfo = useRecoilValue(sigSelector(address))
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 pt-[22px] pb-[28px] border-b border-inactive md:grid md:grid-cols-3">
-      <div>
-        <h2 className="mb-6 primary-text">Governance Details</h2>
-        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none">
+    <div className="flex flex-row flex-wrap gap-6 md:grid md:grid-cols-3">
+      <div className="mb-4 md:mb-0">
+        <h2 className="mb-4 md:mb-6 primary-text">Governance Details</h2>
+        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           <GovInfoListItem
             icon={<Votes fill="currentColor" width="16px" />}
             text="Passing threshold"
@@ -30,7 +36,7 @@ export function MultisigContractInfo({ address }: { address: string }) {
         </ul>
       </div>
       <div>
-        <h2 className="mb-6 primary-text">Addresses</h2>
+        <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
         <ul className="flex flex-col gap-2 mt-3 ml-2 list-none caption-text">
           <li>
             Multisig <CopyToClipboardAccent value={address} />
@@ -40,7 +46,7 @@ export function MultisigContractInfo({ address }: { address: string }) {
           </li>
         </ul>
       </div>
-      <DaoTreasury address={address} />
+      {!hideTreasury && <DaoTreasury address={address} />}
     </div>
   )
 }

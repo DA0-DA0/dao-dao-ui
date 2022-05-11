@@ -7,9 +7,10 @@ import toast from 'react-hot-toast'
 import { useRecoilValue } from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
-import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
+import { Breadcrumbs, CopyToClipboard, LoadingScreen } from '@dao-dao/ui'
 
 import { ProposalData, ProposalForm } from '@/components/ProposalForm'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { sigSelector } from '@/selectors/multisigs'
 import { cleanChainError } from '@/util/cleanChainError'
@@ -62,8 +63,11 @@ const InnerMultisigProposalCreate: FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+    <div className="flex flex-col lg:grid lg:grid-cols-6">
+      <div className="md:hidden">
+        <SmallScreenNav />
+      </div>
+      <div className="col-span-4 px-4 md:p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -71,6 +75,9 @@ const InnerMultisigProposalCreate: FC = () => {
             [router.asPath, `New proposal`],
           ]}
         />
+
+        <h2 className="my-3 md:hidden primary-text">New proposal</h2>
+
         <ProposalForm
           contractAddress={contractAddress}
           loading={proposalLoading}
@@ -83,6 +90,19 @@ const InnerMultisigProposalCreate: FC = () => {
             multisig: true,
           }}
         />
+      </div>
+      <div className="col-span-2 p-4 md:p-6">
+        <h2 className="mb-6 primary-text">Info</h2>
+        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
+          <p className="font-mono text-sm text-tertiary">Multisig</p>
+          <div className="col-span-2">
+            <CopyToClipboard value={contractAddress} />
+          </div>
+          <p className="font-mono text-sm text-tertiary">cw4-groups</p>
+          <div className="col-span-2">
+            <CopyToClipboard value={sigInfo.group_address} />
+          </div>
+        </div>
       </div>
     </div>
   )

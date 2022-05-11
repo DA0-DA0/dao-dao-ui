@@ -29,6 +29,7 @@ import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { Loader } from '@/components/Loader'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
 import { isMemberSelector } from '@/selectors/cosm'
@@ -65,21 +66,24 @@ const InnerMobileDaoHome: FC = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <MobileHeader
-        contractAddress={contractAddress}
-        imageUrl={imageUrl || ''}
-        member={member}
-        name={daoInfo.config.name}
-        onPin={() => {
-          if (pinned) {
-            setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-          } else {
-            setPinnedDaos((p) => p.concat([contractAddress]))
-            addToken(daoInfo.gov_token)
-          }
-        }}
-        pinned={pinned}
-      />
+      <GradientHero>
+        <SmallScreenNav />
+        <MobileHeader
+          contractAddress={contractAddress}
+          imageUrl={imageUrl || ''}
+          member={member}
+          name={daoInfo.config.name}
+          onPin={() => {
+            if (pinned) {
+              setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+            } else {
+              setPinnedDaos((p) => p.concat([contractAddress]))
+              addToken(daoInfo.gov_token)
+            }
+          }}
+          pinned={pinned}
+        />
+      </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
           icon="🗳"
@@ -154,69 +158,76 @@ const InnerDaoHome: FC = () => {
   }, [shouldAddToken, daoInfo.gov_token])
 
   return (
-    <div className="flex overflow-auto flex-row grid-cols-6 justify-around mb-3 min-h-screen">
-      <div className="min-h-screen">
+    <div className="flex flex-row lg:grid lg:grid-cols-6">
+      <div className="col-span-4 mx-auto min-h-screen lg:mx-0">
         <GradientHero>
-          <div className="flex justify-between">
-            <Breadcrumbs
-              crumbs={[
-                ['/starred', 'Home'],
-                [router.asPath, daoInfo.config.name],
-              ]}
-            />
-            <div className="flex flex-row gap-4 items-center">
-              {member && (
-                <div className="flex flex-row gap-2 items-center">
-                  <MemberCheck fill="currentColor" width="16px" />
-                  <p className="text-sm text-primary">You{"'"}re a member</p>
-                </div>
-              )}
-              <StarButton
-                onPin={() => {
-                  if (pinned) {
-                    setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-                  } else {
-                    setPinnedDaos((p) => p.concat([contractAddress]))
-                    addToken(daoInfo.gov_token)
-                  }
-                }}
-                pinned={pinned}
+          <div className="block lg:hidden">
+            <SmallScreenNav />
+          </div>
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <Breadcrumbs
+                crumbs={[
+                  ['/starred', 'Home'],
+                  [router.asPath, daoInfo.config.name],
+                ]}
               />
+              <div className="flex flex-row gap-4 items-center">
+                {member && (
+                  <div className="flex flex-row gap-2 items-center">
+                    <MemberCheck fill="currentColor" width="16px" />
+                    <p className="text-sm text-primary">You{"'"}re a member</p>
+                  </div>
+                )}
+                <StarButton
+                  onPin={() => {
+                    if (pinned) {
+                      setPinnedDaos((p) =>
+                        p.filter((a) => a !== contractAddress)
+                      )
+                    } else {
+                      setPinnedDaos((p) => p.concat([contractAddress]))
+                      addToken(daoInfo.gov_token)
+                    }
+                  }}
+                  pinned={pinned}
+                />
+              </div>
             </div>
-          </div>
 
-          <ContractHeader
-            description={daoInfo.config.description}
-            established={establishedDate}
-            imgUrl={daoInfo.config.image_url || undefined}
-            name={daoInfo.config.name}
-          />
+            <ContractHeader
+              description={daoInfo.config.description}
+              established={establishedDate}
+              imgUrl={daoInfo.config.image_url || undefined}
+              name={daoInfo.config.name}
+            />
 
-          <div className="mt-2">
-            <HorizontalInfo>
-              <HorizontalInfoSection>
-                <UsersIcon className="inline w-4" />
-                {convertMicroDenomToDenomWithDecimals(
-                  tokenInfo.total_supply,
-                  tokenInfo.decimals
-                ).toLocaleString()}{' '}
-                ${tokenInfo?.symbol} total supply
-              </HorizontalInfoSection>
-              <HorizontalInfoSection>
-                <LibraryIcon className="inline w-4" />
-                {stakedPercent}% ${tokenInfo?.symbol} staked
-              </HorizontalInfoSection>
-              <HorizontalInfoSection>
-                <Pencil className="inline" fill="currentColor" />
-                {proposalsTotal} proposals created
-              </HorizontalInfoSection>
-            </HorizontalInfo>
-          </div>
-          <div className="block mt-4 lg:hidden">
-            <YourShares />
-          </div>
-          <div className="pt-[22px] pb-[28px] border-b border-inactive">
-            <DaoContractInfo address={contractAddress} />
+            <div className="mt-2">
+              <HorizontalInfo>
+                <HorizontalInfoSection>
+                  <UsersIcon className="inline w-4" />
+                  {convertMicroDenomToDenomWithDecimals(
+                    tokenInfo.total_supply,
+                    tokenInfo.decimals
+                  ).toLocaleString()}{' '}
+                  ${tokenInfo?.symbol} total supply
+                </HorizontalInfoSection>
+                <HorizontalInfoSection>
+                  <LibraryIcon className="inline w-4" />
+                  {stakedPercent}% ${tokenInfo?.symbol} staked
+                </HorizontalInfoSection>
+                <HorizontalInfoSection>
+                  <Pencil className="inline" fill="currentColor" />
+                  {proposalsTotal} proposals created
+                </HorizontalInfoSection>
+              </HorizontalInfo>
+            </div>
+            <div className="block mt-4 lg:hidden">
+              <YourShares />
+            </div>
+            <div className="pt-[22px] pb-[28px] border-b border-inactive">
+              <DaoContractInfo address={contractAddress} />
+            </div>
           </div>
         </GradientHero>
         <div className="px-6">
@@ -226,7 +237,7 @@ const InnerDaoHome: FC = () => {
           />
         </div>
       </div>
-      <div className="hidden p-6 max-w-sm h-full min-h-screen lg:block">
+      <div className="hidden col-span-2 p-6 max-w-sm h-full min-h-screen lg:block">
         <YourShares />
       </div>
     </div>

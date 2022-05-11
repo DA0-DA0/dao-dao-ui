@@ -1,24 +1,18 @@
-import {
-  ArrowRightIcon,
-  ExternalLinkIcon,
-  LibraryIcon,
-} from '@heroicons/react/outline'
+import { ArrowRightIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import { MenuIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
-import { useRecoilValue, waitForAll } from 'recoil'
 
 import { Logo } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
-import { pinnedDaosAtom, pinnedMultisigsAtom } from 'atoms/pinned'
 import ThemeToggle from 'components/ThemeToggle'
-import { daoSelector } from 'selectors/daos'
-import { sigSelector } from 'selectors/multisigs'
 
 import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
+import { PinnedDaoNavList } from './PinnedDaoNavList'
+import { PinnedMultisigNavList } from './PinnedMultisigNavList'
 import { SuspenseLoader } from './SuspenseLoader'
 
 type NavProps = {
@@ -108,68 +102,4 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
       </ul>
     </div>
   </nav>
-)
-
-const PinnedDaoNavList: FC = () => {
-  const pinnedDaos = useRecoilValue(pinnedDaosAtom)
-  const daos = useRecoilValue(waitForAll(pinnedDaos.map((a) => daoSelector(a))))
-  const daoAddresses = daos.map((d, idx) => ({
-    dao: d,
-    address: pinnedDaos[idx],
-  }))
-
-  return (
-    <ul className="ml-2 list-none">
-      {daoAddresses.map(({ dao, address }) => (
-        <NavListItem
-          key={address}
-          href={`/dao/${address}`}
-          icon={LibraryIcon}
-          text={dao.config.name}
-        />
-      ))}
-    </ul>
-  )
-}
-
-const PinnedMultisigNavList: FC = () => {
-  const pinnedSigs = useRecoilValue(pinnedMultisigsAtom)
-  const sigs = useRecoilValue(waitForAll(pinnedSigs.map((a) => sigSelector(a))))
-  const sigAddresses = sigs.map((s, idx) => ({
-    sig: s,
-    address: pinnedSigs[idx],
-  }))
-
-  return (
-    <ul className="ml-2 list-none">
-      {sigAddresses &&
-        sigAddresses.map(({ sig, address }) => (
-          <NavListItem
-            key={address}
-            href={`/multisig/${address}`}
-            icon={LibraryIcon}
-            text={sig.config.name}
-          />
-        ))}
-    </ul>
-  )
-}
-
-interface SmallScreenNavProps {
-  onMenuClick: () => void
-}
-
-export const SmallScreenNav: FC<SmallScreenNavProps> = ({ onMenuClick }) => (
-  <div className="flex sticky top-0 flex-row justify-between items-center p-6 pb-2 w-full text-lg">
-    <Link href="/starred">
-      <a>
-        <Logo alt={`${SITE_TITLE} Logo`} height={38} width={38} />
-      </a>
-    </Link>
-    <div className="font-mono text-error">Beta</div>
-
-    <div className="cursor-pointer lg:hidden" onClick={onMenuClick}>
-      <MenuIcon className="w-8" />
-    </div>
-  </div>
 )

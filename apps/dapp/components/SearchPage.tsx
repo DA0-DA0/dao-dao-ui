@@ -15,6 +15,7 @@ import {
 
 import { SearchBox } from './SearchBar'
 import { SearchHits } from './SearchHits'
+import { SmallScreenNav } from './SmallScreenNav'
 
 const searchClient = instantMeiliSearch(SEARCH_URL, SEARCH_API_KEY)
 
@@ -28,6 +29,7 @@ export const SearchPage: FC<SearchPageProps> = ({ multisig }) => (
     searchClient={searchClient}
   >
     <div className="max-w-5xl">
+      <SmallScreenNav />
       <div className="p-4 w-full md:p-6">
         <div className="flex justify-between items-center">
           <h1 className="header-text">{multisig ? 'Multisigs' : 'DAOs'}</h1>

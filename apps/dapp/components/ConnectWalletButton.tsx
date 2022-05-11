@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { useWallet } from '@dao-dao/state'
-import { WalletConnect } from '@dao-dao/ui'
+import { WalletConnect, MobileWalletConnect } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/utils'
 
 // Connection errors handled in Layout component.
-const ConnectWalletButton: FC = () => {
+const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
   const { connect, disconnect, address, name, nativeBalance } = useWallet()
 
   const walletBalanceHuman = convertMicroDenomToDenomWithDecimals(
@@ -19,7 +19,17 @@ const ConnectWalletButton: FC = () => {
   )
   const chainDenomHuman = convertDenomToHumanReadableDenom(NATIVE_DENOM)
 
-  return (
+  return mobile ? (
+    <MobileWalletConnect
+      className="w-full"
+      onConnect={connect}
+      onDisconnect={disconnect}
+      walletAddress={address ?? ''}
+      walletBalance={walletBalanceHuman}
+      walletBalanceDenom={chainDenomHuman}
+      walletName={name}
+    />
+  ) : (
     <WalletConnect
       className="w-full"
       onConnect={connect}
