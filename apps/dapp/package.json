@@ -38,7 +38,6 @@
     "axios": "^0.26.1",
     "clsx": "^1.1.1",
     "codemirror": "^5.65.0",
-    "cosmodal": "^0.3.1",
     "dotenv": "^10.0.0",
     "fast-average-color-node": "^2.1.0",
     "json-schema-to-typescript": "^10.1.5",

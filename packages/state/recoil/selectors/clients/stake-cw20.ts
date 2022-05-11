@@ -51,6 +51,7 @@ export const executeClient = selectorFamily<
 
       return new ExecuteClient(client, sender, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export const stakedBalanceAtHeightSelector = selectorFamily<

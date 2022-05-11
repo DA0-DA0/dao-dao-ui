@@ -47,6 +47,7 @@ export const executeClient = selectorFamily<
       if (!client) return
       return new ExecuteClient(client, sender, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export const balanceSelector = selectorFamily<
