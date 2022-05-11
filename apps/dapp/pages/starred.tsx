@@ -1,7 +1,5 @@
-import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
+import { StarIcon } from '@heroicons/react/outline'
 import { NextPage } from 'next'
-import Link from 'next/link'
-import { ReactNode } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { LoadingScreen } from '@dao-dao/ui'
@@ -9,54 +7,12 @@ import { LoadingScreen } from '@dao-dao/ui'
 import { pinnedDaosAtom, pinnedMultisigsAtom } from '@/atoms/pinned'
 import { EmptyDaoCard } from '@/components/EmptyDaoCard'
 import { EmptyMultisigCard } from '@/components/EmptyMultisigCard'
-import { PinnedDaoCard, PinnedMultisigCard } from '@/components/starred'
+import {
+  ActionMenu,
+  PinnedDaoCard,
+  PinnedMultisigCard,
+} from '@/components/starred'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
-
-const ActionItem = ({
-  href,
-  icon,
-  text,
-}: {
-  href: string
-  icon: ReactNode
-  text: string
-}) => (
-  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md transition-all link-text">
-    <Link href={href}>
-      <a className="flex gap-2 items-center">
-        {icon}
-        {text}
-      </a>
-    </Link>
-  </li>
-)
-
-const ActionMenu = () => (
-  <div className="p-6 bg-primary rounded-md hover:outline-btn-secondary hover:outline">
-    <ul className="-mx-1 font-medium list-none text-md">
-      <ActionItem
-        href="/dao/create"
-        icon={<PlusIcon className="w-4" />}
-        text={'Create a DAO'}
-      />
-      <ActionItem
-        href="/multisig/create"
-        icon={<PlusIcon className="w-4" />}
-        text={'Create a multisig'}
-      />
-      <ActionItem
-        href="/dao/list"
-        icon={<MapIcon className="w-4" />}
-        text={'Explore all DAOs'}
-      />
-      <ActionItem
-        href="/multisig/list"
-        icon={<MapIcon className="w-4" />}
-        text={'Explore all multisigs'}
-      />
-    </ul>
-  </div>
-)
 
 const InnerStarred: NextPage = () => {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
