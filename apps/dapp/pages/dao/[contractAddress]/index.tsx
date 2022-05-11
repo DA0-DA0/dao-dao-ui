@@ -1,7 +1,7 @@
 import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { MemberCheck, Pencil } from '@dao-dao/icons'
@@ -14,6 +14,8 @@ import {
   HorizontalInfoSection,
   Breadcrumbs,
   LoadingScreen,
+  MobileHeader,
+  MobileMenuTab,
 } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
@@ -25,6 +27,7 @@ import { pinnedDaosAtom } from '@/atoms/pinned'
 import { ContractProposalsDisplay } from '@/components/ContractView'
 import { YourShares } from '@/components/dao'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
+import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
@@ -38,7 +41,91 @@ import {
 import { addToken } from '@/util/addToken'
 import { getFastAverageColor } from '@/util/colors'
 
-const InnerDaoHome = () => {
+enum MobileMenuTabSelection {
+  Proposal,
+  Staking,
+  Treasury,
+  Info,
+}
+
+const InnerMobileDaoHome: FC = () => {
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
+
+  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const { member } = useRecoilValue(isMemberSelector(contractAddress))
+
+  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
+  const pinned = pinnedDaos.includes(contractAddress)
+
+  const imageUrl = daoInfo.config.image_url
+
+  const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
+  const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
+
+  return (
+    <div className="flex flex-col gap-2">
+      <MobileHeader
+        contractAddress={contractAddress}
+        imageUrl={imageUrl || ''}
+        member={member}
+        name={daoInfo.config.name}
+        onPin={() => {
+          if (pinned) {
+            setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+          } else {
+            setPinnedDaos((p) => p.concat([contractAddress]))
+            addToken(daoInfo.gov_token)
+          }
+        }}
+        pinned={pinned}
+      />
+      <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
+        <MobileMenuTab
+          icon="🗳"
+          onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
+          selected={tab === MobileMenuTabSelection.Proposal}
+          text="Proposal"
+        />
+        <MobileMenuTab
+          icon="💵"
+          onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
+          selected={tab === MobileMenuTabSelection.Staking}
+          text="Staking"
+        />
+        <MobileMenuTab
+          icon="🏛"
+          onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
+          selected={tab === MobileMenuTabSelection.Treasury}
+          text="Treasury"
+        />
+        <MobileMenuTab
+          icon="⚙️"
+          onClick={makeTabSetter(MobileMenuTabSelection.Info)}
+          selected={tab === MobileMenuTabSelection.Info}
+          text="Info"
+        />
+      </div>
+      <div className="py-5 px-6">
+        {tab === MobileMenuTabSelection.Staking && <YourShares />}
+        {tab === MobileMenuTabSelection.Proposal && (
+          <ContractProposalsDisplay
+            contractAddress={contractAddress}
+            proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
+          />
+        )}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <DaoTreasury address={contractAddress} />
+        )}
+        {tab === MobileMenuTabSelection.Info && (
+          <DaoContractInfo address={contractAddress} hideTreasury />
+        )}
+      </div>
+    </div>
+  )
+}
+
+const InnerDaoHome: FC = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -128,7 +215,9 @@ const InnerDaoHome = () => {
           <div className="block mt-4 lg:hidden">
             <YourShares />
           </div>
-          <DaoContractInfo address={contractAddress} />
+          <div className="pt-[22px] pb-[28px] border-b border-inactive">
+            <DaoContractInfo address={contractAddress} />
+          </div>
         </GradientHero>
         <div className="px-6">
           <ContractProposalsDisplay
@@ -177,7 +266,12 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
   return (
     <ErrorBoundary title="DAO Not Found">
       <SuspenseLoader fallback={<LoadingScreen />}>
-        <InnerDaoHome />
+        <div className="block md:hidden">
+          <InnerMobileDaoHome />
+        </div>
+        <div className="hidden md:block">
+          <InnerDaoHome />
+        </div>
       </SuspenseLoader>
     </ErrorBoundary>
   )

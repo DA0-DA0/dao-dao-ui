@@ -74,7 +74,7 @@ export const ProposalList: FC<ProposalListProps> = ({
     })
     // We've now handled all the newly created proposals.
     setPropsCreated(0)
-  }, [newProps, setPropList, setPropsCreated])
+  }, [setPropList, setPropsCreated, newProps])
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.

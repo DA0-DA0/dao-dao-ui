@@ -1,6 +1,7 @@
 import { MapIcon, PlusIcon, StarIcon } from '@heroicons/react/outline'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { ReactNode } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { LoadingScreen } from '@dao-dao/ui'
@@ -11,15 +12,65 @@ import { EmptyMultisigCard } from '@/components/EmptyMultisigCard'
 import { PinnedDaoCard, PinnedMultisigCard } from '@/components/starred'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 
+const ActionItem = ({
+  href,
+  icon,
+  text,
+}: {
+  href: string
+  icon: ReactNode
+  text: string
+}) => (
+  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md transition-all link-text">
+    <Link href={href}>
+      <a className="flex gap-2 items-center">
+        {icon}
+        {text}
+      </a>
+    </Link>
+  </li>
+)
+
+const ActionMenu = () => (
+  <div className="p-6 bg-primary rounded-md hover:outline-btn-secondary hover:outline">
+    <ul className="-mx-1 font-medium list-none text-md">
+      <ActionItem
+        href="/dao/create"
+        icon={<PlusIcon className="w-4" />}
+        text={'Create a DAO'}
+      />
+      <ActionItem
+        href="/multisig/create"
+        icon={<PlusIcon className="w-4" />}
+        text={'Create a multisig'}
+      />
+      <ActionItem
+        href="/dao/list"
+        icon={<MapIcon className="w-4" />}
+        text={'Explore all DAOs'}
+      />
+      <ActionItem
+        href="/multisig/list"
+        icon={<MapIcon className="w-4" />}
+        text={'Explore all multisigs'}
+      />
+    </ul>
+  </div>
+)
+
 const InnerStarred: NextPage = () => {
   const pinnedDaos = useRecoilValue(pinnedDaosAtom)
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+    <div className="flex">
+      <div className="p-6 w-full lg:basis-2/3">
+        <div className="block mb-4 lg:hidden">
+          <ActionMenu />
+        </div>
+
         <h1 className="header-text">Starred</h1>
-        <h2 className="flex gap-1 items-center mt-6 mb-2 primary-text">
+        <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
           <StarIcon className="inline w-4 " />
           DAOs
         </h2>
@@ -48,42 +99,9 @@ const InnerStarred: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="col-span-2 col-start-5 p-6 min-h-screen">
-        <h2 className="mb-6 text-[16px] font-semibold body-text">Actions</h2>
-        <ul className="mt-1 ml-2 list-none link-text">
-          <li className="mt-1">
-            <Link href="/dao/create">
-              <a>
-                <PlusIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Create a DAO
-              </a>
-            </Link>
-          </li>
-          <li className="mt-1">
-            <Link href="/multisig/create">
-              <a>
-                <PlusIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Create a multisig
-              </a>
-            </Link>
-          </li>
-          <li className="mt-1">
-            <Link href="/dao/list">
-              <a>
-                <MapIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Explore all DAOs
-              </a>
-            </Link>
-          </li>
-          <li className="mt-1">
-            <Link href="/multisig/list">
-              <a>
-                <MapIcon className="inline mr-2 mb-1 w-5 h-5" />
-                Explore all multisigs
-              </a>
-            </Link>
-          </li>
-        </ul>
+
+      <div className="hidden basis-1/3 p-6 mb-4 min-h-screen border-l border-inactive lg:block">
+        <ActionMenu />
       </div>
     </div>
   )
