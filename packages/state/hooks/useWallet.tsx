@@ -1,9 +1,10 @@
 import { Keplr } from '@keplr-wallet/types'
+import { isMobile } from '@walletconnect/browser-utils'
 import WalletConnect from '@walletconnect/client'
 import {
   KeplrWalletConnectV1,
   useWalletManager,
-  WalletInfo,
+  Wallet,
   WalletManagerProvider,
 } from 'cosmodal'
 import { FC, useCallback, useEffect } from 'react'
@@ -50,38 +51,28 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
     useRecoilState(walletConnectedAtom)
   const [walletClient, setWalletClient] = useRecoilState(walletClientAtom)
   const setWalletConnectionId = useSetRecoilState(walletConnectionIdAtom)
-  const {
-    getWallet,
-    setDefaultConnectionType,
-    connectionType,
-    clearLastUsedWallet,
-  } = useWalletManager()
+  const { getWalletClient, setDefaultWalletId, connectedWalletId } =
+    useWalletManager()
   const [connectError, setConnectError] = useRecoilState(walletConnectErrorAtom)
 
   // Clear all state.
   const disconnect = useCallback(() => {
     setWalletConnected(null)
     setWalletClient(undefined)
-    setDefaultConnectionType(undefined)
-    clearLastUsedWallet()
+    setDefaultWalletId(undefined)
     setConnectError(undefined)
-  }, [
-    setWalletConnected,
-    setWalletClient,
-    setDefaultConnectionType,
-    clearLastUsedWallet,
-    setConnectError,
-  ])
+  }, [setWalletConnected, setWalletClient, setDefaultWalletId, setConnectError])
 
   const connect = useCallback(async () => {
     setConnectError(undefined)
 
     // Attempt to connect and update keystore accordingly.
     try {
-      const wallet: Keplr | KeplrWalletConnectV1 | undefined = await getWallet()
-      setWalletClient(wallet)
+      const walletClient: Keplr | KeplrWalletConnectV1 | undefined =
+        await getWalletClient()
+      setWalletClient(walletClient)
 
-      if (!wallet) {
+      if (!walletClient) {
         throw new WalletNotInstalledError()
       }
     } catch (error) {
@@ -93,7 +84,7 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
       // Set error after since disconnect cleans up state.
       setConnectError(error)
     }
-  }, [disconnect, getWallet, setWalletClient, setConnectError])
+  }, [disconnect, getWalletClient, setWalletClient, setConnectError])
 
   // Attempt connection if should be connected.
   const walletClientDisconnected = walletClient === undefined
@@ -101,13 +92,13 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
     if (!effectsEnabled) return
 
     if (walletConnected && walletClientDisconnected) {
-      setDefaultConnectionType(walletConnected)
+      setDefaultWalletId(walletConnected)
       connect()
     }
   }, [
     walletClientDisconnected,
     walletConnected,
-    setDefaultConnectionType,
+    setDefaultWalletId,
     connect,
     effectsEnabled,
   ])
@@ -116,14 +107,18 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
   useEffect(() => {
     if (!effectsEnabled) return
 
-    if (walletClient && connectionType && walletConnected !== connectionType) {
-      setWalletConnected(connectionType)
+    if (
+      walletClient &&
+      connectedWalletId &&
+      walletConnected !== connectedWalletId
+    ) {
+      setWalletConnected(connectedWalletId)
     } else if (!walletClient && walletConnected !== null) {
       setWalletConnected(null)
     }
   }, [
     walletClient,
-    connectionType,
+    connectedWalletId,
     setWalletConnected,
     walletConnected,
     effectsEnabled,
@@ -142,12 +137,7 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
 
     return () =>
       window.removeEventListener('keplr_keystorechange', keplrListener)
-  }, [
-    clearLastUsedWallet,
-    setWalletClient,
-    setWalletConnectionId,
-    effectsEnabled,
-  ])
+  }, [setWalletClient, setWalletConnectionId, effectsEnabled])
 
   // Wallet address
   const { state: walletAddressState, contents: walletAddressContents } =
@@ -198,13 +188,14 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
   }
 }
 
-const WalletInfoList: WalletInfo[] = [
+const AvailableWallets: Wallet[] = [
   {
     id: 'keplr-wallet-extension',
     name: 'Keplr Wallet',
     description: 'Keplr Browser Extension',
     logoImgUrl: '/keplr-wallet-extension.png',
-    getWallet: getKeplr,
+    getClient: getKeplr,
+    isWalletConnect: false,
   },
   // WalletConnect only supports mainnet. Not testnet.
   ...(CHAIN_ID === 'juno-1'
@@ -214,11 +205,12 @@ const WalletInfoList: WalletInfo[] = [
           name: 'WalletConnect',
           description: 'Keplr Mobile',
           logoImgUrl: '/walletconnect-keplr.png',
-          getWallet: async (connector?: WalletConnect) => {
+          getClient: async (connector?: WalletConnect) => {
             if (connector?.connected)
               return new KeplrWalletConnectV1(connector, [NativeChainInfo])
             throw new Error('Mobile wallet not connected.')
           },
+          isWalletConnect: true,
         },
       ]
     : []),
@@ -245,7 +237,13 @@ export const WalletProvider: FC = ({ children }) => (
       walletName: '!primary-text',
       walletDescription: '!caption-text',
     }}
-    walletInfoList={WalletInfoList}
+    defaultWalletId={
+      // If on a mobile device, default to WalletConnect.
+      isMobile()
+        ? AvailableWallets.find((w) => w.isWalletConnect)?.id
+        : undefined
+    }
+    wallets={AvailableWallets}
   >
     <InnerWalletProvider>{children}</InnerWalletProvider>
   </WalletManagerProvider>

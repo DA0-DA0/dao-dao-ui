@@ -4618,7 +4618,7 @@
     "@walletconnect/window-metadata" "1.0.0"
     detect-browser "5.2.0"
 
-"@walletconnect/client@^1.7.7", "@walletconnect/client@^1.7.8":
+"@walletconnect/client@^1.7.8":
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-1.7.8.tgz#62c2d7114e59495d90772ea8033831ceb29c6a78"
   integrity sha512-pBroM6jZAaUM0SoXJZg5U7aPTiU3ljQAw3Xh/i2pxFDeN/oPKao7husZ5rdxS5xuGSV6YpqqRb0RxW1IeoR2Pg==
@@ -4708,12 +4708,12 @@
     "@walletconnect/utils" "^1.7.8"
     ws "7.5.3"
 
-"@walletconnect/types@^1.7.7", "@walletconnect/types@^1.7.8":
+"@walletconnect/types@^1.7.8":
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.7.8.tgz#ec397e6fbdc8147bccc17029edfeb41c50a5ca09"
   integrity sha512-0oSZhKIrtXRJVP1jQ0EDTRtotQY6kggGjDcmm/LLQBKnOZXdPeo0sPkV/7DjT5plT3O7Cjc6JvuXt9WOY0hlCA==
 
-"@walletconnect/utils@^1.7.7", "@walletconnect/utils@^1.7.8":
+"@walletconnect/utils@^1.7.8":
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.7.8.tgz#f94572bca5eb6b5f81daf8a35268f249f9c6b1ec"
   integrity sha512-DSpfH6Do0TQmdrgzu+SyjVhupVjN0WEMvNWGK9K4VlSmLFpCWfme7qxzrvuxBZ47gDqs1kGWvjyJmviWqvOnAg==
@@ -6660,9 +6660,9 @@ cosmjs-types@^0.4.0:
     long "^4.0.0"
     protobufjs "~6.11.2"
 
-"cosmodal@https://github.com/NoahSaso/cosmodal#2354f52966d664011245923cb3a2cb50177e01a0":
-  version "0.3.1"
-  resolved "https://github.com/NoahSaso/cosmodal#2354f52966d664011245923cb3a2cb50177e01a0"
+"cosmodal@https://github.com/NoahSaso/cosmodal#c2185433952d38e24c1afa65ceac1d62575933b8":
+  version "0.3.2"
+  resolved "https://github.com/NoahSaso/cosmodal#c2185433952d38e24c1afa65ceac1d62575933b8"
   dependencies:
     "@cosmjs/launchpad" "^0.27.1"
     "@cosmjs/proto-signing" "^0.28.0"
@@ -6671,29 +6671,9 @@ cosmjs-types@^0.4.0:
     "@keplr-wallet/provider" "^0.9.12"
     "@keplr-wallet/stores" "^0.9.18"
     "@keplr-wallet/types" "^0.9.12"
-    "@walletconnect/client" "^1.7.7"
-    "@walletconnect/types" "^1.7.7"
-    "@walletconnect/utils" "^1.7.7"
-    eslint-plugin-react "^7.29.4"
-    qrcode.react "^3.0.0"
-    react-modal "^3.14.4"
-    secretjs "^0.17.5"
-    styled-components "^5.3.5"
-
-"cosmodal@https://github.com/NoahSaso/cosmodal#aa613ebf5d57f61b1029051c5942292269480f41":
-  version "0.3.1"
-  resolved "https://github.com/NoahSaso/cosmodal#aa613ebf5d57f61b1029051c5942292269480f41"
-  dependencies:
-    "@cosmjs/launchpad" "^0.27.1"
-    "@cosmjs/proto-signing" "^0.28.0"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.16"
-    "@keplr-wallet/provider" "^0.9.12"
-    "@keplr-wallet/stores" "^0.9.18"
-    "@keplr-wallet/types" "^0.9.12"
-    "@walletconnect/client" "^1.7.7"
-    "@walletconnect/types" "^1.7.7"
-    "@walletconnect/utils" "^1.7.7"
+    "@walletconnect/client" "^1.7.8"
+    "@walletconnect/types" "^1.7.8"
+    "@walletconnect/utils" "^1.7.8"
     eslint-plugin-react "^7.29.4"
     qrcode.react "^3.0.0"
     react-modal "^3.14.4"

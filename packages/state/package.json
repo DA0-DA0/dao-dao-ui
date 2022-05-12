@@ -9,7 +9,7 @@
     "@dao-dao/ui": "*",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
-    "cosmodal": "https://github.com/NoahSaso/cosmodal#aa613ebf5d57f61b1029051c5942292269480f41",
+    "cosmodal": "https://github.com/NoahSaso/cosmodal#c2185433952d38e24c1afa65ceac1d62575933b8",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },
