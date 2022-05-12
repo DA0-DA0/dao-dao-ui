@@ -8,7 +8,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { walletAddressSelector } from '@dao-dao/state'
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
   useThemeContext,
@@ -27,20 +26,15 @@ import { pinnedMultisigsAtom } from '@/atoms/pinned'
 import { ContractProposalsDisplay } from '@/components/ContractView'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { MobileHeader } from '@/components/MobileHeader'
 import { MultisigContractInfo } from '@/components/MultisigContractInfo'
+import { MultisigMemberList } from '@/components/MultisigMemberList'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
-import {
-  sigSelector,
-  totalWeight,
-  memberWeight,
-  listMembers,
-} from '@/selectors/multisigs'
+import { sigSelector, totalWeight, listMembers } from '@/selectors/multisigs'
 import { cosmWasmClientRouter } from '@/util/chainClientRouter'
 import { getFastAverageColor } from '@/util/colors'
-import { MobileHeader } from '@/components/MobileHeader'
-import { MultisigMemberList } from '@/components/MultisigMemberList'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {

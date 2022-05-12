@@ -1,11 +1,12 @@
 import { FC } from 'react'
-
-import { MultisigMemberList as StatelessMultisigMemberList } from '@dao-dao/ui'
 import { useRecoilValue } from 'recoil'
-import { listMembers, memberWeight, totalWeight } from '@/selectors/multisigs'
-import { walletAddressSelector } from '@/../../packages/state'
+
+import { walletAddressSelector } from '@dao-dao/state'
+import { MultisigMemberList as StatelessMultisigMemberList } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/ui/components/Loader'
+
 import { SuspenseLoader } from './SuspenseLoader'
-import { Loader } from '@/../../packages/ui/components/Loader'
+import { listMembers, memberWeight, totalWeight } from '@/selectors/multisigs'
 
 export interface MultisigMemberListProps {
   contractAddress: string

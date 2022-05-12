@@ -80,7 +80,7 @@ export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
     </div>
     <div className="flex flex-col flex-1 gap-3">
       <div className="flex flex-row justify-between">
-        <h1 className="header-text bg-dark animate-pulse w-full mr-3 rounded-sm"></h1>
+        <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
         <div className="flex gap-5">
           <StarButton onPin={() => null} pinned={false} />
         </div>

@@ -9,8 +9,6 @@ import { WalletConnectProps } from './WalletConnect'
 export const MobileWalletConnect: FC<WalletConnectProps> = ({
   walletAddress,
   walletName,
-  walletBalance,
-  walletBalanceDenom,
   onConnect,
   onDisconnect,
   className,

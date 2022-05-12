@@ -1,10 +1,10 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { useState, FC } from 'react'
 import toast from 'react-hot-toast'
 
 import { Copy } from '@dao-dao/icons'
 import { useThemeContext, Button } from '@dao-dao/ui'
-import clsx from 'clsx'
 
 function concatAddressImpl(
   address: string,
@@ -70,7 +70,7 @@ export function CopyToClipboardAccent({
     <button
       className={clsx(
         'text-sm text-brand underline hover:no-underline transition',
-        loading && 'animate-pulse rounded-sm'
+        loading && 'rounded-sm animate-pulse'
       )}
       onClick={() => {
         navigator.clipboard.writeText(value)
