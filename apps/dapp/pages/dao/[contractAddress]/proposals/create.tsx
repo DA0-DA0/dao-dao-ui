@@ -11,6 +11,7 @@ import { CopyToClipboard, Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
 import { proposalsCreatedAtom } from '@/atoms/proposals'
 import { ProposalData, ProposalForm } from '@/components/ProposalForm'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { daoSelector } from '@/selectors/daos'
 import { cw20TokenInfo } from '@/selectors/treasury'
@@ -113,8 +114,11 @@ const InnerProposalCreate: FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+    <div className="flex flex-col lg:grid lg:grid-cols-6">
+      <div className="md:hidden">
+        <SmallScreenNav />
+      </div>
+      <div className="col-span-4 px-4 md:p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -136,7 +140,7 @@ const InnerProposalCreate: FC = () => {
           }}
         />
       </div>
-      <div className="col-span-2 p-6">
+      <div className="col-span-2 p-4 md:p-6">
         <h2 className="mb-6 font-medium text-medium">Info</h2>
         <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center">
           <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
