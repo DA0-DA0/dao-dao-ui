@@ -37,7 +37,7 @@ export function MultisigContractInfo({
       </div>
       <div>
         <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
-        <ul className="flex flex-col gap-2 mt-3 ml-2 list-none caption-text">
+        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
           <li>
             Multisig <CopyToClipboardAccent value={address} />
           </li>

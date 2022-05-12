@@ -63,28 +63,42 @@ export function TokenAmountInput<
 }) {
   type ValidateFn = Validate<FieldPathValue<FieldValues, AddrFieldName>>
 
+  const numberInputParams = {
+    defaultValue: '0',
+    disabled: readOnly,
+    error: amountError,
+    label: amountLabel as any,
+    onPlusMinus: onPlusMinus,
+    register: register,
+    step: 0.000001,
+    validation: [
+      validateRequired as ValidateFn,
+      validatePositive as ValidateFn,
+    ],
+  }
+
   return (
     <FormCard>
-      <div className="flex gap-3 justify-between">
-        <p className="flex gap-2 items-center body-text">
-          {icon} {title}
-        </p>
+      <div className="flex flex-col md:flex-row gap-3 justify-between">
+        <div className="flex justify-between">
+          <p className="flex gap-2 items-center body-text">
+            {icon}
+            {title}
+          </p>
+          <div className="md:hidden">
+            <button onClick={onRemove} type="button">
+              <XIcon className="w-4 text-error" />
+            </button>
+          </div>
+        </div>
         <div className="flex gap-2 items-center">
           <div className="flex flex-col gap-1">
-            <NumberInput
-              defaultValue="0"
-              disabled={readOnly}
-              error={amountError}
-              label={amountLabel as any}
-              onPlusMinus={onPlusMinus}
-              register={register}
-              small
-              step={0.000001}
-              validation={[
-                validateRequired as ValidateFn,
-                validatePositive as ValidateFn,
-              ]}
-            />
+            <div className="hidden md:block">
+              <NumberInput {...numberInputParams} small />
+            </div>
+            <div className="md:hidden">
+              <NumberInput {...numberInputParams} />
+            </div>
             <InputErrorMessage error={amountError} />
           </div>
           {tokenSymbol && (
@@ -100,7 +114,7 @@ export function TokenAmountInput<
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <p className="font-mono secondary-text">{'->'}</p>
+          <p className="font-mono secondary-text hidden md:block">{'->'}</p>
           <div className="flex flex-col gap-1">
             <AddressInput
               disabled={readOnly}
@@ -115,12 +129,8 @@ export function TokenAmountInput<
             <InputErrorMessage error={addrError} />
           </div>
         </div>
-        {!readOnly && (
-          <button
-            className={`${hideRemove ? 'hidden' : ''}`}
-            onClick={onRemove}
-            type="button"
-          >
+        {!readOnly && !hideRemove && (
+          <button className="hidden md:block" onClick={onRemove} type="button">
             <XIcon className="w-4 text-error" />
           </button>
         )}{' '}

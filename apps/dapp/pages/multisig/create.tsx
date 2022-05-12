@@ -31,6 +31,7 @@ import {
 import '@reach/tooltip/styles.css'
 import { pinnedMultisigsAtom } from '@/atoms/pinned'
 import { FormCard } from '@/components/FormCard'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import TooltipsDisplay, {
   useTooltipsRegister,
@@ -144,36 +145,42 @@ const InnerCreateMultisig: FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
+    <div className="md:grid md:grid-cols-6">
       <form className="col-span-4" onSubmit={handleSubmit(onSubmit)}>
         <GradientHero>
-          <Breadcrumbs
-            crumbs={[
-              ['/starred', 'Home'],
-              [router.asPath, 'Create Multisig'],
-            ]}
-          />
-          <ImageSelector
-            error={errors.imageUrl}
-            imageUrl={imageUrl}
-            label="imageUrl"
-            register={register}
-          />
-
-          <div className="flex flex-col justify-center items-center mx-auto mt-4 max-w-prose rounded-lg">
-            <InputLabel className="pb-1" mono name="Multisig Name" />
-            <TextInput
-              className="font-bold text-center"
-              error={errors.name}
-              label="name"
-              register={register}
-              validation={[validateRequired]}
+          <div className="md:hidden">
+            <SmallScreenNav />
+          </div>
+          <div className="px-4 md:p-6">
+            <Breadcrumbs
+              crumbs={[
+                ['/starred', 'Home'],
+                [router.asPath, 'Create Multisig'],
+              ]}
             />
-            <InputErrorMessage error={errors.name} />
+            <ImageSelector
+              className="mt-6"
+              error={errors.imageUrl}
+              imageUrl={imageUrl}
+              label="imageUrl"
+              register={register}
+            />
+
+            <div className="flex flex-col justify-center items-center mx-auto mt-4 max-w-prose rounded-lg">
+              <InputLabel className="pb-1" mono name="Multisig Name" />
+              <TextInput
+                className="font-bold text-center"
+                error={errors.name}
+                label="name"
+                register={register}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.name} />
+            </div>
           </div>
         </GradientHero>
 
-        <div className="px-8">
+        <div className="p-4 md:px-8">
           <div className="flex flex-col gap-1">
             <InputLabel mono name="Description" />
             <TextareaInput
@@ -233,7 +240,7 @@ const InnerCreateMultisig: FC = () => {
           </Button>
           <h2 className="mt-8 mb-4 title-text">Voting configuration</h2>
           <FormCard>
-            <div className="grid grid-cols-5 gap-x-1 gap-y-8">
+            <div className="flex flex-col grid-cols-5 gap-x-1 gap-y-4 md:grid md:gap-y-8">
               <div className="col-span-3">
                 <p className="body-text">Passing weight</p>
                 <p className="caption-text">
@@ -277,7 +284,7 @@ const InnerCreateMultisig: FC = () => {
                 />
                 <InputErrorMessage error={errors.duration} />
               </div>
-              <div className="flex col-span-1 justify-center items-center bg-disabled rounded-lg">
+              <div className="flex col-span-1 justify-center items-center p-1 -mt-2 bg-disabled rounded-lg md:p-0 md:mt-0">
                 <p className="secondary-text">
                   {secondsToWdhms(votingPeriodSeconds)}
                 </p>
@@ -297,7 +304,7 @@ const InnerCreateMultisig: FC = () => {
         </div>
       </form>
 
-      <div className="col-span-2">
+      <div className="hidden col-span-2 md:block">
         <div className="sticky top-0 p-6 w-full">
           <TooltipsDisplay selected={selectedTooltip} />
         </div>

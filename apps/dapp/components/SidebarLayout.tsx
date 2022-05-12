@@ -58,7 +58,7 @@ export const SidebarLayout: FC = ({ children }) => {
           <Nav />
         </div>
 
-        <main className="overflow-hidden w-screen min-h-screen lg:col-span-4 lg:col-start-2">
+        <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
           {children}
         </main>
       </div>

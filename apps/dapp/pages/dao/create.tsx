@@ -40,6 +40,7 @@ import {
 
 import { pinnedDaosAtom } from '@/atoms/pinned'
 import { FormCard } from '@/components/FormCard'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import TooltipsDisplay, {
   useTooltipsRegister,
@@ -88,7 +89,7 @@ export interface DaoCreateData {
 }
 
 export const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
-export const DEFAULT_UNSTAKING_DURATION_SECONDS = '0' // 12 hours
+export const DEFAULT_UNSTAKING_DURATION_SECONDS = '0'
 
 enum TokenMode {
   UseExisting,
@@ -251,20 +252,22 @@ const InnerCreateDao: FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-4">
-        <form
-          className="mx-auto max-w-[800px]"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <GradientHero>
+    <div className="md:grid md:grid-cols-6">
+      <form className="col-span-4" onSubmit={handleSubmit(onSubmit)}>
+        <GradientHero>
+          <div className="md:hidden">
+            <SmallScreenNav />
+          </div>
+          <div className="px-4 md:p-6">
             <Breadcrumbs
               crumbs={[
                 ['/starred', 'Home'],
                 [router.asPath, 'Create DAO'],
               ]}
             />
+
             <ImageSelector
+              className="mt-6"
               error={errors.imageUrl}
               imageUrl={imageUrl}
               label="imageUrl"
@@ -287,373 +290,364 @@ const InnerCreateDao: FC = () => {
               />
               <InputErrorMessage error={errors.name} />
             </div>
-          </GradientHero>
+          </div>
+        </GradientHero>
 
-          <div className="px-8">
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                mono
-                name="Description"
-                tooltip={daoCreateTooltipsGetter('description').content}
-              />
-              <TextareaInput
-                error={errors.description}
-                label="description"
-                register={register}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-            <h2 className="mt-8 mb-4 title-text">New DAO{"'"}s tokenomics</h2>
-            <div className="flex gap-2 items-center mt-3">
-              <Button
-                className={`${
-                  tokenMode === TokenMode.Create
-                    ? ''
-                    : 'bg-transparent text-secondary'
-                }`}
-                onClick={() => setTokenMode(TokenMode.Create)}
-                size="sm"
-                type="button"
-                variant="secondary"
-              >
-                Create new token
-              </Button>
-              <Button
-                className={`${
-                  tokenMode === TokenMode.UseExisting
-                    ? ''
-                    : 'bg-transparent text-secondary'
-                }`}
-                onClick={() => setTokenMode(TokenMode.UseExisting)}
-                size="sm"
-                type="button"
-                variant="secondary"
-              >
-                Use existing token
-              </Button>
-            </div>
-            <FormCard>
-              {tokenMode === TokenMode.Create && (
-                <div className="grid grid-cols-4 gap-3">
-                  <div className="flex col-span-1 gap-2">
-                    <div className="flex flex-col gap-2">
-                      <InputLabel mono name="Token designs" />
-                      <button
-                        className="group flex flex-row gap-2 items-center"
-                        onClick={() => setShowTokenImageModal(true)}
-                        type="button"
-                      >
-                        <div
-                          className="flex justify-center items-center w-8 h-8 bg-center bg-cover rounded-full border border-inactive group-hover:ring transition"
-                          style={{
-                            backgroundImage: `url(${tokenImage})`,
-                          }}
-                        >
-                          <PlusIcon className="w-4 h-4" />
-                        </div>
-                        <p className="caption-text">Add an image</p>
-                      </button>
-                      {showTokenImageModal && (
-                        <ImageSelectorModal
-                          error={errors.tokenImage}
-                          imageUrl={tokenImage}
-                          label="tokenImage"
-                          onClose={() => setShowTokenImageModal(false)}
-                          register={register}
-                          validation={[validateUrl]}
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-col col-span-1 gap-1">
-                    <InputLabel
-                      mono
-                      name="Symbol"
-                      tooltip={daoCreateTooltipsGetter('tokenSymbol').content}
-                    />
-                    <TextInput
-                      error={errors.tokenSymbol}
-                      label="tokenSymbol"
-                      register={register}
-                      validation={[isValidTicker]}
-                    />
-                    <InputErrorMessage error={errors.tokenSymbol} />
-                  </div>
-                  <div className="flex flex-col col-span-2 gap-1">
-                    <InputLabel
-                      mono
-                      name="Name"
-                      tooltip={daoCreateTooltipsGetter('tokenName').content}
-                    />
-                    <TextInput
-                      error={errors.tokenName}
-                      label="tokenName"
-                      register={register}
-                      validation={[isValidName]}
-                    />
-                    <InputErrorMessage error={errors.tokenName} />
-                  </div>
-                </div>
-              )}
-              {tokenMode === TokenMode.UseExisting && (
-                <div className="flex gap-3">
-                  <div className="flex basis-1/4 items-center">
-                    <InputLabel
-                      mono
-                      name="Existing token address"
-                      tooltip={
-                        daoCreateTooltipsGetter('existingTokenAddress').content
-                      }
-                    />
-                  </div>
-                  <div className="flex basis-3/4 flex-col">
-                    <AddressInput
-                      error={errors.existingTokenAddress}
-                      label="existingTokenAddress"
-                      register={register}
-                      validation={[validateContractAddress, validateRequired]}
-                    />
-                    <InputErrorMessage error={errors.existingTokenAddress} />
-                  </div>
-                </div>
-              )}
-            </FormCard>
+        <div className="p-4 md:px-8">
+          <div className="flex flex-col gap-1">
+            <InputLabel
+              mono
+              name="Description"
+              tooltip={daoCreateTooltipsGetter('description').content}
+            />
+            <TextareaInput
+              error={errors.description}
+              label="description"
+              register={register}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors.description} />
+          </div>
+          <h2 className="mt-8 mb-4 title-text">New DAO{"'"}s tokenomics</h2>
+          <div className="flex gap-2 items-center mt-3">
+            <Button
+              className={`${
+                tokenMode === TokenMode.Create
+                  ? ''
+                  : 'bg-transparent text-secondary'
+              }`}
+              onClick={() => setTokenMode(TokenMode.Create)}
+              size="sm"
+              type="button"
+              variant="secondary"
+            >
+              Create new token
+            </Button>
+            <Button
+              className={`${
+                tokenMode === TokenMode.UseExisting
+                  ? ''
+                  : 'bg-transparent text-secondary'
+              }`}
+              onClick={() => setTokenMode(TokenMode.UseExisting)}
+              size="sm"
+              type="button"
+              variant="secondary"
+            >
+              Use existing token
+            </Button>
+          </div>
+          <FormCard>
             {tokenMode === TokenMode.Create && (
-              <>
-                {' '}
-                <h2 className="mt-8 mb-4 title-text">Distribution</h2>
-                <FormCard>
-                  <div className="flex gap-3 justify-between items-center py-3">
-                    <p className="primary-text">DAO Initial Balance</p>
-                    <div className="flex basis-3/5 flex-col gap-1">
-                      <NumberInput
-                        defaultValue="0"
-                        error={errors.daoInitialBalance}
-                        label="daoInitialBalance"
-                        onPlusMinus={[
-                          () =>
-                            setValue(
-                              'daoInitialBalance',
-                              (Number(daoInitialBalance) + 1).toString()
-                            ),
-                          () =>
-                            setValue(
-                              'daoInitialBalance',
-                              (Number(daoInitialBalance) - 1).toString()
-                            ),
-                        ]}
-                        register={register}
-                        step={0.000001}
-                        validation={[validateRequired, validateNonNegative]}
-                      />
-                      <InputErrorMessage error={errors.daoInitialBalance} />
-                    </div>
-                    <div className="flex gap-3 items-center">
+              <div className="flex flex-col grid-cols-4 gap-3 md:grid">
+                <div className="flex col-span-1 gap-2">
+                  <div className="flex flex-col gap-2">
+                    <InputLabel mono name="Token designs" />
+                    <button
+                      className="group flex flex-row gap-2 items-center"
+                      onClick={() => setShowTokenImageModal(true)}
+                      type="button"
+                    >
                       <div
-                        className="w-8 h-8 bg-center bg-cover rounded-full border border-default"
+                        className="flex justify-center items-center w-8 h-8 bg-center bg-cover rounded-full border border-inactive group-hover:ring transition"
                         style={{
                           backgroundImage: `url(${tokenImage})`,
                         }}
-                      ></div>
-                      <p className="body-text">{tokenSymbol}</p>
-                    </div>
+                      >
+                        <PlusIcon className="w-4 h-4" />
+                      </div>
+                      <p className="caption-text">Add an image</p>
+                    </button>
+                    {showTokenImageModal && (
+                      <ImageSelectorModal
+                        error={errors.tokenImage}
+                        imageUrl={tokenImage}
+                        label="tokenImage"
+                        onClose={() => setShowTokenImageModal(false)}
+                        register={register}
+                        validation={[validateUrl]}
+                      />
+                    )}
                   </div>
-                </FormCard>
-                {fields.map((field, index) => {
-                  const amount = watch(`balances.${index}.amount`)
-                  return (
-                    <TokenAmountInput
-                      key={field.id}
-                      addrError={
-                        (errors.balances &&
-                          errors.balances[index] &&
-                          errors.balances[index].addr) ||
-                        undefined
-                      }
-                      addrLabel={`balances.${index}.addr`}
-                      amountError={
-                        (errors.balances &&
-                          errors.balances[index] &&
-                          errors.balances[index].amount) ||
-                        undefined
-                      }
-                      amountLabel={`balances.${index}.amount`}
-                      hideRemove={fields.length === 1}
+                </div>
+                <div className="flex flex-col col-span-1 gap-1">
+                  <InputLabel
+                    mono
+                    name="Symbol"
+                    tooltip={daoCreateTooltipsGetter('tokenSymbol').content}
+                  />
+                  <TextInput
+                    error={errors.tokenSymbol}
+                    label="tokenSymbol"
+                    register={register}
+                    validation={[isValidTicker]}
+                  />
+                  <InputErrorMessage error={errors.tokenSymbol} />
+                </div>
+                <div className="flex flex-col col-span-2 gap-1">
+                  <InputLabel
+                    mono
+                    name="Name"
+                    tooltip={daoCreateTooltipsGetter('tokenName').content}
+                  />
+                  <TextInput
+                    error={errors.tokenName}
+                    label="tokenName"
+                    register={register}
+                    validation={[isValidName]}
+                  />
+                  <InputErrorMessage error={errors.tokenName} />
+                </div>
+              </div>
+            )}
+            {tokenMode === TokenMode.UseExisting && (
+              <div className="flex flex-col gap-3 md:flex-row">
+                <div className="flex basis-1/4 items-center">
+                  <InputLabel
+                    mono
+                    name="Existing token address"
+                    tooltip={
+                      daoCreateTooltipsGetter('existingTokenAddress').content
+                    }
+                  />
+                </div>
+                <div className="flex basis-3/4 flex-col">
+                  <AddressInput
+                    error={errors.existingTokenAddress}
+                    label="existingTokenAddress"
+                    register={register}
+                    validation={[validateContractAddress, validateRequired]}
+                  />
+                  <InputErrorMessage error={errors.existingTokenAddress} />
+                </div>
+              </div>
+            )}
+          </FormCard>
+          {tokenMode === TokenMode.Create && (
+            <>
+              {' '}
+              <h2 className="mt-8 mb-4 title-text">Distribution</h2>
+              <FormCard>
+                <div className="flex flex-col gap-3 justify-between py-3 md:flex-row md:items-center">
+                  <p className="primary-text">DAO Initial Balance</p>
+                  <div className="flex flex-col gap-1 md:basis-3/5">
+                    <NumberInput
+                      defaultValue="0"
+                      error={errors.daoInitialBalance}
+                      label="daoInitialBalance"
                       onPlusMinus={[
                         () =>
                           setValue(
-                            `balances.${index}.amount`,
-                            (Number(amount) + 1).toString()
+                            'daoInitialBalance',
+                            (Number(daoInitialBalance) + 1).toString()
                           ),
                         () =>
                           setValue(
-                            `balances.${index}.amount`,
-                            (Number(amount) - 1).toString()
+                            'daoInitialBalance',
+                            (Number(daoInitialBalance) - 1).toString()
                           ),
                       ]}
-                      onRemove={() => remove(index)}
-                      register={register}
-                      title={`Recepient ${index}`}
-                      tokenImage={tokenImage}
-                      tokenSymbol={tokenSymbol}
-                    />
-                  )
-                })}
-                <Button
-                  onClick={() => append({ addr: '', amount: '0' })}
-                  type="button"
-                  variant="secondary"
-                >
-                  <PlusIcon className="w-3" /> Add an address
-                </Button>
-              </>
-            )}
-            <h2 className="mt-8 mb-4 title-text">Voting configuration</h2>
-            <FormCard>
-              <div className="grid grid-cols-5 gap-x-1 gap-y-8">
-                <div className="col-span-3">
-                  <p className="body-text">Passing threshold (%)</p>
-                  <p className="caption-text">
-                    Percentage of yes votes required for a proposal to pass.
-                  </p>
-                </div>
-                <div className="flex flex-col col-span-2 gap-1">
-                  <NumberInput
-                    defaultValue="51"
-                    error={errors.threshold}
-                    label="threshold"
-                    onPlusMinus={[
-                      () =>
-                        setValue(
-                          'threshold',
-                          (Number(threshold) + 1).toString()
-                        ),
-                      () =>
-                        setValue(
-                          'threshold',
-                          (Number(threshold) - 1).toString()
-                        ),
-                    ]}
-                    register={register}
-                    step="any"
-                    validation={[validateRequired, validatePercent]}
-                  />
-                  <InputErrorMessage error={errors.threshold} />
-                </div>
-
-                <div className="col-span-3">
-                  <p className="body-text">Quorum (%)</p>
-                  <p className="caption-text">
-                    Minimum percentage of voting power that must participate in
-                    a proposal for it to pass.
-                  </p>
-                </div>
-                <div className="flex flex-col col-span-2 gap-1">
-                  <NumberInput
-                    defaultValue="33"
-                    error={errors.quorum}
-                    label="quorum"
-                    onPlusMinus={[
-                      () => setValue('quorum', (Number(quorum) + 1).toString()),
-                      () => setValue('quorum', (Number(quorum) - 1).toString()),
-                    ]}
-                    register={register}
-                    step="any"
-                    validation={[validateRequired, validatePercent]}
-                  />
-                  <InputErrorMessage error={errors.quorum} />
-                </div>
-
-                <div className="col-span-3">
-                  <p className="body-text">Voting duration (seconds)</p>
-                  <p className="caption-text">
-                    Amount of time proposals will remain open for voting.
-                  </p>
-                </div>
-                <div className="flex flex-col col-span-1 gap-2">
-                  <NumberInput
-                    defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
-                    error={errors.duration}
-                    label="duration"
-                    register={register}
-                    validation={[validateRequired, validatePositive]}
-                  />
-                  <InputErrorMessage error={errors.duration} />
-                </div>
-                <div className="flex col-span-1 justify-center items-center bg-disabled rounded-lg">
-                  <p className="secondary-text">
-                    {secondsToWdhms(votingPeriodSeconds)}
-                  </p>
-                </div>
-
-                <div className="col-span-3">
-                  <p className="body-text">Unstaking duration (seconds)</p>
-                  <p className="caption-text">
-                    Amount of time between unstaking and those tokens being
-                    claimable.
-                  </p>
-                </div>
-                <div className="flex flex-col col-span-1 gap-2">
-                  <NumberInput
-                    defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
-                    error={errors.unstakingDuration}
-                    label="unstakingDuration"
-                    register={register}
-                    validation={[validateRequired]}
-                  />
-                  <InputErrorMessage error={errors.unstakingDuration} />
-                </div>
-                <div className="flex col-span-1 justify-center items-center bg-disabled rounded-lg">
-                  <p className="secondary-text">
-                    {secondsToWdhms(unstakingDurationSeconds)}
-                  </p>
-                </div>
-
-                <div className="col-span-3">
-                  <p className="body-text">Proposal deposit</p>
-                  <p className="caption-text">
-                    Number of governance tokens that must be deposited to create
-                    a proposal.
-                  </p>
-                </div>
-                <div className="flex col-span-2 gap-1">
-                  <div className="flex basis-1/2 flex-col gap-1">
-                    <NumberInput
-                      defaultValue="0"
-                      error={errors.deposit}
-                      label="deposit"
                       register={register}
                       step={0.000001}
-                      validation={[validateRequired]}
+                      validation={[validateRequired, validateNonNegative]}
                     />
-                    <InputErrorMessage error={errors.deposit} />
+                    <InputErrorMessage error={errors.daoInitialBalance} />
                   </div>
-                  <div className="flex basis-1/2 col-span-1 gap-2 justify-center items-center">
-                    <InputLabel mono name="Refund" />
-                    <ToggleInput label="refund" register={register} />
+                  <div className="hidden gap-3 items-center md:flex">
+                    <div
+                      className="w-8 h-8 bg-center bg-cover rounded-full border border-default"
+                      style={{
+                        backgroundImage: `url(${tokenImage})`,
+                      }}
+                    ></div>
+                    <p className="body-text">{tokenSymbol}</p>
                   </div>
                 </div>
-              </div>
-            </FormCard>
-          </div>
-
-          <div className="flex justify-end px-6 mt-4 mb-8 w-full">
-            <Tooltip
-              label={
-                !walletAddress ? 'Connect your wallet to submit' : undefined
-              }
-            >
-              <Button loading={loading} type="submit">
-                Submit{' '}
-                <Airplane color="currentColor" height="14px" width="14px" />
+              </FormCard>
+              {fields.map((field, index) => {
+                const amount = watch(`balances.${index}.amount`)
+                return (
+                  <TokenAmountInput
+                    key={field.id}
+                    addrError={
+                      (errors.balances &&
+                        errors.balances[index] &&
+                        errors.balances[index].addr) ||
+                      undefined
+                    }
+                    addrLabel={`balances.${index}.addr`}
+                    amountError={
+                      (errors.balances &&
+                        errors.balances[index] &&
+                        errors.balances[index].amount) ||
+                      undefined
+                    }
+                    amountLabel={`balances.${index}.amount`}
+                    hideRemove={fields.length === 1}
+                    onPlusMinus={[
+                      () =>
+                        setValue(
+                          `balances.${index}.amount`,
+                          (Number(amount) + 1).toString()
+                        ),
+                      () =>
+                        setValue(
+                          `balances.${index}.amount`,
+                          (Number(amount) - 1).toString()
+                        ),
+                    ]}
+                    onRemove={() => remove(index)}
+                    register={register}
+                    title={`Recepient ${index}`}
+                    tokenImage={tokenImage}
+                    tokenSymbol={tokenSymbol}
+                  />
+                )
+              })}
+              <Button
+                onClick={() => append({ addr: '', amount: '0' })}
+                type="button"
+                variant="secondary"
+              >
+                <PlusIcon className="w-3" /> Add an address
               </Button>
-            </Tooltip>
-          </div>
-        </form>
-      </div>
+            </>
+          )}
+          <h2 className="mt-8 mb-4 title-text">Voting configuration</h2>
+          <FormCard>
+            <div className="flex flex-col grid-cols-5 gap-x-1 gap-y-4 md:grid md:gap-y-8">
+              <div className="col-span-3">
+                <p className="body-text">Passing threshold (%)</p>
+                <p className="caption-text">
+                  Percentage of yes votes required for a proposal to pass.
+                </p>
+              </div>
+              <div className="flex flex-col col-span-2 gap-1">
+                <NumberInput
+                  defaultValue="51"
+                  error={errors.threshold}
+                  label="threshold"
+                  onPlusMinus={[
+                    () =>
+                      setValue('threshold', (Number(threshold) + 1).toString()),
+                    () =>
+                      setValue('threshold', (Number(threshold) - 1).toString()),
+                  ]}
+                  register={register}
+                  step="any"
+                  validation={[validateRequired, validatePercent]}
+                />
+                <InputErrorMessage error={errors.threshold} />
+              </div>
 
-      <div className="col-span-2">
+              <div className="col-span-3">
+                <p className="body-text">Quorum (%)</p>
+                <p className="caption-text">
+                  Minimum percentage of voting power that must participate in a
+                  proposal for it to pass.
+                </p>
+              </div>
+              <div className="flex flex-col col-span-2 gap-1">
+                <NumberInput
+                  defaultValue="33"
+                  error={errors.quorum}
+                  label="quorum"
+                  onPlusMinus={[
+                    () => setValue('quorum', (Number(quorum) + 1).toString()),
+                    () => setValue('quorum', (Number(quorum) - 1).toString()),
+                  ]}
+                  register={register}
+                  step="any"
+                  validation={[validateRequired, validatePercent]}
+                />
+                <InputErrorMessage error={errors.quorum} />
+              </div>
+
+              <div className="col-span-3">
+                <p className="body-text">Voting duration (seconds)</p>
+                <p className="caption-text">
+                  Amount of time proposals will remain open for voting.
+                </p>
+              </div>
+              <div className="flex flex-col col-span-1 gap-2">
+                <NumberInput
+                  defaultValue={DEFAULT_MAX_VOTING_PERIOD_SECONDS}
+                  error={errors.duration}
+                  label="duration"
+                  register={register}
+                  validation={[validateRequired, validatePositive]}
+                />
+                <InputErrorMessage error={errors.duration} />
+              </div>
+              <div className="flex col-span-1 justify-center items-center p-1 -mt-2 bg-disabled rounded-lg md:p-0 md:mt-0">
+                <p className="secondary-text">
+                  {secondsToWdhms(votingPeriodSeconds)}
+                </p>
+              </div>
+
+              <div className="col-span-3">
+                <p className="body-text">Unstaking duration (seconds)</p>
+                <p className="caption-text">
+                  Time between unstaking and tokens being liquid.
+                </p>
+              </div>
+              <div className="flex flex-col col-span-1 gap-2">
+                <NumberInput
+                  defaultValue={DEFAULT_UNSTAKING_DURATION_SECONDS}
+                  error={errors.unstakingDuration}
+                  label="unstakingDuration"
+                  register={register}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors.unstakingDuration} />
+              </div>
+              <div className="flex col-span-1 justify-center items-center p-1 -mt-2 bg-disabled rounded-lg md:p-0 md:mt-0">
+                <p className="secondary-text">
+                  {secondsToWdhms(unstakingDurationSeconds)}
+                </p>
+              </div>
+
+              <div className="col-span-3">
+                <p className="body-text">Proposal deposit</p>
+                <p className="caption-text">
+                  Number of governance tokens that must be deposited to create a
+                  proposal.
+                </p>
+              </div>
+              <div className="flex col-span-2 gap-1">
+                <div className="flex basis-1/2 flex-col gap-1">
+                  <NumberInput
+                    defaultValue="0"
+                    error={errors.deposit}
+                    label="deposit"
+                    register={register}
+                    step={0.000001}
+                    validation={[validateRequired]}
+                  />
+                  <InputErrorMessage error={errors.deposit} />
+                </div>
+                <div className="flex basis-1/2 col-span-1 gap-2 justify-center items-center">
+                  <InputLabel mono name="Refund" />
+                  <ToggleInput label="refund" register={register} />
+                </div>
+              </div>
+            </div>
+          </FormCard>
+        </div>
+
+        <div className="flex justify-end px-6 mb-8 w-full md:mt-4">
+          <Tooltip
+            label={!walletAddress ? 'Connect your wallet to submit' : undefined}
+          >
+            <Button loading={loading} type="submit">
+              Submit{' '}
+              <Airplane color="currentColor" height="14px" width="14px" />
+            </Button>
+          </Tooltip>
+        </div>
+      </form>
+
+      <div className="hidden col-span-2 md:block">
         <div className="sticky top-0 p-6 w-full">
           <TooltipsDisplay selected={selectedTooltip} />
         </div>

@@ -20,10 +20,12 @@ const InnerStarred: NextPage = () => {
   const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
 
   return (
-    <>
-      <SmallScreenNav />
+    <div>
+      <div className="md:hidden">
+        <SmallScreenNav />
+      </div>
       <div className="flex">
-        <div className="p-6 w-full lg:basis-2/3">
+        <div className="p-6 lg:basis-2/3">
           <div className="block mb-4 lg:hidden">
             <ActionMenu />
           </div>
@@ -59,11 +61,11 @@ const InnerStarred: NextPage = () => {
           </div>
         </div>
 
-        <div className="hidden basis-1/3 p-6 mb-4 min-h-screen border-l border-inactive lg:block">
+        <div className="hidden p-6 lg:block lg:basis-1/3">
           <ActionMenu />
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
