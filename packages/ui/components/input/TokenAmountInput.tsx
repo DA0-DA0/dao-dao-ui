@@ -79,7 +79,7 @@ export function TokenAmountInput<
 
   return (
     <FormCard>
-      <div className="flex flex-col md:flex-row gap-3 justify-between">
+      <div className="flex flex-col gap-3 justify-between md:flex-row">
         <div className="flex justify-between">
           <p className="flex gap-2 items-center body-text">
             {icon}
@@ -114,7 +114,7 @@ export function TokenAmountInput<
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <p className="font-mono secondary-text hidden md:block">{'->'}</p>
+          <p className="hidden font-mono md:block secondary-text">{'->'}</p>
           <div className="flex flex-col gap-1">
             <AddressInput
               disabled={readOnly}
