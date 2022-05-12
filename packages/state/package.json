@@ -7,8 +7,9 @@
   },
   "dependencies": {
     "@dao-dao/ui": "*",
+    "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
-    "cosmodal": "https://github.com/DA0-DA0/cosmodal#e007c9cf150f6e2ce2c95fe67efa2b1923faa44e",
+    "cosmodal": "https://github.com/NoahSaso/cosmodal#c829d8790a0d7fe0ccea585107ea67079f7fc01f",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },
@@ -17,6 +18,7 @@
     "@dao-dao/tsconfig": "*",
     "@dao-dao/types": "^1.0.0",
     "@keplr-wallet/types": "^0.10.2",
+    "@walletconnect/types": "^1.7.8",
     "typescript": "^4.5.3"
   },
   "prettier": "@dao-dao/config/prettier",

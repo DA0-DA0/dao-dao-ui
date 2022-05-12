@@ -24,10 +24,10 @@ export const walletOfflineSignerSelector = selector<OfflineSigner | undefined>({
     try {
       // WalletConnect only supports Amino signing.
       if (walletClient instanceof KeplrWalletConnectV1) {
-        return await getOfflineSignerOnlyAmino(walletClient)
+        return await getOfflineSignerOnlyAmino(walletClient, false)
       }
 
-      return await getOfflineSignerAuto(walletClient)
+      return await getOfflineSignerAuto(walletClient, true)
     } catch (error) {
       console.error(error)
     }
@@ -51,6 +51,11 @@ export const walletAddressSelector = selector({
 export const walletAccountNameSelector = selector({
   key: 'walletAccountName',
   get: async ({ get }) => {
+    // Wait until signer has loaded (and requested `enable`).
+    // This prevents simultaneous requests to the wallet which confuse
+    // users with multiple approval requests.
+    get(walletOfflineSignerSelector)
+
     const walletClient = get(walletClientAtom)
     if (!walletClient) return
 
