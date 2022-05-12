@@ -36,6 +36,10 @@ export const HEADER_IMAGES_ENABLED =
   process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
 
 export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE as string
+export const SITE_DESCRIPTION = process.env
+  .NEXT_PUBLIC_SITE_DESCRIPTION as string
+export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL as string
 
 export const NATIVE_DECIMALS = 6
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string

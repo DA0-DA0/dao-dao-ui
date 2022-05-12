@@ -14,7 +14,15 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { CHAIN_ID, getKeplr, NativeChainInfo } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getKeplr,
+  NativeChainInfo,
+  SITE_DESCRIPTION,
+  SITE_IMAGE,
+  SITE_TITLE,
+  SITE_URL,
+} from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -236,6 +244,12 @@ export const WalletProvider: FC = ({ children }) => (
       walletIconImg: '!rounded-full',
       walletName: '!primary-text',
       walletDescription: '!caption-text',
+    }}
+    clientMeta={{
+      name: SITE_TITLE,
+      description: SITE_DESCRIPTION,
+      url: SITE_URL,
+      icons: [SITE_IMAGE],
     }}
     defaultWalletId={
       // If on a mobile device, default to WalletConnect.
