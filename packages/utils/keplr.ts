@@ -26,6 +26,7 @@ export class KeplrNotInstalledError extends Error {
 // Returns Keplr as soon as possible, possibly undefined if not injected
 // onto the page.
 export const getKeplr = async (): Promise<Keplr | undefined> => {
+  if (typeof window === 'undefined') return
   if (window.keplr || document.readyState === 'complete') return window.keplr
 
   return new Promise<Keplr | undefined>((resolve) => {

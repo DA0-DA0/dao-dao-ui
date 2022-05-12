@@ -1,4 +1,3 @@
-import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { Keplr } from '@keplr-wallet/types'
 import WalletConnect from '@walletconnect/client'
 import {
@@ -14,7 +13,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { CHAIN_ID, NativeChainInfo } from '@dao-dao/utils'
+import { CHAIN_ID, getKeplr, NativeChainInfo } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -203,7 +202,7 @@ const WalletInfoList: WalletInfo[] = [
     name: 'Keplr Wallet',
     description: 'Keplr Browser Extension',
     logoImgUrl: '/keplr-wallet-extension.png',
-    getWallet: getKeplrFromWindow,
+    getWallet: getKeplr,
   },
   // WalletConnect only supports mainnet. Not testnet.
   ...(CHAIN_ID === 'juno-1'
@@ -231,7 +230,21 @@ const InnerWalletProvider: FC = ({ children }) => {
 }
 
 export const WalletProvider: FC = ({ children }) => (
-  <WalletManagerProvider walletInfoList={WalletInfoList}>
+  <WalletManagerProvider
+    classNames={{
+      modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
+      modalContent:
+        '!p-6 !max-w-md !bg-white !rounded-lg !border !border-focus',
+      modalCloseButton:
+        '!p-1 hover:!bg-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
+      modalHeader: '!header-text',
+      wallet: '!rounded-lg !bg-card !p-4 !shadow-none',
+      walletIconImg: '!rounded-full',
+      walletName: '!primary-text',
+      walletDescription: '!caption-text',
+    }}
+    walletInfoList={WalletInfoList}
+  >
     <InnerWalletProvider>{children}</InnerWalletProvider>
   </WalletManagerProvider>
 )
