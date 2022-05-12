@@ -1,4 +1,3 @@
-import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { Keplr } from '@keplr-wallet/types'
 import WalletConnect from '@walletconnect/client'
 import {
@@ -14,7 +13,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { CHAIN_ID, NativeChainInfo } from '@dao-dao/utils'
+import { CHAIN_ID, getKeplr, NativeChainInfo } from '@dao-dao/utils'
 
 import {
   refreshWalletBalancesIdAtom,
@@ -203,7 +202,7 @@ const WalletInfoList: WalletInfo[] = [
     name: 'Keplr Wallet',
     description: 'Keplr Browser Extension',
     logoImgUrl: '/keplr-wallet-extension.png',
-    getWallet: getKeplrFromWindow,
+    getWallet: getKeplr,
   },
   // WalletConnect only supports mainnet. Not testnet.
   ...(CHAIN_ID === 'juno-1'
