@@ -86,10 +86,12 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
       }
     } catch (error) {
       console.error(error)
-      setConnectError(error)
 
       // Set disconnected so we don't try to connect again without manual action.
       disconnect()
+
+      // Set error after since disconnect cleans up state.
+      setConnectError(error)
     }
   }, [disconnect, getWallet, setWalletClient, setConnectError])
 

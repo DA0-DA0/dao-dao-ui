@@ -6660,9 +6660,9 @@ cosmjs-types@^0.4.0:
     long "^4.0.0"
     protobufjs "~6.11.2"
 
-"cosmodal@https://github.com/DA0-DA0/cosmodal#e007c9cf150f6e2ce2c95fe67efa2b1923faa44e":
+"cosmodal@https://github.com/NoahSaso/cosmodal#2354f52966d664011245923cb3a2cb50177e01a0":
   version "0.3.1"
-  resolved "https://github.com/DA0-DA0/cosmodal#e007c9cf150f6e2ce2c95fe67efa2b1923faa44e"
+  resolved "https://github.com/NoahSaso/cosmodal#2354f52966d664011245923cb3a2cb50177e01a0"
   dependencies:
     "@cosmjs/launchpad" "^0.27.1"
     "@cosmjs/proto-signing" "^0.28.0"
@@ -6674,6 +6674,27 @@ cosmjs-types@^0.4.0:
     "@walletconnect/client" "^1.7.7"
     "@walletconnect/types" "^1.7.7"
     "@walletconnect/utils" "^1.7.7"
+    eslint-plugin-react "^7.29.4"
+    qrcode.react "^3.0.0"
+    react-modal "^3.14.4"
+    secretjs "^0.17.5"
+    styled-components "^5.3.5"
+
+"cosmodal@https://github.com/NoahSaso/cosmodal#aa613ebf5d57f61b1029051c5942292269480f41":
+  version "0.3.1"
+  resolved "https://github.com/NoahSaso/cosmodal#aa613ebf5d57f61b1029051c5942292269480f41"
+  dependencies:
+    "@cosmjs/launchpad" "^0.27.1"
+    "@cosmjs/proto-signing" "^0.28.0"
+    "@keplr-wallet/common" "^0.9.10"
+    "@keplr-wallet/cosmos" "^0.9.16"
+    "@keplr-wallet/provider" "^0.9.12"
+    "@keplr-wallet/stores" "^0.9.18"
+    "@keplr-wallet/types" "^0.9.12"
+    "@walletconnect/client" "^1.7.7"
+    "@walletconnect/types" "^1.7.7"
+    "@walletconnect/utils" "^1.7.7"
+    eslint-plugin-react "^7.29.4"
     qrcode.react "^3.0.0"
     react-modal "^3.14.4"
     secretjs "^0.17.5"
@@ -7697,6 +7718,26 @@ eslint-plugin-react@7.29.1:
   version "7.29.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.29.1.tgz#6c40bc83142bb63d132a1b3565e2ea655411f800"
   integrity sha512-WtzRpHMhsOX05ZrkyaaqmLl2uXGqmYooCfBxftJKlkYdsltiufGgfU7uuoHwR2lBam2Kh/EIVID4aU9e3kbCMA==
+  dependencies:
+    array-includes "^3.1.4"
+    array.prototype.flatmap "^1.2.5"
+    doctrine "^2.1.0"
+    estraverse "^5.3.0"
+    jsx-ast-utils "^2.4.1 || ^3.0.0"
+    minimatch "^3.1.2"
+    object.entries "^1.1.5"
+    object.fromentries "^2.0.5"
+    object.hasown "^1.1.0"
+    object.values "^1.1.5"
+    prop-types "^15.8.1"
+    resolve "^2.0.0-next.3"
+    semver "^6.3.0"
+    string.prototype.matchall "^4.0.6"
+
+eslint-plugin-react@^7.29.4:
+  version "7.29.4"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.29.4.tgz#4717de5227f55f3801a5fd51a16a4fa22b5914d2"
+  integrity sha512-CVCXajliVh509PcZYRFyu/BoUEz452+jtQJq2b3Bae4v3xBUWPLCmtmBM+ZinG4MzwmxJgJ2M5rMqhqLVn7MtQ==
   dependencies:
     array-includes "^3.1.4"
     array.prototype.flatmap "^1.2.5"
