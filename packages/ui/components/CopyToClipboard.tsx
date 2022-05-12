@@ -18,7 +18,7 @@ function concatAddressImpl(
 }
 
 function concatAddress(address: string, takeN = 7): string {
-  if (!address.length) {
+  if (!address) {
     return ''
   }
   return concatAddressImpl(address, takeN, takeN)
