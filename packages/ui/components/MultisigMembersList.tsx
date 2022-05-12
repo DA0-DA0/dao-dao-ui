@@ -1,13 +1,12 @@
 import clsx from 'clsx'
 import { FC } from 'react'
 
-import { VoteBalanceCard } from './multisig'
-import { MultisigMemberInfo } from '@/selectors/multisigs'
+import { VoteBalanceCard } from '@dao-dao/ui'
 
 export interface MultisigMembersListProps {
   visitorAddress: string | undefined
   visitorWeight: number | undefined
-  memberList: MultisigMemberInfo[]
+  memberList: { addr: string; weight: number }[]
   totalWeight: number
   primaryText?: boolean
 }

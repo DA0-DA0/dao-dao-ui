@@ -60,3 +60,32 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
     </div>
   </div>
 )
+
+export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
+  contractAddress,
+}) => (
+  <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
+    <div className="relative">
+      <div className="animate-spin-medium">
+        <Logo alt="DAO DAO logo" height={72} width={72} />
+      </div>
+      <div
+        className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
+        style={{
+          width: '32px',
+          height: '32px',
+          backgroundImage: 'url(/daotoken.jpg)',
+        }}
+      ></div>
+    </div>
+    <div className="flex flex-col flex-1 gap-3">
+      <div className="flex flex-row justify-between">
+        <h1 className="header-text bg-dark animate-pulse w-full mr-3 rounded-sm"></h1>
+        <div className="flex gap-5">
+          <StarButton onPin={() => null} pinned={false} />
+        </div>
+      </div>
+      <CopyToClipboardMobile value={contractAddress} />
+    </div>
+  </div>
+)

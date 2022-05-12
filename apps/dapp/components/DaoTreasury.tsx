@@ -1,7 +1,7 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
 import { useRouter } from 'next/router'
 import { useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
 import { Button } from '@dao-dao/ui'
 
@@ -14,11 +14,11 @@ export function DaoTreasury({ address }: { address: string }) {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const daoInfo = useRecoilValueLoadable(daoSelector(contractAddress))
 
   const addTokenCallback = useCallback(() => {
-    addToken(daoInfo.gov_token)
-  }, [daoInfo.gov_token])
+    if (daoInfo.state == 'hasValue') addToken(daoInfo.getValue().gov_token)
+  }, [daoInfo])
 
   return (
     <div>

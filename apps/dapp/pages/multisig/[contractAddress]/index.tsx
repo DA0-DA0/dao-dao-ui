@@ -19,7 +19,6 @@ import {
   StarButton,
   Breadcrumbs,
   LoadingScreen,
-  MobileHeader,
   MobileMenuTab,
 } from '@dao-dao/ui'
 import { CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
@@ -29,7 +28,6 @@ import { ContractProposalsDisplay } from '@/components/ContractView'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { MultisigContractInfo } from '@/components/MultisigContractInfo'
-import { MultisigMemberList } from '@/components/MultisigMembersList'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
@@ -38,10 +36,11 @@ import {
   totalWeight,
   memberWeight,
   listMembers,
-  MultisigMemberInfo,
 } from '@/selectors/multisigs'
 import { cosmWasmClientRouter } from '@/util/chainClientRouter'
 import { getFastAverageColor } from '@/util/colors'
+import { MobileHeader } from '@/components/MobileHeader'
+import { MultisigMemberList } from '@/components/MultisigMemberList'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -70,22 +69,6 @@ const InnerMobileMultisigHome = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const sigInfo = useRecoilValue(sigSelector(contractAddress))
-
-  const weightTotal = useRecoilValue(totalWeight(contractAddress))
-  const visitorWeight = useRecoilValue(memberWeight(contractAddress))
-  const memberList = useRecoilValue(listMembers(contractAddress))
-
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const member = memberList.some(
-    (member: MultisigMemberInfo) => member.addr === walletAddress
-  )
-
-  const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
-  const pinned = pinnedSigs.includes(contractAddress)
-
-  const imageUrl = sigInfo.config.image_url
-
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -93,20 +76,7 @@ const InnerMobileMultisigHome = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <MobileHeader
-          contractAddress={contractAddress}
-          imageUrl={imageUrl || ''}
-          member={member}
-          name={sigInfo.config.name}
-          onPin={() => {
-            if (pinned) {
-              setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
-            } else {
-              setPinnedSigs((p) => p.concat([contractAddress]))
-            }
-          }}
-          pinned={pinned}
-        />
+        <MobileHeader contractAddress={contractAddress} />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -142,13 +112,7 @@ const InnerMobileMultisigHome = () => {
           />
         )}
         {tab === MobileMenuTabSelection.Members && (
-          <MultisigMemberList
-            memberList={memberList}
-            primaryText
-            totalWeight={weightTotal}
-            visitorAddress={walletAddress}
-            visitorWeight={visitorWeight}
-          />
+          <MultisigMemberList contractAddress={contractAddress} />
         )}
         {tab === MobileMenuTabSelection.Treasury && (
           <DaoTreasury address={contractAddress} />
@@ -169,8 +133,6 @@ const InnerMultisigHome = () => {
   const established = useRecoilValue(contractInstantiateTime(contractAddress))
 
   const weightTotal = useRecoilValue(totalWeight(contractAddress))
-  const visitorWeight = useRecoilValue(memberWeight(contractAddress))
-  const visitorAddress = useRecoilValue(walletAddressSelector)
   const memberList = useRecoilValue(listMembers(contractAddress))
 
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
@@ -227,12 +189,7 @@ const InnerMultisigHome = () => {
               </HorizontalInfo>
             </div>
             <div className="block mt-4 lg:hidden">
-              <MultisigMemberList
-                memberList={memberList}
-                totalWeight={weightTotal}
-                visitorAddress={visitorAddress}
-                visitorWeight={visitorWeight}
-              />
+              <MultisigMemberList contractAddress={contractAddress} />
             </div>
 
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
@@ -249,12 +206,7 @@ const InnerMultisigHome = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 max-w-sm h-full min-h-screen lg:block">
-        <MultisigMemberList
-          memberList={memberList}
-          totalWeight={weightTotal}
-          visitorAddress={visitorAddress}
-          visitorWeight={visitorWeight}
-        />
+        <MultisigMemberList contractAddress={contractAddress} />
       </div>
     </div>
   )

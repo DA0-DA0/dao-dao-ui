@@ -12,6 +12,7 @@ import {
   ProposalDetailsSidebar,
   ProposalDetailsVoteStatus,
 } from '@/components/ProposalDetailsSidebar'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { daoSelector } from '@/selectors/daos'
 import { cw20TokenInfo } from '@/selectors/treasury'
@@ -39,6 +40,10 @@ const InnerProposal: FC = () => {
             [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
+
+        <div className="mb-4 md:hidden">
+          <SmallScreenNav />
+        </div>
 
         <div className="px-6 mt-6 lg:hidden">
           <ProposalDetailsCard {...proposalDetailsProps} />

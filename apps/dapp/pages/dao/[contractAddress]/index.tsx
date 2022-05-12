@@ -13,7 +13,6 @@ import {
   StarButton,
   HorizontalInfoSection,
   Breadcrumbs,
-  MobileHeader,
   MobileMenuTab,
 } from '@dao-dao/ui'
 import {
@@ -29,6 +28,7 @@ import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { Loader } from '@/components/Loader'
+import { MobileHeader } from '@/components/MobileHeader'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
@@ -53,14 +53,6 @@ const InnerMobileDaoHome: FC = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const { member } = useRecoilValue(isMemberSelector(contractAddress))
-
-  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
-  const pinned = pinnedDaos.includes(contractAddress)
-
-  const imageUrl = daoInfo.config.image_url
-
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -68,21 +60,7 @@ const InnerMobileDaoHome: FC = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <MobileHeader
-          contractAddress={contractAddress}
-          imageUrl={imageUrl || ''}
-          member={member}
-          name={daoInfo.config.name}
-          onPin={() => {
-            if (pinned) {
-              setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-            } else {
-              setPinnedDaos((p) => p.concat([contractAddress]))
-              addToken(daoInfo.gov_token)
-            }
-          }}
-          pinned={pinned}
-        />
+        <MobileHeader contractAddress={contractAddress} />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -276,12 +254,14 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
 
   return (
     <ErrorBoundary title="DAO Not Found">
+      <div className="block md:hidden">
+        <InnerMobileDaoHome />
+      </div>
       <SuspenseLoader
-        fallback={<Loader className="h-[50vh] lg:h-full" size={72} />}
+        fallback={
+          <Loader className="hidden h-[50vh] md:block lg:h-full" size={72} />
+        }
       >
-        <div className="block md:hidden">
-          <InnerMobileDaoHome />
-        </div>
         <div className="hidden md:block">
           <InnerDaoHome />
         </div>

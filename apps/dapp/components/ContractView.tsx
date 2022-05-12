@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { FC } from 'react'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilValue, useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
 import {
@@ -8,9 +8,15 @@ import {
   TreasuryBalances as StatelessTreasuryBalances,
   Tooltip,
 } from '@dao-dao/ui'
-import { NATIVE_DECIMALS, nativeTokenDecimals } from '@dao-dao/utils'
+import { Loader } from '@dao-dao/ui/components/Loader'
+import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  nativeTokenDecimals,
+} from '@dao-dao/utils'
 
 import { ProposalList } from './ProposalList'
+import { SuspenseLoader } from './SuspenseLoader'
 import { isMemberSelector } from '@/selectors/cosm'
 import {
   cw20Balances,
@@ -33,11 +39,13 @@ export function TreasuryBalances({ address }: { address: string }) {
     decimals: info.decimals,
   }))
 
-  const nativeTokens = nativeBalances.map(({ denom, amount }) => ({
-    denom: denom,
-    amount,
-    decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
-  }))
+  const nativeTokens = nativeBalances.length
+    ? nativeBalances.map(({ denom, amount }) => ({
+        denom: denom,
+        amount,
+        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
+      }))
+    : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }]
 
   return (
     <StatelessTreasuryBalances
@@ -59,9 +67,12 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
   multisig,
 }) => {
   const { address: walletAddress } = useWallet()
-  const loading = useRecoilValue(walletTokenBalanceLoading(walletAddress ?? ''))
+  const member = useRecoilValueLoadable(isMemberSelector(contractAddress))
 
-  const member = useRecoilValue(isMemberSelector(contractAddress)).member
+  const loading =
+    useRecoilValue(walletTokenBalanceLoading(walletAddress ?? '')) ||
+    member.state === 'loading'
+
   const tooltip = !member
     ? `You must have voting power to create a proposal.${
         multisig ? '' : ' Consider staking some tokens.'
@@ -73,7 +84,14 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
       <div className="flex justify-between items-center">
         <h2 className="primary-text">Proposals</h2>
 
-        <Link href={member ? proposalCreateLink : '#'} passHref>
+        <Link
+          href={
+            member.state === 'hasValue' && member.getValue().member
+              ? proposalCreateLink
+              : '#'
+          }
+          passHref
+        >
           <a>
             <Tooltip label={tooltip}>
               <Button disabled={!!tooltip || loading} size="sm">
@@ -84,7 +102,9 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
         </Link>
       </div>
       <div className="mt-4 md:px-4">
-        <ProposalList contractAddress={contractAddress} multisig={multisig} />
+        <SuspenseLoader fallback={<Loader />}>
+          <ProposalList contractAddress={contractAddress} multisig={multisig} />
+        </SuspenseLoader>
       </div>
     </>
   )

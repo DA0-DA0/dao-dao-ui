@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 
 import { Copy } from '@dao-dao/icons'
 import { useThemeContext, Button } from '@dao-dao/ui'
+import clsx from 'clsx'
 
 function concatAddressImpl(
   address: string,
@@ -17,6 +18,9 @@ function concatAddressImpl(
 }
 
 function concatAddress(address: string, takeN = 7): string {
+  if (!address.length) {
+    return ''
+  }
   return concatAddressImpl(address, takeN, takeN)
 }
 
@@ -24,6 +28,7 @@ interface CopyToClipboardProps {
   value: string
   success?: string
   takeN?: number
+  loading?: boolean
 }
 
 export function CopyToClipboard({
@@ -57,17 +62,25 @@ export function CopyToClipboard({
 export function CopyToClipboardAccent({
   value,
   success = 'Copied to clipboard!',
+  loading,
 }: CopyToClipboardProps) {
   const { accentColor } = useThemeContext()
 
   return (
     <button
-      className="text-sm text-brand underline hover:no-underline transition"
+      className={clsx(
+        'text-sm text-brand underline hover:no-underline transition',
+        loading && 'animate-pulse rounded-sm'
+      )}
       onClick={() => {
         navigator.clipboard.writeText(value)
         toast.success(success)
       }}
-      style={accentColor ? { color: accentColor } : {}}
+      style={
+        loading
+          ? { backgroundColor: accentColor, color: accentColor }
+          : { color: accentColor }
+      }
     >
       {concatAddressImpl(value, 12, 7)}
     </button>
