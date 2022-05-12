@@ -51,6 +51,11 @@ export const walletAddressSelector = selector({
 export const walletAccountNameSelector = selector({
   key: 'walletAccountName',
   get: async ({ get }) => {
+    // Wait until signer has loaded (and requested `enable`).
+    // This prevents simultaneous requests to the wallet which confuse
+    // users with multiple approval requests.
+    get(walletOfflineSignerSelector)
+
     const walletClient = get(walletClientAtom)
     if (!walletClient) return
 
