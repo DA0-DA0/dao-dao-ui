@@ -16,16 +16,19 @@ import { MobilePinnedDaoNavList } from './PinnedDaoNavList'
 import { MobilePinnedMultisigNavList } from './PinnedMultisigNavList'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface SmallScreenNavProps {}
+interface SmallScreenNavProps {
+  className?: string
+}
 
-export const SmallScreenNav: FC<SmallScreenNavProps> = () => {
+export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const [expanded, setExpanded] = useState(false)
 
   return (
     <div
       className={clsx(
-        'flex flex-col gap-4 py-2 px-6',
-        expanded && 'pb-6 border-b border-inactive'
+        'flex flex-col gap-4 py-2 px-6 lg:hidden',
+        expanded && 'pb-6 border-b border-inactive',
+        className
       )}
     >
       <div className="flex gap-6 justify-between items-center">

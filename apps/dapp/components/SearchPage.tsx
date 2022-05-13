@@ -29,9 +29,7 @@ export const SearchPage: FC<SearchPageProps> = ({ multisig }) => (
     searchClient={searchClient}
   >
     <div className="max-w-5xl">
-      <div className="md:hidden">
-        <SmallScreenNav />
-      </div>
+      <SmallScreenNav />
       <div className="p-4 w-full md:p-6">
         <div className="flex justify-between items-center">
           <h1 className="header-text">{multisig ? 'Multisigs' : 'DAOs'}</h1>

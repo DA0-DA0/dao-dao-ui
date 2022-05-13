@@ -21,9 +21,7 @@ const InnerStarred: NextPage = () => {
 
   return (
     <div>
-      <div className="md:hidden">
-        <SmallScreenNav />
-      </div>
+      <SmallScreenNav />
       <div className="flex">
         <div className="py-3 px-6 md:py-6 lg:basis-2/3">
           <div className="block mb-4 lg:hidden">

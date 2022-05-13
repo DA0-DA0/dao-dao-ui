@@ -255,9 +255,7 @@ const InnerCreateDao: FC = () => {
     <div className="md:grid md:grid-cols-6">
       <form className="col-span-4" onSubmit={handleSubmit(onSubmit)}>
         <GradientHero>
-          <div className="md:hidden">
-            <SmallScreenNav />
-          </div>
+          <SmallScreenNav />
           <div className="px-4 md:p-6">
             <Breadcrumbs
               crumbs={[

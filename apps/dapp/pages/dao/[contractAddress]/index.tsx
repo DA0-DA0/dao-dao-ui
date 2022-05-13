@@ -116,9 +116,7 @@ const InnerDaoHome: FC = () => {
     <div className="flex flex-row lg:grid lg:grid-cols-6">
       <div className="col-span-4 mx-auto min-h-screen lg:mx-0">
         <GradientHero>
-          <div className="block lg:hidden">
-            <SmallScreenNav />
-          </div>
+          <SmallScreenNav />
           <div className="p-6">
             <div className="flex justify-between items-center">
               <Breadcrumbs

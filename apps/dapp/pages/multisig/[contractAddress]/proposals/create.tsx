@@ -64,9 +64,7 @@ const InnerMultisigProposalCreate: FC = () => {
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-6">
-      <div className="md:hidden">
-        <SmallScreenNav />
-      </div>
+      <SmallScreenNav />
       <div className="col-span-4 px-4 md:p-6">
         <Breadcrumbs
           crumbs={[

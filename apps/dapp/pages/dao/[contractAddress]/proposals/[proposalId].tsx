@@ -41,9 +41,7 @@ const InnerProposal: FC = () => {
           ]}
         />
 
-        <div className="mb-4 md:hidden">
-          <SmallScreenNav />
-        </div>
+        <SmallScreenNav className="mb-4" />
 
         <div className="px-6 mt-6 lg:hidden">
           <ProposalDetailsCard {...proposalDetailsProps} />

@@ -136,9 +136,7 @@ const InnerMultisigHome = () => {
     <div className="flex flex-row lg:grid lg:grid-cols-6">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <div className="block lg:hidden">
-            <SmallScreenNav />
-          </div>
+          <SmallScreenNav />
           <div className="p-6">
             <div className="flex justify-between items-center">
               <Breadcrumbs
@@ -223,7 +221,7 @@ const MultisigHomePage: NextPage<StaticProps> = ({ accentColor }) => {
   return (
     <ErrorBoundary title="Multisig Not Found">
       <SuspenseLoader fallback={<LoadingScreen />}>
-        <div className="block md:hidden">
+        <div className="md:hidden">
           <InnerMobileMultisigHome />
         </div>
         <div className="hidden md:block">
