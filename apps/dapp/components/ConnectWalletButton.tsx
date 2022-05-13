@@ -1,13 +1,15 @@
 import { FC } from 'react'
 
 import { useWallet } from '@dao-dao/state'
-import { WalletConnect, MobileWalletConnect } from '@dao-dao/ui'
+import { WalletConnect, MobileWalletConnect, NoMobileWallet } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
+  CHAIN_ID,
 } from '@dao-dao/utils'
+import { isMobile } from '@walletconnect/browser-utils'
 
 // Connection errors handled in Layout component.
 const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
@@ -26,6 +28,10 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
     NATIVE_DECIMALS
   )
   const chainDenomHuman = convertDenomToHumanReadableDenom(NATIVE_DENOM)
+
+  if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {
+    return <NoMobileWallet />
+  }
 
   return mobile ? (
     <MobileWalletConnect

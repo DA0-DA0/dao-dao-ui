@@ -177,7 +177,7 @@ const InnerDaoHome: FC = () => {
           />
         </div>
       </div>
-      <div className="hidden col-span-2 p-6 max-w-sm h-full min-h-screen lg:block">
+      <div className="hidden col-span-2 p-6 h-full w-full min-h-screen lg:block">
         <YourShares />
       </div>
     </div>

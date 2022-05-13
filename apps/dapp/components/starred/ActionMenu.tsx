@@ -11,7 +11,7 @@ const ActionItem = ({
   icon: ReactNode
   text: string
 }) => (
-  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md transition-all link-text">
+  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md link-text">
     <Link href={href}>
       <a className="flex gap-2 items-center">
         {icon}
@@ -22,7 +22,7 @@ const ActionItem = ({
 )
 
 export const ActionMenu = () => (
-  <div className="p-6 bg-primary rounded-md hover:outline-btn-secondary hover:outline">
+  <div className="md:p-6 p-4 bg-primary rounded-md hover:border-btn-secondary border border-transparent">
     <ul className="-mx-1 font-medium list-none text-md">
       <ActionItem
         href="/dao/create"

@@ -25,7 +25,7 @@ const InnerStarred: NextPage = () => {
         <SmallScreenNav />
       </div>
       <div className="flex">
-        <div className="p-6 lg:basis-2/3">
+        <div className="px-6 py-3 md:py-6 lg:basis-2/3">
           <div className="block mb-4 lg:hidden">
             <ActionMenu />
           </div>
