@@ -1,3 +1,4 @@
+import { isMobile } from '@walletconnect/browser-utils'
 import { FC } from 'react'
 
 import { useWallet } from '@dao-dao/state'
@@ -9,7 +10,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   CHAIN_ID,
 } from '@dao-dao/utils'
-import { isMobile } from '@walletconnect/browser-utils'
 
 // Connection errors handled in Layout component.
 const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {

@@ -7,7 +7,6 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 
 import { Wallet } from '@dao-dao/icons'
-
 import { WalletConnectProps, Modal } from '@dao-dao/ui'
 
 export const MobileWalletConnect: FC<WalletConnectProps> = ({
@@ -62,10 +61,10 @@ export const NoMobileWallet: FC = () => {
   return (
     <>
       <button
+        className="flex gap-2 items-center py-2 px-3 my-1 -ml-6 w-full rounded-lg"
         onClick={() => setShowInfo(true)}
-        className="-ml-6 py-2 px-3 flex gap-2 items-center my-1 rounded-lg w-full"
       >
-        <p className="link-text text-xs italic">Testnet</p>
+        <p className="text-xs italic link-text">Testnet</p>
         <InformationCircleIcon className="w-3 h-3" />
       </button>
       {showInfo && (

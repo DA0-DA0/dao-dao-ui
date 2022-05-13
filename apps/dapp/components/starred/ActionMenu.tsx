@@ -22,7 +22,7 @@ const ActionItem = ({
 )
 
 export const ActionMenu = () => (
-  <div className="md:p-6 p-4 bg-primary rounded-md hover:border-btn-secondary border border-transparent">
+  <div className="p-4 bg-primary rounded-md border border-transparent hover:border-btn-secondary md:p-6">
     <ul className="-mx-1 font-medium list-none text-md">
       <ActionItem
         href="/dao/create"
