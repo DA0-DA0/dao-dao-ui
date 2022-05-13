@@ -4,11 +4,13 @@ import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { Button } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/ui/components/Loader'
 
 import { daoSelector } from 'selectors/daos'
 import { addToken } from 'util/addToken'
 
 import { TreasuryBalances } from './ContractView'
+import { SuspenseLoader } from './SuspenseLoader'
 
 export function DaoTreasury({ address }: { address: string }) {
   const router = useRouter()
@@ -28,7 +30,9 @@ export function DaoTreasury({ address }: { address: string }) {
           Add Token <PlusSmIcon className="w-4 h-4" />
         </Button>
       </div>
-      <TreasuryBalances address={address} />
+      <SuspenseLoader fallback={<Loader />}>
+        <TreasuryBalances address={address} />
+      </SuspenseLoader>
     </div>
   )
 }

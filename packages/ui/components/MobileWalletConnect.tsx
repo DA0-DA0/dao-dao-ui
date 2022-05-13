@@ -12,6 +12,10 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
   onConnect,
   onDisconnect,
   className,
+  // Need to take but igore these fields so that they don't get passed
+  // along to the button and make React mad.
+  walletBalance: _b,
+  walletBalanceDenom: _d,
   ...buttonProps
 }) =>
   walletAddress ? (

@@ -161,7 +161,7 @@ export const YourShares: FC = () => (
   <>
     <h2 className="mb-2 title-text">Your shares</h2>
 
-    <SuspenseLoader fallback={<Loader />}>
+    <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
       <InnerYourShares />
     </SuspenseLoader>
   </>

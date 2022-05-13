@@ -99,7 +99,7 @@ function DaoContractInfoInternal({
   )
 }
 
-const DaoContractInfoLoading = () => (
+const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => (
   <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
     <div className="mb-4 md:mb-0">
       <h2 className="mb-4 md:mb-6 primary-text">Governance Details</h2>
@@ -144,11 +144,18 @@ const DaoContractInfoLoading = () => (
         </li>
       </ul>
     </div>
+    {!hideTreasury && (
+      <div>
+        <div className="flex gap-1 justify-between">
+          <h2 className="primary-text">Treasury</h2>
+        </div>
+      </div>
+    )}{' '}
   </div>
 )
 
 export const DaoContractInfo: FC<DaoContractInfoProps> = (props) => (
-  <SuspenseLoader fallback={<DaoContractInfoLoading />}>
+  <SuspenseLoader fallback={<DaoContractInfoLoading {...props} />}>
     <DaoContractInfoInternal {...props} />
   </SuspenseLoader>
 )

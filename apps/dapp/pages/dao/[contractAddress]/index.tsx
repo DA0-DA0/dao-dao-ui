@@ -1,44 +1,32 @@
-import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValueLoadable } from 'recoil'
 
-import { MemberCheck, Pencil } from '@dao-dao/icons'
+import { MemberCheck } from '@dao-dao/icons'
 import {
   useThemeContext,
   GradientHero,
-  HorizontalInfo,
-  ContractHeader,
   StarButton,
-  HorizontalInfoSection,
   Breadcrumbs,
   MobileMenuTab,
 } from '@dao-dao/ui'
-import {
-  CHAIN_RPC_ENDPOINT,
-  convertMicroDenomToDenomWithDecimals,
-  cosmWasmClientRouter,
-} from '@dao-dao/utils'
+import { CHAIN_RPC_ENDPOINT, cosmWasmClientRouter } from '@dao-dao/utils'
 
 import { pinnedDaosAtom } from '@/atoms/pinned'
+import { ContractHeader } from '@/components/ContractHeader'
 import { ContractProposalsDisplay } from '@/components/ContractView'
 import { YourShares } from '@/components/dao'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
+import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { Loader } from '@/components/Loader'
 import { MobileHeader } from '@/components/MobileHeader'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
-import { contractInstantiateTime } from '@/selectors/contracts'
 import { isMemberSelector } from '@/selectors/cosm'
-import {
-  daoSelector,
-  tokenConfig,
-  totalStaked,
-  proposalCount,
-} from '@/selectors/daos'
+import { daoSelector } from '@/selectors/daos'
 import { addToken } from '@/util/addToken'
 import { getFastAverageColor } from '@/util/colors'
 
@@ -111,29 +99,18 @@ const InnerDaoHome: FC = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-  const establishedDate = useRecoilValue(
-    contractInstantiateTime(contractAddress)
-  )
-  const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
-  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
-  const { member } = useRecoilValue(isMemberSelector(contractAddress))
+  const daoInfo = useRecoilValueLoadable(daoSelector(contractAddress))
+  const member = useRecoilValueLoadable(isMemberSelector(contractAddress))
 
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
 
-  const stakedPercent = (
-    (100 * stakedTotal) /
-    Number(tokenInfo?.total_supply)
-  ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
-
   const shouldAddToken = router.query.add_token
   useEffect(() => {
-    if (shouldAddToken) {
-      addToken(daoInfo.gov_token)
+    if (shouldAddToken && daoInfo.state === 'hasValue') {
+      addToken(daoInfo.getValue().gov_token)
     }
-  }, [shouldAddToken, daoInfo.gov_token])
+  }, [shouldAddToken, daoInfo])
 
   return (
     <div className="flex flex-row lg:grid lg:grid-cols-6">
@@ -147,11 +124,16 @@ const InnerDaoHome: FC = () => {
               <Breadcrumbs
                 crumbs={[
                   ['/starred', 'Home'],
-                  [router.asPath, daoInfo.config.name],
+                  [
+                    router.asPath,
+                    daoInfo.state === 'hasValue'
+                      ? daoInfo.getValue().config.name
+                      : 'DAO',
+                  ],
                 ]}
               />
               <div className="flex flex-row gap-4 items-center">
-                {member && (
+                {member.state === 'hasValue' && member.getValue().member && (
                   <div className="flex flex-row gap-2 items-center">
                     <MemberCheck fill="currentColor" width="16px" />
                     <p className="text-sm text-primary">You{"'"}re a member</p>
@@ -165,7 +147,9 @@ const InnerDaoHome: FC = () => {
                       )
                     } else {
                       setPinnedDaos((p) => p.concat([contractAddress]))
-                      addToken(daoInfo.gov_token)
+                      if (daoInfo.state === 'hasValue') {
+                        addToken(daoInfo.getValue().gov_token)
+                      }
                     }
                   }}
                   pinned={pinned}
@@ -173,32 +157,10 @@ const InnerDaoHome: FC = () => {
               </div>
             </div>
 
-            <ContractHeader
-              description={daoInfo.config.description}
-              established={establishedDate}
-              imgUrl={daoInfo.config.image_url || undefined}
-              name={daoInfo.config.name}
-            />
+            <ContractHeader contractAddress={contractAddress} />
 
             <div className="mt-2">
-              <HorizontalInfo>
-                <HorizontalInfoSection>
-                  <UsersIcon className="inline w-4" />
-                  {convertMicroDenomToDenomWithDecimals(
-                    tokenInfo.total_supply,
-                    tokenInfo.decimals
-                  ).toLocaleString()}{' '}
-                  ${tokenInfo?.symbol} total supply
-                </HorizontalInfoSection>
-                <HorizontalInfoSection>
-                  <LibraryIcon className="inline w-4" />
-                  {stakedPercent}% ${tokenInfo?.symbol} staked
-                </HorizontalInfoSection>
-                <HorizontalInfoSection>
-                  <Pencil className="inline" fill="currentColor" />
-                  {proposalsTotal} proposals created
-                </HorizontalInfoSection>
-              </HorizontalInfo>
+              <DaoHorizontalInfoDisplay contractAddress={contractAddress} />
             </div>
             <div className="block mt-4 lg:hidden">
               <YourShares />
@@ -254,14 +216,10 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
 
   return (
     <ErrorBoundary title="DAO Not Found">
-      <div className="block md:hidden">
-        <InnerMobileDaoHome />
-      </div>
-      <SuspenseLoader
-        fallback={
-          <Loader className="hidden h-[50vh] md:block lg:h-full" size={72} />
-        }
-      >
+      <SuspenseLoader fallback={<Loader className="mt-6" size={72} />}>
+        <div className="block md:hidden">
+          <InnerMobileDaoHome />
+        </div>
         <div className="hidden md:block">
           <InnerDaoHome />
         </div>

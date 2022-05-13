@@ -23,7 +23,7 @@ export const MobileMenuTab: FC<MobileMenuTabProps> = ({
     style={{
       backgroundImage: selected
         ? 'radial-gradient(#FF990033, #FFCC001A, transparent 80%)'
-        : '',
+        : ' ',
     }}
   >
     <span className="text-[32px]">{icon}</span>

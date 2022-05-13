@@ -3,12 +3,12 @@ import { FC } from 'react'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 import { Logo } from '../Logo'
-import { EstablishedDate } from './EstablishedDate'
+import { EstablishedDate, EstablishedDateLoader } from './EstablishedDate'
 
 export interface ContractHeaderProps {
   name: string
   description: string
-  established: Date
+  established: Date | undefined
   imgUrl?: string
 }
 
@@ -33,10 +33,30 @@ export const ContractHeader: FC<ContractHeaderProps> = ({
     )}
     <div className="flex flex-col items-center">
       <h1 className="inline mt-5 header-text">{name}</h1>
-      <EstablishedDate date={established} />
+      {established ? (
+        <EstablishedDate date={established} />
+      ) : (
+        <EstablishedDateLoader />
+      )}
     </div>
     <div className="mt-2 mb-4">
       <p className="whitespace-pre-wrap body-text">{description}</p>
+    </div>
+  </div>
+)
+
+export const ContractHeaderLoader: FC<{}> = () => (
+  <div className="flex flex-col items-center mt-2">
+    <div className="animate-spin-medium">
+      <Logo alt="DAO DAO logo" height={85} width={85} />
+    </div>
+
+    <div className="flex flex-col items-center">
+      <h1 className="invisible inline mt-5 header-text">DAO name</h1>
+      <EstablishedDateLoader />
+    </div>
+    <div className="mt-2 mb-4">
+      <p className="invisible">descripton of the DAO</p>
     </div>
   </div>
 )

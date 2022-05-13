@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
 import { useRecoilValue, useRecoilValueLoadable, waitForAll } from 'recoil'
@@ -85,17 +86,18 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
         <h2 className="primary-text">Proposals</h2>
 
         <Link
-          href={
-            member.state === 'hasValue' && member.getValue().member
-              ? proposalCreateLink
-              : '#'
-          }
+          className={clsx(
+            member.state === 'hasValue' &&
+              member.getValue().member &&
+              'pointer-events-none'
+          )}
+          href={proposalCreateLink}
           passHref
         >
           <a>
             <Tooltip label={tooltip}>
               <Button disabled={!!tooltip || loading} size="sm">
-                {loading ? 'Loading...' : 'New proposal'}
+                New proposal
               </Button>
             </Tooltip>
           </a>
