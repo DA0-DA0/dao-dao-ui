@@ -19,7 +19,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
   primaryText,
 }) => (
   <div className="flex flex-wrap gap-4">
-    {visitorWeight && (
+    {!!visitorWeight && (
       <div className="flex-1">
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}

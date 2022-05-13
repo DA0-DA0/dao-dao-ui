@@ -55,8 +55,8 @@ const InnerYourShares: FC = () => {
 
   return (
     <>
-      <ul className="flex flex-row flex-wrap gap-2 list-none">
-        <li className="basis-0">
+      <ul className="flex flex-col gap-2 items-stretch list-none">
+        <li>
           <BalanceCard
             amount={convertMicroDenomToDenomWithDecimals(
               govTokenBalance?.amount,
@@ -70,7 +70,7 @@ const InnerYourShares: FC = () => {
             title="Balance"
           />
         </li>
-        <li className="basis-0">
+        <li>
           <BalanceCard
             amount={convertMicroDenomToDenomWithDecimals(
               stakedGovTokenBalance.amount,
@@ -85,7 +85,7 @@ const InnerYourShares: FC = () => {
           />
         </li>
         {claimsAvailable ? (
-          <li className="basis-0">
+          <li>
             <BalanceCard
               amount={convertMicroDenomToDenomWithDecimals(
                 claimsAvailable,

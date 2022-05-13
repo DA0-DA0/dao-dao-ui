@@ -134,7 +134,7 @@ const InnerMultisigHome = () => {
 
   return (
     <div className="flex flex-row lg:grid lg:grid-cols-6">
-      <div className="col-span-4 min-h-screen">
+      <div className="col-span-4 w-full min-h-screen">
         <GradientHero>
           <SmallScreenNav />
           <div className="p-6">
