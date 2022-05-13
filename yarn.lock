@@ -6799,9 +6799,9 @@ cosmjs-types@^0.4.0:
     long "^4.0.0"
     protobufjs "~6.11.2"
 
-"cosmodal@https://github.com/NoahSaso/cosmodal#3299ce23e4c9325cabbb85a3e7644f71b4256670":
+"cosmodal@https://github.com/NoahSaso/cosmodal#dd5ab60318259d323e955f6022fb490f0cbbe27f":
   version "0.3.2"
-  resolved "https://github.com/NoahSaso/cosmodal#3299ce23e4c9325cabbb85a3e7644f71b4256670"
+  resolved "https://github.com/NoahSaso/cosmodal#dd5ab60318259d323e955f6022fb490f0cbbe27f"
   dependencies:
     "@cosmjs/launchpad" "^0.27.1"
     "@cosmjs/proto-signing" "^0.28.0"
