@@ -1,4 +1,5 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
@@ -157,9 +158,15 @@ const InnerYourShares: FC = () => {
   )
 }
 
-export const YourShares: FC = () => (
+export interface YourSharesProps {
+  primaryText?: boolean
+}
+
+export const YourShares: FC<YourSharesProps> = ({ primaryText }) => (
   <>
-    <h2 className="mb-2 title-text">Your shares</h2>
+    <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
+      Your shares
+    </h2>
 
     <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
       <InnerYourShares />

@@ -14,8 +14,8 @@ export const EstablishedDate: FC<EstablishedDateProps> = ({ date }) => {
 }
 
 export const EstablishedDateLoader: FC<{}> = () => (
-  <p className="mb-3 text-sm invisible">
-    <span className="inline animate-pulse bg-dark rounded-sm">
+  <p className="invisible mb-3 text-sm">
+    <span className="inline bg-dark rounded-sm animate-pulse">
       Est. 12 May 2022
     </span>
   </p>

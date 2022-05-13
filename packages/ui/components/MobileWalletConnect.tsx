@@ -21,7 +21,7 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
   walletAddress ? (
     <button
       className={clsx(
-        'flex justify-between items-center py-2 px-3 my-1 bg-btn-secondary rounded-lg hover:outline-brand hover:outline',
+        'flex justify-between items-center py-2 px-3 my-1 bg-btn-secondary rounded-lg hover:border hover:border-brand',
         className
       )}
       onClick={walletAddress ? onDisconnect : onConnect}

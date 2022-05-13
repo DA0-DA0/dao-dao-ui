@@ -52,7 +52,7 @@ export const ContractHeaderLoader: FC<{}> = () => (
     </div>
 
     <div className="flex flex-col items-center">
-      <h1 className="invisible inline mt-5 header-text">DAO name</h1>
+      <h1 className="inline invisible mt-5 header-text">DAO name</h1>
       <EstablishedDateLoader />
     </div>
     <div className="mt-2 mb-4">

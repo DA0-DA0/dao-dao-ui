@@ -77,7 +77,7 @@ const InnerMobileDaoHome: FC = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Staking && <YourShares />}
+        {tab === MobileMenuTabSelection.Staking && <YourShares primaryText />}
         {tab === MobileMenuTabSelection.Proposal && (
           <ContractProposalsDisplay
             contractAddress={contractAddress}
