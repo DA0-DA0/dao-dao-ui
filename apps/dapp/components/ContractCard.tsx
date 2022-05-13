@@ -41,7 +41,7 @@ function ContractCardBase({
             'flex relative flex-col justify-between items-center p-6 m-2 bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline',
             // Make card smaller if no weight. Balances the spacing a
             // little better.
-            weight ? 'h-[320px]' : 'h-[300px]'
+            weight === undefined ? 'h-[320px]' : 'h-[300px]'
           )}
         >
           <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>

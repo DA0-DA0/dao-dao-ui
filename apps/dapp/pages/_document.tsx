@@ -34,10 +34,6 @@ export default class MyDocument extends Document {
           <meta content="#111213" name="theme-color" />
           <meta key="title" content={SITE_TITLE} name="title" />
           <meta
-            content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-            name="viewport"
-          />
-          <meta
             key="description"
             content={SITE_DESCRIPTION}
             name="description"

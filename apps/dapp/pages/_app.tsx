@@ -3,6 +3,7 @@ import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
 import type { AppProps } from 'next/app'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState, useEffect, FC } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
@@ -39,20 +40,28 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const Layout = router.pathname === '/' ? HomepageLayout : SidebarLayout
 
   return (
-    <ErrorBoundary title="An unexpected error occurred.">
-      <ThemeProvider
-        accentColor={accentColor}
-        setAccentColor={setAccentColor}
-        theme={theme}
-        updateTheme={setTheme}
-      >
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+    <>
+      <Head>
+        <meta
+          content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+          name="viewport"
+        />
+      </Head>
+      <ErrorBoundary title="An unexpected error occurred.">
+        <ThemeProvider
+          accentColor={accentColor}
+          setAccentColor={setAccentColor}
+          theme={theme}
+          updateTheme={setTheme}
+        >
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
 
-        <Notifications />
-      </ThemeProvider>
-    </ErrorBoundary>
+          <Notifications />
+        </ThemeProvider>
+      </ErrorBoundary>
+    </>
   )
 }
 
