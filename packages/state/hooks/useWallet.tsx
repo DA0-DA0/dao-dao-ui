@@ -35,50 +35,25 @@ import {
 } from '../recoil'
 import {
   walletClientAtom,
-  walletConnectedAtom,
+  connectedWalletIdAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
 
-interface UseWalletProps {
-  // Selectively enable or disable effect hooks. There's no need to run
-  // them everywhere we want to fetch some wallet state (like address or
-  // balance). These effects must be enabled on every page at least
-  // once, and ideally should be enabled on every page exactly once.
-  // Wrapping the app in `WalletProvider` takes care of all of this.
-  effectsEnabled?: boolean
-}
+export const useWallet = () => {
+  const {
+    connect,
+    disconnect: disconnectCosmodal,
+    connectionError,
+    isMobileWeb,
+  } = useWalletManager()
+  const saveConnectedWalletId = useSetRecoilState(connectedWalletIdAtom)
 
-export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
-  const saveConnectedWalletId = useSetRecoilState(walletConnectedAtom)
-  const setWalletClient = useSetRecoilState(walletClientAtom)
-  const setWalletConnectionId = useSetRecoilState(walletConnectionIdAtom)
-  const { connect, disconnect, connectedWallet, connectionError, isMobileWeb } =
-    useWalletManager()
-
-  // Save wallet client in recoil atom so it can be used by selectors,
-  // and store wallet ID for future autoconnect.
-  useEffect(() => {
-    if (!effectsEnabled) return
-
-    setWalletClient(connectedWallet?.client)
-    // Don't auto connect on page load.
-    saveConnectedWalletId(connectedWallet?.wallet.id ?? null)
-  }, [connectedWallet, saveConnectedWalletId, effectsEnabled, setWalletClient])
-
-  // Listen for keplr keystore changes and update as needed.
-  useEffect(() => {
-    if (!effectsEnabled) return
-
-    const keplrListener = () => {
-      console.log('Keplr keystore changed, reloading client.')
-      // Force refresh of wallet client/info selectors.
-      setWalletConnectionId((id) => id + 1)
-    }
-    window.addEventListener('keplr_keystorechange', keplrListener)
-
-    return () =>
-      window.removeEventListener('keplr_keystorechange', keplrListener)
-  }, [setWalletConnectionId, effectsEnabled])
+  // Manually clear saved connected wallet ID to prevent interference with
+  // autoconnect. See InnerWalletProvider's useEffect comment.
+  const disconnect = useCallback(() => {
+    disconnectCosmodal()
+    saveConnectedWalletId(null)
+  }, [disconnectCosmodal, saveConnectedWalletId])
 
   // Wallet address
   const { state: walletAddressState, contents: walletAddressContents } =
@@ -162,8 +137,37 @@ const AvailableWallets: Wallet[] = [
 ]
 
 const InnerWalletProvider: FC = ({ children }) => {
-  // Wallet effects must be enabled at least once on every page.
-  useWallet({ effectsEnabled: true })
+  // SYNC WALLET MANAGER STATE WITH RECOIL FOR USE IN SELECTORS
+
+  const saveConnectedWalletId = useSetRecoilState(connectedWalletIdAtom)
+  const setWalletClient = useSetRecoilState(walletClientAtom)
+  const setWalletConnectionId = useSetRecoilState(walletConnectionIdAtom)
+  const { connectedWallet } = useWalletManager()
+
+  // Save wallet client in recoil atom so it can be used by selectors,
+  // and store wallet ID for future autoconnect.
+  useEffect(() => {
+    setWalletClient(connectedWallet?.client)
+    // Only save wallet ID if wallet is connected, since connectedWallet
+    // is initially null on page load, which interferes with autoconnect.
+    // Clear this manually in the disconnect function of useWallet.
+    if (connectedWallet?.wallet.id) {
+      saveConnectedWalletId(connectedWallet.wallet.id)
+    }
+  }, [connectedWallet, saveConnectedWalletId, setWalletClient])
+
+  // Listen for keplr keystore changes and update as needed.
+  useEffect(() => {
+    const keplrListener = () => {
+      console.log('Keplr keystore changed, reloading client.')
+      // Force refresh of wallet client/info selectors.
+      setWalletConnectionId((id) => id + 1)
+    }
+    window.addEventListener('keplr_keystorechange', keplrListener)
+
+    return () =>
+      window.removeEventListener('keplr_keystorechange', keplrListener)
+  }, [setWalletConnectionId])
 
   return <>{children}</>
 }
@@ -172,16 +176,15 @@ const enableKeplr = async (wallet: Wallet, walletClient: WalletClient) => {
   if (!wallet.isWalletConnect) {
     await suggestChain(walletClient)
   }
-
   await walletClient.enable(CHAIN_ID)
 }
 
 export const WalletProvider: FC = ({ children }) => {
-  const savedWalletConnected = useRecoilValue(walletConnectedAtom)
+  const savedConectedWalletId = useRecoilValue(connectedWalletIdAtom)
 
   return (
     <WalletManagerProvider
-      attemptAutoConnect={!!savedWalletConnected}
+      attemptAutoConnect={!!savedConectedWalletId}
       classNames={{
         modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
         modalContent:
@@ -204,7 +207,7 @@ export const WalletProvider: FC = ({ children }) => {
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
-        savedWalletConnected ?? isMobile()
+        savedConectedWalletId ?? isMobile()
           ? // If on a mobile device, default to WalletConnect.
             AvailableWallets.find((w) => w.isWalletConnect)?.id
           : undefined

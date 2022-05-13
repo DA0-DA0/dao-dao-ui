@@ -4,11 +4,11 @@ import { atom } from 'recoil'
 
 import { localStorageEffectJSON } from '../effects'
 
-export const walletConnectedKey = 'walletConnected'
-export const walletConnectedAtom = atom<string | null>({
-  key: walletConnectedKey,
+export const connectedWalletIdKey = 'connectedWalletId'
+export const connectedWalletIdAtom = atom<string | null>({
+  key: connectedWalletIdKey,
   default: null,
-  effects: [localStorageEffectJSON(walletConnectedKey)],
+  effects: [localStorageEffectJSON(connectedWalletIdKey)],
 })
 
 export const walletConnectionIdAtom = atom({
