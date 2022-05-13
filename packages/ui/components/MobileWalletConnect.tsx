@@ -8,6 +8,7 @@ import { FC, useState } from 'react'
 
 import { Wallet } from '@dao-dao/icons'
 import { WalletConnectProps, Modal } from '@dao-dao/ui'
+import { CHAIN_NAME } from '@dao-dao/utils'
 
 export const MobileWalletConnect: FC<WalletConnectProps> = ({
   connected,
@@ -68,12 +69,12 @@ export const NoMobileWallet: FC = () => {
         <InformationCircleIcon className="w-3 h-3" />
       </button>
       {showInfo && (
-        <Modal>
+        <Modal onClose={() => setShowInfo(false)}>
           <div className="relative p-4 h-min bg-white rounded-lg border border-inactive cursor-auto">
             <div className="flex gap-2 items-start">
               <h1 className="primary-text">
-                This is a pre-release version of DAO DAO running on the Juno
-                testnet.
+                This is a pre-release version of DAO DAO running on the{' '}
+                {CHAIN_NAME}.
               </h1>
               <button
                 className="hover:bg-secondary rounded-full transition"
@@ -84,8 +85,8 @@ export const NoMobileWallet: FC = () => {
             </div>
             <p className="mt-6 body-text">
               Please feel free to explore the UI. Due to current limitations in
-              WalletConnect you will not be able to connect your wallet while on
-              your mobile device.
+              WalletConnect, you will not be able to connect your mobile wallet
+              to the {CHAIN_NAME}.
             </p>
           </div>
         </Modal>

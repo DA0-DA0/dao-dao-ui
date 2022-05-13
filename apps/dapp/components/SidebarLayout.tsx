@@ -3,7 +3,7 @@ import { FC, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom, useWallet } from '@dao-dao/state'
-import { SITE_TITLE } from '@dao-dao/utils'
+import { KeplrNotInstalledError, SITE_TITLE } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
@@ -24,8 +24,7 @@ export const SidebarLayout: FC = ({ children }) => {
 
   const { connectionError } = useWallet()
   useEffect(() => {
-    // TODO: Handle Keplr not installed in cosmodal somehow.
-    // setInstallWarningVisible(connectionError instanceof WalletNotInstalledError)
+    setInstallWarningVisible(connectionError instanceof KeplrNotInstalledError)
     setNoKeplrAccount(
       connectionError instanceof Error &&
         connectionError.message === "key doesn't exist"

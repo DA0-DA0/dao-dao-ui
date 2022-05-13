@@ -36,7 +36,7 @@ export function ImageSelectorModal<
   const { label, register, error, validation, imageUrl, onClose } = props
 
   return (
-    <Modal>
+    <Modal onClose={onClose}>
       <div
         className={clsx(
           'flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white',

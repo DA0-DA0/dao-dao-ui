@@ -18,7 +18,7 @@ declare global {
 
 export class KeplrNotInstalledError extends Error {
   constructor() {
-    super("Keplr extension isn't installed.")
+    super("Keplr Chrome extension isn't installed.")
     this.name = 'KeplrNotInstalled'
   }
 }

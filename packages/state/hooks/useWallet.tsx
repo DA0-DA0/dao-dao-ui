@@ -18,6 +18,7 @@ import {
 import { Loader } from '@dao-dao/ui/components/Loader'
 import {
   CHAIN_ID,
+  KeplrNotInstalledError,
   NativeChainInfo,
   SITE_DESCRIPTION,
   SITE_IMAGE,
@@ -112,10 +113,16 @@ const AvailableWallets: Wallet[] = [
   {
     id: 'keplr-wallet-extension',
     name: 'Keplr Wallet',
-    description: 'Keplr Browser Extension',
+    description: 'Keplr Chrome Extension',
     logoImgUrl: '/keplr-wallet-extension.png',
     getClient: getKeplrFromWindow,
     isWalletConnect: false,
+    onSelect: async () => {
+      const hasKeplr = !!(await getKeplrFromWindow())
+      if (!hasKeplr) {
+        throw new KeplrNotInstalledError()
+      }
+    },
   },
   // WalletConnect only supports mainnet. Not testnet.
   ...(CHAIN_ID === 'juno-1'

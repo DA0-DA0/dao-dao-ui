@@ -53,7 +53,7 @@ export function ProposalTemplateSelector({
   multisig: boolean
 }) {
   return (
-    <Modal>
+    <Modal onClose={onClose}>
       <div className="relative p-3 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto md:p-6">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
