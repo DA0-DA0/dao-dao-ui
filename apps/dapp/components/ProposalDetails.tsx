@@ -5,6 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { useWallet } from '@dao-dao/state'
 import {
   StakingMode,
   ProposalDetails as StatelessProposalDetails,
@@ -12,40 +13,36 @@ import {
 } from '@dao-dao/ui'
 import { VoteChoice } from '@dao-dao/ui'
 
-import { proposalUpdateCountAtom, proposalsUpdated } from 'atoms/proposals'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
+import { StakingModal } from './StakingModal'
+import { proposalUpdateCountAtom, proposalsUpdated } from '@/atoms/proposals'
+import { treasuryTokenListUpdates } from '@/atoms/treasury'
 import {
   proposalSelector,
   proposalStartBlockSelector,
   votingPowerAtHeightSelector,
   walletVoteSelector,
-} from 'selectors/proposals'
-import { walletTokenBalanceLoading } from 'selectors/treasury'
+} from '@/selectors/proposals'
+import { walletTokenBalanceLoading } from '@/selectors/treasury'
 import {
   FromCosmosMsgProps,
   messageTemplateAndValuesForDecodedCosmosMsg,
-} from 'templates/templateList'
-import { cleanChainError } from 'util/cleanChainError'
-
-import { treasuryTokenListUpdates } from '../atoms/treasury'
-import { StakingModal } from './StakingModal'
+} from '@/templates/templateList'
+import { cleanChainError } from '@/util/cleanChainError'
 
 function executeProposalVote(
   choice: VoteChoice,
   id: number,
   contractAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   onDone: Function,
   setLoading: SetterOrUpdater<boolean>
 ) {
   if (!signingClient || !walletAddress) {
-    toast.error('Please connect your wallet')
+    toast.error('Please connect your wallet.')
     return
   }
+
   let vote
   switch (choice) {
     case VoteChoice.Yes:
@@ -84,8 +81,8 @@ function executeProposalVote(
 function executeProposalExecute(
   id: number,
   contractAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   onDone: Function,
   setLoading: SetterOrUpdater<boolean>
 ) {
@@ -134,7 +131,7 @@ export function ProposalDetails({
   const proposal = useRecoilValue(
     proposalSelector({ contractAddress, proposalId })
   )!
-  const wallet = useRecoilValue(walletAddressSelector)
+  const { address: walletAddress, signingClient } = useWallet()
 
   const height = useRecoilValue(
     proposalStartBlockSelector({ proposalId, contractAddress })
@@ -146,12 +143,11 @@ export function ProposalDetails({
       height,
     })
   )
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
   const walletVote = useRecoilValue(
     walletVoteSelector({ contractAddress, proposalId })
   )
   const setTokenBalancesLoading = useSetRecoilState(
-    walletTokenBalanceLoading(wallet)
+    walletTokenBalanceLoading(walletAddress ?? '')
   )
 
   const setProposalUpdates = useSetRecoilState(
@@ -218,7 +214,7 @@ export function ProposalDetails({
           proposalId,
           contractAddress,
           signingClient,
-          wallet,
+          walletAddress,
           () => {
             setProposalUpdates((n) => n + 1)
             setProposalsUpdated((p) =>
@@ -235,7 +231,7 @@ export function ProposalDetails({
           proposalId,
           contractAddress,
           signingClient,
-          wallet,
+          walletAddress,
           () => {
             setProposalUpdates((n) => n + 1)
             setProposalsUpdated((p) =>

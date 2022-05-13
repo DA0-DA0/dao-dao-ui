@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil'
 import { Button } from '@dao-dao/ui'
 import { AddressInput, InputErrorMessage, TokenAmountInput } from '@dao-dao/ui'
 
-import { FormCard } from '@components/FormCard'
+import { FormCard } from 'components/FormCard'
 import { listMembers } from 'selectors/multisigs'
 import { Config } from 'util/contractConfigWrapper'
 import { validateAddress, validateRequired } from 'util/formValidation'

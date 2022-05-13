@@ -1,5 +1,6 @@
 import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
+import clsx from 'clsx'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
@@ -35,7 +36,14 @@ function ContractCardBase({
   return (
     <Link href={href}>
       <a>
-        <div className="flex relative flex-col justify-between items-center p-6 m-2 h-[300px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline">
+        <div
+          className={clsx(
+            'flex relative flex-col justify-between items-center p-6 m-2 bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline',
+            // Make card smaller if no weight. Balances the spacing a
+            // little better.
+            weight === undefined ? 'h-[320px]' : 'h-[300px]'
+          )}
+        >
           <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
             <div className="relative">
@@ -54,7 +62,7 @@ function ContractCardBase({
             <h3 className="mt-3 max-w-full font-semibold truncate text-md">
               {title}
             </h3>
-            <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
+            <p className="mt-1 font-mono text-xs text-center text-secondary break-all line-clamp-3">
               {body}
             </p>
           </div>
@@ -148,15 +156,13 @@ export function ContractCard({
   )
 }
 
-export function LoadingContractCard() {
-  return (
-    <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
-      <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
-      <div className="flex justify-center items-center w-[70px] h-[70px]">
-        <div className="inline-block animate-spin">
-          <Logo height={72} width={72} />
-        </div>
+export const LoadingContractCard = () => (
+  <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
+    <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
+    <div className="flex justify-center items-center w-[70px] h-[70px]">
+      <div className="inline-block animate-spin">
+        <Logo height={72} width={72} />
       </div>
     </div>
-  )
-}
+  </div>
+)

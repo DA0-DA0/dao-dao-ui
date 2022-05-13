@@ -9,25 +9,25 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 
 import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
-import { Button, GradientWrapper, Logo } from '@dao-dao/ui'
+import { Button, GradientWrapper, LoadingScreen, Logo } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 
-function EnterAppButton({ small }: { small?: boolean }) {
-  return (
-    <Link href="/starred" passHref>
-      <a>
-        <Button size={small ? 'sm' : 'lg'}>
-          Enter the app{' '}
-          <ArrowUpRight color="currentColor" height="10px" width="10px" />
-        </Button>
-      </a>
-    </Link>
-  )
-}
+import { SuspenseLoader } from '@/components/SuspenseLoader'
 
-function InfoCard({
+const EnterAppButton = ({ small }: { small?: boolean }) => (
+  <Link href="/starred">
+    <a>
+      <Button size={small ? 'sm' : 'lg'}>
+        Enter the app{' '}
+        <ArrowUpRight color="currentColor" height="10px" width="10px" />
+      </Button>
+    </a>
+  </Link>
+)
+
+const InfoCard = ({
   title,
   body,
   children,
@@ -35,22 +35,20 @@ function InfoCard({
   title: string
   body: string
   children: ReactNode
-}) {
-  return (
-    <div className="flex flex-col justify-around py-4 px-6 mt-2 w-80 h-48 bg-clip-padding bg-primary bg-opacity-60 rounded-lg backdrop-blur-2xl backdrop-filter">
-      <div className="flex justify-center items-center p-2 w-fit w-9 h-fit h-8 bg-secondary rounded">
-        {children}
-      </div>
-      <div>
-        <h3 className="header-text">{title}</h3>
-        <p className="mt-[12px] body-text">{body}</p>
-      </div>
+}) => (
+  <div className="flex flex-col justify-around py-4 px-6 mt-2 w-80 h-48 bg-clip-padding bg-primary bg-opacity-60 rounded-lg backdrop-blur-2xl backdrop-filter">
+    <div className="flex justify-center items-center p-2 w-fit h-fit bg-secondary rounded">
+      {children}
     </div>
-  )
-}
+    <div>
+      <h3 className="header-text">{title}</h3>
+      <p className="mt-[12px] body-text">{body}</p>
+    </div>
+  </div>
+)
 
-const Home: NextPage = () => {
-  return (
+const Home: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
     <GradientWrapper>
       <nav className="py-4 px-6 w-full bg-clip-padding bg-opacity-40 border-b border-inactive backdrop-blur-xl backdrop-filter">
         <div className="flex justify-between items-center mx-auto max-w-screen-lg">
@@ -88,9 +86,8 @@ const Home: NextPage = () => {
       <h1 className="mt-[33vh] text-[54px] text-center text-primary hero-text">
         DAOs for everyone
       </h1>
-      <p className="px-2 my-[40px] mx-auto max-w-lg text-lg text-center text-secondary">
-        We provide tooling for creating, deploying, managing, and joining DAOs.
-        Built with love on Juno.
+      <p className="px-4 my-[40px] mx-auto max-w-lg text-lg text-center text-secondary">
+        Simple, capable, free DAO tooling. Built with love, by DAO DAO, on Juno.
       </p>
       <div className="mx-auto mb-12">
         <EnterAppButton />
@@ -98,22 +95,22 @@ const Home: NextPage = () => {
       <div className="mx-3">
         <div className="flex flex-row flex-wrap gap-3 justify-center">
           <InfoCard
-            body="Make DAOs with a visual interface. No command line required."
+            body="Create and grow a DAO for your community with a simple user interface. No command line required."
             title="Create DAOs"
           >
-            <PlusSmIcon />
+            <PlusSmIcon className="w-6" />
           </InfoCard>
           <InfoCard
-            body="Create and vote on proposals without writing code."
+            body="Proposals can do anything you can do on chain. They pass when the community votes on them."
             title="Propose and vote"
           >
-            <ScaleIcon />
+            <ScaleIcon className="w-6" />
           </InfoCard>
           <InfoCard
-            body="Launch your token. Share them across any chain that supports IBC."
-            title="Launch tokens"
+            body="DAO DAO DAOs can manage IBC assets, instantiate smart contracts, and manage entire protocols."
+            title="IBC enabled"
           >
-            <StarIcon />
+            <StarIcon className="w-6" />
           </InfoCard>
         </div>
         <div className="grid grid-cols-1 gap-2 my-10 font-mono md:grid-cols-3 caption-text">
@@ -161,7 +158,7 @@ const Home: NextPage = () => {
         </div>
       </div>
     </GradientWrapper>
-  )
-}
+  </SuspenseLoader>
+)
 
 export default Home

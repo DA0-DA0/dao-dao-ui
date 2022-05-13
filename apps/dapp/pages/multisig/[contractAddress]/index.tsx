@@ -5,36 +5,36 @@ import {
 } from '@heroicons/react/outline'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Threshold } from '@dao-dao/types/contracts/cw3-multisig'
 import {
-  CopyToClipboard,
   useThemeContext,
   GradientHero,
   HorizontalInfo,
   HorizontalInfoSection,
   ContractHeader,
   StarButton,
-  BalanceIcon,
   Breadcrumbs,
+  LoadingScreen,
+  MobileMenuTab,
 } from '@dao-dao/ui'
+import { CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 
-import { MultisigContractInfo } from '@components/MultisigContractInfo'
-import { pinnedMultisigsAtom } from 'atoms/pinned'
-import { ContractProposalsDispaly } from 'components/ContractView'
-import ErrorBoundary from 'components/ErrorBoundary'
-import { contractInstantiateTime } from 'selectors/contracts'
-import { CHAIN_RPC_ENDPOINT } from 'selectors/cosm'
-import {
-  listMembers,
-  memberWeight,
-  sigSelector,
-  totalWeight,
-} from 'selectors/multisigs'
-import { cosmWasmClientRouter } from 'util/chainClientRouter'
-import { getFastAverageColor } from 'util/colors'
+import { pinnedMultisigsAtom } from '@/atoms/pinned'
+import { ContractProposalsDisplay } from '@/components/ContractView'
+import { DaoTreasury } from '@/components/DaoTreasury'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { MobileHeader } from '@/components/MobileHeader'
+import { MultisigContractInfo } from '@/components/MultisigContractInfo'
+import { MultisigMemberList } from '@/components/MultisigMemberList'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { contractInstantiateTime } from '@/selectors/contracts'
+import { sigSelector, totalWeight, listMembers } from '@/selectors/multisigs'
+import { cosmWasmClientRouter } from '@/util/chainClientRouter'
+import { getFastAverageColor } from '@/util/colors'
 
 const thresholdString = (t: Threshold) => {
   if ('absolute_count' in t) {
@@ -52,39 +52,74 @@ const thresholdString = (t: Threshold) => {
   }
 }
 
-function VoteBalanceCard({
-  weight,
-  title,
-  weightTotal,
-  addrTitle,
-}: {
-  weight: number
-  title: string
-  weightTotal: number
-  addrTitle?: boolean
-}) {
+enum MobileMenuTabSelection {
+  Proposal,
+  Treasury,
+  Members,
+  Info,
+}
+
+const InnerMobileMultisigHome = () => {
+  const router = useRouter()
+  const contractAddress = router.query.contractAddress as string
+
+  const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
+  const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
+
   return (
-    <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
-      {addrTitle ? (
-        <CopyToClipboard value={title} />
-      ) : (
-        <h2 className="font-mono caption-text">{title}</h2>
-      )}
-      <div className="flex flex-row flex-wrap gap-2 items-center mt-2 mt-5 mb-[22px] title-text">
-        <BalanceIcon />
-        {weight}
-        <span className="inline secondary-text">
-          {((weight / weightTotal) * 100).toLocaleString(undefined, {
-            maximumSignificantDigits: 3,
-          })}
-          %
-        </span>
+    <div className="flex flex-col gap-2">
+      <GradientHero>
+        <SmallScreenNav />
+        <MobileHeader contractAddress={contractAddress} />
+      </GradientHero>
+      <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
+        <MobileMenuTab
+          icon="🗳"
+          onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
+          selected={tab === MobileMenuTabSelection.Proposal}
+          text="Proposal"
+        />
+        <MobileMenuTab
+          icon="👥"
+          onClick={makeTabSetter(MobileMenuTabSelection.Members)}
+          selected={tab === MobileMenuTabSelection.Members}
+          text="Members"
+        />
+        <MobileMenuTab
+          icon="🏛"
+          onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
+          selected={tab === MobileMenuTabSelection.Treasury}
+          text="Treasury"
+        />
+        <MobileMenuTab
+          icon="⚙️"
+          onClick={makeTabSetter(MobileMenuTabSelection.Info)}
+          selected={tab === MobileMenuTabSelection.Info}
+          text="Info"
+        />
+      </div>
+      <div className="py-5 px-6">
+        {tab === MobileMenuTabSelection.Proposal && (
+          <ContractProposalsDisplay
+            contractAddress={contractAddress}
+            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
+          />
+        )}
+        {tab === MobileMenuTabSelection.Members && (
+          <MultisigMemberList contractAddress={contractAddress} />
+        )}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <DaoTreasury address={contractAddress} />
+        )}
+        {tab === MobileMenuTabSelection.Info && (
+          <MultisigContractInfo address={contractAddress} hideTreasury />
+        )}
       </div>
     </div>
   )
 }
 
-function MultisigHome() {
+const InnerMultisigHome = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -92,101 +127,78 @@ function MultisigHome() {
   const established = useRecoilValue(contractInstantiateTime(contractAddress))
 
   const weightTotal = useRecoilValue(totalWeight(contractAddress))
-  const visitorWeight = useRecoilValue(memberWeight(contractAddress))
   const memberList = useRecoilValue(listMembers(contractAddress))
 
   const [pinnedSigs, setPinnedSigs] = useRecoilState(pinnedMultisigsAtom)
   const pinned = pinnedSigs.includes(contractAddress)
 
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-4 min-h-screen">
+    <div className="flex flex-row lg:grid lg:grid-cols-6">
+      <div className="col-span-4 w-full min-h-screen">
         <GradientHero>
-          <div className="flex justify-between items-center">
-            <Breadcrumbs
-              crumbs={[
-                ['/starred', 'Home'],
-                [router.asPath, sigInfo.config.name],
-              ]}
+          <SmallScreenNav />
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <Breadcrumbs
+                crumbs={[
+                  ['/starred', 'Home'],
+                  [router.asPath, sigInfo.config.name],
+                ]}
+              />
+              <StarButton
+                onPin={() => {
+                  if (pinned) {
+                    setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
+                  } else {
+                    setPinnedSigs((p) => p.concat([contractAddress]))
+                  }
+                }}
+                pinned={pinned}
+              />
+            </div>
+
+            <ContractHeader
+              description={sigInfo.config.description}
+              established={established}
+              imgUrl={sigInfo.config.image_url || undefined}
+              name={sigInfo.config.name}
             />
-            <StarButton
-              onPin={() => {
-                if (pinned) {
-                  setPinnedSigs((p) => p.filter((a) => a !== contractAddress))
-                } else {
-                  setPinnedSigs((p) => p.concat([contractAddress]))
-                }
-              }}
-              pinned={pinned}
-            />
+
+            <div className="mt-2">
+              <HorizontalInfo>
+                <HorizontalInfoSection>
+                  <ScaleIcon className="inline w-4" />
+                  {thresholdString(sigInfo.config.threshold)}
+                </HorizontalInfoSection>
+                <HorizontalInfoSection>
+                  <VariableIcon className="inline w-4" />
+                  Total votes: {weightTotal}
+                </HorizontalInfoSection>
+                <HorizontalInfoSection>
+                  <UserGroupIcon className="inline w-4" />
+                  Total members: {memberList.length}
+                </HorizontalInfoSection>
+              </HorizontalInfo>
+            </div>
+            <div className="block mt-4 lg:hidden">
+              <MultisigMemberList contractAddress={contractAddress} />
+            </div>
+
+            <div className="pt-[22px] pb-[28px] border-b border-inactive">
+              <MultisigContractInfo address={contractAddress} />
+            </div>
           </div>
-
-          <ContractHeader
-            description={sigInfo.config.description}
-            established={established}
-            imgUrl={sigInfo.config.image_url || undefined}
-            name={sigInfo.config.name}
-          />
-
-          <div className="mt-2">
-            <HorizontalInfo>
-              <HorizontalInfoSection>
-                <ScaleIcon className="inline w-4" />
-                {thresholdString(sigInfo.config.threshold)}
-              </HorizontalInfoSection>
-              <HorizontalInfoSection>
-                <VariableIcon className="inline w-4" />
-                Total votes: {weightTotal}
-              </HorizontalInfoSection>
-              <HorizontalInfoSection>
-                <UserGroupIcon className="inline w-4" />
-                Total members: {memberList.length}
-              </HorizontalInfoSection>
-            </HorizontalInfo>
-          </div>
-
-          <MultisigContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
-          <ContractProposalsDispaly
+          <ContractProposalsDisplay
             contractAddress={contractAddress}
             multisig
             proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
           />
         </div>
       </div>
-      <div className="col-span-2 col-start-5 p-6 h-full min-h-screen">
-        {visitorWeight && (
-          <>
-            <h2 className="mt-1 mb-[23px] title-text">Your shares</h2>
-            <ul className="mt-3 list-none">
-              <li>
-                <VoteBalanceCard
-                  title="voting weight"
-                  weight={visitorWeight}
-                  weightTotal={weightTotal}
-                />
-              </li>
-            </ul>
-          </>
-        )}
-        {memberList.length != 0 && (
-          <>
-            <h2 className="mt-5 mb-[23px] title-text">Member shares</h2>
-            <ul className="mt-3 list-none">
-              {memberList.map((member) => (
-                <li key={member.addr}>
-                  <VoteBalanceCard
-                    addrTitle
-                    title={member.addr}
-                    weight={member.weight}
-                    weightTotal={weightTotal}
-                  />
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+      <div className="hidden col-span-2 p-6 max-w-sm h-full min-h-screen lg:block">
+        <MultisigMemberList contractAddress={contractAddress} />
       </div>
     </div>
   )
@@ -206,12 +218,16 @@ const MultisigHomePage: NextPage<StaticProps> = ({ accentColor }) => {
     setAccentColor(accentColor)
   }, [accentColor, setAccentColor, isReady, isFallback])
 
-  // Trigger Suspense.
-  if (!isReady || isFallback) throw new Promise((_) => {})
-
   return (
     <ErrorBoundary title="Multisig Not Found">
-      <MultisigHome />
+      <SuspenseLoader fallback={<LoadingScreen />}>
+        <div className="md:hidden">
+          <InnerMobileMultisigHome />
+        </div>
+        <div className="hidden md:block">
+          <InnerMultisigHome />
+        </div>
+      </SuspenseLoader>
     </ErrorBoundary>
   )
 }

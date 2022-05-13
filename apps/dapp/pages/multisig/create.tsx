@@ -2,12 +2,13 @@ import { InstantiateResult } from '@cosmjs/cosmwasm-stargate'
 import { PlusIcon } from '@heroicons/react/outline'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
-import { Button, Tooltip } from '@dao-dao/ui'
+import { useWallet } from '@dao-dao/state'
+import { Button, LoadingScreen, Tooltip } from '@dao-dao/ui'
 import {
   GradientHero,
   Breadcrumbs,
@@ -19,30 +20,29 @@ import {
   TextInput,
   TokenAmountInput,
 } from '@dao-dao/ui'
-import { MULTISIG_CODE_ID, secondsToWdhms } from '@dao-dao/utils'
-
-import { FormCard } from '@components/FormCard'
-import TooltipsDisplay, {
-  useTooltipsRegister,
-} from '@components/TooltipsDisplay'
-import { pinnedMultisigsAtom } from 'atoms/pinned'
 import {
-  multisigCreateTooltipsDefault,
-  multisigCreateTooltipsGetter,
-} from 'components/TooltipsDisplay/multisigCreate'
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
-import { cleanChainError } from 'util/cleanChainError'
-import {
+  MULTISIG_CODE_ID,
+  secondsToWdhms,
   validatePercent,
   validatePositive,
   validateRequired,
-} from 'util/formValidation'
-import { makeMultisigInstantiateMessage } from 'util/messagehelpers'
-import { errorNotify, successNotify } from 'util/toast'
+} from '@dao-dao/utils'
+
 import '@reach/tooltip/styles.css'
+import { pinnedMultisigsAtom } from '@/atoms/pinned'
+import { FormCard } from '@/components/FormCard'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import TooltipsDisplay, {
+  useTooltipsRegister,
+} from '@/components/TooltipsDisplay'
+import {
+  multisigCreateTooltipsGetter,
+  multisigCreateTooltipsDefault,
+} from '@/components/TooltipsDisplay/multisigCreate'
+import { cleanChainError } from '@/util/cleanChainError'
+import { makeMultisigInstantiateMessage } from '@/util/messagehelpers'
+import { errorNotify, successNotify } from '@/util/toast'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -58,8 +58,9 @@ export interface MultisigCreateData {
   balances: { addr: string; amount: string }[]
 }
 
-const CreateMultisig: NextPage = () => {
+const InnerCreateMultisig: FC = () => {
   const router = useRouter()
+  const { address: walletAddress, signingClient } = useWallet()
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -88,9 +89,6 @@ const CreateMultisig: NextPage = () => {
   const votingPeriodSeconds = watch('duration')
   const imageUrl = watch('imageUrl')
   const threshold = watch('threshold')
-
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
 
   useEffect(() => {
     if (error) errorNotify(cleanChainError(error))
@@ -147,36 +145,40 @@ const CreateMultisig: NextPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-6">
+    <div className="md:grid md:grid-cols-6">
       <form className="col-span-4" onSubmit={handleSubmit(onSubmit)}>
         <GradientHero>
-          <Breadcrumbs
-            crumbs={[
-              ['/starred', 'Home'],
-              [router.asPath, 'Create Multisig'],
-            ]}
-          />
-          <ImageSelector
-            error={errors.imageUrl}
-            imageUrl={imageUrl}
-            label="imageUrl"
-            register={register}
-          />
-
-          <div className="flex flex-col justify-center items-center mx-auto mt-4 max-w-prose rounded-lg">
-            <InputLabel className="pb-1" mono name="Multisig Name" />
-            <TextInput
-              className="font-bold text-center"
-              error={errors.name}
-              label="name"
-              register={register}
-              validation={[validateRequired]}
+          <SmallScreenNav />
+          <div className="px-4 md:p-6">
+            <Breadcrumbs
+              crumbs={[
+                ['/starred', 'Home'],
+                [router.asPath, 'Create Multisig'],
+              ]}
             />
-            <InputErrorMessage error={errors.name} />
+            <ImageSelector
+              className="mt-6"
+              error={errors.imageUrl}
+              imageUrl={imageUrl}
+              label="imageUrl"
+              register={register}
+            />
+
+            <div className="flex flex-col justify-center items-center mx-auto mt-4 max-w-prose rounded-lg">
+              <InputLabel className="pb-1" mono name="Multisig Name" />
+              <TextInput
+                className="font-bold text-center"
+                error={errors.name}
+                label="name"
+                register={register}
+                validation={[validateRequired]}
+              />
+              <InputErrorMessage error={errors.name} />
+            </div>
           </div>
         </GradientHero>
 
-        <div className="px-8">
+        <div className="p-4 md:px-8">
           <div className="flex flex-col gap-1">
             <InputLabel mono name="Description" />
             <TextareaInput
@@ -236,7 +238,7 @@ const CreateMultisig: NextPage = () => {
           </Button>
           <h2 className="mt-8 mb-4 title-text">Voting configuration</h2>
           <FormCard>
-            <div className="grid grid-cols-5 gap-x-1 gap-y-8">
+            <div className="flex flex-col grid-cols-5 gap-x-1 gap-y-4 md:grid md:gap-y-8">
               <div className="col-span-3">
                 <p className="body-text">Passing weight</p>
                 <p className="caption-text">
@@ -280,7 +282,7 @@ const CreateMultisig: NextPage = () => {
                 />
                 <InputErrorMessage error={errors.duration} />
               </div>
-              <div className="flex col-span-1 justify-center items-center bg-disabled rounded-lg">
+              <div className="flex col-span-1 justify-center items-center p-1 -mt-2 bg-disabled rounded-lg md:p-0 md:mt-0">
                 <p className="secondary-text">
                   {secondsToWdhms(votingPeriodSeconds)}
                 </p>
@@ -300,7 +302,7 @@ const CreateMultisig: NextPage = () => {
         </div>
       </form>
 
-      <div className="col-span-2">
+      <div className="hidden col-span-2 md:block">
         <div className="sticky top-0 p-6 w-full">
           <TooltipsDisplay selected={selectedTooltip} />
         </div>
@@ -309,4 +311,10 @@ const CreateMultisig: NextPage = () => {
   )
 }
 
-export default CreateMultisig
+const CreateMultisigPage: NextPage = () => (
+  <SuspenseLoader fallback={<LoadingScreen />}>
+    <InnerCreateMultisig />
+  </SuspenseLoader>
+)
+
+export default CreateMultisigPage

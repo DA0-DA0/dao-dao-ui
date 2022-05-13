@@ -3,14 +3,14 @@ import { QueryClient } from '@cosmjs/stargate'
 import { QueryContractsByCodeResponse } from 'cosmjs-types/cosmwasm/wasm/v1/query'
 import { selectorFamily } from 'recoil'
 
-import { cosmWasmClient } from 'selectors/cosm'
+import { cosmWasmClientSelector } from '@dao-dao/state'
 
 export const contractsByCodeId = selectorFamily({
   key: 'contractsByCodeId',
   get:
     (codeId: number) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       if (!client) {
         return []
       }
@@ -24,7 +24,7 @@ export const allContractsByCodeId = selectorFamily({
   get:
     (codeId: number) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       if (!client) {
         return []
       }
@@ -58,7 +58,7 @@ export const contractInstantiateTime = selectorFamily<Date, string>({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       if (!client) {
         return new Date()
       }

@@ -1,23 +1,30 @@
+import clsx from 'clsx'
 import Link from 'next/link'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { FC } from 'react'
+import { useRecoilValue, useRecoilValueLoadable, waitForAll } from 'recoil'
 
+import { useWallet } from '@dao-dao/state'
 import {
   Button,
   TreasuryBalances as StatelessTreasuryBalances,
   Tooltip,
 } from '@dao-dao/ui'
-import { NATIVE_DECIMALS, nativeTokenDecimals } from '@dao-dao/utils'
+import { Loader } from '@dao-dao/ui/components/Loader'
+import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  nativeTokenDecimals,
+} from '@dao-dao/utils'
 
-import { isMemberSelector } from 'selectors/cosm'
+import { ProposalList } from './ProposalList'
+import { SuspenseLoader } from './SuspenseLoader'
+import { isMemberSelector } from '@/selectors/cosm'
 import {
   cw20Balances,
   cw20TokenInfo,
   nativeBalance,
-  walletAddress,
   walletTokenBalanceLoading,
-} from 'selectors/treasury'
-
-import { ProposalList } from './ProposalList'
+} from '@/selectors/treasury'
 
 export function TreasuryBalances({ address }: { address: string }) {
   const nativeBalances = useRecoilValue(nativeBalance(address))
@@ -33,11 +40,13 @@ export function TreasuryBalances({ address }: { address: string }) {
     decimals: info.decimals,
   }))
 
-  const nativeTokens = nativeBalances.map(({ denom, amount }) => ({
-    denom: denom,
-    amount,
-    decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
-  }))
+  const nativeTokens = nativeBalances.length
+    ? nativeBalances.map(({ denom, amount }) => ({
+        denom: denom,
+        amount,
+        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
+      }))
+    : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }]
 
   return (
     <StatelessTreasuryBalances
@@ -47,19 +56,24 @@ export function TreasuryBalances({ address }: { address: string }) {
   )
 }
 
-export function ContractProposalsDispaly({
-  contractAddress,
-  proposalCreateLink,
-  multisig,
-}: {
+interface ContractProposalsDisplayProps {
   contractAddress: string
   proposalCreateLink: string
   multisig?: boolean
-}) {
-  const wallet = useRecoilValue(walletAddress)
-  const loading = useRecoilValue(walletTokenBalanceLoading(wallet))
+}
 
-  const member = useRecoilValue(isMemberSelector(contractAddress)).member
+export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
+  contractAddress,
+  proposalCreateLink,
+  multisig,
+}) => {
+  const { address: walletAddress } = useWallet()
+  const member = useRecoilValueLoadable(isMemberSelector(contractAddress))
+
+  const loading =
+    useRecoilValue(walletTokenBalanceLoading(walletAddress ?? '')) ||
+    member.state === 'loading'
+
   const tooltip = !member
     ? `You must have voting power to create a proposal.${
         multisig ? '' : ' Consider staking some tokens.'
@@ -71,18 +85,28 @@ export function ContractProposalsDispaly({
       <div className="flex justify-between items-center">
         <h2 className="primary-text">Proposals</h2>
 
-        <Link href={member ? proposalCreateLink : '#'} passHref>
+        <Link
+          className={clsx(
+            member.state === 'hasValue' &&
+              member.getValue().member &&
+              'pointer-events-none'
+          )}
+          href={proposalCreateLink}
+          passHref
+        >
           <a>
             <Tooltip label={tooltip}>
               <Button disabled={!!tooltip || loading} size="sm">
-                {loading ? 'Loading...' : 'New proposal'}
+                New proposal
               </Button>
             </Tooltip>
           </a>
         </Link>
       </div>
-      <div className="px-4 mt-4">
-        <ProposalList contractAddress={contractAddress} multisig={multisig} />
+      <div className="mt-4 md:px-4">
+        <SuspenseLoader fallback={<Loader />}>
+          <ProposalList contractAddress={contractAddress} multisig={multisig} />
+        </SuspenseLoader>
       </div>
     </>
   )

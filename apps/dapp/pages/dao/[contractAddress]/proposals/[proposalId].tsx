@@ -1,19 +1,23 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { Breadcrumbs } from '@dao-dao/ui'
+import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
-import { ProposalDetails } from 'components/ProposalDetails'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { ProposalDetails } from '@/components/ProposalDetails'
 import {
+  ProposalDetailsCard,
   ProposalDetailsSidebar,
   ProposalDetailsVoteStatus,
-  ProposalDetailsCard,
-} from 'components/ProposalDetailsSidebar'
-import { daoSelector } from 'selectors/daos'
-import { cw20TokenInfo } from 'selectors/treasury'
+} from '@/components/ProposalDetailsSidebar'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { daoSelector } from '@/selectors/daos'
+import { cw20TokenInfo } from '@/selectors/treasury'
 
-const Proposal: NextPage = () => {
+const InnerProposal: FC = () => {
   const router = useRouter()
   const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
@@ -28,7 +32,7 @@ const Proposal: NextPage = () => {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+      <div className="col-span-4 w-full md:p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -36,6 +40,8 @@ const Proposal: NextPage = () => {
             [router.asPath, `Proposal ${proposalKey}`],
           ]}
         />
+
+        <SmallScreenNav className="mb-4" />
 
         <div className="px-6 mt-6 lg:hidden">
           <ProposalDetailsCard {...proposalDetailsProps} />
@@ -49,17 +55,25 @@ const Proposal: NextPage = () => {
           proposalId={Number(proposalKey)}
         />
 
-        <div className="px-6 pb-6 mt-6 lg:hidden">
+        <div className="px-4 pb-6 mt-6 md:px-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
           <ProposalDetailsVoteStatus {...proposalDetailsProps} />
         </div>
       </div>
-      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
+      <div className="hidden col-span-2 p-4 min-h-screen md:p-6 lg:block bg-base-200">
         <ProposalDetailsSidebar {...proposalDetailsProps} />
       </div>
     </div>
   )
 }
 
-export default Proposal
+const ProposalPage: NextPage = () => (
+  <ErrorBoundary title="Proposal Not Found">
+    <SuspenseLoader fallback={<LoadingScreen />}>
+      <InnerProposal />
+    </SuspenseLoader>
+  </ErrorBoundary>
+)
+
+export default ProposalPage

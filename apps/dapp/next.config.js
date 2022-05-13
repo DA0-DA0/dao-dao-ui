@@ -16,10 +16,6 @@ let config = {
   */
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
-  react: {
-    useSuspense: false,
-    wait: true,
-  },
   eslint: {
     dirs: [
       'atoms',

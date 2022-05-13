@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { cosmWasmClientSelector, walletAddressSelector } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   Config,
@@ -9,13 +10,9 @@ import {
 import { DAO_CODE_ID, NATIVE_DENOM } from '@dao-dao/utils'
 
 import { contractsByCodeId } from 'selectors/contracts'
-import { cosmWasmClient, isMemberSelector } from 'selectors/cosm'
+import { isMemberSelector } from 'selectors/cosm'
 
-import {
-  nativeBalance,
-  walletAddress,
-  walletTokenBalanceUpdateCountAtom,
-} from './treasury'
+import { nativeBalance, walletTokenBalanceUpdateCountAtom } from './treasury'
 
 export interface DaoListType {
   address: string
@@ -32,7 +29,7 @@ export const tokenConfig = selectorFamily<TokenInfoResponse, string>({
   get:
     (contractAddress) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const response = await client.queryContractSmart(contractAddress, {
         token_info: {},
       })
@@ -45,11 +42,11 @@ export const totalStaked = selectorFamily<number, string>({
   get:
     (contractAddress) =>
     async ({ get }) => {
-      const wallet = get(walletAddress)
-      const client = get(cosmWasmClient)
+      const wallet = get(walletAddressSelector)
+      const client = get(cosmWasmClientSelector)
 
       // Refresh this value when the visitor stakes / unstakes tokens.
-      get(walletTokenBalanceUpdateCountAtom(wallet))
+      get(walletTokenBalanceUpdateCountAtom(wallet ?? ''))
 
       if (!client) {
         return 0
@@ -66,7 +63,7 @@ export const proposalCount = selectorFamily<number, string>({
   get:
     (contractAddress) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const response = await client.queryContractSmart(contractAddress, {
         proposal_count: {},
       })
@@ -104,7 +101,7 @@ export const daoSelector = selectorFamily<ConfigResponse, string>({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const response = await client.queryContractSmart(address, {
         get_config: {},
       })
@@ -117,7 +114,7 @@ export const unstakingDuration = selectorFamily<Duration, string>({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const response = await client.queryContractSmart(address, {
         get_config: {},
       })

@@ -19,9 +19,9 @@ export const GradientHero: FC<GradientHeroProps> = ({ children }) => {
       }}
     >
       <div
-        className="flex flex-col justify-between p-6"
+        className="flex flex-col justify-between"
         style={{
-          background: `linear-gradient(270deg, ${endStop} 0%, rgba(17, 18, 19, 0) 50%, ${endStop} 100%)`,
+          backgroundImage: `linear-gradient(270deg, ${endStop} 0%, rgba(17, 18, 19, 0) 50%, ${endStop} 100%)`,
         }}
       >
         {children}

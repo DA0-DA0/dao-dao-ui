@@ -138,9 +138,9 @@ export const SpendComponent: TemplateComponent = ({
   }
 
   return (
-    <div className="flex justify-between items-center p-3 my-2 bg-primary rounded-lg">
-      <div className="flex flex-wrap gap-4 items-center">
-        <div className="flex flex-wrap gap-2 items-center w-24">
+    <div className="flex justify-between p-3 my-2 bg-primary rounded-lg">
+      <div className="flex flex-col flex-wrap gap-4 sm:flex-row sm:items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <h2 className="text-3xl">💵</h2>
           <h2>Spend</h2>
         </div>

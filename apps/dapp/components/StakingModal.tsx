@@ -3,6 +3,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { useWallet } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
 import {
@@ -10,10 +11,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import {
-  cosmWasmSigningClient,
-  walletAddress as walletAddressSelector,
-} from 'selectors/cosm'
 import {
   daoSelector,
   unstakingDuration as unstakingDurationSelector,
@@ -31,13 +28,15 @@ function executeUnstakeAction(
   denomAmount: number,
   tokenInfo: TokenInfoResponse,
   stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
+  onSuccess: Function,
   onDone: Function
 ) {
-  if (!signingClient) {
+  if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
+    return
   }
 
   const amount = convertDenomToMicroDenomWithDecimals(
@@ -57,12 +56,13 @@ function executeUnstakeAction(
       },
       'auto'
     )
+    .then(() => onSuccess())
     .catch((err) => {
       toast.error(cleanChainError(err.message))
+      console.error(err)
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Unstaked ${denomAmount} tokens`)
       onDone()
     })
 }
@@ -72,14 +72,17 @@ function executeStakeAction(
   tokenAddress: string,
   tokenInfo: TokenInfoResponse,
   stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
+  onSuccess: Function,
   onDone: Function
 ) {
-  if (!signingClient) {
+  if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
+    return
   }
+
   const amount = convertDenomToMicroDenomWithDecimals(
     denomAmount,
     tokenInfo.decimals
@@ -99,28 +102,30 @@ function executeStakeAction(
       },
       'auto'
     )
+    .then(() => onSuccess())
     .catch((err) => {
       toast.error(cleanChainError(err.message))
-      console.log(err.message)
+      console.error(err)
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Staked ${denomAmount} tokens`)
       onDone()
     })
 }
 
 function executeClaimAction(
-  denomAmount: number,
   stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null,
-  walletAddress: string,
+  signingClient: SigningCosmWasmClient | null | undefined,
+  walletAddress: string | undefined,
   setLoading: SetterOrUpdater<boolean>,
+  onSuccess: Function,
   onDone: Function
 ) {
-  if (!signingClient) {
+  if (!signingClient || !walletAddress) {
     toast.error('Please connect your wallet')
+    return
   }
+
   setLoading(true)
   signingClient
     ?.execute(
@@ -131,12 +136,13 @@ function executeClaimAction(
       },
       'auto'
     )
+    .then(() => onSuccess())
     .catch((err) => {
       toast.error(cleanChainError(err.message))
+      console.error(err)
     })
     .finally(() => {
       setLoading(false)
-      toast.success(`Claimed ${denomAmount} tokens`)
       onDone()
     })
 }
@@ -158,8 +164,7 @@ export function StakingModal({
 }) {
   const [amount, setAmount] = useState(0)
 
-  const walletAddress = useRecoilValue(walletAddressSelector)
-  const signingClient = useRecoilValue(cosmWasmSigningClient)
+  const { address: walletAddress, signingClient } = useWallet()
   const [loading, setLoading] = useState(false)
 
   const daoInfo = useRecoilValue(daoSelector(contractAddress))
@@ -169,7 +174,7 @@ export function StakingModal({
     tokenInfo.decimals
   )
   const tokenBalanceLoading = useRecoilValue(
-    walletTokenBalanceLoading(walletAddress)
+    walletTokenBalanceLoading(walletAddress ?? '')
   )
 
   const stakedGovTokenBalance = convertMicroDenomToDenomWithDecimals(
@@ -180,17 +185,8 @@ export function StakingModal({
     unstakingDurationSelector(daoInfo.staking_contract)
   )
   const setWalletTokenBalanceUpdateCount = useSetRecoilState(
-    walletTokenBalanceUpdateCountAtom(walletAddress)
+    walletTokenBalanceUpdateCountAtom(walletAddress ?? '')
   )
-
-  const walletDisconnected = (): string | undefined => {
-    if (!signingClient || !walletAddress) {
-      return 'Please connect your wallet'
-    }
-    return undefined
-  }
-
-  const error = walletDisconnected()
 
   const onAction = (mode: StakingMode, amount: number) => {
     beforeExecute()
@@ -204,14 +200,15 @@ export function StakingModal({
           signingClient,
           walletAddress,
           setLoading,
-          () => {
-            setAmount(0)
+          async () => {
             // New staking balances will not appear until the next block has been added.
-            setTimeout(() => {
-              setWalletTokenBalanceUpdateCount((p) => p + 1)
-              afterExecute()
-            }, 6000)
-          }
+            await new Promise((resolve) => setTimeout(resolve, 6500))
+
+            setAmount(0)
+            setWalletTokenBalanceUpdateCount((p) => p + 1)
+            toast.success(`Staked ${amount.toLocaleString()} tokens`)
+          },
+          afterExecute
         )
         break
       case StakingMode.Unstake:
@@ -222,29 +219,36 @@ export function StakingModal({
           signingClient,
           walletAddress,
           setLoading,
-          () => {
-            setAmount(0)
+          async () => {
             // New staking balances will not appear until the next block has been added.
-            setTimeout(() => {
-              setWalletTokenBalanceUpdateCount((p) => p + 1)
-              afterExecute()
-            }, 6500)
-          }
+            await new Promise((resolve) => setTimeout(resolve, 6500))
+
+            setAmount(0)
+            setWalletTokenBalanceUpdateCount((p) => p + 1)
+            toast.success(`Unstaked ${amount.toLocaleString()} tokens`)
+          },
+          afterExecute
         )
         break
       case StakingMode.Claim:
         executeClaimAction(
-          convertMicroDenomToDenomWithDecimals(amount, tokenInfo.decimals),
           daoInfo.staking_contract,
           signingClient,
           walletAddress,
           setLoading,
-          () => {
-            setTimeout(() => {
-              setWalletTokenBalanceUpdateCount((p) => p + 1)
-              afterExecute()
-            }, 6500)
-          }
+          async () => {
+            // New staking balances will not appear until the next block has been added.
+            await new Promise((resolve) => setTimeout(resolve, 6500))
+
+            setWalletTokenBalanceUpdateCount((p) => p + 1)
+            toast.success(
+              `Claimed ${convertMicroDenomToDenomWithDecimals(
+                amount,
+                tokenInfo.decimals
+              ).toLocaleString()} tokens`
+            )
+          },
+          afterExecute
         )
         break
       default:
@@ -257,7 +261,11 @@ export function StakingModal({
       amount={amount}
       claimableTokens={claimableTokens}
       defaultMode={defaultMode}
-      error={error}
+      error={
+        !signingClient || !walletAddress
+          ? 'Please connect your wallet'
+          : undefined
+      }
       loading={loading || tokenBalanceLoading}
       onAction={onAction}
       onClose={onClose}

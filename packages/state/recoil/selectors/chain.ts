@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/utils'
 
 import { refreshWalletBalancesIdAtom } from '../atoms/refresh'
-import { keplrOfflineSignerSelector } from './keplr'
+import { walletOfflineSignerSelector } from './wallet'
 
 export const stargateClientSelector = selector({
   key: 'stargateClient',
@@ -25,7 +25,7 @@ export const cosmWasmClientSelector = selector({
 export const signingCosmWasmClientSelector = selector({
   key: 'signingCosmWasmClient',
   get: async ({ get }) => {
-    const signer = get(keplrOfflineSignerSelector)
+    const signer = get(walletOfflineSignerSelector)
     if (!signer) return
 
     const client = await SigningCosmWasmClient.connectWithSigner(
@@ -40,6 +40,7 @@ export const signingCosmWasmClientSelector = selector({
 
     return client
   },
+  dangerouslyAllowMutability: true,
 })
 
 export const blockHeightSelector = selector({

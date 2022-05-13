@@ -4,20 +4,25 @@ import '@fontsource/jetbrains-mono/latin.css'
 
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FC } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
+import {
+  activeThemeAtom,
+  mountedInBrowserAtom,
+  WalletProvider,
+} from '@dao-dao/state'
 import { ThemeProvider, Theme } from '@dao-dao/ui'
-import { SITE_TITLE } from '@dao-dao/utils'
+import {
+  SITE_DESCRIPTION,
+  SITE_IMAGE,
+  SITE_TITLE,
+  SITE_URL,
+} from '@dao-dao/utils'
 
 import { ErrorBoundary, Footer, Notifications } from '@/components'
 
-const description = process.env.NEXT_PUBLIC_SITE_DESCRIPTION
-const image = process.env.NEXT_PUBLIC_SITE_IMAGE
-const url = process.env.NEXT_PUBLIC_SITE_URL
-
-const InnerApp = ({ Component, pageProps }: AppProps) => {
+const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [accentColor, setAccentColor] = useState<string | undefined>()
@@ -50,7 +55,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-const SDA = (props: AppProps) => (
+const SDA: FC<AppProps> = (props) => (
   <>
     <DefaultSeo
       additionalLinkTags={[
@@ -87,13 +92,13 @@ const SDA = (props: AppProps) => (
           content: '#ffffff',
         },
       ]}
-      description={description}
+      description={SITE_DESCRIPTION}
       openGraph={{
-        url,
+        url: SITE_URL,
         type: 'website',
         title: SITE_TITLE,
-        description,
-        images: image ? [{ url: image }] : [],
+        description: SITE_DESCRIPTION,
+        images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
       }}
       title={SITE_TITLE}
       twitter={{
@@ -102,7 +107,9 @@ const SDA = (props: AppProps) => (
     />
 
     <RecoilRoot>
-      <InnerApp {...props} />
+      <WalletProvider>
+        <InnerApp {...props} />
+      </WalletProvider>
     </RecoilRoot>
   </>
 )

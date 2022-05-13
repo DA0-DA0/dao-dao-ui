@@ -12,7 +12,7 @@ import {
 export const WalletConnectButton: FunctionComponent<
   Partial<WalletConnectProps>
 > = (props) => {
-  const { connect, address, name, nativeBalance } = useWallet()
+  const { connect, connected, address, name, nativeBalance } = useWallet()
 
   const walletBalance =
     nativeBalance !== undefined
@@ -23,7 +23,8 @@ export const WalletConnectButton: FunctionComponent<
 
   return (
     <WalletConnect
-      handleConnect={connect}
+      connected={connected}
+      onConnect={connect}
       walletAddress={address ?? ''}
       walletBalance={walletBalance}
       walletBalanceDenom={humanDenom}

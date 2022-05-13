@@ -4,7 +4,7 @@ import { Button, Modal } from '@dao-dao/ui'
 
 export function NoKeplrAccountModal({ onClose }: { onClose: () => void }) {
   return (
-    <Modal>
+    <Modal onClose={onClose}>
       <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
