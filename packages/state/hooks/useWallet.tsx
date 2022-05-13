@@ -1,27 +1,29 @@
-import { Keplr } from '@keplr-wallet/types'
+import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { isMobile } from '@walletconnect/browser-utils'
 import WalletConnect from '@walletconnect/client'
 import {
   KeplrWalletConnectV1,
   useWalletManager,
   Wallet,
+  WalletClient,
   WalletManagerProvider,
 } from 'cosmodal'
 import { FC, useCallback, useEffect } from 'react'
 import {
-  useRecoilState,
+  useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
+import { Loader } from '@dao-dao/ui/components/Loader'
 import {
   CHAIN_ID,
-  getKeplr,
   NativeChainInfo,
   SITE_DESCRIPTION,
   SITE_IMAGE,
   SITE_TITLE,
   SITE_URL,
+  suggestChain,
 } from '@dao-dao/utils'
 
 import {
@@ -34,16 +36,8 @@ import {
 import {
   walletClientAtom,
   walletConnectedAtom,
-  walletConnectErrorAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
-
-export class WalletNotInstalledError extends Error {
-  constructor() {
-    super("Wallet extension isn't installed.")
-    this.name = 'WalletNotInstalled'
-  }
-}
 
 interface UseWalletProps {
   // Selectively enable or disable effect hooks. There's no need to run
@@ -55,82 +49,21 @@ interface UseWalletProps {
 }
 
 export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
-  const [walletConnected, setWalletConnected] =
-    useRecoilState(walletConnectedAtom)
-  const [walletClient, setWalletClient] = useRecoilState(walletClientAtom)
+  const saveConnectedWalletId = useSetRecoilState(walletConnectedAtom)
+  const setWalletClient = useSetRecoilState(walletClientAtom)
   const setWalletConnectionId = useSetRecoilState(walletConnectionIdAtom)
-  const { getWalletClient, setDefaultWalletId, connectedWalletId } =
+  const { connect, disconnect, connectedWallet, connectionError, isMobileWeb } =
     useWalletManager()
-  const [connectError, setConnectError] = useRecoilState(walletConnectErrorAtom)
 
-  // Clear all state.
-  const disconnect = useCallback(() => {
-    setWalletConnected(null)
-    setWalletClient(undefined)
-    setDefaultWalletId(undefined)
-    setConnectError(undefined)
-  }, [setWalletConnected, setWalletClient, setDefaultWalletId, setConnectError])
-
-  const connect = useCallback(async () => {
-    setConnectError(undefined)
-
-    // Attempt to connect and update keystore accordingly.
-    try {
-      const walletClient: Keplr | KeplrWalletConnectV1 | undefined =
-        await getWalletClient()
-      setWalletClient(walletClient)
-
-      if (!walletClient) {
-        throw new WalletNotInstalledError()
-      }
-    } catch (error) {
-      console.error(error)
-
-      // Set disconnected so we don't try to connect again without manual action.
-      disconnect()
-
-      // Set error after since disconnect cleans up state.
-      setConnectError(error)
-    }
-  }, [disconnect, getWalletClient, setWalletClient, setConnectError])
-
-  // Attempt connection if should be connected.
-  const walletClientDisconnected = walletClient === undefined
+  // Save wallet client in recoil atom so it can be used by selectors,
+  // and store wallet ID for future autoconnect.
   useEffect(() => {
     if (!effectsEnabled) return
 
-    if (walletConnected && walletClientDisconnected) {
-      setDefaultWalletId(walletConnected)
-      connect()
-    }
-  }, [
-    walletClientDisconnected,
-    walletConnected,
-    setDefaultWalletId,
-    connect,
-    effectsEnabled,
-  ])
-
-  // Save wallet connected ID.
-  useEffect(() => {
-    if (!effectsEnabled) return
-
-    if (
-      walletClient &&
-      connectedWalletId &&
-      walletConnected !== connectedWalletId
-    ) {
-      setWalletConnected(connectedWalletId)
-    } else if (!walletClient && walletConnected !== null) {
-      setWalletConnected(null)
-    }
-  }, [
-    walletClient,
-    connectedWalletId,
-    setWalletConnected,
-    walletConnected,
-    effectsEnabled,
-  ])
+    setWalletClient(connectedWallet?.client)
+    // Don't auto connect on page load.
+    saveConnectedWalletId(connectedWallet?.wallet.id ?? null)
+  }, [connectedWallet, saveConnectedWalletId, effectsEnabled, setWalletClient])
 
   // Listen for keplr keystore changes and update as needed.
   useEffect(() => {
@@ -145,7 +78,7 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
 
     return () =>
       window.removeEventListener('keplr_keystorechange', keplrListener)
-  }, [setWalletClient, setWalletConnectionId, effectsEnabled])
+  }, [setWalletConnectionId, effectsEnabled])
 
   // Wallet address
   const { state: walletAddressState, contents: walletAddressContents } =
@@ -189,10 +122,14 @@ export const useWallet = ({ effectsEnabled = false }: UseWalletProps = {}) => {
     address,
     name,
     nativeBalance,
+    // Wallet is connected before the address is loaded, but in
+    // practicality, we only care about the wallet being connected
+    // once the address is loaded.
     connected: !!address,
     loading: walletAddressState === 'loading',
-    connectError,
+    connectionError,
     signingClient,
+    isMobileWeb,
   }
 }
 
@@ -202,7 +139,7 @@ const AvailableWallets: Wallet[] = [
     name: 'Keplr Wallet',
     description: 'Keplr Browser Extension',
     logoImgUrl: '/keplr-wallet-extension.png',
-    getClient: getKeplr,
+    getClient: getKeplrFromWindow,
     isWalletConnect: false,
   },
   // WalletConnect only supports mainnet. Not testnet.
@@ -231,34 +168,55 @@ const InnerWalletProvider: FC = ({ children }) => {
   return <>{children}</>
 }
 
-export const WalletProvider: FC = ({ children }) => (
-  <WalletManagerProvider
-    classNames={{
-      modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
-      modalContent:
-        '!p-6 !max-w-md !bg-white !rounded-lg !border !border-focus',
-      modalCloseButton:
-        '!p-1 hover:!bg-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
-      modalHeader: '!header-text',
-      wallet: '!rounded-lg !bg-card !p-4 !shadow-none',
-      walletIconImg: '!rounded-full',
-      walletName: '!primary-text',
-      walletDescription: '!caption-text',
-    }}
-    clientMeta={{
-      name: SITE_TITLE,
-      description: SITE_DESCRIPTION,
-      url: SITE_URL,
-      icons: [SITE_IMAGE],
-    }}
-    defaultWalletId={
-      // If on a mobile device, default to WalletConnect.
-      isMobile()
-        ? AvailableWallets.find((w) => w.isWalletConnect)?.id
-        : undefined
-    }
-    wallets={AvailableWallets}
-  >
-    <InnerWalletProvider>{children}</InnerWalletProvider>
-  </WalletManagerProvider>
-)
+const enableKeplr = async (wallet: Wallet, walletClient: WalletClient) => {
+  if (!wallet.isWalletConnect) {
+    await suggestChain(walletClient)
+  }
+
+  await walletClient.enable(CHAIN_ID)
+}
+
+export const WalletProvider: FC = ({ children }) => {
+  const savedWalletConnected = useRecoilValue(walletConnectedAtom)
+
+  return (
+    <WalletManagerProvider
+      attemptAutoConnect={!!savedWalletConnected}
+      classNames={{
+        modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
+        modalContent:
+          '!p-6 !max-w-md !bg-white !rounded-lg !border !border-focus',
+        modalCloseButton:
+          '!p-1 hover:!bg-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
+        modalHeader: '!header-text',
+        modalSubheader: '!title-text',
+        wallet: '!rounded-lg !bg-card !p-4 !shadow-none',
+        walletIconImg: '!rounded-full',
+        walletName: '!primary-text',
+        walletDescription: '!caption-text',
+        textContent: '!primary-text',
+      }}
+      clientMeta={{
+        name: SITE_TITLE,
+        description: SITE_DESCRIPTION,
+        url: SITE_URL,
+        icons: [SITE_IMAGE],
+      }}
+      enableKeplr={enableKeplr}
+      preselectedWalletId={
+        savedWalletConnected ?? isMobile()
+          ? // If on a mobile device, default to WalletConnect.
+            AvailableWallets.find((w) => w.isWalletConnect)?.id
+          : undefined
+      }
+      renderEnablingKeplrModalContent={() => (
+        <div className="mt-4">
+          <Loader size={64} />
+        </div>
+      )}
+      wallets={AvailableWallets}
+    >
+      <InnerWalletProvider>{children}</InnerWalletProvider>
+    </WalletManagerProvider>
+  )
+}

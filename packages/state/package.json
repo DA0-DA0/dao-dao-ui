@@ -7,9 +7,10 @@
   },
   "dependencies": {
     "@dao-dao/ui": "*",
+    "@keplr-wallet/stores": "^0.10.3",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
-    "cosmodal": "https://github.com/NoahSaso/cosmodal#c829d8790a0d7fe0ccea585107ea67079f7fc01f",
+    "cosmodal": "https://github.com/NoahSaso/cosmodal#3299ce23e4c9325cabbb85a3e7644f71b4256670",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },

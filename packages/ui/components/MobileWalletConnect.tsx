@@ -7,24 +7,26 @@ import { Wallet } from '@dao-dao/icons'
 import { WalletConnectProps } from './WalletConnect'
 
 export const MobileWalletConnect: FC<WalletConnectProps> = ({
-  walletAddress,
+  connected,
   walletName,
   onConnect,
   onDisconnect,
   className,
-  // Need to take but igore these fields so that they don't get passed
+  // Need to take but ignore these fields so that they don't get passed
   // along to the button and make React mad.
+  walletAddress: _a,
   walletBalance: _b,
   walletBalanceDenom: _d,
   ...buttonProps
 }) =>
-  walletAddress ? (
+  connected ? (
     <button
       className={clsx(
         'flex justify-between items-center py-2 px-3 my-1 bg-btn-secondary rounded-lg hover:border hover:border-brand',
         className
       )}
-      onClick={walletAddress ? onDisconnect : onConnect}
+      disabled={connected && !onDisconnect}
+      onClick={connected ? onDisconnect : onConnect}
       type="button"
       {...buttonProps}
     >

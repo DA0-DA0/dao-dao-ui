@@ -9,6 +9,7 @@ import { ButtonProps } from './Button/Button'
 import { Tooltip } from './Tooltip'
 
 export interface WalletConnectProps extends Partial<ButtonProps> {
+  connected: boolean
   walletAddress: string
   walletName: string | undefined
   walletBalance: number
@@ -19,6 +20,7 @@ export interface WalletConnectProps extends Partial<ButtonProps> {
 }
 
 export const WalletConnect: FC<WalletConnectProps> = ({
+  connected,
   walletAddress,
   walletName,
   walletBalance,
@@ -28,7 +30,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   className,
   ...buttonProps
 }) =>
-  walletAddress ? (
+  connected ? (
     <div
       className={clsx(
         'group relative py-2 px-4 bg-primary rounded-lg hover:outline-brand hover:outline',

@@ -11,7 +11,15 @@ import {
 
 // Connection errors handled in Layout component.
 const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
-  const { connect, disconnect, address, name, nativeBalance } = useWallet()
+  const {
+    connect,
+    disconnect,
+    address,
+    name,
+    nativeBalance,
+    isMobileWeb,
+    connected,
+  } = useWallet()
 
   const walletBalanceHuman = convertMicroDenomToDenomWithDecimals(
     nativeBalance ?? 0,
@@ -22,8 +30,9 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
   return mobile ? (
     <MobileWalletConnect
       className="w-full"
+      connected={connected}
       onConnect={connect}
-      onDisconnect={disconnect}
+      onDisconnect={isMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
@@ -32,8 +41,9 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
   ) : (
     <WalletConnect
       className="w-full"
+      connected={connected}
       onConnect={connect}
-      onDisconnect={disconnect}
+      onDisconnect={isMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
