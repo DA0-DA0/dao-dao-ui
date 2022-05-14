@@ -6,13 +6,11 @@ import { proposalModulesSelector } from '@dao-dao/state/recoil/selectors/clients
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 
-import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
-
 interface UseProposalModuleOptions {
   fetchProposalDepositTokenInfo?: boolean
-  // If the `OLD_PROPOSALS_ADDRESS` should be used. Used if the DAO has updated
-  // it's governance module and would still like to show those old proposals.
-  old?: boolean
+  // Used if the DAO has updated its governance module and would still
+  // like to show those old proposals.
+  oldProposalsAddress?: string
 }
 
 interface UseProposalModuleResponse {
@@ -23,14 +21,17 @@ interface UseProposalModuleResponse {
   proposalDepositTokenInfo?: TokenInfoResponse
 }
 
-export const useProposalModule = ({
-  fetchProposalDepositTokenInfo = false,
-  old = false,
-}: UseProposalModuleOptions = {}): UseProposalModuleResponse => {
+export const useProposalModule = (
+  coreAddress: string,
+  {
+    fetchProposalDepositTokenInfo = false,
+    oldProposalsAddress,
+  }: UseProposalModuleOptions = {}
+): UseProposalModuleResponse => {
   const proposalModuleAddress = useRecoilValue(
-    old
-      ? constSelector([OLD_PROPOSALS_ADDRESS])
-      : proposalModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
+    oldProposalsAddress
+      ? constSelector([oldProposalsAddress])
+      : proposalModulesSelector({ contractAddress: coreAddress, params: [{}] })
   )?.[0]
   const proposalModuleConfig = useRecoilValue(
     proposalModuleAddress

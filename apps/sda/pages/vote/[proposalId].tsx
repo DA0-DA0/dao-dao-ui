@@ -4,7 +4,12 @@ import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { useWallet } from '@dao-dao/state'
+import {
+  useWallet,
+  useProposalModule,
+  useGovernanceTokenInfo,
+  useProposalInfo,
+} from '@dao-dao/state'
 import { CwCoreQueryClient } from '@dao-dao/state/clients/cw-core'
 import {
   CwProposalSingleQueryClient,
@@ -30,12 +35,7 @@ import {
   TemplateRendererComponent,
   WalletConnectButton,
 } from '@/components'
-import {
-  useProposalModule,
-  useGovernanceTokenInfo,
-  useProposalInfo,
-} from '@/hooks'
-import { CI, cleanChainError, DAO_ADDRESS } from '@/util'
+import { CI, cleanChainError, DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 const InnerProposal = () => {
   const router = useRouter()
@@ -53,10 +53,13 @@ const InnerProposal = () => {
       ? Number(proposalIdQuery)
       : undefined
 
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
-  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule({
-    old: !!oldQuery,
-  })
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule(
+    DAO_ADDRESS,
+    {
+      oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
+    }
+  )
 
   const {
     proposalResponse,
@@ -64,7 +67,9 @@ const InnerProposal = () => {
     votingPowerAtHeight,
     txHash,
     refreshProposalAndAll,
-  } = useProposalInfo(proposalId, !!oldQuery)
+  } = useProposalInfo(DAO_ADDRESS, proposalId, {
+    oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
+  })
 
   const castVote = useCastVote({
     contractAddress: proposalModuleAddress ?? '',

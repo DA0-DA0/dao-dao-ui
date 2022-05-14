@@ -38,7 +38,7 @@ export const REWARDS_ADDRESS = process.env.NEXT_PUBLIC_REWARDS_ADDRESS as string
 export const TOKEN_SWAP_ADDRESS = process.env
   .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string
 export const OLD_PROPOSALS_ADDRESS = process.env
-  .NEXT_PUBLIC_OLD_PROPOSALS_ADDRESS as string
+  .NEXT_PUBLIC_OLD_PROPOSALS_ADDRESS as string | undefined
 
 export const VOTE_EXTERNAL_URL = process.env
   .NEXT_PUBLIC_VOTE_EXTERNAL_URL as string

@@ -4,7 +4,7 @@ import type { NextPage } from 'next'
 import React, { useState } from 'react'
 
 import { Pie } from '@dao-dao/icons'
-import { useWallet } from '@dao-dao/state'
+import { useWallet, useGovernanceTokenInfo } from '@dao-dao/state'
 import { StakingMode, TooltipIcon } from '@dao-dao/ui'
 
 import {
@@ -22,11 +22,11 @@ import {
   BalanceCardLoader,
   WalletConnectButton,
 } from '@/components'
-import { useGovernanceTokenInfo } from '@/hooks'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerStake = () => {
   const { connected } = useWallet()
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
 
   // Set to default mode to display, and undefined to hide.
   const [showStakingDefaultMode, setShowStakingDefaultMode] =

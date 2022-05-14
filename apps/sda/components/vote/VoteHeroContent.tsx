@@ -2,6 +2,11 @@
 
 import { useRecoilValue } from 'recoil'
 
+import {
+  useGovernanceTokenInfo,
+  useStakingInfo,
+  useProposalModule,
+} from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -11,11 +16,7 @@ import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { Loader } from '../Loader'
 import { VoteHero } from './Hero'
-import {
-  useGovernanceTokenInfo,
-  useStakingInfo,
-  useProposalModule,
-} from '@/hooks'
+import { useApr } from '@/hooks'
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL, VOTE_EXTERNAL_URL } from '@/util'
 
 export const VoteHeroContentLoader = () => (
@@ -29,12 +30,16 @@ export const VoteHeroContent = () => {
   const daoConfig = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })
   )
-  const { governanceTokenAddress, governanceTokenInfo, apr } =
-    useGovernanceTokenInfo({ fetchPriceInfo: true })
-  const { stakingContractConfig, totalStakedValue } = useStakingInfo({
-    fetchTotalStakedValue: true,
-  })
-  const { proposalModuleConfig } = useProposalModule({
+  const { governanceTokenAddress, governanceTokenInfo } =
+    useGovernanceTokenInfo(DAO_ADDRESS)
+  const apr = useApr()
+  const { stakingContractConfig, totalStakedValue } = useStakingInfo(
+    DAO_ADDRESS,
+    {
+      fetchTotalStakedValue: true,
+    }
+  )
+  const { proposalModuleConfig } = useProposalModule(DAO_ADDRESS, {
     fetchProposalDepositTokenInfo: true,
   })
 

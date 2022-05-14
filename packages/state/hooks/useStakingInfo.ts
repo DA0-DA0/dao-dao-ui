@@ -8,7 +8,6 @@ import {
   useWallet,
 } from '@dao-dao/state'
 import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
-import { stakingContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import {
   getConfigSelector,
   claimsSelector,
@@ -46,20 +45,18 @@ interface UseStakingResponse {
   walletBalance?: number
 }
 
-export const useStakingInfo = ({
-  fetchClaims = false,
-  fetchTotalStaked = false,
-  fetchWalletBalance = false,
-  fetchTotalStakedValue = false,
-}: UseStakingOptions = {}): UseStakingResponse => {
+export const useStakingInfo = (
+  coreAddress: string,
+  {
+    fetchClaims = false,
+    fetchTotalStaked = false,
+    fetchWalletBalance = false,
+    fetchTotalStakedValue = false,
+  }: UseStakingOptions = {}
+): UseStakingResponse => {
   const { address: walletAddress } = useWallet()
-  const { votingModuleAddress } = useGovernanceTokenInfo()
+  const { stakingContractAddress } = useGovernanceTokenInfo(coreAddress)
 
-  const stakingContractAddress = useRecoilValue(
-    votingModuleAddress
-      ? stakingContractSelector({ contractAddress: votingModuleAddress })
-      : constSelector(undefined)
-  )
   const stakingContractConfig = useRecoilValue(
     stakingContractAddress
       ? getConfigSelector({ contractAddress: stakingContractAddress })

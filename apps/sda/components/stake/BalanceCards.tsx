@@ -1,12 +1,16 @@
 import { FunctionComponent } from 'react'
 
-import { useWallet } from '@dao-dao/state'
+import {
+  useWallet,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
+import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
 
 interface CardProps {
   setShowStakingMode: () => void
@@ -20,9 +24,9 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
     governanceTokenInfo,
     walletBalance: _unstakedBalance,
     price,
-  } = useGovernanceTokenInfo({
+  } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchWalletBalance: true,
-    fetchPriceInfo: true,
+    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
 
   if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
@@ -74,11 +78,11 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
   const { connected } = useWallet()
-  const { governanceTokenInfo, price } = useGovernanceTokenInfo({
-    fetchPriceInfo: true,
+  const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
+    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
   const { totalStakedValue: totalStakedValue, walletBalance: _stakedBalance } =
-    useStakingInfo({
+    useStakingInfo(DAO_ADDRESS, {
       fetchTotalStakedValue: true,
       fetchWalletBalance: true,
     })

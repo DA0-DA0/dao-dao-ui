@@ -9,6 +9,7 @@ import {
   blockHeightSelector,
   refreshProposalsIdAtom,
   useWallet,
+  useProposalModule,
 } from '@dao-dao/state'
 import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
 import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
@@ -24,7 +25,6 @@ import {
   ProposalsInfo,
   SuspenseLoader,
 } from '@/components'
-import { useProposalModule } from '@/hooks'
 import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
 
 const InnerProposalCreate = () => {
@@ -32,7 +32,8 @@ const InnerProposalCreate = () => {
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
-  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule()
+  const { proposalModuleAddress, proposalModuleConfig } =
+    useProposalModule(DAO_ADDRESS)
 
   const currentAllowance = useRecoilValue(
     proposalModuleConfig?.deposit_info && proposalModuleAddress && walletAddress

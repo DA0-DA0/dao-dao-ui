@@ -14,15 +14,23 @@ import {
 } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
 import { useProposalModule } from '.'
-import { DAO_ADDRESS } from '@/util'
+
+interface UseProposalInfoOptions {
+  // Used if the DAO has updated its governance module and would still
+  // like to show those old proposals.
+  oldProposalsAddress?: string
+}
 
 export const useProposalInfo = (
-  proposalId: number | undefined,
-  old?: boolean
+  coreAddress: string,
+  proposalId?: number,
+  { oldProposalsAddress }: UseProposalInfoOptions = {}
 ) => {
   const { address: walletAddress } = useWallet()
 
-  const { proposalModuleAddress } = useProposalModule({ old })
+  const { proposalModuleAddress } = useProposalModule(coreAddress, {
+    oldProposalsAddress,
+  })
 
   const proposalResponse = useRecoilValue(
     proposalModuleAddress && proposalId !== undefined
@@ -45,7 +53,7 @@ export const useProposalInfo = (
   const votingPowerAtHeight = useRecoilValue(
     walletAddress && proposalResponse
       ? votingPowerAtHeightSelector({
-          contractAddress: DAO_ADDRESS,
+          contractAddress: coreAddress,
           params: [
             {
               address: walletAddress,

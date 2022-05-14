@@ -1,3 +1,4 @@
+import { useGovernanceTokenInfo } from '@dao-dao/state'
 import {
   MintComponent as StatelessMintComponent,
   TemplateComponent,
@@ -5,10 +6,10 @@ import {
 } from '@dao-dao/ui/components/templates'
 
 import { SuspenseLoader } from '..'
-import { useGovernanceTokenInfo } from '@/hooks'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerMintComponent: TemplateComponent = (props) => {
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
 
   return (
     <StatelessMintComponent

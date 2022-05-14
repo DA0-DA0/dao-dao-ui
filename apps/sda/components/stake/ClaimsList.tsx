@@ -1,11 +1,14 @@
 import { FunctionComponent } from 'react'
 
-import { useWallet } from '@dao-dao/state'
+import {
+  useWallet,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
 import { useDAOInfoContext } from '../DAOInfoContext'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
-import { DEFAULT_IMAGE_URL } from '@/util'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 interface ClaimsListProps {
   showClaim: () => void
@@ -15,14 +18,14 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   showClaim,
 }) => {
   const { connected } = useWallet()
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const {
     stakingContractConfig,
     blockHeight,
     claims,
     refreshClaims,
     sumClaimsAvailable,
-  } = useStakingInfo({
+  } = useStakingInfo(DAO_ADDRESS, {
     fetchClaims: true,
   })
 

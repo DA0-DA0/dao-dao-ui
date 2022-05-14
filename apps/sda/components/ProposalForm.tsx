@@ -9,7 +9,12 @@ import {
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
-import { useWallet, walletCw20BalanceSelector } from '@dao-dao/state'
+import {
+  useWallet,
+  useGovernanceTokenInfo,
+  useProposalModule,
+  walletCw20BalanceSelector,
+} from '@dao-dao/state'
 import {
   pauseInfoSelector,
   votingPowerAtHeightSelector,
@@ -31,7 +36,6 @@ import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
 import { TemplateSelector } from '.'
 import { templateMap, templateToCosmosMsg } from './templates'
 import { WalletConnectButton } from './WalletConnectButton'
-import { useGovernanceTokenInfo, useProposalModule } from '@/hooks'
 import { DAO_ADDRESS } from '@/util'
 
 interface TemplateKeyAndData {
@@ -57,9 +61,9 @@ interface ProposalFormProps {
 export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const { connected, address: walletAddress } = useWallet()
   const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo()
+    useGovernanceTokenInfo(DAO_ADDRESS)
 
-  const { proposalModuleConfig } = useProposalModule()
+  const { proposalModuleConfig } = useProposalModule(DAO_ADDRESS)
 
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(

@@ -3,12 +3,13 @@
 import { FunctionComponent } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+import { useApr } from '@/hooks'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL, TOKEN_SWAP_ADDRESS } from '@/util'
 
 export const StakeHeaderLoader: FunctionComponent = () => (
   <>
@@ -64,13 +65,13 @@ export const StakeHeader: FunctionComponent = () => {
     treasuryBalance: _treasuryBalance,
     walletBalance: _unstakedBalance,
     price: governanceTokenPrice,
-    apr,
-  } = useGovernanceTokenInfo({
+  } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchTreasuryBalance: true,
     fetchWalletBalance: true,
-    fetchPriceInfo: true,
+    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
-  const { totalStakedValue: totalStakedValue } = useStakingInfo({
+  const apr = useApr()
+  const { totalStakedValue: totalStakedValue } = useStakingInfo(DAO_ADDRESS, {
     fetchTotalStakedValue: true,
   })
 

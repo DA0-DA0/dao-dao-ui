@@ -3,7 +3,11 @@ import { useState, FunctionComponent } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
+import {
+  useWallet,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
 import {
@@ -22,8 +26,7 @@ import {
 } from '@dao-dao/utils'
 
 import { Loader, SuspenseLoader, WalletConnectButton } from '.'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
-import { cleanChainError } from '@/util'
+import { cleanChainError, DAO_ADDRESS } from '@/util'
 
 interface StakingModalProps {
   defaultMode: StakingMode
@@ -49,7 +52,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     governanceTokenAddress,
     governanceTokenInfo,
     walletBalance: unstakedBalance,
-  } = useGovernanceTokenInfo({
+  } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchWalletBalance: true,
   })
   const {
@@ -60,7 +63,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     sumClaimsAvailable,
     walletBalance: stakedValue,
     refreshClaims,
-  } = useStakingInfo({
+  } = useStakingInfo(DAO_ADDRESS, {
     fetchClaims: true,
     fetchWalletBalance: true,
   })
