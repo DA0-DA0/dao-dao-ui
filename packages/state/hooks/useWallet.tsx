@@ -214,10 +214,11 @@ export const WalletProvider: FC = ({ children }) => {
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
-        savedConectedWalletId ?? isMobile()
-          ? // If on a mobile device, default to WalletConnect.
-            AvailableWallets.find((w) => w.isWalletConnect)?.id
-          : undefined
+        savedConectedWalletId ??
+        // If on a mobile device, default to WalletConnect.
+        (isMobile()
+          ? AvailableWallets.find((w) => w.isWalletConnect)?.id
+          : undefined)
       }
       renderEnablingKeplrModalContent={() => (
         <div className="mt-4">
