@@ -17,7 +17,6 @@ import {
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { ContractHeader } from '@/components/ContractHeader'
 import { ContractProposalsDisplay } from '@/components/ContractView'
-import { YourShares } from '@/components/dao'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'
@@ -31,6 +30,7 @@ import {
 } from '@/components/OrgPageWrapper'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { YourShares } from '@/components/YourShares'
 import { addToken } from '@/util/addToken'
 import { getFastAverageColor } from '@/util/colors'
 

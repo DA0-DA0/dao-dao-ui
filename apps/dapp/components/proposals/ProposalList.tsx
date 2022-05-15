@@ -94,7 +94,7 @@ export const ProposalList: FC<ProposalListProps> = ({ contractAddress }) => {
   // requested by a load more press or first load of this page.
   const existingProps = useRecoilValue(
     listProposalsSelector({
-      contractAddress,
+      contractAddress: proposalModuleAddress,
       params: [
         {
           startAfter,

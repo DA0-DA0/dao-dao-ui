@@ -12,10 +12,10 @@ import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { BalanceCard, StakingMode } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { ClaimsPendingList } from '../ClaimsPendingList'
-import { Loader } from '../Loader'
-import { StakingModal } from '../StakingModal'
-import { SuspenseLoader } from '../SuspenseLoader'
+import { ClaimsPendingList } from './ClaimsPendingList'
+import { Loader } from './Loader'
+import { StakingModal } from './StakingModal'
+import { SuspenseLoader } from './SuspenseLoader'
 import {
   walletTokenBalanceLoading,
   walletTokenBalanceUpdateCountAtom,

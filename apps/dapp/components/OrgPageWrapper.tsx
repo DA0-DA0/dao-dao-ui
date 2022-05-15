@@ -1,5 +1,6 @@
 import type { GetStaticProps } from 'next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import {
   FunctionComponent,
   PropsWithChildren,
@@ -46,27 +47,36 @@ export const OrgPageWrapper: FunctionComponent<OrgPageWrapperProps> = ({
   description,
   info,
   children,
-}) => (
-  <>
-    <NextSeo
-      description={description}
-      openGraph={{
-        ...(!!url && { url }),
-        type: 'website',
-        title,
-        description,
-        ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
-      }}
-      title={title}
-    />
+}) => {
+  const { isFallback, isReady } = useRouter()
 
-    {info ? (
-      <OrgInfoContext.Provider value={info}>{children}</OrgInfoContext.Provider>
-    ) : (
-      <OrgNotFound />
-    )}
-  </>
-)
+  return (
+    <>
+      <NextSeo
+        description={description}
+        openGraph={{
+          ...(!!url && { url }),
+          type: 'website',
+          title,
+          description,
+          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+        }}
+        title={title}
+      />
+
+      {/* We only know an org is not found if info is still empty when
+       * when the page is ready and not a fallback page.
+       */}
+      {!info && !isFallback && isReady ? (
+        <OrgNotFound />
+      ) : (
+        <OrgInfoContext.Provider value={info || DefaultOrgInfo}>
+          {children}
+        </OrgInfoContext.Provider>
+      )}
+    </>
+  )
+}
 
 interface GetStaticPropsMakerProps {
   leadingTitle?: string
