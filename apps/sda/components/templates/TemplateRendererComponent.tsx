@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { CosmosMessageDisplay } from '@dao-dao/ui'
 import {
   TemplateRendererComponentProps,
@@ -9,12 +10,12 @@ import {
 
 import { templateAndDataForDecodedCosmosMsg } from '.'
 import { SuspenseLoader } from '..'
-import { useGovernanceTokenInfo } from '@/hooks'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerTemplateRendererComponent: FunctionComponent<
   TemplateRendererComponentProps
 > = ({ message }) => {
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
 
   const { template = undefined, data = undefined } = governanceTokenInfo
     ? templateAndDataForDecodedCosmosMsg(message, {

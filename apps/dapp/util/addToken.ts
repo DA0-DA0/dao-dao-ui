@@ -1,15 +1,21 @@
+import { getKeplrFromWindow } from '@keplr-wallet/stores'
+
+import { CHAIN_ID } from '@dao-dao/utils'
+
 import { errorNotify, successNotify } from './toast'
 
-export function addToken(address: string) {
-  if (typeof window !== 'undefined') {
-    ;(window as any).keplr
-      .suggestToken(process.env.NEXT_PUBLIC_CHAIN_ID as string, address)
-      .catch((e: any) => {
-        console.log(e)
-        errorNotify(e.message)
-      })
-      .then(() => {
-        successNotify('Added token to Keplr')
-      })
+export const addToken = async (address: string) => {
+  if (typeof window === 'undefined') return
+
+  try {
+    const keplr = await getKeplrFromWindow()
+
+    if (keplr) {
+      await keplr.suggestToken(CHAIN_ID, address)
+      successNotify('Added token to Keplr')
+    }
+  } catch (err) {
+    console.error(err)
+    errorNotify(err instanceof Error ? err.message : `${err}`)
   }
 }

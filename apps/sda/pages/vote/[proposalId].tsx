@@ -1,7 +1,7 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import {
@@ -19,13 +19,13 @@ import {
   useCastVote,
   useExecute,
 } from '@dao-dao/state/hooks/cw-proposal-single'
-import { StakingMode } from '@dao-dao/ui'
+import { ErrorPage, StakingMode } from '@dao-dao/ui'
 import {
   V1ProposalDetails,
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
+import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT, CI } from '@dao-dao/utils'
 
 import {
   makeGetStaticProps,
@@ -35,9 +35,9 @@ import {
   TemplateRendererComponent,
   WalletConnectButton,
 } from '@/components'
-import { CI, cleanChainError, DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+import { cleanChainError, DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
-const InnerProposal = () => {
+const InnerProposal: FC = () => {
   const router = useRouter()
 
   const { address: walletAddress, connected } = useWallet()
@@ -47,7 +47,6 @@ const InnerProposal = () => {
 
   const oldQuery = router.query.old
   const proposalIdQuery = router.query.proposalId
-
   const proposalId =
     typeof proposalIdQuery === 'string' && !isNaN(Number(proposalIdQuery))
       ? Number(proposalIdQuery)
@@ -219,24 +218,19 @@ const InnerProposal = () => {
 }
 
 const ProposalNotFound = () => (
-  <div className="mx-auto mt-4 max-w-prose text-center break-words">
-    <h1 className="text-3xl font-bold">Proposal Not Found</h1>
-    <p className="mt-3">
+  <ErrorPage title="Proposal Not Found">
+    <p>
       We couldn{"'"}t find a proposal with that ID. See all proposals on the{' '}
       <Link href="/vote">
         <a className="underline link-text">Vote</a>
       </Link>{' '}
       page.
     </p>
-  </div>
+  </ErrorPage>
 )
 
-interface ProposalInnerProps {
+interface ProposalPageProps extends PageWrapperProps {
   exists: boolean
-}
-
-type ProposalPageProps = PageWrapperProps & {
-  innerProps: ProposalInnerProps
 }
 
 const ProposalPage: NextPage<ProposalPageProps> = ({
@@ -247,7 +241,7 @@ const ProposalPage: NextPage<ProposalPageProps> = ({
     {/* Need optional chaining due to static path generation.
      *  Fallback page renders without any props on the server.
      */}
-    {props?.innerProps?.exists ? <InnerProposal /> : <ProposalNotFound />}
+    {props?.exists ? <InnerProposal /> : <ProposalNotFound />}
   </PageWrapper>
 )
 
@@ -279,9 +273,7 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
           ...staticProps,
           props: {
             ...staticProps.props,
-            innerProps: {
-              exists: false,
-            },
+            exists: false,
           },
         }
       : staticProps
@@ -326,9 +318,7 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
           ...staticProps,
           props: {
             ...staticProps.props,
-            innerProps: {
-              exists,
-            },
+            exists,
           },
         }
       : staticProps

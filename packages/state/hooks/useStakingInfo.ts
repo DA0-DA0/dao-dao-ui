@@ -11,7 +11,6 @@ import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
 import {
   getConfigSelector,
   claimsSelector,
-  totalStakedAtHeightSelector,
   stakedValueSelector,
   totalValueSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
@@ -22,8 +21,7 @@ import { useGovernanceTokenInfo } from '.'
 interface UseStakingOptions {
   fetchClaims?: boolean
   fetchTotalStaked?: boolean
-  fetchWalletBalance?: boolean
-  fetchTotalStakedValue?: boolean
+  fetchWalletStaked?: boolean
 }
 
 interface UseStakingResponse {
@@ -34,15 +32,15 @@ interface UseStakingResponse {
   /// Optional
   // Claims
   blockHeight?: number
-  claims?: Claim[]
   refreshClaims?: () => void
+  claims?: Claim[]
+  claimsPending?: Claim[]
+  claimsAvailable?: Claim[]
   sumClaimsAvailable?: number
   // Total staked
   totalStaked?: number
-  // The total staked value.
-  totalStakedValue?: number
-  // Wallet balance
-  walletBalance?: number
+  // Wallet staked
+  walletStaked?: number
 }
 
 export const useStakingInfo = (
@@ -50,8 +48,7 @@ export const useStakingInfo = (
   {
     fetchClaims = false,
     fetchTotalStaked = false,
-    fetchWalletBalance = false,
-    fetchTotalStakedValue = false,
+    fetchWalletStaked = false,
   }: UseStakingOptions = {}
 ): UseStakingResponse => {
   const { address: walletAddress } = useWallet()
@@ -86,42 +83,40 @@ export const useStakingInfo = (
   const blockHeight = useRecoilValue(
     fetchClaims ? blockHeightSelector : constSelector(undefined)
   )
-  const _claimsSelector =
+
+  const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
+  const refreshClaims = () => _setClaimsId((id) => id + 1)
+
+  const claims = useRecoilValue(
     fetchClaims && walletAddress && stakingContractAddress
       ? claimsSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
-  const claims = useRecoilValue(_claimsSelector)?.claims
-  const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
-  const refreshClaims = () => _setClaimsId((id) => id + 1)
-  const sumClaimsAvailable =
-    fetchClaims && blockHeight !== undefined
-      ? claims
-          ?.filter((c) => claimAvailable(c, blockHeight))
-          .reduce((p, c) => p + Number(c.amount), 0)
-      : undefined
+  )?.claims
+
+  const claimsPending = blockHeight
+    ? claims?.filter((c) => !claimAvailable(c, blockHeight))
+    : undefined
+  const claimsAvailable = blockHeight
+    ? claims?.filter((c) => claimAvailable(c, blockHeight))
+    : undefined
+  const sumClaimsAvailable = claimsAvailable?.reduce(
+    (p, c) => p + Number(c.amount),
+    0
+  )
 
   // Total staked
-  const totalStakedAtHeight = useRecoilValue(
+  const totalStaked = useRecoilValue(
     fetchTotalStaked && stakingContractAddress
-      ? totalStakedAtHeightSelector({
-          contractAddress: stakingContractAddress,
-          params: [{}],
-        })
-      : constSelector(undefined)
-  )
-
-  const totalStakedValue = useRecoilValue(
-    fetchTotalStakedValue && stakingContractAddress
       ? totalValueSelector({ contractAddress: stakingContractAddress })
       : constSelector(undefined)
-  )
+  )?.total
 
-  // Wallet balance
-  const walletBalance = useRecoilValue(
-    fetchWalletBalance && stakingContractAddress && walletAddress
+  // Wallet staked
+  const walletStaked = useRecoilValue(
+    fetchWalletStaked && stakingContractAddress && walletAddress
       ? stakedValueSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
@@ -137,13 +132,14 @@ export const useStakingInfo = (
     /// Optional
     // Claims
     blockHeight,
-    claims,
     refreshClaims: fetchClaims ? refreshClaims : undefined,
+    claims,
+    claimsPending,
+    claimsAvailable,
     sumClaimsAvailable,
     // Total staked
-    totalStaked: totalStakedAtHeight && Number(totalStakedAtHeight.total),
-    totalStakedValue: totalStakedValue && Number(totalStakedValue.total),
-    // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance) : undefined,
+    totalStaked: fetchTotalStaked ? Number(totalStaked) : undefined,
+    // Wallet staked
+    walletStaked: fetchWalletStaked ? Number(walletStaked) : undefined,
   }
 }

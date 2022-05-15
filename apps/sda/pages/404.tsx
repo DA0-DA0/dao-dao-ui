@@ -2,6 +2,8 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
+import { ErrorPage } from '@dao-dao/ui'
+
 import { Header, SuspenseLoader } from '@/components'
 
 const Custom404: NextPage = () => {
@@ -17,9 +19,8 @@ const Custom404: NextPage = () => {
        * route.
        */}
       <SuspenseLoader fallback={null}>
-        <div className="mx-auto mt-4 max-w-prose text-center break-words">
-          <h1 className="text-3xl font-bold">404 - Page Not Found</h1>
-          <p className="mt-3">
+        <ErrorPage title="404 - Page Not Found">
+          <p>
             We couldn{"'"}t find <code>{router.asPath}</code>. Consider
             returning{' '}
             <Link href="/">
@@ -27,7 +28,7 @@ const Custom404: NextPage = () => {
             </Link>
             .
           </p>
-        </div>
+        </ErrorPage>
       </SuspenseLoader>
     </>
   )

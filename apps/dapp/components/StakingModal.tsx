@@ -1,280 +1,338 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { useState } from 'react'
+import { XIcon } from '@heroicons/react/outline'
+import { useState, FunctionComponent } from 'react'
 import toast from 'react-hot-toast'
-import { SetterOrUpdater, useRecoilValue, useSetRecoilState } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { StakingMode, StakingModal as StatelessStakingModal } from '@dao-dao/ui'
+import {
+  useWallet,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from '@dao-dao/state'
+import { useSend } from '@dao-dao/state/hooks/cw20-base'
+import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
+import {
+  stakedBalanceAtHeightSelector,
+  totalStakedAtHeightSelector,
+  totalValueSelector,
+} from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
+import {
+  StakingMode,
+  StakingModal as StatelessStakingModal,
+  Modal,
+} from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import {
-  daoSelector,
-  unstakingDuration as unstakingDurationSelector,
-} from 'selectors/daos'
-import {
-  cw20TokenInfo,
-  walletStakedTokenBalance,
-  walletTokenBalance,
-  walletTokenBalanceLoading,
-  walletTokenBalanceUpdateCountAtom,
-} from 'selectors/treasury'
-import { cleanChainError } from 'util/cleanChainError'
+import ConnectWalletButton from './ConnectWalletButton'
+import { Loader } from './Loader'
+import { useOrgInfoContext } from './OrgPageWrapper'
+import { SuspenseLoader } from './SuspenseLoader'
+import { cleanChainError } from '@/util/cleanChainError'
 
-function executeUnstakeAction(
-  denomAmount: number,
-  tokenInfo: TokenInfoResponse,
-  stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null | undefined,
-  walletAddress: string | undefined,
-  setLoading: SetterOrUpdater<boolean>,
-  onSuccess: Function,
-  onDone: Function
-) {
-  if (!signingClient || !walletAddress) {
-    toast.error('Please connect your wallet')
-    return
-  }
-
-  const amount = convertDenomToMicroDenomWithDecimals(
-    denomAmount,
-    tokenInfo.decimals
-  )
-
-  setLoading(true)
-  signingClient
-    ?.execute(
-      walletAddress,
-      stakingAddress,
-      {
-        unstake: {
-          amount,
-        },
-      },
-      'auto'
-    )
-    .then(() => onSuccess())
-    .catch((err) => {
-      toast.error(cleanChainError(err.message))
-      console.error(err)
-    })
-    .finally(() => {
-      setLoading(false)
-      onDone()
-    })
-}
-
-function executeStakeAction(
-  denomAmount: number,
-  tokenAddress: string,
-  tokenInfo: TokenInfoResponse,
-  stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null | undefined,
-  walletAddress: string | undefined,
-  setLoading: SetterOrUpdater<boolean>,
-  onSuccess: Function,
-  onDone: Function
-) {
-  if (!signingClient || !walletAddress) {
-    toast.error('Please connect your wallet')
-    return
-  }
-
-  const amount = convertDenomToMicroDenomWithDecimals(
-    denomAmount,
-    tokenInfo.decimals
-  )
-  setLoading(true)
-  signingClient
-    ?.execute(
-      walletAddress,
-      tokenAddress,
-      {
-        send: {
-          owner: walletAddress,
-          contract: stakingAddress,
-          amount: amount,
-          msg: btoa('{"stake": {}}'),
-        },
-      },
-      'auto'
-    )
-    .then(() => onSuccess())
-    .catch((err) => {
-      toast.error(cleanChainError(err.message))
-      console.error(err)
-    })
-    .finally(() => {
-      setLoading(false)
-      onDone()
-    })
-}
-
-function executeClaimAction(
-  stakingAddress: string,
-  signingClient: SigningCosmWasmClient | null | undefined,
-  walletAddress: string | undefined,
-  setLoading: SetterOrUpdater<boolean>,
-  onSuccess: Function,
-  onDone: Function
-) {
-  if (!signingClient || !walletAddress) {
-    toast.error('Please connect your wallet')
-    return
-  }
-
-  setLoading(true)
-  signingClient
-    ?.execute(
-      walletAddress,
-      stakingAddress,
-      {
-        claim: {},
-      },
-      'auto'
-    )
-    .then(() => onSuccess())
-    .catch((err) => {
-      toast.error(cleanChainError(err.message))
-      console.error(err)
-    })
-    .finally(() => {
-      setLoading(false)
-      onDone()
-    })
-}
-
-export function StakingModal({
-  defaultMode,
-  contractAddress,
-  claimableTokens,
-  onClose,
-  beforeExecute,
-  afterExecute,
-}: {
+interface StakingModalProps {
   defaultMode: StakingMode
-  contractAddress: string
-  claimableTokens: number
   onClose: () => void
-  beforeExecute: Function
-  afterExecute: Function
-}) {
+}
+
+export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
+  <SuspenseLoader fallback={<StakingModalLoader {...props} />}>
+    <InnerStakingModal {...props} />
+  </SuspenseLoader>
+)
+
+const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
+  defaultMode,
+  onClose,
+}) => {
+  const { address: walletAddress, connected, refreshBalances } = useWallet()
+  const { coreAddress } = useOrgInfoContext()
+
+  const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState(0)
 
-  const { address: walletAddress, signingClient } = useWallet()
-  const [loading, setLoading] = useState(false)
+  const {
+    governanceTokenAddress,
+    governanceTokenInfo,
+    walletBalance: unstakedBalance,
+  } = useGovernanceTokenInfo(coreAddress, {
+    fetchWalletBalance: true,
+  })
+  const {
+    stakingContractAddress,
+    stakingContractConfig,
+    refreshStakingContractBalances,
+    refreshTotals,
+    sumClaimsAvailable,
+    walletStaked,
+    refreshClaims,
+  } = useStakingInfo(coreAddress, {
+    fetchClaims: true,
+    fetchWalletStaked: true,
+  })
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(cw20TokenInfo(daoInfo?.gov_token))
-  const govTokenBalance = convertMicroDenomToDenomWithDecimals(
-    useRecoilValue(walletTokenBalance(daoInfo?.gov_token)).amount,
-    tokenInfo.decimals
-  )
-  const tokenBalanceLoading = useRecoilValue(
-    walletTokenBalanceLoading(walletAddress ?? '')
-  )
-
-  const stakedGovTokenBalance = convertMicroDenomToDenomWithDecimals(
-    useRecoilValue(walletStakedTokenBalance(daoInfo?.staking_contract)).amount,
-    tokenInfo.decimals
-  )
-  const unstakingDuration = useRecoilValue(
-    unstakingDurationSelector(daoInfo.staking_contract)
-  )
-  const setWalletTokenBalanceUpdateCount = useSetRecoilState(
-    walletTokenBalanceUpdateCountAtom(walletAddress ?? '')
+  const totalStaked = useRecoilValue(
+    stakingContractAddress
+      ? totalStakedAtHeightSelector({
+          contractAddress: stakingContractAddress,
+          params: [{}],
+        })
+      : constSelector(undefined)
   )
 
-  const onAction = (mode: StakingMode, amount: number) => {
-    beforeExecute()
+  const stakedBalance = useRecoilValue(
+    stakingContractAddress && walletAddress
+      ? stakedBalanceAtHeightSelector({
+          contractAddress: stakingContractAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined)
+  )
+
+  const totalValue = useRecoilValue(
+    stakingContractAddress
+      ? totalValueSelector({ contractAddress: stakingContractAddress })
+      : constSelector(undefined)
+  )
+
+  const doStake = useSend({
+    contractAddress: governanceTokenAddress ?? '',
+    sender: walletAddress ?? '',
+  })
+  const doUnstake = useUnstake({
+    contractAddress: stakingContractAddress ?? '',
+    sender: walletAddress ?? '',
+  })
+  const doClaim = useClaim({
+    contractAddress: stakingContractAddress ?? '',
+    sender: walletAddress ?? '',
+  })
+
+  const onAction = async (mode: StakingMode, amount: number) => {
+    if (
+      !connected ||
+      !governanceTokenInfo ||
+      !stakingContractAddress ||
+      !totalValue ||
+      !totalStaked ||
+      !stakedBalance
+    )
+      return
+
+    setLoading(true)
+
     switch (mode) {
-      case StakingMode.Stake:
-        executeStakeAction(
-          amount,
-          daoInfo.gov_token,
-          tokenInfo,
-          daoInfo.staking_contract,
-          signingClient,
-          walletAddress,
-          setLoading,
-          async () => {
-            // New staking balances will not appear until the next block has been added.
-            await new Promise((resolve) => setTimeout(resolve, 6500))
+      case StakingMode.Stake: {
+        setLoading(true)
 
-            setAmount(0)
-            setWalletTokenBalanceUpdateCount((p) => p + 1)
-            toast.success(`Staked ${amount.toLocaleString()} tokens`)
-          },
-          afterExecute
-        )
+        try {
+          await doStake({
+            amount: convertDenomToMicroDenomWithDecimals(
+              amount,
+              governanceTokenInfo.decimals
+            ),
+            contract: stakingContractAddress,
+            msg: btoa('{"stake": {}}'),
+          })
+
+          // TODO: Figure out better solution for detecting block.
+          // New balances will not appear until the next block.
+          await new Promise((resolve) => setTimeout(resolve, 6500))
+
+          refreshBalances()
+          refreshTotals()
+          refreshStakingContractBalances()
+
+          setAmount(0)
+          toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
+
+          // Close once done.
+          onClose()
+        } catch (err) {
+          console.error(err)
+          toast.error(cleanChainError(err.message))
+        } finally {
+          setLoading(false)
+        }
+
         break
-      case StakingMode.Unstake:
-        executeUnstakeAction(
-          amount,
-          tokenInfo,
-          daoInfo.staking_contract,
-          signingClient,
-          walletAddress,
-          setLoading,
-          async () => {
-            // New staking balances will not appear until the next block has been added.
-            await new Promise((resolve) => setTimeout(resolve, 6500))
+      }
+      case StakingMode.Unstake: {
+        setLoading(true)
 
-            setAmount(0)
-            setWalletTokenBalanceUpdateCount((p) => p + 1)
-            toast.success(`Unstaked ${amount.toLocaleString()} tokens`)
-          },
-          afterExecute
-        )
-        break
-      case StakingMode.Claim:
-        executeClaimAction(
-          daoInfo.staking_contract,
-          signingClient,
-          walletAddress,
-          setLoading,
-          async () => {
-            // New staking balances will not appear until the next block has been added.
-            await new Promise((resolve) => setTimeout(resolve, 6500))
+        // In the UI we display staked value as `amount_staked +
+        // rewards` and is the value used to compute voting power. When we actually
+        // process an unstake call, the contract expects this value in terms of
+        // amount_staked.
+        //
+        // value = amount_staked * total_value / staked_total
+        //
+        // => amount_staked = staked_total * value / total_value
+        let amountToUnstake =
+          (Number(totalStaked.total) * amount) / Number(totalValue.total)
 
-            setWalletTokenBalanceUpdateCount((p) => p + 1)
-            toast.success(
-              `Claimed ${convertMicroDenomToDenomWithDecimals(
-                amount,
-                tokenInfo.decimals
-              ).toLocaleString()} tokens`
+        // We have limited precision and on the contract side division rounds
+        // down, so division and multiplication don't commute. Handle the common
+        // case here where someone is attempting to unstake all of their funds.
+        if (
+          Math.abs(
+            Number(stakedBalance.balance) -
+              Number(
+                convertDenomToMicroDenomWithDecimals(
+                  amountToUnstake,
+                  governanceTokenInfo.decimals
+                )
+              )
+          ) <= 1
+        ) {
+          amountToUnstake = Number(
+            convertMicroDenomToDenomWithDecimals(
+              stakedBalance.balance,
+              governanceTokenInfo.decimals
             )
-          },
-          afterExecute
-        )
+          )
+        }
+
+        try {
+          await doUnstake({
+            amount: convertDenomToMicroDenomWithDecimals(
+              amountToUnstake,
+              governanceTokenInfo.decimals
+            ),
+          })
+
+          // TODO: Figure out better solution for detecting block.
+          // New balances will not appear until the next block.
+          await new Promise((resolve) => setTimeout(resolve, 6500))
+
+          refreshBalances()
+          refreshTotals()
+          refreshStakingContractBalances()
+
+          setAmount(0)
+          toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
+
+          // Close once done.
+          onClose()
+        } catch (err) {
+          console.error(err)
+          toast.error(cleanChainError(err.message))
+        } finally {
+          setLoading(false)
+        }
+
         break
+      }
+      case StakingMode.Claim: {
+        if (sumClaimsAvailable === 0) {
+          return toast.error('No claims available.')
+        }
+
+        setLoading(true)
+        try {
+          await doClaim()
+
+          // TODO: Figure out better solution for detecting block.
+          // New balances will not appear until the next block.
+          await new Promise((resolve) => setTimeout(resolve, 6500))
+
+          refreshBalances()
+          refreshTotals()
+          refreshClaims?.()
+          refreshStakingContractBalances()
+
+          setAmount(0)
+          toast.success(
+            `Claimed ${sumClaimsAvailable} token${
+              sumClaimsAvailable === 1 ? '' : 's'
+            }`
+          )
+
+          // Close once done.
+          onClose()
+        } catch (err) {
+          console.error(err)
+          toast.error(cleanChainError(err.message))
+        } finally {
+          setLoading(false)
+        }
+
+        break
+      }
       default:
         toast.error('Internal error while staking. Unrecognized mode.')
     }
   }
 
+  // If not connected, show connect button.
+  if (!connected) {
+    return (
+      <StakingModalWrapper onClose={onClose}>
+        <ConnectWalletButton />
+      </StakingModalWrapper>
+    )
+  }
+
+  // Don't render until ready.
+  if (
+    !governanceTokenInfo ||
+    !stakingContractConfig ||
+    sumClaimsAvailable === undefined ||
+    unstakedBalance === undefined ||
+    walletStaked === undefined
+  ) {
+    return <StakingModalLoader onClose={onClose} />
+  }
+
   return (
     <StatelessStakingModal
       amount={amount}
-      claimableTokens={claimableTokens}
+      claimableTokens={sumClaimsAvailable}
       defaultMode={defaultMode}
-      error={
-        !signingClient || !walletAddress
-          ? 'Please connect your wallet'
-          : undefined
-      }
-      loading={loading || tokenBalanceLoading}
+      error={connected ? undefined : 'Please connect your wallet.'}
+      loading={loading}
       onAction={onAction}
       onClose={onClose}
       setAmount={(newAmount) => setAmount(newAmount)}
-      stakableTokens={govTokenBalance}
-      tokenDecimals={tokenInfo.decimals}
-      tokenSymbol={tokenInfo.symbol}
-      unstakableTokens={stakedGovTokenBalance}
-      unstakingDuration={unstakingDuration}
+      stakableTokens={convertMicroDenomToDenomWithDecimals(
+        unstakedBalance,
+        governanceTokenInfo.decimals
+      )}
+      tokenDecimals={governanceTokenInfo.decimals}
+      tokenSymbol={governanceTokenInfo.symbol}
+      unstakableTokens={convertMicroDenomToDenomWithDecimals(
+        walletStaked,
+        governanceTokenInfo.decimals
+      )}
+      unstakingDuration={stakingContractConfig.unstaking_duration ?? null}
     />
   )
 }
+
+type StakingModalWrapperProps = Pick<StakingModalProps, 'onClose'>
+const StakingModalWrapper: FunctionComponent<StakingModalWrapperProps> = ({
+  children,
+  onClose,
+}) => (
+  <Modal onClose={onClose}>
+    <div className="relative p-40 bg-white rounded-lg border border-focus cursor-auto">
+      <button
+        className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+        onClick={onClose}
+      >
+        <XIcon className="w-4 h-4" />
+      </button>
+
+      {children}
+    </div>
+  </Modal>
+)
+
+const StakingModalLoader: FunctionComponent<
+  Omit<StakingModalWrapperProps, 'children'>
+> = (props) => (
+  <StakingModalWrapper {...props}>
+    <Loader size={40} />
+  </StakingModalWrapper>
+)

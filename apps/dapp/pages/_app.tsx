@@ -15,9 +15,9 @@ import {
 } from '@dao-dao/state'
 import { Theme, ThemeProvider } from '@dao-dao/ui'
 
-import ErrorBoundary from '@/components/ErrorBoundary'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { HomepageLayout } from '@/components/HomepageLayout'
-import Notifications from '@/components/Notifications'
+import { Notifications } from '@/components/Notifications'
 import { SidebarLayout } from '@/components/SidebarLayout'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {

@@ -12,8 +12,7 @@ import { Logo } from '@dao-dao/ui'
 import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
-import { MobilePinnedDaoNavList } from './PinnedDaoNavList'
-import { MobilePinnedMultisigNavList } from './PinnedMultisigNavList'
+import { MobilePinnedOrgNavList } from './PinnedOrgNavList'
 import { SuspenseLoader } from './SuspenseLoader'
 
 interface SmallScreenNavProps {
@@ -46,34 +45,19 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       {expanded && (
         <div>
           <div className="ml-1">
-            <h3 className="mb-2 font-mono caption-text">DAOs</h3>
+            <h3 className="mb-2 font-mono caption-text">Orgs</h3>
 
             <SuspenseLoader
               fallback={<Loader className="!justify-start ml-2" size={20} />}
             >
-              <MobilePinnedDaoNavList />
+              <MobilePinnedOrgNavList />
             </SuspenseLoader>
 
             <ul className="mt-2 list-none">
               <NavListItem
-                href="/dao/list"
+                href="/org/list"
                 icon={ArrowRightIcon}
-                text="All DAOs"
-              />
-            </ul>
-            <h3 className="mt-5 mb-2 font-mono caption-text">Multisigs</h3>
-
-            <SuspenseLoader
-              fallback={<Loader className="!justify-start ml-2" size={20} />}
-            >
-              <MobilePinnedMultisigNavList />
-            </SuspenseLoader>
-
-            <ul className="mt-2 list-none">
-              <NavListItem
-                href="/multisig/list"
-                icon={ArrowRightIcon}
-                text="All Multisigs"
+                text="All Orgs"
               />
             </ul>
           </div>

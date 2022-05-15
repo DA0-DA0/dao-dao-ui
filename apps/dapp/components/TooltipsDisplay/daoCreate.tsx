@@ -1,7 +1,37 @@
 import { ReactNode } from 'react'
 
-import { TooltipResponse } from 'components/TooltipsDisplay'
-import { DaoCreateData } from 'pages/dao/create'
+import { TooltipResponse } from '@/components/TooltipsDisplay'
+
+export interface DaoCreateData {
+  deposit: string
+  description: string
+  duration: string
+
+  // The `tokenMode` state varaible inside of `CreateDAO` determines
+  // which of these fields we use to instantiate the DAO.
+
+  // Fields for creating a DAO with a new token.
+  name: string
+
+  threshold: string
+  // Quorum if the threshold quorum passing threshold type is selected. Consult
+  // `ThresholdMode` to determine if this type is selected.
+  quorum: string
+
+  tokenName: string
+  tokenSymbol: string
+  tokenImage: string
+  daoInitialBalance: string
+
+  // Field for creating a DAO with an existing token.
+  existingTokenAddress: string
+
+  unstakingDuration: string
+  refund: string | boolean
+  imageUrl: string
+
+  balances: { addr: string; amount: string }[]
+}
 
 // A type which maps each key of DaoCreateData to a react node. Updating a field
 // name in DaoCreateData will cause type checking to fail until that field is

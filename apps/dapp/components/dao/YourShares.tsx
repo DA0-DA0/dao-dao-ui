@@ -1,47 +1,44 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
-import { BalanceCard, StakingMode } from '@dao-dao/ui'
 import {
-  claimAvailable,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
+  useGovernanceTokenInfo,
+  useStakingInfo,
+  useWallet,
+} from '@dao-dao/state'
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { BalanceCard, StakingMode } from '@dao-dao/ui'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { ClaimsPendingList } from '../Claims'
+import { ClaimsPendingList } from '../ClaimsPendingList'
 import { Loader } from '../Loader'
 import { StakingModal } from '../StakingModal'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { daoSelector, tokenConfig } from '@/selectors/daos'
 import {
-  walletTokenBalance,
-  walletStakedTokenBalance,
-  getBlockHeight,
-  walletClaims,
   walletTokenBalanceLoading,
   walletTokenBalanceUpdateCountAtom,
 } from '@/selectors/treasury'
 
-const InnerYourShares: FC = () => {
-  const router = useRouter()
-  const contractAddress = router.query.contractAddress as string
+interface InternalYourSharesProps {
+  coreAddress: string
+}
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-
-  // Balances for the visitor
-  const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
-  const stakedGovTokenBalance = useRecoilValue(
-    walletStakedTokenBalance(daoInfo?.staking_contract)
+const InnerYourShares: FC<InternalYourSharesProps> = ({ coreAddress }) => {
+  const config = useRecoilValue(
+    configSelector({ contractAddress: coreAddress })
   )
-  const blockHeight = useRecoilValue(getBlockHeight)
-  const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const claimsAvailable = stuff.claims
-    .filter((c) => claimAvailable(c, blockHeight))
-    .reduce((p, n) => p + Number(n.amount), 0)
+  const { governanceTokenInfo, walletBalance: unstakedGovTokenBalance } =
+    useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
+  const {
+    walletStaked: stakedGovTokenBalance,
+    blockHeight,
+    sumClaimsAvailable,
+  } = useStakingInfo(coreAddress, {
+    fetchWalletStaked: true,
+    fetchClaims: true,
+  })
 
   const { address: walletAddress } = useWallet()
   const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
@@ -53,77 +50,82 @@ const InnerYourShares: FC = () => {
 
   const [showStaking, setShowStaking] = useState(false)
 
+  if (
+    !config ||
+    !governanceTokenInfo ||
+    unstakedGovTokenBalance === undefined ||
+    stakedGovTokenBalance === undefined ||
+    blockHeight === undefined ||
+    sumClaimsAvailable === undefined
+  ) {
+    throw new Error('Failed to load data.')
+  }
+
   return (
     <>
       <ul className="flex flex-col gap-2 items-stretch list-none">
         <li>
           <BalanceCard
             amount={convertMicroDenomToDenomWithDecimals(
-              govTokenBalance?.amount,
-              tokenInfo.decimals
+              unstakedGovTokenBalance,
+              governanceTokenInfo.decimals
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-            denom={tokenInfo?.symbol}
+            denom={governanceTokenInfo.symbol}
             loading={tokenBalanceLoading}
-            onManage={() => {
-              setShowStaking(true)
-            }}
+            onManage={() => setShowStaking(true)}
             title="Balance"
           />
         </li>
         <li>
           <BalanceCard
             amount={convertMicroDenomToDenomWithDecimals(
-              stakedGovTokenBalance.amount,
-              tokenInfo.decimals
+              stakedGovTokenBalance,
+              governanceTokenInfo.decimals
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-            denom={tokenInfo?.symbol}
+            denom={governanceTokenInfo.symbol}
             loading={tokenBalanceLoading}
-            onManage={() => {
-              setShowStaking(true)
-            }}
-            title={`Voting power (staked ${tokenInfo?.symbol})`}
+            onManage={() => setShowStaking(true)}
+            title={`Voting power (staked ${governanceTokenInfo.symbol})`}
           />
         </li>
-        {claimsAvailable ? (
+        {sumClaimsAvailable ? (
           <li>
             <BalanceCard
               amount={convertMicroDenomToDenomWithDecimals(
-                claimsAvailable,
-                tokenInfo.decimals
+                sumClaimsAvailable,
+                governanceTokenInfo.decimals
               ).toLocaleString(undefined, {
                 maximumFractionDigits: 20,
               })}
-              denom={tokenInfo?.symbol}
+              denom={governanceTokenInfo.symbol}
               loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title={`Pending (unclaimed ${tokenInfo?.symbol})`}
+              onManage={() => setShowStaking(true)}
+              title={`Pending (unclaimed ${governanceTokenInfo.symbol})`}
             />
           </li>
         ) : null}
       </ul>
-      {govTokenBalance?.amount ? (
+      {unstakedGovTokenBalance ? (
         <div className="p-6 mt-2 w-full bg-primary rounded-lg">
           <h3 className="mb-4 link-text">
             You have{' '}
             {convertMicroDenomToDenomWithDecimals(
-              govTokenBalance?.amount,
-              tokenInfo.decimals
+              unstakedGovTokenBalance,
+              governanceTokenInfo.decimals
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-            unstaked {tokenInfo.symbol}
+            unstaked {governanceTokenInfo.symbol}
           </h3>
           <p className="secondary-text">
             Staking them would bring you{' '}
-            {stakedGovTokenBalance &&
+            {!!stakedGovTokenBalance &&
               `${(
-                (govTokenBalance.amount / stakedGovTokenBalance.amount) *
+                (unstakedGovTokenBalance / stakedGovTokenBalance) *
                 100
               ).toLocaleString(undefined, {
                 maximumSignificantDigits: 3,
-              })}%`}{' '}
+              })}% `}
             more voting power and help you defend your positions for{' '}
-            {daoInfo.config.name}
+            {config.name}
             {"'"}s direction.
           </p>
           <div className="flex justify-end mt-4">
@@ -140,16 +142,11 @@ const InnerYourShares: FC = () => {
         </div>
       ) : null}
       <ClaimsPendingList
+        coreAddress={coreAddress}
         onClaimAvailable={() => setWalletTokenBalanceUpdateCount((n) => n + 1)}
-        stakingAddress={daoInfo.staking_contract}
-        tokenInfo={tokenInfo}
       />
       {showStaking && (
         <StakingModal
-          afterExecute={() => setTokenBalancesLoading(false)}
-          beforeExecute={() => setTokenBalancesLoading(true)}
-          claimableTokens={claimsAvailable}
-          contractAddress={contractAddress}
           defaultMode={StakingMode.Stake}
           onClose={() => setShowStaking(false)}
         />
@@ -158,18 +155,19 @@ const InnerYourShares: FC = () => {
   )
 }
 
-export interface YourSharesProps {
+export interface YourSharesProps extends InternalYourSharesProps {
+  coreAddress: string
   primaryText?: boolean
 }
 
-export const YourShares: FC<YourSharesProps> = ({ primaryText }) => (
+export const YourShares: FC<YourSharesProps> = ({ primaryText, ...props }) => (
   <>
     <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
       Your shares
     </h2>
 
     <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-      <InnerYourShares />
+      <InnerYourShares {...props} />
     </SuspenseLoader>
   </>
 )

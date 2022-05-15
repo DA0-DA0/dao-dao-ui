@@ -63,22 +63,20 @@ export const StakeHeader: FunctionComponent = () => {
   const {
     governanceTokenInfo,
     treasuryBalance: _treasuryBalance,
-    walletBalance: _unstakedBalance,
     price: governanceTokenPrice,
   } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchTreasuryBalance: true,
-    fetchWalletBalance: true,
     fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
   const apr = useApr()
-  const { totalStakedValue: totalStakedValue } = useStakingInfo(DAO_ADDRESS, {
-    fetchTotalStakedValue: true,
+  const { totalStaked } = useStakingInfo(DAO_ADDRESS, {
+    fetchTotalStaked: true,
   })
 
   if (
     !daoConfig ||
     !governanceTokenInfo ||
-    totalStakedValue === undefined ||
+    totalStaked === undefined ||
     _treasuryBalance === undefined ||
     apr === undefined
   ) {
@@ -86,7 +84,7 @@ export const StakeHeader: FunctionComponent = () => {
   }
 
   const totalStakedBalance = convertMicroDenomToDenomWithDecimals(
-    totalStakedValue,
+    totalStaked,
     governanceTokenInfo.decimals
   )
   const treasuryBalance = convertMicroDenomToDenomWithDecimals(

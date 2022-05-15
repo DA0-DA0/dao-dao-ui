@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { FunctionComponent, PropsWithChildren } from 'react'
 
 import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
+import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT, CI } from '@dao-dao/utils'
 
 import {
   Header,
@@ -14,7 +14,7 @@ import {
   DAOInfo,
   DefaultDAOInfo,
 } from '.'
-import { CI, DAO_ADDRESS } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string

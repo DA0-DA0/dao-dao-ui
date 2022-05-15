@@ -25,24 +25,14 @@ export const ActionMenu = () => (
   <div className="p-4 bg-primary rounded-md border border-transparent hover:border-btn-secondary">
     <ul className="-mx-1 font-medium list-none text-md">
       <ActionItem
-        href="/dao/create"
+        href="/org/create"
         icon={<PlusIcon className="w-4" />}
-        text={'Create a DAO'}
+        text="Create an Org"
       />
       <ActionItem
-        href="/multisig/create"
-        icon={<PlusIcon className="w-4" />}
-        text={'Create a multisig'}
-      />
-      <ActionItem
-        href="/dao/list"
+        href="/org/list"
         icon={<MapIcon className="w-4" />}
-        text={'Explore all DAOs'}
-      />
-      <ActionItem
-        href="/multisig/list"
-        icon={<MapIcon className="w-4" />}
-        text={'Explore all multisigs'}
+        text="Explore all Orgs"
       />
     </ul>
   </div>

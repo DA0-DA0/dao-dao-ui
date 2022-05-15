@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { FunctionComponent } from 'react'
 
 import { Button } from '@dao-dao/ui'
+import { CI } from '@dao-dao/utils'
 
 import {
   VoteHeroContent,
@@ -23,7 +24,6 @@ import {
   DescriptionAndAirdropAllocation,
 } from '@/components'
 import { PausedBanner } from '@/components/PausedBanner'
-import { CI } from '@/util'
 
 interface InnerVoteProps {
   missionMarkdown: string

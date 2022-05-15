@@ -61,11 +61,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
-    walletBalance: stakedValue,
+    walletStaked,
     refreshClaims,
   } = useStakingInfo(DAO_ADDRESS, {
     fetchClaims: true,
-    fetchWalletBalance: true,
+    fetchWalletStaked: true,
   })
 
   const totalStaked = useRecoilValue(
@@ -276,7 +276,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     !stakingContractConfig ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
-    stakedValue === undefined
+    walletStaked === undefined
   ) {
     return <StakingModalLoader onClose={onClose} />
   }
@@ -298,7 +298,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       tokenDecimals={governanceTokenInfo.decimals}
       tokenSymbol={governanceTokenInfo.symbol}
       unstakableTokens={convertMicroDenomToDenomWithDecimals(
-        stakedValue,
+        walletStaked,
         governanceTokenInfo.decimals
       )}
       unstakingDuration={stakingContractConfig.unstaking_duration ?? null}
@@ -329,8 +329,6 @@ const StakingModalLoader: FunctionComponent<
   Omit<StakingModalWrapperProps, 'children'>
 > = (props) => (
   <StakingModalWrapper {...props}>
-    <div className="animate-spin">
-      <Loader size={40} />
-    </div>
+    <Loader size={40} />
   </StakingModalWrapper>
 )

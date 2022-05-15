@@ -6,6 +6,7 @@ import {
   CHAIN_RPC_ENDPOINT,
   cosmWasmClientRouter,
   GAS_PRICE,
+  NATIVE_DENOM,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -64,5 +65,19 @@ export const nativeBalancesSelector = selectorFamily({
       get(refreshWalletBalancesIdAtom(address))
 
       return await client.getAllBalances(address)
+    },
+})
+
+export const nativeBalanceSelector = selectorFamily({
+  key: 'nativeBalance',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(stargateClientSelector)
+      if (!client) return
+
+      get(refreshWalletBalancesIdAtom(address))
+
+      return await client.getBalance(address, NATIVE_DENOM)
     },
 })

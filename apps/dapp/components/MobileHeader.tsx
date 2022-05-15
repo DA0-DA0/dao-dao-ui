@@ -1,15 +1,15 @@
 import { FC } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState } from 'recoil'
 
+import { useStakingInfo } from '@dao-dao/state'
 import {
   MobileHeader as StatelessMobileHeader,
   MobileHeaderLoader,
 } from '@dao-dao/ui'
 
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
-import { pinnedDaosAtom } from '@/atoms/pinned'
-import { isMemberSelector } from '@/selectors/cosm'
-import { daoSelector } from '@/selectors/daos'
+import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
 
 export interface MobileHeaderProps {
@@ -17,23 +17,35 @@ export interface MobileHeaderProps {
 }
 
 const MobileHeaderInternal: FC<MobileHeaderProps> = ({ contractAddress }) => {
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const { member } = useRecoilValue(isMemberSelector(contractAddress))
-  const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
-  const pinned = pinnedDaos.includes(contractAddress)
+  const {
+    governanceTokenAddress,
+    name: orgName,
+    imageUrl,
+  } = useOrgInfoContext()
+  const { walletStaked } = useStakingInfo(contractAddress, {
+    fetchWalletStaked: true,
+  })
+
+  const [pinnedAddresses, setPinnedAddresses] =
+    useRecoilState(pinnedAddressesAtom)
+  const pinned = pinnedAddresses.includes(contractAddress)
+
+  if (walletStaked === undefined) {
+    throw new Error('Failed to load data.')
+  }
 
   return (
     <StatelessMobileHeader
       contractAddress={contractAddress}
-      imageUrl={daoInfo.config.image_url || ''}
-      member={member}
-      name={daoInfo.config.name}
+      imageUrl={imageUrl ?? ''}
+      member={walletStaked > 0}
+      name={orgName}
       onPin={() => {
         if (pinned) {
-          setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
+          setPinnedAddresses((p) => p.filter((a) => a !== contractAddress))
         } else {
-          setPinnedDaos((p) => p.concat([contractAddress]))
-          addToken(daoInfo.gov_token)
+          setPinnedAddresses((p) => p.concat([contractAddress]))
+          addToken(governanceTokenAddress)
         }
       }}
       pinned={pinned}

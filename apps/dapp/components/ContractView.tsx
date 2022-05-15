@@ -16,7 +16,7 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { ProposalList } from './ProposalList'
+import { ProposalList } from './proposals/ProposalList'
 import { SuspenseLoader } from './SuspenseLoader'
 import { isMemberSelector } from '@/selectors/cosm'
 import {
@@ -59,13 +59,11 @@ export function TreasuryBalances({ address }: { address: string }) {
 interface ContractProposalsDisplayProps {
   contractAddress: string
   proposalCreateLink: string
-  multisig?: boolean
 }
 
 export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
   contractAddress,
   proposalCreateLink,
-  multisig,
 }) => {
   const { address: walletAddress } = useWallet()
   const member = useRecoilValueLoadable(isMemberSelector(contractAddress))
@@ -75,9 +73,7 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
     member.state === 'loading'
 
   const tooltip = !member
-    ? `You must have voting power to create a proposal.${
-        multisig ? '' : ' Consider staking some tokens.'
-      }`
+    ? 'You must have voting power to create a proposal. Consider staking some tokens.'
     : undefined
 
   return (
@@ -105,7 +101,7 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
       </div>
       <div className="mt-4 md:px-4">
         <SuspenseLoader fallback={<Loader />}>
-          <ProposalList contractAddress={contractAddress} multisig={multisig} />
+          <ProposalList contractAddress={contractAddress} />
         </SuspenseLoader>
       </div>
     </>

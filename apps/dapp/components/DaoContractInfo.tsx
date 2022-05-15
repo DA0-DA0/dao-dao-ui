@@ -3,20 +3,21 @@ import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
+import {
+  useGovernanceTokenInfo,
+  useProposalModule,
+  useStakingInfo,
+} from '@dao-dao/state'
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
-  getThresholdAndQuorumDisplay,
 } from '@dao-dao/utils'
-
-import {
-  daoSelector,
-  tokenConfig,
-  unstakingDuration as unstakingDurationSelector,
-} from 'selectors/daos'
+import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { DaoTreasury } from './DaoTreasury'
+import { Loader } from './Loader'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface DaoContractInfoProps {
@@ -28,17 +29,26 @@ function DaoContractInfoInternal({
   address,
   hideTreasury,
 }: DaoContractInfoProps) {
-  const daoInfo = useRecoilValue(daoSelector(address))
-  const govTokenInfo = useRecoilValue(tokenConfig(daoInfo.gov_token))
+  const config = useRecoilValue(configSelector({ contractAddress: address }))
+  const { governanceTokenAddress, governanceTokenInfo } =
+    useGovernanceTokenInfo(address)
+  const { proposalModuleConfig } = useProposalModule(address)
+  const { stakingContractAddress, stakingContractConfig } =
+    useStakingInfo(address)
 
-  const [threshold, quorum] = getThresholdAndQuorumDisplay(
-    daoInfo.config.threshold,
-    false,
-    govTokenInfo.decimals
-  )
+  if (
+    !config ||
+    !governanceTokenAddress ||
+    !governanceTokenInfo ||
+    !proposalModuleConfig ||
+    !stakingContractAddress ||
+    !stakingContractConfig
+  ) {
+    throw new Error('Failed to load data.')
+  }
 
-  const unstakingDuration = useRecoilValue(
-    unstakingDurationSelector(daoInfo.staking_contract)
+  const { threshold, quorum } = processThresholdData(
+    proposalModuleConfig.threshold
   )
 
   return (
@@ -49,35 +59,49 @@ function DaoContractInfoInternal({
           <GovInfoListItem
             icon={<ChartPieIcon className="inline w-4" />}
             text="Unstaking period"
-            value={humanReadableDuration(unstakingDuration)}
+            value={
+              stakingContractConfig.unstaking_duration
+                ? humanReadableDuration(
+                    stakingContractConfig.unstaking_duration
+                  )
+                : 'None'
+            }
           />
           <GovInfoListItem
             icon={<Votes fill="currentColor" width="16px" />}
             text="Passing threshold"
-            value={threshold}
+            value={threshold.display}
           />
           {quorum && (
             <GovInfoListItem
               icon={<Votes fill="currentColor" width="16px" />}
               text="Quorum"
-              value={quorum}
+              value={quorum.display}
             />
           )}
-          <GovInfoListItem
-            icon={<CashIcon className="inline w-4" />}
-            text="Proposal deposit refund"
-            value={daoInfo.config.refund_failed_proposals ? 'ON' : 'OFF'}
-          />
-          <li className="flex flex-row items-center caption-text">
-            <span className="flex gap-1 items-center">
-              <Votes fill="currentColor" width="16px" />{' '}
-              {convertMicroDenomToDenomWithDecimals(
-                daoInfo.config.proposal_deposit,
-                govTokenInfo.decimals
-              )}{' '}
-              ${govTokenInfo.symbol} proposal deposit
-            </span>
-          </li>
+          {proposalModuleConfig.deposit_info && (
+            <>
+              <GovInfoListItem
+                icon={<CashIcon className="inline w-4" />}
+                text="Proposal deposit refund"
+                value={
+                  proposalModuleConfig.deposit_info.refund_failed_proposals
+                    ? 'ON'
+                    : 'OFF'
+                }
+              />
+              <li className="flex flex-row items-center caption-text">
+                <span className="flex gap-1 items-center">
+                  <Votes fill="currentColor" width="16px" />{' '}
+                  {convertMicroDenomToDenomWithDecimals(
+                    proposalModuleConfig.deposit_info.deposit,
+                    governanceTokenInfo.decimals
+                  )}{' '}
+                  ${governanceTokenInfo.symbol} proposal deposit
+                </span>
+              </li>
+            </>
+          )}
         </ul>
       </div>
       <div>
@@ -87,14 +111,18 @@ function DaoContractInfoInternal({
             DAO <CopyToClipboardAccent value={address} />
           </li>
           <li>
-            Gov token <CopyToClipboardAccent value={daoInfo.gov_token} />
+            Gov token <CopyToClipboardAccent value={governanceTokenAddress} />
           </li>
           <li>
-            Staking <CopyToClipboardAccent value={daoInfo.staking_contract} />
+            Staking <CopyToClipboardAccent value={stakingContractAddress} />
           </li>
         </ul>
       </div>
-      {!hideTreasury && <DaoTreasury address={address} />}
+      {!hideTreasury && (
+        <SuspenseLoader fallback={<Loader />}>
+          <DaoTreasury address={address} />
+        </SuspenseLoader>
+      )}
     </div>
   )
 }

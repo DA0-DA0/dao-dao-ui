@@ -9,15 +9,14 @@ interface Hit {
   description: string
   image_url: string | undefined
   proposal_count: number
-  type: 'dao' | 'multisig'
   treasury_balance: string
 }
 
-const Hit = ({ hit, multisig }: { hit: Hit; multisig?: boolean }) => (
+const Hit = ({ hit }: { hit: Hit }) => (
   <ContractCard
     balance={hit.treasury_balance}
     description={hit.description}
-    href={`/${multisig ? 'multisig' : 'dao'}/${hit.id}`}
+    href={`/org/${hit.id}`}
     imgUrl={hit.image_url}
     name={hit.name}
     proposals={hit.proposal_count}
@@ -26,10 +25,10 @@ const Hit = ({ hit, multisig }: { hit: Hit; multisig?: boolean }) => (
 
 // Need to use `any` here as instantsearch does't export the required
 // types.
-const HitsInternal: FC<any> = ({ hits, multisig }) => (
+const HitsInternal: FC<any> = ({ hits }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
     {hits.map((hit: Hit) => (
-      <Hit key={hit.id} hit={hit} multisig={multisig} />
+      <Hit key={hit.id} hit={hit} />
     ))}
   </div>
 )

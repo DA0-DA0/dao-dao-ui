@@ -3,16 +3,16 @@ import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { Pencil } from '@dao-dao/icons'
+import {
+  useGovernanceTokenInfo,
+  useProposalModule,
+  useStakingInfo,
+} from '@dao-dao/state'
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from './SuspenseLoader'
-import {
-  daoSelector,
-  proposalCount,
-  tokenConfig,
-  totalStaked,
-} from '@/selectors/daos'
 
 export interface DaoHorizontalInfoDisplayProps {
   contractAddress: string
@@ -21,14 +21,27 @@ export interface DaoHorizontalInfoDisplayProps {
 const DaoHorizontalInfoDisplayInternal: FC<DaoHorizontalInfoDisplayProps> = ({
   contractAddress,
 }) => {
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-  const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
-  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
+  const config = useRecoilValue(configSelector({ contractAddress }))
+  const { governanceTokenInfo } = useGovernanceTokenInfo(contractAddress)
+  const { totalStaked } = useStakingInfo(contractAddress, {
+    fetchTotalStaked: true,
+  })
+  const { proposalCount } = useProposalModule(contractAddress, {
+    fetchProposalCount: true,
+  })
+
+  if (
+    !config ||
+    !governanceTokenInfo ||
+    totalStaked === undefined ||
+    proposalCount === undefined
+  ) {
+    throw new Error('Failed to load data.')
+  }
 
   const stakedPercent = (
-    (100 * stakedTotal) /
-    Number(tokenInfo?.total_supply)
+    (100 * totalStaked) /
+    Number(governanceTokenInfo.total_supply)
   ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
 
   return (
@@ -36,18 +49,18 @@ const DaoHorizontalInfoDisplayInternal: FC<DaoHorizontalInfoDisplayProps> = ({
       <HorizontalInfoSection>
         <UsersIcon className="inline w-4" />
         {convertMicroDenomToDenomWithDecimals(
-          tokenInfo.total_supply,
-          tokenInfo.decimals
+          governanceTokenInfo.total_supply,
+          governanceTokenInfo.decimals
         ).toLocaleString()}{' '}
-        ${tokenInfo?.symbol} total supply
+        ${governanceTokenInfo.symbol} total supply
       </HorizontalInfoSection>
       <HorizontalInfoSection>
         <LibraryIcon className="inline w-4" />
-        {stakedPercent}% ${tokenInfo?.symbol} staked
+        {stakedPercent}% ${governanceTokenInfo.symbol} staked
       </HorizontalInfoSection>
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {proposalsTotal} proposals created
+        {proposalCount} proposals created
       </HorizontalInfoSection>
     </HorizontalInfo>
   )

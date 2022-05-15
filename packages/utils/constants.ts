@@ -71,3 +71,5 @@ export const MICRO_STAKING_DENOM = process.env
 export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 export const SEARCH_INDEX = process.env.NEXT_PUBLIC_SEARCH_INDEX as string
+
+export const CI = process.env.CI === 'true'

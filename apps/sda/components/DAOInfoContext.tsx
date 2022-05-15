@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react'
 
 export interface DAOInfo {
   name: string
-  imageUrl?: string | null
+  imageUrl: string | null
 }
 
 export const DefaultDAOInfo: DAOInfo = {

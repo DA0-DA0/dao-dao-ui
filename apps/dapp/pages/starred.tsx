@@ -1,23 +1,18 @@
 import { StarIcon } from '@heroicons/react/outline'
 import { NextPage } from 'next'
+import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { LoadingScreen } from '@dao-dao/ui'
 
-import { pinnedDaosAtom, pinnedMultisigsAtom } from '@/atoms/pinned'
-import { EmptyDaoCard } from '@/components/EmptyDaoCard'
-import { EmptyMultisigCard } from '@/components/EmptyMultisigCard'
+import { pinnedAddressesAtom } from '@/atoms/pinned'
+import { EmptyOrgCard } from '@/components/EmptyDaoCard'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
-import {
-  ActionMenu,
-  PinnedDaoCard,
-  PinnedMultisigCard,
-} from '@/components/starred'
+import { ActionMenu, PinnedOrgCard } from '@/components/starred'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 
-const InnerStarred: NextPage = () => {
-  const pinnedDaos = useRecoilValue(pinnedDaosAtom)
-  const pinnedMultisigs = useRecoilValue(pinnedMultisigsAtom)
+const InnerStarred: FC = () => {
+  const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
 
   return (
     <div>
@@ -31,31 +26,16 @@ const InnerStarred: NextPage = () => {
           <h1 className="header-text">Starred</h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
-            DAOs
+            Orgs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {pinnedDaos.length ? (
-              pinnedDaos.map((address) => (
-                <PinnedDaoCard key={address} address={address} />
+            {pinnedAddresses.length ? (
+              pinnedAddresses.map((address) => (
+                <PinnedOrgCard key={address} address={address} />
               ))
             ) : (
-              <EmptyDaoCard />
+              <EmptyOrgCard />
             )}
-          </div>
-          <div className="mt-6">
-            <h2 className="flex gap-1 items-center mt-6 mb-2 primary-text">
-              <StarIcon className="inline w-4 " />
-              Multisigs
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-              {pinnedMultisigs.length ? (
-                pinnedMultisigs.map((address) => (
-                  <PinnedMultisigCard key={address} address={address} />
-                ))
-              ) : (
-                <EmptyMultisigCard />
-              )}
-            </div>
           </div>
         </div>
 

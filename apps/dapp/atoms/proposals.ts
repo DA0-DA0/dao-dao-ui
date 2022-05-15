@@ -1,6 +1,6 @@
 import { atom, atomFamily } from 'recoil'
 
-import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
+import { ProposalResponse } from '@dao-dao/state/clients/cw-proposal-single'
 
 // By depending on this atom, the selector for retrieving the list
 // of on-chain proposals can know when it's time to actually re-calculate
@@ -14,8 +14,8 @@ export const proposalsRequestIdAtom = atom<number>({
 
 // High-water mark for where to start querying the chain for proposals.
 // Used when paging in "more items" in proposal list pages.
-export const proposalsRequestStartBeforeAtom = atom<number>({
-  key: 'proposalsRequestStartBefore',
+export const proposalsRequestStartAfterAtom = atom<number>({
+  key: 'proposalsRequestStartAfter',
   default: 0,
 })
 

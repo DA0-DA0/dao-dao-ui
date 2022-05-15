@@ -11,8 +11,7 @@ import ThemeToggle from 'components/ThemeToggle'
 import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
-import { PinnedDaoNavList } from './PinnedDaoNavList'
-import { PinnedMultisigNavList } from './PinnedMultisigNavList'
+import { PinnedOrgNavList } from './PinnedOrgNavList'
 import { SuspenseLoader } from './SuspenseLoader'
 
 type NavProps = {
@@ -37,38 +36,19 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
       </div>
       <div className="ml-1 text-sm">
         <div className="mt-[20px]">
-          <h3 className="mb-[16px] font-mono caption-text">DAOs</h3>
+          <h3 className="mb-[16px] font-mono caption-text">Orgs</h3>
 
           <SuspenseLoader
             fallback={<Loader className="!justify-start ml-2" size={20} />}
           >
-            <PinnedDaoNavList />
+            <PinnedOrgNavList />
           </SuspenseLoader>
 
           <ul className="mt-2 ml-2 list-none">
             <NavListItem
-              href="/dao/list"
+              href="/org/explore"
               icon={ArrowRightIcon}
-              text="All DAOs"
-            />
-          </ul>
-        </div>
-        <div className="mt-3">
-          <h3 className="mt-[20px] mb-[16px] font-mono caption-text">
-            Multisigs
-          </h3>
-
-          <SuspenseLoader
-            fallback={<Loader className="!justify-start ml-2" size={20} />}
-          >
-            <PinnedMultisigNavList />
-          </SuspenseLoader>
-
-          <ul className="mt-2 ml-2 list-none">
-            <NavListItem
-              href="/multisig/list"
-              icon={ArrowRightIcon}
-              text="All Multisigs"
+              text="All Orgs"
             />
           </ul>
         </div>

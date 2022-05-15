@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   ContractHeader as StatelessContractHeader,
   ContractHeaderLoader,
@@ -8,7 +9,6 @@ import {
 
 import { SuspenseLoader } from './SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
-import { daoSelector } from '@/selectors/daos'
 
 export interface ContractHeaderProps {
   contractAddress: string
@@ -17,20 +17,22 @@ export interface ContractHeaderProps {
 const ContractHeaderInternal: FC<ContractHeaderProps> = ({
   contractAddress,
 }) => {
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+  const config = useRecoilValue(configSelector({ contractAddress }))
   const establishedDate = useRecoilValueLoadable(
     contractInstantiateTime(contractAddress)
   )
 
+  if (!config) throw new Error('Failed to load data.')
+
   return (
     <StatelessContractHeader
-      description={daoInfo.config.description}
+      description={config.description}
       established={
         (establishedDate.state === 'hasValue' && establishedDate.getValue()) ||
         undefined
       }
-      imgUrl={daoInfo.config.image_url || undefined}
-      name={daoInfo.config.name}
+      imgUrl={config.image_url ?? undefined}
+      name={config.name}
     />
   )
 }

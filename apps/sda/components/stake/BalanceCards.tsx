@@ -81,27 +81,24 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
-  const { totalStakedValue: totalStakedValue, walletBalance: _stakedBalance } =
-    useStakingInfo(DAO_ADDRESS, {
-      fetchTotalStakedValue: true,
-      fetchWalletBalance: true,
-    })
+  const { totalStaked, walletStaked } = useStakingInfo(DAO_ADDRESS, {
+    fetchTotalStaked: true,
+    fetchWalletStaked: true,
+  })
 
   if (
     !governanceTokenInfo ||
-    totalStakedValue === undefined ||
-    (connected && _stakedBalance === undefined)
+    totalStaked === undefined ||
+    (connected && walletStaked === undefined)
   ) {
     return <BalanceCardLoader />
   }
 
   const votingPower =
-    totalStakedValue === 0
-      ? 0
-      : ((_stakedBalance ?? 0) / totalStakedValue) * 100
+    totalStaked === 0 ? 0 : ((walletStaked ?? 0) / totalStaked) * 100
 
   const stakedBalance = convertMicroDenomToDenomWithDecimals(
-    _stakedBalance ?? 0,
+    walletStaked ?? 0,
     governanceTokenInfo.decimals
   )
 

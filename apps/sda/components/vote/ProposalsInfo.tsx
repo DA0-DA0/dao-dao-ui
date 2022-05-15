@@ -1,54 +1,23 @@
-import clsx from 'clsx'
 import { FC } from 'react'
 
-import { Dollar, Pie } from '@dao-dao/icons'
+import { useProposalModule } from '@dao-dao/state'
+import {
+  ProposalsInfo as StatelessProposalsInfo,
+  ProposalsInfoProps,
+  ProposalsInfoLoader,
+} from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
 
-import { HeroStat } from './Hero/Stat'
-import { useProposalModule } from '@/hooks'
-
-export interface ProposalsInfoProps {
-  data?: {
-    denom: string
-    macroDeposit: string
-    depositRefunds: boolean
-    passingThresholdString: string
-    quorumString?: string
-  }
-  className?: string
-}
-
-const ProposalsInfoInternal: FC<ProposalsInfoProps> = ({ data, className }) => (
-  <div
-    className={clsx(
-      'flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive',
-      className
-    )}
-  >
-    <HeroStat
-      Icon={Dollar}
-      title="Proposal deposit:"
-      value={data?.macroDeposit ?? ''}
-    />
-    <HeroStat
-      Icon={Dollar}
-      title="Deposit refund:"
-      value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
-    />
-    <HeroStat
-      Icon={Pie}
-      title="Passing threshold:"
-      value={data?.passingThresholdString ?? ''}
-    />
-    <HeroStat Icon={Pie} title="Quorum:" value={data?.quorumString ?? ''} />
-  </div>
-)
+import { DAO_ADDRESS } from '@/util'
 
 export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
-  const { proposalModuleConfig, proposalDepositTokenInfo } = useProposalModule({
-    fetchProposalDepositTokenInfo: true,
-  })
+  const { proposalModuleConfig, proposalDepositTokenInfo } = useProposalModule(
+    DAO_ADDRESS,
+    {
+      fetchProposalDepositTokenInfo: true,
+    }
+  )
 
   const dontHaveData =
     !proposalModuleConfig ||
@@ -76,7 +45,7 @@ export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
       }
     : undefined
 
-  return <ProposalsInfoInternal {...props} data={data} />
+  return <StatelessProposalsInfo {...props} data={data} />
 }
 
-export const ProposalsInfoLoader: FC = () => <ProposalsInfoInternal />
+export { ProposalsInfoLoader }

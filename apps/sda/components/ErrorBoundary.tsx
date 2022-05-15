@@ -1,11 +1,13 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 
-type ErrorBoundaryProps = {
+import { ErrorPage } from '@dao-dao/ui'
+
+interface ErrorBoundaryProps {
   children: ReactNode
-  title: string
+  title?: string
 }
 
-type ErrorBoundaryState = {
+interface ErrorBoundaryState {
   hasError: boolean
   error?: Error
 }
@@ -29,18 +31,14 @@ export class ErrorBoundary extends Component<
   }
 
   render() {
-    const { title, children } = this.props
-    if (this.state.hasError) {
-      return (
-        <div className="p-6 mx-auto max-w-prose break-words">
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="mt-3">
-            Check your internet connection or try again later.
-          </p>
-        </div>
-      )
-    }
+    const { title = 'An unexpected error occurred.', children } = this.props
 
-    return children
+    return this.state.hasError ? (
+      <ErrorPage title={title}>
+        <p>Check your internet connection or try again later.</p>
+      </ErrorPage>
+    ) : (
+      children
+    )
   }
 }

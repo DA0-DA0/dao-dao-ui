@@ -59,7 +59,7 @@ const Home: NextPage = () => (
               </div>
               <p className="mr-1 font-medium">DAO</p>
               <p
-                className="font-medium font-semibold text-secondary"
+                className="font-semibold text-secondary"
                 style={{ transform: 'scaleY(-1) scaleX(-1)' }}
               >
                 DAO

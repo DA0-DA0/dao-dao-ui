@@ -1,32 +1,32 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
-import { useRouter } from 'next/router'
-import { useCallback } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { FC } from 'react'
+import { useRecoilValue } from 'recoil'
 
+import { useGovernanceTokenInfo } from '@dao-dao/state'
+import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { Button } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 
-import { daoSelector } from 'selectors/daos'
-import { addToken } from 'util/addToken'
-
 import { TreasuryBalances } from './ContractView'
 import { SuspenseLoader } from './SuspenseLoader'
+import { addToken } from '@/util/addToken'
 
-export function DaoTreasury({ address }: { address: string }) {
-  const router = useRouter()
-  const contractAddress = router.query.contractAddress as string
+export const DaoTreasury: FC<{ address: string }> = ({ address }) => {
+  const config = useRecoilValue(configSelector({ contractAddress: address }))
+  const { governanceTokenAddress } = useGovernanceTokenInfo(address)
 
-  const daoInfo = useRecoilValueLoadable(daoSelector(contractAddress))
-
-  const addTokenCallback = useCallback(() => {
-    if (daoInfo.state == 'hasValue') addToken(daoInfo.getValue().gov_token)
-  }, [daoInfo])
+  if (!config || !governanceTokenAddress) {
+    throw new Error('Failed to load data.')
+  }
 
   return (
     <div>
       <div className="flex gap-1 justify-between">
         <h2 className="primary-text">Treasury</h2>
-        <Button onClick={addTokenCallback} variant="ghost">
+        <Button
+          onClick={() => addToken(governanceTokenAddress)}
+          variant="ghost"
+        >
           Add Token <PlusSmIcon className="w-4 h-4" />
         </Button>
       </div>
