@@ -222,7 +222,11 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
 
   return (
     <OrgPageWrapper {...props}>
-      <SuspenseLoader fallback={<Loader className="mt-6" size={72} />}>
+      <SuspenseLoader
+        // On mobile, the container is not as tall as the whole screen, so
+        // set to screen height.
+        fallback={<Loader className="min-h-screen md:h-full" size={72} />}
+      >
         <div className="block md:hidden">
           <InnerMobileDaoHome />
         </div>
