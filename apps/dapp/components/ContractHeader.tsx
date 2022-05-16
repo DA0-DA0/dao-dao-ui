@@ -7,19 +7,17 @@ import {
   ContractHeaderLoader,
 } from '@dao-dao/ui'
 
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 import { contractInstantiateTime } from '@/selectors/contracts'
 
-export interface ContractHeaderProps {
-  contractAddress: string
-}
-
-const ContractHeaderInternal: FC<ContractHeaderProps> = ({
-  contractAddress,
-}) => {
-  const config = useRecoilValue(configSelector({ contractAddress }))
+const ContractHeaderInternal: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
+  const config = useRecoilValue(
+    configSelector({ contractAddress: coreAddress })
+  )
   const establishedDate = useRecoilValueLoadable(
-    contractInstantiateTime(contractAddress)
+    contractInstantiateTime(coreAddress)
   )
 
   if (!config) throw new Error('Failed to load data.')
@@ -37,8 +35,8 @@ const ContractHeaderInternal: FC<ContractHeaderProps> = ({
   )
 }
 
-export const ContractHeader: FC<ContractHeaderProps> = (props) => (
+export const ContractHeader: FC = () => (
   <SuspenseLoader fallback={<ContractHeaderLoader />}>
-    <ContractHeaderInternal {...props} />
+    <ContractHeaderInternal />
   </SuspenseLoader>
 )

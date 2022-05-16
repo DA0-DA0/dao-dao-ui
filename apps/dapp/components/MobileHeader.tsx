@@ -12,23 +12,20 @@ import { SuspenseLoader } from './SuspenseLoader'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
 
-export interface MobileHeaderProps {
-  contractAddress: string
-}
-
-const MobileHeaderInternal: FC<MobileHeaderProps> = ({ contractAddress }) => {
+const MobileHeaderInternal: FC = () => {
   const {
+    coreAddress,
     governanceTokenAddress,
     name: orgName,
     imageUrl,
   } = useOrgInfoContext()
-  const { walletStaked } = useStakingInfo(contractAddress, {
+  const { walletStaked } = useStakingInfo(coreAddress, {
     fetchWalletStaked: true,
   })
 
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)
-  const pinned = pinnedAddresses.includes(contractAddress)
+  const pinned = pinnedAddresses.includes(coreAddress)
 
   if (walletStaked === undefined) {
     throw new Error('Failed to load data.')
@@ -36,15 +33,15 @@ const MobileHeaderInternal: FC<MobileHeaderProps> = ({ contractAddress }) => {
 
   return (
     <StatelessMobileHeader
-      contractAddress={contractAddress}
+      contractAddress={coreAddress}
       imageUrl={imageUrl ?? ''}
       member={walletStaked > 0}
       name={orgName}
       onPin={() => {
         if (pinned) {
-          setPinnedAddresses((p) => p.filter((a) => a !== contractAddress))
+          setPinnedAddresses((p) => p.filter((a) => a !== coreAddress))
         } else {
-          setPinnedAddresses((p) => p.concat([contractAddress]))
+          setPinnedAddresses((p) => p.concat([coreAddress]))
           addToken(governanceTokenAddress)
         }
       }}
@@ -53,8 +50,12 @@ const MobileHeaderInternal: FC<MobileHeaderProps> = ({ contractAddress }) => {
   )
 }
 
-export const MobileHeader: FC<MobileHeaderProps> = (props) => (
-  <SuspenseLoader fallback={<MobileHeaderLoader {...props} />}>
-    <MobileHeaderInternal {...props} />
+export const MobileHeader: FC = () => (
+  <SuspenseLoader
+    fallback={
+      <MobileHeaderLoader contractAddress={useOrgInfoContext().coreAddress} />
+    }
+  >
+    <MobileHeaderInternal />
   </SuspenseLoader>
 )

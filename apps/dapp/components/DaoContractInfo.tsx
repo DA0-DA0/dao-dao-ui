@@ -18,23 +18,23 @@ import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { DaoTreasury } from './DaoTreasury'
 import { Loader } from './Loader'
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface DaoContractInfoProps {
-  address: string
+interface DaoContractInfoProps {
   hideTreasury?: boolean
 }
 
-function DaoContractInfoInternal({
-  address,
-  hideTreasury,
-}: DaoContractInfoProps) {
-  const config = useRecoilValue(configSelector({ contractAddress: address }))
+const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
+  const { coreAddress } = useOrgInfoContext()
+  const config = useRecoilValue(
+    configSelector({ contractAddress: coreAddress })
+  )
   const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo(address)
-  const { proposalModuleConfig } = useProposalModule(address)
+    useGovernanceTokenInfo(coreAddress)
+  const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { stakingContractAddress, stakingContractConfig } =
-    useStakingInfo(address)
+    useStakingInfo(coreAddress)
 
   if (
     !config ||
@@ -108,7 +108,7 @@ function DaoContractInfoInternal({
         <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
           <li>
-            DAO <CopyToClipboardAccent value={address} />
+            DAO <CopyToClipboardAccent value={coreAddress} />
           </li>
           <li>
             Gov token <CopyToClipboardAccent value={governanceTokenAddress} />
@@ -120,7 +120,7 @@ function DaoContractInfoInternal({
       </div>
       {!hideTreasury && (
         <SuspenseLoader fallback={<Loader />}>
-          <DaoTreasury address={address} />
+          <DaoTreasury />
         </SuspenseLoader>
       )}
     </div>

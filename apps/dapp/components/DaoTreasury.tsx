@@ -8,12 +8,16 @@ import { Button } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 
 import { TreasuryBalances } from './ContractView'
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 import { addToken } from '@/util/addToken'
 
-export const DaoTreasury: FC<{ address: string }> = ({ address }) => {
-  const config = useRecoilValue(configSelector({ contractAddress: address }))
-  const { governanceTokenAddress } = useGovernanceTokenInfo(address)
+export const DaoTreasury: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
+  const config = useRecoilValue(
+    configSelector({ contractAddress: coreAddress })
+  )
+  const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
 
   if (!config || !governanceTokenAddress) {
     throw new Error('Failed to load data.')
@@ -31,7 +35,7 @@ export const DaoTreasury: FC<{ address: string }> = ({ address }) => {
         </Button>
       </div>
       <SuspenseLoader fallback={<Loader />}>
-        <TreasuryBalances address={address} />
+        <TreasuryBalances />
       </SuspenseLoader>
     </div>
   )

@@ -8,7 +8,10 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
+import { nativeBalancesSelector, useWallet } from '@dao-dao/state'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
+import { allCw20BalancesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { stakedValueSelector } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import {
   Button,
@@ -25,25 +28,28 @@ import {
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
 import { SuspenseLoader } from './SuspenseLoader'
-import {
-  cw20Balances,
-  cw20TokenInfo,
-  nativeBalance,
-  walletTokenBalanceLoading,
-} from '@/selectors/treasury'
+import { walletTokenBalanceLoading } from '@/selectors/treasury'
 
-export function TreasuryBalances({ address }: { address: string }) {
-  return null
-  const nativeBalances = useRecoilValue(nativeBalance(address))
+export const TreasuryBalances: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
 
-  const cw20List = useRecoilValue(cw20Balances(address))
+  const nativeBalances =
+    useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
+
+  const cw20List =
+    useRecoilValue(allCw20BalancesSelector({ contractAddress: coreAddress })) ??
+    []
   const cw20Info = useRecoilValue(
-    waitForAll(cw20List.map(({ address }) => cw20TokenInfo(address)))
-  )
+    waitForAll(
+      cw20List.map(({ addr }) =>
+        tokenInfoSelector({ contractAddress: addr, params: [] })
+      )
+    )
+  ).filter(Boolean) as TokenInfoResponse[]
 
   const cw20Tokens = cw20Info.map((info, idx) => ({
     symbol: info.symbol,
-    amount: cw20List[idx].amount,
+    amount: cw20List[idx].balance,
     decimals: info.decimals,
   }))
 
@@ -63,15 +69,8 @@ export function TreasuryBalances({ address }: { address: string }) {
   )
 }
 
-interface ContractProposalsDisplayProps {
-  contractAddress: string
-  proposalCreateLink: string
-}
-
-export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
-  contractAddress,
-  proposalCreateLink,
-}) => {
+export const ContractProposalsDisplay: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
   const { address: walletAddress } = useWallet()
   const { stakingContractAddress } = useOrgInfoContext()
 
@@ -103,7 +102,7 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
 
         <Link
           className={clsx({ 'pointer-events-none': isMember })}
-          href={proposalCreateLink}
+          href={`/org/${coreAddress}/proposals/create`}
         >
           <a>
             <Tooltip label={tooltip}>
@@ -116,7 +115,7 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
       </div>
       <div className="mt-4 mb-8 md:px-4">
         <SuspenseLoader fallback={<Loader />}>
-          <ProposalList contractAddress={contractAddress} />
+          <ProposalList />
         </SuspenseLoader>
       </div>
     </>

@@ -10,7 +10,7 @@ import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import { betaWarningAcceptedAtom } from '@/atoms/status'
-import { noKeplrAccountAtom, installWarningVisibleAtom } from '@/selectors/cosm'
+import { noKeplrAccountAtom, installWarningVisibleAtom } from '@/atoms/wallet'
 
 export const SidebarLayout: FC = ({ children }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)

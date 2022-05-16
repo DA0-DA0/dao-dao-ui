@@ -12,6 +12,7 @@ import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/client
 import { ProposalLine, Button } from '@dao-dao/ui'
 
 import { Loader } from '../Loader'
+import { useOrgInfoContext } from '../OrgPageWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import {
   proposalListCountAtom,
@@ -20,19 +21,13 @@ import {
 
 const PROP_LOAD_LIMIT = 10
 
-interface ProposalListProps {
-  contractAddress: string
-}
-
-interface SingleProposalListProps extends ProposalListProps {
+interface SingleProposalListProps {
   listIndex: number
 }
 
-const SingleProposalList: FC<SingleProposalListProps> = ({
-  contractAddress,
-  listIndex,
-}) => {
-  const { proposalModuleAddress } = useProposalModule(contractAddress)
+const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
+  const { coreAddress } = useOrgInfoContext()
+  const { proposalModuleAddress } = useProposalModule(coreAddress)
   if (!proposalModuleAddress) {
     throw new Error('No proposal module found.')
   }
@@ -72,18 +67,23 @@ const SingleProposalList: FC<SingleProposalListProps> = ({
         <ProposalLine
           key={response.id}
           proposalResponse={response}
-          proposalViewUrl={`/org/${contractAddress}/proposals/${response.id}`}
+          proposalViewUrl={`/org/${coreAddress}/proposals/${response.id}`}
         />
       ))}
     </>
   )
 }
 
-export const ProposalList: FC<ProposalListProps> = ({ contractAddress }) => {
+export const ProposalList: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
   const { proposalModuleAddress, proposalCount } = useProposalModule(
-    contractAddress,
+    coreAddress,
     { fetchProposalCount: true }
   )
+
+  if (!proposalModuleAddress) {
+    throw new Error('No proposal module found.')
+  }
 
   // Load from Recoil so that loaded propoals are shared by
   // desktop and mobile views.
@@ -99,10 +99,6 @@ export const ProposalList: FC<ProposalListProps> = ({ contractAddress }) => {
     resetStartBefores()
   }, [refreshProposalsId, resetStartBefores])
 
-  if (!proposalModuleAddress) {
-    throw new Error('No proposal module found.')
-  }
-
   if (!proposalCount) {
     return <p className="body-text">No proposals found.</p>
   }
@@ -117,10 +113,7 @@ export const ProposalList: FC<ProposalListProps> = ({ contractAddress }) => {
       <div className="flex flex-col gap-2 md:gap-1">
         {[...Array(listCount)].map((_, idx) => (
           <SuspenseLoader key={idx} fallback={<Loader className="mt-2" />}>
-            <SingleProposalList
-              contractAddress={contractAddress}
-              listIndex={idx}
-            />
+            <SingleProposalList listIndex={idx} />
           </SuspenseLoader>
         ))}
       </div>

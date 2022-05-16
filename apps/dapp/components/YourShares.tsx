@@ -14,6 +14,7 @@ import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { ClaimsPendingList } from './ClaimsPendingList'
 import { Loader } from './Loader'
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { StakingModal } from './StakingModal'
 import { SuspenseLoader } from './SuspenseLoader'
 import {
@@ -21,11 +22,8 @@ import {
   walletTokenBalanceUpdateCountAtom,
 } from '@/selectors/treasury'
 
-interface InternalYourSharesProps {
-  coreAddress: string
-}
-
-const InnerYourShares: FC<InternalYourSharesProps> = ({ coreAddress }) => {
+const InnerYourShares: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
   const config = useRecoilValue(
     configSelector({ contractAddress: coreAddress })
   )
@@ -155,19 +153,18 @@ const InnerYourShares: FC<InternalYourSharesProps> = ({ coreAddress }) => {
   )
 }
 
-export interface YourSharesProps extends InternalYourSharesProps {
-  coreAddress: string
+interface YourSharesProps {
   primaryText?: boolean
 }
 
-export const YourShares: FC<YourSharesProps> = ({ primaryText, ...props }) => (
+export const YourShares: FC<YourSharesProps> = ({ primaryText }) => (
   <>
     <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
       Your shares
     </h2>
 
     <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-      <InnerYourShares {...props} />
+      <InnerYourShares />
     </SuspenseLoader>
   </>
 )

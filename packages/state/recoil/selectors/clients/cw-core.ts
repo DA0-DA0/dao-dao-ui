@@ -209,6 +209,36 @@ export const cw20BalancesSelector = selectorFamily<
     },
 })
 
+const CW20_BALANCES_LIMIT = 10
+export const allCw20BalancesSelector = selectorFamily<
+  Cw20BalancesResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreAllCw20Balances',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      let startAt: string | undefined
+
+      const balances: Cw20BalancesResponse = []
+      while (true) {
+        const response = await get(
+          cw20BalancesSelector({
+            ...queryClientParams,
+            params: [{ startAt, limit: CW20_BALANCES_LIMIT }],
+          })
+        )
+
+        balances.push(...(response ?? []))
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (!response || response.length < CW20_BALANCES_LIMIT) break
+      }
+
+      return balances
+    },
+})
+
 export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }

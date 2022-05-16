@@ -12,21 +12,19 @@ import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface DaoHorizontalInfoDisplayProps {
-  contractAddress: string
-}
-
-const DaoHorizontalInfoDisplayInternal: FC<DaoHorizontalInfoDisplayProps> = ({
-  contractAddress,
-}) => {
-  const config = useRecoilValue(configSelector({ contractAddress }))
-  const { governanceTokenInfo } = useGovernanceTokenInfo(contractAddress)
-  const { totalStaked } = useStakingInfo(contractAddress, {
+const DaoHorizontalInfoDisplayInternal: FC = () => {
+  const { coreAddress } = useOrgInfoContext()
+  const config = useRecoilValue(
+    configSelector({ contractAddress: coreAddress })
+  )
+  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const { totalStaked } = useStakingInfo(coreAddress, {
     fetchTotalStaked: true,
   })
-  const { proposalCount } = useProposalModule(contractAddress, {
+  const { proposalCount } = useProposalModule(coreAddress, {
     fetchProposalCount: true,
   })
 
@@ -66,16 +64,14 @@ const DaoHorizontalInfoDisplayInternal: FC<DaoHorizontalInfoDisplayProps> = ({
   )
 }
 
-export const HorizontalInfoDisplayLoader: FC<{}> = () => (
+export const HorizontalInfoDisplayLoader: FC = () => (
   <HorizontalInfo>
     <HorizontalInfoSection>{undefined}</HorizontalInfoSection>
   </HorizontalInfo>
 )
 
-export const DaoHorizontalInfoDisplay: FC<DaoHorizontalInfoDisplayProps> = (
-  props
-) => (
+export const DaoHorizontalInfoDisplay: FC = () => (
   <SuspenseLoader fallback={<HorizontalInfoDisplayLoader />}>
-    <DaoHorizontalInfoDisplayInternal {...props} />
+    <DaoHorizontalInfoDisplayInternal />
   </SuspenseLoader>
 )

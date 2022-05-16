@@ -42,8 +42,6 @@ enum MobileMenuTabSelection {
 }
 
 const InnerMobileDaoHome: FC = () => {
-  const { coreAddress } = useOrgInfoContext()
-
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -51,7 +49,7 @@ const InnerMobileDaoHome: FC = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <MobileHeader contractAddress={coreAddress} />
+        <MobileHeader />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -80,20 +78,13 @@ const InnerMobileDaoHome: FC = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Staking && (
-          <YourShares coreAddress={coreAddress} primaryText />
-        )}
+        {tab === MobileMenuTabSelection.Staking && <YourShares primaryText />}
         {tab === MobileMenuTabSelection.Proposal && (
-          <ContractProposalsDisplay
-            contractAddress={coreAddress}
-            proposalCreateLink={`/org/${coreAddress}/proposals/create`}
-          />
+          <ContractProposalsDisplay />
         )}
-        {tab === MobileMenuTabSelection.Treasury && (
-          <DaoTreasury address={coreAddress} />
-        )}
+        {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
-          <DaoContractInfo address={coreAddress} hideTreasury />
+          <DaoContractInfo hideTreasury />
         )}
       </div>
     </div>
@@ -171,28 +162,25 @@ const InnerDaoHome: FC = () => {
               </div>
             </div>
 
-            <ContractHeader contractAddress={coreAddress} />
+            <ContractHeader />
 
             <div className="mt-2">
-              <DaoHorizontalInfoDisplay contractAddress={coreAddress} />
+              <DaoHorizontalInfoDisplay />
             </div>
             <div className="block mt-4 lg:hidden">
-              <YourShares coreAddress={coreAddress} />
+              <YourShares />
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
-              <DaoContractInfo address={coreAddress} />
+              <DaoContractInfo />
             </div>
           </div>
         </GradientHero>
         <div className="px-6">
-          <ContractProposalsDisplay
-            contractAddress={coreAddress}
-            proposalCreateLink={`/org/${coreAddress}/proposals/create`}
-          />
+          <ContractProposalsDisplay />
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <YourShares coreAddress={coreAddress} />
+        <YourShares />
       </div>
     </div>
   )
