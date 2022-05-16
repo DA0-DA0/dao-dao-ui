@@ -11,19 +11,19 @@ const ActionItem = ({
   icon: ReactNode
   text: string
 }) => (
-  <li className="py-0.5 px-2 mt-0.5 hover:bg-secondary rounded-md link-text">
+  <div className="py-0.5 px-2 hover:bg-secondary rounded-md link-text">
     <Link href={href}>
       <a className="flex gap-2 items-center">
         {icon}
         {text}
       </a>
     </Link>
-  </li>
+  </div>
 )
 
 export const ActionMenu = () => (
   <div className="p-4 bg-primary rounded-md border border-transparent hover:border-btn-secondary">
-    <ul className="-mx-1 font-medium list-none text-md">
+    <div className="flex flex-col gap-1 font-medium md:gap-0 text-md">
       <ActionItem
         href="/dao/create"
         icon={<PlusIcon className="w-4" />}
@@ -44,6 +44,6 @@ export const ActionMenu = () => (
         icon={<MapIcon className="w-4" />}
         text={'Explore all multisigs'}
       />
-    </ul>
+    </div>
   </div>
 )
