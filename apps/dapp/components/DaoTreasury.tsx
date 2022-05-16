@@ -12,7 +12,13 @@ import { addToken } from 'util/addToken'
 import { TreasuryBalances } from './ContractView'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export function DaoTreasury({ address }: { address: string }) {
+export function DaoTreasury({
+  address,
+  multisig,
+}: {
+  address: string
+  multisig?: boolean
+}) {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
@@ -26,9 +32,11 @@ export function DaoTreasury({ address }: { address: string }) {
     <div>
       <div className="flex gap-1 justify-between">
         <h2 className="primary-text">Treasury</h2>
-        <Button onClick={addTokenCallback} variant="ghost">
-          Add Token <PlusSmIcon className="w-4 h-4" />
-        </Button>
+        {!multisig && (
+          <Button onClick={addTokenCallback} variant="ghost">
+            Add Token <PlusSmIcon className="w-4 h-4" />
+          </Button>
+        )}
       </div>
       <SuspenseLoader fallback={<Loader />}>
         <TreasuryBalances address={address} />
