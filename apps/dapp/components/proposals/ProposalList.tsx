@@ -1,8 +1,13 @@
 import { DownloadIcon } from '@heroicons/react/outline'
 import { FC, useEffect } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import {
+  constSelector,
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+} from 'recoil'
 
-import { useProposalModule } from '@dao-dao/state'
+import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
 import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { ProposalLine, Button } from '@dao-dao/ui'
 
@@ -37,16 +42,18 @@ const SingleProposalList: FC<SingleProposalListProps> = ({
   )
 
   const proposalResponses = useRecoilValue(
-    reverseProposalsSelector({
-      contractAddress: proposalModuleAddress,
-      params: [
-        {
-          startBefore:
-            listIndex === 0 ? undefined : startBefores[listIndex - 1],
-          limit: PROP_LOAD_LIMIT,
-        },
-      ],
-    })
+    listIndex - 1 in startBefores
+      ? reverseProposalsSelector({
+          contractAddress: proposalModuleAddress,
+          params: [
+            {
+              startBefore:
+                listIndex === 0 ? undefined : startBefores[listIndex - 1],
+              limit: PROP_LOAD_LIMIT,
+            },
+          ],
+        })
+      : constSelector(undefined)
   )?.proposals
 
   // Once proposals are loaded, store last proposal ID for next load query.
@@ -82,6 +89,15 @@ export const ProposalList: FC<ProposalListProps> = ({ contractAddress }) => {
   // desktop and mobile views.
   const startBefores = useRecoilValue(proposalStartBeforesAtom)
   const [listCount, setListCount] = useRecoilState(proposalListCountAtom)
+
+  // If all proposals are refreshed, reset startBefores since the pages
+  // proposals display on might have switched. startBefores stores the
+  // last proposal ID on each page, so this must be reset.
+  const refreshProposalsId = useRecoilValue(refreshProposalsIdAtom)
+  const resetStartBefores = useResetRecoilState(proposalStartBeforesAtom)
+  useEffect(() => {
+    resetStartBefores()
+  }, [refreshProposalsId, resetStartBefores])
 
   if (!proposalModuleAddress) {
     throw new Error('No proposal module found.')
