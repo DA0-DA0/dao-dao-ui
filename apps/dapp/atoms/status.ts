@@ -33,3 +33,18 @@ export const betaWarningAcceptedAtom = atom<boolean>({
   default: false,
   effects: [localStorageEffect<boolean>('betaWarningAccepted')],
 })
+
+export const installWarningVisibleAtom = atom<boolean>({
+  key: 'installWarningVisible',
+  default: false,
+})
+
+export const noKeplrAccountAtom = atom<boolean>({
+  key: 'noKeplrAccountAtom',
+  default: false,
+})
+
+export const stakingLoadingAtom = atom<boolean>({
+  key: 'stakingLoading',
+  default: false,
+})

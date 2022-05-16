@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
+import { contractInstantiateTimeSelector } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   ContractHeader as StatelessContractHeader,
@@ -9,7 +10,6 @@ import {
 
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
-import { contractInstantiateTime } from '@/selectors/contracts'
 
 const ContractHeaderInternal: FC = () => {
   const { coreAddress } = useOrgInfoContext()
@@ -17,7 +17,7 @@ const ContractHeaderInternal: FC = () => {
     configSelector({ contractAddress: coreAddress })
   )
   const establishedDate = useRecoilValueLoadable(
-    contractInstantiateTime(coreAddress)
+    contractInstantiateTimeSelector(coreAddress)
   )
 
   if (!config) throw new Error('Failed to load data.')

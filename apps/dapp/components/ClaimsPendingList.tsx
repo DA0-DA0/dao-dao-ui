@@ -4,17 +4,17 @@ import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { ClaimsListItem } from '@dao-dao/ui'
 
 import { Loader } from './Loader'
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 interface ClaimsPendingListProps {
-  coreAddress: string
   onClaimAvailable: () => void
 }
 
 const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
-  coreAddress,
   onClaimAvailable,
 }) => {
+  const { coreAddress } = useOrgInfoContext()
   const { blockHeight, claimsPending } = useStakingInfo(coreAddress, {
     fetchClaims: true,
   })

@@ -28,7 +28,6 @@ import {
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
 import { SuspenseLoader } from './SuspenseLoader'
-import { walletTokenBalanceLoading } from '@/selectors/treasury'
 
 export const TreasuryBalances: FC = () => {
   const { coreAddress } = useOrgInfoContext()
@@ -87,10 +86,6 @@ export const ContractProposalsDisplay: FC = () => {
     !isNaN(Number(walletStakedLoadable.contents?.value)) &&
     Number(walletStakedLoadable.contents?.value) > 0
 
-  const loading =
-    useRecoilValue(walletTokenBalanceLoading(walletAddress ?? '')) ||
-    walletStakedLoadable.state === 'loading'
-
   const tooltip = isMember
     ? undefined
     : 'You must have voting power to create a proposal. Consider staking some tokens.'
@@ -106,7 +101,7 @@ export const ContractProposalsDisplay: FC = () => {
         >
           <a>
             <Tooltip label={tooltip}>
-              <Button disabled={!!tooltip || loading} size="sm">
+              <Button disabled={!isMember} size="sm">
                 New proposal
               </Button>
             </Tooltip>

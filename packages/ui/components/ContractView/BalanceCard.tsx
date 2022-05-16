@@ -19,7 +19,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
   onManage,
   loading,
 }) => (
-  <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
+  <div className="py-4 px-6 w-full rounded-lg border border-default">
     <h2 className="font-mono caption-text">{title}</h2>
     {loading ? (
       <div className="inline-block mt-2 animate-spin-medium">

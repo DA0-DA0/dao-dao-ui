@@ -1,7 +1,7 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
-import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import {
   useGovernanceTokenInfo,
@@ -17,10 +17,7 @@ import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { StakingModal } from './StakingModal'
 import { SuspenseLoader } from './SuspenseLoader'
-import {
-  walletTokenBalanceLoading,
-  walletTokenBalanceUpdateCountAtom,
-} from '@/selectors/treasury'
+import { stakingLoadingAtom } from '@/atoms/status'
 
 const InnerYourShares: FC = () => {
   const { coreAddress } = useOrgInfoContext()
@@ -38,15 +35,12 @@ const InnerYourShares: FC = () => {
     fetchClaims: true,
   })
 
-  const { address: walletAddress } = useWallet()
-  const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
-    walletTokenBalanceLoading(walletAddress ?? '')
-  )
-  const setWalletTokenBalanceUpdateCount = useSetRecoilState(
-    walletTokenBalanceUpdateCountAtom(walletAddress ?? '')
-  )
+  const { refreshBalances } = useWallet()
 
-  const [showStaking, setShowStaking] = useState(false)
+  // Set to a StakingMode to display modal.
+  const [showStakingDefaultMode, setShowStakingDefaultMode] =
+    useState<StakingMode>()
+  const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
   if (
     !config ||
@@ -69,8 +63,8 @@ const InnerYourShares: FC = () => {
               governanceTokenInfo.decimals
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
             denom={governanceTokenInfo.symbol}
-            loading={tokenBalanceLoading}
-            onManage={() => setShowStaking(true)}
+            loading={stakingLoading}
+            onManage={() => setShowStakingDefaultMode(StakingMode.Unstake)}
             title="Balance"
           />
         </li>
@@ -81,8 +75,8 @@ const InnerYourShares: FC = () => {
               governanceTokenInfo.decimals
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
             denom={governanceTokenInfo.symbol}
-            loading={tokenBalanceLoading}
-            onManage={() => setShowStaking(true)}
+            loading={stakingLoading}
+            onManage={() => setShowStakingDefaultMode(StakingMode.Stake)}
             title={`Voting power (staked ${governanceTokenInfo.symbol})`}
           />
         </li>
@@ -96,8 +90,8 @@ const InnerYourShares: FC = () => {
                 maximumFractionDigits: 20,
               })}
               denom={governanceTokenInfo.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => setShowStaking(true)}
+              loading={stakingLoading}
+              onManage={() => setShowStakingDefaultMode(StakingMode.Claim)}
               title={`Pending (unclaimed ${governanceTokenInfo.symbol})`}
             />
           </li>
@@ -130,7 +124,7 @@ const InnerYourShares: FC = () => {
             <button
               className="flex gap-2 items-center rounded link-text"
               onClick={() => {
-                setShowStaking(true)
+                setShowStakingDefaultMode(StakingMode.Stake)
               }}
             >
               Stake tokens
@@ -139,14 +133,11 @@ const InnerYourShares: FC = () => {
           </div>
         </div>
       ) : null}
-      <ClaimsPendingList
-        coreAddress={coreAddress}
-        onClaimAvailable={() => setWalletTokenBalanceUpdateCount((n) => n + 1)}
-      />
-      {showStaking && (
+      <ClaimsPendingList onClaimAvailable={refreshBalances} />
+      {showStakingDefaultMode && (
         <StakingModal
-          defaultMode={StakingMode.Stake}
-          onClose={() => setShowStaking(false)}
+          defaultMode={showStakingDefaultMode}
+          onClose={() => setShowStakingDefaultMode(undefined)}
         />
       )}
     </>

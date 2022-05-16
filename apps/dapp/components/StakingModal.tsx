@@ -1,7 +1,7 @@
 import { XIcon } from '@heroicons/react/outline'
 import { useState, FunctionComponent } from 'react'
 import toast from 'react-hot-toast'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   useWallet,
@@ -29,6 +29,7 @@ import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
+import { stakingLoadingAtom } from '@/atoms/status'
 import { cleanChainError } from '@/util/cleanChainError'
 
 interface StakingModalProps {
@@ -49,7 +50,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const { coreAddress } = useOrgInfoContext()
 
-  const [loading, setLoading] = useState(false)
+  const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
   const [amount, setAmount] = useState(0)
 
   const {
@@ -120,11 +121,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     )
       return
 
-    setLoading(true)
+    setStakingLoading(true)
 
     switch (mode) {
       case StakingMode.Stake: {
-        setLoading(true)
+        setStakingLoading(true)
 
         try {
           await doStake({
@@ -153,13 +154,13 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           console.error(err)
           toast.error(cleanChainError(err.message))
         } finally {
-          setLoading(false)
+          setStakingLoading(false)
         }
 
         break
       }
       case StakingMode.Unstake: {
-        setLoading(true)
+        setStakingLoading(true)
 
         // In the UI we display staked value as `amount_staked +
         // rewards` and is the value used to compute voting power. When we actually
@@ -219,7 +220,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           console.error(err)
           toast.error(cleanChainError(err.message))
         } finally {
-          setLoading(false)
+          setStakingLoading(false)
         }
 
         break
@@ -229,7 +230,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           return toast.error('No claims available.')
         }
 
-        setLoading(true)
+        setStakingLoading(true)
         try {
           await doClaim()
 
@@ -255,7 +256,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           console.error(err)
           toast.error(cleanChainError(err.message))
         } finally {
-          setLoading(false)
+          setStakingLoading(false)
         }
 
         break
@@ -291,7 +292,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       claimableTokens={sumClaimsAvailable}
       defaultMode={defaultMode}
       error={connected ? undefined : 'Please connect your wallet.'}
-      loading={loading}
+      loading={stakingLoading}
       onAction={onAction}
       onClose={onClose}
       setAmount={(newAmount) => setAmount(newAmount)}
