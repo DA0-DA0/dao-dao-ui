@@ -107,8 +107,12 @@ const InnerDaoHome: FC = () => {
 
   const shouldAddToken = router.query.add_token
   useEffect(() => {
-    if (shouldAddToken && daoInfo.state === 'hasValue') {
-      addToken(daoInfo.getValue().gov_token)
+    try {
+      if (shouldAddToken && daoInfo.state === 'hasValue') {
+        addToken(daoInfo.getValue().gov_token)
+      }
+    } catch (e) {
+      console.error('Error adding token:', e)
     }
   }, [shouldAddToken, daoInfo])
 

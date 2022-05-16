@@ -109,7 +109,7 @@ const InnerMobileMultisigHome = () => {
           <MultisigMemberList contractAddress={contractAddress} />
         )}
         {tab === MobileMenuTabSelection.Treasury && (
-          <DaoTreasury address={contractAddress} />
+          <DaoTreasury address={contractAddress} multisig />
         )}
         {tab === MobileMenuTabSelection.Info && (
           <MultisigContractInfo address={contractAddress} hideTreasury />
