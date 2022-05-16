@@ -1,286 +1,185 @@
-import { LibraryIcon, PlusSmIcon, UsersIcon } from '@heroicons/react/outline'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import React, { FC, useEffect, useState } from 'react'
+import { useRecoilState, useRecoilValueLoadable } from 'recoil'
 
-import { MemberCheck, Pencil } from '@dao-dao/icons'
+import { MemberCheck } from '@dao-dao/icons'
 import {
   useThemeContext,
-  StakingMode,
   GradientHero,
-  HorizontalInfo,
-  ContractHeader,
   StarButton,
-  HorizontalInfoSection,
-  BalanceCard,
   Breadcrumbs,
+  MobileMenuTab,
 } from '@dao-dao/ui'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  claimAvailable,
-} from '@dao-dao/utils'
+import { CHAIN_RPC_ENDPOINT, cosmWasmClientRouter } from '@dao-dao/utils'
 
-import { ClaimsPendingList } from '@components/Claims'
-import { DaoContractInfo } from '@components/DaoContractInfo'
-import { pinnedDaosAtom } from 'atoms/pinned'
-import { ContractProposalsDispaly } from 'components/ContractView'
-import ErrorBoundary from 'components/ErrorBoundary'
-import { StakingModal } from 'components/StakingModal'
-import { contractInstantiateTime } from 'selectors/contracts'
-import { CHAIN_RPC_ENDPOINT, isMemberSelector } from 'selectors/cosm'
-import {
-  daoSelector,
-  proposalCount,
-  tokenConfig,
-  totalStaked,
-} from 'selectors/daos'
-import {
-  getBlockHeight,
-  walletAddress,
-  walletClaims,
-  walletStakedTokenBalance,
-  walletTokenBalance,
-  walletTokenBalanceLoading,
-  walletTokenBalanceUpdateCountAtom,
-} from 'selectors/treasury'
-import { addToken } from 'util/addToken'
-import { cosmWasmClientRouter } from 'util/chainClientRouter'
-import { getFastAverageColor } from 'util/colors'
+import { pinnedDaosAtom } from '@/atoms/pinned'
+import { ContractHeader } from '@/components/ContractHeader'
+import { ContractProposalsDisplay } from '@/components/ContractView'
+import { YourShares } from '@/components/dao'
+import { DaoContractInfo } from '@/components/DaoContractInfo'
+import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
+import { DaoTreasury } from '@/components/DaoTreasury'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { Loader } from '@/components/Loader'
+import { MobileHeader } from '@/components/MobileHeader'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { isMemberSelector } from '@/selectors/cosm'
+import { daoSelector } from '@/selectors/daos'
+import { addToken } from '@/util/addToken'
+import { getFastAverageColor } from '@/util/colors'
 
-function YourShares() {
+enum MobileMenuTabSelection {
+  Proposal,
+  Staking,
+  Treasury,
+  Info,
+}
+
+const InnerMobileDaoHome: FC = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
+  const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
+  const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
-  // Balances for the visitor
-  const govTokenBalance = useRecoilValue(walletTokenBalance(daoInfo?.gov_token))
-  const stakedGovTokenBalance = useRecoilValue(
-    walletStakedTokenBalance(daoInfo?.staking_contract)
-  )
-  const blockHeight = useRecoilValue(getBlockHeight)
-  const stuff = useRecoilValue(walletClaims(daoInfo.staking_contract))
-  const claimsAvailable = stuff.claims
-    .filter((c) => claimAvailable(c, blockHeight))
-    .reduce((p, n) => p + Number(n.amount), 0)
-
-  const wallet = useRecoilValue(walletAddress)
-  const [tokenBalanceLoading, setTokenBalancesLoading] = useRecoilState(
-    walletTokenBalanceLoading(wallet)
-  )
-  const setWalletTokenBalanceUpdateCount = useSetRecoilState(
-    walletTokenBalanceUpdateCountAtom(wallet)
-  )
-
-  const [showStaking, setShowStaking] = useState(false)
   return (
-    <>
-      <h2 className="mb-2 title-text">Your shares</h2>
-      <ul className="flex flex-row flex-wrap gap-2 list-none">
-        <li className="basis-0 grow min-w-max">
-          <BalanceCard
-            amount={convertMicroDenomToDenomWithDecimals(
-              govTokenBalance?.amount,
-              tokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-            denom={tokenInfo?.symbol}
-            loading={tokenBalanceLoading}
-            onManage={() => {
-              setShowStaking(true)
-            }}
-            title="Balance"
-          />
-        </li>
-        <li className="basis-0 grow min-w-max">
-          <BalanceCard
-            amount={convertMicroDenomToDenomWithDecimals(
-              stakedGovTokenBalance.amount,
-              tokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
-            denom={tokenInfo?.symbol}
-            loading={tokenBalanceLoading}
-            onManage={() => {
-              setShowStaking(true)
-            }}
-            title={`Voting power (staked ${tokenInfo?.symbol})`}
-          />
-        </li>
-        {claimsAvailable ? (
-          <li className="basis-0 grow min-w-max">
-            <BalanceCard
-              amount={convertMicroDenomToDenomWithDecimals(
-                claimsAvailable,
-                tokenInfo.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: 20,
-              })}
-              denom={tokenInfo?.symbol}
-              loading={tokenBalanceLoading}
-              onManage={() => {
-                setShowStaking(true)
-              }}
-              title={`Pending (unclaimed ${tokenInfo?.symbol})`}
-            />
-          </li>
-        ) : null}
-      </ul>
-      {govTokenBalance?.amount ? (
-        <div className="p-6 mt-2 w-full bg-primary rounded-lg">
-          <h3 className="mb-4 link-text">
-            You have{' '}
-            {convertMicroDenomToDenomWithDecimals(
-              govTokenBalance?.amount,
-              tokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-            unstaked {tokenInfo.symbol}
-          </h3>
-          <p className="secondary-text">
-            Staking them would bring you{' '}
-            {stakedGovTokenBalance &&
-              `${(
-                (govTokenBalance.amount / stakedGovTokenBalance.amount) *
-                100
-              ).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-              })}%`}{' '}
-            more voting power and help you defend your positions for{' '}
-            {daoInfo.config.name}
-            {"'"}s direction.
-          </p>
-          <div className="flex justify-end mt-4">
-            <button
-              className="flex gap-2 items-center rounded link-text"
-              onClick={() => {
-                setShowStaking(true)
-              }}
-            >
-              Stake tokens
-              <PlusSmIcon className="h-5" />
-            </button>
-          </div>
-        </div>
-      ) : null}
-      <ClaimsPendingList
-        onClaimAvailable={() => setWalletTokenBalanceUpdateCount((n) => n + 1)}
-        stakingAddress={daoInfo.staking_contract}
-        tokenInfo={tokenInfo}
-      />
-      {showStaking && (
-        <StakingModal
-          afterExecute={() => setTokenBalancesLoading(false)}
-          beforeExecute={() => setTokenBalancesLoading(true)}
-          claimableTokens={claimsAvailable}
-          contractAddress={contractAddress}
-          defaultMode={StakingMode.Stake}
-          onClose={() => setShowStaking(false)}
+    <div className="flex flex-col gap-2">
+      <GradientHero>
+        <SmallScreenNav />
+        <MobileHeader contractAddress={contractAddress} />
+      </GradientHero>
+      <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
+        <MobileMenuTab
+          icon="🗳"
+          onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
+          selected={tab === MobileMenuTabSelection.Proposal}
+          text="Proposal"
         />
-      )}
-    </>
+        <MobileMenuTab
+          icon="💵"
+          onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
+          selected={tab === MobileMenuTabSelection.Staking}
+          text="Staking"
+        />
+        <MobileMenuTab
+          icon="🏛"
+          onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
+          selected={tab === MobileMenuTabSelection.Treasury}
+          text="Treasury"
+        />
+        <MobileMenuTab
+          icon="⚙️"
+          onClick={makeTabSetter(MobileMenuTabSelection.Info)}
+          selected={tab === MobileMenuTabSelection.Info}
+          text="Info"
+        />
+      </div>
+      <div className="py-5 px-6">
+        {tab === MobileMenuTabSelection.Staking && <YourShares primaryText />}
+        {tab === MobileMenuTabSelection.Proposal && (
+          <ContractProposalsDisplay
+            contractAddress={contractAddress}
+            proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
+          />
+        )}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <DaoTreasury address={contractAddress} />
+        )}
+        {tab === MobileMenuTabSelection.Info && (
+          <DaoContractInfo address={contractAddress} hideTreasury />
+        )}
+      </div>
+    </div>
   )
 }
 
-function DaoHome() {
+const InnerDaoHome: FC = () => {
   const router = useRouter()
   const contractAddress = router.query.contractAddress as string
 
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-  const establishedDate = useRecoilValue(
-    contractInstantiateTime(contractAddress)
-  )
-  const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
-  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
-  const { member } = useRecoilValue(isMemberSelector(contractAddress))
+  const daoInfo = useRecoilValueLoadable(daoSelector(contractAddress))
+  const member = useRecoilValueLoadable(isMemberSelector(contractAddress))
 
   const [pinnedDaos, setPinnedDaos] = useRecoilState(pinnedDaosAtom)
   const pinned = pinnedDaos.includes(contractAddress)
 
-  const stakedPercent = (
-    (100 * stakedTotal) /
-    Number(tokenInfo?.total_supply)
-  ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
-
   const shouldAddToken = router.query.add_token
   useEffect(() => {
-    if (shouldAddToken) {
-      addToken(daoInfo.gov_token)
+    try {
+      if (shouldAddToken && daoInfo.state === 'hasValue') {
+        addToken(daoInfo.getValue().gov_token)
+      }
+    } catch (e) {
+      console.error('Error adding token:', e)
     }
-  }, [shouldAddToken, daoInfo.gov_token])
+  }, [shouldAddToken, daoInfo])
 
   return (
-    <div className="flex overflow-auto flex-row grid-cols-6 justify-around mb-3 min-h-screen">
-      <div className="min-h-screen">
+    <div className="flex flex-row lg:grid lg:grid-cols-6">
+      <div className="col-span-4 min-h-screen">
         <GradientHero>
-          <div className="flex justify-between">
-            <Breadcrumbs
-              crumbs={[
-                ['/starred', 'Home'],
-                [router.asPath, daoInfo.config.name],
-              ]}
-            />
-            <div className="flex flex-row gap-4 items-center">
-              {member && (
-                <div className="flex flex-row gap-2 items-center">
-                  <MemberCheck fill="currentColor" width="16px" />
-                  <p className="text-sm text-primary">You{"'"}re a member</p>
-                </div>
-              )}
-              <StarButton
-                onPin={() => {
-                  if (pinned) {
-                    setPinnedDaos((p) => p.filter((a) => a !== contractAddress))
-                  } else {
-                    setPinnedDaos((p) => p.concat([contractAddress]))
-                    addToken(daoInfo.gov_token)
-                  }
-                }}
-                pinned={pinned}
+          <SmallScreenNav />
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <Breadcrumbs
+                crumbs={[
+                  ['/starred', 'Home'],
+                  [
+                    router.asPath,
+                    daoInfo.state === 'hasValue'
+                      ? daoInfo.getValue().config.name
+                      : 'DAO',
+                  ],
+                ]}
               />
+              <div className="flex flex-row gap-4 items-center">
+                {member.state === 'hasValue' && member.getValue().member && (
+                  <div className="flex flex-row gap-2 items-center">
+                    <MemberCheck fill="currentColor" width="16px" />
+                    <p className="text-sm text-primary">You{"'"}re a member</p>
+                  </div>
+                )}
+                <StarButton
+                  onPin={() => {
+                    if (pinned) {
+                      setPinnedDaos((p) =>
+                        p.filter((a) => a !== contractAddress)
+                      )
+                    } else {
+                      setPinnedDaos((p) => p.concat([contractAddress]))
+                      if (daoInfo.state === 'hasValue') {
+                        addToken(daoInfo.getValue().gov_token)
+                      }
+                    }
+                  }}
+                  pinned={pinned}
+                />
+              </div>
+            </div>
+
+            <ContractHeader contractAddress={contractAddress} />
+
+            <div className="mt-2">
+              <DaoHorizontalInfoDisplay contractAddress={contractAddress} />
+            </div>
+            <div className="block mt-4 lg:hidden">
+              <YourShares />
+            </div>
+            <div className="pt-[22px] pb-[28px] border-b border-inactive">
+              <DaoContractInfo address={contractAddress} />
             </div>
           </div>
-
-          <ContractHeader
-            description={daoInfo.config.description}
-            established={establishedDate}
-            imgUrl={daoInfo.config.image_url || undefined}
-            name={daoInfo.config.name}
-          />
-
-          <div className="mt-2">
-            <HorizontalInfo>
-              <HorizontalInfoSection>
-                <UsersIcon className="inline w-4" />
-                {convertMicroDenomToDenomWithDecimals(
-                  tokenInfo.total_supply,
-                  tokenInfo.decimals
-                ).toLocaleString()}{' '}
-                ${tokenInfo?.symbol} total supply
-              </HorizontalInfoSection>
-              <HorizontalInfoSection>
-                <LibraryIcon className="inline w-4" />
-                {stakedPercent}% ${tokenInfo?.symbol} staked
-              </HorizontalInfoSection>
-              <HorizontalInfoSection>
-                <Pencil className="inline" fill="currentColor" />
-                {proposalsTotal} proposals created
-              </HorizontalInfoSection>
-            </HorizontalInfo>
-          </div>
-          <div className="block mt-4 lg:hidden">
-            <YourShares />
-          </div>
-          <DaoContractInfo address={contractAddress} />
         </GradientHero>
         <div className="px-6">
-          <ContractProposalsDispaly
+          <ContractProposalsDisplay
             contractAddress={contractAddress}
             proposalCreateLink={`/dao/${contractAddress}/proposals/create`}
           />
         </div>
       </div>
-      <div className="hidden p-6 max-w-sm h-full min-h-screen lg:block">
+      <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
         <YourShares />
       </div>
     </div>
@@ -317,12 +216,16 @@ const DaoHomePage: NextPage<StaticProps> = ({ accentColor }) => {
     setAccentColor(accentColor)
   }, [accentColor, setAccentColor, isReady, isFallback])
 
-  // Trigger Suspense.
-  if (!isReady || isFallback) throw new Promise((_resolve) => {})
-
   return (
     <ErrorBoundary title="DAO Not Found">
-      <DaoHome />
+      <SuspenseLoader fallback={<Loader className="mt-6" size={72} />}>
+        <div className="block md:hidden">
+          <InnerMobileDaoHome />
+        </div>
+        <div className="hidden md:block">
+          <InnerDaoHome />
+        </div>
+      </SuspenseLoader>
     </ErrorBoundary>
   )
 }

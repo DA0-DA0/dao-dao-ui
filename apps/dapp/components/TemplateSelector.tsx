@@ -28,7 +28,7 @@ export function MessageTemplateDisplayItem({
       <p className="text-3xl">{icon}</p>
       <div className="flex flex-col items-start">
         <p className="body-text">{label}</p>
-        <p className="secondary-text">{description}</p>
+        <p className="text-left secondary-text">{description}</p>
       </div>
     </button>
   )
@@ -53,8 +53,8 @@ export function ProposalTemplateSelector({
   multisig: boolean
 }) {
   return (
-    <Modal>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
+    <Modal onClose={onClose}>
+      <div className="relative p-3 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto md:p-6">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}

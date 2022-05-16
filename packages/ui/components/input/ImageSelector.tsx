@@ -36,7 +36,7 @@ export function ImageSelectorModal<
   const { label, register, error, validation, imageUrl, onClose } = props
 
   return (
-    <Modal>
+    <Modal onClose={onClose}>
       <div
         className={clsx(
           'flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white',
@@ -90,22 +90,24 @@ export type ImageSelectorProps<
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   imageUrl: string
+  className?: string
 }
 
 export function ImageSelector<FieldValues, FieldName extends Path<FieldValues>>(
   props: ImageSelectorProps<FieldName, FieldValues>
 ) {
-  const { label, register, error, validation, imageUrl } = props
+  const { label, register, error, validation, imageUrl, className } = props
 
   const [showImageSelect, setShowImageSelect] = useState(false)
   return (
     <>
       <button
         className={clsx(
-          'flex justify-center items-center mx-auto mt-12 w-24 h-24 bg-center bg-cover',
+          'flex justify-center items-center mx-auto w-24 h-24 bg-center bg-cover',
           'rounded-full border border-inactive',
           'hover:ring transition',
-          { 'ring ring-error': error }
+          { 'ring ring-error': error },
+          className
         )}
         onClick={() => setShowImageSelect(true)}
         style={{ backgroundImage: `url(${imageUrl})` }}

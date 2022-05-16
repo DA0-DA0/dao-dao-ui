@@ -41,6 +41,8 @@ const backgroundColor = {
   card: generateColorClass('dark', 0.08),
   'accent-transparent': generateColorClass('accent', 0.08),
   'very-light': generateColorClass('very-light', 1),
+  tab: generateColorClass('light', 0.7),
+  'tab-hover': generateColorClass('brand', 0.2),
 }
 
 const borderColor = {

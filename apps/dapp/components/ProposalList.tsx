@@ -1,5 +1,5 @@
 import { DownloadIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useRecoilState, useRecoilValue, waitForAll } from 'recoil'
 
 import { ProposalResponse } from '@dao-dao/types/contracts/cw3-dao'
@@ -30,13 +30,15 @@ const getNewestLoadedProposal = (props: ProposalResponse[]) => {
   return props[0].id
 }
 
-export function ProposalList({
-  contractAddress,
-  multisig,
-}: {
+interface ProposalListProps {
   contractAddress: string
   multisig?: boolean
-}) {
+}
+
+export const ProposalList: FC<ProposalListProps> = ({
+  contractAddress,
+  multisig,
+}) => {
   // Our position in the DAO's list of proposals.
   const [startBefore, setStartBefore] = useRecoilState(
     proposalsRequestStartBeforeAtom
@@ -72,7 +74,7 @@ export function ProposalList({
     })
     // We've now handled all the newly created proposals.
     setPropsCreated(0)
-  }, [newProps, setPropList, setPropsCreated, propList])
+  }, [setPropList, setPropsCreated, newProps])
 
   // Update the proposal list with any proposals that have been
   // requested by a load more press or first load of this page.
@@ -102,7 +104,7 @@ export function ProposalList({
         return p
       })
     }
-  })
+  }, [existingProps, setPropList])
 
   // Update the proposals in our list that need updating
   const [needUpdating, setNeedsUpdating] = useRecoilState(
@@ -129,7 +131,7 @@ export function ProposalList({
     )
   }
 
-  useEffect(() => setNeedsUpdating([]))
+  useEffect(() => setNeedsUpdating([]), [setNeedsUpdating])
 
   const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
   const showLoadMore = propList.length < proposalsTotal

@@ -1,4 +1,5 @@
-import { Keplr, Window as KeplrWindow } from '@keplr-wallet/types'
+import { Bech32Address } from '@keplr-wallet/cosmos'
+import { ChainInfo, Keplr, Window as KeplrWindow } from '@keplr-wallet/types'
 
 import {
   CHAIN_BECH32_PREFIX,
@@ -7,6 +8,7 @@ import {
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   MICRO_STAKING_DENOM,
+  NATIVE_DECIMALS,
 } from './constants'
 import { convertFromMicroDenom } from './conversion'
 
@@ -16,7 +18,7 @@ declare global {
 
 export class KeplrNotInstalledError extends Error {
   constructor() {
-    super("Keplr extension isn't installed.")
+    super("Keplr Chrome extension isn't installed.")
     this.name = 'KeplrNotInstalled'
   }
 }
@@ -24,6 +26,7 @@ export class KeplrNotInstalledError extends Error {
 // Returns Keplr as soon as possible, possibly undefined if not injected
 // onto the page.
 export const getKeplr = async (): Promise<Keplr | undefined> => {
+  if (typeof window === 'undefined') return
   if (window.keplr || document.readyState === 'complete') return window.keplr
 
   return new Promise<Keplr | undefined>((resolve) => {
@@ -42,7 +45,7 @@ export const getKeplr = async (): Promise<Keplr | undefined> => {
 }
 
 // Tries to enable Keplr and retrieve the signer.
-export const getOfflineSignerAuto = async (): Promise<
+export const getKeplrOfflineSignerAuto = async (): Promise<
   Awaited<ReturnType<Keplr['getOfflineSignerAuto']>>
 > => {
   const keplr = await getKeplr()
@@ -118,7 +121,7 @@ export const suggestChain = async (keplr: Keplr) => {
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
         coinMinimalDenom: MICRO_STAKING_DENOM,
         // # of decimal points to convert minimal denomination to user-facing denomination.
-        coinDecimals: 6,
+        coinDecimals: NATIVE_DECIMALS,
         // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
         // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
         // coinGeckoId: ""
@@ -154,4 +157,42 @@ export const suggestChain = async (keplr: Keplr) => {
       high: 0.05,
     },
   })
+}
+
+export const NativeChainInfo: ChainInfo = {
+  rpc: CHAIN_RPC_ENDPOINT,
+  rest: CHAIN_REST_ENDPOINT,
+  chainId: CHAIN_ID,
+  chainName: CHAIN_NAME,
+  stakeCurrency: {
+    coinDenom: convertFromMicroDenom(MICRO_STAKING_DENOM),
+    coinMinimalDenom: MICRO_STAKING_DENOM,
+    coinDecimals: 6,
+  },
+  bip44: {
+    coinType: 118,
+  },
+  bech32Config: Bech32Address.defaultBech32Config(CHAIN_BECH32_PREFIX),
+  currencies: [
+    {
+      coinDenom: convertFromMicroDenom(MICRO_STAKING_DENOM),
+      coinMinimalDenom: MICRO_STAKING_DENOM,
+      coinDecimals: NATIVE_DECIMALS,
+    },
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: convertFromMicroDenom(MICRO_STAKING_DENOM),
+      coinMinimalDenom: MICRO_STAKING_DENOM,
+      coinDecimals: NATIVE_DECIMALS,
+    },
+  ],
+  coinType: 118,
+  features: ['ibc-transfer', 'ibc-go'],
+  // If this field is not provided, Keplr extension will set the default gas price as (low: 0.01, average: 0.025, high: 0.04).
+  gasPriceStep: {
+    low: 0.03,
+    average: 0.04,
+    high: 0.05,
+  },
 }

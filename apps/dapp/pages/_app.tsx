@@ -3,78 +3,74 @@ import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
 import type { AppProps } from 'next/app'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
-import { Suspense } from 'react'
-import { RecoilRoot } from 'recoil'
+import { useState, useEffect, FC } from 'react'
+import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  DEFAULT_THEME_NAME,
-  Theme,
-  ThemeProvider,
-  LoadingScreen,
-} from '@dao-dao/ui'
+  activeThemeAtom,
+  mountedInBrowserAtom,
+  WalletProvider,
+} from '@dao-dao/state'
+import { Theme, ThemeProvider } from '@dao-dao/ui'
 
-import ErrorBoundary from 'components/ErrorBoundary'
-import { HomepageLayout } from 'components/HomepageLayout'
-import SidebarLayout from 'components/Layout'
-import Notifications from 'components/Notifications'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { HomepageLayout } from '@/components/HomepageLayout'
+import Notifications from '@/components/Notifications'
+import { SidebarLayout } from '@/components/SidebarLayout'
 
-function MyApp({ Component, pageProps }: AppProps) {
+const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()
 
-  const [theme, setTheme] = useState(DEFAULT_THEME_NAME)
+  const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
+  const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [accentColor, setAccentColor] = useState<string | undefined>()
-  const [loaded, setLoaded] = useState(false)
 
-  useEffect(() => setLoaded(true), [])
+  // Indicate that we are mounted.
+  useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
+
+  // Ensure correct theme class is set on document.
   useEffect(() => {
-    setTheme((theme) => {
-      let savedTheme = localStorage.getItem('theme') as Theme
-      if (!Object.values(Theme).includes(savedTheme)) {
-        // Theme used to be either junoDark or junoLight. We've since moved on
-        // to our own theming. This handles case where user has those old themes in
-        // local storage.
-        savedTheme = Theme.Dark
-        localStorage.setItem('theme', savedTheme)
-      }
-      const themeToUse = savedTheme ? savedTheme : theme
-      document.documentElement.classList.add(themeToUse)
-      return themeToUse
-    })
-  }, [])
-
-  function updateTheme(themeName: Theme) {
-    setTheme(themeName)
     Object.values(Theme).forEach((value) =>
-      document.documentElement.classList.toggle(value, value === themeName)
+      document.documentElement.classList.toggle(value, value === theme)
     )
-    localStorage.setItem('theme', themeName)
-  }
+  }, [theme])
 
   const Layout = router.pathname === '/' ? HomepageLayout : SidebarLayout
 
   return (
-    <RecoilRoot>
+    <>
+      <Head>
+        <meta
+          content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+          name="viewport"
+        />
+      </Head>
       <ErrorBoundary title="An unexpected error occurred.">
-        <Suspense fallback={<LoadingScreen />}>
-          <ThemeProvider
-            accentColor={accentColor}
-            setAccentColor={setAccentColor}
-            theme={theme}
-            updateTheme={updateTheme}
-          >
-            {loaded && (
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            )}
-          </ThemeProvider>
-        </Suspense>
+        <ThemeProvider
+          accentColor={accentColor}
+          setAccentColor={setAccentColor}
+          theme={theme}
+          updateTheme={setTheme}
+        >
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
 
-        <Notifications />
+          <Notifications />
+        </ThemeProvider>
       </ErrorBoundary>
-    </RecoilRoot>
+    </>
   )
 }
-export default MyApp
+
+const dApp: FC<AppProps> = (props) => (
+  <RecoilRoot>
+    <WalletProvider>
+      <InnerApp {...props} />
+    </WalletProvider>
+  </RecoilRoot>
+)
+
+export default dApp

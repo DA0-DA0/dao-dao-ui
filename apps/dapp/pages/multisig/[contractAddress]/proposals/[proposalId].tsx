@@ -1,18 +1,22 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { Breadcrumbs } from '@dao-dao/ui'
+import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
 
-import { ProposalDetails } from 'components/ProposalDetails'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { ProposalDetails } from '@/components/ProposalDetails'
 import {
   ProposalDetailsSidebar,
   ProposalDetailsCard,
   ProposalDetailsVoteStatus,
-} from 'components/ProposalDetailsSidebar'
-import { sigSelector } from 'selectors/multisigs'
+} from '@/components/ProposalDetailsSidebar'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
+import { sigSelector } from '@/selectors/multisigs'
 
-const MultisigProposal: NextPage = () => {
+const InnerMultisigProposal: FC = () => {
   const router = useRouter()
   const proposalKey = router.query.proposalId as string
   const contractAddress = router.query.contractAddress as string
@@ -26,7 +30,7 @@ const MultisigProposal: NextPage = () => {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
-      <div className="col-span-4 p-6 w-full">
+      <div className="col-span-4 w-full md:p-6">
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
@@ -35,7 +39,9 @@ const MultisigProposal: NextPage = () => {
           ]}
         />
 
-        <div className="px-6 mt-6 lg:hidden">
+        <SmallScreenNav className="mb-4" />
+
+        <div className="px-6 md:mt-6 lg:hidden">
           <ProposalDetailsCard {...proposalDetailsProps} />
         </div>
 
@@ -61,4 +67,12 @@ const MultisigProposal: NextPage = () => {
   )
 }
 
-export default MultisigProposal
+const MultisigProposalPage: NextPage = () => (
+  <ErrorBoundary title="Proposal Not Found">
+    <SuspenseLoader fallback={<LoadingScreen />}>
+      <InnerMultisigProposal />
+    </SuspenseLoader>
+  </ErrorBoundary>
+)
+
+export default MultisigProposalPage

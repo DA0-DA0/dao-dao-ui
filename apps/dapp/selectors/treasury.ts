@@ -1,26 +1,24 @@
 import { IndexedTx, Coin } from '@cosmjs/stargate'
 import { atomFamily, selector, selectorFamily } from 'recoil'
 
+import {
+  cosmWasmClientSelector,
+  stargateClientSelector,
+  walletAddressSelector,
+} from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { Cw20CoinVerified } from '@dao-dao/types/contracts/cw3-dao'
 import { ClaimsResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { NATIVE_DECIMALS } from '@dao-dao/utils'
 
 import { treasuryTokenListUpdates } from '../atoms/treasury'
-import {
-  stargateClient,
-  cosmWasmClient,
-  walletAddress,
-} from '../selectors/cosm'
-
-export { walletAddress }
 
 export const nativeBalance = selectorFamily({
   key: 'NativeBalance',
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(stargateClient)
+      const client = get(stargateClientSelector)
       const response = (await client.getAllBalances(address)) as Coin[]
       return response
     },
@@ -33,7 +31,7 @@ export const cw20Balances = selectorFamily({
     async ({ get }) => {
       // Invalidate state if the token list has been updated.
       get(treasuryTokenListUpdates(address))
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
 
       const balances: Cw20CoinVerified[] = []
       let more = true
@@ -60,7 +58,7 @@ export const cw20TokenInfo = selectorFamily({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       try {
         const response = (await client.queryContractSmart(address, {
           token_info: {},
@@ -83,7 +81,7 @@ export const cw20TokensList = selectorFamily({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const tokens: string[] = (
         await client.queryContractSmart(address, {
           cw20_token_list: {},
@@ -98,7 +96,7 @@ export const transactions = selectorFamily({
   get:
     (address: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
       const response = (await client.searchTx({
         sentFromOrTo: address,
       })) as IndexedTx[]
@@ -125,9 +123,9 @@ export const walletTokenBalance = selectorFamily({
   get:
     (tokenAddress: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
 
-      const wallet = get(walletAddress)
+      const wallet = get(walletAddressSelector)
       if (!wallet) {
         return {
           amount: 0.0,
@@ -150,9 +148,9 @@ export const walletStakedTokenBalance = selectorFamily({
   get:
     (tokenAddress: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
+      const client = get(cosmWasmClientSelector)
 
-      const wallet = get(walletAddress)
+      const wallet = get(walletAddressSelector)
       if (!wallet) {
         return {
           amount: 0.0,
@@ -179,8 +177,8 @@ export const walletStakedTokenBalanceAtHeightSelector = selectorFamily<
   get:
     ({ stakingAddress, height }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
-      const wallet = get(walletAddress)
+      const client = get(cosmWasmClientSelector)
+      const wallet = get(walletAddressSelector)
       if (!client || !wallet) {
         return 0
       }
@@ -197,8 +195,8 @@ export const walletClaims = selectorFamily({
   get:
     (stakingAddress: string) =>
     async ({ get }) => {
-      const client = get(cosmWasmClient)
-      const wallet = get(walletAddress)
+      const client = get(cosmWasmClientSelector)
+      const wallet = get(walletAddressSelector)
       if (!wallet) {
         return { claims: [] }
       }
@@ -215,10 +213,10 @@ export const walletClaims = selectorFamily({
 export const getBlockHeight = selector({
   key: 'ChainBlockHeight',
   get: async ({ get }) => {
-    const wallet = get(walletAddress)
-    get(walletTokenBalanceUpdateCountAtom(wallet))
+    const wallet = get(walletAddressSelector)
+    get(walletTokenBalanceUpdateCountAtom(wallet ?? ''))
 
-    const client = get(cosmWasmClient)
+    const client = get(cosmWasmClientSelector)
     return await client.getHeight()
   },
 })

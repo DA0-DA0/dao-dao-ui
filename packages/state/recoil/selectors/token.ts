@@ -4,7 +4,7 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 
 import { Cw20BalanceResponse } from '../../clients/cw-core'
 import { cosmWasmClientSelector } from './chain'
-import { walletAddressSelector } from './keplr'
+import { walletAddressSelector } from './wallet'
 
 export const govTokenInfoSelector = selectorFamily<TokenInfoResponse, string>({
   key: 'govTokenInfo',
