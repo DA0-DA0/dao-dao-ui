@@ -1,6 +1,6 @@
 import { selectorFamily, atom } from 'recoil'
 
-import { cosmWasmClientSelector, walletAddressSelector } from '@dao-dao/state'
+import { cosmWasmClientSelector } from '@dao-dao/state'
 
 import { walletTokenBalanceUpdateCountAtom } from './treasury'
 
@@ -46,28 +46,6 @@ export const voterInfoSelector = selectorFamily({
 
       return {
         weight: Number(response?.weight || 0),
-      }
-    },
-})
-
-export const isMemberSelector = selectorFamily<MemberStatus, string>({
-  key: 'isMember',
-  get:
-    (contractAddress) =>
-    async ({ get }) => {
-      const wallet = get(walletAddressSelector)
-      if (!wallet) {
-        return {
-          member: false,
-          weight: 0,
-        }
-      }
-      const voterInfo = get(
-        voterInfoSelector({ contractAddress, walletAddress: wallet })
-      )
-      return {
-        member: voterInfo.weight !== 0,
-        weight: voterInfo.weight,
       }
     },
 })

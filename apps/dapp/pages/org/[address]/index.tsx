@@ -136,7 +136,7 @@ const InnerDaoHome: FC = () => {
   }, [shouldAddToken, governanceTokenAddress])
 
   return (
-    <div className="flex flex-row lg:grid lg:grid-cols-6">
+    <div className="flex flex-col items-stretch lg:grid lg:grid-cols-6">
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <SmallScreenNav />

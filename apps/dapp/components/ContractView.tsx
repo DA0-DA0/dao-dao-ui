@@ -1,9 +1,15 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
-import { useRecoilValue, useRecoilValueLoadable, waitForAll } from 'recoil'
+import {
+  constSelector,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
+import { stakedValueSelector } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import {
   Button,
   TreasuryBalances as StatelessTreasuryBalances,
@@ -16,9 +22,9 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
+import { useOrgInfoContext } from './OrgPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
 import { SuspenseLoader } from './SuspenseLoader'
-import { isMemberSelector } from '@/selectors/cosm'
 import {
   cw20Balances,
   cw20TokenInfo,
@@ -27,6 +33,7 @@ import {
 } from '@/selectors/treasury'
 
 export function TreasuryBalances({ address }: { address: string }) {
+  return null
   const nativeBalances = useRecoilValue(nativeBalance(address))
 
   const cw20List = useRecoilValue(cw20Balances(address))
@@ -66,15 +73,28 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
   proposalCreateLink,
 }) => {
   const { address: walletAddress } = useWallet()
-  const member = useRecoilValueLoadable(isMemberSelector(contractAddress))
+  const { stakingContractAddress } = useOrgInfoContext()
+
+  const walletStakedLoadable = useRecoilValueLoadable(
+    walletAddress
+      ? stakedValueSelector({
+          contractAddress: stakingContractAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined)
+  )
+  const isMember =
+    walletStakedLoadable.state === 'hasValue' &&
+    !isNaN(Number(walletStakedLoadable.contents?.value)) &&
+    Number(walletStakedLoadable.contents?.value) > 0
 
   const loading =
     useRecoilValue(walletTokenBalanceLoading(walletAddress ?? '')) ||
-    member.state === 'loading'
+    walletStakedLoadable.state === 'loading'
 
-  const tooltip = !member
-    ? 'You must have voting power to create a proposal. Consider staking some tokens.'
-    : undefined
+  const tooltip = isMember
+    ? undefined
+    : 'You must have voting power to create a proposal. Consider staking some tokens.'
 
   return (
     <>
@@ -82,13 +102,8 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
         <h2 className="primary-text">Proposals</h2>
 
         <Link
-          className={clsx(
-            member.state === 'hasValue' &&
-              member.getValue().member &&
-              'pointer-events-none'
-          )}
+          className={clsx({ 'pointer-events-none': isMember })}
           href={proposalCreateLink}
-          passHref
         >
           <a>
             <Tooltip label={tooltip}>
@@ -99,7 +114,7 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
           </a>
         </Link>
       </div>
-      <div className="mt-4 md:px-4">
+      <div className="mt-4 mb-8 md:px-4">
         <SuspenseLoader fallback={<Loader />}>
           <ProposalList contractAddress={contractAddress} />
         </SuspenseLoader>

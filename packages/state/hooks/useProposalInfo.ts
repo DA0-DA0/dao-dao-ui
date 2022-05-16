@@ -75,7 +75,10 @@ export const useProposalInfo = (
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const setRefreshProposalId = useSetRecoilState(
-    refreshProposalIdAtom(proposalId ?? -1)
+    refreshProposalIdAtom({
+      address: proposalModuleAddress ?? '',
+      proposalId: proposalId ?? -1,
+    })
   )
   const refreshProposal = useCallback(() => {
     setRefreshProposalId((id) => id + 1)

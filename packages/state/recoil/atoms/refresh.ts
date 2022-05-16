@@ -15,8 +15,12 @@ export const refreshWalletBalancesIdAtom = atomFamily<
   default: 0,
 })
 
-// Change this to refresh information for the given proposal.
-export const refreshProposalIdAtom = atomFamily<number, number>({
+// Change this to refresh information for the given proposal from the
+// given proposal module.
+export const refreshProposalIdAtom = atomFamily<
+  number,
+  { address: string; proposalId: number }
+>({
   key: 'refreshProposalId',
   default: 0,
 })

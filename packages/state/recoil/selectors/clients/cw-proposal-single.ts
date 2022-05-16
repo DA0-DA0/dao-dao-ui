@@ -83,7 +83,12 @@ export const proposalSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      get(refreshProposalIdAtom(params[0].proposalId))
+      get(
+        refreshProposalIdAtom({
+          address: queryClientParams.contractAddress,
+          proposalId: params[0].proposalId,
+        })
+      )
 
       return await client.proposal(...params)
     },
@@ -151,7 +156,12 @@ export const getVoteSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      get(refreshProposalIdAtom(params[0].proposalId))
+      get(
+        refreshProposalIdAtom({
+          address: queryClientParams.contractAddress,
+          proposalId: params[0].proposalId,
+        })
+      )
 
       return await client.getVote(...params)
     },
@@ -168,7 +178,12 @@ export const listVotesSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       if (!client) return
 
-      get(refreshProposalIdAtom(params[0].proposalId))
+      get(
+        refreshProposalIdAtom({
+          address: queryClientParams.contractAddress,
+          proposalId: params[0].proposalId,
+        })
+      )
 
       return await client.listVotes(...params)
     },

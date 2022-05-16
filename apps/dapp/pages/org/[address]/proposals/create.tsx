@@ -48,10 +48,10 @@ const InnerProposalCreate = () => {
   )
   const blockHeight = useRecoilValue(blockHeightSelector)
 
-  const setRefrehProposalsId = useSetRecoilState(refreshProposalsIdAtom)
+  const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const refreshProposals = useCallback(
-    () => setRefrehProposalsId((id) => id + 1),
-    [setRefrehProposalsId]
+    () => setRefreshProposalsId((id) => id + 1),
+    [setRefreshProposalsId]
   )
 
   const increaseAllowance = useIncreaseAllowance({
