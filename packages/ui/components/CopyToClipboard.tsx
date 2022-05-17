@@ -6,23 +6,18 @@ import toast from 'react-hot-toast'
 import { Copy } from '@dao-dao/icons'
 import { useThemeContext, Button } from '@dao-dao/ui'
 
-function concatAddressImpl(
+const concatAddressImpl = (
   address: string,
   takeStart: number,
   takeEnd: number
-) {
-  const strLen = address.length
+) => {
   const first = address.substring(0, takeStart)
-  const last = address.substring(strLen - takeEnd, strLen)
-  return first + '...' + last
+  const last = address.substring(address.length - takeEnd, address.length)
+  return [first, last].filter(Boolean).join('...')
 }
 
-function concatAddress(address: string, takeN = 7): string {
-  if (!address) {
-    return ''
-  }
-  return concatAddressImpl(address, takeN, takeN)
-}
+const concatAddress = (address: string, takeN = 7): string =>
+  address && concatAddressImpl(address, takeN, takeN)
 
 interface CopyToClipboardProps {
   value: string
