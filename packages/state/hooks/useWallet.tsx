@@ -24,6 +24,7 @@ import {
   SITE_TITLE,
   SITE_URL,
   suggestChain,
+  WC_ICON_PATH,
 } from '@dao-dao/utils'
 
 import {
@@ -211,7 +212,7 @@ export const WalletProvider: FC = ({ children }) => {
         url: SITE_URL,
         icons: [
           (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
-            '/walletconnect.png',
+            WC_ICON_PATH,
         ],
       }}
       enableKeplr={enableKeplr}
