@@ -21,7 +21,7 @@ import {
   KeplrNotInstalledError,
   NativeChainInfo,
   SITE_DESCRIPTION,
-  SITE_IMAGE,
+  SITE_ICON_URL,
   SITE_TITLE,
   SITE_URL,
   suggestChain,
@@ -210,7 +210,7 @@ export const WalletProvider: FC = ({ children }) => {
         name: SITE_TITLE,
         description: SITE_DESCRIPTION,
         url: SITE_URL,
-        icons: [SITE_IMAGE],
+        icons: [SITE_URL + SITE_ICON_URL],
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
@@ -220,11 +220,7 @@ export const WalletProvider: FC = ({ children }) => {
           ? AvailableWallets.find((w) => w.isWalletConnect)?.id
           : undefined)
       }
-      renderEnablingKeplrModalContent={() => (
-        <div className="mt-4">
-          <Loader size={64} />
-        </div>
-      )}
+      renderLoader={() => <Loader size={64} />}
       wallets={AvailableWallets}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>

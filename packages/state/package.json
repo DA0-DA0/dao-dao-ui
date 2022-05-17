@@ -10,7 +10,7 @@
     "@keplr-wallet/stores": "^0.10.3",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
-    "cosmodal": "https://github.com/NoahSaso/cosmodal#6be3afb98c12dad7e2b53a1a4bc808ec4e74a473",
+    "cosmodal": "https://github.com/NoahSaso/cosmodal#cecd0afb9aa93a622f15321449428d2000defa7c",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },
