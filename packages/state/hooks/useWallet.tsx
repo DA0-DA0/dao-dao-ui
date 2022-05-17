@@ -210,7 +210,7 @@ export const WalletProvider: FC = ({ children }) => {
         name: SITE_TITLE,
         description: SITE_DESCRIPTION,
         url: SITE_URL,
-        icons: [SITE_URL + SITE_ICON_URL],
+        icons: [window.location.origin + SITE_ICON_URL],
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
