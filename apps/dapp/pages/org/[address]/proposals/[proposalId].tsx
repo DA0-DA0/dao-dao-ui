@@ -28,6 +28,7 @@ import {
 import { CHAIN_RPC_ENDPOINT, CI, cosmWasmClientRouter } from '@dao-dao/utils'
 
 import ConnectWalletButton from '@/components/ConnectWalletButton'
+import { PageLoader } from '@/components/Loader'
 import { ProposalNotFound } from '@/components/org/NotFound'
 import {
   makeGetStaticProps,
@@ -37,6 +38,7 @@ import {
 } from '@/components/OrgPageWrapper'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { StakingModal } from '@/components/StakingModal'
+import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { TemplateRendererComponent } from '@/components/templates'
 import { cleanChainError } from '@/util/cleanChainError'
 
@@ -231,7 +233,9 @@ const ProposalPage: NextPage<ProposalPageProps> = ({
   ...props
 }) => (
   <OrgPageWrapper {...props}>
-    {props.exists ? <InnerProposal /> : <ProposalNotFound />}
+    <SuspenseLoader fallback={<PageLoader />}>
+      {props.exists ? <InnerProposal /> : <ProposalNotFound />}
+    </SuspenseLoader>
   </OrgPageWrapper>
 )
 

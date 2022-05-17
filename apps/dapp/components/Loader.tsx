@@ -20,3 +20,9 @@ export const Loader: FC<LoaderProps> = ({ size = 42, className }) => (
     </div>
   </div>
 )
+
+// On mobile, the container is not as tall as the whole screen, so
+// set to screen height.
+export const PageLoader: FC = () => (
+  <Loader className="min-h-screen md:h-full" size={66} />
+)

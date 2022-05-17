@@ -20,7 +20,7 @@ import { ContractProposalsDisplay } from '@/components/ContractView'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'
-import { Loader } from '@/components/Loader'
+import { PageLoader } from '@/components/Loader'
 import { MobileHeader } from '@/components/MobileHeader'
 import {
   makeGetStaticProps,
@@ -222,11 +222,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
 
   return (
     <OrgPageWrapper {...props}>
-      <SuspenseLoader
-        // On mobile, the container is not as tall as the whole screen, so
-        // set to screen height.
-        fallback={<Loader className="min-h-screen md:h-full" size={72} />}
-      >
+      <SuspenseLoader fallback={<PageLoader />}>
         <div className="block md:hidden">
           <InnerMobileDaoHome />
         </div>

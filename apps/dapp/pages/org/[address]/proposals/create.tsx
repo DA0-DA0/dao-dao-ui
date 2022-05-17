@@ -16,7 +16,7 @@ import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
 import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { CopyToClipboard } from '@dao-dao/ui'
 
-import { Loader } from '@/components/Loader'
+import { Loader, PageLoader } from '@/components/Loader'
 import {
   makeGetStaticProps,
   OrgPageWrapper,
@@ -176,7 +176,9 @@ const ProposalCreatePage: NextPage<OrgPageWrapperProps> = ({
   ...props
 }) => (
   <OrgPageWrapper {...props}>
-    <InnerProposalCreate />
+    <SuspenseLoader fallback={<PageLoader />}>
+      <InnerProposalCreate />
+    </SuspenseLoader>
   </OrgPageWrapper>
 )
 
