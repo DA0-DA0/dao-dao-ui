@@ -21,7 +21,6 @@ import {
   KeplrNotInstalledError,
   NativeChainInfo,
   SITE_DESCRIPTION,
-  SITE_ICON_URL,
   SITE_TITLE,
   SITE_URL,
   suggestChain,
@@ -210,7 +209,7 @@ export const WalletProvider: FC = ({ children }) => {
         name: SITE_TITLE,
         description: SITE_DESCRIPTION,
         url: SITE_URL,
-        icons: [window.location.origin + SITE_ICON_URL],
+        icons: [window.location.origin + '/walletconnect.png'],
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
