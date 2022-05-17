@@ -40,7 +40,6 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
     nativeBalance === undefined ||
     !governanceTokenAddress ||
     !governanceTokenInfo ||
-    walletStaked === undefined ||
     proposalCount === undefined
   ) {
     throw new Error('Failed to load data.')
@@ -63,10 +62,14 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
       }}
       pinned={pinned}
       proposals={proposalCount}
-      weight={convertMicroDenomToDenomWithDecimals(
-        walletStaked,
-        governanceTokenInfo.decimals
-      )}
+      weight={
+        walletStaked !== undefined
+          ? convertMicroDenomToDenomWithDecimals(
+              walletStaked,
+              governanceTokenInfo.decimals
+            )
+          : undefined
+      }
     />
   )
 }

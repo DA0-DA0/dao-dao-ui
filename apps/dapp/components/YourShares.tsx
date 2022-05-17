@@ -13,6 +13,7 @@ import { BalanceCard, StakingMode } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { ClaimsPendingList } from './ClaimsPendingList'
+import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { StakingModal } from './StakingModal'
@@ -35,22 +36,23 @@ const InnerYourShares: FC = () => {
     fetchClaims: true,
   })
 
-  const { refreshBalances } = useWallet()
+  const { connected, refreshBalances } = useWallet()
 
   // Set to a StakingMode to display modal.
   const [showStakingDefaultMode, setShowStakingDefaultMode] =
     useState<StakingMode>()
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  if (
-    !config ||
-    !governanceTokenInfo ||
-    unstakedGovTokenBalance === undefined ||
-    stakedGovTokenBalance === undefined ||
-    blockHeight === undefined ||
-    sumClaimsAvailable === undefined
-  ) {
+  if (!config || !governanceTokenInfo || blockHeight === undefined) {
     throw new Error('Failed to load data.')
+  }
+
+  if (
+    !connected ||
+    unstakedGovTokenBalance === undefined ||
+    stakedGovTokenBalance === undefined
+  ) {
+    return <ConnectWalletButton />
   }
 
   return (
@@ -80,7 +82,7 @@ const InnerYourShares: FC = () => {
             title={`Voting power (staked ${governanceTokenInfo.symbol})`}
           />
         </li>
-        {sumClaimsAvailable ? (
+        {!!sumClaimsAvailable && (
           <li>
             <BalanceCard
               amount={convertMicroDenomToDenomWithDecimals(
@@ -95,7 +97,7 @@ const InnerYourShares: FC = () => {
               title={`Pending (unclaimed ${governanceTokenInfo.symbol})`}
             />
           </li>
-        ) : null}
+        )}
       </ul>
       {unstakedGovTokenBalance ? (
         <div className="p-6 mt-2 w-full bg-primary rounded-lg">

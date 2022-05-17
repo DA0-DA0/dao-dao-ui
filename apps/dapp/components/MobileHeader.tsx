@@ -27,15 +27,11 @@ const MobileHeaderInternal: FC = () => {
     useRecoilState(pinnedAddressesAtom)
   const pinned = pinnedAddresses.includes(coreAddress)
 
-  if (walletStaked === undefined) {
-    throw new Error('Failed to load data.')
-  }
-
   return (
     <StatelessMobileHeader
       contractAddress={coreAddress}
       imageUrl={imageUrl ?? ''}
-      member={walletStaked > 0}
+      member={!!walletStaked}
       name={orgName}
       onPin={() => {
         if (pinned) {
