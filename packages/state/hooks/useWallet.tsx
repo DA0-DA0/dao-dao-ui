@@ -209,7 +209,10 @@ export const WalletProvider: FC = ({ children }) => {
         name: SITE_TITLE,
         description: SITE_DESCRIPTION,
         url: SITE_URL,
-        icons: [window.location.origin + '/walletconnect.png'],
+        icons: [
+          (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
+            '/walletconnect.png',
+        ],
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
