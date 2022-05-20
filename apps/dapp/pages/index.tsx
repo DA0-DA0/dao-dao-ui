@@ -83,10 +83,10 @@ const Home: NextPage = () => (
           </div>
         </div>
       </nav>
-      <h1 className="mt-[33vh] text-[54px] text-center text-primary hero-text">
+      <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
         DAOs for everyone
       </h1>
-      <p className="px-4 my-[40px] mx-auto max-w-lg text-lg text-center text-secondary">
+      <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
         Simple, capable, free DAO tooling. Built with love, by DAO DAO, on Juno.
       </p>
       <div className="mx-auto mb-12">

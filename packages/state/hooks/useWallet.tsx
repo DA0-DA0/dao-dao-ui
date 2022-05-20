@@ -21,10 +21,10 @@ import {
   KeplrNotInstalledError,
   NativeChainInfo,
   SITE_DESCRIPTION,
-  SITE_IMAGE,
   SITE_TITLE,
   SITE_URL,
   suggestChain,
+  WC_ICON_PATH,
 } from '@dao-dao/utils'
 
 import {
@@ -210,7 +210,10 @@ export const WalletProvider: FC = ({ children }) => {
         name: SITE_TITLE,
         description: SITE_DESCRIPTION,
         url: SITE_URL,
-        icons: [SITE_IMAGE],
+        icons: [
+          (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
+            WC_ICON_PATH,
+        ],
       }}
       enableKeplr={enableKeplr}
       preselectedWalletId={
@@ -220,11 +223,7 @@ export const WalletProvider: FC = ({ children }) => {
           ? AvailableWallets.find((w) => w.isWalletConnect)?.id
           : undefined)
       }
-      renderEnablingKeplrModalContent={() => (
-        <div className="mt-4">
-          <Loader size={64} />
-        </div>
-      )}
+      renderLoader={() => <Loader size={64} />}
       wallets={AvailableWallets}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
