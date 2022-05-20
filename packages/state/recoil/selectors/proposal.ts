@@ -32,6 +32,6 @@ export const proposalExecutionTXHashSelector = selectorFamily<
         console.error('More than one execution', events)
       }
 
-      return events?.[0].hash
+      return events?.[0]?.hash
     },
 })
