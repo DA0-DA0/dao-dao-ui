@@ -18,13 +18,14 @@ import { CopyToClipboard } from '@dao-dao/ui'
 
 import { Loader, PageLoader } from '@/components/Loader'
 import {
-  makeGetStaticProps,
+  makeGetOrgStaticProps,
   OrgPageWrapper,
   OrgPageWrapperProps,
   useOrgInfoContext,
 } from '@/components/OrgPageWrapper'
-import { ProposalForm } from '@/components/proposals/ProposalForm'
+import { CreateProposalForm } from '@/components/proposals/CreateProposalForm'
 import { ProposalsInfo } from '@/components/proposals/ProposalsInfo'
+import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { cleanChainError } from '@/util/cleanChainError'
 import { expirationExpired } from '@/util/expiration'
@@ -145,29 +146,33 @@ const InnerProposalCreate = () => {
   )
 
   return (
-    <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
-      <div className="md:w-2/3">
-        <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
+    <>
+      <SmallScreenNav />
 
-        <SuspenseLoader fallback={<Loader />}>
-          <ProposalForm loading={loading} onSubmit={onProposalSubmit} />
-        </SuspenseLoader>
-      </div>
+      <div className="flex flex-col gap-14 justify-center p-6 md:flex-row md:gap-8">
+        <div className="md:w-2/3">
+          <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
 
-      <div className="flex-1">
-        <h2 className="mb-4 font-medium text-medium">Addresses</h2>
-
-        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
-          <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
-          <div className="col-span-2">
-            <CopyToClipboard value={coreAddress} />
-          </div>
+          <SuspenseLoader fallback={<Loader />}>
+            <CreateProposalForm loading={loading} onSubmit={onProposalSubmit} />
+          </SuspenseLoader>
         </div>
 
-        <h2 className="mb-4 font-medium text-medium">Proposal Info</h2>
-        <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+        <div className="flex-1">
+          <h2 className="mb-4 font-medium text-medium">Addresses</h2>
+
+          <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
+            <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
+            <div className="col-span-2">
+              <CopyToClipboard value={coreAddress} />
+            </div>
+          </div>
+
+          <h2 className="mb-4 font-medium text-medium">Proposal Info</h2>
+          <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -191,6 +196,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetStaticProps({
+export const getStaticProps = makeGetOrgStaticProps({
   followingTitle: 'Create Proposal',
 })

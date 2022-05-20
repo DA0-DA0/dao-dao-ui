@@ -31,7 +31,7 @@ import ConnectWalletButton from '@/components/ConnectWalletButton'
 import { PageLoader } from '@/components/Loader'
 import { ProposalNotFound } from '@/components/org/NotFound'
 import {
-  makeGetStaticProps,
+  makeGetOrgStaticProps,
   OrgPageWrapper,
   OrgPageWrapperProps,
   useOrgInfoContext,
@@ -147,59 +147,61 @@ const InnerProposal: FC = () => {
           ]}
         />
 
-        <SmallScreenNav className="mb-4" />
+        <SmallScreenNav className="md:!px-0" />
 
-        <div className="px-6 mt-6 lg:hidden">
-          <V1ProposalInfoCard
-            connected={connected}
-            memberWhenProposalCreated={memberWhenProposalCreated}
-            proposalExecutionTXHash={txHash}
-            proposalResponse={proposalResponse}
-            walletVote={voteResponse?.vote?.vote ?? undefined}
-          />
-        </div>
-
-        <V1ProposalDetails
-          TemplateRendererComponent={TemplateRendererComponent}
-          connectWalletButton={<ConnectWalletButton />}
-          connected={connected}
-          loading={loading}
-          onExecute={onExecute}
-          onVote={onVote}
-          proposal={proposalResponse.proposal}
-          setShowStaking={setShowStaking}
-          showStaking={showStaking}
-          stakingModal={
-            <StakingModal
-              defaultMode={StakingMode.Stake}
-              onClose={() => setShowStaking(false)}
+        <div className="flex flex-col gap-6 p-6 md:p-0 md:mt-6">
+          <div className="lg:hidden">
+            <V1ProposalInfoCard
+              connected={connected}
+              memberWhenProposalCreated={memberWhenProposalCreated}
+              proposalExecutionTXHash={txHash}
+              proposalResponse={proposalResponse}
+              walletVote={voteResponse?.vote?.vote ?? undefined}
             />
-          }
-          walletVote={voteResponse?.vote?.vote ?? undefined}
-          walletWeightPercent={
-            votingPowerAtHeight
-              ? (Number(votingPowerAtHeight.power) /
-                  Number(proposalResponse.proposal.total_power)) *
-                100
-              : 0
-          }
-        />
+          </div>
 
-        <div className="px-4 pb-6 mt-6 md:px-6 lg:hidden">
-          <h3 className="mb-6 text-base font-medium">Referendum status</h3>
-
-          <V1ProposalInfoVoteStatus
-            maxVotingSeconds={
-              'time' in proposalModuleConfig.max_voting_period
-                ? proposalModuleConfig.max_voting_period.time
-                : undefined
-            }
+          <V1ProposalDetails
+            TemplateRendererComponent={TemplateRendererComponent}
+            connectWalletButton={<ConnectWalletButton />}
+            connected={connected}
+            loading={loading}
+            onExecute={onExecute}
+            onVote={onVote}
             proposal={proposalResponse.proposal}
-            tokenDecimals={governanceTokenInfo.decimals}
+            setShowStaking={setShowStaking}
+            showStaking={showStaking}
+            stakingModal={
+              <StakingModal
+                defaultMode={StakingMode.Stake}
+                onClose={() => setShowStaking(false)}
+              />
+            }
+            walletVote={voteResponse?.vote?.vote ?? undefined}
+            walletWeightPercent={
+              votingPowerAtHeight
+                ? (Number(votingPowerAtHeight.power) /
+                    Number(proposalResponse.proposal.total_power)) *
+                  100
+                : 0
+            }
           />
+
+          <div className="lg:hidden">
+            <h3 className="mb-6 text-base font-medium">Referendum status</h3>
+
+            <V1ProposalInfoVoteStatus
+              maxVotingSeconds={
+                'time' in proposalModuleConfig.max_voting_period
+                  ? proposalModuleConfig.max_voting_period.time
+                  : undefined
+              }
+              proposal={proposalResponse.proposal}
+              tokenDecimals={governanceTokenInfo.decimals}
+            />
+          </div>
         </div>
       </div>
-      <div className="hidden col-span-2 p-4 min-h-screen md:p-6 lg:block bg-base-200">
+      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">Details</h2>
         <V1ProposalInfoCard
           connected={connected}
@@ -259,12 +261,12 @@ export const getStaticProps: GetStaticProps<OrgPageWrapperProps> = async (
   // If invalid address, fallback to default handler.
   const coreAddress = props[0].params?.address
   if (typeof coreAddress !== 'string' || !coreAddress) {
-    return await makeGetStaticProps()(...props)
+    return await makeGetOrgStaticProps()(...props)
   }
 
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    return await makeGetStaticProps({
+    return await makeGetOrgStaticProps({
       followingTitle: 'Proposal not found',
       getAdditionalProps: () => ({
         exists: false,
@@ -302,7 +304,7 @@ export const getStaticProps: GetStaticProps<OrgPageWrapperProps> = async (
       console.error(err)
     }
 
-    const staticProps = await makeGetStaticProps({
+    const staticProps = await makeGetOrgStaticProps({
       followingTitle: `Proposal ${exists ? '#' + proposalId : 'not found'}`,
     })(...props)
 

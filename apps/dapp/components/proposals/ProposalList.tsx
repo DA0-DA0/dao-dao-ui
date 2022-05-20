@@ -42,8 +42,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
           contractAddress: proposalModuleAddress,
           params: [
             {
-              startBefore:
-                listIndex === 0 ? undefined : startBefores[listIndex - 1],
+              startBefore: startBefores[listIndex - 1],
               limit: PROP_LOAD_LIMIT,
             },
           ],

@@ -12,7 +12,7 @@ import { SuspenseLoader } from './SuspenseLoader'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
 
-const MobileHeaderInternal: FC = () => {
+const OrgMobileHeaderInternal: FC = () => {
   const {
     coreAddress,
     governanceTokenAddress,
@@ -46,12 +46,12 @@ const MobileHeaderInternal: FC = () => {
   )
 }
 
-export const MobileHeader: FC = () => (
+export const OrgMobileHeader: FC = () => (
   <SuspenseLoader
     fallback={
       <MobileHeaderLoader contractAddress={useOrgInfoContext().coreAddress} />
     }
   >
-    <MobileHeaderInternal />
+    <OrgMobileHeaderInternal />
   </SuspenseLoader>
 )

@@ -21,9 +21,9 @@ import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import { PageLoader } from '@/components/Loader'
-import { MobileHeader } from '@/components/MobileHeader'
+import { OrgMobileHeader } from '@/components/OrgMobileHeader'
 import {
-  makeGetStaticProps,
+  makeGetOrgStaticProps,
   OrgPageWrapper,
   OrgPageWrapperProps,
   useOrgInfoContext,
@@ -49,7 +49,7 @@ const InnerMobileDaoHome: FC = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <MobileHeader />
+        <OrgMobileHeader />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -243,7 +243,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetStaticProps({
+  makeGetOrgStaticProps({
     getAdditionalProps: async ({ image_url }) =>
       image_url
         ? { accentColor: await getFastAverageColor(image_url) }

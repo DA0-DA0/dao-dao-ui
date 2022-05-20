@@ -92,8 +92,8 @@ type GetStaticPropsMaker = (
   props?: GetStaticPropsMakerProps
 ) => GetStaticProps<OrgPageWrapperProps>
 
-// Computes OrgPageWrapperProps for the DAO with optional alterations.
-export const makeGetStaticProps: GetStaticPropsMaker =
+// Computes OrgPageWrapperProps for the org with optional alterations.
+export const makeGetOrgStaticProps: GetStaticPropsMaker =
   ({
     leadingTitle,
     followingTitle,

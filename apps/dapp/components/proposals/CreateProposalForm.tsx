@@ -53,12 +53,15 @@ export interface ProposalData extends Omit<FormProposalData, 'templateData'> {
   messages: CosmosMsgFor_Empty[]
 }
 
-interface ProposalFormProps {
+interface CreateProposalFormProps {
   onSubmit: (data: ProposalData) => void
   loading: boolean
 }
 
-export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
+export const CreateProposalForm = ({
+  onSubmit,
+  loading,
+}: CreateProposalFormProps) => {
   const { coreAddress } = useOrgInfoContext()
   const { connected, address: walletAddress } = useWallet()
   const { governanceTokenAddress, governanceTokenInfo } =
@@ -165,10 +168,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
 
   return (
     <FormProvider {...formMethods}>
-      <form
-        className="mx-auto max-w-[800px]"
-        onSubmit={handleSubmit(onSubmitForm)}
-      >
+      <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmitForm)}>
         {showPreview && (
           <>
             <div className="max-w-prose">

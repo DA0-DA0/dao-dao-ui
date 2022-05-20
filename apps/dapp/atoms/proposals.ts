@@ -7,7 +7,10 @@ export const proposalStartBeforesAtom = atom<
   Record<number, number | undefined>
 >({
   key: 'proposalStartBefores',
-  default: {},
+  // Start first list (index 0) at the beginning.
+  // It uses the previous list's ending as its starting point, so
+  // set index -1 to undefined so startBefore is initially undefined.
+  default: { [-1]: undefined },
 })
 
 // Count of proposal lists that have been loaded. Each 'load more' action
