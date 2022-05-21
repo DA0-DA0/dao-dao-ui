@@ -1,4 +1,6 @@
 import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
+import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -6,6 +8,18 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+
+interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
+  extends Omit<ComponentProps<'input'>, 'type'> {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  defaultValue?: string
+  step?: string | number
+  onPlusMinus?: [() => void, () => void]
+  small?: boolean
+}
 
 /**
  * @param label      - the label for the value that this will contain.
@@ -16,27 +30,19 @@ import {
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
+export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   label,
   register,
   error,
   validation,
   defaultValue,
   step,
-  disabled = false,
   onPlusMinus,
+  disabled,
   small = false,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  defaultValue?: string
-  step?: string | number
-  disabled?: boolean
-  onPlusMinus?: [() => void, () => void]
-  small?: boolean
-}) {
+  className,
+  ...props
+}: NumberInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -45,10 +51,10 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   if (onPlusMinus) {
     return (
       <div
-        className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm ${
-          small ? 'w-40' : ''
-        }
-        ${error ? ' ring-error ring-1' : ''}`}
+        className={clsx(
+          'flex gap-1 items-center py-2 px-3 text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+          { 'w-40': small, 'ring-1 ring-error': error }
+        )}
       >
         <button
           className="transition secondary-text hover:body-text"
@@ -67,14 +73,16 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
           <MinusIcon className="w-4" />
         </button>
         <input
-          className="w-full text-right bg-transparent border-none outline-none ring-none body-text"
+          className={clsx(
+            'w-full text-right bg-transparent border-none outline-none ring-none body-text',
+            className
+          )}
           defaultValue={defaultValue}
           disabled={disabled}
           step={step}
           type="number"
-          {...register(label, {
-            validate,
-          })}
+          {...props}
+          {...register(label, { validate })}
         />
       </div>
     )
@@ -82,12 +90,16 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
 
   return (
     <input
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default body-text
-        ${error ? ' ring-error ring-1' : ''}`}
+      className={clsx(
+        'py-2 px-3 bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
+        { 'ring-1 ring-error': error },
+        className
+      )}
       defaultValue={defaultValue}
       disabled={disabled}
       step={step}
       type="number"
+      {...props}
       {...register(label, { validate })}
     />
   )

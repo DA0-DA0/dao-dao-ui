@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -5,6 +7,14 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+
+interface TextInputProps<FieldValues, FieldName extends Path<FieldValues>>
+  extends Omit<ComponentProps<'input'>, 'type'> {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+}
 
 /**
  * @param label      - the label for the value that this will contain.
@@ -15,32 +25,28 @@ import {
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export function TextInput<FieldValues, FieldName extends Path<FieldValues>>({
+export const TextInput = <FieldValues, FieldName extends Path<FieldValues>>({
   label,
   register,
   error,
   validation,
-  disabled = false,
-  className = '',
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  border?: boolean
-  disabled?: boolean
-  className?: string
-}) {
+  className,
+  ...rest
+}: TextInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
   return (
     <input
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full body-text
-        ${error ? ' ring-error ring-1' : ''} ${className}`}
-      disabled={disabled}
+      className={clsx(
+        'py-2 px-3 w-full bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
+        { 'ring-1 ring-error': error },
+        className
+      )}
       type="text"
+      {...rest}
       {...register(label, { validate })}
     />
   )

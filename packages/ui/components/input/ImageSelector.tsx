@@ -115,7 +115,8 @@ export function ImageSelector<FieldValues, FieldName extends Path<FieldValues>>(
       >
         <PlusIcon className="w-4" />
       </button>
-      <div className={clsx({ hidden: !showImageSelect })}>
+
+      {showImageSelect && (
         <ImageSelectorModal
           error={error}
           imageUrl={imageUrl}
@@ -124,7 +125,7 @@ export function ImageSelector<FieldValues, FieldName extends Path<FieldValues>>(
           register={register}
           validation={validation}
         />
-      </div>
+      )}
     </>
   )
 }
