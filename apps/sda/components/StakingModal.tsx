@@ -1,4 +1,3 @@
-import { XIcon } from '@heroicons/react/outline'
 import { useState, FunctionComponent } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -311,17 +310,8 @@ const StakingModalWrapper: FunctionComponent<StakingModalWrapperProps> = ({
   children,
   onClose,
 }) => (
-  <Modal onClose={onClose}>
-    <div className="relative p-40 bg-white rounded-lg border border-focus cursor-auto">
-      <button
-        className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
-        onClick={onClose}
-      >
-        <XIcon className="w-4 h-4" />
-      </button>
-
-      {children}
-    </div>
+  <Modal containerClassName="!p-40" onClose={onClose}>
+    {children}
   </Modal>
 )
 

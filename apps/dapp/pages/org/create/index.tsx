@@ -1,8 +1,13 @@
 import { FC } from 'react'
 
-import { ImageSelector, TextAreaInput, TextInput } from '@dao-dao/ui'
+import {
+  ImageSelector,
+  InputErrorMessage,
+  TextAreaInput,
+  TextInput,
+} from '@dao-dao/ui'
 
-import { CreateOrgHeader } from '@/components/org/create/Header'
+import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -30,20 +35,26 @@ const CreateOrgPage: FC = () => {
           </div>
 
           <div className="flex flex-col flex-1 gap-2">
-            <TextInput
-              error={errors.name}
-              label="name"
-              placeholder="Organization's name..."
-              register={register}
-            />
+            <div>
+              <TextInput
+                error={errors.name}
+                label="name"
+                placeholder="Organization's name..."
+                register={register}
+              />
+              <InputErrorMessage error={errors.name} />
+            </div>
 
-            <TextAreaInput
-              error={errors.description}
-              label="description"
-              placeholder="Organization's description..."
-              register={register}
-              rows={4}
-            />
+            <div>
+              <TextAreaInput
+                error={errors.description}
+                label="description"
+                placeholder="Organization's description..."
+                register={register}
+                rows={4}
+              />
+              <InputErrorMessage error={errors.description} />
+            </div>
           </div>
         </div>
 

@@ -1,16 +1,18 @@
-import { XIcon } from '@heroicons/react/outline'
+import { FC } from 'react'
 
 import { Modal } from '@dao-dao/ui'
 import { Template } from '@dao-dao/ui/components/templates'
 
 import { templates } from './templates'
 
-export const TemplateDisplayItem = ({
-  template,
-  onClick,
-}: {
+interface TemplateDisplayItemProps {
   template: Template
   onClick: () => void
+}
+
+export const TemplateDisplayItem: FC<TemplateDisplayItemProps> = ({
+  template,
+  onClick,
 }) => {
   const words = template.label.split(' ')
 
@@ -39,32 +41,23 @@ interface TemplateSelectorProps {
   onSelectTemplate: (template: Template) => void
 }
 
-export const TemplateSelector = ({
+export const TemplateSelector: FC<TemplateSelectorProps> = ({
   onClose,
   onSelectTemplate,
-}: TemplateSelectorProps) => (
+}) => (
   <Modal onClose={onClose}>
-    <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
-      <button
-        className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
-        onClick={onClose}
-        type="button"
-      >
-        <XIcon className="w-4 h-4" />
-      </button>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="header-text">Proposal message templates</h1>
-      </div>
-      <ul className="flex flex-col gap-3 list-none">
-        {templates.map((template, index) => (
-          <li key={index}>
-            <TemplateDisplayItem
-              onClick={() => onSelectTemplate(template)}
-              template={template}
-            />
-          </li>
-        ))}
-      </ul>
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="header-text">Proposal message templates</h1>
     </div>
+    <ul className="flex flex-col gap-3 list-none">
+      {templates.map((template, index) => (
+        <li key={index}>
+          <TemplateDisplayItem
+            onClick={() => onSelectTemplate(template)}
+            template={template}
+          />
+        </li>
+      ))}
+    </ul>
   </Modal>
 )

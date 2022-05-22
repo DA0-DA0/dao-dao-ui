@@ -9,7 +9,7 @@ import {
   UseFormWatch,
 } from 'react-hook-form'
 
-import { Button, NumberInput, TextInput } from '@dao-dao/ui'
+import { Button, InputErrorMessage, NumberInput, TextInput } from '@dao-dao/ui'
 
 import { NewOrg } from '@/atoms/org'
 
@@ -68,53 +68,46 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   return (
     <div className="p-6 bg-disabled rounded-lg">
       <div className="flex flex-row gap-8 justify-between items-center">
-        <TextInput
-          className="flex-1"
-          error={errors.groups?.[groupIndex]?.name}
-          label={`groups.${groupIndex}.name`}
-          placeholder="Group's name..."
-          register={register}
-        />
+        <p className="title-text">
+          {watch(`groups.${groupIndex}.name`)} members
+        </p>
 
         <div className="flex flex-row gap-2 justify-between items-center">
-          <p className="caption-text">
-            Voting
-            <br />
-            Power
-          </p>
+          <p className="caption-text">Voting power</p>
 
-          <NumberInput
-            className="w-10"
-            error={errors.groups?.[groupIndex]?.weight}
-            label={`groups.${groupIndex}.weight`}
-            onPlusMinus={[
-              () =>
-                setValue(
-                  `groups.${groupIndex}.weight`,
-                  Math.max(
-                    Math.min(watch(`groups.${groupIndex}.weight`) + 1, 100),
-                    0
-                  )
-                ),
-              () =>
-                setValue(
-                  `groups.${groupIndex}.weight`,
-                  Math.max(
-                    Math.min(watch(`groups.${groupIndex}.weight`) - 1, 100),
-                    0
-                  )
-                ),
-            ]}
-            register={register}
-            step={1}
-          />
+          <div>
+            <NumberInput
+              className="w-10"
+              error={errors.groups?.[groupIndex]?.weight}
+              label={`groups.${groupIndex}.weight`}
+              onPlusMinus={[
+                () =>
+                  setValue(
+                    `groups.${groupIndex}.weight`,
+                    Math.max(
+                      Math.min(watch(`groups.${groupIndex}.weight`) + 1, 100),
+                      0
+                    )
+                  ),
+                () =>
+                  setValue(
+                    `groups.${groupIndex}.weight`,
+                    Math.max(
+                      Math.min(watch(`groups.${groupIndex}.weight`) - 1, 100),
+                      0
+                    )
+                  ),
+              ]}
+              register={register}
+              step={1}
+            />
+            <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+          </div>
           <p className="primary-text">%</p>
         </div>
       </div>
 
-      <p className="mt-6 mb-2 primary-text">Members</p>
-
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col gap-2 items-stretch mt-4">
         {members.map(({ id }, idx) => (
           <CreateOrgGroupMember
             key={id}
@@ -150,12 +143,15 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
   remove,
 }) => (
   <div className="grid grid-cols-[5fr_2fr_2rem] grid-rows-1 gap-8 items-center p-3 bg-card rounded-md">
-    <TextInput
-      error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-      label={`groups.${groupIndex}.members.${memberIndex}.address`}
-      placeholder="Member's address..."
-      register={register}
-    />
+    <div>
+      <TextInput
+        error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+        label={`groups.${groupIndex}.members.${memberIndex}.address`}
+        placeholder="Member's address..."
+        register={register}
+      />
+      <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+    </div>
 
     <p className="text-xs text-center sm:text-sm">
       Proportion:{' '}

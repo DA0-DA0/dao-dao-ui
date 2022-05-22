@@ -26,7 +26,7 @@ import {
   CosmosMessageDisplay,
   InputErrorMessage,
   InputLabel,
-  TextareaInput,
+  TextAreaInput,
   Tooltip,
   TextInput,
 } from '@dao-dao/ui'
@@ -198,7 +198,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
           </div>
           <div className="flex flex-col gap-1 my-3">
             <InputLabel name="Description" />
-            <TextareaInput
+            <TextAreaInput
               error={errors.description}
               label="description"
               register={register}

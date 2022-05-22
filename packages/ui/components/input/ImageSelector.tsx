@@ -1,4 +1,4 @@
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
+import { PlusIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { useState } from 'react'
 import {
@@ -36,46 +36,34 @@ export function ImageSelectorModal<
   const { label, register, error, validation, imageUrl, onClose } = props
 
   return (
-    <Modal onClose={onClose}>
+    <Modal
+      containerClassName="flex flex-col gap-3 items-center"
+      onClose={onClose}
+    >
       <div
-        className={clsx(
-          'flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white',
-          'rounded-lg border border-focus',
-          'cursor-auto'
-        )}
-      >
-        <button
-          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
-          onClick={onClose}
-          type="button"
-        >
-          <XIcon className="w-4 h-4" />
-        </button>
-        <div
-          aria-label="DAO's Custom Logo"
-          className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
-          role="img"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+        aria-label="DAO's Custom Logo"
+        className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
+        role="img"
+        style={{ backgroundImage: `url(${imageUrl})` }}
+      />
+      <div className="flex flex-col gap-1">
+        <InputLabel
+          mono
+          name="Image URL"
+          tooltip="A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg"
         />
-        <div className="flex flex-col gap-1">
-          <InputLabel
-            mono
-            name="Image URL"
-            tooltip="A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg"
-          />
-          <TextInput
-            error={error}
-            label={label}
-            register={register}
-            validation={validation}
-          />
-          <InputErrorMessage error={error} />
-        </div>
-        <div className="w-full text-right">
-          <Button onClick={onClose} size="sm" type="button">
-            Done <Airplane color="currentColor" />
-          </Button>
-        </div>
+        <TextInput
+          error={error}
+          label={label}
+          register={register}
+          validation={validation}
+        />
+        <InputErrorMessage error={error} />
+      </div>
+      <div className="w-full text-right">
+        <Button onClick={onClose} size="sm" type="button">
+          Done <Airplane color="currentColor" />
+        </Button>
       </div>
     </Modal>
   )

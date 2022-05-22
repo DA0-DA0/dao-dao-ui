@@ -1,4 +1,3 @@
-import { XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -100,80 +99,71 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   return (
     <Modal onClose={onClose}>
-      <div className="relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto">
-        <button
-          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
-          onClick={onClose}
+      <div className="flex justify-between items-center">
+        <h1 className="header-text">Manage staking</h1>
+      </div>
+
+      <div className="flex gap-1 py-[20px] mb-2 border-b border-inactive">
+        <ModeButton
+          active={mode === StakingMode.Stake}
+          onClick={() => setMode(StakingMode.Stake)}
         >
-          <XIcon className="w-4 h-4" />
-        </button>
-
-        <div className="flex justify-between items-center">
-          <h1 className="header-text">Manage staking</h1>
-        </div>
-
-        <div className="flex gap-1 py-[20px] mb-2 border-b border-inactive">
+          Stake
+        </ModeButton>
+        <ModeButton
+          active={mode === StakingMode.Unstake}
+          onClick={() => setMode(StakingMode.Unstake)}
+        >
+          Unstake
+        </ModeButton>
+        {canClaim && (
           <ModeButton
-            active={mode === StakingMode.Stake}
-            onClick={() => setMode(StakingMode.Stake)}
+            active={mode === StakingMode.Claim}
+            onClick={() => setMode(StakingMode.Claim)}
           >
-            Stake
+            Claim
           </ModeButton>
-          <ModeButton
-            active={mode === StakingMode.Unstake}
-            onClick={() => setMode(StakingMode.Unstake)}
-          >
-            Unstake
-          </ModeButton>
-          {canClaim && (
-            <ModeButton
-              active={mode === StakingMode.Claim}
-              onClick={() => setMode(StakingMode.Claim)}
-            >
-              Claim
-            </ModeButton>
-          )}
-        </div>
-        {mode === StakingMode.Stake && (
-          <StakeUnstakeModesBody
-            amount={amount}
-            max={stakableTokens}
-            mode={mode}
-            setAmount={(amount: number) => setAmount(amount)}
-            tokenDecimals={tokenDecimals}
-            unstakingDuration={unstakingDuration}
-          />
         )}
-        {mode === StakingMode.Unstake && (
-          <StakeUnstakeModesBody
-            amount={amount}
-            max={unstakableTokens}
-            mode={mode}
-            setAmount={(amount: number) => setAmount(amount)}
-            tokenDecimals={tokenDecimals}
-            unstakingDuration={unstakingDuration}
-          />
-        )}
-        {mode === StakingMode.Claim && (
-          <ClaimModeBody
-            amount={claimableTokens}
-            tokenDecimals={tokenDecimals}
-            tokenSymbol={tokenSymbol}
-          />
-        )}
-        <div className="flex justify-end px-3 pt-6">
-          <ActionButton
-            error={error}
-            loading={loading}
-            mode={mode}
-            onClick={() =>
-              onAction(
-                mode,
-                mode === StakingMode.Claim ? claimableTokens : amount
-              )
-            }
-          />
-        </div>
+      </div>
+      {mode === StakingMode.Stake && (
+        <StakeUnstakeModesBody
+          amount={amount}
+          max={stakableTokens}
+          mode={mode}
+          setAmount={(amount: number) => setAmount(amount)}
+          tokenDecimals={tokenDecimals}
+          unstakingDuration={unstakingDuration}
+        />
+      )}
+      {mode === StakingMode.Unstake && (
+        <StakeUnstakeModesBody
+          amount={amount}
+          max={unstakableTokens}
+          mode={mode}
+          setAmount={(amount: number) => setAmount(amount)}
+          tokenDecimals={tokenDecimals}
+          unstakingDuration={unstakingDuration}
+        />
+      )}
+      {mode === StakingMode.Claim && (
+        <ClaimModeBody
+          amount={claimableTokens}
+          tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
+        />
+      )}
+      <div className="flex justify-end px-3 pt-6">
+        <ActionButton
+          error={error}
+          loading={loading}
+          mode={mode}
+          onClick={() =>
+            onAction(
+              mode,
+              mode === StakingMode.Claim ? claimableTokens : amount
+            )
+          }
+        />
       </div>
     </Modal>
   )
