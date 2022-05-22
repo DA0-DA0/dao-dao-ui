@@ -39,6 +39,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
     watch,
     control,
     setValue,
+    resetField,
   } = useForm({ defaultValues: newOrg })
 
   // // Ensure all previous fields are valid.
@@ -136,6 +137,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
     watch,
     control,
     setValue,
+    resetField,
     Navigation,
   }
 }

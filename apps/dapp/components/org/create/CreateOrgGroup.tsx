@@ -77,7 +77,6 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
 
           <div>
             <NumberInput
-              className="w-10"
               error={errors.groups?.[groupIndex]?.weight}
               label={`groups.${groupIndex}.weight`}
               onPlusMinus={[
@@ -99,6 +98,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                   ),
               ]}
               register={register}
+              sizing="sm"
               step={1}
             />
             <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />

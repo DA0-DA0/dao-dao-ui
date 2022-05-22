@@ -18,7 +18,8 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
   defaultValue?: string
   step?: string | number
   onPlusMinus?: [() => void, () => void]
-  small?: boolean
+  containerClassName?: string
+  sizing?: 'sm' | 'md'
 }
 
 /**
@@ -39,8 +40,9 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   step,
   onPlusMinus,
   disabled,
-  small = false,
+  sizing,
   className,
+  containerClassName,
   ...props
 }: NumberInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
@@ -53,7 +55,12 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
       <div
         className={clsx(
           'flex gap-1 items-center py-2 px-3 text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
-          { 'w-40': small, 'ring-1 ring-error': error }
+          {
+            'ring-1 ring-error': error,
+            'w-28': sizing === 'sm',
+            'w-40': sizing === 'md',
+          },
+          containerClassName
         )}
       >
         <button

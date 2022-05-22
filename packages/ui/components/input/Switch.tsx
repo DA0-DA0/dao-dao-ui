@@ -6,15 +6,24 @@ interface SwitchProps {
   on: boolean
   onClick?: () => void
   className?: string
+  sizing?: 'sm' | 'lg'
 }
 
-export const Switch: FC<SwitchProps> = ({ on, onClick, className }) => (
+export const Switch: FC<SwitchProps> = ({
+  on,
+  onClick,
+  className,
+  sizing = 'lg',
+}) => (
   <div
     className={clsx(
-      'flex relative items-center w-[67px] h-[38px] rounded-full hover:opacity-70 cursor-pointer',
+      'flex relative flex-none items-center rounded-full hover:opacity-70 cursor-pointer',
       {
         'bg-valid': on,
         'bg-transparent border border-dark': !on,
+        // Sizing.
+        'w-[28px] h-[16px]': sizing === 'sm',
+        'w-[67px] h-[38px]': sizing === 'lg',
       },
       className
     )}
@@ -22,10 +31,17 @@ export const Switch: FC<SwitchProps> = ({ on, onClick, className }) => (
   >
     <div
       className={clsx(
-        'absolute w-[28px] h-[28px] rounded-full transition-all',
+        'absolute bg-dark rounded-full transition-all',
+        // Sizing.
         {
-          'left-[33px] bg-dark': on,
-          'left-[4.5px] bg-dark': !on,
+          // Small
+          'w-[10px] h-[10px]': sizing === 'sm',
+          'left-[15px]': sizing === 'sm' && on,
+          'left-[2px]': sizing === 'sm' && !on,
+          // Large
+          'w-[28px] h-[28px]': sizing === 'lg',
+          'left-[33px]': sizing === 'lg' && on,
+          'left-[4.5px]': sizing === 'lg' && !on,
         }
       )}
     ></div>

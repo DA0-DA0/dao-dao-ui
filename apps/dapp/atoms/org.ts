@@ -21,34 +21,34 @@ export interface NewOrg {
   name: string
   description?: string
   imageUrl?: string
-  // Voting power
   groups: NewOrgGroup[]
-  variableVotingWeightsEnabled: boolean
-  governanceTokenEnabled: boolean
-  unstakingDuration: {
-    value: number
-    units: DurationUnits
-  }
-  existingGovernanceTokenAddress?: string
-  newGovernanceToken?: {
-    name: string
-    symbol: string
-    imageUrl?: string
-  }
-  // TODO: Initial supply stuff.
-  // Proposal
-  changeThresholdQuorumEnabled: boolean
-  allowRevoting: boolean
-  depositInfo?: {
-    deposit: number
-    refundFailedProposals: boolean
-  }
   votingDuration: {
     value: number
     units: DurationUnits
   }
-  threshold: {
-    type: ThresholdType
+  variableVotingWeightsEnabled: boolean
+  variableVotingWeightsOptions: {
+    governanceTokenEnabled: boolean
+    governanceTokenOptions: {
+      newGovernanceToken?: {
+        name: string
+        symbol: string
+        imageUrl?: string
+      }
+      existingGovernanceTokenAddress?: string
+      proposalDeposit?: {
+        value: number
+        refundFailed: boolean
+      }
+      unregisterDuration: {
+        value: number
+        units: DurationUnits
+      }
+    }
+  }
+  // TODO: Initial supply stuff.
+  changeThresholdQuorumEnabled: boolean
+  changeThresholdQuorumOptions: {
     thresholdValue: ThresholdValue
     quorumValue: ThresholdValue
   }
@@ -65,25 +65,29 @@ export interface NewOrgGroupMember {
   proportion: number
 }
 
-export const newOrgAtom = atom<Partial<NewOrg>>({
-  key: 'newOrg',
-  default: {
-    variableVotingWeightsEnabled: false,
+export const DefaultNewOrg: Partial<NewOrg> = {
+  votingDuration: {
+    value: 1,
+    units: DurationUnits.Weeks,
+  },
+  variableVotingWeightsEnabled: false,
+  variableVotingWeightsOptions: {
     governanceTokenEnabled: false,
-    unstakingDuration: {
-      value: 2,
-      units: DurationUnits.Weeks,
-    },
-    changeThresholdQuorumEnabled: false,
-    allowRevoting: false,
-    votingDuration: {
-      value: 1,
-      units: DurationUnits.Weeks,
-    },
-    threshold: {
-      type: ThresholdType.ThresholdQuorum,
-      thresholdValue: 'majority',
-      quorumValue: 20,
+    governanceTokenOptions: {
+      unregisterDuration: {
+        value: 2,
+        units: DurationUnits.Weeks,
+      },
     },
   },
+  changeThresholdQuorumEnabled: false,
+  changeThresholdQuorumOptions: {
+    thresholdValue: 'majority',
+    quorumValue: 20,
+  },
+}
+
+export const newOrgAtom = atom<Partial<NewOrg>>({
+  key: 'newOrg',
+  default: DefaultNewOrg,
 })

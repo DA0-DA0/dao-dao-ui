@@ -66,7 +66,7 @@ export const MintComponent: TemplateComponent<MintOptions> = ({
                 setValue(getLabel('amount'), (Number(amount) - 1).toString()),
             ]}
             register={register}
-            small
+            sizing="md"
             validation={[validateRequired, validatePositive]}
           />
           <InputErrorMessage error={errors?.amount} />

@@ -146,7 +146,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
               ),
           ]}
           register={register}
-          small
+          sizing="md"
           step={0.000001}
           validation={[
             validateRequired,
