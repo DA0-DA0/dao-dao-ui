@@ -496,7 +496,7 @@ const InnerCreateDao: FC = () => {
                     ]}
                     onRemove={() => remove(index)}
                     register={register}
-                    title={`Recepient ${index}`}
+                    title={`Recipient ${index}`}
                     tokenImage={tokenImage}
                     tokenSymbol={tokenSymbol}
                   />

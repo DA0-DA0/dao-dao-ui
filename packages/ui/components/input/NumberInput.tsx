@@ -26,6 +26,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   disabled = false,
   onPlusMinus,
   small = false,
+  className,
 }: {
   label: FieldName
   register: UseFormRegister<FieldValues>
@@ -36,6 +37,7 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   disabled?: boolean
   onPlusMinus?: [() => void, () => void]
   small?: boolean
+  className?: string
 }) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -45,10 +47,10 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
   if (onPlusMinus) {
     return (
       <div
-        className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm ${
+        className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border border-default text-sm ${
           small ? 'w-40' : ''
         }
-        ${error ? ' ring-error ring-1' : ''}`}
+        ${error ? ' ring-error ring-1' : ''} ${className}`}
       >
         <button
           className="transition secondary-text hover:body-text"
@@ -82,8 +84,8 @@ export function NumberInput<FieldValues, FieldName extends Path<FieldValues>>({
 
   return (
     <input
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default body-text
-        ${error ? ' ring-error ring-1' : ''}`}
+      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border border-default body-text
+        ${error ? ' ring-error ring-1' : ''} ${className}`}
       defaultValue={defaultValue}
       disabled={disabled}
       step={step}
