@@ -19,6 +19,26 @@ import { AddressInput } from './AddressInput'
 import { InputErrorMessage } from './InputErrorMessage'
 import { NumberInput } from './NumberInput'
 
+interface TokenAmountInputProps<
+  FieldValues,
+  AmountFieldName extends Path<FieldValues>,
+  AddrFieldName extends Path<FieldValues>
+> {
+  amountLabel: AmountFieldName
+  addrLabel: AddrFieldName
+  onRemove: () => void
+  tokenSymbol?: string
+  tokenImage?: string
+  hideRemove: boolean
+  icon?: ReactNode
+  title: string
+  register: UseFormRegister<FieldValues>
+  onPlusMinus?: [() => void, () => void]
+  amountError?: FieldError
+  addrError?: FieldError
+  readOnly?: boolean
+}
+
 /**
  * @param label      - the label for the value that this will contain.
  * @param register   - the register function returned by `useForm`.
@@ -28,7 +48,7 @@ import { NumberInput } from './NumberInput'
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export function TokenAmountInput<
+export const TokenAmountInput = <
   FieldValues,
   AmountFieldName extends Path<FieldValues>,
   AddrFieldName extends Path<FieldValues>
@@ -46,36 +66,8 @@ export function TokenAmountInput<
   amountError,
   addrError,
   readOnly,
-}: {
-  amountLabel: AmountFieldName
-  addrLabel: AddrFieldName
-  onRemove: () => void
-  tokenSymbol?: string
-  tokenImage?: string
-  hideRemove: boolean
-  icon?: ReactNode
-  title: string
-  register: UseFormRegister<FieldValues>
-  onPlusMinus?: [() => void, () => void]
-  amountError?: FieldError
-  addrError?: FieldError
-  readOnly?: boolean
-}) {
+}: TokenAmountInputProps<FieldValues, AmountFieldName, AddrFieldName>) => {
   type ValidateFn = Validate<FieldPathValue<FieldValues, AddrFieldName>>
-
-  const numberInputParams = {
-    defaultValue: '0',
-    disabled: readOnly,
-    error: amountError,
-    label: amountLabel as any,
-    onPlusMinus: onPlusMinus,
-    register: register,
-    step: 0.000001,
-    validation: [
-      validateRequired as ValidateFn,
-      validatePositive as ValidateFn,
-    ],
-  }
 
   return (
     <FormCard>
@@ -93,12 +85,20 @@ export function TokenAmountInput<
         </div>
         <div className="flex gap-2 items-center">
           <div className="flex flex-col gap-1">
-            <div className="hidden md:block">
-              <NumberInput {...numberInputParams} small />
-            </div>
-            <div className="md:hidden">
-              <NumberInput {...numberInputParams} />
-            </div>
+            <NumberInput
+              className="md:w-40"
+              defaultValue="0"
+              disabled={readOnly}
+              error={amountError}
+              label={amountLabel as any}
+              onPlusMinus={onPlusMinus}
+              register={register}
+              step={0.000001}
+              validation={[
+                validateRequired as ValidateFn,
+                validatePositive as ValidateFn,
+              ]}
+            />
             <InputErrorMessage error={amountError} />
           </div>
           {tokenSymbol && (
