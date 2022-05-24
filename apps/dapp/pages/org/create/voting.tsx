@@ -2,19 +2,30 @@ import Emoji from 'a11y-react-emoji'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
+import { PlaceholderToken } from '@dao-dao/icons'
 import {
   Button,
   FormSwitch,
+  ImageSelector,
+  InputErrorMessage,
   InputLabel,
   Modal,
   NumberInput,
+  RadioInput,
   SelectInput,
   SubmitButton,
   TextInput,
 } from '@dao-dao/ui'
 
-import { DefaultNewOrg, DurationUnitsValues } from '@/atoms/org'
-import { CreateOrgConfigCard } from '@/components/org/create/CreateOrgConfigCard'
+import {
+  DefaultNewOrg,
+  DurationUnitsValues,
+  GovernanceTokenType,
+} from '@/atoms/org'
+import {
+  CreateOrgConfigCard,
+  CreateOrgConfigCardWrapper,
+} from '@/components/org/create/CreateOrgConfigCard'
 import { CreateOrgGroup } from '@/components/org/create/CreateOrgGroup'
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
@@ -89,6 +100,10 @@ const CreateOrgVotingPage: FC = () => {
     useState(false)
   const thresholdValue = watch('changeThresholdQuorumOptions.thresholdValue')
   const quorumValue = watch('changeThresholdQuorumOptions.quorumValue')
+
+  const newTokenImageUrl = watch(
+    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.imageUrl'
+  )
 
   return (
     <>
@@ -225,6 +240,164 @@ const CreateOrgVotingPage: FC = () => {
 
         {watch('variableVotingWeightsOptions.governanceTokenEnabled') && (
           <div className="space-y-3">
+            <RadioInput
+              label="variableVotingWeightsOptions.governanceTokenOptions.type"
+              options={[
+                {
+                  label: 'Create new token',
+                  value: GovernanceTokenType.New,
+                },
+                {
+                  label: 'Use existing token',
+                  value: GovernanceTokenType.Existing,
+                },
+              ]}
+              setValue={setValue}
+              watch={watch}
+            />
+            <CreateOrgConfigCardWrapper className="gap-8 mb-9">
+              {watch(
+                'variableVotingWeightsOptions.governanceTokenOptions.type'
+              ) === GovernanceTokenType.New ? (
+                <>
+                  <div className="flex flex-row gap-8 justify-between items-center">
+                    <p className="primary-text">Total supply</p>
+
+                    <div className="flex flex-row grow gap-4 items-center">
+                      <NumberInput
+                        containerClassName="grow"
+                        error={
+                          errors.variableVotingWeightsOptions
+                            ?.governanceTokenOptions?.newGovernanceToken?.supply
+                        }
+                        label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply"
+                        onPlusMinus={[
+                          () =>
+                            setValue(
+                              'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
+                              Math.max(
+                                watch(
+                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
+                                ) + 1,
+                                0
+                              )
+                            ),
+                          () =>
+                            setValue(
+                              'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
+                              Math.max(
+                                watch(
+                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
+                                ) - 1,
+                                0
+                              )
+                            ),
+                        ]}
+                        register={register}
+                        step={1}
+                      />
+
+                      <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
+                        {newTokenImageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img alt="" src={newTokenImageUrl} />
+                        ) : (
+                          <PlaceholderToken
+                            className="p-2 rounded-full border border-default"
+                            color="rgba(var(--dark), 0.3)"
+                            height="2.25rem"
+                            width="2.25rem"
+                          />
+                        )}
+
+                        {watch(
+                          'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol'
+                        ) || 'Token'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">
+                    <div className="flex flex-col gap-2 justify-between items-start">
+                      <InputLabel mono name="Token image" />
+                      <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
+                        <ImageSelector
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken
+                              ?.imageUrl
+                          }
+                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.imageUrl"
+                          register={register}
+                          size={36}
+                          watch={watch}
+                        />
+                        <p className="hidden text-disabled sm:block">
+                          Add an image
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 justify-between">
+                      <InputLabel mono name="Symbol" />
+                      <TextInput
+                        error={
+                          errors.variableVotingWeightsOptions
+                            ?.governanceTokenOptions?.newGovernanceToken?.symbol
+                        }
+                        label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol"
+                        placeholder="Define a symbol..."
+                        register={register}
+                      />
+                      <InputErrorMessage
+                        error={
+                          errors.variableVotingWeightsOptions
+                            ?.governanceTokenOptions?.newGovernanceToken?.symbol
+                        }
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2 justify-between">
+                      <InputLabel mono name="Name" />
+                      <TextInput
+                        error={
+                          errors.variableVotingWeightsOptions
+                            ?.governanceTokenOptions?.newGovernanceToken?.name
+                        }
+                        label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.name"
+                        placeholder="Name your token..."
+                        register={register}
+                      />
+                      <InputErrorMessage
+                        error={
+                          errors.variableVotingWeightsOptions
+                            ?.governanceTokenOptions?.newGovernanceToken?.name
+                        }
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <TextInput
+                    error={
+                      errors.variableVotingWeightsOptions
+                        ?.governanceTokenOptions?.existingGovernanceTokenAddress
+                    }
+                    label="variableVotingWeightsOptions.governanceTokenOptions.existingGovernanceTokenAddress"
+                    placeholder="Token contract address..."
+                    register={register}
+                  />
+                  <InputErrorMessage
+                    error={
+                      errors.variableVotingWeightsOptions
+                        ?.governanceTokenOptions?.existingGovernanceTokenAddress
+                    }
+                  />
+                </div>
+              )}
+            </CreateOrgConfigCardWrapper>
+
             <CreateOrgConfigCard
               description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
               image={<Emoji label="banknote" symbol="💵" />}

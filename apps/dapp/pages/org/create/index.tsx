@@ -26,9 +26,9 @@ const CreateOrgPage: FC = () => {
             <ImageSelector
               className="!bg-card !border-0"
               error={errors.imageUrl}
-              imageUrl={watch('imageUrl') ?? ''}
               label="imageUrl"
               register={register}
+              watch={watch}
             />
 
             <p className="text-disabled">Add an image</p>

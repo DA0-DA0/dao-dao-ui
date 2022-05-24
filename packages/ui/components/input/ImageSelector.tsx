@@ -5,7 +5,9 @@ import {
   FieldError,
   FieldPathValue,
   Path,
+  PathValue,
   UseFormRegister,
+  UseFormWatch,
   Validate,
 } from 'react-hook-form'
 
@@ -17,23 +19,39 @@ import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'
 
-export type ImageSelectorModalProps<
-  FieldName extends Path<FieldValues>,
-  FieldValues
-> = {
-  label: FieldName
+// Return the field name paths that have type string.
+export type StringFieldNames<FieldValues> = {
+  [Property in Path<FieldValues>]: PathValue<FieldValues, Property> extends
+    | string
+    | undefined
+    ? Property
+    : never
+}[Path<FieldValues>]
+
+export interface ImageSelectorModalProps<
+  FieldValues,
+  StringFieldName extends StringFieldNames<FieldValues>
+> {
+  label: StringFieldName
   register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
+  watch: UseFormWatch<FieldValues>
   error?: FieldError
-  imageUrl: string
   onClose: () => void
 }
 
-export function ImageSelectorModal<
+export const ImageSelectorModal = <
   FieldValues,
-  FieldName extends Path<FieldValues>
->(props: ImageSelectorModalProps<FieldName, FieldValues>) {
-  const { label, register, error, validation, imageUrl, onClose } = props
+  StringFieldName extends StringFieldNames<FieldValues>
+>({
+  label,
+  register,
+  error,
+  validation,
+  watch,
+  onClose,
+}: ImageSelectorModalProps<FieldValues, StringFieldName>) => {
+  const imageUrl = watch(label) ?? ''
 
   return (
     <Modal
@@ -69,49 +87,63 @@ export function ImageSelectorModal<
   )
 }
 
-export type ImageSelectorProps<
-  FieldName extends Path<FieldValues>,
-  FieldValues
-> = {
-  label: FieldName
+export interface ImageSelectorProps<
+  FieldValues,
+  StringFieldName extends StringFieldNames<FieldValues>
+> {
+  label: StringFieldName
   register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
+  watch: UseFormWatch<FieldValues>
   error?: FieldError
-  imageUrl: string
   className?: string
+  size?: string | number
 }
 
-export function ImageSelector<FieldValues, FieldName extends Path<FieldValues>>(
-  props: ImageSelectorProps<FieldName, FieldValues>
-) {
-  const { label, register, error, validation, imageUrl, className } = props
-
+export const ImageSelector = <
+  FieldValues,
+  StringFieldName extends StringFieldNames<FieldValues>
+>({
+  label,
+  register,
+  error,
+  validation,
+  watch,
+  className,
+  size,
+}: ImageSelectorProps<FieldValues, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
+  const imageUrl = watch(label) ?? ''
+
   return (
     <>
       <button
         className={clsx(
-          'flex justify-center items-center mx-auto w-24 h-24 bg-center bg-cover',
-          'rounded-full border border-inactive',
-          'hover:ring transition',
-          { 'ring ring-error': error },
+          'flex shrink-0 justify-center items-center mx-auto bg-center bg-cover rounded-full border border-inactive hover:ring transition',
+          {
+            'ring ring-error': error,
+            'w-24 h-24': size === undefined,
+          },
           className
         )}
         onClick={() => setShowImageSelect(true)}
-        style={{ backgroundImage: `url(${imageUrl})` }}
+        style={{
+          backgroundImage: `url(${imageUrl})`,
+          ...(size !== undefined && { width: size, height: size }),
+        }}
         type="button"
       >
-        <PlusIcon className="w-4" />
+        {!imageUrl && <PlusIcon className="w-4" />}
       </button>
 
       {showImageSelect && (
         <ImageSelectorModal
           error={error}
-          imageUrl={imageUrl}
           label={label}
           onClose={() => setShowImageSelect(false)}
           register={register}
           validation={validation}
+          watch={watch}
         />
       )}
     </>

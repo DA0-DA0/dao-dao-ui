@@ -10,7 +10,12 @@ import {
   UseFormWatch,
 } from 'react-hook-form'
 
-import { Button, InputErrorMessage, NumberInput, TextInput } from '@dao-dao/ui'
+import {
+  AddressInput,
+  Button,
+  InputErrorMessage,
+  NumberInput,
+} from '@dao-dao/ui'
 
 import { NewOrg } from '@/atoms/org'
 
@@ -203,7 +208,7 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
       <div
         className={clsx('grow', { 'col-span-2': variableVotingWeightsEnabled })}
       >
-        <TextInput
+        <AddressInput
           error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
           label={`groups.${groupIndex}.members.${memberIndex}.address`}
           placeholder="Member's address..."

@@ -17,6 +17,11 @@ export enum ThresholdType {
 }
 type ThresholdValue = 'majority' | number
 
+export enum GovernanceTokenType {
+  New,
+  Existing,
+}
+
 export interface NewOrg {
   name: string
   description?: string
@@ -30,10 +35,12 @@ export interface NewOrg {
   variableVotingWeightsOptions: {
     governanceTokenEnabled: boolean
     governanceTokenOptions: {
+      type?: GovernanceTokenType
       newGovernanceToken?: {
-        name: string
-        symbol: string
+        supply: number
         imageUrl?: string
+        symbol: string
+        name: string
       }
       existingGovernanceTokenAddress?: string
       proposalDeposit?: {
@@ -74,6 +81,12 @@ export const DefaultNewOrg: Partial<NewOrg> = {
   variableVotingWeightsOptions: {
     governanceTokenEnabled: false,
     governanceTokenOptions: {
+      type: GovernanceTokenType.New,
+      newGovernanceToken: {
+        supply: 1000000,
+        symbol: '',
+        name: '',
+      },
       unregisterDuration: {
         value: 2,
         units: DurationUnits.Weeks,

@@ -1,4 +1,5 @@
-import { ChangeEventHandler } from 'react'
+import clsx from 'clsx'
+import { ChangeEventHandler, ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -9,29 +10,38 @@ import {
 
 import { Wallet } from '@dao-dao/icons'
 
-export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
-  label,
-  register,
-  error,
-  validation,
-  onChange,
-  disabled = false,
-}: {
+export interface AddressInputProps<
+  FieldValues,
+  FieldName extends Path<FieldValues>
+> extends ComponentPropsWithoutRef<'input'> {
   label: FieldName
   register: UseFormRegister<FieldValues>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   disabled?: boolean
-}) {
+}
+
+export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
+  label,
+  register,
+  error,
+  validation,
+  onChange,
+  disabled,
+  ...rest
+}: AddressInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
   return (
     <div
-      className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm font-mono
-        ${error ? ' ring-error ring-1' : ''}`}
+      className={clsx(
+        'flex gap-1 items-center py-2 px-3 font-mono text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+        { 'ring-1 ring-error': error }
+      )}
     >
       <Wallet color="currentColor" width="24px" />
       <input
@@ -39,6 +49,7 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
         disabled={disabled}
         placeholder="Juno address"
         type="text"
+        {...rest}
         {...register(label, { validate, onChange })}
       />
     </div>

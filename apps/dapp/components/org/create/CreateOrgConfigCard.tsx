@@ -12,16 +12,9 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
   title,
   description,
   children,
-  className,
   ...props
 }) => (
-  <div
-    className={clsx(
-      'flex flex-col items-stretch p-6 bg-disabled rounded-lg',
-      className
-    )}
-    {...props}
-  >
+  <CreateOrgConfigCardWrapper {...props}>
     <div className="flex flex-row gap-6 items-start">
       <p className="mt-4 text-[42px]">{image}</p>
 
@@ -34,5 +27,21 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
     <div className="flex flex-row gap-2 items-center self-end mt-4">
       {children}
     </div>
+  </CreateOrgConfigCardWrapper>
+)
+
+export const CreateOrgConfigCardWrapper: FC<ComponentProps<'div'>> = ({
+  children,
+  className,
+  ...rest
+}) => (
+  <div
+    className={clsx(
+      'flex flex-col items-stretch p-6 bg-disabled rounded-lg',
+      className
+    )}
+    {...rest}
+  >
+    {children}
   </div>
 )
