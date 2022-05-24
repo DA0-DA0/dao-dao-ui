@@ -1,5 +1,5 @@
 import Emoji from 'a11y-react-emoji'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
 import {
@@ -59,6 +59,32 @@ const CreateOrgVotingPage: FC = () => {
     [appendGroup]
   )
 
+  const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
+  const distributeGroupVoteWeightEvenly = useCallback(
+    (index?: number) => {
+      watch('groups')
+        ?.filter((_, idx) => index === undefined || index === idx)
+        .forEach((group, groupIndex) => {
+          // Evenly distributed so redistribute proportionally.
+          const totalMembers = group.members?.length ?? 1
+          const proportion = Math.round(100 / totalMembers)
+
+          // Update members proportions.
+          group.members?.forEach((_, memberIndex) =>
+            setValue(
+              `groups.${groupIndex}.members.${memberIndex}.proportion`,
+              proportion
+            )
+          )
+        })
+    },
+    [watch, setValue]
+  )
+  // When variable voting weights is disabled, reset group member weights.
+  useEffect(() => {
+    if (!variableVotingWeightsEnabled) distributeGroupVoteWeightEvenly()
+  }, [distributeGroupVoteWeightEvenly, variableVotingWeightsEnabled])
+
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
   const thresholdValue = watch('changeThresholdQuorumOptions.thresholdValue')
@@ -88,6 +114,7 @@ const CreateOrgVotingPage: FC = () => {
               control={control}
               errors={errors}
               groupIndex={idx}
+              redistributeEvenly={() => distributeGroupVoteWeightEvenly(idx)}
               register={register}
               remove={() => removeGroup(idx)}
               setValue={setValue}
@@ -197,7 +224,7 @@ const CreateOrgVotingPage: FC = () => {
         )}
 
         {watch('variableVotingWeightsOptions.governanceTokenEnabled') && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <CreateOrgConfigCard
               description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
               image={<Emoji label="banknote" symbol="💵" />}
@@ -343,7 +370,7 @@ const CreateOrgVotingPage: FC = () => {
         </div>
 
         {watch('changeThresholdQuorumEnabled') && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <CreateOrgConfigCard
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
               image={<Emoji label="ballot box" symbol="🗳️" />}

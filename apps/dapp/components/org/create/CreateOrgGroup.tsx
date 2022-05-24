@@ -1,4 +1,5 @@
 import { TrashIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC, useCallback } from 'react'
 import {
   Control,
@@ -21,11 +22,13 @@ interface CreateOrgGroupProps {
   watch: UseFormWatch<Partial<NewOrg>>
   setValue: UseFormSetValue<Partial<NewOrg>>
   remove: () => void
+  redistributeEvenly: () => void
 }
 
 export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   // Don't pass along to member.
   remove,
+  redistributeEvenly,
   ...props
 }) => {
   const { groupIndex, control, register, errors, setValue, watch } = props
@@ -38,31 +41,61 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     name: `groups.${groupIndex}.members`,
   })
 
+  const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
+
   const addNewMember = useCallback(() => {
-    const totalMembers = members.length + 1
-    const proportion = Math.round(100 / totalMembers)
-
-    // Update existing members proportions.
-    members.forEach((_, idx) =>
-      setValue(`groups.${groupIndex}.members.${idx}.proportion`, proportion)
-    )
-    // Add new member.
-    appendMember({ proportion })
-  }, [members, appendMember, setValue, groupIndex])
-
-  const removeMember = useCallback(
-    (index: number) => {
-      const totalMembers = members.length - 1
-      const proportion = totalMembers === 0 ? 0 : Math.round(100 / totalMembers)
+    let proportion = 0
+    if (members.length === 0) {
+      proportion = 100
+    } else if (variableVotingWeightsEnabled) {
+      // If there are already members, give the new member the remainder
+      // of the voting weight.
+      if (members.length > 0) {
+        const totalWeight = members.reduce(
+          (acc, member) => acc + member.proportion,
+          0
+        )
+        proportion = 100 - totalWeight
+      }
+    } else {
+      // Evenly distributed so redistribute proportionally.
+      const totalMembers = members.length + 1
+      proportion = Math.round(100 / totalMembers)
 
       // Update existing members proportions.
       members.forEach((_, idx) =>
         setValue(`groups.${groupIndex}.members.${idx}.proportion`, proportion)
       )
+    }
+
+    // Add new member.
+    appendMember({ proportion })
+  }, [
+    members,
+    appendMember,
+    setValue,
+    groupIndex,
+    variableVotingWeightsEnabled,
+  ])
+
+  const removeMember = useCallback(
+    (index: number) => {
+      // If evenly distributed, redistribute proportionally.
+      if (!variableVotingWeightsEnabled) {
+        const totalMembers = members.length - 1
+        const proportion =
+          totalMembers === 0 ? 0 : Math.round(100 / totalMembers)
+
+        // Update existing members proportions.
+        members.forEach((_, idx) =>
+          setValue(`groups.${groupIndex}.members.${idx}.proportion`, proportion)
+        )
+      }
+
       // Remove member.
       _removeMember(index)
     },
-    [members, _removeMember, setValue, groupIndex]
+    [members, _removeMember, setValue, groupIndex, variableVotingWeightsEnabled]
   )
 
   return (
@@ -73,7 +106,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
         </p>
 
         <div className="flex flex-row gap-2 justify-between items-center">
-          <p className="caption-text">Voting power</p>
+          <p className="text-right caption-text">Voting power</p>
 
           <div>
             <NumberInput
@@ -117,20 +150,33 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
           />
         ))}
 
-        <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-row gap-2 justify-between items-center">
           <Button onClick={addNewMember} variant="secondary">
             Add member
           </Button>
-          <Button className="!text-error" onClick={remove} variant="secondary">
-            Remove group
-          </Button>
+          <div className="flex flex-row gap-2 items-center">
+            {variableVotingWeightsEnabled && (
+              <Button onClick={redistributeEvenly} variant="secondary">
+                Distribute evenly
+              </Button>
+            )}
+
+            <Button
+              className="!text-error"
+              onClick={remove}
+              variant="secondary"
+            >
+              Remove group
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-interface CreateOrgGroupMemberProps extends CreateOrgGroupProps {
+interface CreateOrgGroupMemberProps
+  extends Omit<CreateOrgGroupProps, 'redistributeEvenly'> {
   memberIndex: number
 }
 
@@ -141,25 +187,85 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
   errors,
   watch,
   remove,
-}) => (
-  <div className="grid grid-cols-[5fr_2fr_2rem] grid-rows-1 gap-8 items-center p-3 bg-card rounded-md">
-    <div>
-      <TextInput
-        error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-        label={`groups.${groupIndex}.members.${memberIndex}.address`}
-        placeholder="Member's address..."
-        register={register}
-      />
-      <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+  setValue,
+}) => {
+  const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
+
+  return (
+    <div
+      className={clsx('gap-4  p-3 bg-card rounded-md sm:gap-8', {
+        'grid grid-cols-[5fr_2fr_2rem] grid-rows-1 items-center':
+          !variableVotingWeightsEnabled,
+        'grid grid-cols-2 grid-rows-2 sm:flex sm:flex-row sm:justify-between sm:items-center':
+          variableVotingWeightsEnabled,
+      })}
+    >
+      <div
+        className={clsx('grow', { 'col-span-2': variableVotingWeightsEnabled })}
+      >
+        <TextInput
+          error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+          label={`groups.${groupIndex}.members.${memberIndex}.address`}
+          placeholder="Member's address..."
+          register={register}
+        />
+        <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+      </div>
+
+      {variableVotingWeightsEnabled ? (
+        <div className="flex flex-row gap-2 justify-between items-center">
+          <p className="text-right caption-text">Proportion:</p>
+
+          <div>
+            <NumberInput
+              error={errors.groups?.[groupIndex]?.weight}
+              label={`groups.${groupIndex}.members.${memberIndex}.proportion`}
+              onPlusMinus={[
+                () =>
+                  setValue(
+                    `groups.${groupIndex}.members.${memberIndex}.proportion`,
+                    Math.max(
+                      Math.min(
+                        watch(
+                          `groups.${groupIndex}.members.${memberIndex}.proportion`
+                        ) + 1,
+                        100
+                      ),
+                      0
+                    )
+                  ),
+                () =>
+                  setValue(
+                    `groups.${groupIndex}.members.${memberIndex}.proportion`,
+                    Math.max(
+                      Math.min(
+                        watch(
+                          `groups.${groupIndex}.members.${memberIndex}.proportion`
+                        ) - 1,
+                        100
+                      ),
+                      0
+                    )
+                  ),
+              ]}
+              register={register}
+              sizing="sm"
+              step={1}
+            />
+            <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+          </div>
+          <p className="primary-text">%</p>
+        </div>
+      ) : (
+        <p className="text-xs text-center sm:text-sm">
+          Proportion:{' '}
+          {watch(`groups.${groupIndex}.members.${memberIndex}.proportion`)}%
+        </p>
+      )}
+
+      <button className="justify-self-end" onClick={remove}>
+        <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
+      </button>
     </div>
-
-    <p className="text-xs text-center sm:text-sm">
-      Proportion:{' '}
-      {watch(`groups.${groupIndex}.members.${memberIndex}.proportion`)}%
-    </p>
-
-    <button onClick={remove}>
-      <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
-    </button>
-  </div>
-)
+  )
+}
