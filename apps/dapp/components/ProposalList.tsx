@@ -143,9 +143,13 @@ export const ProposalList: FC<ProposalListProps> = ({
       <div className="flex">
         <EmptyContractCard
           backgroundUrl={`/empty-state-proposal.jpeg`}
-          description={'This DAO has no proposals. Why not create one?'}
+          description={`This ${
+            multisig ? 'multisig' : 'DAO'
+          } has no proposals. Why not create one?`}
           fullWidth={true}
-          href={`/dao/${contractAddress}/proposals/create`}
+          href={`/${
+            multisig ? 'multisig' : 'dao'
+          }/${contractAddress}/proposals/create`}
           title={'Create a Proposal'}
         />
       </div>
