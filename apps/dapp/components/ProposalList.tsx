@@ -14,6 +14,8 @@ import {
 import { proposalCount } from 'selectors/daos'
 import { proposalsSelector, proposalSelector } from 'selectors/proposals'
 
+import { EmptyContractCard } from './EmptyContractCard'
+
 const PROP_LOAD_LIMIT = 10
 
 const getOldestLoadedProposal = (props: ProposalResponse[]) => {
@@ -137,7 +139,17 @@ export const ProposalList: FC<ProposalListProps> = ({
   const showLoadMore = propList.length < proposalsTotal
 
   if (!propList.length) {
-    return <p className="body-text">no proposals</p>
+    return (
+      <div className="flex">
+        <EmptyContractCard
+          backgroundUrl={`/empty-state-proposal.jpeg`}
+          description={'This DAO has no proposals. Why not create one?'}
+          fullWidth={true}
+          href={`/dao/${contractAddress}/proposals/create`}
+          title={'Create a Proposal'}
+        />
+      </div>
+    )
   }
 
   return (
