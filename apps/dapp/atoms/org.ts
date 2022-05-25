@@ -1,14 +1,46 @@
 import { atom } from 'recoil'
 
+import { Duration } from '@dao-dao/state/clients/cw-core'
+import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
+
 export enum DurationUnits {
   Seconds = 'seconds',
   Minutes = 'minutes',
   Hours = 'hours',
   Days = 'days',
   Weeks = 'weeks',
-  Months = 'months',
 }
 export const DurationUnitsValues = Object.values(DurationUnits)
+interface DurationWithUnits {
+  value: number
+  units: DurationUnits
+}
+export const convertDurationWithUnitsToDuration = ({
+  units,
+  value,
+}: DurationWithUnits): Duration => {
+  let time
+  switch (units) {
+    case DurationUnits.Seconds:
+      time = value
+      break
+    case DurationUnits.Minutes:
+      time = value * 60
+      break
+    case DurationUnits.Hours:
+      time = value * 60 * 60
+      break
+    case DurationUnits.Days:
+      time = value * 60 * 60 * 24
+      break
+    case DurationUnits.Weeks:
+      time = value * 60 * 60 * 24 * 7
+      break
+    default:
+      throw new Error(`Unsupported duration unit: ${units}`)
+  }
+  return { time }
+}
 
 export enum ThresholdType {
   AbsolutePercentage,
@@ -16,6 +48,12 @@ export enum ThresholdType {
   AbsoluteCount,
 }
 type ThresholdValue = 'majority' | number
+export const convertThresholdValueToPercentageThreshold = (
+  value: ThresholdValue
+): PercentageThreshold =>
+  value === 'majority'
+    ? { majority: {} }
+    : { percent: (value / 100).toFixed(2) }
 
 export enum GovernanceTokenType {
   New,
@@ -24,13 +62,10 @@ export enum GovernanceTokenType {
 
 export interface NewOrg {
   name: string
-  description?: string
+  description: string
   imageUrl?: string
   groups: NewOrgGroup[]
-  votingDuration: {
-    value: number
-    units: DurationUnits
-  }
+  votingDuration: DurationWithUnits
   variableVotingWeightsEnabled: boolean
   variableVotingWeightsOptions: {
     governanceTokenEnabled: boolean
@@ -47,10 +82,7 @@ export interface NewOrg {
         value: number
         refundFailed: boolean
       }
-      unregisterDuration: {
-        value: number
-        units: DurationUnits
-      }
+      unregisterDuration: DurationWithUnits
     }
   }
   // TODO: Initial supply stuff.
@@ -72,7 +104,14 @@ export interface NewOrgGroupMember {
   proportion: number
 }
 
-export const DefaultNewOrg: Partial<NewOrg> = {
+export const DefaultThresholdQuorum: NewOrg['changeThresholdQuorumOptions'] = {
+  thresholdValue: 'majority',
+  quorumValue: 20,
+}
+export const DefaultNewOrg: NewOrg = {
+  name: '',
+  description: '',
+  groups: [],
   votingDuration: {
     value: 1,
     units: DurationUnits.Weeks,
@@ -94,13 +133,10 @@ export const DefaultNewOrg: Partial<NewOrg> = {
     },
   },
   changeThresholdQuorumEnabled: false,
-  changeThresholdQuorumOptions: {
-    thresholdValue: 'majority',
-    quorumValue: 20,
-  },
+  changeThresholdQuorumOptions: DefaultThresholdQuorum,
 }
 
-export const newOrgAtom = atom<Partial<NewOrg>>({
+export const newOrgAtom = atom<NewOrg>({
   key: 'newOrg',
   default: DefaultNewOrg,
 })

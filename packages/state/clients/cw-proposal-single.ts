@@ -114,7 +114,7 @@ export type Expiration =
     }
 export type Timestamp = Uint64
 export type Uint64 = string
-export type CosmosMsgFor_Empty =
+export type CosmosMsg_for_Empty =
   | {
       bank: BankMsg
     }
@@ -242,7 +242,7 @@ export interface Proposal {
   deposit_info?: CheckedDepositInfo | null
   description: string
   expiration: Expiration
-  msgs: CosmosMsgFor_Empty[]
+  msgs: CosmosMsg_for_Empty[]
   proposer: Addr
   start_height: number
   status: Status
@@ -472,7 +472,7 @@ export interface CwProposalSingleInterface
       title,
     }: {
       description: string
-      msgs: CosmosMsgFor_Empty[]
+      msgs: CosmosMsg_for_Empty[]
       title: string
     },
     fee?: number | StdFee | 'auto',
@@ -609,7 +609,7 @@ export class CwProposalSingleClient
       title,
     }: {
       description: string
-      msgs: CosmosMsgFor_Empty[]
+      msgs: CosmosMsg_for_Empty[]
       title: string
     },
     fee: number | StdFee | 'auto' = 'auto',

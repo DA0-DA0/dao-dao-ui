@@ -1,13 +1,15 @@
 import Ajv from 'ajv'
 import JSON5 from 'json5'
 
-import cosmosMsgSchema from './cosmos_msg.json'
+import cosmosMsgSchema from '../cosmos_msg.json'
 import {
   isValidAddress,
   isValidContractAddress,
   isValidValidatorAddress,
-} from './isValidAddress'
-import { isValidUrl } from './isValidUrl'
+} from '../isValidAddress'
+import { isValidUrl } from '../isValidUrl'
+
+export * from './instantiate'
 
 const CHAIN_PREFIX = process.env.NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
 

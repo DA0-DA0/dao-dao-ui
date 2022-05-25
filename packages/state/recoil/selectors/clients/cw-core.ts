@@ -16,6 +16,7 @@ import {
   VotingModuleResponse,
   PauseInfoResponse,
   VotingPowerAtHeightResponse,
+  AdminResponse,
 } from '../../../clients/cw-core'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
@@ -55,6 +56,21 @@ export const executeClient = selectorFamily<
       return new ExecuteClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
+})
+
+export const adminSelector = selectorFamily<
+  AdminResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreAdmin',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      return await client.admin()
+    },
 })
 
 export const configSelector = selectorFamily<

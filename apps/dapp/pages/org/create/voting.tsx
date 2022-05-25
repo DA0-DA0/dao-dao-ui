@@ -438,7 +438,7 @@ const CreateOrgVotingPage: FC = () => {
             </CreateOrgConfigCard>
 
             <CreateOrgConfigCard
-              description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this on may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
+              description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
               image={<Emoji label="finger pointing up" symbol="👆" />}
               title="Refund failed proposals"
             >

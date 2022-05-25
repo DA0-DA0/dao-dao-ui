@@ -1,61 +1,70 @@
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 
-type MajorityOrPercent =
-  | { majority: true }
-  | { majority: false; percent: number }
+export enum ProcessedTQType {
+  Majority,
+  Absolute,
+  Percent,
+}
+
+type ProcessedTQ = { display: string } & (
+  | { type: ProcessedTQType.Majority }
+  | { type: ProcessedTQType.Absolute | ProcessedTQType.Percent; value: number }
+)
 
 export type ProcessedThresholdQuorum = {
-  threshold: {
-    value: MajorityOrPercent
-    display: string
-  }
-  quorum?: {
-    value: MajorityOrPercent
-    display: string
-  }
+  threshold: ProcessedTQ
+  quorum?: ProcessedTQ
 }
 
 export const processThresholdData = (
   data: Threshold
 ): ProcessedThresholdQuorum => {
-  const thresholdSource =
-    'absolute_percentage' in data
-      ? data.absolute_percentage.percentage
-      : data.threshold_quorum.threshold
-  const quorumSource =
-    'absolute_percentage' in data ? undefined : data.threshold_quorum.quorum
+  //! Threshold
+  let threshold: ProcessedTQ
 
-  // Threshold
-  let threshold: ProcessedThresholdQuorum['threshold']
-  if ('majority' in thresholdSource) {
+  if ('absolute_count' in data) {
     threshold = {
-      value: {
-        majority: true,
-      },
-      display: 'Majority',
+      type: ProcessedTQType.Absolute,
+      value: Number(data.absolute_count.threshold),
+      display: data.absolute_count.threshold,
     }
   } else {
-    const percent = Number(thresholdSource.percent) * 100
-    threshold = {
-      value: { majority: false, percent },
-      display: `${percent}%`,
+    const thresholdSource =
+      'absolute_percentage' in data
+        ? data.absolute_percentage.percentage
+        : data.threshold_quorum.threshold
+
+    if ('majority' in thresholdSource) {
+      threshold = {
+        type: ProcessedTQType.Majority,
+        display: 'Majority',
+      }
+    } else {
+      const percent = Number(thresholdSource.percent) * 100
+      threshold = {
+        type: ProcessedTQType.Percent,
+        value: percent,
+        display: `${percent}%`,
+      }
     }
   }
 
-  // Quorum
-  let quorum: ProcessedThresholdQuorum['quorum']
+  //! Quorum
+  let quorum: ProcessedTQ | undefined
+
+  const quorumSource =
+    'threshold_quorum' in data ? data.threshold_quorum.quorum : undefined
   if (quorumSource) {
     if ('majority' in quorumSource) {
       quorum = {
-        value: {
-          majority: true,
-        },
+        type: ProcessedTQType.Majority,
         display: 'Majority',
       }
     } else {
       const percent = Number(quorumSource.percent) * 100
       quorum = {
-        value: { majority: false, percent },
+        type: ProcessedTQType.Percent,
+        value: percent,
         display: `${percent}%`,
       }
     }

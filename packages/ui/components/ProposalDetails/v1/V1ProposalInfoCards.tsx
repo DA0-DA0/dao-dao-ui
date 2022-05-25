@@ -14,7 +14,7 @@ import {
   expirationAtTimeToSecondsFromNow,
   secondsToWdhms,
 } from '@dao-dao/utils'
-import { processThresholdData } from '@dao-dao/utils/v1'
+import { ProcessedTQType, processThresholdData } from '@dao-dao/utils/v1'
 
 import { CopyToClipboard } from '../../CopyToClipboard'
 import { Progress } from '../../Progress'
@@ -190,20 +190,21 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
     !!threshold &&
     // All abstain fails, so we need at least 1 yes vote to reach threshold.
     yesVotes > 0 &&
-    (threshold.value.majority
+    (threshold.type === ProcessedTQType.Majority
       ? // Majority
         yesVotes > (quorum ? turnoutTotal : totalWeight) / 2
       : // Percent
         yesVotes >=
         ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
-          (threshold.value.percent / 100))
+          (threshold.value /
+            (threshold.type === ProcessedTQType.Percent ? 100 : 1)))
   const quorumMet =
     !!quorum &&
-    (quorum.value.majority
+    (quorum.type === ProcessedTQType.Majority
       ? // Majority
         turnoutTotal > totalWeight / 2
       : // Percent
-        turnoutPercent >= quorum.value.percent)
+        turnoutPercent >= quorum.value)
 
   const helpfulStatusText =
     proposal.status === Status.Open && threshold && quorum
@@ -216,6 +217,19 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
         : undefined
       : undefined
 
+  // Convert various threshold types to a relevant percent to use in UI
+  // elements.
+  const effectiveThresholdValue =
+    threshold.type === ProcessedTQType.Majority
+      ? 50
+      : threshold.type === ProcessedTQType.Percent
+      ? threshold.value
+      : // If absolute, compute percent of total.
+        (threshold.value / totalWeight) * 100
+  // Quorum does not have an absolute setting.
+  const effectiveQuorumValue =
+    quorum && (quorum.type === ProcessedTQType.Majority ? 50 : quorum.value)
+
   return (
     <div className="flex flex-col gap-2 items-stretch">
       {helpfulStatusText && (
@@ -225,7 +239,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
       )}
 
       {threshold &&
-        (quorum ? (
+        (quorum && effectiveQuorumValue !== undefined ? (
           <>
             <p className="mb-3 text-sm body-text">Ratio of votes</p>
 
@@ -286,16 +300,12 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                     ],
                   },
                 ]}
-                verticalBars={
-                  threshold && [
-                    {
-                      value: threshold.value.majority
-                        ? 50
-                        : threshold.value.percent,
-                      color: 'rgba(var(--dark), 0.5)',
-                    },
-                  ]
-                }
+                verticalBars={[
+                  {
+                    value: effectiveThresholdValue,
+                    color: 'rgba(var(--dark), 0.5)',
+                  },
+                ]}
               />
             </div>
 
@@ -306,16 +316,11 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 height="36px"
                 style={{
                   left:
-                    !threshold.value.majority && threshold.value.percent < 10
+                    effectiveThresholdValue < 10
                       ? '0'
-                      : !threshold.value.majority &&
-                        threshold.value.percent > 90
+                      : effectiveThresholdValue > 90
                       ? 'calc(100% - 32px)'
-                      : `calc(${
-                          threshold.value.majority
-                            ? 50
-                            : threshold.value.percent
-                        }% - 17px)`,
+                      : `calc(${effectiveThresholdValue}% - 17px)`,
                 }}
                 width="36px"
               />
@@ -375,7 +380,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 ]}
                 verticalBars={[
                   {
-                    value: quorum.value.majority ? 50 : quorum.value.percent,
+                    value: effectiveQuorumValue,
                     color: 'rgba(var(--dark), 0.5)',
                   },
                 ]}
@@ -389,13 +394,11 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 height="36px"
                 style={{
                   left:
-                    !quorum.value.majority && quorum.value.percent < 10
+                    effectiveQuorumValue < 10
                       ? '0'
-                      : !quorum.value.majority && quorum.value.percent > 90
+                      : effectiveQuorumValue > 90
                       ? 'calc(100% - 32px)'
-                      : `calc(${
-                          quorum.value.majority ? 50 : quorum.value.percent
-                        }% - 17px)`,
+                      : `calc(${effectiveQuorumValue}% - 17px)`,
                 }}
                 width="36px"
               />
@@ -493,9 +496,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 ]}
                 verticalBars={[
                   {
-                    value: threshold.value.majority
-                      ? 50
-                      : threshold.value.percent,
+                    value: effectiveThresholdValue,
                     color: 'rgba(var(--dark), 0.5)',
                   },
                 ]}
@@ -509,16 +510,11 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 height="36px"
                 style={{
                   left:
-                    !threshold.value.majority && threshold.value.percent < 10
+                    effectiveThresholdValue < 10
                       ? '0'
-                      : !threshold.value.majority &&
-                        threshold.value.percent > 90
+                      : effectiveThresholdValue > 90
                       ? 'calc(100% - 32px)'
-                      : `calc(${
-                          threshold.value.majority
-                            ? 50
-                            : threshold.value.percent
-                        }% - 17px)`,
+                      : `calc(${effectiveThresholdValue}% - 17px)`,
                 }}
                 width="36px"
               />
@@ -592,8 +588,10 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
        * when the threshold is exactly 50%.
        */}
       {!!threshold &&
-        !threshold.value.majority &&
-        threshold.value.percent === 50 &&
+        // effectiveThresholdValue is set to 50 when the type is majority,
+        // but there are no ties in the majority case, so we can ignore it.
+        threshold.type !== ProcessedTQType.Majority &&
+        effectiveThresholdValue === 50 &&
         turnoutTotal > 0 &&
         yesVotes === noVotes && (
           <div className="mt-4 text-sm">

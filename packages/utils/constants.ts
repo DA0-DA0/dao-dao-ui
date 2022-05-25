@@ -1,31 +1,5 @@
-export const DAO_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_DAO_CONTRACT_CODE_ID as string,
-  10
-)
-
-export const LEGACY_DAO_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_LEGACY_DAO_CONTRACT_CODE_ID as string
-)
-
-export const CW20_CODE_ID = parseInt(process.env.NEXT_PUBLIC_CW20_CODE_ID!, 10)
-
-export const STAKE_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_STAKE_CW20_CODE_ID as string,
-  10
-)
-
-export const MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_MULTISIG_CODE_ID as string,
-  10
-)
-
-export const LEGACY_MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_LEGACY_MULTISIG_CODE_ID as string,
-  10
-)
-
-export const C4_GROUP_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_C4_GROUP_CODE_ID as string,
+export const CWCORE_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CWCORE_CODE_ID as string,
   10
 )
 

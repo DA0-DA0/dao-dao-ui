@@ -21,11 +21,11 @@ import { NewOrg } from '@/atoms/org'
 
 interface CreateOrgGroupProps {
   groupIndex: number
-  control: Control<Partial<NewOrg>, any>
-  register: UseFormRegister<Partial<NewOrg>>
-  errors: FormState<Partial<NewOrg>>['errors']
-  watch: UseFormWatch<Partial<NewOrg>>
-  setValue: UseFormSetValue<Partial<NewOrg>>
+  control: Control<NewOrg, any>
+  register: UseFormRegister<NewOrg>
+  errors: FormState<NewOrg>['errors']
+  watch: UseFormWatch<NewOrg>
+  setValue: UseFormSetValue<NewOrg>
   remove: () => void
   redistributeEvenly: () => void
 }

@@ -1,21 +1,48 @@
 import { useRouter } from 'next/router'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import {
+  FieldPath,
   FieldValues,
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
 } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useRecoilState } from 'recoil'
 
+import { useWallet } from '@dao-dao/state'
+import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
+import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
+import { InstantiateMsg as Cw20StakedBalanceVotingInstantiateMsg } from '@dao-dao/state/clients/cw20-staked-balance-voting'
+import { InstantiateMsg as Cw4VotingInstantiateMsg } from '@dao-dao/state/clients/cw4-voting'
+import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
 import { SubmitButton } from '@dao-dao/ui'
+import {
+  CWCORE_CODE_ID,
+  validateCw20StakedBalanceVotingInstantiateMsg,
+  validateCw4VotingInstantiateMsg,
+  validateCwProposalSingleInstantiateMsg,
+} from '@dao-dao/utils'
 
-import { NewOrg, newOrgAtom } from '@/atoms/org'
+import {
+  convertDurationWithUnitsToDuration,
+  convertThresholdValueToPercentageThreshold,
+  DefaultThresholdQuorum,
+  GovernanceTokenType,
+  NewOrg,
+  newOrgAtom,
+} from '@/atoms/org'
 
-export const createOrgFormPages = [
+interface OrgFormPage {
+  href: string
+  label: string
+  ensureFieldSetBeforeContinuing?: FieldPath<NewOrg>
+}
+export const createOrgFormPages: OrgFormPage[] = [
   {
     href: '/org/create',
     label: '1. Describe your org',
+    ensureFieldSetBeforeContinuing: 'name',
   },
   {
     href: '/org/create/voting',
@@ -27,9 +54,17 @@ export const createOrgFormPages = [
   },
 ]
 
+enum CreateOrgSubmitLabel {
+  Back = 'Back',
+  Continue = 'Continue',
+  Review = 'Review',
+  CreateOrg = 'Create Org',
+}
+
 export const useCreateOrgForm = (pageIndex: number) => {
   const router = useRouter()
   const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
+  const { connected, address: walletAddress } = useWallet()
 
   const {
     handleSubmit,
@@ -42,43 +77,39 @@ export const useCreateOrgForm = (pageIndex: number) => {
     resetField,
   } = useForm({ defaultValues: newOrg })
 
-  // // Ensure all previous fields are valid.
-  // useEffect(() => {
-  //   const firstInvalidRequiredField = newCampaignFieldEntries.find(
-  //     ([field, { required }]) => {
-  //       if (!required) return false
+  // Ensure previous pages are valid and navigate if not.
+  useEffect(() => {
+    if (!router.isReady) return
 
-  //       const value = newOrg[field as keyof NewCampaign]
-  //       return (
-  //         (typeof value === 'string' && !value.trim()) ||
-  //         (typeof value === 'number' && value < 0) ||
-  //         value === undefined
-  //       )
-  //     }
-  //   )?.[1]
+    const invalidPreviousPage = createOrgFormPages.find(
+      ({ ensureFieldSetBeforeContinuing }, idx) =>
+        idx < pageIndex &&
+        !!ensureFieldSetBeforeContinuing &&
+        !getValues(ensureFieldSetBeforeContinuing)
+    )
+    if (invalidPreviousPage) {
+      router.push(invalidPreviousPage.href)
+    }
+  }, [router, pageIndex, getValues])
 
-  //   // Show review button if there are no invalid required fields OR we're on the last page.
-  //   setShowReview(!firstInvalidRequiredField || id === numPagesBeforeReview)
+  const instantiate = useInstantiate({
+    codeId: CWCORE_CODE_ID,
+    sender: walletAddress ?? '',
+  })
 
-  //   // If no invalid required fields OR the first invalid required field is on the current page or after, no need to redirect.
-  //   if (!firstInvalidRequiredField || firstInvalidRequiredField.pageId >= id)
-  //     return
-
-  //   // Route to the first page with an invalid required field.
-  //   router.push(
-  //     `/create/${
-  //       firstInvalidRequiredField.pageId === 1
-  //         ? ''
-  //         : firstInvalidRequiredField.pageId
-  //     }`
-  //   )
-  // }, [router, newOrg])
-
-  const onSubmit: SubmitHandler<Partial<NewOrg>> = useCallback(
-    (values, event) => {
+  const onSubmit: SubmitHandler<NewOrg> = useCallback(
+    async (values, event) => {
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
+      // Create the org.
+      if (submitterValue === CreateOrgSubmitLabel.CreateOrg) {
+        if (!connected) toast.error('Connect a wallet to create an org.')
+        createOrg(instantiate, values)
+        return
+      }
+
+      // Continue to the next page.
       setNewOrg((prevNewOrg) => ({
         ...prevNewOrg,
         ...values,
@@ -86,15 +117,15 @@ export const useCreateOrgForm = (pageIndex: number) => {
 
       router.push(
         createOrgFormPages[
-          submitterValue === 'Back'
+          submitterValue === CreateOrgSubmitLabel.Back
             ? Math.max(0, pageIndex - 1)
-            : submitterValue === 'Review'
+            : submitterValue === CreateOrgSubmitLabel.Review
             ? createOrgFormPages.length - 1
             : Math.min(createOrgFormPages.length - 1, pageIndex + 1)
         ].href
       )
     },
-    [pageIndex, router, setNewOrg]
+    [setNewOrg, router, pageIndex, connected, instantiate]
   )
 
   const onError: SubmitErrorHandler<FieldValues> = useCallback(
@@ -103,14 +134,16 @@ export const useCreateOrgForm = (pageIndex: number) => {
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
       // Allow Back press without required fields.
-      if (submitterValue === 'Back') return onSubmit(getValues(), event)
+      if (submitterValue === CreateOrgSubmitLabel.Back)
+        return onSubmit(getValues(), event)
     },
     [getValues, onSubmit]
   )
 
+  const currentPage = useMemo(() => createOrgFormPages[pageIndex], [pageIndex])
   const showBack = useMemo(() => pageIndex > 0, [pageIndex])
   const showNext = useMemo(
-    () => pageIndex < createOrgFormPages.length - 1,
+    () => pageIndex < createOrgFormPages.length,
     [pageIndex]
   )
   const Navigation = (
@@ -119,8 +152,25 @@ export const useCreateOrgForm = (pageIndex: number) => {
       // justify-end doesn't work in tailwind for some reason
       style={{ justifyContent: showBack ? 'space-between' : 'flex-end' }}
     >
-      {showBack && <SubmitButton label="Back" variant="secondary" />}
-      {showNext && <SubmitButton label="Continue" />}
+      {showBack && (
+        <SubmitButton label={CreateOrgSubmitLabel.Back} variant="secondary" />
+      )}
+      {showNext && (
+        <SubmitButton
+          disabled={
+            !router.isReady ||
+            (!!currentPage.ensureFieldSetBeforeContinuing &&
+              !watch(currentPage.ensureFieldSetBeforeContinuing))
+          }
+          label={
+            pageIndex < createOrgFormPages.length - 2
+              ? CreateOrgSubmitLabel.Continue
+              : pageIndex === createOrgFormPages.length - 2
+              ? CreateOrgSubmitLabel.Review
+              : CreateOrgSubmitLabel.CreateOrg
+          }
+        />
+      )}
     </div>
   )
 
@@ -139,5 +189,158 @@ export const useCreateOrgForm = (pageIndex: number) => {
     setValue,
     resetField,
     Navigation,
+  }
+}
+
+const createOrg = async (
+  instantiate: ReturnType<typeof useInstantiate>,
+  values: NewOrg
+) => {
+  const {
+    name,
+    description,
+    imageUrl,
+    groups,
+    votingDuration,
+    variableVotingWeightsEnabled,
+    variableVotingWeightsOptions: {
+      governanceTokenEnabled,
+      governanceTokenOptions,
+    },
+    changeThresholdQuorumEnabled,
+    changeThresholdQuorumOptions,
+  } = values
+
+  try {
+    let votingModuleInstantiateMsg
+    if (variableVotingWeightsEnabled && governanceTokenEnabled) {
+      let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
+      if (governanceTokenOptions.type === GovernanceTokenType.New) {
+        if (!governanceTokenOptions.newGovernanceToken) {
+          throw new Error('New governance token info not provided.')
+        }
+
+        tokenInfo = {
+          new: {
+            code_id: 0,
+            decimals: 6,
+            initial_balances: [],
+            initial_dao_balance: null,
+            label: '',
+            marketing: null,
+            name: governanceTokenOptions.newGovernanceToken?.name,
+            staking_code_id: 0,
+            symbol: '',
+            unstaking_duration: convertDurationWithUnitsToDuration(
+              governanceTokenOptions.unregisterDuration
+            ),
+          },
+        }
+      } else {
+        if (!governanceTokenOptions.existingGovernanceTokenAddress) {
+          throw new Error('Existing governance token address not provided.')
+        }
+
+        tokenInfo = {
+          existing: {
+            address: governanceTokenOptions.existingGovernanceTokenAddress,
+            staking_contract: {
+              new: {
+                staking_code_id: 0,
+                unstaking_duration: convertDurationWithUnitsToDuration(
+                  governanceTokenOptions.unregisterDuration
+                ),
+              },
+            },
+          },
+        }
+      }
+
+      const cw20StakedBalanceVotingInstantiateMsg: Cw20StakedBalanceVotingInstantiateMsg =
+        { token_info: tokenInfo }
+
+      validateCw20StakedBalanceVotingInstantiateMsg(
+        cw20StakedBalanceVotingInstantiateMsg
+      )
+      votingModuleInstantiateMsg = cw20StakedBalanceVotingInstantiateMsg
+    } else {
+      const cw4VotingInstantiateMsg: Cw4VotingInstantiateMsg = {
+        cw4_group_code_id: 0,
+        initial_members: [],
+      }
+
+      validateCw4VotingInstantiateMsg(cw4VotingInstantiateMsg)
+      votingModuleInstantiateMsg = cw4VotingInstantiateMsg
+    }
+
+    const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
+      {
+        allow_revoting: false,
+        deposit_info:
+          governanceTokenEnabled && governanceTokenOptions.proposalDeposit
+            ? {
+                deposit:
+                  governanceTokenOptions.proposalDeposit.value.toString(),
+                refund_failed_proposals:
+                  governanceTokenOptions.proposalDeposit.refundFailed,
+                token: { voting_module_token: {} },
+              }
+            : null,
+        max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
+        only_members_execute: false,
+        threshold: {
+          threshold_quorum: {
+            quorum: changeThresholdQuorumEnabled
+              ? convertThresholdValueToPercentageThreshold(
+                  changeThresholdQuorumOptions.quorumValue
+                )
+              : convertThresholdValueToPercentageThreshold(
+                  DefaultThresholdQuorum.quorumValue
+                ),
+            threshold: changeThresholdQuorumEnabled
+              ? convertThresholdValueToPercentageThreshold(
+                  changeThresholdQuorumOptions.thresholdValue
+                )
+              : convertThresholdValueToPercentageThreshold(
+                  DefaultThresholdQuorum.thresholdValue
+                ),
+          },
+        },
+      }
+    validateCwProposalSingleInstantiateMsg(cwProposalSingleModuleInstantiateMsg)
+
+    const msg: CwCoreInstantiateMsg = {
+      admin: null,
+      automatically_add_cw20s: false,
+      automatically_add_cw721s: false,
+      description,
+      image_url: imageUrl ?? null,
+      name,
+      proposal_modules_instantiate_info: [
+        {
+          admin: { none: {} },
+          code_id: 0,
+          label: '',
+          msg: Buffer.from(
+            JSON.stringify(cwProposalSingleModuleInstantiateMsg),
+            'utf8'
+          ).toString('base64'),
+        },
+      ],
+      voting_module_instantiate_info: {
+        admin: { none: {} },
+        code_id: 0,
+        label: '',
+        msg: Buffer.from(
+          JSON.stringify(votingModuleInstantiateMsg),
+          'utf8'
+        ).toString('base64'),
+      },
+    }
+
+    await instantiate(msg, msg.name)
+  } catch (err) {
+    console.error(err)
+    toast.error('Failed to create org.')
   }
 }
