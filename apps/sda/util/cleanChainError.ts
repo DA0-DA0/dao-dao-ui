@@ -7,6 +7,9 @@ export const cleanChainError = (error: string): string => {
   const lines = error.split('\n')
   const errorLine = lines[lines.length - 1]
 
+  // Log error to console to assist in debugging.
+  console.error(error)
+
   if (errorLine.startsWith('Account does not exist on chain')) {
     return 'One of the accounts in this transaction does not exist on chain. Try sending some Juno to the address.'
   }
