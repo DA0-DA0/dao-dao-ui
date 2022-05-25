@@ -37,6 +37,7 @@ export const DAO_ADDRESS = process.env.NEXT_PUBLIC_DAO_ADDRESS as string
 export const REWARDS_ADDRESS = process.env.NEXT_PUBLIC_REWARDS_ADDRESS as string
 export const TOKEN_SWAP_ADDRESS = process.env
   .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string
+export const USDC_SWAP_ADDRESS = process.env.NEXT_PUBLIC_USDC_SWAP_ADDRESS
 export const OLD_PROPOSALS_ADDRESS = process.env
   .NEXT_PUBLIC_OLD_PROPOSALS_ADDRESS as string
 
