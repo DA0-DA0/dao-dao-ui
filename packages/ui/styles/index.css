@@ -68,6 +68,25 @@ input[type='number']::-webkit-outer-spin-button {
   scrollbar-width: none; /* Firefox */
 }
 
+@keyframes moveSlideshow {
+  100% {
+    -webkit-transform: translateX(-100%);
+  }
+}
+
+@keyframes moveLeft {
+  100% {
+    -webkit-transform: translateX(-100vw);
+  }
+}
+
+.move-left-forever {
+  animation-name: moveLeft;
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
 @layer base {
   :root {
     --black: 17, 18, 19;
