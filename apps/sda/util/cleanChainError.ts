@@ -7,14 +7,14 @@ export const cleanChainError = (error: string): string => {
   const lines = error.split('\n')
   const errorLine = lines[lines.length - 1]
 
+  // Log error to console to assist in debugging.
+  console.error(error)
+
   if (errorLine.startsWith('Account does not exist on chain')) {
     return 'One of the accounts in this transaction does not exist on chain. Try sending some Juno to the address.'
   }
   if (errorLine.includes('account sequence mismatch')) {
     return 'You have a different transaction pending. Please wait a little and then try again.'
-  }
-  if (errorLine.toLowerCase().includes('unauthorized')) {
-    return 'Unauthorized. You must have staked governance tokens at the time of proposal creation to vote.'
   }
 
   return errorLine
