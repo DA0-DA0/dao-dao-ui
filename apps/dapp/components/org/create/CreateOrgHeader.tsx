@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import { NextSeo } from 'next-seo'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
 
@@ -24,15 +23,19 @@ export const CreateOrgHeader: FC = () => {
 
         <div className="flex flex-col gap-2 justify-between items-start max-w-xl sm:flex-row sm:items-center">
           {createOrgFormPages.map(({ href, label }) => (
-            <Link key={href} href={href}>
-              <a
-                className={clsx({
-                  'text-disabled': href !== pathname,
-                })}
-              >
-                {label}
-              </a>
-            </Link>
+            // react-hook-form requires a submit button to be pressed to
+            // update the fields of the form in the onSubmit handler.
+            // If these header links are used for navigation, the form will
+            // not save any changes made to the fields. Thus, let's just
+            // not make these links and force the user to use buttons.
+            <p
+              key={href}
+              className={clsx({
+                'text-disabled': href !== pathname,
+              })}
+            >
+              {label}
+            </p>
           ))}
         </div>
       </div>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
 import { Cw4VotingClient as ExecuteClient } from '../clients/cw4-voting'
 import {
@@ -13,7 +13,9 @@ import { FunctionKeyOf } from '../types'
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: ExecuteClientParams) => {
-    const client = useRecoilValue(executeClient(params))
+    const clientLoadable = useRecoilValueLoadable(executeClient(params))
+    const client =
+      clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
     return useCallback(
       (...args: Parameters<ExecuteClient[T]>) => {

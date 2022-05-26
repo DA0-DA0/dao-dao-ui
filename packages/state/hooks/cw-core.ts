@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
 import { validateCwCoreInstantiateMsg } from '@dao-dao/utils'
 
@@ -15,7 +15,9 @@ import { FunctionKeyOf } from '../types'
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: ExecuteClientParams) => {
-    const client = useRecoilValue(executeClient(params))
+    const clientLoadable = useRecoilValueLoadable(executeClient(params))
+    const client =
+      clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
     return useCallback(
       (...args: Parameters<ExecuteClient[T]>) => {
@@ -53,10 +55,12 @@ interface UseInstantiateParams
   codeId: number
 }
 export const useInstantiate = ({ codeId, ...params }: UseInstantiateParams) => {
-  const client = useRecoilValue(
+  const clientLoadable = useRecoilValueLoadable(
     // contractAddress irrelevant when instantiating a new contract.
     executeClient({ ...params, contractAddress: '' })
   )
+  const client =
+    clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
   return useCallback(
     (...args: ParametersExceptFirst<ExecuteClient['instantiate']>) => {

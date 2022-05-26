@@ -1,6 +1,7 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
+const withInterceptStdout = require('next-intercept-stdout')
 const withTM = require('next-transpile-modules')([
   '@dao-dao/ui',
   '@dao-dao/icons',
@@ -43,4 +44,14 @@ if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
   }
 }
 
-module.exports = withBundleAnalyzer(withTM(config))
+module.exports = withBundleAnalyzer(
+  withInterceptStdout(
+    withTM(config),
+    // Silence Recoil duplicate warnings on dev.
+    (text) =>
+      process.env.NODE_ENV === 'development' &&
+      text.includes('Expectation Violation: Duplicate atom key')
+        ? ''
+        : text
+  )
+)

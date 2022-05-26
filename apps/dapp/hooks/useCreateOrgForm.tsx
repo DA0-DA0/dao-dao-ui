@@ -104,8 +104,12 @@ export const useCreateOrgForm = (pageIndex: number) => {
 
       // Create the org.
       if (submitterValue === CreateOrgSubmitLabel.CreateOrg) {
-        if (!connected) toast.error('Connect a wallet to create an org.')
-        createOrg(instantiate, values)
+        if (connected) {
+          createOrg(instantiate, values)
+        } else {
+          toast.error('Connect a wallet to create an org.')
+        }
+
         return
       }
 

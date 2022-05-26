@@ -173,8 +173,8 @@ const InnerWalletProvider: FC = ({ children }) => {
   )
 
   // Wallet is connected before the address is loaded, but in
-  // practicality, we only care about the wallet being connected
-  // once the address is loaded.
+  // practice, we only care about the wallet being connected once the
+  // address is loaded.
   const connected = !!address
   const loading = walletAddressState === 'loading'
 
