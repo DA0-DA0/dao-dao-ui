@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { NATIVE_DECIMALS } from '@dao-dao/utils'
+import { NATIVE_DECIMALS, USDC_SWAP_ADDRESS } from '@dao-dao/utils'
 
 import { cosmWasmClientSelector } from './chain'
 
@@ -18,10 +18,14 @@ export const tokenUSDPriceSelector = selectorFamily<
       // Likely means we're on the testnet. Just make up a number.
       if (!tokenSwapAddress.length) return undefined
 
+      if (!USDC_SWAP_ADDRESS) {
+        return undefined
+      }
+
       const junoUSD = (
         await client.queryContractSmart(
           // Juno UST pool on Junoswap.
-          'juno1hue3dnrtgf9ly2frnnvf8z5u7e224ctc4hk7wks2xumeu3arj6rs9vgzec',
+          USDC_SWAP_ADDRESS,
           { token1_for_token2_price: { token1_amount: '1000000' } }
         )
       ).token2_amount

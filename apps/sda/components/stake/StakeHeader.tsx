@@ -116,7 +116,7 @@ export const StakeHeader: FunctionComponent = () => {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
-            ' USD'
+            ' USDC'
           : ' $ ??'}
       </p>
 

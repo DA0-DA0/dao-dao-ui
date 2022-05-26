@@ -496,7 +496,7 @@ const InnerCreateDao: FC = () => {
                     ]}
                     onRemove={() => remove(index)}
                     register={register}
-                    title={`Recepient ${index}`}
+                    title={`Recipient ${index}`}
                     tokenImage={tokenImage}
                     tokenSymbol={tokenSymbol}
                   />
@@ -646,9 +646,7 @@ const InnerCreateDao: FC = () => {
       </form>
 
       <div className="hidden col-span-2 md:block">
-        <div className="sticky top-0 p-6 w-full">
-          <TooltipsDisplay selected={selectedTooltip} />
-        </div>
+        <TooltipsDisplay selected={selectedTooltip} />
       </div>
     </div>
   )

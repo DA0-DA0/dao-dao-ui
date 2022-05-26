@@ -13,9 +13,6 @@ export function cleanChainError(error: string): string {
   if (errorLine.includes('account sequence mismatch')) {
     return 'You have a different transaction pending. Please wait a little and then try again.'
   }
-  if (errorLine.toLowerCase().includes('unauthorized')) {
-    return 'Unauthorized. You must have staked governance tokens at the time of proposal creation to vote.'
-  }
 
   return errorLine
 }

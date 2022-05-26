@@ -6,15 +6,23 @@ export const EmptyContractCard = ({
   description,
   backgroundUrl,
   href,
+  fullWidth,
 }: {
   title: string
   description: string
   backgroundUrl: string
   href: string
+  fullWidth?: boolean
 }) => {
   return (
     <Link href={href} passHref>
-      <a className="overflow-hidden max-w-[400px] rounded-md border border-inactive hover:border-brand transition md:w-max">
+      <a
+        className={`overflow-hidden ${
+          fullWidth ? 'w-full' : 'max-w-[400px]'
+        } rounded-md border border-default hover:border-brand transition ${
+          fullWidth ? undefined : 'md:w-max'
+        }`}
+      >
         <div
           className={'h-72 bg-no-repeat bg-cover opacity-75'}
           style={{ backgroundImage: `url(${backgroundUrl})` }}

@@ -30,7 +30,7 @@ export function AddressInput<FieldValues, FieldName extends Path<FieldValues>>({
   )
   return (
     <div
-      className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border-default border border-default text-sm font-mono
+      className={`flex items-center gap-1 bg-transparent rounded-lg px-3 py-2 transition focus-within:ring-1 focus-within:outline-none ring-brand ring-offset-0 border border-default text-sm font-mono
         ${error ? ' ring-error ring-1' : ''}`}
     >
       <Wallet color="currentColor" width="24px" />
