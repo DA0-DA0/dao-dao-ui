@@ -27,6 +27,19 @@
       "junoChannel": "channel-27"
     },
     {
+      "id": "terrausd",
+      "name": "UST",
+      "symbol": "UST",
+      "chain_id": "columbus-5",
+      "rpc": "https://rpc-columbus.keplr.app:443",
+      "denom": "uusd",
+      "decimals": 6,
+      "channel": "channel-20",
+      "logoURI": "https://raw.githubusercontent.com/osmosis-labs/assetlists/main/images/ust.png",
+      "junoDenom": "ibc/2DA4136457810BCB9DAAB620CA67BC342B17C3C70151CA70490A170DF7C9CB27",
+      "junoChannel": "channel-27"
+    },
+    {
       "id": "bitsong",
       "name": "BTSG",
       "symbol": "BTSG",
@@ -194,6 +207,6 @@
       "logoURI": "https://sz56ino2efvrofw5wgw6iafudpi6br6xny6u6o6xilynddmf64.arweave.net/lnvkNdohaxcW3bGt5AC0G9Hgx9duPU_8710Lw0Y2F90",
       "junoDenom": "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034",
       "junoChannel": "channel-71"
-    },
+    }
   ]
 }
