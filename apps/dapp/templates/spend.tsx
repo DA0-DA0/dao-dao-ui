@@ -91,7 +91,7 @@ export const SpendComponent: TemplateComponent = ({
   useEffect(() => {
     isFromCSV &&
       cw20Info.map(({ symbol }, idx) => {
-        symbol === getValues(getLabel('denom')) &&
+        symbol === getValues?.(getLabel('denom')) &&
           setDefaultSymbol(
             JSON.stringify({
               address: tokenList[idx],
