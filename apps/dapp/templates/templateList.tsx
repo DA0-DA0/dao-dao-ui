@@ -181,6 +181,7 @@ export interface TemplateComponentProps {
   errors?: FieldErrors
   multisig?: boolean
   readOnly?: boolean
+  getValues?: (field: string) => string
 }
 
 export type TemplateComponent = React.FunctionComponent<TemplateComponentProps>

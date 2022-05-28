@@ -47,6 +47,7 @@ export interface SpendData {
   // but we need to do it because we can only fetch data while we're rendering the
   // component.
   denom: string
+  isFromCSV?: boolean
 }
 
 export const spendDefaults = (
@@ -56,6 +57,7 @@ export const spendDefaults = (
   to: walletAddress,
   amount: 1,
   denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
+  isFromCSV: false,
 })
 
 export const SpendComponent: TemplateComponent = ({
@@ -64,6 +66,7 @@ export const SpendComponent: TemplateComponent = ({
   onRemove,
   errors,
   readOnly,
+  getValues,
 }) => {
   const { register, watch, clearErrors, setValue } = useFormContext()
 
@@ -80,6 +83,7 @@ export const SpendComponent: TemplateComponent = ({
   }))
   const spendAmount = watch(getLabel('amount'))
   const spendDenom = watch(getLabel('denom'))
+  const isFromCSV = watch(getLabel('isFromCSV'))
 
   const validatePossibleSpend = (
     denom: string,
@@ -200,7 +204,7 @@ export const SpendComponent: TemplateComponent = ({
               </option>
             )
           })}
-          {cw20Info.map(({ symbol }, idx) => (
+          {/* {cw20Info.map(({ symbol }, idx) => (
             <option
               key={tokenList[idx]}
               value={JSON.stringify({
@@ -210,7 +214,21 @@ export const SpendComponent: TemplateComponent = ({
             >
               ${symbol}
             </option>
-          ))}
+          ))} */}
+          {cw20Info.map(({ symbol }, idx) => {
+            return (
+              <option
+                key={tokenList[idx]}
+                selected={isFromCSV && symbol === getValues(getLabel('denom'))}
+                value={JSON.stringify({
+                  address: tokenList[idx],
+                  decimals: cw20Info[idx].decimals,
+                })}
+              >
+                ${symbol}
+              </option>
+            )
+          })}
         </SelectInput>
         <div className="flex gap-2 items-center">
           <p className="font-mono secondary-text">{'->'}</p>

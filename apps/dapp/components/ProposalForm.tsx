@@ -1,4 +1,10 @@
-import { EyeIcon, EyeOffIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
+import {
+  EyeIcon,
+  EyeOffIcon,
+  PlusIcon,
+  XIcon,
+  ArrowDownIcon,
+} from '@heroicons/react/outline'
 import { useState } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
@@ -19,6 +25,7 @@ import {
   TextInput,
 } from '@dao-dao/ui'
 
+import { SpendFromCsvComponent } from 'templates/spendFromCsv'
 import {
   messageTemplates,
   ToCosmosMsgProps,
@@ -76,10 +83,12 @@ export function ProposalForm({
     handleSubmit,
     watch,
     formState: { errors },
+    getValues,
   } = formMethods
 
   const [showPreview, setShowPreview] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showImportCsvModal, setImportCsvModal] = useState(false)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -146,7 +155,12 @@ export function ProposalForm({
               templates={messageTemplates}
             />
           )}
-
+          {showImportCsvModal && (
+            <SpendFromCsvComponent
+              append={append}
+              onClose={() => setImportCsvModal(false)}
+            />
+          )}
           <div className="flex flex-col gap-1 my-3">
             <InputLabel name="Title" />
             <TextInput
@@ -192,6 +206,7 @@ export function ProposalForm({
                     contractAddress={contractAddress}
                     errors={(errors.messages && errors.messages[index]) || {}}
                     getLabel={(fieldName) => `messages.${index}.${fieldName}`}
+                    getValues={getValues}
                     multisig={multisig}
                     onRemove={() => remove(index)}
                   />
@@ -206,6 +221,14 @@ export function ProposalForm({
               variant="secondary"
             >
               <PlusIcon className="inline h-4" /> Add component
+            </Button>
+            <Button
+              className="ml-2"
+              onClick={() => setImportCsvModal((s) => !s)}
+              type="button"
+              variant="secondary"
+            >
+              <ArrowDownIcon className="inline h-4" /> Import Spend CSV
             </Button>
             {showTemplateSelector && (
               <ProposalTemplateSelector
