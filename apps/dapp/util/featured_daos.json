@@ -1,0 +1,67 @@
+[
+  {
+    "name": "RAW DAO",
+    "href": "https://rawdao.zone",
+    "image": "https://bafkreibstilkuupryhi74z2ehzqjds6lvjndzd2cjlxucxsc57zs47qxfa.ipfs.nftstorage.link/",
+    "members": "1,000+",
+    "TVL": "25M",
+    "description": "RAW DAO uses DAO DAO to manages the Junoswap decentralized exchange.",
+    "href": "https://rawdao.zone"
+  },
+  {
+    "name": "Security DAO",
+    "href": "https://daodao.zone/dao/juno1p9w4u6nlrwc6gdg3cyrvzlh3tuacsyqfl4vadkh02pjeh0zsrnksd93z0c",
+    "image": "https://pbs.twimg.com/profile_images/1510870764328656900/PxLvvLZL_400x400.jpg",
+    "members": "5",
+    "description": "Security DAO uses DAO DAO to manage audits and member compensation.",
+    "TVL": "6K"
+  },
+  {
+    "name": "Core-1",
+    "href": "https://daodao.zone/multisig/juno19nccy4t3wf27pu7pa68u2amkf9ecwk7w9600cqrqrfp0y24fzp4sf8eza3",
+    "image": "https://pbs.twimg.com/profile_images/1473966985360850945/L7AdA0Me_400x400.jpg",
+    "members": "5",
+    "description": "Core-1 uses DAO DAO to distribute Juno dev grants.",
+    "TVL": "250K"
+  },
+  {
+    "name": "Interwasm DAO",
+    "href": "https://daodao.zone/multisig/juno1kkvct82dl0afp7lv2v6wv6emgltwqywxw2xu7p0l0vvl8rquv94s7e6xss",
+    "image": "https://avatars.githubusercontent.com/u/89775619?s=200&v=4",
+    "members": "3",
+    "description": "Interwasm DAO uses DAO DAO coordinate CosmWasm development.",
+    "TVL": "25K"
+  },
+  {
+    "name": "RAW Foundation Dev Fund",
+    "href": "https://daodao.zone/multisig/juno18jy629ehmfp2w4nnnyajj955npuw0ryhrvxauff47s65nev8eyuqnpfsd2",
+    "image": "https://bafkreihau5dwkvm4pktk6z4gbloy5o32djxl3vpfbwxz6i374byneclwje.ipfs.nftstorage.link",
+    "members": "5",
+    "description": "The RAW Foundation Dev Fund uses DAO DAO manage the RAW DAO development fund.",
+    "TVL": "4.8M"
+  },
+  {
+    "name": "Dog Dao",
+    "href": "https://daodao.zone/dao/juno1hqr0t3scwkrmuu3554lnqzrccuevd8huxmu533gtm6s7vuzeztzqh6tuwq",
+    "image": "https://www.princeton.edu/sites/default/files/styles/full_2x/public/images/2022/02/KOA_Nassau_2697x1517.jpg",
+    "members": "25+",
+    "description": "Dog Dao uses DAO DAO to collect fans of dogs. One dog, one vote.",
+    "TVL": "30"
+  },
+  {
+    "name": "Hope Galaxy",
+    "href": "https://daodao.zone/dao/juno166nqpdute25frcw5xsg6ax8gj84jcdmsk5grrdecz673pxcjyzlqgnjc0f",
+    "image": "https://i.ibb.co/Pz72Qjy/logo-hope.png",
+    "members": "1000+",
+    "description": "Hope Galaxy uses DAO DAO to manage a NFT collection and marketplace.",
+    "TVL": "1K"
+  },
+  {
+    "name": "Terra Dev Fund",
+    "href": "https://daodao.zone/multisig/juno1lgnstas4ruflg0eta394y8epq67s4rzhg5anssz3rc5zwvjmmvcql6qps2",
+    "image": "https://bafybeieab276fqx3fpyvyzzwpekr3mee5uwr4zk3jggedkxmp7ahc6mwnq.ipfs.dweb.link/",
+    "members": "9",
+    "description": "The Terra Dev Fund uses DAO DAO to help Terra projects migrate to Juno.",
+    "TVL": "6M"
+  }
+]

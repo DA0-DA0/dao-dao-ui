@@ -19,14 +19,14 @@ export const GradientWrapper: FC<GradientWrapperProps> = ({ children }) => {
       {typeof CSS.supports !== 'undefined' &&
         CSS.supports('backdrop-filter', 'blur(5px)') && (
           <div
-            className="absolute top-0 left-1/2 -z-20 mt-[60px] -ml-[250px] text-[#06090B] animate-spin-slow will-change-auto"
+            className="absolute top-0 left-1/2 -z-20 mt-[60px] -ml-[250px] text-[#06090B]"
             style={{ transform: 'rotate(270)' }}
           >
             <LogoNoBorder height={500} width={500} />
           </div>
         )}
       <div
-        className="fixed -z-30 w-screen h-full bg-no-repeat bg-contain"
+        className="absolute -z-30 w-screen h-full bg-no-repeat bg-contain"
         style={{
           backgroundImage: `${bg}`,
         }}

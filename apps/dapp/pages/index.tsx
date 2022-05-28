@@ -1,4 +1,4 @@
-import { ScaleIcon } from '@heroicons/react/outline'
+import { ArrowRightIcon, ScaleIcon } from '@heroicons/react/outline'
 import {
   ArrowNarrowRightIcon,
   PlusSmIcon,
@@ -14,6 +14,7 @@ import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 
+import { FeaturedDaos } from '@/components/FeaturedDaos'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 
 const EnterAppButton = ({ small }: { small?: boolean }) => (
@@ -44,6 +45,32 @@ const InfoCard = ({
       <h3 className="header-text">{title}</h3>
       <p className="mt-[12px] body-text">{body}</p>
     </div>
+  </div>
+)
+
+const AnouncementCard = ({}) => (
+  <div
+    className="flex flex-row flex-wrap gap-2 justify-between py-7 px-8 mx-2 max-w-[780px] rounded"
+    style={{
+      backgroundImage:
+        'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--light), 0.7), rgba(var(--light), 0.7))',
+    }}
+  >
+    <div className="flex flex-col gap-1">
+      <h3 className="primary-text">What is a DAO?</h3>
+      <p className="body-text">
+        A DAO is an organization democratically controlled by its members.
+      </p>
+    </div>
+    <a
+      className="flex flex-row gap-1 items-center secondary-text"
+      href="https://nickmerrill.substack.com/p/what-are-daos"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      <p>Read more</p>
+      <ArrowRightIcon className="w-4 h-3" />
+    </a>
   </div>
 )
 
@@ -89,8 +116,23 @@ const Home: NextPage = () => (
       <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
         Simple, capable, free DAO tooling. Built with love, by DAO DAO, on Juno.
       </p>
-      <div className="mx-auto mb-12">
+      <div className="mx-auto">
         <EnterAppButton />
+      </div>
+      <div className="my-12 mx-auto md:my-20">
+        <AnouncementCard />
+      </div>
+      <p className="mx-auto mx-2 max-w-prose text-2xl text-center hero-text">
+        Explore DAOs
+        <br />
+        <span className="text-brand">and join a community.</span>
+      </p>
+      <p className="my-6 mx-2 max-w-xl text-center text-tertiary primary-text">
+        DAOs built with DAO DAO manage decentralized exchanges, run grant
+        programs, do security audits, and much, much more.
+      </p>
+      <div className="my-12">
+        <FeaturedDaos />
       </div>
       <div className="mx-3">
         <div className="flex flex-row flex-wrap gap-3 justify-center">
