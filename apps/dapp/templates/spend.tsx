@@ -1,4 +1,5 @@
 import { XIcon } from '@heroicons/react/outline'
+import { useState, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 
@@ -84,6 +85,25 @@ export const SpendComponent: TemplateComponent = ({
   const spendAmount = watch(getLabel('amount'))
   const spendDenom = watch(getLabel('denom'))
   const isFromCSV = watch(getLabel('isFromCSV'))
+
+  const [defaultSymbol, setDefaultSymbol] = useState('')
+
+  useEffect(() => {
+    isFromCSV &&
+      cw20Info.map(({ symbol }, idx) => {
+        symbol === getValues(getLabel('denom')) &&
+          setDefaultSymbol(
+            JSON.stringify({
+              address: tokenList[idx],
+              decimals: cw20Info[idx].decimals,
+            })
+          )
+      })
+  }, [isFromCSV, cw20Info, tokenList, getValues, getLabel, defaultSymbol])
+
+  useEffect(() => {
+    isFromCSV && setValue(getLabel('denom'), defaultSymbol)
+  }, [isFromCSV, setValue, getLabel, defaultSymbol])
 
   const validatePossibleSpend = (
     denom: string,
@@ -180,7 +200,9 @@ export const SpendComponent: TemplateComponent = ({
           ]}
         />
         <SelectInput
-          defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
+          defaultValue={
+            defaultSymbol ? defaultSymbol : process.env.NEXT_PUBLIC_FEE_DENOM
+          }
           disabled={readOnly}
           error={errors?.denom}
           label={getLabel('denom')}
@@ -204,31 +226,17 @@ export const SpendComponent: TemplateComponent = ({
               </option>
             )
           })}
-          {cw20Info.map(({ symbol }, idx) => {
-            return isFromCSV && symbol === getValues(getLabel('denom')) ? (
-              <option
-                key={tokenList[idx]}
-                onChange={(val) => setValue(getLabel('denom'), val)}
-                selected
-                value={JSON.stringify({
-                  address: tokenList[idx],
-                  decimals: cw20Info[idx].decimals,
-                })}
-              >
-                ${symbol}
-              </option>
-            ) : (
-              <option
-                key={tokenList[idx]}
-                value={JSON.stringify({
-                  address: tokenList[idx],
-                  decimals: cw20Info[idx].decimals,
-                })}
-              >
-                ${symbol}
-              </option>
-            )
-          })}
+          {cw20Info.map(({ symbol }, idx) => (
+            <option
+              key={tokenList[idx]}
+              value={JSON.stringify({
+                address: tokenList[idx],
+                decimals: cw20Info[idx].decimals,
+              })}
+            >
+              ${symbol}
+            </option>
+          ))}
         </SelectInput>
         <div className="flex gap-2 items-center">
           <p className="font-mono secondary-text">{'->'}</p>
