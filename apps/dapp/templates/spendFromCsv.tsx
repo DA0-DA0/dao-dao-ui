@@ -15,7 +15,7 @@ function objectJSONify(results: any, append: any) {
       .replace(/[\u0300-\u036f]/g, '')
   )
   let values = results.data.slice(1)
-  let objects = values.map((array: any) => {
+  values.map((array: any) => {
     let object: any = {}
     keys.forEach((key: any, i: any) => {
       return (object[key] = array[i])

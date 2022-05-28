@@ -204,22 +204,22 @@ export const SpendComponent: TemplateComponent = ({
               </option>
             )
           })}
-          {/* {cw20Info.map(({ symbol }, idx) => (
-            <option
-              key={tokenList[idx]}
-              value={JSON.stringify({
-                address: tokenList[idx],
-                decimals: cw20Info[idx].decimals,
-              })}
-            >
-              ${symbol}
-            </option>
-          ))} */}
           {cw20Info.map(({ symbol }, idx) => {
-            return (
+            return isFromCSV && symbol === getValues(getLabel('denom')) ? (
               <option
                 key={tokenList[idx]}
-                selected={isFromCSV && symbol === getValues(getLabel('denom'))}
+                onChange={(val) => setValue(getLabel('denom'), val)}
+                selected
+                value={JSON.stringify({
+                  address: tokenList[idx],
+                  decimals: cw20Info[idx].decimals,
+                })}
+              >
+                ${symbol}
+              </option>
+            ) : (
+              <option
+                key={tokenList[idx]}
                 value={JSON.stringify({
                   address: tokenList[idx],
                   decimals: cw20Info[idx].decimals,
