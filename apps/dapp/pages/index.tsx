@@ -59,8 +59,7 @@ const AnouncementCard = ({}) => (
     <div className="flex flex-col gap-1">
       <h3 className="primary-text">What is a DAO?</h3>
       <p className="body-text">
-        A DAO is an entity on a blockchain controlled democratically by its
-        members.
+        A DAO is an organization democratically controlled by its members.
       </p>
     </div>
     <a
@@ -124,13 +123,13 @@ const Home: NextPage = () => (
         <AnouncementCard />
       </div>
       <p className="mx-auto mx-2 max-w-prose text-2xl text-center hero-text">
-        Explore DAOs on the platform
+        Explore DAOs
         <br />
         <span className="text-brand">and join a community.</span>
       </p>
       <p className="my-6 mx-2 max-w-xl text-center text-tertiary primary-text">
-        DAOs on DAO DAO manage decentralized exchanges, run grant programs, do
-        security audits, and much, much more.
+        DAOs built with DAO DAO manage decentralized exchanges, run grant
+        programs, do security audits, and much, much more.
       </p>
       <div className="my-12">
         <FeaturedDaos />

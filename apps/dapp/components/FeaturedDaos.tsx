@@ -234,7 +234,7 @@ export const FeaturedDaos: FC<FeaturedDaosProps> = () => {
             <FeaturedCard {...props} key={props.name} />
           ))}
           {featuredDaos.map((props) => (
-            <FeaturedCard {...props} key={props.name} />
+            <FeaturedCard {...props} key={props.name} className="is-clone" />
           ))}
         </div>
       </div>
