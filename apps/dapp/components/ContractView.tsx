@@ -103,7 +103,7 @@ export const ContractProposalsDisplay: FC<ContractProposalsDisplayProps> = ({
           </a>
         </Link>
       </div>
-      <div className="mt-4 md:px-4">
+      <div className="mt-4 mb-12">
         <SuspenseLoader fallback={<Loader />}>
           <ProposalList contractAddress={contractAddress} multisig={multisig} />
         </SuspenseLoader>

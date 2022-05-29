@@ -46,14 +46,17 @@ export function LogoNoBorder({
   width = 28,
   height = 28,
   alt = '',
+  className,
 }: {
   width?: number | string
   height?: number | string
   alt?: string
+  className?: string
 }) {
   return (
     <svg
       aria-label={alt}
+      className={className}
       fill="none"
       height={height}
       viewBox={`0 0 28 28`}
