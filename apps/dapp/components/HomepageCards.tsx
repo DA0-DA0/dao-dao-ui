@@ -22,7 +22,7 @@ export const HomepageCards: FC<HomepageCardsProps> = () => (
             loading={false}
             onVote={() =>
               toast.success(
-                'Think this is neat? You should try the real thing!)'
+                'Think this is neat? You should try the real thing! :)'
               )
             }
             voterWeight={7}
