@@ -13,10 +13,13 @@ import { Dao, Votes } from '@dao-dao/icons'
 
 import featuredDaos from '../util/featured_daos.json'
 
-const useIsVisible = (element: RefObject<Element>) => {
+const useIsVisible = (ref: RefObject<Element>) => {
   const [isVisible, setState] = useState(false)
 
   useEffect(() => {
+    // Copy element into useEffect so that we're sure to unobserve the same one we started with.
+    const element = ref
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         setState(entry.isIntersecting)
@@ -29,7 +32,7 @@ const useIsVisible = (element: RefObject<Element>) => {
     return () => {
       if (element.current) observer.unobserve(element.current)
     }
-  }, [])
+  }, [ref])
 
   return isVisible
 }
@@ -203,7 +206,7 @@ export const FeaturedDaos: FC<FeaturedDaosProps> = () => {
           scrollWidth - divWidth - container.scrollLeft
       }
     },
-    [clonesWidth, scrollRef, mirrorRef]
+    [clonesWidth, mirrorRef]
   )
 
   // Set the width of the clones once this component mounts.
