@@ -112,9 +112,6 @@ const Home: NextPage = () => (
             </a>
           </Link>
           <div className="flex gap-4 items-center">
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
             <a
               className="flex gap-2 items-center"
               href="https://docs.daodao.zone"
