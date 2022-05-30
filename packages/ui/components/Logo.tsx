@@ -3,16 +3,19 @@ export function Logo({
   height = 28,
   alt = '',
   invert = false,
+  className = '',
 }: {
   width?: number | string
   height?: number | string
   alt?: string
   invert?: boolean
+  className?: string
 }) {
   const fill = invert ? '--white' : '--black'
   return (
     <svg
       aria-label={alt}
+      className={className}
       fill="none"
       height={height}
       viewBox={`0 0 28 28`}
