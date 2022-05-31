@@ -18,8 +18,6 @@ import {
 } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
-import ThemeToggle from 'components/ThemeToggle'
-
 import { FeaturedDaos } from '@/components/FeaturedDaos'
 import { HomepageCards } from '@/components/HomepageCards'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
@@ -161,13 +159,13 @@ const Home: NextPage = () => (
             <PlusSmIcon className="w-4" />
           </InfoCard>
           <InfoCard
-            body="Proposals can do anything you can do on chain. They pass when the community votes on them."
+            body="Proposals can do anything. The community decides what the DAO does."
             title="Propose and vote"
           >
             <ScaleIcon className="w-4" />
           </InfoCard>
           <InfoCard
-            body="DAO DAO DAOs can manage IBC assets, instantiate smart contracts, and manage entire protocols."
+            body="DAOs can manage funds, run smart contracts, and manage entire protocols across multiple, sovereign chains."
             title="IBC enabled"
           >
             <StarIcon className="w-4" />
@@ -179,11 +177,11 @@ const Home: NextPage = () => (
           <RotatableLogo initialRotation={45} />
         </div>
         <h2 className="px-4 mt-12 w-full text-center header-text">
-          Transparent governance, entirely on chain
+          Transparent governance, entirely on-chain
         </h2>
         <p className="px-4 mx-auto mt-4 max-w-xl text-center text-tertiary primary-text">
-          Anyone, anywhere can participate. Decisions are stored on a blockchain
-          so they are public and hard to censor.
+          Anyone can see what decisions your DAO made, and who voted for and
+          against them.
         </p>
         <div className="mt-12">
           <HomepageCards />

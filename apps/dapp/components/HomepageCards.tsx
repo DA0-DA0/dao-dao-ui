@@ -1,4 +1,4 @@
-import { HandIcon } from '@heroicons/react/outline'
+import { EmojiHappyIcon, HandIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 import { FC } from 'react'
 import toast from 'react-hot-toast'
@@ -37,7 +37,7 @@ export const HomepageCards: FC<HomepageCardsProps> = () => (
         }}
       >
         <div className="flex justify-center items-center p-2 w-fit h-fit bg-primary rounded">
-          <HandIcon className="w-3" />
+          <EmojiHappyIcon className="w-3" />
         </div>
         <div className="hidden absolute top-0 right-0 bottom-0 my-6 w-full md:block">
           <Image
@@ -47,19 +47,20 @@ export const HomepageCards: FC<HomepageCardsProps> = () => (
             objectPosition="right center"
             src="/proposal-list-homepage.png"
             style={{
-              opacity: '0.5',
+              opacity: '0.75',
             }}
           />
         </div>
 
-        <h3 className="header-text">Easy to use interface</h3>
+        <h3 className="header-text">Easy-to-use interface</h3>
         <div className="flex flex-col gap-3 max-w-xs">
           <p className="max-w-sm body-text">
             Anyone from your community can be a full participant.
           </p>
           <p className="max-w-sm body-text">
-            With DAO DAO the days of command line wrangling to get a multisig
-            message signed are over.
+            No more command line wrangling just to vote on a proposal. DAO
+            DAO&apos;s visual UI makes collective ownership accessible to
+            everyone.
           </p>
         </div>
       </div>
