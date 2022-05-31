@@ -1,8 +1,17 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { InputLabel } from '@dao-dao/ui'
 
+import {
+  convertDurationWithUnitsToHumanReadableString,
+  convertThresholdValueToHumanReadableString,
+} from '@/atoms/org'
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
+import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'
+import {
+  TokenDistributionPie,
+  TokenDistributionPieLegend,
+} from '@/components/org/create/TokenDistributionPie'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -10,6 +19,18 @@ const CreateOrgReviewPage: FC = () => {
   const { formOnSubmit, watch, Navigation } = useCreateOrgForm(2)
 
   const values = watch()
+
+  const pieSections = useMemo(
+    () =>
+      values.groups
+        .map(({ name, weight }, index) => ({
+          name,
+          percent: weight,
+          color: colors[index % colors.length],
+        }))
+        .sort((a, b) => b.percent - a.percent),
+    [values.groups]
+  )
 
   return (
     <>
@@ -36,6 +57,71 @@ const CreateOrgReviewPage: FC = () => {
           </div>
 
           <div className="w-full h-[1px] bg-card"></div>
+
+          <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center mx-auto w-5/6 md:gap-x-16 md:gap-y-8">
+            <InputLabel
+              className="text-sm text-center"
+              labelProps={{ className: 'justify-center' }}
+              mono
+              name="Voting Distribution"
+            />
+            <InputLabel className="text-sm text-center" mono name="Roles" />
+
+            <TokenDistributionPie segments={pieSections} />
+            <TokenDistributionPieLegend segments={pieSections} />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">
+          <CreateOrgReviewStat
+            title="Threshold"
+            value={convertThresholdValueToHumanReadableString(
+              values.changeThresholdQuorumOptions.thresholdValue
+            )}
+          />
+          <CreateOrgReviewStat
+            title="Quorum"
+            value={convertThresholdValueToHumanReadableString(
+              values.changeThresholdQuorumOptions.quorumValue
+            )}
+          />
+          <CreateOrgReviewStat
+            title="Prop. duration"
+            value={convertDurationWithUnitsToHumanReadableString(
+              values.votingDuration
+            )}
+          />
+          {values.variableVotingWeightsOptions.governanceTokenEnabled &&
+            !!values.variableVotingWeightsOptions.governanceTokenOptions
+              .proposalDeposit?.value && (
+              <>
+                <CreateOrgReviewStat
+                  title="Prop. deposit"
+                  value={`${values.variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value}`}
+                />
+                <CreateOrgReviewStat
+                  title="Prop. refunds"
+                  value={
+                    values.variableVotingWeightsOptions.governanceTokenOptions
+                      .proposalDeposit.refundFailed
+                      ? 'Yes'
+                      : 'No'
+                  }
+                />
+              </>
+            )}
+          {values.variableVotingWeightsOptions.governanceTokenEnabled && (
+            <>
+              <CreateOrgReviewStat title="Gov. tokens" value="Enabled" />
+              <CreateOrgReviewStat
+                title="Unregister duration"
+                value={convertDurationWithUnitsToHumanReadableString(
+                  values.variableVotingWeightsOptions.governanceTokenOptions
+                    .unregisterDuration
+                )}
+              />
+            </>
+          )}
         </div>
 
         {Navigation}
@@ -45,3 +131,11 @@ const CreateOrgReviewPage: FC = () => {
 }
 
 export default CreateOrgReviewPage
+
+const colors = [
+  '#FC82A4',
+  '#954EE8',
+  '#DC30D3',
+  '#FD6386',
+  'rgba(243, 246, 248, 0.08)',
+]

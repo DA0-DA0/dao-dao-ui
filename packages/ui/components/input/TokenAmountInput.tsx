@@ -19,6 +19,27 @@ import { AddressInput } from './AddressInput'
 import { InputErrorMessage } from './InputErrorMessage'
 import { NumberInput } from './NumberInput'
 
+export interface TokenAmountInputProps<
+  FieldValues,
+  AmountFieldName extends Path<FieldValues>,
+  AddrFieldName extends Path<FieldValues>
+> {
+  amountLabel: AmountFieldName
+  addrLabel: AddrFieldName
+  onRemove: () => void
+  tokenSymbol?: string
+  tokenImage?: string
+  hideRemove: boolean
+  icon?: ReactNode
+  title: string
+  register: UseFormRegister<FieldValues>
+  onPlusMinus?: [() => void, () => void]
+  amountError?: FieldError
+  addrError?: FieldError
+  readOnly?: boolean
+  required?: boolean
+}
+
 /**
  * @param label      - the label for the value that this will contain.
  * @param register   - the register function returned by `useForm`.
@@ -28,7 +49,7 @@ import { NumberInput } from './NumberInput'
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export function TokenAmountInput<
+export const TokenAmountInput = <
   FieldValues,
   AmountFieldName extends Path<FieldValues>,
   AddrFieldName extends Path<FieldValues>
@@ -46,21 +67,8 @@ export function TokenAmountInput<
   amountError,
   addrError,
   readOnly,
-}: {
-  amountLabel: AmountFieldName
-  addrLabel: AddrFieldName
-  onRemove: () => void
-  tokenSymbol?: string
-  tokenImage?: string
-  hideRemove: boolean
-  icon?: ReactNode
-  title: string
-  register: UseFormRegister<FieldValues>
-  onPlusMinus?: [() => void, () => void]
-  amountError?: FieldError
-  addrError?: FieldError
-  readOnly?: boolean
-}) {
+  required,
+}: TokenAmountInputProps<FieldValues, AmountFieldName, AddrFieldName>) => {
   type ValidateFn = Validate<FieldPathValue<FieldValues, AddrFieldName>>
 
   const numberInputParams = {
@@ -75,6 +83,7 @@ export function TokenAmountInput<
       validateRequired as ValidateFn,
       validatePositive as ValidateFn,
     ],
+    required,
   }
 
   return (
@@ -121,6 +130,7 @@ export function TokenAmountInput<
               error={addrError}
               label={addrLabel}
               register={register}
+              required={required}
               validation={[
                 validateRequired as ValidateFn,
                 validateAddress as ValidateFn,

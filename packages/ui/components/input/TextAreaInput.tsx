@@ -9,11 +9,12 @@ import {
 } from 'react-hook-form'
 
 interface TextAreaInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends ComponentProps<'textarea'> {
+  extends Omit<ComponentProps<'textarea'>, 'required'> {
   label: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
+  required?: boolean
 }
 
 export const TextAreaInput = <
@@ -25,6 +26,7 @@ export const TextAreaInput = <
   error,
   validation,
   className,
+  required,
   ...rest
 }: TextAreaInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
@@ -42,7 +44,7 @@ export const TextAreaInput = <
         className
       )}
       {...rest}
-      {...register(label, { validate })}
+      {...register(label, { required: required && 'Required', validate })}
     ></textarea>
   )
 }

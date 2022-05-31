@@ -16,6 +16,7 @@ import {
   InputErrorMessage,
   NumberInput,
 } from '@dao-dao/ui'
+import { validatePositive } from '@dao-dao/utils'
 
 import { NewOrg } from '@/atoms/org'
 
@@ -136,8 +137,10 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                   ),
               ]}
               register={register}
+              required
               sizing="sm"
               step={1}
+              validation={[validatePositive]}
             />
             <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
           </div>
@@ -213,6 +216,7 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
           label={`groups.${groupIndex}.members.${memberIndex}.address`}
           placeholder="Member's address..."
           register={register}
+          required
         />
         <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
       </div>
@@ -254,8 +258,10 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
                   ),
               ]}
               register={register}
+              required
               sizing="sm"
               step={1}
+              validation={[validatePositive]}
             />
             <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
           </div>

@@ -2,6 +2,7 @@ import { atom } from 'recoil'
 
 import { Duration } from '@dao-dao/state/clients/cw-core'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
+import { titlecase } from '@dao-dao/utils'
 
 export enum DurationUnits {
   Seconds = 'seconds',
@@ -41,6 +42,10 @@ export const convertDurationWithUnitsToDuration = ({
   }
   return { time }
 }
+export const convertDurationWithUnitsToHumanReadableString = ({
+  units,
+  value,
+}: DurationWithUnits): string => `${value} ${titlecase(units)}`
 
 export enum ThresholdType {
   AbsolutePercentage,
@@ -54,6 +59,9 @@ export const convertThresholdValueToPercentageThreshold = (
   value === 'majority'
     ? { majority: {} }
     : { percent: (value / 100).toFixed(2) }
+export const convertThresholdValueToHumanReadableString = (
+  value: ThresholdValue
+): string => (value === 'majority' ? 'Majority' : `${value}%`)
 
 export enum GovernanceTokenType {
   New,
@@ -78,6 +86,11 @@ export interface NewOrg {
         name: string
       }
       existingGovernanceTokenAddress?: string
+      _existingGovernanceTokenInfo?: {
+        imageUrl?: string
+        symbol: string
+        name: string
+      }
       proposalDeposit?: {
         value: number
         refundFailed: boolean

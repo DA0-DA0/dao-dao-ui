@@ -9,11 +9,12 @@ import {
 } from 'react-hook-form'
 
 interface SelectInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends ComponentProps<'select'> {
+  extends Omit<ComponentProps<'select'>, 'required'> {
   label?: FieldName
   register?: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
+  required?: boolean
 }
 
 export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
@@ -22,6 +23,7 @@ export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
   error,
   validation,
   children,
+  required,
   ...props
 }: SelectInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
@@ -36,7 +38,9 @@ export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
         { 'ring-1 ring-error': error }
       )}
       {...props}
-      {...(register && label && register(label, { validate }))}
+      {...(register &&
+        label &&
+        register(label, { required: required && 'Required', validate }))}
     >
       {children}
     </select>

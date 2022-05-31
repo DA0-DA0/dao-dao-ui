@@ -20,13 +20,13 @@ export const validateRequired = (v: string | boolean) => {
   return (v !== null && v !== undefined) || 'Field is required'
 }
 
-export const validatePositive = (v: string) =>
-  parseFloat(v) > 0.0 || 'Must be positive'
+export const validatePositive = (v: string | number) =>
+  Number(v) > 0 || 'Must be positive'
 
-export const validateNonNegative = (v: string) =>
-  parseFloat(v) >= 0.0 || 'Must be non-negative'
+export const validateNonNegative = (v: string | number) =>
+  Number(v) >= 0 || 'Must be non-negative'
 
-export const validatePercent = (v: string) => {
+export const validatePercent = (v: string | number) => {
   const p = Number(v)
   return (p <= 100 && p >= 0) || 'Invalid percentage'
 }

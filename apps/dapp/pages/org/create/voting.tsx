@@ -16,6 +16,7 @@ import {
   SubmitButton,
   TextInput,
 } from '@dao-dao/ui'
+import { validateNonNegative, validatePositive } from '@dao-dao/utils'
 
 import {
   DefaultNewOrg,
@@ -151,6 +152,7 @@ const CreateOrgVotingPage: FC = () => {
 
         <CreateOrgConfigCard
           description="The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final."
+          error={errors.votingDuration?.value || errors.votingDuration?.units}
           image={<Emoji label="hourglass" symbol="⏳" />}
           title="Voting duration"
         >
@@ -170,14 +172,17 @@ const CreateOrgVotingPage: FC = () => {
                 ),
             ]}
             register={register}
+            required
             sizing="sm"
             step={1}
+            validation={[validatePositive]}
           />
 
           <SelectInput
             error={errors.votingDuration?.units}
             label="votingDuration.units"
             register={register}
+            required
           >
             {DurationUnitsValues.map((type, idx) => (
               <option key={idx} value={type}>
@@ -263,57 +268,69 @@ const CreateOrgVotingPage: FC = () => {
                   <div className="flex flex-row gap-8 justify-between items-center">
                     <p className="primary-text">Total supply</p>
 
-                    <div className="flex flex-row grow gap-4 items-center">
-                      <NumberInput
-                        containerClassName="grow"
+                    <div>
+                      <div className="flex flex-row grow gap-4 items-center">
+                        <NumberInput
+                          containerClassName="grow"
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken
+                              ?.supply
+                          }
+                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply"
+                          onPlusMinus={[
+                            () =>
+                              setValue(
+                                'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
+                                Math.max(
+                                  watch(
+                                    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
+                                  ) + 1,
+                                  0
+                                )
+                              ),
+                            () =>
+                              setValue(
+                                'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
+                                Math.max(
+                                  watch(
+                                    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
+                                  ) - 1,
+                                  0
+                                )
+                              ),
+                          ]}
+                          register={register}
+                          required
+                          step={1}
+                          validation={[validatePositive]}
+                        />
+
+                        <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
+                          {newTokenImageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img alt="" src={newTokenImageUrl} />
+                          ) : (
+                            <PlaceholderToken
+                              className="p-2 rounded-full border border-default"
+                              color="rgba(var(--dark), 0.3)"
+                              height="2.25rem"
+                              width="2.25rem"
+                            />
+                          )}
+
+                          {watch(
+                            'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol'
+                          ) || 'Token'}
+                        </div>
+                      </div>
+
+                      <InputErrorMessage
                         error={
                           errors.variableVotingWeightsOptions
                             ?.governanceTokenOptions?.newGovernanceToken?.supply
                         }
-                        label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply"
-                        onPlusMinus={[
-                          () =>
-                            setValue(
-                              'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
-                              Math.max(
-                                watch(
-                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
-                                ) + 1,
-                                0
-                              )
-                            ),
-                          () =>
-                            setValue(
-                              'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
-                              Math.max(
-                                watch(
-                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
-                                ) - 1,
-                                0
-                              )
-                            ),
-                        ]}
-                        register={register}
-                        step={1}
                       />
-
-                      <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
-                        {newTokenImageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img alt="" src={newTokenImageUrl} />
-                        ) : (
-                          <PlaceholderToken
-                            className="p-2 rounded-full border border-default"
-                            color="rgba(var(--dark), 0.3)"
-                            height="2.25rem"
-                            width="2.25rem"
-                          />
-                        )}
-
-                        {watch(
-                          'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol'
-                        ) || 'Token'}
-                      </div>
                     </div>
                   </div>
 
@@ -348,6 +365,7 @@ const CreateOrgVotingPage: FC = () => {
                         label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol"
                         placeholder="Define a symbol..."
                         register={register}
+                        required
                       />
                       <InputErrorMessage
                         error={
@@ -367,6 +385,7 @@ const CreateOrgVotingPage: FC = () => {
                         label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.name"
                         placeholder="Name your token..."
                         register={register}
+                        required
                       />
                       <InputErrorMessage
                         error={
@@ -387,6 +406,7 @@ const CreateOrgVotingPage: FC = () => {
                     label="variableVotingWeightsOptions.governanceTokenOptions.existingGovernanceTokenAddress"
                     placeholder="Token contract address..."
                     register={register}
+                    required
                   />
                   <InputErrorMessage
                     error={
@@ -400,6 +420,10 @@ const CreateOrgVotingPage: FC = () => {
 
             <CreateOrgConfigCard
               description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
+              error={
+                errors.variableVotingWeightsOptions?.governanceTokenOptions
+                  ?.proposalDeposit?.value
+              }
               image={<Emoji label="banknote" symbol="💵" />}
               title="Proposal deposit"
             >
@@ -434,6 +458,7 @@ const CreateOrgVotingPage: FC = () => {
                 register={register}
                 sizing="sm"
                 step={1}
+                validation={[validateNonNegative]}
               />
             </CreateOrgConfigCard>
 
@@ -462,6 +487,12 @@ const CreateOrgVotingPage: FC = () => {
 
             <CreateOrgConfigCard
               description="In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
+              error={
+                errors.variableVotingWeightsOptions?.governanceTokenOptions
+                  ?.unregisterDuration?.value ||
+                errors.variableVotingWeightsOptions?.governanceTokenOptions
+                  ?.unregisterDuration?.units
+              }
               image={<Emoji label="alarm clock" symbol="⏰" />}
               title="Unregister duration"
             >
@@ -494,8 +525,10 @@ const CreateOrgVotingPage: FC = () => {
                     ),
                 ]}
                 register={register}
+                required
                 sizing="sm"
                 step={1}
+                validation={[validateNonNegative]}
               />
 
               <SelectInput
@@ -505,6 +538,7 @@ const CreateOrgVotingPage: FC = () => {
                 }
                 label="variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.units"
                 register={register}
+                required
               >
                 {DurationUnitsValues.map((type, idx) => (
                   <option key={idx} value={type}>
@@ -546,6 +580,7 @@ const CreateOrgVotingPage: FC = () => {
           <div className="space-y-3">
             <CreateOrgConfigCard
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
+              error={errors.changeThresholdQuorumOptions?.thresholdValue}
               image={<Emoji label="ballot box" symbol="🗳️" />}
               title="Passing threshold"
             >
@@ -566,8 +601,10 @@ const CreateOrgVotingPage: FC = () => {
                       ),
                   ]}
                   register={register}
+                  required
                   sizing="sm"
                   step={1}
+                  validation={[validatePositive]}
                 />
               )}
 
@@ -578,6 +615,7 @@ const CreateOrgVotingPage: FC = () => {
                     value === 'majority' ? 'majority' : 75
                   )
                 }
+                required
               >
                 <option
                   selected={thresholdValue !== 'majority'}
@@ -596,6 +634,7 @@ const CreateOrgVotingPage: FC = () => {
 
             <CreateOrgConfigCard
               description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have an org with many inactive members, setting this value too high may make it difficult to pass proposals."
+              error={errors.changeThresholdQuorumOptions?.quorumValue}
               image={<Emoji label="megaphone" symbol="📣" />}
               title="Quorum"
             >
@@ -616,8 +655,10 @@ const CreateOrgVotingPage: FC = () => {
                       ),
                   ]}
                   register={register}
+                  required
                   sizing="sm"
                   step={1}
+                  validation={[validateNonNegative]}
                 />
               )}
 
@@ -631,6 +672,7 @@ const CreateOrgVotingPage: FC = () => {
                           ?.quorumValue ?? 'majority'
                   )
                 }
+                required
               >
                 <option selected={quorumValue !== 'majority'} value="percent">
                   %
@@ -653,7 +695,12 @@ const CreateOrgVotingPage: FC = () => {
             onSubmit={newGroupNameHandleSubmit(onSubmitNewGroupName)}
           >
             <InputLabel name="Group name" />
-            <TextInput autoFocus label="name" register={newGroupNameRegister} />
+            <TextInput
+              autoFocus
+              label="name"
+              register={newGroupNameRegister}
+              required
+            />
             <SubmitButton className="w-full" label="Add group" />
           </form>
         </Modal>

@@ -7,6 +7,19 @@ import {
   Validate,
 } from 'react-hook-form'
 
+export interface ToggleInputProps<
+  FieldValues,
+  FieldName extends Path<FieldValues>
+> extends Omit<React.ComponentProps<'input'>, 'required'> {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  onChange?: ChangeEventHandler<HTMLInputElement>
+  disabled?: boolean
+  required?: boolean
+}
+
 /**
  * @param label      - the label for the value that this will contain.
  * @param register   - the register function returned by `useForm`.
@@ -16,20 +29,14 @@ import {
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
+export const ToggleInput = <FieldValues, FieldName extends Path<FieldValues>>({
   label,
   register,
   validation,
   onChange,
-  disabled = false,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  onChange?: ChangeEventHandler<HTMLInputElement>
-  disabled?: boolean
-}) {
+  disabled,
+  required,
+}: ToggleInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -41,7 +48,11 @@ export function ToggleInput<FieldValues, FieldName extends Path<FieldValues>>({
         disabled={disabled}
         role="switch"
         type="checkbox"
-        {...register(label, { validate, onChange })}
+        {...register(label, {
+          required: required && 'Required',
+          validate,
+          onChange,
+        })}
       />
     </div>
   )

@@ -25,6 +25,7 @@ interface CodeMirrorInputProps<T extends FieldValues, U extends Path<T>> {
   validation?: Validate<FieldPathValue<T, U>>[]
   error?: FieldError
   readOnly?: boolean
+  required?: boolean
 }
 
 export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
@@ -32,6 +33,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   control,
   validation,
   readOnly = false,
+  required,
 }: CodeMirrorInputProps<T, U>) {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -71,7 +73,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
           value={value}
         />
       )}
-      rules={{ validate: validate }}
+      rules={{ required: required && 'Required', validate: validate }}
       shouldUnregister
     />
   )

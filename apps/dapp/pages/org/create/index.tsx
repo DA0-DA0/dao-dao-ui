@@ -41,6 +41,7 @@ const CreateOrgPage: FC = () => {
                 label="name"
                 placeholder="Organization's name..."
                 register={register}
+                required
               />
               <InputErrorMessage error={errors.name} />
             </div>

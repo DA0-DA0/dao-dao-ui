@@ -10,7 +10,7 @@ import {
 } from 'react-hook-form'
 
 interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends Omit<ComponentProps<'input'>, 'type'> {
+  extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
   label: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
@@ -20,6 +20,7 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
   onPlusMinus?: [() => void, () => void]
   containerClassName?: string
   sizing?: 'sm' | 'md'
+  required?: boolean
 }
 
 /**
@@ -43,6 +44,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   sizing,
   className,
   containerClassName,
+  required,
   ...props
 }: NumberInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
@@ -89,7 +91,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
           step={step}
           type="number"
           {...props}
-          {...register(label, { validate })}
+          {...register(label, { required: required && 'Required', validate })}
         />
       </div>
     )
@@ -107,7 +109,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
       step={step}
       type="number"
       {...props}
-      {...register(label, { validate })}
+      {...register(label, { required: required && 'Required', validate })}
     />
   )
 }

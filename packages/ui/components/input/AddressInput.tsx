@@ -13,13 +13,14 @@ import { Wallet } from '@dao-dao/icons'
 export interface AddressInputProps<
   FieldValues,
   FieldName extends Path<FieldValues>
-> extends ComponentPropsWithoutRef<'input'> {
+> extends Omit<ComponentPropsWithoutRef<'input'>, 'required'> {
   label: FieldName
   register: UseFormRegister<FieldValues>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
   disabled?: boolean
+  required?: boolean
 }
 
 export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
@@ -29,6 +30,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
   validation,
   onChange,
   disabled,
+  required,
   ...rest
 }: AddressInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
@@ -50,7 +52,11 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
         placeholder="Juno address"
         type="text"
         {...rest}
-        {...register(label, { validate, onChange })}
+        {...register(label, {
+          required: required && 'Required',
+          validate,
+          onChange,
+        })}
       />
     </div>
   )

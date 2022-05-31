@@ -1,10 +1,14 @@
 import clsx from 'clsx'
 import { ComponentProps, ReactNode, FC } from 'react'
+import { FieldError } from 'react-hook-form'
+
+import { InputErrorMessage } from '@dao-dao/ui'
 
 interface CreateOrgConfigCardProps extends ComponentProps<'div'> {
   image: ReactNode
   title: string
   description: string
+  error?: FieldError
 }
 
 export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
@@ -12,6 +16,7 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
   title,
   description,
   children,
+  error,
   ...props
 }) => (
   <CreateOrgConfigCardWrapper {...props}>
@@ -27,6 +32,7 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
     <div className="flex flex-row gap-2 items-center self-end mt-4">
       {children}
     </div>
+    <InputErrorMessage className="self-end" error={error} />
   </CreateOrgConfigCardWrapper>
 )
 
