@@ -116,9 +116,9 @@ const FeaturedCardMirrored: FC<FillerCardProps> = ({
     )}
     style={{
       WebkitMaskImage:
-        'linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 0%, transparent 100%)',
+        'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, transparent 100%)',
       maskImage:
-        'linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 0%, transparent 100%)',
+        'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, transparent 100%)',
     }}
   >
     <div className="absolute top-0 left-0 w-full h-[160px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
