@@ -21,6 +21,7 @@ import {
   validateNonNegative,
   validatePositive,
   validateRequired,
+  validateTokenSymbol,
 } from '@dao-dao/utils'
 
 import {
@@ -399,7 +400,11 @@ const CreateOrgVotingPage: FC = () => {
                           <div className="hidden flex-row gap-2 items-center text-tertiary sm:flex">
                             {newTokenImageUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
-                              <img alt="" src={newTokenImageUrl} />
+                              <img
+                                alt=""
+                                className="w-9 h-9 rounded-full"
+                                src={newTokenImageUrl}
+                              />
                             ) : (
                               <PlaceholderToken
                                 className="p-2 rounded-full border border-default"
@@ -539,7 +544,7 @@ const CreateOrgVotingPage: FC = () => {
                           label="governanceTokenOptions.newGovernanceToken.symbol"
                           placeholder="Define a symbol..."
                           register={register}
-                          validation={[validateRequired]}
+                          validation={[validateRequired, validateTokenSymbol]}
                         />
                         <InputErrorMessage
                           error={

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FieldPath,
   FieldValues,
@@ -11,7 +11,7 @@ import {
   UseFormSetError,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
@@ -48,6 +48,8 @@ import {
   newOrgAtom,
   NEW_ORG_CW20_DECIMALS,
 } from '@/atoms/org'
+import { pinnedAddressesAtom } from '@/atoms/pinned'
+import { cleanChainError } from '@/util/cleanChainError'
 
 export type CustomValidation = (
   values: NewOrg,
@@ -93,6 +95,8 @@ export const useCreateOrgForm = (
   const router = useRouter()
   const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
   const { connected, address: walletAddress } = useWallet()
+  const [creating, setCreating] = useState(false)
+  const setPinnedAddresses = useSetRecoilState(pinnedAddressesAtom)
 
   const {
     handleSubmit,
@@ -135,7 +139,17 @@ export const useCreateOrgForm = (
       // Create the org.
       if (submitterValue === CreateOrgSubmitLabel.CreateOrg) {
         if (connected) {
-          createOrg(instantiate, values)
+          setCreating(true)
+          try {
+            const address = await createOrg(instantiate, values)
+            if (address) {
+              setPinnedAddresses((pinned) => [...pinned, address])
+              router.push(`/org/${address}`)
+              toast.success('Org created.')
+            }
+          } finally {
+            setCreating(false)
+          }
         } else {
           toast.error('Connect a wallet to create an org.')
         }
@@ -159,7 +173,7 @@ export const useCreateOrgForm = (
         ].href
       )
     },
-    [setNewOrg, router, pageIndex, connected, instantiate]
+    [setNewOrg, router, pageIndex, connected, instantiate, setPinnedAddresses]
   )
 
   const onError: SubmitErrorHandler<FieldValues> = useCallback(
@@ -187,14 +201,19 @@ export const useCreateOrgForm = (
       style={{ justifyContent: showBack ? 'space-between' : 'flex-end' }}
     >
       {showBack && (
-        <SubmitButton label={CreateOrgSubmitLabel.Back} variant="secondary" />
+        <SubmitButton
+          disabled={creating}
+          label={CreateOrgSubmitLabel.Back}
+          variant="secondary"
+        />
       )}
       {showNext && (
         <SubmitButton
           disabled={
             !router.isReady ||
             (!!currentPage.ensureFieldSetBeforeContinuing &&
-              !watch(currentPage.ensureFieldSetBeforeContinuing))
+              !watch(currentPage.ensureFieldSetBeforeContinuing)) ||
+            creating
           }
           label={
             pageIndex < createOrgFormPages.length - 2
@@ -236,6 +255,7 @@ export const useCreateOrgForm = (
     setError,
     clearErrors,
     Navigation,
+    creating,
   }
 }
 
@@ -423,9 +443,10 @@ const createOrg = async (
       },
     }
 
-    await instantiate(msg, msg.name)
+    const { contractAddress } = await instantiate(msg, msg.name)
+    return contractAddress
   } catch (err) {
     console.error(err)
-    toast.error('Failed to create org.')
+    toast.error(cleanChainError(err instanceof Error ? err.message : `${err}`))
   }
 }

@@ -2,7 +2,6 @@ import { atom } from 'recoil'
 
 import { Duration } from '@dao-dao/state/clients/cw-core'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
-import { titlecase } from '@dao-dao/utils'
 
 export enum DurationUnits {
   Seconds = 'seconds',
@@ -45,7 +44,7 @@ export const convertDurationWithUnitsToDuration = ({
 export const convertDurationWithUnitsToHumanReadableString = ({
   units,
   value,
-}: DurationWithUnits): string => `${value} ${titlecase(units)}`
+}: DurationWithUnits): string => `${value} ${units}`
 
 export enum ThresholdType {
   AbsolutePercentage,

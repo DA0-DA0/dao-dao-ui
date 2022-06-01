@@ -108,7 +108,7 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
         <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
           <li>
-            DAO <CopyToClipboardAccent value={coreAddress} />
+            Treasury <CopyToClipboardAccent value={coreAddress} />
           </li>
           <li>
             Gov token <CopyToClipboardAccent value={governanceTokenAddress} />
@@ -162,7 +162,7 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => (
       <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
       <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
         <li>
-          DAO <CopyToClipboardAccent loading value="juno..." />
+          Treasury <CopyToClipboardAccent loading value="juno..." />
         </li>
         <li>
           Gov token <CopyToClipboardAccent loading value="juno..." />

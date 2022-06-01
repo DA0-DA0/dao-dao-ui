@@ -141,7 +141,13 @@ export const proposalCountSelector = selectorFamily<
 
       get(refreshProposalsIdAtom)
 
-      return await client.proposalCount()
+      try {
+        return await client.proposalCount()
+      } catch {
+        // Contract throws error if no proposals have been made, so return
+        // 0 for now until the contract is fixed.
+        return 0
+      }
     },
 })
 

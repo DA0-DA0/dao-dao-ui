@@ -62,3 +62,7 @@ export const validateCosmosMsg = (msg: any) => ({
   valid: _validateCosmosMsg(msg),
   errors: _validateCosmosMsg.errors,
 })
+
+export const validateTokenSymbol = (v: string) =>
+  /^[a-zA-Z\-]{3,12}$/.test(v) ||
+  'Invalid token symbol. Must be 3-12 characters long and contain only letters and hyphens.'

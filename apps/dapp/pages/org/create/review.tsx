@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { FC, useMemo } from 'react'
 
 import { InputLabel } from '@dao-dao/ui'
@@ -16,7 +17,7 @@ import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
 const CreateOrgReviewPage: FC = () => {
-  const { formOnSubmit, watch, Navigation } = useCreateOrgForm(2)
+  const { formOnSubmit, watch, Navigation, creating } = useCreateOrgForm(2)
 
   const values = watch()
 
@@ -41,12 +42,14 @@ const CreateOrgReviewPage: FC = () => {
         <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
             <div className="flex flex-col gap-2 items-center text-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt="Org Logo"
-                className="w-24 h-24 rounded-full"
-                src={values.imageUrl}
-              />
+              <div className={clsx({ 'animate-spin': creating })}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt="Org Logo"
+                  className="w-24 h-24 rounded-full"
+                  src={values.imageUrl}
+                />
+              </div>
               <p className="text-xl">{values.name}</p>
             </div>
 

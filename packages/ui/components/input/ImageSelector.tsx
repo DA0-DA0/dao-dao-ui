@@ -71,6 +71,7 @@ export const ImageSelectorModal = <
           tooltip="A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg"
         />
         <TextInput
+          autoFocus
           error={error}
           label={label}
           register={register}
