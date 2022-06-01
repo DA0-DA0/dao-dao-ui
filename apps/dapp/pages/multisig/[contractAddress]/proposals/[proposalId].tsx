@@ -12,6 +12,7 @@ import {
   ProposalDetailsCard,
   ProposalDetailsVoteStatus,
 } from '@/components/ProposalDetailsSidebar'
+import { ProposalVotes } from '@/components/ProposalVotes'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { sigSelector } from '@/selectors/multisigs'
@@ -59,6 +60,7 @@ const InnerMultisigProposal: FC = () => {
 
           <ProposalDetailsVoteStatus {...proposalDetailsProps} />
         </div>
+        <ProposalVotes {...proposalDetailsProps} />
       </div>
       <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
         <ProposalDetailsSidebar {...proposalDetailsProps} />

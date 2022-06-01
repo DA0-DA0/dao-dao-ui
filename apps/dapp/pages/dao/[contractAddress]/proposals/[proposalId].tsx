@@ -12,6 +12,7 @@ import {
   ProposalDetailsSidebar,
   ProposalDetailsVoteStatus,
 } from '@/components/ProposalDetailsSidebar'
+import { ProposalVotes } from '@/components/ProposalVotes'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { daoSelector } from '@/selectors/daos'
@@ -60,6 +61,7 @@ const InnerProposal: FC = () => {
 
           <ProposalDetailsVoteStatus {...proposalDetailsProps} />
         </div>
+        <ProposalVotes {...proposalDetailsProps} />
       </div>
       <div className="hidden col-span-2 p-4 min-h-screen md:p-6 lg:block bg-base-200">
         <ProposalDetailsSidebar {...proposalDetailsProps} />
