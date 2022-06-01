@@ -23,14 +23,14 @@ export const validateRequired = (
 }
 
 export const validatePositive = (v: string | number) =>
-  Number(v) > 0 || 'Must be positive'
+  (!isNaN(Number(v)) && Number(v) > 0) || 'Must be positive'
 
 export const validateNonNegative = (v: string | number) =>
-  Number(v) >= 0 || 'Must be non-negative'
+  (!isNaN(Number(v)) && Number(v) >= 0) || 'Must be non-negative'
 
 export const validatePercent = (v: string | number) => {
   const p = Number(v)
-  return (p <= 100 && p >= 0) || 'Invalid percentage'
+  return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
 
 export const validateAddress = (v: string) =>

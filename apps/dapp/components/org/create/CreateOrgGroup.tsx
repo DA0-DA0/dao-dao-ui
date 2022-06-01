@@ -18,6 +18,7 @@ import {
 } from '@dao-dao/ui'
 import {
   validateAddress,
+  validatePercent,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -70,7 +71,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     } else {
       // Evenly distributed so redistribute proportionally.
       const totalMembers = members.length + 1
-      proportion = Math.round(100 / totalMembers)
+      proportion = parseFloat((100 / totalMembers).toFixed(3))
 
       // Update existing members proportions.
       members.forEach((_, idx) =>
@@ -94,7 +95,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
       if (!variableVotingWeightsEnabled) {
         const totalMembers = members.length - 1
         const proportion =
-          totalMembers === 0 ? 0 : Math.round(100 / totalMembers)
+          totalMembers === 0 ? 0 : parseFloat((100 / totalMembers).toFixed(3))
 
         // Update existing members proportions.
         members.forEach((_, idx) =>
@@ -112,9 +113,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     <div className="p-6 bg-disabled rounded-lg">
       <div className="flex flex-row gap-8 justify-between items-center">
         <div>
-          <p className="title-text">
-            {watch(`groups.${groupIndex}.name`)} members
-          </p>
+          <p className="title-text">{watch(`groups.${groupIndex}.name`)}</p>
           <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
         </div>
 
@@ -145,8 +144,12 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                 ]}
                 register={register}
                 sizing="sm"
-                step={1}
-                validation={[validatePositive, validateRequired]}
+                step={0.001}
+                validation={[
+                  validatePositive,
+                  validatePercent,
+                  validateRequired,
+                ]}
               />
             </div>
             <p className="primary-text">%</p>
@@ -271,8 +274,8 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
               ]}
               register={register}
               sizing="sm"
-              step={1}
-              validation={[validatePositive, validateRequired]}
+              step={0.001}
+              validation={[validatePositive, validatePercent, validateRequired]}
             />
             <InputErrorMessage
               error={
@@ -285,7 +288,10 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
       ) : (
         <p className="text-xs text-center sm:text-sm">
           Proportion:{' '}
-          {watch(`groups.${groupIndex}.members.${memberIndex}.proportion`)}%
+          {watch(
+            `groups.${groupIndex}.members.${memberIndex}.proportion`
+          ).toLocaleString(undefined, { maximumFractionDigits: 3 })}
+          %
         </p>
       )}
 

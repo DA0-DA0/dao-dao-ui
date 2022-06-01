@@ -311,7 +311,9 @@ const createOrg = async (
       {
         allow_revoting: false,
         deposit_info:
-          governanceTokenEnabled && governanceTokenOptions.proposalDeposit
+          governanceTokenEnabled &&
+          typeof governanceTokenOptions.proposalDeposit?.value === 'number' &&
+          governanceTokenOptions.proposalDeposit.value > 0
             ? {
                 deposit:
                   governanceTokenOptions.proposalDeposit.value.toString(),

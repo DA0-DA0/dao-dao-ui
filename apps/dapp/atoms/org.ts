@@ -81,7 +81,8 @@ export interface NewOrg {
     governanceTokenOptions: {
       type?: GovernanceTokenType
       newGovernanceToken?: {
-        supply: number
+        initialSupply: number
+        initialTreasuryPercent: number
         imageUrl?: string
         symbol: string
         name: string
@@ -92,14 +93,13 @@ export interface NewOrg {
         symbol: string
         name: string
       }
-      proposalDeposit?: {
+      proposalDeposit: {
         value: number
         refundFailed: boolean
       }
       unregisterDuration: DurationWithUnits
     }
   }
-  // TODO: Initial supply stuff.
   changeThresholdQuorumEnabled: boolean
   changeThresholdQuorumOptions: {
     thresholdValue: ThresholdValue
@@ -126,7 +126,13 @@ export const DefaultThresholdQuorum: NewOrg['changeThresholdQuorumOptions'] = {
 export const DefaultNewOrg: NewOrg = {
   name: '',
   description: '',
-  groups: [],
+  groups: [
+    {
+      name: 'Initial members',
+      weight: 100,
+      members: [],
+    },
+  ],
   votingDuration: {
     value: 1,
     units: DurationUnits.Weeks,
@@ -137,9 +143,14 @@ export const DefaultNewOrg: NewOrg = {
     governanceTokenOptions: {
       type: GovernanceTokenType.New,
       newGovernanceToken: {
-        supply: 1000000,
+        initialSupply: 1000000,
+        initialTreasuryPercent: 90,
         symbol: '',
         name: '',
+      },
+      proposalDeposit: {
+        value: 0,
+        refundFailed: false,
       },
       unregisterDuration: {
         value: 2,

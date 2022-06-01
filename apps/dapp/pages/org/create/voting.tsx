@@ -62,7 +62,10 @@ const CreateOrgVotingPage: FC = () => {
           groups.reduce((acc, { weight }) => acc + weight, 0) || 0
         if (totalWeight !== 100) {
           setError('_groupsError', {
-            message: `Total group voting power must be 100%, but is currently ${totalWeight.toLocaleString()}%`,
+            message:
+              totalWeight === 0
+                ? 'You have not given anyone voting power! Add some members to your org.'
+                : `Total group voting power must be 100%, but is currently ${totalWeight.toLocaleString()}%`,
           })
           valid = false
         } else {
@@ -173,7 +176,7 @@ const CreateOrgVotingPage: FC = () => {
         .forEach((group, groupIndex) => {
           // Evenly distributed so redistribute proportionally.
           const totalMembers = group.members?.length ?? 1
-          const proportion = Math.round(100 / totalMembers)
+          const proportion = parseFloat((100 / totalMembers).toFixed(3))
 
           // Update members proportions.
           group.members?.forEach((_, memberIndex) =>
@@ -200,6 +203,9 @@ const CreateOrgVotingPage: FC = () => {
 
   const newTokenImageUrl = watch(
     'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.imageUrl'
+  )
+  const initialTreasuryPercent = watch(
+    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
   )
 
   return (
@@ -364,72 +370,159 @@ const CreateOrgVotingPage: FC = () => {
                 'variableVotingWeightsOptions.governanceTokenOptions.type'
               ) === GovernanceTokenType.New ? (
                 <>
-                  <div className="flex flex-row gap-8 justify-between items-center">
-                    <p className="primary-text">Total supply</p>
+                  <div className="flex flex-col gap-2 items-stretch">
+                    <div className="flex flex-row gap-8 justify-between items-center">
+                      <p className="primary-text">Total supply</p>
 
-                    <div>
-                      <div className="flex flex-row grow gap-4 items-center">
-                        <NumberInput
-                          containerClassName="grow"
+                      <div>
+                        <div className="flex flex-row grow gap-4 items-center">
+                          <NumberInput
+                            containerClassName="grow"
+                            error={
+                              errors.variableVotingWeightsOptions
+                                ?.governanceTokenOptions?.newGovernanceToken
+                                ?.initialSupply
+                            }
+                            label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply"
+                            onPlusMinus={[
+                              () =>
+                                setValue(
+                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply',
+                                  Math.max(
+                                    watch(
+                                      'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply'
+                                    ) + 1,
+                                    0
+                                  )
+                                ),
+                              () =>
+                                setValue(
+                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply',
+                                  Math.max(
+                                    watch(
+                                      'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply'
+                                    ) - 1,
+                                    0
+                                  )
+                                ),
+                            ]}
+                            register={register}
+                            step={1}
+                            validation={[validatePositive, validateRequired]}
+                          />
+
+                          <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
+                            {newTokenImageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img alt="" src={newTokenImageUrl} />
+                            ) : (
+                              <PlaceholderToken
+                                className="p-2 rounded-full border border-default"
+                                color="rgba(var(--dark), 0.3)"
+                                height="2.25rem"
+                                width="2.25rem"
+                              />
+                            )}
+
+                            {watch(
+                              'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol'
+                            ) || 'Token'}
+                          </div>
+                        </div>
+
+                        <InputErrorMessage
                           error={
                             errors.variableVotingWeightsOptions
                               ?.governanceTokenOptions?.newGovernanceToken
-                              ?.supply
+                              ?.initialSupply
                           }
-                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply"
-                          onPlusMinus={[
-                            () =>
-                              setValue(
-                                'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
-                                Math.max(
-                                  watch(
-                                    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
-                                  ) + 1,
-                                  0
-                                )
-                              ),
-                            () =>
-                              setValue(
-                                'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply',
-                                Math.max(
-                                  watch(
-                                    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.supply'
-                                  ) - 1,
-                                  0
-                                )
-                              ),
-                          ]}
-                          register={register}
-                          step={1}
-                          validation={[validatePositive, validateRequired]}
                         />
-
-                        <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
-                          {newTokenImageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img alt="" src={newTokenImageUrl} />
-                          ) : (
-                            <PlaceholderToken
-                              className="p-2 rounded-full border border-default"
-                              color="rgba(var(--dark), 0.3)"
-                              height="2.25rem"
-                              width="2.25rem"
-                            />
-                          )}
-
-                          {watch(
-                            'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol'
-                          ) || 'Token'}
-                        </div>
                       </div>
-
-                      <InputErrorMessage
-                        error={
-                          errors.variableVotingWeightsOptions
-                            ?.governanceTokenOptions?.newGovernanceToken?.supply
-                        }
-                      />
                     </div>
+
+                    <div className="flex flex-row gap-8 justify-between items-center">
+                      <p className="primary-text">Initial treasury size</p>
+
+                      <div>
+                        <div className="flex flex-row grow gap-2 items-center">
+                          <NumberInput
+                            containerClassName="grow"
+                            error={
+                              errors.variableVotingWeightsOptions
+                                ?.governanceTokenOptions?.newGovernanceToken
+                                ?.initialTreasuryPercent
+                            }
+                            label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent"
+                            onPlusMinus={[
+                              () =>
+                                setValue(
+                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
+                                  Math.max(
+                                    Math.min(
+                                      watch(
+                                        'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
+                                      ) + 1,
+                                      100
+                                    ),
+                                    0
+                                  )
+                                ),
+                              () =>
+                                setValue(
+                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
+                                  Math.max(
+                                    Math.min(
+                                      watch(
+                                        'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
+                                      ) - 1,
+                                      100
+                                    ),
+                                    0
+                                  )
+                                ),
+                            ]}
+                            register={register}
+                            sizing="sm"
+                            step={1}
+                            validation={[
+                              (v: number) =>
+                                isNaN(v) || v < 0 || v > 100
+                                  ? 'Invalid percentage'
+                                  : v === 100
+                                  ? 'You cannot give 100% of the voting power to the treasury, as an org with no members cannot do anything. Decrease this value and ensure that the org has at least one member.'
+                                  : true,
+                            ]}
+                          />
+
+                          <p className="text-tertiary text-mono">%</p>
+                        </div>
+
+                        <InputErrorMessage
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken
+                              ?.initialTreasuryPercent
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {typeof initialTreasuryPercent === 'number' &&
+                      initialTreasuryPercent >= 0 &&
+                      initialTreasuryPercent < 100 && (
+                        <p className="self-end my-2 max-w-prose text-right caption-text">
+                          The remaining{' '}
+                          {(100 - (initialTreasuryPercent || 0)).toLocaleString(
+                            undefined,
+                            {
+                              maximumFractionDigits: 3,
+                            }
+                          )}
+                          % of the tokens will be distributed according to the
+                          groups defined above. Tokens in the treasury do not
+                          count against the voting power of members.
+                        </p>
+                      )}
                   </div>
 
                   <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">
@@ -455,42 +548,50 @@ const CreateOrgVotingPage: FC = () => {
 
                     <div className="flex flex-col gap-2 justify-between">
                       <InputLabel mono name="Symbol" />
-                      <TextInput
-                        error={
-                          errors.variableVotingWeightsOptions
-                            ?.governanceTokenOptions?.newGovernanceToken?.symbol
-                        }
-                        label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol"
-                        placeholder="Define a symbol..."
-                        register={register}
-                        validation={[validateRequired]}
-                      />
-                      <InputErrorMessage
-                        error={
-                          errors.variableVotingWeightsOptions
-                            ?.governanceTokenOptions?.newGovernanceToken?.symbol
-                        }
-                      />
+
+                      <div>
+                        <TextInput
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken
+                              ?.symbol
+                          }
+                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol"
+                          placeholder="Define a symbol..."
+                          register={register}
+                          validation={[validateRequired]}
+                        />
+                        <InputErrorMessage
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken
+                              ?.symbol
+                          }
+                        />
+                      </div>
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
                       <InputLabel mono name="Name" />
-                      <TextInput
-                        error={
-                          errors.variableVotingWeightsOptions
-                            ?.governanceTokenOptions?.newGovernanceToken?.name
-                        }
-                        label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.name"
-                        placeholder="Name your token..."
-                        register={register}
-                        validation={[validateRequired]}
-                      />
-                      <InputErrorMessage
-                        error={
-                          errors.variableVotingWeightsOptions
-                            ?.governanceTokenOptions?.newGovernanceToken?.name
-                        }
-                      />
+
+                      <div>
+                        <TextInput
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken?.name
+                          }
+                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.name"
+                          placeholder="Name your token..."
+                          register={register}
+                          validation={[validateRequired]}
+                        />
+                        <InputErrorMessage
+                          error={
+                            errors.variableVotingWeightsOptions
+                              ?.governanceTokenOptions?.newGovernanceToken?.name
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
@@ -560,28 +661,32 @@ const CreateOrgVotingPage: FC = () => {
               />
             </CreateOrgConfigCard>
 
-            <CreateOrgConfigCard
-              description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
-              image={<Emoji label="finger pointing up" symbol="👆" />}
-              title="Refund failed proposals"
-            >
-              <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
-                <p className="w-[3ch] secondary-text">
-                  {watch(
-                    'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.refundFailed'
-                  )
-                    ? 'Yes'
-                    : 'No'}
-                </p>
+            {!!watch(
+              'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value'
+            ) && (
+              <CreateOrgConfigCard
+                description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
+                image={<Emoji label="finger pointing up" symbol="👆" />}
+                title="Refund failed proposals"
+              >
+                <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
+                  <p className="w-[3ch] secondary-text">
+                    {watch(
+                      'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.refundFailed'
+                    )
+                      ? 'Yes'
+                      : 'No'}
+                  </p>
 
-                <FormSwitch
-                  label="variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.refundFailed"
-                  setValue={setValue}
-                  sizing="sm"
-                  watch={watch}
-                />
-              </div>
-            </CreateOrgConfigCard>
+                  <FormSwitch
+                    label="variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.refundFailed"
+                    setValue={setValue}
+                    sizing="sm"
+                    watch={watch}
+                  />
+                </div>
+              </CreateOrgConfigCard>
+            )}
 
             <CreateOrgConfigCard
               description="In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
@@ -796,7 +901,13 @@ const CreateOrgVotingPage: FC = () => {
               register={newGroupNameRegister}
               validation={[validateRequired]}
             />
-            <SubmitButton className="w-full" label="Add group" />
+            <p className="caption-text">
+              This name is just for your reference when creating the org.
+              <br />
+              For example: &apos;Core team&apos; or &apos;Developers&apos;.
+            </p>
+
+            <SubmitButton className="mt-4 w-full" label="Add group" />
           </form>
         </Modal>
       )}
