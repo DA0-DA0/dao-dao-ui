@@ -16,11 +16,18 @@ import { useRecoilState } from 'recoil'
 import { useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
-import { InstantiateMsg as Cw20StakedBalanceVotingInstantiateMsg } from '@dao-dao/state/clients/cw20-staked-balance-voting'
-import { InstantiateMsg as Cw4VotingInstantiateMsg } from '@dao-dao/state/clients/cw4-voting'
+import {
+  Cw20Coin,
+  InstantiateMsg as Cw20StakedBalanceVotingInstantiateMsg,
+} from '@dao-dao/state/clients/cw20-staked-balance-voting'
+import {
+  InstantiateMsg as Cw4VotingInstantiateMsg,
+  Member,
+} from '@dao-dao/state/clients/cw4-voting'
 import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
 import { SubmitButton } from '@dao-dao/ui'
 import {
+  convertDenomToMicroDenomWithDecimals,
   CWCORE_CODE_ID,
   validateCw20StakedBalanceVotingInstantiateMsg,
   validateCw4VotingInstantiateMsg,
@@ -30,10 +37,10 @@ import {
 import {
   convertDurationWithUnitsToDuration,
   convertThresholdValueToPercentageThreshold,
-  DefaultThresholdQuorum,
   GovernanceTokenType,
   NewOrg,
   newOrgAtom,
+  NEW_ORG_CW20_DECIMALS,
 } from '@/atoms/org'
 
 export type CustomValidation = (
@@ -237,9 +244,14 @@ const createOrg = async (
     groups,
     votingDuration,
     governanceTokenEnabled,
-    governanceTokenOptions,
-    changeThresholdQuorumEnabled,
-    changeThresholdQuorumOptions,
+    governanceTokenOptions: {
+      unregisterDuration,
+      newGovernanceToken,
+      existingGovernanceTokenAddress,
+      proposalDeposit,
+      ...governanceTokenOptions
+    },
+    thresholdQuorum: { threshold, quorum },
   } = values
 
   try {
@@ -247,40 +259,77 @@ const createOrg = async (
     if (governanceTokenEnabled) {
       let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
       if (governanceTokenOptions.type === GovernanceTokenType.New) {
-        if (!governanceTokenOptions.newGovernanceToken) {
+        if (!newGovernanceToken) {
           throw new Error('New governance token info not provided.')
         }
 
+        const {
+          initialSupply,
+          initialTreasuryPercent,
+          imageUrl,
+          symbol,
+          name,
+        } = newGovernanceToken
+
+        const microInitialSupply = Number(
+          convertDenomToMicroDenomWithDecimals(
+            initialSupply,
+            NEW_ORG_CW20_DECIMALS
+          )
+        )
+
+        // Distribute non-treasury supply to the members.
+        const microBalanceToDistribute =
+          microInitialSupply * (1 - initialTreasuryPercent / 100)
+        const microInitialBalances: Cw20Coin[] =
+          microBalanceToDistribute > 0
+            ? groups.flatMap(({ weight, members }) =>
+                members.map(({ address }) => ({
+                  address,
+                  amount: Math.round(
+                    (microBalanceToDistribute * (weight / 100)) / members.length
+                  ).toString(),
+                }))
+              )
+            : []
+        const microInitialBalanceDistributed = microInitialBalances.reduce(
+          (acc, { amount }) => acc + Number(amount),
+          0
+        )
+        // Compute treasury supply based on sum of distributed coins,
+        // since amount rounding at micro decimals may affect the total.
+        const microInitialDaoBalance = (
+          microInitialSupply - microInitialBalanceDistributed
+        ).toString()
+
         tokenInfo = {
           new: {
-            code_id: 0,
-            decimals: 6,
-            initial_balances: [],
-            initial_dao_balance: null,
-            label: '',
-            marketing: null,
-            name: governanceTokenOptions.newGovernanceToken?.name,
-            staking_code_id: 0,
-            symbol: '',
-            unstaking_duration: convertDurationWithUnitsToDuration(
-              governanceTokenOptions.unregisterDuration
-            ),
+            code_id: 0, // TODO
+            decimals: NEW_ORG_CW20_DECIMALS,
+            initial_balances: microInitialBalances,
+            initial_dao_balance: microInitialDaoBalance,
+            label: name,
+            marketing: imageUrl ? { logo: { url: imageUrl } } : null,
+            name,
+            staking_code_id: 0, // TODO
+            symbol,
+            unstaking_duration:
+              convertDurationWithUnitsToDuration(unregisterDuration),
           },
         }
       } else {
-        if (!governanceTokenOptions.existingGovernanceTokenAddress) {
+        if (!existingGovernanceTokenAddress) {
           throw new Error('Existing governance token address not provided.')
         }
 
         tokenInfo = {
           existing: {
-            address: governanceTokenOptions.existingGovernanceTokenAddress,
+            address: existingGovernanceTokenAddress,
             staking_contract: {
               new: {
-                staking_code_id: 0,
-                unstaking_duration: convertDurationWithUnitsToDuration(
-                  governanceTokenOptions.unregisterDuration
-                ),
+                staking_code_id: 0, // TODO
+                unstaking_duration:
+                  convertDurationWithUnitsToDuration(unregisterDuration),
               },
             },
           },
@@ -295,9 +344,16 @@ const createOrg = async (
       )
       votingModuleInstantiateMsg = cw20StakedBalanceVotingInstantiateMsg
     } else {
+      const initialMembers: Member[] = groups.flatMap(({ weight, members }) =>
+        members.map(({ address }) => ({
+          addr: address,
+          weight,
+        }))
+      )
+
       const cw4VotingInstantiateMsg: Cw4VotingInstantiateMsg = {
-        cw4_group_code_id: 0,
-        initial_members: [],
+        cw4_group_code_id: 0, // TODO
+        initial_members: initialMembers,
       }
 
       validateCw4VotingInstantiateMsg(cw4VotingInstantiateMsg)
@@ -306,54 +362,40 @@ const createOrg = async (
 
     const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
       {
-        allow_revoting: false,
+        allow_revoting: false, // TODO
         deposit_info:
           governanceTokenEnabled &&
-          typeof governanceTokenOptions.proposalDeposit?.value === 'number' &&
-          governanceTokenOptions.proposalDeposit.value > 0
+          typeof proposalDeposit?.value === 'number' &&
+          proposalDeposit.value > 0
             ? {
-                deposit:
-                  governanceTokenOptions.proposalDeposit.value.toString(),
-                refund_failed_proposals:
-                  governanceTokenOptions.proposalDeposit.refundFailed,
+                deposit: proposalDeposit.value.toString(),
+                refund_failed_proposals: proposalDeposit.refundFailed,
                 token: { voting_module_token: {} },
               }
             : null,
         max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
-        only_members_execute: false,
+        only_members_execute: false, // TODO
         threshold: {
           threshold_quorum: {
-            quorum: changeThresholdQuorumEnabled
-              ? convertThresholdValueToPercentageThreshold(
-                  changeThresholdQuorumOptions.quorumValue
-                )
-              : convertThresholdValueToPercentageThreshold(
-                  DefaultThresholdQuorum.quorumValue
-                ),
-            threshold: changeThresholdQuorumEnabled
-              ? convertThresholdValueToPercentageThreshold(
-                  changeThresholdQuorumOptions.thresholdValue
-                )
-              : convertThresholdValueToPercentageThreshold(
-                  DefaultThresholdQuorum.thresholdValue
-                ),
+            quorum: convertThresholdValueToPercentageThreshold(quorum),
+            threshold: convertThresholdValueToPercentageThreshold(threshold),
           },
         },
       }
     validateCwProposalSingleInstantiateMsg(cwProposalSingleModuleInstantiateMsg)
 
     const msg: CwCoreInstantiateMsg = {
-      admin: null,
-      automatically_add_cw20s: false,
-      automatically_add_cw721s: false,
+      admin: null, // TODO
+      automatically_add_cw20s: false, // TODO
+      automatically_add_cw721s: false, // TODO
       description,
       image_url: imageUrl ?? null,
       name,
       proposal_modules_instantiate_info: [
         {
           admin: { none: {} },
-          code_id: 0,
-          label: '',
+          code_id: 0, // TODO
+          label: `org_${name}_cw-proposal-single`,
           msg: Buffer.from(
             JSON.stringify(cwProposalSingleModuleInstantiateMsg),
             'utf8'
@@ -362,8 +404,10 @@ const createOrg = async (
       ],
       voting_module_instantiate_info: {
         admin: { none: {} },
-        code_id: 0,
-        label: '',
+        code_id: 0, // TODO
+        label: governanceTokenEnabled
+          ? `org_${name}_cw20-staked-balance-voting`
+          : `org_${name}_cw4-voting`,
         msg: Buffer.from(
           JSON.stringify(votingModuleInstantiateMsg),
           'utf8'

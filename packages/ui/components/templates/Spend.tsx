@@ -1,5 +1,6 @@
 import { Coin } from '@cosmjs/stargate'
 import { XIcon } from '@heroicons/react/outline'
+import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
@@ -122,6 +123,13 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
     return valid
   }
 
+  const amountDecimals = useMemo(
+    () =>
+      cw20Balances.find(({ info }) => info.symbol === spendDenom)?.info
+        ?.decimals ?? NATIVE_DECIMALS,
+    [spendDenom, cw20Balances]
+  )
+
   return (
     <div className="flex justify-between items-center p-3 my-2 bg-primary rounded-lg">
       <div className="flex flex-wrap gap-4 items-center">
@@ -147,7 +155,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
           ]}
           register={register}
           sizing="md"
-          step={0.000001}
+          step={1 / 10 ** amountDecimals}
           validation={[
             validateRequired,
             validatePositive,

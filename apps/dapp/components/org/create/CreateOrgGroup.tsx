@@ -49,6 +49,8 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     name: `groups.${groupIndex}.members`,
   })
 
+  const governanceTokenEnabled = watch('governanceTokenEnabled')
+
   return (
     <div className="p-6 bg-disabled rounded-lg">
       <div className="flex flex-row gap-8 justify-between items-center">
@@ -58,7 +60,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="flex flex-row gap-2 justify-between items-center">
+          <div className="flex flex-row gap-2 items-center">
             <p className="text-right caption-text">Voting power</p>
             <div>
               <NumberInput
@@ -68,31 +70,49 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                   () =>
                     setValue(
                       `groups.${groupIndex}.weight`,
-                      Math.max(
-                        Math.min(watch(`groups.${groupIndex}.weight`) + 1, 100),
-                        0
-                      )
+                      governanceTokenEnabled
+                        ? Math.max(
+                            Math.min(
+                              watch(`groups.${groupIndex}.weight`) + 1,
+                              100
+                            ),
+                            1
+                          )
+                        : Math.max(watch(`groups.${groupIndex}.weight`) + 1, 1)
                     ),
                   () =>
                     setValue(
                       `groups.${groupIndex}.weight`,
-                      Math.max(
-                        Math.min(watch(`groups.${groupIndex}.weight`) - 1, 100),
-                        0
-                      )
+                      governanceTokenEnabled
+                        ? Math.max(
+                            Math.min(
+                              watch(`groups.${groupIndex}.weight`) - 1,
+                              100
+                            ),
+                            1
+                          )
+                        : Math.max(watch(`groups.${groupIndex}.weight`) - 1, 1)
                     ),
                 ]}
                 register={register}
                 sizing="sm"
-                step={0.001}
+                step={governanceTokenEnabled ? 0.001 : 1}
                 validation={[
                   validatePositive,
-                  validatePercent,
                   validateRequired,
+                  ...(governanceTokenEnabled ? [validatePercent] : []),
                 ]}
               />
             </div>
-            <p className="primary-text">%</p>
+            {governanceTokenEnabled ? (
+              <p className="primary-text">%</p>
+            ) : (
+              <p className="secondary-text">
+                per
+                <br />
+                member
+              </p>
+            )}
           </div>
 
           <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
@@ -158,10 +178,21 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
     </div>
 
     <p className="text-xs text-center sm:text-sm">
-      Proportion:{' '}
-      <span className="font-mono">
-        1/{(watch(`groups.${groupIndex}.members`) || []).length}
-      </span>
+      {watch('governanceTokenEnabled') ? (
+        <>
+          Proportion:{' '}
+          <span className="font-mono">
+            1/{(watch(`groups.${groupIndex}.members`) || []).length}
+          </span>
+        </>
+      ) : (
+        <>
+          Voting power:{' '}
+          <span className="font-mono">
+            {watch(`groups.${groupIndex}.weight`)}
+          </span>
+        </>
+      )}
     </p>
 
     <button className="justify-self-end" onClick={remove}>

@@ -78,7 +78,7 @@ export interface NewOrg {
   governanceTokenEnabled: boolean
   governanceTokenOptions: {
     type?: GovernanceTokenType
-    newGovernanceToken?: {
+    newGovernanceToken: {
       initialSupply: number
       initialTreasuryPercent: number
       imageUrl?: string
@@ -97,10 +97,10 @@ export interface NewOrg {
     }
     unregisterDuration: DurationWithUnits
   }
-  changeThresholdQuorumEnabled: boolean
-  changeThresholdQuorumOptions: {
-    thresholdValue: ThresholdValue
-    quorumValue: ThresholdValue
+  _changeThresholdQuorumEnabled: boolean
+  thresholdQuorum: {
+    threshold: ThresholdValue
+    quorum: ThresholdValue
   }
 }
 
@@ -115,17 +115,13 @@ export interface NewOrgGroupMember {
   address: string
 }
 
-export const DefaultThresholdQuorum: NewOrg['changeThresholdQuorumOptions'] = {
-  thresholdValue: 'majority',
-  quorumValue: 20,
-}
 export const DefaultNewOrg: NewOrg = {
   name: '',
   description: '',
   groups: [
     {
       name: 'Members',
-      weight: 100,
+      weight: 1,
       members: [],
     },
   ],
@@ -151,9 +147,15 @@ export const DefaultNewOrg: NewOrg = {
       units: DurationUnits.Weeks,
     },
   },
-  changeThresholdQuorumEnabled: false,
-  changeThresholdQuorumOptions: DefaultThresholdQuorum,
+  _changeThresholdQuorumEnabled: false,
+  thresholdQuorum: {
+    threshold: 'majority',
+    quorum: 20,
+  },
 }
+// Default percent when selecting the percent option for custom threshold.
+export const DEFAULT_NEW_ORG_THRESHOLD_PERCENT: ThresholdValue = 75
+export const NEW_ORG_CW20_DECIMALS = 6
 
 export const newOrgAtom = atom<NewOrg>({
   key: 'newOrg',

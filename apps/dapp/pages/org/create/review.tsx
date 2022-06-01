@@ -76,13 +76,13 @@ const CreateOrgReviewPage: FC = () => {
           <CreateOrgReviewStat
             title="Threshold"
             value={convertThresholdValueToHumanReadableString(
-              values.changeThresholdQuorumOptions.thresholdValue
+              values.thresholdQuorum.threshold
             )}
           />
           <CreateOrgReviewStat
             title="Quorum"
             value={convertThresholdValueToHumanReadableString(
-              values.changeThresholdQuorumOptions.quorumValue
+              values.thresholdQuorum.quorum
             )}
           />
           <CreateOrgReviewStat
@@ -91,33 +91,30 @@ const CreateOrgReviewPage: FC = () => {
               values.votingDuration
             )}
           />
-          {values.variableVotingWeightsOptions.governanceTokenEnabled &&
-            !!values.variableVotingWeightsOptions.governanceTokenOptions
-              .proposalDeposit?.value && (
+          {values.governanceTokenEnabled &&
+            !!values.governanceTokenOptions.proposalDeposit?.value && (
               <>
                 <CreateOrgReviewStat
                   title="Prop. deposit"
-                  value={`${values.variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value}`}
+                  value={`${values.governanceTokenOptions.proposalDeposit.value}`}
                 />
                 <CreateOrgReviewStat
                   title="Prop. refunds"
                   value={
-                    values.variableVotingWeightsOptions.governanceTokenOptions
-                      .proposalDeposit.refundFailed
+                    values.governanceTokenOptions.proposalDeposit.refundFailed
                       ? 'Yes'
                       : 'No'
                   }
                 />
               </>
             )}
-          {values.variableVotingWeightsOptions.governanceTokenEnabled && (
+          {values.governanceTokenEnabled && (
             <>
               <CreateOrgReviewStat title="Gov. tokens" value="Enabled" />
               <CreateOrgReviewStat
                 title="Unregister duration"
                 value={convertDurationWithUnitsToHumanReadableString(
-                  values.variableVotingWeightsOptions.governanceTokenOptions
-                    .unregisterDuration
+                  values.governanceTokenOptions.unregisterDuration
                 )}
               />
             </>

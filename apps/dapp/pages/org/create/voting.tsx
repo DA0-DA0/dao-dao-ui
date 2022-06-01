@@ -25,8 +25,10 @@ import {
 
 import {
   DefaultNewOrg,
+  DEFAULT_NEW_ORG_THRESHOLD_PERCENT,
   DurationUnitsValues,
   GovernanceTokenType,
+  NEW_ORG_CW20_DECIMALS,
 } from '@/atoms/org'
 import {
   CreateOrgConfigCard,
@@ -60,6 +62,8 @@ const CreateOrgVotingPage: FC = () => {
       if (!noNewErrors || errors._groupsError) {
         const totalWeight =
           groups.reduce((acc, { weight }) => acc + weight, 0) || 0
+        // Ensures all group voting weights sum to 100 which also ensures
+        // that at least one group exists.
         if (totalWeight !== 100) {
           setError('_groupsError', {
             message:
@@ -146,16 +150,76 @@ const CreateOrgVotingPage: FC = () => {
   } = useForm<NewGroupNameForm>()
   const onSubmitNewGroupName: SubmitHandler<NewGroupNameForm> = useCallback(
     ({ name }) => {
-      appendGroup({ name, weight: 20, members: [] })
+      appendGroup({
+        name,
+        weight: getValues('governanceTokenEnabled') ? 20 : 1,
+        members: [],
+      })
       setAddGroupModalOpen(false)
     },
-    [appendGroup]
+    [appendGroup, getValues]
+  )
+
+  const onToggleGovernanceTokenEnabled = useCallback(
+    (newValue: boolean) => {
+      const groups = getValues('groups')
+
+      if (newValue) {
+        // Convert group weights per member to total group
+        // voting weight percent.
+        const totalWeight = groups.reduce(
+          (total, { weight, members }) =>
+            total + weight * (members.length || 1),
+          0
+        )
+        groups.forEach(({ weight, members }, index) =>
+          setValue(
+            `groups.${index}.weight`,
+            Math.min(
+              Math.max(
+                Number(
+                  (
+                    ((weight * (members.length || 1)) / totalWeight) *
+                    100
+                  ).toFixed(3)
+                ),
+                1
+              ),
+              100
+            )
+          )
+        )
+      } else {
+        // Reset option changes configured when switch was enabled.
+        resetField('governanceTokenOptions')
+
+        // Convert total group voting weight percent to group weights per
+        // member.
+
+        const totalWeight = groups.reduce(
+          (total, { weight }) => total + weight,
+          0
+        )
+        groups.forEach(({ weight, members }, index) =>
+          setValue(
+            `groups.${index}.weight`,
+            Math.max(
+              Math.round(
+                ((weight / 100) * totalWeight) / (members.length || 1)
+              ),
+              1
+            )
+          )
+        )
+      }
+    },
+    [getValues, resetField, setValue]
   )
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
-  const thresholdValue = watch('changeThresholdQuorumOptions.thresholdValue')
-  const quorumValue = watch('changeThresholdQuorumOptions.quorumValue')
+  const threshold = watch('thresholdQuorum.threshold')
+  const quorum = watch('thresholdQuorum.quorum')
 
   const newTokenImageUrl = watch(
     'governanceTokenOptions.newGovernanceToken.imageUrl'
@@ -255,10 +319,7 @@ const CreateOrgVotingPage: FC = () => {
         <div className="flex flex-row gap-4 items-center">
           <FormSwitch
             label="governanceTokenEnabled"
-            // Reset options.
-            onToggle={(newValue) =>
-              !newValue && resetField('governanceTokenOptions')
-            }
+            onToggle={onToggleGovernanceTokenEnabled}
             setValue={setValue}
             watch={watch}
           />
@@ -296,7 +357,7 @@ const CreateOrgVotingPage: FC = () => {
               GovernanceTokenType.New ? (
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
-                    <div className="flex flex-row gap-8 justify-between items-center">
+                    <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
                       <p className="primary-text">Total supply</p>
 
                       <div>
@@ -331,11 +392,11 @@ const CreateOrgVotingPage: FC = () => {
                                 ),
                             ]}
                             register={register}
-                            step={1}
+                            step={1 / 10 ** NEW_ORG_CW20_DECIMALS}
                             validation={[validatePositive, validateRequired]}
                           />
 
-                          <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
+                          <div className="hidden flex-row gap-2 items-center text-tertiary sm:flex">
                             {newTokenImageUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img alt="" src={newTokenImageUrl} />
@@ -363,8 +424,8 @@ const CreateOrgVotingPage: FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-row gap-8 justify-between items-center">
-                      <p className="primary-text">Initial treasury size</p>
+                    <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
+                      <p className="primary-text">Treasury allocation</p>
 
                       <div>
                         <div className="flex flex-row grow gap-2 items-center">
@@ -405,7 +466,7 @@ const CreateOrgVotingPage: FC = () => {
                             ]}
                             register={register}
                             sizing="sm"
-                            step={1}
+                            step={0.001}
                             validation={[
                               (v: number) =>
                                 isNaN(v) || v < 0 || v > 100
@@ -654,13 +715,13 @@ const CreateOrgVotingPage: FC = () => {
 
         <div className="flex flex-row gap-4 items-center">
           <FormSwitch
-            label="changeThresholdQuorumEnabled"
+            label="_changeThresholdQuorumEnabled"
             onToggle={(newValue) => {
               if (newValue) {
                 setShowThresholdQuorumWarning(true)
               } else {
-                // Reset options.
-                resetField('changeThresholdQuorumOptions')
+                // Reset threshold and quorum.
+                resetField('thresholdQuorum')
               }
             }}
             setValue={setValue}
@@ -678,33 +739,33 @@ const CreateOrgVotingPage: FC = () => {
           </div>
         </div>
 
-        {watch('changeThresholdQuorumEnabled') && (
+        {watch('_changeThresholdQuorumEnabled') && (
           <div className="space-y-3">
             <CreateOrgConfigCard
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
-              error={errors.changeThresholdQuorumOptions?.thresholdValue}
+              error={errors.thresholdQuorum?.threshold}
               image={<Emoji label="ballot box" symbol="🗳️" />}
               title="Passing threshold"
             >
-              {thresholdValue !== 'majority' && (
+              {threshold !== 'majority' && (
                 <NumberInput
-                  error={errors.changeThresholdQuorumOptions?.thresholdValue}
-                  label="changeThresholdQuorumOptions.thresholdValue"
+                  error={errors.thresholdQuorum?.threshold}
+                  label="thresholdQuorum.threshold"
                   onPlusMinus={[
                     () =>
                       setValue(
-                        'changeThresholdQuorumOptions.thresholdValue',
-                        Math.max(thresholdValue + 1, 1)
+                        'thresholdQuorum.threshold',
+                        Math.max(threshold + 1, 1)
                       ),
                     () =>
                       setValue(
-                        'changeThresholdQuorumOptions.thresholdValue',
-                        Math.max(thresholdValue - 1, 1)
+                        'thresholdQuorum.threshold',
+                        Math.max(threshold - 1, 1)
                       ),
                   ]}
                   register={register}
                   sizing="sm"
-                  step={1}
+                  step={0.001}
                   validation={[validatePositive, validateRequired]}
                 />
               )}
@@ -712,22 +773,19 @@ const CreateOrgVotingPage: FC = () => {
               <SelectInput
                 onChange={({ target: { value } }) =>
                   setValue(
-                    'changeThresholdQuorumOptions.thresholdValue',
-                    value === 'majority' ? 'majority' : 75
+                    'thresholdQuorum.threshold',
+                    value === 'majority'
+                      ? 'majority'
+                      : // value === '%'
+                        DEFAULT_NEW_ORG_THRESHOLD_PERCENT
                   )
                 }
                 validation={[validateRequired]}
               >
-                <option
-                  selected={thresholdValue !== 'majority'}
-                  value="percent"
-                >
+                <option selected={threshold !== 'majority'} value="%">
                   %
                 </option>
-                <option
-                  selected={thresholdValue === 'majority'}
-                  value="majority"
-                >
+                <option selected={threshold === 'majority'} value="majority">
                   Majority
                 </option>
               </SelectInput>
@@ -735,29 +793,29 @@ const CreateOrgVotingPage: FC = () => {
 
             <CreateOrgConfigCard
               description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have an org with many inactive members, setting this value too high may make it difficult to pass proposals."
-              error={errors.changeThresholdQuorumOptions?.quorumValue}
+              error={errors.thresholdQuorum?.quorum}
               image={<Emoji label="megaphone" symbol="📣" />}
               title="Quorum"
             >
-              {quorumValue !== 'majority' && (
+              {quorum !== 'majority' && (
                 <NumberInput
-                  error={errors.changeThresholdQuorumOptions?.quorumValue}
-                  label="changeThresholdQuorumOptions.quorumValue"
+                  error={errors.thresholdQuorum?.quorum}
+                  label="thresholdQuorum.quorum"
                   onPlusMinus={[
                     () =>
                       setValue(
-                        'changeThresholdQuorumOptions.quorumValue',
-                        Math.max(quorumValue + 1, 1)
+                        'thresholdQuorum.quorum',
+                        Math.max(quorum + 1, 0)
                       ),
                     () =>
                       setValue(
-                        'changeThresholdQuorumOptions.quorumValue',
-                        Math.max(quorumValue - 1, 1)
+                        'thresholdQuorum.quorum',
+                        Math.max(quorum - 1, 0)
                       ),
                   ]}
                   register={register}
                   sizing="sm"
-                  step={1}
+                  step={0.001}
                   validation={[validateNonNegative, validateRequired]}
                 />
               )}
@@ -765,19 +823,19 @@ const CreateOrgVotingPage: FC = () => {
               <SelectInput
                 onChange={({ target: { value } }) =>
                   setValue(
-                    'changeThresholdQuorumOptions.quorumValue',
+                    'thresholdQuorum.quorum',
                     value === 'majority'
                       ? 'majority'
-                      : DefaultNewOrg.changeThresholdQuorumOptions
-                          ?.quorumValue ?? 'majority'
+                      : // value === '%'
+                        DefaultNewOrg.thresholdQuorum.quorum
                   )
                 }
                 validation={[validateRequired]}
               >
-                <option selected={quorumValue !== 'majority'} value="percent">
+                <option selected={quorum !== 'majority'} value="%">
                   %
                 </option>
-                <option selected={quorumValue === 'majority'} value="majority">
+                <option selected={quorum === 'majority'} value="majority">
                   Majority
                 </option>
               </SelectInput>

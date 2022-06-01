@@ -167,7 +167,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
               error={errors?.amount}
               label={getLabel('amount')}
               register={register}
-              step={0.000001}
+              step={1 / 10 ** NATIVE_DECIMALS}
               validation={[
                 validateRequired,
                 validatePositive,
