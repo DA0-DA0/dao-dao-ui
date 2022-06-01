@@ -94,7 +94,7 @@ export const useCreateOrgForm = (
 ) => {
   const router = useRouter()
   const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
-  const { connected, address: walletAddress } = useWallet()
+  const { connected, address: walletAddress, refreshBalances } = useWallet()
   const [creating, setCreating] = useState(false)
   const setPinnedAddresses = useSetRecoilState(pinnedAddressesAtom)
 
@@ -143,7 +143,13 @@ export const useCreateOrgForm = (
           try {
             const address = await createOrg(instantiate, values)
             if (address) {
+              // TODO: Figure out better solution for detecting block.
+              // New wallet balances will not appear until the next block.
+              await new Promise((resolve) => setTimeout(resolve, 6500))
+
+              refreshBalances()
               setPinnedAddresses((pinned) => [...pinned, address])
+
               router.push(`/org/${address}`)
               toast.success('Org created.')
             }
@@ -173,7 +179,15 @@ export const useCreateOrgForm = (
         ].href
       )
     },
-    [setNewOrg, router, pageIndex, connected, instantiate, setPinnedAddresses]
+    [
+      setNewOrg,
+      router,
+      pageIndex,
+      connected,
+      instantiate,
+      refreshBalances,
+      setPinnedAddresses,
+    ]
   )
 
   const onError: SubmitErrorHandler<FieldValues> = useCallback(

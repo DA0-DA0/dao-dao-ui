@@ -26,9 +26,9 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
 
   return claimsPending?.length ? (
     <>
-      <h2 className="mt-4">Currently unstaking</h2>
+      <h2 className="mt-4 mb-2">Currently unstaking</h2>
 
-      <ul className="ml-1 space-y-2">
+      <ul className="space-y-2">
         {claimsPending.map((claim, idx) => (
           <ClaimsListItem
             key={idx}

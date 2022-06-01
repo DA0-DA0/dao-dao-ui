@@ -195,7 +195,12 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
           Can{"'"}t stake more tokens than you own.
         </span>
       )}
-      <span className="mt-4 font-mono caption-text">Max available {max}</span>
+      <span className="mt-4 font-mono caption-text">
+        Max available{' '}
+        {max.toLocaleString(undefined, {
+          maximumFractionDigits: tokenDecimals,
+        })}
+      </span>
       <div className="mt-4">
         <PercentSelector
           amount={amount}
@@ -231,8 +236,13 @@ const ClaimModeBody: FC<ClaimModeBodyProps> = ({
 }) => (
   <div className="flex flex-col py-3 px-6 mt-3">
     <h2 className="font-medium">
-      {convertMicroDenomToDenomWithDecimals(amount, tokenDecimals)} $
-      {tokenSymbol} available
+      {convertMicroDenomToDenomWithDecimals(
+        amount,
+        tokenDecimals
+      ).toLocaleString(undefined, {
+        maximumFractionDigits: tokenDecimals,
+      })}{' '}
+      ${tokenSymbol} available
     </h2>
     <p className="mt-3 mb-3 text-sm">
       Claim them to receive your unstaked tokens.

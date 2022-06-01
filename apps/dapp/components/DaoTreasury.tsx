@@ -7,9 +7,9 @@ import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { Button } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 
-import { TreasuryBalances } from './ContractView'
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
+import { TreasuryBalances } from './TreasuryBalances'
 import { addToken } from '@/util/addToken'
 
 export const DaoTreasury: FC = () => {

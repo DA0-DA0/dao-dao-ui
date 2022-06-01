@@ -208,6 +208,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
           refreshBalances()
           refreshTotals()
+          refreshClaims?.()
           refreshStakingContractBalances()
 
           setAmount(0)

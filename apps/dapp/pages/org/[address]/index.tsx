@@ -16,7 +16,7 @@ import {
 
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { ContractHeader } from '@/components/ContractHeader'
-import { ContractProposalsDisplay } from '@/components/ContractView'
+import { ContractProposalsDisplay } from '@/components/ContractProposalsDisplay'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'

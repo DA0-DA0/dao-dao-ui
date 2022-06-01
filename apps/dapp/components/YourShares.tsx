@@ -66,7 +66,7 @@ const InnerYourShares: FC = () => {
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
             denom={governanceTokenInfo.symbol}
             loading={stakingLoading}
-            onManage={() => setShowStakingDefaultMode(StakingMode.Unstake)}
+            onManage={() => setShowStakingDefaultMode(StakingMode.Stake)}
             title="Balance"
           />
         </li>
@@ -78,7 +78,7 @@ const InnerYourShares: FC = () => {
             ).toLocaleString(undefined, { maximumFractionDigits: 20 })}
             denom={governanceTokenInfo.symbol}
             loading={stakingLoading}
-            onManage={() => setShowStakingDefaultMode(StakingMode.Stake)}
+            onManage={() => setShowStakingDefaultMode(StakingMode.Unstake)}
             title={`Voting power (staked ${governanceTokenInfo.symbol})`}
           />
         </li>
@@ -136,7 +136,7 @@ const InnerYourShares: FC = () => {
         </div>
       ) : null}
       <ClaimsPendingList onClaimAvailable={refreshBalances} />
-      {showStakingDefaultMode && (
+      {showStakingDefaultMode !== undefined && (
         <StakingModal
           defaultMode={showStakingDefaultMode}
           onClose={() => setShowStakingDefaultMode(undefined)}
