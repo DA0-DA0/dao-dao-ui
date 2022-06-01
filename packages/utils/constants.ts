@@ -1,8 +1,3 @@
-export const CWCORE_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CWCORE_CODE_ID as string,
-  10
-)
-
 export const CARD_IMAGES_ENABLED =
   process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
 
@@ -48,3 +43,33 @@ export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 export const SEARCH_INDEX = process.env.NEXT_PUBLIC_SEARCH_INDEX as string
 
 export const CI = process.env.CI === 'true'
+
+// Contract Code IDs
+export const CW20_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW20_CODE_ID as string,
+  10
+)
+export const CW4GROUP_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW4GROUP_CODE_ID as string,
+  10
+)
+export const CWCORE_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CWCORE_CODE_ID as string,
+  10
+)
+export const CWPROPOSALSINGLE_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CWPROPOSALSINGLE_CODE_ID as string,
+  10
+)
+export const CW4VOTING_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW4VOTING_CODE_ID as string,
+  10
+)
+export const CW20STAKEDBALANCEVOTING_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CODE_ID as string,
+  10
+)
+export const STAKECW20_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_STAKECW20_CODE_ID as string,
+  10
+)

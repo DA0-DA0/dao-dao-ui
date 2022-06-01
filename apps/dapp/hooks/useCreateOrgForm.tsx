@@ -28,7 +28,13 @@ import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
 import { SubmitButton } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
+  CW20STAKEDBALANCEVOTING_CODE_ID,
+  CW20_CODE_ID,
+  CW4GROUP_CODE_ID,
+  CW4VOTING_CODE_ID,
   CWCORE_CODE_ID,
+  CWPROPOSALSINGLE_CODE_ID,
+  STAKECW20_CODE_ID,
   validateCw20StakedBalanceVotingInstantiateMsg,
   validateCw4VotingInstantiateMsg,
   validateCwProposalSingleInstantiateMsg,
@@ -304,14 +310,14 @@ const createOrg = async (
 
         tokenInfo = {
           new: {
-            code_id: 0, // TODO
+            code_id: CW20_CODE_ID,
             decimals: NEW_ORG_CW20_DECIMALS,
             initial_balances: microInitialBalances,
             initial_dao_balance: microInitialDaoBalance,
             label: name,
             marketing: imageUrl ? { logo: { url: imageUrl } } : null,
             name,
-            staking_code_id: 0, // TODO
+            staking_code_id: STAKECW20_CODE_ID,
             symbol,
             unstaking_duration:
               convertDurationWithUnitsToDuration(unregisterDuration),
@@ -327,7 +333,7 @@ const createOrg = async (
             address: existingGovernanceTokenAddress,
             staking_contract: {
               new: {
-                staking_code_id: 0, // TODO
+                staking_code_id: STAKECW20_CODE_ID,
                 unstaking_duration:
                   convertDurationWithUnitsToDuration(unregisterDuration),
               },
@@ -352,7 +358,7 @@ const createOrg = async (
       )
 
       const cw4VotingInstantiateMsg: Cw4VotingInstantiateMsg = {
-        cw4_group_code_id: 0, // TODO
+        cw4_group_code_id: CW4GROUP_CODE_ID,
         initial_members: initialMembers,
       }
 
@@ -362,7 +368,7 @@ const createOrg = async (
 
     const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
       {
-        allow_revoting: false, // TODO
+        allow_revoting: false,
         deposit_info:
           governanceTokenEnabled &&
           typeof proposalDeposit?.value === 'number' &&
@@ -374,7 +380,7 @@ const createOrg = async (
               }
             : null,
         max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
-        only_members_execute: false, // TODO
+        only_members_execute: true,
         threshold: {
           threshold_quorum: {
             quorum: convertThresholdValueToPercentageThreshold(quorum),
@@ -385,16 +391,16 @@ const createOrg = async (
     validateCwProposalSingleInstantiateMsg(cwProposalSingleModuleInstantiateMsg)
 
     const msg: CwCoreInstantiateMsg = {
-      admin: null, // TODO
-      automatically_add_cw20s: false, // TODO
-      automatically_add_cw721s: false, // TODO
+      admin: null,
+      automatically_add_cw20s: true,
+      automatically_add_cw721s: true,
       description,
       image_url: imageUrl ?? null,
       name,
       proposal_modules_instantiate_info: [
         {
-          admin: { none: {} },
-          code_id: 0, // TODO
+          admin: { core_contract: {} },
+          code_id: CWPROPOSALSINGLE_CODE_ID,
           label: `org_${name}_cw-proposal-single`,
           msg: Buffer.from(
             JSON.stringify(cwProposalSingleModuleInstantiateMsg),
@@ -403,8 +409,10 @@ const createOrg = async (
         },
       ],
       voting_module_instantiate_info: {
-        admin: { none: {} },
-        code_id: 0, // TODO
+        admin: { core_contract: {} },
+        code_id: governanceTokenEnabled
+          ? CW20STAKEDBALANCEVOTING_CODE_ID
+          : CW4VOTING_CODE_ID,
         label: governanceTokenEnabled
           ? `org_${name}_cw20-staked-balance-voting`
           : `org_${name}_cw4-voting`,
