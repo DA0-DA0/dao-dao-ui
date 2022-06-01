@@ -236,18 +236,15 @@ const createOrg = async (
     imageUrl,
     groups,
     votingDuration,
-    variableVotingWeightsEnabled,
-    variableVotingWeightsOptions: {
-      governanceTokenEnabled,
-      governanceTokenOptions,
-    },
+    governanceTokenEnabled,
+    governanceTokenOptions,
     changeThresholdQuorumEnabled,
     changeThresholdQuorumOptions,
   } = values
 
   try {
     let votingModuleInstantiateMsg
-    if (variableVotingWeightsEnabled && governanceTokenEnabled) {
+    if (governanceTokenEnabled) {
       let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
       if (governanceTokenOptions.type === GovernanceTokenType.New) {
         if (!governanceTokenOptions.newGovernanceToken) {

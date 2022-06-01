@@ -1,6 +1,5 @@
 import { TrashIcon } from '@heroicons/react/outline'
-import clsx from 'clsx'
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import {
   Control,
   FormState,
@@ -32,82 +31,23 @@ interface CreateOrgGroupProps {
   errors: FormState<NewOrg>['errors']
   watch: UseFormWatch<NewOrg>
   setValue: UseFormSetValue<NewOrg>
-  remove: () => void
-  redistributeEvenly: () => void
+  remove?: () => void
 }
 
 export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   // Don't pass along to member.
   remove,
-  redistributeEvenly,
   ...props
 }) => {
   const { groupIndex, control, register, errors, setValue, watch } = props
   const {
     fields: members,
     append: appendMember,
-    remove: _removeMember,
+    remove: removeMember,
   } = useFieldArray({
     control,
     name: `groups.${groupIndex}.members`,
   })
-
-  const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
-
-  const addNewMember = useCallback(() => {
-    let proportion = 0
-    if (members.length === 0) {
-      proportion = 100
-    } else if (variableVotingWeightsEnabled) {
-      // If there are already members, give the new member the remainder
-      // of the voting weight.
-      if (members.length > 0) {
-        const totalWeight = members.reduce(
-          (acc, member) => acc + member.proportion,
-          0
-        )
-        proportion = 100 - totalWeight
-      }
-    } else {
-      // Evenly distributed so redistribute proportionally.
-      const totalMembers = members.length + 1
-      proportion = parseFloat((100 / totalMembers).toFixed(3))
-
-      // Update existing members proportions.
-      members.forEach((_, idx) =>
-        setValue(`groups.${groupIndex}.members.${idx}.proportion`, proportion)
-      )
-    }
-
-    // Add new member.
-    appendMember({ proportion })
-  }, [
-    members,
-    appendMember,
-    setValue,
-    groupIndex,
-    variableVotingWeightsEnabled,
-  ])
-
-  const removeMember = useCallback(
-    (index: number) => {
-      // If evenly distributed, redistribute proportionally.
-      if (!variableVotingWeightsEnabled) {
-        const totalMembers = members.length - 1
-        const proportion =
-          totalMembers === 0 ? 0 : parseFloat((100 / totalMembers).toFixed(3))
-
-        // Update existing members proportions.
-        members.forEach((_, idx) =>
-          setValue(`groups.${groupIndex}.members.${idx}.proportion`, proportion)
-        )
-      }
-
-      // Remove member.
-      _removeMember(index)
-    },
-    [members, _removeMember, setValue, groupIndex, variableVotingWeightsEnabled]
-  )
 
   return (
     <div className="p-6 bg-disabled rounded-lg">
@@ -170,16 +110,13 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
         ))}
 
         <div className="flex flex-row gap-2 justify-between items-center">
-          <Button onClick={addNewMember} variant="secondary">
+          <Button
+            onClick={() => appendMember({ address: '' })}
+            variant="secondary"
+          >
             Add member
           </Button>
-          <div className="flex flex-row gap-2 items-center">
-            {variableVotingWeightsEnabled && (
-              <Button onClick={redistributeEvenly} variant="secondary">
-                Distribute evenly
-              </Button>
-            )}
-
+          {remove && (
             <Button
               className="!text-error"
               onClick={remove}
@@ -187,15 +124,14 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
             >
               Remove group
             </Button>
-          </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-interface CreateOrgGroupMemberProps
-  extends Omit<CreateOrgGroupProps, 'redistributeEvenly'> {
+interface CreateOrgGroupMemberProps extends CreateOrgGroupProps {
   memberIndex: number
 }
 
@@ -206,98 +142,30 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
   errors,
   watch,
   remove,
-  setValue,
-}) => {
-  const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
-
-  return (
-    <div
-      className={clsx('gap-4  p-3 bg-card rounded-md sm:gap-8', {
-        'grid grid-cols-[5fr_2fr_2rem] grid-rows-1 items-center':
-          !variableVotingWeightsEnabled,
-        'grid grid-cols-2 grid-rows-2 sm:flex sm:flex-row sm:justify-between sm:items-center':
-          variableVotingWeightsEnabled,
-      })}
-    >
-      <div
-        className={clsx('grow', { 'col-span-2': variableVotingWeightsEnabled })}
-      >
-        <AddressInput
-          error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-          label={`groups.${groupIndex}.members.${memberIndex}.address`}
-          placeholder="Member's address..."
-          register={register}
-          validation={[validateAddress, validateRequired]}
-        />
-        <InputErrorMessage
-          error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-        />
-      </div>
-
-      {variableVotingWeightsEnabled ? (
-        <div className="flex flex-row gap-2 justify-between items-center">
-          <p className="text-right caption-text">Proportion:</p>
-
-          <div>
-            <NumberInput
-              error={
-                errors.groups?.[groupIndex]?.members?.[memberIndex]?.proportion
-              }
-              label={`groups.${groupIndex}.members.${memberIndex}.proportion`}
-              onPlusMinus={[
-                () =>
-                  setValue(
-                    `groups.${groupIndex}.members.${memberIndex}.proportion`,
-                    Math.max(
-                      Math.min(
-                        watch(
-                          `groups.${groupIndex}.members.${memberIndex}.proportion`
-                        ) + 1,
-                        100
-                      ),
-                      0
-                    )
-                  ),
-                () =>
-                  setValue(
-                    `groups.${groupIndex}.members.${memberIndex}.proportion`,
-                    Math.max(
-                      Math.min(
-                        watch(
-                          `groups.${groupIndex}.members.${memberIndex}.proportion`
-                        ) - 1,
-                        100
-                      ),
-                      0
-                    )
-                  ),
-              ]}
-              register={register}
-              sizing="sm"
-              step={0.001}
-              validation={[validatePositive, validatePercent, validateRequired]}
-            />
-            <InputErrorMessage
-              error={
-                errors.groups?.[groupIndex]?.members?.[memberIndex]?.proportion
-              }
-            />
-          </div>
-          <p className="primary-text">%</p>
-        </div>
-      ) : (
-        <p className="text-xs text-center sm:text-sm">
-          Proportion:{' '}
-          {watch(
-            `groups.${groupIndex}.members.${memberIndex}.proportion`
-          ).toLocaleString(undefined, { maximumFractionDigits: 3 })}
-          %
-        </p>
-      )}
-
-      <button className="justify-self-end" onClick={remove}>
-        <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
-      </button>
+}) => (
+  <div className="grid grid-cols-[5fr_2fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
+    <div className="grow">
+      <AddressInput
+        error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+        label={`groups.${groupIndex}.members.${memberIndex}.address`}
+        placeholder="Member's address..."
+        register={register}
+        validation={[validateAddress, validateRequired]}
+      />
+      <InputErrorMessage
+        error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+      />
     </div>
-  )
-}
+
+    <p className="text-xs text-center sm:text-sm">
+      Proportion:{' '}
+      <span className="font-mono">
+        1/{(watch(`groups.${groupIndex}.members`) || []).length}
+      </span>
+    </p>
+
+    <button className="justify-self-end" onClick={remove}>
+      <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
+    </button>
+  </div>
+)

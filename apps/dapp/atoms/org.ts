@@ -75,30 +75,27 @@ export interface NewOrg {
   groups: NewOrgGroup[]
   _groupsError?: undefined
   votingDuration: DurationWithUnits
-  variableVotingWeightsEnabled: boolean
-  variableVotingWeightsOptions: {
-    governanceTokenEnabled: boolean
-    governanceTokenOptions: {
-      type?: GovernanceTokenType
-      newGovernanceToken?: {
-        initialSupply: number
-        initialTreasuryPercent: number
-        imageUrl?: string
-        symbol: string
-        name: string
-      }
-      existingGovernanceTokenAddress?: string
-      _existingGovernanceTokenInfo?: {
-        imageUrl?: string
-        symbol: string
-        name: string
-      }
-      proposalDeposit: {
-        value: number
-        refundFailed: boolean
-      }
-      unregisterDuration: DurationWithUnits
+  governanceTokenEnabled: boolean
+  governanceTokenOptions: {
+    type?: GovernanceTokenType
+    newGovernanceToken?: {
+      initialSupply: number
+      initialTreasuryPercent: number
+      imageUrl?: string
+      symbol: string
+      name: string
     }
+    existingGovernanceTokenAddress?: string
+    _existingGovernanceTokenInfo?: {
+      imageUrl?: string
+      symbol: string
+      name: string
+    }
+    proposalDeposit: {
+      value: number
+      refundFailed: boolean
+    }
+    unregisterDuration: DurationWithUnits
   }
   changeThresholdQuorumEnabled: boolean
   changeThresholdQuorumOptions: {
@@ -116,7 +113,6 @@ export interface NewOrgGroup {
 
 export interface NewOrgGroupMember {
   address: string
-  proportion: number
 }
 
 export const DefaultThresholdQuorum: NewOrg['changeThresholdQuorumOptions'] = {
@@ -128,7 +124,7 @@ export const DefaultNewOrg: NewOrg = {
   description: '',
   groups: [
     {
-      name: 'Initial members',
+      name: 'Members',
       weight: 100,
       members: [],
     },
@@ -137,25 +133,22 @@ export const DefaultNewOrg: NewOrg = {
     value: 1,
     units: DurationUnits.Weeks,
   },
-  variableVotingWeightsEnabled: false,
-  variableVotingWeightsOptions: {
-    governanceTokenEnabled: false,
-    governanceTokenOptions: {
-      type: GovernanceTokenType.New,
-      newGovernanceToken: {
-        initialSupply: 1000000,
-        initialTreasuryPercent: 90,
-        symbol: '',
-        name: '',
-      },
-      proposalDeposit: {
-        value: 0,
-        refundFailed: false,
-      },
-      unregisterDuration: {
-        value: 2,
-        units: DurationUnits.Weeks,
-      },
+  governanceTokenEnabled: false,
+  governanceTokenOptions: {
+    type: GovernanceTokenType.New,
+    newGovernanceToken: {
+      initialSupply: 1000000,
+      initialTreasuryPercent: 90,
+      symbol: '',
+      name: '',
+    },
+    proposalDeposit: {
+      value: 0,
+      refundFailed: false,
+    },
+    unregisterDuration: {
+      value: 2,
+      units: DurationUnits.Weeks,
     },
   },
   changeThresholdQuorumEnabled: false,

@@ -43,7 +43,7 @@ interface NewGroupNameForm {
 
 const CreateOrgVotingPage: FC = () => {
   // Validate group weights and member proportions add up to 100%.
-  const _checkValidVotingWeights: CustomValidation = useCallback(
+  const _validateGroups: CustomValidation = useCallback(
     (
       { groups },
       errors,
@@ -78,12 +78,9 @@ const CreateOrgVotingPage: FC = () => {
           return
         }
 
-        const totalGroupProportion =
-          group.members.reduce((acc, { proportion }) => acc + proportion, 0) ||
-          0
-        if (totalGroupProportion !== 100) {
+        if (group.members.length === 0) {
           setError(`groups.${groupIndex}._error`, {
-            message: `Member proportions must add up to 100%, but currently add up to ${totalGroupProportion.toLocaleString()}%`,
+            message: 'No members have been added.',
           })
           valid = false
         } else {
@@ -108,39 +105,26 @@ const CreateOrgVotingPage: FC = () => {
     getValues,
     setError,
     clearErrors,
-  } = useCreateOrgForm(1, _checkValidVotingWeights)
+  } = useCreateOrgForm(1, _validateGroups)
 
   // To call manually when changing data.
-  const checkValidVotingWeights = useCallback(
+  const validateGroups = useCallback(
     (noNewErrors = false) =>
-      _checkValidVotingWeights(
-        getValues(),
-        errors,
-        setError,
-        clearErrors,
-        noNewErrors
-      ),
-    [_checkValidVotingWeights, getValues, errors, setError, clearErrors]
+      _validateGroups(getValues(), errors, setError, clearErrors, noNewErrors),
+    [_validateGroups, getValues, errors, setError, clearErrors]
   )
-  // Check voting weights when any group weight or member proportion
-  // changes, or groups/members are added/removed. Only update existing
-  // errors, not creating any new errors. New errors will be displayed on
-  // attempted submit/page progression as usual.
+  // Check voting weights when any group weight changes, or groups/members
+  // are added / removed. Only update existing errors, not creating any
+  // new errors. New errors will be displayed on attempted submit/page
+  // progression as usual.
   useEffect(() => {
-    checkValidVotingWeights(true)
+    validateGroups(true)
   }, [
-    checkValidVotingWeights,
+    validateGroups,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     getValues('groups')
-      .map(({ weight }, idx) => `${idx}:${weight}`)
-      .join(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    getValues('groups')
-      .flatMap(({ members }, groupIdx) =>
-        members?.map(
-          ({ proportion }, memberIdx) =>
-            `${groupIdx}:${memberIdx}:${proportion}`
-        )
+      .map(
+        ({ weight, members }, idx) => `${idx}:${weight}:${members.join('_')}`
       )
       .join(),
   ])
@@ -162,39 +146,11 @@ const CreateOrgVotingPage: FC = () => {
   } = useForm<NewGroupNameForm>()
   const onSubmitNewGroupName: SubmitHandler<NewGroupNameForm> = useCallback(
     ({ name }) => {
-      appendGroup({ name, weight: 20 })
+      appendGroup({ name, weight: 20, members: [] })
       setAddGroupModalOpen(false)
     },
     [appendGroup]
   )
-
-  const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
-  const distributeGroupVoteWeightEvenly = useCallback(
-    (index?: number) => {
-      getValues('groups')
-        ?.filter((_, idx) => index === undefined || index === idx)
-        .forEach((group, groupIndex) => {
-          // Evenly distributed so redistribute proportionally.
-          const totalMembers = group.members?.length ?? 1
-          const proportion = parseFloat((100 / totalMembers).toFixed(3))
-
-          // Update members proportions.
-          group.members?.forEach((_, memberIndex) =>
-            setValue(
-              `groups.${groupIndex}.members.${memberIndex}.proportion`,
-              proportion
-            )
-          )
-        })
-    },
-    [getValues, setValue]
-  )
-  // When variable voting weights is disabled, reset group member weights.
-  useEffect(() => {
-    if (!variableVotingWeightsEnabled && getValues('groups').length > 0) {
-      distributeGroupVoteWeightEvenly()
-    }
-  }, [distributeGroupVoteWeightEvenly, variableVotingWeightsEnabled, getValues])
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
@@ -202,10 +158,10 @@ const CreateOrgVotingPage: FC = () => {
   const quorumValue = watch('changeThresholdQuorumOptions.quorumValue')
 
   const newTokenImageUrl = watch(
-    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.imageUrl'
+    'governanceTokenOptions.newGovernanceToken.imageUrl'
   )
   const initialTreasuryPercent = watch(
-    'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
+    'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
   )
 
   return (
@@ -232,9 +188,8 @@ const CreateOrgVotingPage: FC = () => {
               control={control}
               errors={errors}
               groupIndex={idx}
-              redistributeEvenly={() => distributeGroupVoteWeightEvenly(idx)}
               register={register}
-              remove={() => removeGroup(idx)}
+              remove={groups.length === 1 ? undefined : () => removeGroup(idx)}
               setValue={setValue}
               watch={watch}
             />
@@ -249,7 +204,7 @@ const CreateOrgVotingPage: FC = () => {
               }}
               variant="secondary"
             >
-              Add group
+              Add another group
             </Button>
 
             <InputErrorMessage error={errors._groupsError} />
@@ -299,10 +254,10 @@ const CreateOrgVotingPage: FC = () => {
 
         <div className="flex flex-row gap-4 items-center">
           <FormSwitch
-            label="variableVotingWeightsEnabled"
+            label="governanceTokenEnabled"
             // Reset options.
             onToggle={(newValue) =>
-              !newValue && resetField('variableVotingWeightsOptions')
+              !newValue && resetField('governanceTokenOptions')
             }
             setValue={setValue}
             watch={watch}
@@ -311,47 +266,18 @@ const CreateOrgVotingPage: FC = () => {
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name="Enable varying voting weights"
+              name="(Advanced) Enable governance tokens"
             />
             <p className="caption-text">
-              Allow group members to have varying voting weights.
+              Use fungible governance tokens to assign voting weight.
             </p>
           </div>
         </div>
 
-        {watch('variableVotingWeightsEnabled') && (
-          <>
-            <div className="flex flex-row gap-4 items-center">
-              <FormSwitch
-                label="variableVotingWeightsOptions.governanceTokenEnabled"
-                // Reset options.
-                onToggle={(newValue) =>
-                  !newValue &&
-                  resetField(
-                    'variableVotingWeightsOptions.governanceTokenOptions'
-                  )
-                }
-                setValue={setValue}
-                watch={watch}
-              />
-
-              <div className="flex flex-col gap-1">
-                <InputLabel
-                  className="!body-text"
-                  name="(Advanced) Enable governance tokens"
-                />
-                <p className="caption-text">
-                  Use fungible governance tokens to assign voting weight.
-                </p>
-              </div>
-            </div>
-          </>
-        )}
-
-        {watch('variableVotingWeightsOptions.governanceTokenEnabled') && (
+        {watch('governanceTokenEnabled') && (
           <div className="space-y-3">
             <RadioInput
-              label="variableVotingWeightsOptions.governanceTokenOptions.type"
+              label="governanceTokenOptions.type"
               options={[
                 {
                   label: 'Create new token',
@@ -366,9 +292,8 @@ const CreateOrgVotingPage: FC = () => {
               watch={watch}
             />
             <CreateOrgConfigCardWrapper className="gap-8 mb-9">
-              {watch(
-                'variableVotingWeightsOptions.governanceTokenOptions.type'
-              ) === GovernanceTokenType.New ? (
+              {watch('governanceTokenOptions.type') ===
+              GovernanceTokenType.New ? (
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
                     <div className="flex flex-row gap-8 justify-between items-center">
@@ -379,28 +304,27 @@ const CreateOrgVotingPage: FC = () => {
                           <NumberInput
                             containerClassName="grow"
                             error={
-                              errors.variableVotingWeightsOptions
-                                ?.governanceTokenOptions?.newGovernanceToken
+                              errors.governanceTokenOptions?.newGovernanceToken
                                 ?.initialSupply
                             }
-                            label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply"
+                            label="governanceTokenOptions.newGovernanceToken.initialSupply"
                             onPlusMinus={[
                               () =>
                                 setValue(
-                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply',
+                                  'governanceTokenOptions.newGovernanceToken.initialSupply',
                                   Math.max(
                                     watch(
-                                      'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply'
+                                      'governanceTokenOptions.newGovernanceToken.initialSupply'
                                     ) + 1,
                                     0
                                   )
                                 ),
                               () =>
                                 setValue(
-                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply',
+                                  'governanceTokenOptions.newGovernanceToken.initialSupply',
                                   Math.max(
                                     watch(
-                                      'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialSupply'
+                                      'governanceTokenOptions.newGovernanceToken.initialSupply'
                                     ) - 1,
                                     0
                                   )
@@ -425,15 +349,14 @@ const CreateOrgVotingPage: FC = () => {
                             )}
 
                             {watch(
-                              'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol'
+                              'governanceTokenOptions.newGovernanceToken.symbol'
                             ) || 'Token'}
                           </div>
                         </div>
 
                         <InputErrorMessage
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken
+                            errors.governanceTokenOptions?.newGovernanceToken
                               ?.initialSupply
                           }
                         />
@@ -448,19 +371,18 @@ const CreateOrgVotingPage: FC = () => {
                           <NumberInput
                             containerClassName="grow"
                             error={
-                              errors.variableVotingWeightsOptions
-                                ?.governanceTokenOptions?.newGovernanceToken
+                              errors.governanceTokenOptions?.newGovernanceToken
                                 ?.initialTreasuryPercent
                             }
-                            label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent"
+                            label="governanceTokenOptions.newGovernanceToken.initialTreasuryPercent"
                             onPlusMinus={[
                               () =>
                                 setValue(
-                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
+                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
                                   Math.max(
                                     Math.min(
                                       watch(
-                                        'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
+                                        'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
                                       ) + 1,
                                       100
                                     ),
@@ -469,11 +391,11 @@ const CreateOrgVotingPage: FC = () => {
                                 ),
                               () =>
                                 setValue(
-                                  'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
+                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
                                   Math.max(
                                     Math.min(
                                       watch(
-                                        'variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
+                                        'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
                                       ) - 1,
                                       100
                                     ),
@@ -499,8 +421,7 @@ const CreateOrgVotingPage: FC = () => {
 
                         <InputErrorMessage
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken
+                            errors.governanceTokenOptions?.newGovernanceToken
                               ?.initialTreasuryPercent
                           }
                         />
@@ -531,11 +452,10 @@ const CreateOrgVotingPage: FC = () => {
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken
+                            errors.governanceTokenOptions?.newGovernanceToken
                               ?.imageUrl
                           }
-                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.imageUrl"
+                          label="governanceTokenOptions.newGovernanceToken.imageUrl"
                           register={register}
                           size={36}
                           watch={watch}
@@ -552,19 +472,17 @@ const CreateOrgVotingPage: FC = () => {
                       <div>
                         <TextInput
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken
+                            errors.governanceTokenOptions?.newGovernanceToken
                               ?.symbol
                           }
-                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol"
+                          label="governanceTokenOptions.newGovernanceToken.symbol"
                           placeholder="Define a symbol..."
                           register={register}
                           validation={[validateRequired]}
                         />
                         <InputErrorMessage
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken
+                            errors.governanceTokenOptions?.newGovernanceToken
                               ?.symbol
                           }
                         />
@@ -577,18 +495,18 @@ const CreateOrgVotingPage: FC = () => {
                       <div>
                         <TextInput
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken?.name
+                            errors.governanceTokenOptions?.newGovernanceToken
+                              ?.name
                           }
-                          label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.name"
+                          label="governanceTokenOptions.newGovernanceToken.name"
                           placeholder="Name your token..."
                           register={register}
                           validation={[validateRequired]}
                         />
                         <InputErrorMessage
                           error={
-                            errors.variableVotingWeightsOptions
-                              ?.governanceTokenOptions?.newGovernanceToken?.name
+                            errors.governanceTokenOptions?.newGovernanceToken
+                              ?.name
                           }
                         />
                       </div>
@@ -599,18 +517,18 @@ const CreateOrgVotingPage: FC = () => {
                 <div>
                   <TextInput
                     error={
-                      errors.variableVotingWeightsOptions
-                        ?.governanceTokenOptions?.existingGovernanceTokenAddress
+                      errors.governanceTokenOptions
+                        ?.existingGovernanceTokenAddress
                     }
-                    label="variableVotingWeightsOptions.governanceTokenOptions.existingGovernanceTokenAddress"
+                    label="governanceTokenOptions.existingGovernanceTokenAddress"
                     placeholder="Token contract address..."
                     register={register}
                     validation={[validateContractAddress, validateRequired]}
                   />
                   <InputErrorMessage
                     error={
-                      errors.variableVotingWeightsOptions
-                        ?.governanceTokenOptions?.existingGovernanceTokenAddress
+                      errors.governanceTokenOptions
+                        ?.existingGovernanceTokenAddress
                     }
                   />
                 </div>
@@ -619,37 +537,29 @@ const CreateOrgVotingPage: FC = () => {
 
             <CreateOrgConfigCard
               description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
-              error={
-                errors.variableVotingWeightsOptions?.governanceTokenOptions
-                  ?.proposalDeposit?.value
-              }
+              error={errors.governanceTokenOptions?.proposalDeposit?.value}
               image={<Emoji label="banknote" symbol="💵" />}
               title="Proposal deposit"
             >
               <NumberInput
-                error={
-                  errors.variableVotingWeightsOptions?.governanceTokenOptions
-                    ?.proposalDeposit?.value
-                }
-                label="variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value"
+                error={errors.governanceTokenOptions?.proposalDeposit?.value}
+                label="governanceTokenOptions.proposalDeposit.value"
                 onPlusMinus={[
                   () =>
                     setValue(
-                      'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value',
+                      'governanceTokenOptions.proposalDeposit.value',
                       Math.max(
-                        watch(
-                          'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value'
-                        ) + 1,
+                        watch('governanceTokenOptions.proposalDeposit.value') +
+                          1,
                         0
                       )
                     ),
                   () =>
                     setValue(
-                      'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value',
+                      'governanceTokenOptions.proposalDeposit.value',
                       Math.max(
-                        watch(
-                          'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value'
-                        ) - 1,
+                        watch('governanceTokenOptions.proposalDeposit.value') -
+                          1,
                         0
                       )
                     ),
@@ -661,9 +571,7 @@ const CreateOrgVotingPage: FC = () => {
               />
             </CreateOrgConfigCard>
 
-            {!!watch(
-              'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.value'
-            ) && (
+            {!!watch('governanceTokenOptions.proposalDeposit.value') && (
               <CreateOrgConfigCard
                 description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
                 image={<Emoji label="finger pointing up" symbol="👆" />}
@@ -672,14 +580,14 @@ const CreateOrgVotingPage: FC = () => {
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
                     {watch(
-                      'variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.refundFailed'
+                      'governanceTokenOptions.proposalDeposit.refundFailed'
                     )
                       ? 'Yes'
                       : 'No'}
                   </p>
 
                   <FormSwitch
-                    label="variableVotingWeightsOptions.governanceTokenOptions.proposalDeposit.refundFailed"
+                    label="governanceTokenOptions.proposalDeposit.refundFailed"
                     setValue={setValue}
                     sizing="sm"
                     watch={watch}
@@ -691,37 +599,32 @@ const CreateOrgVotingPage: FC = () => {
             <CreateOrgConfigCard
               description="In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
               error={
-                errors.variableVotingWeightsOptions?.governanceTokenOptions
-                  ?.unregisterDuration?.value ||
-                errors.variableVotingWeightsOptions?.governanceTokenOptions
-                  ?.unregisterDuration?.units
+                errors.governanceTokenOptions?.unregisterDuration?.value ||
+                errors.governanceTokenOptions?.unregisterDuration?.units
               }
               image={<Emoji label="alarm clock" symbol="⏰" />}
               title="Unregister duration"
             >
               <NumberInput
-                error={
-                  errors.variableVotingWeightsOptions?.governanceTokenOptions
-                    ?.unregisterDuration?.value
-                }
-                label="variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.value"
+                error={errors.governanceTokenOptions?.unregisterDuration?.value}
+                label="governanceTokenOptions.unregisterDuration.value"
                 onPlusMinus={[
                   () =>
                     setValue(
-                      'variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.value',
+                      'governanceTokenOptions.unregisterDuration.value',
                       Math.max(
                         watch(
-                          'variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.value'
+                          'governanceTokenOptions.unregisterDuration.value'
                         ) + 1,
                         0
                       )
                     ),
                   () =>
                     setValue(
-                      'variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.value',
+                      'governanceTokenOptions.unregisterDuration.value',
                       Math.max(
                         watch(
-                          'variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.value'
+                          'governanceTokenOptions.unregisterDuration.value'
                         ) - 1,
                         0
                       )
@@ -734,11 +637,8 @@ const CreateOrgVotingPage: FC = () => {
               />
 
               <SelectInput
-                error={
-                  errors.variableVotingWeightsOptions?.governanceTokenOptions
-                    ?.unregisterDuration?.units
-                }
-                label="variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.units"
+                error={errors.governanceTokenOptions?.unregisterDuration?.units}
+                label="governanceTokenOptions.unregisterDuration.units"
                 register={register}
                 validation={[validateRequired]}
               >
