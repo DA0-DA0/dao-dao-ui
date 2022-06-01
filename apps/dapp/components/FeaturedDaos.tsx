@@ -86,7 +86,7 @@ const FeaturedCard: FC<FillerCardProps> = ({
       ></div>
     </div>
     <h3 className="mt-5 title-text">{name}</h3>
-    <p className="mt-2 font-mono text-xs text-center text-secondary line-clamp-3 break-word">
+    <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
       {description}
     </p>
     <div className="flex flex-col gap-1 mt-5 items-left">
@@ -140,7 +140,7 @@ const FeaturedCardMirrored: FC<FillerCardProps> = ({
       ></div>
     </div>
     <h3 className="mt-5 title-text">{name}</h3>
-    <p className="mt-2 font-mono text-xs text-center text-secondary line-clamp-3 break-word">
+    <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
       {description}
     </p>
     <div className="flex flex-col gap-1 mt-5 items-left">
