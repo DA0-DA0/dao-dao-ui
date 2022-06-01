@@ -13,9 +13,11 @@ export * from './instantiate'
 
 const CHAIN_PREFIX = process.env.NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
 
-export const validateRequired = (v: string | boolean) => {
+export const validateRequired = (
+  v: string | number | boolean | null | undefined
+) => {
   if (typeof v === 'string') {
-    return v.trim().length != 0 || 'Field is required'
+    return v.trim().length !== 0 || 'Field is required'
   }
   return (v !== null && v !== undefined) || 'Field is required'
 }

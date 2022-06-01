@@ -16,7 +16,11 @@ import {
   InputErrorMessage,
   NumberInput,
 } from '@dao-dao/ui'
-import { validatePositive } from '@dao-dao/utils'
+import {
+  validateAddress,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { NewOrg } from '@/atoms/org'
 
@@ -107,44 +111,48 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   return (
     <div className="p-6 bg-disabled rounded-lg">
       <div className="flex flex-row gap-8 justify-between items-center">
-        <p className="title-text">
-          {watch(`groups.${groupIndex}.name`)} members
-        </p>
+        <div>
+          <p className="title-text">
+            {watch(`groups.${groupIndex}.name`)} members
+          </p>
+          <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
+        </div>
 
-        <div className="flex flex-row gap-2 justify-between items-center">
-          <p className="text-right caption-text">Voting power</p>
-
-          <div>
-            <NumberInput
-              error={errors.groups?.[groupIndex]?.weight}
-              label={`groups.${groupIndex}.weight`}
-              onPlusMinus={[
-                () =>
-                  setValue(
-                    `groups.${groupIndex}.weight`,
-                    Math.max(
-                      Math.min(watch(`groups.${groupIndex}.weight`) + 1, 100),
-                      0
-                    )
-                  ),
-                () =>
-                  setValue(
-                    `groups.${groupIndex}.weight`,
-                    Math.max(
-                      Math.min(watch(`groups.${groupIndex}.weight`) - 1, 100),
-                      0
-                    )
-                  ),
-              ]}
-              register={register}
-              required
-              sizing="sm"
-              step={1}
-              validation={[validatePositive]}
-            />
-            <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+        <div className="flex flex-col items-center">
+          <div className="flex flex-row gap-2 justify-between items-center">
+            <p className="text-right caption-text">Voting power</p>
+            <div>
+              <NumberInput
+                error={errors.groups?.[groupIndex]?.weight}
+                label={`groups.${groupIndex}.weight`}
+                onPlusMinus={[
+                  () =>
+                    setValue(
+                      `groups.${groupIndex}.weight`,
+                      Math.max(
+                        Math.min(watch(`groups.${groupIndex}.weight`) + 1, 100),
+                        0
+                      )
+                    ),
+                  () =>
+                    setValue(
+                      `groups.${groupIndex}.weight`,
+                      Math.max(
+                        Math.min(watch(`groups.${groupIndex}.weight`) - 1, 100),
+                        0
+                      )
+                    ),
+                ]}
+                register={register}
+                sizing="sm"
+                step={1}
+                validation={[validatePositive, validateRequired]}
+              />
+            </div>
+            <p className="primary-text">%</p>
           </div>
-          <p className="primary-text">%</p>
+
+          <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
         </div>
       </div>
 
@@ -216,9 +224,11 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
           label={`groups.${groupIndex}.members.${memberIndex}.address`}
           placeholder="Member's address..."
           register={register}
-          required
+          validation={[validateAddress, validateRequired]}
         />
-        <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+        <InputErrorMessage
+          error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+        />
       </div>
 
       {variableVotingWeightsEnabled ? (
@@ -227,7 +237,9 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
 
           <div>
             <NumberInput
-              error={errors.groups?.[groupIndex]?.weight}
+              error={
+                errors.groups?.[groupIndex]?.members?.[memberIndex]?.proportion
+              }
               label={`groups.${groupIndex}.members.${memberIndex}.proportion`}
               onPlusMinus={[
                 () =>
@@ -258,12 +270,15 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
                   ),
               ]}
               register={register}
-              required
               sizing="sm"
               step={1}
-              validation={[validatePositive]}
+              validation={[validatePositive, validateRequired]}
             />
-            <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+            <InputErrorMessage
+              error={
+                errors.groups?.[groupIndex]?.members?.[memberIndex]?.proportion
+              }
+            />
           </div>
           <p className="primary-text">%</p>
         </div>

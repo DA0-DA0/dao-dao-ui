@@ -3,9 +3,12 @@ import { useCallback, useEffect, useMemo } from 'react'
 import {
   FieldPath,
   FieldValues,
+  FormState,
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
+  UseFormClearErrors,
+  UseFormSetError,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useRecoilState } from 'recoil'
@@ -33,11 +36,20 @@ import {
   newOrgAtom,
 } from '@/atoms/org'
 
+export type CustomValidation = (
+  values: NewOrg,
+  errors: FormState<NewOrg>['errors'],
+  setError: UseFormSetError<NewOrg>,
+  clearErrors: UseFormClearErrors<NewOrg>,
+  noNewErrors?: boolean
+) => boolean
+
 interface OrgFormPage {
   href: string
   label: string
   ensureFieldSetBeforeContinuing?: FieldPath<NewOrg>
 }
+
 export const createOrgFormPages: OrgFormPage[] = [
   {
     href: '/org/create',
@@ -61,7 +73,10 @@ enum CreateOrgSubmitLabel {
   CreateOrg = 'Create Org',
 }
 
-export const useCreateOrgForm = (pageIndex: number) => {
+export const useCreateOrgForm = (
+  pageIndex: number,
+  customValidation?: CustomValidation
+) => {
   const router = useRouter()
   const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
   const { connected, address: walletAddress } = useWallet()
@@ -75,6 +90,8 @@ export const useCreateOrgForm = (pageIndex: number) => {
     control,
     setValue,
     resetField,
+    setError,
+    clearErrors,
   } = useForm({ defaultValues: newOrg })
 
   // Ensure previous pages are valid and navigate if not.
@@ -178,9 +195,20 @@ export const useCreateOrgForm = (pageIndex: number) => {
     </div>
   )
 
-  const formOnSubmit = useMemo(
+  const _handleSubmit = useMemo(
     () => handleSubmit(onSubmit, onError),
     [handleSubmit, onSubmit, onError]
+  )
+
+  const formOnSubmit = useCallback(
+    (...args: Parameters<typeof _handleSubmit>) => {
+      // Validate here instead of in onSubmit since custom errors prevent
+      // form submission. customValidation will set/clear custom errors.
+      customValidation?.(getValues(), errors, setError, clearErrors)
+
+      return _handleSubmit(...args)
+    },
+    [_handleSubmit, customValidation, getValues, errors, setError, clearErrors]
   )
 
   return {
@@ -192,6 +220,8 @@ export const useCreateOrgForm = (pageIndex: number) => {
     control,
     setValue,
     resetField,
+    setError,
+    clearErrors,
     Navigation,
   }
 }

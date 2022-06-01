@@ -91,7 +91,11 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
           step={step}
           type="number"
           {...props}
-          {...register(label, { required: required && 'Required', validate })}
+          {...register(label, {
+            required: required && 'Required',
+            validate,
+            valueAsNumber: true,
+          })}
         />
       </div>
     )
@@ -109,7 +113,11 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
       step={step}
       type="number"
       {...props}
-      {...register(label, { required: required && 'Required', validate })}
+      {...register(label, {
+        required: required && 'Required',
+        validate,
+        valueAsNumber: true,
+      })}
     />
   )
 }

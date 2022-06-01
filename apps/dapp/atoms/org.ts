@@ -73,6 +73,7 @@ export interface NewOrg {
   description: string
   imageUrl?: string
   groups: NewOrgGroup[]
+  _groupsError?: undefined
   votingDuration: DurationWithUnits
   variableVotingWeightsEnabled: boolean
   variableVotingWeightsOptions: {
@@ -110,6 +111,7 @@ export interface NewOrgGroup {
   name: string
   weight: number
   members: NewOrgGroupMember[]
+  _error?: undefined
 }
 
 export interface NewOrgGroupMember {

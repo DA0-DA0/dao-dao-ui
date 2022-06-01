@@ -16,7 +16,12 @@ import {
   SubmitButton,
   TextInput,
 } from '@dao-dao/ui'
-import { validateNonNegative, validatePositive } from '@dao-dao/utils'
+import {
+  validateContractAddress,
+  validateNonNegative,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import {
   DefaultNewOrg,
@@ -30,13 +35,64 @@ import {
 import { CreateOrgGroup } from '@/components/org/create/CreateOrgGroup'
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
+import { CustomValidation, useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
 interface NewGroupNameForm {
   name: string
 }
 
 const CreateOrgVotingPage: FC = () => {
+  // Validate group weights and member proportions add up to 100%.
+  const _checkValidVotingWeights: CustomValidation = useCallback(
+    (
+      { groups },
+      errors,
+      setError,
+      clearErrors,
+      // Only set or clear error if error is already set. This is useful
+      // to ensure errors are up to date as values change without showing
+      // errors for values that are still being input and are not ready for
+      // validation.
+      noNewErrors = false
+    ) => {
+      let valid = true
+
+      if (!noNewErrors || errors._groupsError) {
+        const totalWeight =
+          groups.reduce((acc, { weight }) => acc + weight, 0) || 0
+        if (totalWeight !== 100) {
+          setError('_groupsError', {
+            message: `Total group voting power must be 100%, but is currently ${totalWeight.toLocaleString()}%`,
+          })
+          valid = false
+        } else {
+          clearErrors('_groupsError')
+        }
+      }
+
+      groups.forEach((group, groupIndex) => {
+        if (noNewErrors && !errors.groups?.[groupIndex]?._error) {
+          return
+        }
+
+        const totalGroupProportion =
+          group.members.reduce((acc, { proportion }) => acc + proportion, 0) ||
+          0
+        if (totalGroupProportion !== 100) {
+          setError(`groups.${groupIndex}._error`, {
+            message: `Member proportions must add up to 100%, but currently add up to ${totalGroupProportion.toLocaleString()}%`,
+          })
+          valid = false
+        } else {
+          clearErrors(`groups.${groupIndex}._error`)
+        }
+      })
+
+      return valid
+    },
+    []
+  )
+
   const {
     control,
     register,
@@ -46,7 +102,45 @@ const CreateOrgVotingPage: FC = () => {
     setValue,
     resetField,
     Navigation,
-  } = useCreateOrgForm(1)
+    getValues,
+    setError,
+    clearErrors,
+  } = useCreateOrgForm(1, _checkValidVotingWeights)
+
+  // To call manually when changing data.
+  const checkValidVotingWeights = useCallback(
+    (noNewErrors = false) =>
+      _checkValidVotingWeights(
+        getValues(),
+        errors,
+        setError,
+        clearErrors,
+        noNewErrors
+      ),
+    [_checkValidVotingWeights, getValues, errors, setError, clearErrors]
+  )
+  // Check voting weights when any group weight or member proportion
+  // changes, or groups/members are added/removed. Only update existing
+  // errors, not creating any new errors. New errors will be displayed on
+  // attempted submit/page progression as usual.
+  useEffect(() => {
+    checkValidVotingWeights(true)
+  }, [
+    checkValidVotingWeights,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    getValues('groups')
+      .map(({ weight }, idx) => `${idx}:${weight}`)
+      .join(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    getValues('groups')
+      .flatMap(({ members }, groupIdx) =>
+        members?.map(
+          ({ proportion }, memberIdx) =>
+            `${groupIdx}:${memberIdx}:${proportion}`
+        )
+      )
+      .join(),
+  ])
 
   const {
     fields: groups,
@@ -65,7 +159,7 @@ const CreateOrgVotingPage: FC = () => {
   } = useForm<NewGroupNameForm>()
   const onSubmitNewGroupName: SubmitHandler<NewGroupNameForm> = useCallback(
     ({ name }) => {
-      appendGroup({ name })
+      appendGroup({ name, weight: 20 })
       setAddGroupModalOpen(false)
     },
     [appendGroup]
@@ -74,7 +168,7 @@ const CreateOrgVotingPage: FC = () => {
   const variableVotingWeightsEnabled = watch('variableVotingWeightsEnabled')
   const distributeGroupVoteWeightEvenly = useCallback(
     (index?: number) => {
-      watch('groups')
+      getValues('groups')
         ?.filter((_, idx) => index === undefined || index === idx)
         .forEach((group, groupIndex) => {
           // Evenly distributed so redistribute proportionally.
@@ -90,12 +184,14 @@ const CreateOrgVotingPage: FC = () => {
           )
         })
     },
-    [watch, setValue]
+    [getValues, setValue]
   )
   // When variable voting weights is disabled, reset group member weights.
   useEffect(() => {
-    if (!variableVotingWeightsEnabled) distributeGroupVoteWeightEvenly()
-  }, [distributeGroupVoteWeightEvenly, variableVotingWeightsEnabled])
+    if (!variableVotingWeightsEnabled && getValues('groups').length > 0) {
+      distributeGroupVoteWeightEvenly()
+    }
+  }, [distributeGroupVoteWeightEvenly, variableVotingWeightsEnabled, getValues])
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
@@ -138,16 +234,20 @@ const CreateOrgVotingPage: FC = () => {
             />
           ))}
 
-          <Button
-            className="self-start"
-            onClick={() => {
-              newGroupNameReset()
-              setAddGroupModalOpen(true)
-            }}
-            variant="secondary"
-          >
-            Add group
-          </Button>
+          <div className="flex flex-col">
+            <Button
+              className="self-start"
+              onClick={() => {
+                newGroupNameReset()
+                setAddGroupModalOpen(true)
+              }}
+              variant="secondary"
+            >
+              Add group
+            </Button>
+
+            <InputErrorMessage error={errors._groupsError} />
+          </div>
         </div>
 
         <CreateOrgConfigCard
@@ -172,17 +272,16 @@ const CreateOrgVotingPage: FC = () => {
                 ),
             ]}
             register={register}
-            required
             sizing="sm"
             step={1}
-            validation={[validatePositive]}
+            validation={[validatePositive, validateRequired]}
           />
 
           <SelectInput
             error={errors.votingDuration?.units}
             label="votingDuration.units"
             register={register}
-            required
+            validation={[validateRequired]}
           >
             {DurationUnitsValues.map((type, idx) => (
               <option key={idx} value={type}>
@@ -301,9 +400,8 @@ const CreateOrgVotingPage: FC = () => {
                               ),
                           ]}
                           register={register}
-                          required
                           step={1}
-                          validation={[validatePositive]}
+                          validation={[validatePositive, validateRequired]}
                         />
 
                         <div className="hidden flex-row gap-2 items-center text-tertiary xs:flex">
@@ -365,7 +463,7 @@ const CreateOrgVotingPage: FC = () => {
                         label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.symbol"
                         placeholder="Define a symbol..."
                         register={register}
-                        required
+                        validation={[validateRequired]}
                       />
                       <InputErrorMessage
                         error={
@@ -385,7 +483,7 @@ const CreateOrgVotingPage: FC = () => {
                         label="variableVotingWeightsOptions.governanceTokenOptions.newGovernanceToken.name"
                         placeholder="Name your token..."
                         register={register}
-                        required
+                        validation={[validateRequired]}
                       />
                       <InputErrorMessage
                         error={
@@ -406,7 +504,7 @@ const CreateOrgVotingPage: FC = () => {
                     label="variableVotingWeightsOptions.governanceTokenOptions.existingGovernanceTokenAddress"
                     placeholder="Token contract address..."
                     register={register}
-                    required
+                    validation={[validateContractAddress, validateRequired]}
                   />
                   <InputErrorMessage
                     error={
@@ -525,10 +623,9 @@ const CreateOrgVotingPage: FC = () => {
                     ),
                 ]}
                 register={register}
-                required
                 sizing="sm"
                 step={1}
-                validation={[validateNonNegative]}
+                validation={[validateNonNegative, validateRequired]}
               />
 
               <SelectInput
@@ -538,7 +635,7 @@ const CreateOrgVotingPage: FC = () => {
                 }
                 label="variableVotingWeightsOptions.governanceTokenOptions.unregisterDuration.units"
                 register={register}
-                required
+                validation={[validateRequired]}
               >
                 {DurationUnitsValues.map((type, idx) => (
                   <option key={idx} value={type}>
@@ -601,10 +698,9 @@ const CreateOrgVotingPage: FC = () => {
                       ),
                   ]}
                   register={register}
-                  required
                   sizing="sm"
                   step={1}
-                  validation={[validatePositive]}
+                  validation={[validatePositive, validateRequired]}
                 />
               )}
 
@@ -615,7 +711,7 @@ const CreateOrgVotingPage: FC = () => {
                     value === 'majority' ? 'majority' : 75
                   )
                 }
-                required
+                validation={[validateRequired]}
               >
                 <option
                   selected={thresholdValue !== 'majority'}
@@ -655,10 +751,9 @@ const CreateOrgVotingPage: FC = () => {
                       ),
                   ]}
                   register={register}
-                  required
                   sizing="sm"
                   step={1}
-                  validation={[validateNonNegative]}
+                  validation={[validateNonNegative, validateRequired]}
                 />
               )}
 
@@ -672,7 +767,7 @@ const CreateOrgVotingPage: FC = () => {
                           ?.quorumValue ?? 'majority'
                   )
                 }
-                required
+                validation={[validateRequired]}
               >
                 <option selected={quorumValue !== 'majority'} value="percent">
                   %
@@ -699,7 +794,7 @@ const CreateOrgVotingPage: FC = () => {
               autoFocus
               label="name"
               register={newGroupNameRegister}
-              required
+              validation={[validateRequired]}
             />
             <SubmitButton className="w-full" label="Add group" />
           </form>

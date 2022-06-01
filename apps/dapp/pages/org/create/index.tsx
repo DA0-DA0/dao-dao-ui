@@ -6,6 +6,7 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/ui'
+import { validateRequired } from '@dao-dao/utils'
 
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
@@ -41,7 +42,7 @@ const CreateOrgPage: FC = () => {
                 label="name"
                 placeholder="Organization's name..."
                 register={register}
-                required
+                validation={[validateRequired]}
               />
               <InputErrorMessage error={errors.name} />
             </div>
