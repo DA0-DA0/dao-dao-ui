@@ -53,30 +53,34 @@ export const allContractsByCodeId = selectorFamily({
     },
 })
 
-export const contractInstantiateTime = selectorFamily<Date, string>({
-  key: 'contractInstantiateTimeSelector',
-  get:
-    (address: string) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
-      if (!client) {
-        return new Date()
-      }
+export const contractInstantiateTime = selectorFamily<Date | undefined, string>(
+  {
+    key: 'contractInstantiateTimeSelector',
+    get:
+      (address: string) =>
+      async ({ get }) => {
+        const client = get(cosmWasmClientSelector)
+        if (!client) {
+          return undefined
+        }
 
-      const events = await client.searchTx({
-        tags: [{ key: 'instantiate._contract_address', value: address }],
-      })
-      if (events.length == 0) {
-        return new Date()
-      }
-      // The timestamp field is available when running this query via the
-      // command line but is not available from CosmJS so we need to run a
-      // second query to get the block info.
-      const height = events[0].height
-      const block = await client.getBlock(height)
-      return new Date(Date.parse(block.header.time))
-    },
-})
+        const events = await client.searchTx({
+          tags: [{ key: 'instantiate._contract_address', value: address }],
+        })
+        if (events.length == 0) {
+          // Failed to locate the instantiate transaction. This happens if the
+          // RPC node doesn't have historical data this far back.
+          return undefined
+        }
+        // The timestamp field is available when running this query via the
+        // command line but is not available from CosmJS so we need to run a
+        // second query to get the block info.
+        const height = events[0].height
+        const block = await client.getBlock(height)
+        return new Date(Date.parse(block.header.time))
+      },
+  }
+)
 
 interface IPagedContractsByCodeId {
   contracts: string[]
