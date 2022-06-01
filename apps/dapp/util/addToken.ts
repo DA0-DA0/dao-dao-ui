@@ -1,4 +1,4 @@
-import { errorNotify, successNotify } from './toast'
+import toast from 'react-hot-toast'
 
 export function addToken(address: string) {
   if (typeof window !== 'undefined') {
@@ -6,10 +6,10 @@ export function addToken(address: string) {
       .suggestToken(process.env.NEXT_PUBLIC_CHAIN_ID as string, address)
       .catch((e: any) => {
         console.log(e)
-        errorNotify(e.message)
+        toast.error(e.message)
       })
       .then(() => {
-        successNotify('Added token to Keplr')
+        toast.success('Added token to Keplr')
       })
   }
 }

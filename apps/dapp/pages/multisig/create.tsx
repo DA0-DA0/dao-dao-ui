@@ -4,6 +4,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import { useFieldArray, useForm, Validate } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useSetRecoilState } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
@@ -42,7 +43,6 @@ import {
 } from '@/components/TooltipsDisplay/multisigCreate'
 import { cleanChainError } from '@/util/cleanChainError'
 import { makeMultisigInstantiateMessage } from '@/util/messagehelpers'
-import { errorNotify, successNotify } from '@/util/toast'
 
 const DEFAULT_MAX_VOTING_PERIOD_SECONDS = '604800'
 
@@ -91,7 +91,7 @@ const InnerCreateMultisig: FC = () => {
   const threshold = watch('threshold')
 
   useEffect(() => {
-    if (error) errorNotify(cleanChainError(error))
+    if (error) toast.error(cleanChainError(error))
   }, [error])
 
   const setPinnedMultisigs = useSetRecoilState(pinnedMultisigsAtom)
@@ -135,7 +135,7 @@ const InnerCreateMultisig: FC = () => {
           )
         }
 
-        successNotify('New multisig created')
+        toast.success('New multisig created')
       })
       .catch((err: any) => {
         setLoading(false)
