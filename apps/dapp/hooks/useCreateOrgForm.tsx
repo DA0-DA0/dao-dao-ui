@@ -404,7 +404,7 @@ const createOrg = async (
       }
     validateCwProposalSingleInstantiateMsg(cwProposalSingleModuleInstantiateMsg)
 
-    const msg: CwCoreInstantiateMsg = {
+    const cwCoreInstantiateMsg: CwCoreInstantiateMsg = {
       admin: null,
       automatically_add_cw20s: true,
       automatically_add_cw721s: true,
@@ -437,7 +437,10 @@ const createOrg = async (
       },
     }
 
-    const { contractAddress } = await instantiate(msg, msg.name)
+    const { contractAddress } = await instantiate(
+      cwCoreInstantiateMsg,
+      cwCoreInstantiateMsg.name
+    )
     return contractAddress
   } catch (err) {
     console.error(err)
