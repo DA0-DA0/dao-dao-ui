@@ -1,29 +1,30 @@
 import { ArcElement, Chart as ChartJS } from 'chart.js'
+import clsx from 'clsx'
 import { FC } from 'react'
 import { Pie } from 'react-chartjs-2'
 
 ChartJS.register(ArcElement)
 
 interface Segment {
-  name: string
+  name?: string
   percent: number
   color: string
 }
 
 interface TokenDistributionPieProps {
-  segments: Segment[]
+  data: Segment[]
 }
 
 export const TokenDistributionPie: FC<TokenDistributionPieProps> = ({
-  segments,
+  data,
 }) => (
   <Pie
     className="justify-self-center !w-32 !h-32 md:!w-48 md:!h-48"
     data={{
       datasets: [
         {
-          data: segments.map(({ percent }) => percent),
-          backgroundColor: segments.map((a) => a.color),
+          data: data.map(({ percent }) => percent),
+          backgroundColor: data.map((a) => a.color),
           borderWidth: 0,
         },
       ],
@@ -36,11 +37,13 @@ export const TokenDistributionPie: FC<TokenDistributionPieProps> = ({
   />
 )
 
-export const TokenDistributionPieLegend: FC<TokenDistributionPieProps> = ({
-  segments,
-}) => (
+type TokenDistributionPieLegendProps = TokenDistributionPieProps
+
+export const TokenDistributionPieLegend: FC<
+  TokenDistributionPieLegendProps
+> = ({ data }) => (
   <div className="flex flex-col gap-1 md:gap-2">
-    {segments.map((allocation) => (
+    {data.map((allocation) => (
       <LegendItem key={allocation.name} data={allocation} />
     ))}
   </div>
@@ -55,14 +58,17 @@ const LegendItem: FC<LegendItemProps> = ({
 }) => (
   <div
     key={name}
-    className="grid grid-cols-[0.25rem_6ch_auto] gap-5 items-center"
+    className={clsx('grid gap-5 items-center', {
+      'grid-cols-[0.25rem_7ch_auto]': !name,
+      'grid-cols-[0.25rem_auto_7ch]': name,
+    })}
   >
     <div
       className="shrink-0 w-2 h-2 rounded-full"
       style={{ backgroundColor: color }}
     ></div>
 
-    <p className="primary-text">{name}</p>
+    {!!name && <p className="truncate primary-text">{name}</p>}
 
     <p className="font-mono text-sm text-right text-tertiary">
       {percent.toLocaleString(undefined, {
