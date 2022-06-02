@@ -33,11 +33,7 @@ export const ContractHeader: FC<ContractHeaderProps> = ({
     )}
     <div className="flex flex-col items-center">
       <h1 className="inline mt-5 header-text">{name}</h1>
-      {established ? (
-        <EstablishedDate date={established} />
-      ) : (
-        <EstablishedDateLoader />
-      )}
+      {established && <EstablishedDate date={established} />}
     </div>
     <div className="mt-2 mb-4">
       <p className="whitespace-pre-wrap body-text">{description}</p>
