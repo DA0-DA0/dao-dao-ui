@@ -37,6 +37,7 @@ import {
 } from '@/components/org/create/CreateOrgConfigCard'
 import { CreateOrgGroup } from '@/components/org/create/CreateOrgGroup'
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
+import { TokenDistribution } from '@/components/org/create/TokenDistribution'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { CustomValidation, useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -303,6 +304,10 @@ const CreateOrgVotingPage: FC = () => {
 
         {governanceTokenEnabled && (
           <div className="space-y-3">
+            <div className="p-10 bg-disabled rounded-lg">
+              <TokenDistribution watch={watch} />
+            </div>
+
             <RadioInput
               label="governanceTokenOptions.type"
               options={[
