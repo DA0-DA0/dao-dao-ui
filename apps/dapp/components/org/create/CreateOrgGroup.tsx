@@ -178,30 +178,32 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
   showColorDotOnMember,
 }) => (
   <div className="grid grid-cols-[1fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
-    <div className="flex flex-row gap-4 items-center">
-      {showColorDotOnMember && (
-        <div
-          className="shrink-0 w-2 h-2 rounded-full"
-          style={{
-            backgroundColor:
-              distributionColors[memberIndex % distributionColors.length],
-          }}
-        ></div>
-      )}
+    <div>
+      <div className="flex flex-row gap-4 items-center">
+        {showColorDotOnMember && (
+          <div
+            className="shrink-0 w-2 h-2 rounded-full"
+            style={{
+              backgroundColor:
+                distributionColors[memberIndex % distributionColors.length],
+            }}
+          ></div>
+        )}
 
-      <AddressInput
-        containerClassName="grow"
+        <AddressInput
+          containerClassName="grow"
+          error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+          label={`groups.${groupIndex}.members.${memberIndex}.address`}
+          placeholder="Member's address..."
+          register={register}
+          validation={[validateAddress, validateRequired]}
+        />
+      </div>
+
+      <InputErrorMessage
         error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-        label={`groups.${groupIndex}.members.${memberIndex}.address`}
-        placeholder="Member's address..."
-        register={register}
-        validation={[validateAddress, validateRequired]}
       />
     </div>
-
-    <InputErrorMessage
-      error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-    />
 
     <button className="justify-self-end" onClick={remove}>
       <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
