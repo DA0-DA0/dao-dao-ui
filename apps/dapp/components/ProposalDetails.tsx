@@ -245,14 +245,16 @@ export function ProposalDetails({
       setShowStaking={(s) => setShowStaking(s)}
       showStaking={showStaking}
       stakingModal={
-        <StakingModal
-          afterExecute={() => setTokenBalancesLoading(false)}
-          beforeExecute={() => setTokenBalancesLoading(true)}
-          claimableTokens={0}
-          contractAddress={contractAddress}
-          defaultMode={StakingMode.Stake}
-          onClose={() => setShowStaking(false)}
-        />
+        !multisig ? (
+          <StakingModal
+            afterExecute={() => setTokenBalancesLoading(false)}
+            beforeExecute={() => setTokenBalancesLoading(true)}
+            claimableTokens={0}
+            contractAddress={contractAddress}
+            defaultMode={StakingMode.Stake}
+            onClose={() => setShowStaking(false)}
+          />
+        ) : undefined
       }
       walletVote={walletVote}
       walletWeightPercent={weightPercent}
