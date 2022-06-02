@@ -78,8 +78,7 @@ export interface NewOrg {
   governanceTokenOptions: {
     type?: GovernanceTokenType
     newGovernanceToken: {
-      initialSupply: number
-      initialTreasuryPercent: number
+      initialTreasuryBalance: number
       imageUrl?: string
       symbol: string
       name: string
@@ -132,8 +131,7 @@ export const DefaultNewOrg: NewOrg = {
   governanceTokenOptions: {
     type: GovernanceTokenType.New,
     newGovernanceToken: {
-      initialSupply: 1000000,
-      initialTreasuryPercent: 90,
+      initialTreasuryBalance: 1000000,
       symbol: '',
       name: '',
     },

@@ -303,51 +303,31 @@ const createOrg = async (
           throw new Error('New governance token info not provided.')
         }
 
-        const {
-          initialSupply,
-          initialTreasuryPercent,
-          imageUrl,
-          symbol,
-          name,
-        } = newGovernanceToken
+        const { initialTreasuryBalance, imageUrl, symbol, name } =
+          newGovernanceToken
 
-        const microInitialSupply = Number(
+        const microInitialBalances: Cw20Coin[] = groups.flatMap(
+          ({ weight, members }) =>
+            members.map(({ address }) => ({
+              address,
+              amount: convertDenomToMicroDenomWithDecimals(
+                weight,
+                NEW_ORG_CW20_DECIMALS
+              ),
+            }))
+        )
+        const microInitialTreasuryBalance =
           convertDenomToMicroDenomWithDecimals(
-            initialSupply,
+            initialTreasuryBalance,
             NEW_ORG_CW20_DECIMALS
           )
-        )
-
-        // Distribute non-treasury supply to the members.
-        const microBalanceToDistribute =
-          microInitialSupply * (1 - initialTreasuryPercent / 100)
-        const microInitialBalances: Cw20Coin[] =
-          microBalanceToDistribute > 0
-            ? groups.flatMap(({ weight, members }) =>
-                members.map(({ address }) => ({
-                  address,
-                  amount: Math.round(
-                    (microBalanceToDistribute * (weight / 100)) / members.length
-                  ).toString(),
-                }))
-              )
-            : []
-        const microInitialBalanceDistributed = microInitialBalances.reduce(
-          (acc, { amount }) => acc + Number(amount),
-          0
-        )
-        // Compute treasury supply based on sum of distributed coins,
-        // since amount rounding at micro decimals may affect the total.
-        const microInitialDaoBalance = (
-          microInitialSupply - microInitialBalanceDistributed
-        ).toString()
 
         tokenInfo = {
           new: {
             code_id: CW20_CODE_ID,
             decimals: NEW_ORG_CW20_DECIMALS,
             initial_balances: microInitialBalances,
-            initial_dao_balance: microInitialDaoBalance,
+            initial_dao_balance: microInitialTreasuryBalance,
             label: name,
             marketing: imageUrl ? { logo: { url: imageUrl } } : null,
             name,

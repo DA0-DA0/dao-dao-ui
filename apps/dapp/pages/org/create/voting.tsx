@@ -1,5 +1,5 @@
 import Emoji from 'a11y-react-emoji'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
 import { PlaceholderToken } from '@dao-dao/icons'
@@ -62,15 +62,15 @@ const CreateOrgVotingPage: FC = () => {
 
       if (!noNewErrors || errors._groupsError) {
         const totalWeight =
-          groups.reduce((acc, { weight }) => acc + weight, 0) || 0
-        // Ensures all group voting weights sum to 100 which also ensures
-        // that at least one group exists.
-        if (totalWeight !== 100) {
+          groups.reduce(
+            (acc, { weight, members }) => acc + weight * members.length,
+            0
+          ) || 0
+        // Ensure voting power has been given to at least one member.
+        if (totalWeight === 0) {
           setError('_groupsError', {
             message:
-              totalWeight === 0
-                ? 'You have not given anyone voting power! Add some members to your org.'
-                : `Total group voting power must be 100%, but is currently ${totalWeight.toLocaleString()}%`,
+              'You have not given anyone voting power. Add some members to your org.',
           })
           valid = false
         } else {
@@ -112,6 +112,11 @@ const CreateOrgVotingPage: FC = () => {
     clearErrors,
   } = useCreateOrgForm(1, _validateGroups)
 
+  const _groups = watch('groups')
+  const _groupsChangedString = _groups
+    .map(({ weight, members }, idx) => `${idx}:${weight}:${members.join('_')}`)
+    .join()
+
   // To call manually when changing data.
   const validateGroups = useCallback(
     (noNewErrors = false) =>
@@ -127,11 +132,7 @@ const CreateOrgVotingPage: FC = () => {
   }, [
     validateGroups,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    getValues('groups')
-      .map(
-        ({ weight, members }, idx) => `${idx}:${weight}:${members.join('_')}`
-      )
-      .join(),
+    _groupsChangedString,
   ])
 
   const {
@@ -153,68 +154,12 @@ const CreateOrgVotingPage: FC = () => {
     ({ name }) => {
       appendGroup({
         name,
-        weight: getValues('governanceTokenEnabled') ? 20 : 1,
+        weight: getValues('governanceTokenEnabled') ? 1000 : 1,
         members: [],
       })
       setAddGroupModalOpen(false)
     },
     [appendGroup, getValues]
-  )
-
-  const onToggleGovernanceTokenEnabled = useCallback(
-    (newValue: boolean) => {
-      const groups = getValues('groups')
-
-      if (newValue) {
-        // Convert group weights per member to total group
-        // voting weight percent.
-        const totalWeight = groups.reduce(
-          (total, { weight, members }) =>
-            total + weight * (members.length || 1),
-          0
-        )
-        groups.forEach(({ weight, members }, index) =>
-          setValue(
-            `groups.${index}.weight`,
-            Math.min(
-              Math.max(
-                Number(
-                  (
-                    ((weight * (members.length || 1)) / totalWeight) *
-                    100
-                  ).toFixed(3)
-                ),
-                1
-              ),
-              100
-            )
-          )
-        )
-      } else {
-        // Reset option changes configured when switch was enabled.
-        resetField('governanceTokenOptions')
-
-        // Convert total group voting weight percent to group weights per
-        // member.
-
-        const totalWeight = groups.reduce(
-          (total, { weight }) => total + weight,
-          0
-        )
-        groups.forEach(({ weight, members }, index) =>
-          setValue(
-            `groups.${index}.weight`,
-            Math.max(
-              Math.round(
-                ((weight / 100) * totalWeight) / (members.length || 1)
-              ),
-              1
-            )
-          )
-        )
-      }
-    },
-    [getValues, resetField, setValue]
   )
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
@@ -225,9 +170,26 @@ const CreateOrgVotingPage: FC = () => {
   const newTokenImageUrl = watch(
     'governanceTokenOptions.newGovernanceToken.imageUrl'
   )
-  const initialTreasuryPercent = watch(
-    'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
+
+  const governanceTokenEnabled = watch('governanceTokenEnabled')
+  // Only count treasury balance when creating new governance token.
+  const initialTreasuryBalance =
+    governanceTokenEnabled &&
+    watch('governanceTokenOptions.type') === GovernanceTokenType.New
+      ? watch(
+          'governanceTokenOptions.newGovernanceToken.initialTreasuryBalance'
+        ) || 0
+      : 0
+  const memberWeightAllocated = useMemo(
+    () =>
+      _groups.reduce(
+        (acc, { weight, members }) => acc + weight * members.length,
+        0
+      ) || 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [_groupsChangedString]
   )
+  const totalWeightAllocated = memberWeightAllocated + initialTreasuryBalance
 
   return (
     <>
@@ -320,7 +282,10 @@ const CreateOrgVotingPage: FC = () => {
         <div className="flex flex-row gap-4 items-center">
           <FormSwitch
             label="governanceTokenEnabled"
-            onToggle={onToggleGovernanceTokenEnabled}
+            // Reset option changes configured when switch was enabled.
+            onToggle={(newValue) =>
+              !newValue && resetField('governanceTokenOptions')
+            }
             setValue={setValue}
             watch={watch}
           />
@@ -336,7 +301,7 @@ const CreateOrgVotingPage: FC = () => {
           </div>
         </div>
 
-        {watch('governanceTokenEnabled') && (
+        {governanceTokenEnabled && (
           <div className="space-y-3">
             <RadioInput
               label="governanceTokenOptions.type"
@@ -359,7 +324,7 @@ const CreateOrgVotingPage: FC = () => {
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
                     <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">Total supply</p>
+                      <p className="primary-text">Treasury balance</p>
 
                       <div>
                         <div className="flex flex-row grow gap-4 items-center">
@@ -367,28 +332,24 @@ const CreateOrgVotingPage: FC = () => {
                             containerClassName="grow"
                             error={
                               errors.governanceTokenOptions?.newGovernanceToken
-                                ?.initialSupply
+                                ?.initialTreasuryBalance
                             }
-                            label="governanceTokenOptions.newGovernanceToken.initialSupply"
+                            label="governanceTokenOptions.newGovernanceToken.initialTreasuryBalance"
                             onPlusMinus={[
                               () =>
                                 setValue(
-                                  'governanceTokenOptions.newGovernanceToken.initialSupply',
+                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryBalance',
                                   Math.max(
-                                    watch(
-                                      'governanceTokenOptions.newGovernanceToken.initialSupply'
-                                    ) + 1,
-                                    0
+                                    initialTreasuryBalance + 1,
+                                    1 / 10 ** NEW_ORG_CW20_DECIMALS
                                   )
                                 ),
                               () =>
                                 setValue(
-                                  'governanceTokenOptions.newGovernanceToken.initialSupply',
+                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryBalance',
                                   Math.max(
-                                    watch(
-                                      'governanceTokenOptions.newGovernanceToken.initialSupply'
-                                    ) - 1,
-                                    0
+                                    initialTreasuryBalance - 1,
+                                    1 / 10 ** NEW_ORG_CW20_DECIMALS
                                   )
                                 ),
                             ]}
@@ -423,93 +384,37 @@ const CreateOrgVotingPage: FC = () => {
                         <InputErrorMessage
                           error={
                             errors.governanceTokenOptions?.newGovernanceToken
-                              ?.initialSupply
+                              ?.initialTreasuryBalance
                           }
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">Treasury allocation</p>
-
-                      <div>
-                        <div className="flex flex-row grow gap-2 items-center">
-                          <NumberInput
-                            containerClassName="grow"
-                            error={
-                              errors.governanceTokenOptions?.newGovernanceToken
-                                ?.initialTreasuryPercent
-                            }
-                            label="governanceTokenOptions.newGovernanceToken.initialTreasuryPercent"
-                            onPlusMinus={[
-                              () =>
-                                setValue(
-                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
-                                  Math.max(
-                                    Math.min(
-                                      watch(
-                                        'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
-                                      ) + 1,
-                                      100
-                                    ),
-                                    0
-                                  )
-                                ),
-                              () =>
-                                setValue(
-                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent',
-                                  Math.max(
-                                    Math.min(
-                                      watch(
-                                        'governanceTokenOptions.newGovernanceToken.initialTreasuryPercent'
-                                      ) - 1,
-                                      100
-                                    ),
-                                    0
-                                  )
-                                ),
-                            ]}
-                            register={register}
-                            sizing="sm"
-                            step={0.001}
-                            validation={[
-                              (v: number) =>
-                                isNaN(v) || v < 0 || v > 100
-                                  ? 'Invalid percentage'
-                                  : v === 100
-                                  ? 'You cannot give 100% of the voting power to the treasury, as an org with no members cannot do anything. Decrease this value and ensure that the org has at least one member.'
-                                  : true,
-                            ]}
-                          />
-
-                          <p className="text-tertiary text-mono">%</p>
-                        </div>
-
-                        <InputErrorMessage
-                          error={
-                            errors.governanceTokenOptions?.newGovernanceToken
-                              ?.initialTreasuryPercent
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {typeof initialTreasuryPercent === 'number' &&
-                      initialTreasuryPercent >= 0 &&
-                      initialTreasuryPercent < 100 && (
-                        <p className="self-end my-2 max-w-prose text-right caption-text">
-                          The remaining{' '}
-                          {(100 - (initialTreasuryPercent || 0)).toLocaleString(
-                            undefined,
-                            {
-                              maximumFractionDigits: 3,
-                            }
-                          )}
-                          % of the tokens will be distributed according to the
-                          groups defined above. Tokens in the treasury do not
-                          count against the voting power of members.
-                        </p>
-                      )}
+                    <p className="self-end my-2 max-w-prose text-right tertiary-text">
+                      {totalWeightAllocated.toLocaleString(undefined, {
+                        maximumFractionDigits: NEW_ORG_CW20_DECIMALS,
+                      })}{' '}
+                      tokens will be minted.{' '}
+                      {totalWeightAllocated === 0
+                        ? 0
+                        : (
+                            (memberWeightAllocated / totalWeightAllocated) *
+                            100
+                          ).toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                      % will be sent to the members according to the
+                      distribution above. The remaining{' '}
+                      {totalWeightAllocated === 0
+                        ? 0
+                        : (
+                            (initialTreasuryBalance / totalWeightAllocated) *
+                            100
+                          ).toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                      % will begin in the treasury.
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">

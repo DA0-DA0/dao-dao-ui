@@ -17,12 +17,11 @@ import {
 } from '@dao-dao/ui'
 import {
   validateAddress,
-  validatePercent,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
-import { NewOrg } from '@/atoms/org'
+import { NewOrg, NEW_ORG_CW20_DECIMALS } from '@/atoms/org'
 
 interface CreateOrgGroupProps {
   groupIndex: number
@@ -61,7 +60,9 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
 
         <div className="flex flex-col items-center">
           <div className="flex flex-row gap-2 items-center">
-            <p className="text-right caption-text">Voting power</p>
+            <p className="text-right caption-text">
+              {governanceTokenEnabled ? 'Tokens' : 'Voting power'}
+            </p>
             <div>
               <NumberInput
                 error={errors.groups?.[groupIndex]?.weight}
@@ -70,49 +71,37 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                   () =>
                     setValue(
                       `groups.${groupIndex}.weight`,
-                      governanceTokenEnabled
-                        ? Math.max(
-                            Math.min(
-                              watch(`groups.${groupIndex}.weight`) + 1,
-                              100
-                            ),
-                            1
-                          )
-                        : Math.max(watch(`groups.${groupIndex}.weight`) + 1, 1)
+                      Math.max(
+                        watch(`groups.${groupIndex}.weight`) + 1,
+                        governanceTokenEnabled
+                          ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
+                          : 1
+                      )
                     ),
                   () =>
                     setValue(
                       `groups.${groupIndex}.weight`,
-                      governanceTokenEnabled
-                        ? Math.max(
-                            Math.min(
-                              watch(`groups.${groupIndex}.weight`) - 1,
-                              100
-                            ),
-                            1
-                          )
-                        : Math.max(watch(`groups.${groupIndex}.weight`) - 1, 1)
+                      Math.max(
+                        watch(`groups.${groupIndex}.weight`) - 1,
+                        governanceTokenEnabled
+                          ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
+                          : 1
+                      )
                     ),
                 ]}
                 register={register}
-                sizing="sm"
-                step={governanceTokenEnabled ? 0.001 : 1}
-                validation={[
-                  validatePositive,
-                  validateRequired,
-                  ...(governanceTokenEnabled ? [validatePercent] : []),
-                ]}
+                sizing={governanceTokenEnabled ? 'md' : 'sm'}
+                step={
+                  governanceTokenEnabled ? 1 / 10 ** NEW_ORG_CW20_DECIMALS : 1
+                }
+                validation={[validatePositive, validateRequired]}
               />
             </div>
-            {governanceTokenEnabled ? (
-              <p className="primary-text">%</p>
-            ) : (
-              <p className="secondary-text">
-                per
-                <br />
-                member
-              </p>
-            )}
+            <p className="secondary-text">
+              per
+              <br />
+              member
+            </p>
           </div>
 
           <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
@@ -160,10 +149,9 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
   memberIndex,
   register,
   errors,
-  watch,
   remove,
 }) => (
-  <div className="grid grid-cols-[5fr_2fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
+  <div className="grid grid-cols-[1fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
     <div className="grow">
       <AddressInput
         error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
@@ -176,24 +164,6 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
         error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
       />
     </div>
-
-    <p className="text-xs text-center sm:text-sm">
-      {watch('governanceTokenEnabled') ? (
-        <>
-          Proportion:{' '}
-          <span className="font-mono">
-            1/{(watch(`groups.${groupIndex}.members`) || []).length}
-          </span>
-        </>
-      ) : (
-        <>
-          Voting power:{' '}
-          <span className="font-mono">
-            {watch(`groups.${groupIndex}.weight`)}
-          </span>
-        </>
-      )}
-    </p>
 
     <button className="justify-self-end" onClick={remove}>
       <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
