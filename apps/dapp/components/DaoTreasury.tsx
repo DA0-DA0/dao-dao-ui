@@ -19,7 +19,7 @@ export const DaoTreasury: FC = () => {
   )
   const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
 
-  if (!config || !governanceTokenAddress) {
+  if (!config) {
     throw new Error('Failed to load data.')
   }
 
@@ -27,12 +27,14 @@ export const DaoTreasury: FC = () => {
     <div>
       <div className="flex gap-1 justify-between">
         <h2 className="primary-text">Treasury</h2>
-        <Button
-          onClick={() => addToken(governanceTokenAddress)}
-          variant="ghost"
-        >
-          Add Token <PlusSmIcon className="w-4 h-4" />
-        </Button>
+        {governanceTokenAddress && (
+          <Button
+            onClick={() => addToken(governanceTokenAddress)}
+            variant="ghost"
+          >
+            Add Token <PlusSmIcon className="w-4 h-4" />
+          </Button>
+        )}
       </div>
       <SuspenseLoader fallback={<Loader />}>
         <TreasuryBalances />

@@ -1,25 +1,26 @@
 import clsx from 'clsx'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
+import { Member } from '@dao-dao/state/clients/cw4-voting'
 import { VoteBalanceCard } from '@dao-dao/ui'
 
 export interface MultisigMembersListProps {
-  visitorAddress: string | undefined
-  visitorWeight: number | undefined
-  memberList: { addr: string; weight: number }[]
+  walletAddress?: string
+  walletWeight?: number
+  members: Member[]
   totalWeight: number
   primaryText?: boolean
 }
 
 export const MultisigMemberList: FC<MultisigMembersListProps> = ({
-  visitorAddress,
-  visitorWeight,
-  memberList,
+  walletAddress,
+  walletWeight,
+  members,
   totalWeight,
   primaryText,
 }) => (
   <div className="flex flex-wrap gap-4">
-    {!!visitorWeight && (
+    {!!walletWeight && (
       <div className="flex-1">
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
@@ -30,15 +31,15 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
           <li>
             <VoteBalanceCard
               addrTitle
-              title={visitorAddress as string}
-              weight={visitorWeight}
+              title={walletAddress as string}
+              weight={walletWeight}
               weightTotal={totalWeight}
             />
           </li>
         </ul>
       </div>
     )}
-    {memberList.length != 0 && (
+    {!!members.length && (
       <div className="flex-1">
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
@@ -46,7 +47,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
           Member shares
         </h2>
         <ul className="mt-2 list-none">
-          {memberList.map((member) => (
+          {members.map((member) => (
             <li key={member.addr}>
               <VoteBalanceCard
                 addrTitle
@@ -59,5 +60,33 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
         </ul>
       </div>
     )}
+  </div>
+)
+
+interface MultisigMembersListLoaderProps
+  extends Pick<MultisigMembersListProps, 'primaryText'> {
+  loader: ReactNode
+}
+
+export const MultisigMemberListLoader: FC<MultisigMembersListLoaderProps> = ({
+  primaryText,
+  loader,
+}) => (
+  <div className="flex flex-wrap gap-4">
+    <div className="flex-1">
+      <h2 className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}>
+        Your shares
+      </h2>
+
+      {loader}
+    </div>
+
+    <div className="flex-1">
+      <h2 className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}>
+        Member shares
+      </h2>
+
+      {loader}
+    </div>
   </div>
 )

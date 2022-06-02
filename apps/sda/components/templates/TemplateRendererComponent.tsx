@@ -17,6 +17,7 @@ const InnerTemplateRendererComponent: FunctionComponent<
 > = ({ message }) => {
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
 
+  // TODO: Add cw4-voting support.
   const { template = undefined, data = undefined } = governanceTokenInfo
     ? templateAndDataForDecodedCosmosMsg(message, {
         govTokenDecimals: governanceTokenInfo.decimals ?? 1,

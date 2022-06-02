@@ -1,11 +1,10 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
-import { constSelector, useRecoilState, useRecoilValueLoadable } from 'recoil'
+import { useRecoilState } from 'recoil'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { useWallet } from '@dao-dao/state'
-import { stakedValueSelector } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
+import { useVotingModule } from '@dao-dao/state'
 import {
   useThemeContext,
   GradientHero,
@@ -13,6 +12,7 @@ import {
   Breadcrumbs,
   MobileMenuTab,
 } from '@dao-dao/ui'
+import { VotingModuleType } from '@dao-dao/utils'
 
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { ContractHeader } from '@/components/ContractHeader'
@@ -21,6 +21,7 @@ import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import { PageLoader } from '@/components/Loader'
+import { MultisigMemberList } from '@/components/MultisigMemberList'
 import { OrgMobileHeader } from '@/components/OrgMobileHeader'
 import {
   makeGetOrgStaticProps,
@@ -36,12 +37,14 @@ import { getFastAverageColor } from '@/util/colors'
 
 enum MobileMenuTabSelection {
   Proposal,
+  Members,
   Staking,
   Treasury,
   Info,
 }
 
 const InnerMobileDaoHome: FC = () => {
+  const { votingModuleType } = useOrgInfoContext()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -58,12 +61,21 @@ const InnerMobileDaoHome: FC = () => {
           selected={tab === MobileMenuTabSelection.Proposal}
           text="Proposal"
         />
-        <MobileMenuTab
-          icon="💵"
-          onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
-          selected={tab === MobileMenuTabSelection.Staking}
-          text="Staking"
-        />
+        {votingModuleType === VotingModuleType.Cw4Voting ? (
+          <MobileMenuTab
+            icon="👥"
+            onClick={makeTabSetter(MobileMenuTabSelection.Members)}
+            selected={tab === MobileMenuTabSelection.Members}
+            text="Members"
+          />
+        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
+          <MobileMenuTab
+            icon="💵"
+            onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
+            selected={tab === MobileMenuTabSelection.Staking}
+            text="Staking"
+          />
+        ) : null}
         <MobileMenuTab
           icon="🏛"
           onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
@@ -78,10 +90,13 @@ const InnerMobileDaoHome: FC = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Staking && <YourShares primaryText />}
         {tab === MobileMenuTabSelection.Proposal && (
           <ContractProposalsDisplay />
         )}
+        {tab === MobileMenuTabSelection.Members && (
+          <MultisigMemberList primaryText />
+        )}
+        {tab === MobileMenuTabSelection.Staking && <YourShares primaryText />}
         {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
           <DaoContractInfo hideTreasury />
@@ -91,29 +106,16 @@ const InnerMobileDaoHome: FC = () => {
   )
 }
 
-const InnerDaoHome: FC = () => {
+const InnerOrgHome: FC = () => {
   const router = useRouter()
 
-  const { address: walletAddress } = useWallet()
   const {
-    governanceTokenAddress,
-    stakingContractAddress,
+    votingModuleType,
     coreAddress,
+    governanceTokenAddress,
     name: orgName,
   } = useOrgInfoContext()
-
-  const walletStakedLoadable = useRecoilValueLoadable(
-    walletAddress
-      ? stakedValueSelector({
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
-  const isMember =
-    walletStakedLoadable.state === 'hasValue' &&
-    !isNaN(Number(walletStakedLoadable.contents?.value)) &&
-    Number(walletStakedLoadable.contents?.value) > 0
+  const { isMember } = useVotingModule(coreAddress)
 
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)
@@ -121,7 +123,7 @@ const InnerDaoHome: FC = () => {
 
   const shouldAddToken = router.query.add_token
   useEffect(() => {
-    if (shouldAddToken) {
+    if (shouldAddToken && governanceTokenAddress) {
       addToken(governanceTokenAddress)
     }
   }, [shouldAddToken, governanceTokenAddress])
@@ -154,7 +156,7 @@ const InnerDaoHome: FC = () => {
                       )
                     } else {
                       setPinnedAddresses((p) => p.concat([coreAddress]))
-                      addToken(governanceTokenAddress)
+                      governanceTokenAddress && addToken(governanceTokenAddress)
                     }
                   }}
                   pinned={pinned}
@@ -168,7 +170,12 @@ const InnerDaoHome: FC = () => {
               <DaoHorizontalInfoDisplay />
             </div>
             <div className="block mt-4 lg:hidden">
-              <YourShares />
+              {votingModuleType === VotingModuleType.Cw4Voting ? (
+                <MultisigMemberList />
+              ) : votingModuleType ===
+                VotingModuleType.Cw20StakedBalanceVoting ? (
+                <YourShares />
+              ) : null}
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
               <DaoContractInfo />
@@ -180,7 +187,11 @@ const InnerDaoHome: FC = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <YourShares />
+        {votingModuleType === VotingModuleType.Cw4Voting ? (
+          <MultisigMemberList />
+        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
+          <YourShares />
+        ) : null}
       </div>
     </div>
   )
@@ -227,7 +238,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
           <InnerMobileDaoHome />
         </div>
         <div className="hidden md:block">
-          <InnerDaoHome />
+          <InnerOrgHome />
         </div>
       </SuspenseLoader>
     </OrgPageWrapper>

@@ -18,6 +18,7 @@ const InnerTemplateRendererComponent: FunctionComponent<
   const { coreAddress } = useOrgInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
 
+  // TODO: Add cw4-voting support.
   const { template = undefined, data = undefined } = governanceTokenInfo
     ? templateAndDataForDecodedCosmosMsg(message, {
         govTokenDecimals: governanceTokenInfo.decimals ?? 1,
@@ -27,7 +28,7 @@ const InnerTemplateRendererComponent: FunctionComponent<
 
   // If could not load required state or did not match template, just
   // display raw message.
-  if (!governanceTokenInfo || !template || !data) {
+  if (!template || !data) {
     return (
       <CosmosMessageDisplay value={JSON.stringify(message, undefined, 2)} />
     )

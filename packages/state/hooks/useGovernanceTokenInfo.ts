@@ -1,7 +1,11 @@
+import { useMemo } from 'react'
 import { useRecoilValue, constSelector } from 'recoil'
 
 import { govTokenInfoSelector, useWallet } from '@dao-dao/state'
-import { votingModuleSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import {
+  infoSelector,
+  votingModuleSelector,
+} from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { balanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import {
   stakingContractSelector,
@@ -9,6 +13,7 @@ import {
 } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { parseVotingModuleContractName, VotingModuleType } from '@dao-dao/utils'
 
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
@@ -43,14 +48,30 @@ export const useGovernanceTokenInfo = (
   const votingModuleAddress = useRecoilValue(
     votingModuleSelector({ contractAddress: coreAddress })
   )
-  const stakingContractAddress = useRecoilValue(
+  // All `info` queries are the same, so just use cw-core's info query.
+  const votingModuleInfo = useRecoilValue(
     votingModuleAddress
+      ? infoSelector({ contractAddress: votingModuleAddress })
+      : constSelector(undefined)
+  )
+  // Ensure using the cw20 voting module.
+  const governanceTokenExists = useMemo(
+    () =>
+      votingModuleInfo?.info.contract
+        ? parseVotingModuleContractName(votingModuleInfo.info.contract) ===
+          VotingModuleType.Cw20StakedBalanceVoting
+        : false,
+    [votingModuleInfo]
+  )
+
+  const stakingContractAddress = useRecoilValue(
+    votingModuleAddress && governanceTokenExists
       ? stakingContractSelector({ contractAddress: votingModuleAddress })
       : constSelector(undefined)
   )
 
   const governanceTokenAddress = useRecoilValue(
-    votingModuleAddress
+    votingModuleAddress && governanceTokenExists
       ? tokenContractSelector({ contractAddress: votingModuleAddress })
       : constSelector(undefined)
   )
@@ -84,10 +105,10 @@ export const useGovernanceTokenInfo = (
 
   // Price info
   const price = useRecoilValue(
-    fetchPriceWithSwapAddress
+    fetchPriceWithSwapAddress && governanceTokenInfo
       ? tokenUSDPriceSelector({
           tokenSwapAddress: fetchPriceWithSwapAddress,
-          tokenDecimals: governanceTokenInfo?.decimals || 6,
+          tokenDecimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
   )

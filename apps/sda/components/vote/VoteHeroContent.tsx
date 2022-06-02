@@ -26,6 +26,7 @@ export const VoteHeroContentLoader = () => (
   </>
 )
 
+// TODO: Add cw4-voting support.
 export const VoteHeroContent = () => {
   const daoConfig = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })

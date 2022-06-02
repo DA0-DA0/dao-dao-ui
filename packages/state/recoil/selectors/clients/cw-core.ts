@@ -244,11 +244,19 @@ export const allCw20BalancesSelector = selectorFamily<
             params: [{ startAt, limit: CW20_BALANCES_LIMIT }],
           })
         )
+        if (!response?.length) break
 
-        balances.push(...(response ?? []))
+        // Don't double-add last balance since we set startAt to it for
+        // the next query.
+        balances.push(...response.slice(0, -1))
+        startAt = response[response.length - 1].addr
 
         // If we have less than the limit of items, we've exhausted them.
-        if (!response || response.length < CW20_BALANCES_LIMIT) break
+        if (response.length < CW20_BALANCES_LIMIT) {
+          // Add last balance to the list since we ignored it.
+          balances.push(response[response.length - 1])
+          break
+        }
       }
 
       return balances

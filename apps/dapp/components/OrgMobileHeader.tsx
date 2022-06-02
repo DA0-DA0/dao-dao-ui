@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { useStakingInfo } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/state'
 import {
   MobileHeader as StatelessMobileHeader,
   MobileHeaderLoader,
@@ -19,9 +19,7 @@ const OrgMobileHeaderInternal: FC = () => {
     name: orgName,
     imageUrl,
   } = useOrgInfoContext()
-  const { walletStaked } = useStakingInfo(coreAddress, {
-    fetchWalletStaked: true,
-  })
+  const { isMember } = useVotingModule(coreAddress)
 
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)
@@ -31,14 +29,14 @@ const OrgMobileHeaderInternal: FC = () => {
     <StatelessMobileHeader
       contractAddress={coreAddress}
       imageUrl={imageUrl ?? ''}
-      member={!!walletStaked}
+      member={isMember ?? false}
       name={orgName}
       onPin={() => {
         if (pinned) {
           setPinnedAddresses((p) => p.filter((a) => a !== coreAddress))
         } else {
           setPinnedAddresses((p) => p.concat([coreAddress]))
-          addToken(governanceTokenAddress)
+          governanceTokenAddress && addToken(governanceTokenAddress)
         }
       }}
       pinned={pinned}

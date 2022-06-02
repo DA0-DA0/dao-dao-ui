@@ -42,6 +42,7 @@ import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { TemplateRendererComponent } from '@/components/templates'
 import { cleanChainError } from '@/util/cleanChainError'
 
+// TODO: Add cw4-voting support.
 const InnerProposal: FC = () => {
   const router = useRouter()
   const { coreAddress, name: orgName } = useOrgInfoContext()

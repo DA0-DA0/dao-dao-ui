@@ -37,6 +37,7 @@ import {
 } from '@/components'
 import { cleanChainError, DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
+// TODO: Add cw4-voting support.
 const InnerProposal: FC = () => {
   const router = useRouter()
 

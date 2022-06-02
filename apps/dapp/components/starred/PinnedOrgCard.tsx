@@ -5,12 +5,16 @@ import {
   nativeBalanceSelector,
   useGovernanceTokenInfo,
   useProposalModule,
-  useStakingInfo,
+  useVotingModule,
 } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
 import { ContractCard, LoadingContractCard } from '../ContractCard'
+import { useOrgInfoContext } from '../OrgPageWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
@@ -20,13 +24,13 @@ interface PinnedOrgCardProps {
 }
 
 const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
+  const { votingModuleType } = useOrgInfoContext()
+
   const config = useRecoilValue(configSelector({ contractAddress: address }))
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(address)
-  const { walletStaked } = useStakingInfo(address, {
-    fetchWalletStaked: true,
-  })
+  const { walletVotingWeight } = useVotingModule(address)
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })
@@ -38,8 +42,7 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
   if (
     !config ||
     nativeBalance === undefined ||
-    !governanceTokenAddress ||
-    !governanceTokenInfo ||
+    walletVotingWeight === undefined ||
     proposalCount === undefined
   ) {
     throw new Error('Failed to load data.')
@@ -57,15 +60,20 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
           setPinnedAddresses((p) => p.filter((a) => a !== address))
         } else {
           setPinnedAddresses((p) => p.concat([address]))
-          addToken(governanceTokenAddress)
+          governanceTokenAddress && addToken(governanceTokenAddress)
         }
       }}
       pinned={pinned}
       proposals={proposalCount}
       weight={
-        walletStaked !== undefined
+        walletVotingWeight === undefined
+          ? undefined
+          : votingModuleType === VotingModuleType.Cw4Voting
+          ? walletVotingWeight
+          : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+            governanceTokenInfo
           ? convertMicroDenomToDenomWithDecimals(
-              walletStaked,
+              walletVotingWeight,
               governanceTokenInfo.decimals
             )
           : undefined

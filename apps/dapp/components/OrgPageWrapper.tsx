@@ -12,20 +12,39 @@ import {
   ConfigResponse,
   CwCoreQueryClient as QueryClient,
 } from '@dao-dao/state/clients/cw-core'
-import { Cw20StakedBalanceVotingQueryClient } from '@dao-dao/state/clients/cw20-staked-balance-voting'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT, CI } from '@dao-dao/utils'
+import {
+  Cw20StakedBalanceVotingQueryClient,
+  InfoResponse as Cw20StakedBalanceVotingInfoResponse,
+} from '@dao-dao/state/clients/cw20-staked-balance-voting'
+import {
+  Cw4VotingQueryClient,
+  InfoResponse as Cw4VotingInfoResponse,
+} from '@dao-dao/state/clients/cw4-voting'
+import {
+  cosmWasmClientRouter,
+  CHAIN_RPC_ENDPOINT,
+  CI,
+  parseVotingModuleContractName,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
 import { OrgNotFound } from './org/NotFound'
 
 interface OrgInfo {
   coreAddress: string
-  governanceTokenAddress: string
-  stakingContractAddress: string
+  votingModuleType: VotingModuleType
+  // cw4-voting
+  cw4GroupAddress: string | null
+  // cw20-staked-balance-voting
+  governanceTokenAddress: string | null
+  stakingContractAddress: string | null
   name: string
   imageUrl: string | null
 }
 const DefaultOrgInfo: OrgInfo = {
   coreAddress: '',
+  votingModuleType: VotingModuleType.Cw4Voting,
+  cw4GroupAddress: '',
   governanceTokenAddress: '',
   stakingContractAddress: '',
   name: '',
@@ -126,12 +145,37 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
       const config = await coreClient.config()
 
       const votingModuleAddress = await coreClient.votingModule()
-      const votingModuleClient = new Cw20StakedBalanceVotingQueryClient(
-        cwClient,
-        votingModuleAddress
+      const {
+        info: { contract: votingModuleContractName },
+      }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
+        await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
+
+      const votingModuleType = parseVotingModuleContractName(
+        votingModuleContractName
       )
-      const governanceTokenAddress = await votingModuleClient.tokenContract()
-      const stakingContractAddress = await votingModuleClient.stakingContract()
+      if (!votingModuleType) {
+        throw new Error('Failed to determine voting module type.')
+      }
+
+      let cw4GroupAddress: string | null = null
+      let governanceTokenAddress: string | null = null
+      let stakingContractAddress: string | null = null
+      if (votingModuleType === VotingModuleType.Cw4Voting) {
+        const votingModuleClient = new Cw4VotingQueryClient(
+          cwClient,
+          votingModuleAddress
+        )
+        cw4GroupAddress = await votingModuleClient.groupContract()
+      } else if (
+        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+      ) {
+        const votingModuleClient = new Cw20StakedBalanceVotingQueryClient(
+          cwClient,
+          votingModuleAddress
+        )
+        governanceTokenAddress = await votingModuleClient.tokenContract()
+        stakingContractAddress = await votingModuleClient.stakingContract()
+      }
 
       return {
         props: {
@@ -143,6 +187,8 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
           description: overrideDescription ?? config.description,
           info: {
             coreAddress: address,
+            votingModuleType,
+            cw4GroupAddress,
             governanceTokenAddress,
             stakingContractAddress,
             name: config.name,

@@ -36,14 +36,7 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
   const { stakingContractAddress, stakingContractConfig } =
     useStakingInfo(coreAddress)
 
-  if (
-    !config ||
-    !governanceTokenAddress ||
-    !governanceTokenInfo ||
-    !proposalModuleConfig ||
-    !stakingContractAddress ||
-    !stakingContractConfig
-  ) {
+  if (!config || !proposalModuleConfig) {
     throw new Error('Failed to load data.')
   }
 
@@ -56,17 +49,19 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
       <div className="mb-4 md:mb-0">
         <h2 className="mb-4 md:mb-6 primary-text">Governance Details</h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
-          <GovInfoListItem
-            icon={<ChartPieIcon className="inline w-4" />}
-            text="Unstaking period"
-            value={
-              stakingContractConfig.unstaking_duration
-                ? humanReadableDuration(
-                    stakingContractConfig.unstaking_duration
-                  )
-                : 'None'
-            }
-          />
+          {stakingContractConfig && (
+            <GovInfoListItem
+              icon={<ChartPieIcon className="inline w-4" />}
+              text="Unstaking period"
+              value={
+                stakingContractConfig.unstaking_duration
+                  ? humanReadableDuration(
+                      stakingContractConfig.unstaking_duration
+                    )
+                  : 'None'
+              }
+            />
+          )}
           <GovInfoListItem
             icon={<Votes fill="currentColor" width="16px" />}
             text="Passing threshold"
@@ -79,7 +74,7 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
               value={quorum.display}
             />
           )}
-          {proposalModuleConfig.deposit_info && (
+          {proposalModuleConfig.deposit_info && governanceTokenInfo && (
             <>
               <GovInfoListItem
                 icon={<CashIcon className="inline w-4" />}
@@ -110,12 +105,16 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
           <li>
             Treasury <CopyToClipboardAccent value={coreAddress} />
           </li>
-          <li>
-            Gov token <CopyToClipboardAccent value={governanceTokenAddress} />
-          </li>
-          <li>
-            Staking <CopyToClipboardAccent value={stakingContractAddress} />
-          </li>
+          {governanceTokenAddress && (
+            <li>
+              Gov token <CopyToClipboardAccent value={governanceTokenAddress} />
+            </li>
+          )}
+          {stakingContractAddress && (
+            <li>
+              Staking <CopyToClipboardAccent value={stakingContractAddress} />
+            </li>
+          )}
         </ul>
       </div>
       {!hideTreasury && (

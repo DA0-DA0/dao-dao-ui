@@ -1,10 +1,8 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
-import { stakedValueSelector } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
+import { useVotingModule } from '@dao-dao/state'
 import { Button, Tooltip } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 
@@ -12,23 +10,9 @@ import { useOrgInfoContext } from './OrgPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export const ContractProposalsDisplay: FC = () => {
+export const InnerContractProposalsDisplay: FC = () => {
   const { coreAddress } = useOrgInfoContext()
-  const { address: walletAddress } = useWallet()
-  const { stakingContractAddress } = useOrgInfoContext()
-
-  const walletStakedLoadable = useRecoilValueLoadable(
-    walletAddress
-      ? stakedValueSelector({
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
-  const isMember =
-    walletStakedLoadable.state === 'hasValue' &&
-    !isNaN(Number(walletStakedLoadable.contents?.value)) &&
-    Number(walletStakedLoadable.contents?.value) > 0
+  const { isMember } = useVotingModule(coreAddress)
 
   const tooltip = isMember
     ? undefined
@@ -60,3 +44,16 @@ export const ContractProposalsDisplay: FC = () => {
     </>
   )
 }
+
+export const ContractProposalsDisplay: FC = () => (
+  <SuspenseLoader
+    fallback={
+      <div className="flex justify-between items-center">
+        <h2 className="primary-text">Proposals</h2>
+        <Loader />
+      </div>
+    }
+  >
+    <InnerContractProposalsDisplay />
+  </SuspenseLoader>
+)
