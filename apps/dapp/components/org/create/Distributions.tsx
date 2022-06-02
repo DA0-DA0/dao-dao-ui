@@ -273,14 +273,7 @@ export const VotingPowerChart: FC<DataProps> = ({ data }) => {
               },
             },
             y: {
-              display: true,
-              ticks: {
-                color: `rgba(${darkRgb}, 0.2)`,
-              },
-              grid: {
-                borderColor: `rgba(${darkRgb}, 0.1)`,
-                color: `rgba(${darkRgb}, 0.1)`,
-              },
+              display: false,
             },
           },
         }}
