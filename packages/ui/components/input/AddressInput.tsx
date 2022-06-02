@@ -21,6 +21,7 @@ export interface AddressInputProps<
   error?: FieldError
   disabled?: boolean
   required?: boolean
+  containerClassName?: string
 }
 
 export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
@@ -31,6 +32,8 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
   onChange,
   disabled,
   required,
+  className,
+  containerClassName,
   ...rest
 }: AddressInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
@@ -42,12 +45,16 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
     <div
       className={clsx(
         'flex gap-1 items-center py-2 px-3 font-mono text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
-        { 'ring-1 ring-error': error }
+        { 'ring-1 ring-error': error },
+        containerClassName
       )}
     >
       <Wallet color="currentColor" width="24px" />
       <input
-        className="w-full bg-transparent border-none outline-none ring-none body-text"
+        className={clsx(
+          'w-full bg-transparent border-none outline-none ring-none body-text',
+          className
+        )}
         disabled={disabled}
         placeholder="Juno address"
         type="text"

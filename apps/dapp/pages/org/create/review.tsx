@@ -6,10 +6,14 @@ import { InputLabel, Logo } from '@dao-dao/ui'
 import {
   convertDurationWithUnitsToHumanReadableString,
   convertThresholdValueToHumanReadableString,
+  GovernanceTokenType,
 } from '@/atoms/org'
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
 import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'
-import { TokenDistribution } from '@/components/org/create/TokenDistribution'
+import {
+  TokenDistribution,
+  VotingPowerDistribution,
+} from '@/components/org/create/Distributions'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -52,11 +56,22 @@ const CreateOrgReviewPage: FC = () => {
             </div>
           </div>
 
-          <div className="w-full h-[1px] bg-card"></div>
+          {(!values.governanceTokenEnabled ||
+            values.governanceTokenOptions.type === GovernanceTokenType.New) && (
+            <>
+              <div className="w-full h-[1px] bg-card"></div>
 
-          <div className="mx-auto w-5/6">
-            <TokenDistribution watch={watch} />
-          </div>
+              <div className="mx-auto w-5/6">
+                {values.governanceTokenEnabled &&
+                values.governanceTokenOptions.type ===
+                  GovernanceTokenType.New ? (
+                  <TokenDistribution watch={watch} />
+                ) : (
+                  <VotingPowerDistribution watch={watch} />
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">

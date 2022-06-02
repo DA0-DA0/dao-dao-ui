@@ -21,10 +21,15 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { distributionColors } from './Distributions'
 import { NewOrg, NEW_ORG_CW20_DECIMALS } from '@/atoms/org'
 
 interface CreateOrgGroupProps {
   groupIndex: number
+  // Display color dots next to each member instead of each group.
+  // When there is only one group, all members are displayed on the chart,
+  // so the colors correspond to members instead of groups.
+  showColorDotOnMember: boolean
   control: Control<NewOrg, any>
   register: UseFormRegister<NewOrg>
   errors: FormState<NewOrg>['errors']
@@ -38,7 +43,15 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   remove,
   ...props
 }) => {
-  const { groupIndex, control, register, errors, setValue, watch } = props
+  const {
+    groupIndex,
+    control,
+    register,
+    errors,
+    setValue,
+    watch,
+    showColorDotOnMember,
+  } = props
   const {
     fields: members,
     append: appendMember,
@@ -54,7 +67,19 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     <div className="p-6 bg-disabled rounded-lg">
       <div className="flex flex-row gap-8 justify-between items-center">
         <div>
-          <p className="title-text">{watch(`groups.${groupIndex}.name`)}</p>
+          <div className="flex flex-row gap-4 items-center">
+            {!showColorDotOnMember && (
+              <div
+                className="shrink-0 w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor:
+                    distributionColors[groupIndex % distributionColors.length],
+                }}
+              ></div>
+            )}
+
+            <p className="title-text">{watch(`groups.${groupIndex}.name`)}</p>
+          </div>
           <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
         </div>
 
@@ -150,20 +175,33 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
   register,
   errors,
   remove,
+  showColorDotOnMember,
 }) => (
   <div className="grid grid-cols-[1fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
-    <div className="grow">
+    <div className="flex flex-row gap-4 items-center">
+      {showColorDotOnMember && (
+        <div
+          className="shrink-0 w-2 h-2 rounded-full"
+          style={{
+            backgroundColor:
+              distributionColors[memberIndex % distributionColors.length],
+          }}
+        ></div>
+      )}
+
       <AddressInput
+        containerClassName="grow"
         error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
         label={`groups.${groupIndex}.members.${memberIndex}.address`}
         placeholder="Member's address..."
         register={register}
         validation={[validateAddress, validateRequired]}
       />
-      <InputErrorMessage
-        error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-      />
     </div>
+
+    <InputErrorMessage
+      error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+    />
 
     <button className="justify-self-end" onClick={remove}>
       <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />

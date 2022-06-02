@@ -25,16 +25,20 @@ import { ErrorBoundary, Footer, Notifications } from '@/components'
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [themeChangeCount, setThemeChangeCount] = useState(0)
   const [accentColor, setAccentColor] = useState<string | undefined>()
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
-  // Ensure correct theme class is set on document.
+  // On theme change, update DOM and state.
   useEffect(() => {
+    // Ensure correct theme class is set on document.
     Object.values(Theme).forEach((value) =>
       document.documentElement.classList.toggle(value, value === theme)
     )
+    // Update theme change count.
+    setThemeChangeCount((c) => c + 1)
   }, [theme])
 
   return (
@@ -42,6 +46,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
       accentColor={accentColor}
       setAccentColor={setAccentColor}
       theme={theme}
+      themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
       <ErrorBoundary title="An unexpected error occurred.">

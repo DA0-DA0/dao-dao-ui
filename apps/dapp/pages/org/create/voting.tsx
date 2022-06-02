@@ -37,7 +37,11 @@ import {
 } from '@/components/org/create/CreateOrgConfigCard'
 import { CreateOrgGroup } from '@/components/org/create/CreateOrgGroup'
 import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
-import { TokenDistribution } from '@/components/org/create/TokenDistribution'
+import {
+  TokenDistribution,
+  useVotingPowerDistributionData,
+  VotingPowerChart,
+} from '@/components/org/create/Distributions'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { CustomValidation, useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -192,6 +196,12 @@ const CreateOrgVotingPage: FC = () => {
   )
   const totalWeightAllocated = memberWeightAllocated + initialTreasuryBalance
 
+  const { onlyOneGroup, entries } = useVotingPowerDistributionData(
+    _groups,
+    _groupsChangedString,
+    false
+  )
+
   return (
     <>
       <SmallScreenNav />
@@ -209,6 +219,10 @@ const CreateOrgVotingPage: FC = () => {
           </p>
         </div>
 
+        <div className="mx-auto w-full max-w-md">
+          <VotingPowerChart data={entries} />
+        </div>
+
         <div className="flex flex-col gap-4 items-stretch">
           {groups.map(({ id }, idx) => (
             <CreateOrgGroup
@@ -217,8 +231,9 @@ const CreateOrgVotingPage: FC = () => {
               errors={errors}
               groupIndex={idx}
               register={register}
-              remove={groups.length === 1 ? undefined : () => removeGroup(idx)}
+              remove={onlyOneGroup ? undefined : () => removeGroup(idx)}
               setValue={setValue}
+              showColorDotOnMember={onlyOneGroup}
               watch={watch}
             />
           ))}
