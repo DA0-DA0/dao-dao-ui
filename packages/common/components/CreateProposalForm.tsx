@@ -3,6 +3,7 @@ import { ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitHandler,
+  SubmitErrorHandler,
   useFieldArray,
   useForm,
 } from 'react-hook-form'
@@ -126,6 +127,7 @@ export const CreateProposalForm = ({
 
   const [showPreview, setShowPreview] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -157,6 +159,8 @@ export const CreateProposalForm = ({
 
   const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
     ({ templateData, ...data }, event) => {
+      setShowSubmitErrorNote(false)
+
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
@@ -180,9 +184,17 @@ export const CreateProposalForm = ({
     [onSubmit, templates, setShowPreview]
   )
 
+  const onSubmitError: SubmitErrorHandler<FormProposalData> = useCallback(
+    () => setShowSubmitErrorNote(true),
+    [setShowSubmitErrorNote]
+  )
+
   return (
     <FormProvider {...formMethods}>
-      <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmitForm)}>
+      <form
+        className="max-w-[800px]"
+        onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
+      >
         {showPreview && (
           <>
             <div className="max-w-prose">
@@ -299,6 +311,11 @@ export const CreateProposalForm = ({
             )}
           </Button>
         </div>
+        {showSubmitErrorNote && (
+          <p className="mt-2 text-right text-error secondary-text">
+            Correct the errors above before previewing or publishing.
+          </p>
+        )}
       </form>
 
       {showTemplateSelector && (

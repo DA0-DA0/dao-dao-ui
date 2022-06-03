@@ -81,29 +81,37 @@ export const RemoveTokenComponent: TemplateComponent<RemoveTokenOptions> = ({
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-1 my-3">
-        <AddressSelector
-          onSelect={(address) => setValue(getLabel('address'), address)}
-          readOnly={readOnly}
-          selectedAddress={tokenAddress}
-          tokenOptions={existingTokens}
-        />
-      </div>
-      <div className="flex flex-col gap-2 mb-3">
-        <InputLabel name="Token address" />
-        <AddressInput
-          disabled={readOnly}
-          error={errors?.address}
-          label={getLabel('address')}
-          register={register}
-          validation={[
-            validateRequired,
-            validateContractAddress,
-            validateIsTreasuryToken,
-          ]}
-        />
-        <InputErrorMessage error={errors?.address} />
-      </div>
+      {existingTokens.length > 0 ? (
+        <>
+          <div className="flex flex-col gap-1 my-3">
+            <AddressSelector
+              onSelect={(address) => setValue(getLabel('address'), address)}
+              readOnly={readOnly}
+              selectedAddress={tokenAddress}
+              tokenOptions={existingTokens}
+            />
+          </div>
+          <div className="flex flex-col gap-2 mb-3">
+            <InputLabel name="Token address" />
+            <AddressInput
+              disabled={readOnly}
+              error={errors?.address}
+              label={getLabel('address')}
+              register={register}
+              validation={[
+                validateRequired,
+                validateContractAddress,
+                validateIsTreasuryToken,
+              ]}
+            />
+            <InputErrorMessage error={errors?.address} />
+          </div>
+        </>
+      ) : (
+        <p className="italic text-error">
+          The treasury currently has no tokens.
+        </p>
+      )}
 
       <TokenInfoDisplay {...options} />
     </div>

@@ -41,22 +41,6 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
       : constSelector(undefined)
   )
 
-  useEffect(() => {
-    if (tokenInfoLoadable.state !== 'hasError') {
-      if (errors?.address) {
-        clearErrors(getLabel('address'))
-      }
-      return
-    }
-
-    if (!errors?.address) {
-      setError(getLabel('address'), {
-        type: 'manual',
-        message: 'Failed to get token info.',
-      })
-    }
-  }, [tokenInfoLoadable.state, errors, setError, clearErrors, getLabel])
-
   const existingTokenAddresses =
     useRecoilValue(
       allCw20TokenListSelector({
@@ -81,6 +65,34 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
     address: string
     info: TokenInfoResponse
   }[]
+
+  useEffect(() => {
+    if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
+      if (errors?.address) {
+        clearErrors(getLabel('address'))
+      }
+      return
+    }
+
+    if (!errors?.address) {
+      setError(getLabel('address'), {
+        type: 'manual',
+        message:
+          tokenInfoLoadable.state === 'hasError'
+            ? 'Failed to get token info.'
+            : existingTokens.length === 0
+            ? 'No tokens in the DAO treasury.'
+            : 'Unknown error',
+      })
+    }
+  }, [
+    tokenInfoLoadable.state,
+    errors?.address,
+    setError,
+    clearErrors,
+    getLabel,
+    existingTokens.length,
+  ])
 
   return (
     <StatelessRemoveTokenComponent
