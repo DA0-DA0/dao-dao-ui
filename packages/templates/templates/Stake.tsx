@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
@@ -87,58 +87,62 @@ export const useDecodeStakeCosmosMsg: UseDecodeCosmosMsg<StakeData> = (
     process.env.NEXT_PUBLIC_FEE_DENOM as string
   )
 
-  if (
-    'distribution' in msg &&
-    StakeType.WithdrawDelegatorReward in msg.distribution &&
-    'validator' in msg.distribution.withdraw_delegator_reward
-  ) {
-    return {
-      match: true,
-      data: {
-        stakeType: StakeType.WithdrawDelegatorReward,
-        validator: msg.distribution.withdraw_delegator_reward.validator,
-        // Default values, not needed for displaying this type of message.
-        amount: 1,
-        denom,
-      },
-    }
-  } else if ('staking' in msg) {
-    const stakeType = stakeActions
-      .map(({ type }) => type)
-      .find((type) => type in msg.staking)
-    if (!stakeType) return { match: false }
-
-    const data = msg.staking[stakeType]
+  return useMemo(() => {
     if (
-      ((stakeType === StakeType.Redelegate &&
-        'src_validator' in data &&
-        'dst_validator' in data) ||
-        (stakeType !== StakeType.Redelegate && 'validator' in data)) &&
-      'amount' in data &&
-      'amount' in data.amount &&
-      'denom' in data.amount
+      'distribution' in msg &&
+      StakeType.WithdrawDelegatorReward in msg.distribution &&
+      'validator' in msg.distribution.withdraw_delegator_reward
     ) {
-      const { denom } = data.amount
-
       return {
         match: true,
         data: {
-          stakeType,
-          validator:
-            stakeType === StakeType.Redelegate
-              ? data.dst_validator
-              : data.validator,
-          fromValidator:
-            stakeType === StakeType.Redelegate ? data.src_validator : undefined,
-          amount: convertMicroDenomToDenomWithDecimals(
-            data.amount.amount,
-            nativeTokenDecimals(denom)!
-          ),
+          stakeType: StakeType.WithdrawDelegatorReward,
+          validator: msg.distribution.withdraw_delegator_reward.validator,
+          // Default values, not needed for displaying this type of message.
+          amount: 1,
           denom,
         },
       }
-    }
-  }
+    } else if ('staking' in msg) {
+      const stakeType = stakeActions
+        .map(({ type }) => type)
+        .find((type) => type in msg.staking)
+      if (!stakeType) return { match: false }
 
-  return { match: false }
+      const data = msg.staking[stakeType]
+      if (
+        ((stakeType === StakeType.Redelegate &&
+          'src_validator' in data &&
+          'dst_validator' in data) ||
+          (stakeType !== StakeType.Redelegate && 'validator' in data)) &&
+        'amount' in data &&
+        'amount' in data.amount &&
+        'denom' in data.amount
+      ) {
+        const { denom } = data.amount
+
+        return {
+          match: true,
+          data: {
+            stakeType,
+            validator:
+              stakeType === StakeType.Redelegate
+                ? data.dst_validator
+                : data.validator,
+            fromValidator:
+              stakeType === StakeType.Redelegate
+                ? data.src_validator
+                : undefined,
+            amount: convertMicroDenomToDenomWithDecimals(
+              data.amount.amount,
+              nativeTokenDecimals(denom)!
+            ),
+            denom,
+          },
+        }
+      }
+    }
+
+    return { match: false }
+  }, [msg, denom])
 }

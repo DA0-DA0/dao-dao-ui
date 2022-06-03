@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import {
   constSelector,
@@ -30,7 +30,7 @@ export const removeTokenDefaults = (): RemoveTokenData => ({
 })
 
 const InnerRemoveTokenComponent: TemplateComponent = (props) => {
-  const { getLabel } = props
+  const { getLabel, errors } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
@@ -42,15 +42,20 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
   )
 
   useEffect(() => {
-    if (tokenInfoLoadable.state === 'hasError') {
+    if (tokenInfoLoadable.state !== 'hasError') {
+      if (errors?.address) {
+        clearErrors(getLabel('address'))
+      }
+      return
+    }
+
+    if (!errors?.address) {
       setError(getLabel('address'), {
         type: 'manual',
         message: 'Failed to get token info.',
       })
-    } else {
-      clearErrors(getLabel('address'))
     }
-  }, [tokenInfoLoadable, setError, clearErrors, getLabel])
+  }, [tokenInfoLoadable.state, errors, setError, clearErrors, getLabel])
 
   const existingTokenAddresses =
     useRecoilValue(
@@ -123,17 +128,21 @@ export const useTransformRemoveTokenToCosmos: UseTransformToCosmos<
 export const useDecodeRemoveTokenCosmosMsg: UseDecodeCosmosMsg<
   RemoveTokenData
 > = (msg: Record<string, any>) =>
-  'wasm' in msg &&
-  'execute' in msg.wasm &&
-  'update_cw20_token_list' in msg.wasm.execute.msg &&
-  'to_add' in msg.wasm.execute.msg.update_cw20_token_list &&
-  msg.wasm.execute.msg.update_cw20_token_list.to_add.length === 0 &&
-  'to_remove' in msg.wasm.execute.msg.update_cw20_token_list &&
-  msg.wasm.execute.msg.update_cw20_token_list.to_remove.length === 1
-    ? {
-        match: true,
-        data: {
-          address: msg.wasm.execute.msg.update_cw20_token_list.to_remove[0],
-        },
-      }
-    : { match: false }
+  useMemo(
+    () =>
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'update_cw20_token_list' in msg.wasm.execute.msg &&
+      'to_add' in msg.wasm.execute.msg.update_cw20_token_list &&
+      msg.wasm.execute.msg.update_cw20_token_list.to_add.length === 0 &&
+      'to_remove' in msg.wasm.execute.msg.update_cw20_token_list &&
+      msg.wasm.execute.msg.update_cw20_token_list.to_remove.length === 1
+        ? {
+            match: true,
+            data: {
+              address: msg.wasm.execute.msg.update_cw20_token_list.to_remove[0],
+            },
+          }
+        : { match: false },
+    [msg]
+  )

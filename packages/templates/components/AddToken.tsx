@@ -23,7 +23,7 @@ export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
   const { register } = useFormContext()
 
   return (
-    <div className="flex flex-col p-3 my-2 gap-2 rounded-lg bg-primary">
+    <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
       <div className="flex gap-2 justify-between items-center">
         <div className="flex gap-2 items-center">
           <h2 className="text-3xl">🔘</h2>

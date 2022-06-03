@@ -1,5 +1,5 @@
 import JSON5 from 'json5'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { makeWasmMessage } from '@dao-dao/utils'
 
@@ -34,9 +34,13 @@ export const useTransformCustomToCosmos: UseTransformToCosmos<
 
 export const useDecodeCustomCosmosMsg: UseDecodeCosmosMsg<CustomData> = (
   msg: Record<string, any>
-) => ({
-  match: true,
-  data: {
-    message: JSON.stringify(msg, undefined, 2),
-  },
-})
+) =>
+  useMemo(
+    () => ({
+      match: true,
+      data: {
+        message: JSON.stringify(msg, undefined, 2),
+      },
+    }),
+    [msg]
+  )

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
@@ -85,28 +85,30 @@ export const useDecodeMintCosmosMsg: UseDecodeCosmosMsg<MintData> = (
     throw new Error('Failed to load data.')
   }
 
-  if (
-    'wasm' in msg &&
-    'execute' in msg.wasm &&
-    'contract_addr' in msg.wasm.execute &&
-    // Mint template only supports minting our own governance token. Let
-    // custom template handle the rest of the mint messages for now.
-    msg.wasm.execute.contract_addr === governanceTokenAddress &&
-    'mint' in msg.wasm.execute.msg &&
-    'amount' in msg.wasm.execute.msg.mint &&
-    'recipient' in msg.wasm.execute.msg.mint
-  ) {
-    return {
-      match: true,
-      data: {
-        to: msg.wasm.execute.msg.mint.recipient,
-        amount: convertMicroDenomToDenomWithDecimals(
-          msg.wasm.execute.msg.mint.amount,
-          governanceTokenInfo.decimals
-        ),
-      },
+  return useMemo(() => {
+    if (
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'contract_addr' in msg.wasm.execute &&
+      // Mint template only supports minting our own governance token. Let
+      // custom template handle the rest of the mint messages for now.
+      msg.wasm.execute.contract_addr === governanceTokenAddress &&
+      'mint' in msg.wasm.execute.msg &&
+      'amount' in msg.wasm.execute.msg.mint &&
+      'recipient' in msg.wasm.execute.msg.mint
+    ) {
+      return {
+        match: true,
+        data: {
+          to: msg.wasm.execute.msg.mint.recipient,
+          amount: convertMicroDenomToDenomWithDecimals(
+            msg.wasm.execute.msg.mint.amount,
+            governanceTokenInfo.decimals
+          ),
+        },
+      }
     }
-  }
 
-  return { match: false }
+    return { match: false }
+  }, [governanceTokenAddress, governanceTokenInfo.decimals, msg])
 }

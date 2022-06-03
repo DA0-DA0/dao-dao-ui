@@ -110,7 +110,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
   }
 
   return (
-    <div className="p-3 my-2 rounded-lg bg-primary">
+    <div className="p-3 my-2 bg-primary rounded-lg">
       <div className="flex justify-between w-full">
         <div className="flex flex-wrap gap-2 items-center w-24">
           <h2 className="text-3xl">📤</h2>
@@ -218,7 +218,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
         <InputErrorMessage error={errors?.validator} />
       </div>
 
-      <div className="flex gap-2 items-center p-2 mt-3 rounded-lg bg-disabled">
+      <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
         <InformationCircleIcon className="h-4" />
         <p className="body-text">
           This template is new and in beta. Double check the generated JSON

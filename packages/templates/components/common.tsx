@@ -16,6 +16,17 @@ export enum TemplateKey {
   Custom = 'custom',
 }
 
+export interface TemplateKeyAndData {
+  key: TemplateKey
+  data: any
+}
+
+export interface FormProposalData {
+  title: string
+  description: string
+  templateData: TemplateKeyAndData[]
+}
+
 // A component which will render a template's input form.
 export type TemplateComponentProps<T = undefined> = {
   coreAddress: string

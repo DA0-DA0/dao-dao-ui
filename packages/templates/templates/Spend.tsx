@@ -177,51 +177,53 @@ export const useDecodeSpendCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
     throw new Error('Failed to load data.')
   }
 
-  if (
-    'bank' in msg &&
-    'send' in msg.bank &&
-    'amount' in msg.bank.send &&
-    msg.bank.send.amount.length === 1 &&
-    'amount' in msg.bank.send.amount[0] &&
-    'denom' in msg.bank.send.amount[0] &&
-    'to_address' in msg.bank.send
-  ) {
-    const denom = msg.bank.send.amount[0].denom
-    if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
+  return useMemo(() => {
+    if (
+      'bank' in msg &&
+      'send' in msg.bank &&
+      'amount' in msg.bank.send &&
+      msg.bank.send.amount.length === 1 &&
+      'amount' in msg.bank.send.amount[0] &&
+      'denom' in msg.bank.send.amount[0] &&
+      'to_address' in msg.bank.send
+    ) {
+      const denom = msg.bank.send.amount[0].denom
+      if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
+        return {
+          match: true,
+          data: {
+            to: msg.bank.send.to_address,
+            amount: convertMicroDenomToDenomWithDecimals(
+              msg.bank.send.amount[0].amount,
+              nativeTokenDecimals(denom)!
+            ),
+            denom,
+          },
+        }
+      }
+    }
+
+    if (
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'contract_addr' in msg.wasm.execute &&
+      'transfer' in msg.wasm.execute.msg &&
+      'recipient' in msg.wasm.execute.msg.transfer &&
+      'amount' in msg.wasm.execute.msg.transfer
+    ) {
       return {
         match: true,
         data: {
-          to: msg.bank.send.to_address,
+          to: msg.wasm.execute.msg.transfer.recipient,
           amount: convertMicroDenomToDenomWithDecimals(
-            msg.bank.send.amount[0].amount,
-            nativeTokenDecimals(denom)!
+            msg.wasm.execute.msg.transfer.amount,
+            spentTokenDecimals
           ),
-          denom,
+          denom: msg.wasm.execute.contract_addr,
         },
       }
     }
-  }
 
-  if (
-    'wasm' in msg &&
-    'execute' in msg.wasm &&
-    'contract_addr' in msg.wasm.execute &&
-    'transfer' in msg.wasm.execute.msg &&
-    'recipient' in msg.wasm.execute.msg.transfer &&
-    'amount' in msg.wasm.execute.msg.transfer
-  ) {
-    return {
-      match: true,
-      data: {
-        to: msg.wasm.execute.msg.transfer.recipient,
-        amount: convertMicroDenomToDenomWithDecimals(
-          msg.wasm.execute.msg.transfer.amount,
-          spentTokenDecimals
-        ),
-        denom: msg.wasm.execute.contract_addr,
-      },
-    }
-  }
-
-  return { match: false }
+    return { match: false }
+  }, [msg, spentTokenDecimals])
 }

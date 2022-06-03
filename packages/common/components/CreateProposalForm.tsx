@@ -24,7 +24,10 @@ import {
   useTemplatesForVotingModuleType,
   UseTransformToCosmos,
 } from '@dao-dao/templates'
-import { TemplateSelector } from '@dao-dao/templates/components'
+import {
+  FormProposalData,
+  TemplateSelector,
+} from '@dao-dao/templates/components'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -45,17 +48,6 @@ import {
 enum ProposeSubmitValue {
   Preview = 'Preview',
   Submit = 'Submit',
-}
-
-interface TemplateKeyAndData {
-  key: TemplateKey
-  data: any
-}
-
-interface FormProposalData {
-  title: string
-  description: string
-  templateData: TemplateKeyAndData[]
 }
 
 export interface ProposalData extends Omit<FormProposalData, 'templateData'> {

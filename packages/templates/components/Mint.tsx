@@ -25,7 +25,7 @@ export const MintComponent: TemplateComponent<MintOptions> = ({
   const amount = watch(getLabel('amount'))
 
   return (
-    <div className="flex justify-between items-center p-3 my-2 rounded-lg bg-primary">
+    <div className="flex justify-between items-center p-3 my-2 bg-primary rounded-lg">
       <div className="flex flex-wrap gap-4 gap-y-2 items-center">
         <div className="flex flex-wrap gap-2 items-center w-24">
           <h2 className="text-3xl">🌿</h2>
@@ -49,7 +49,7 @@ export const MintComponent: TemplateComponent<MintOptions> = ({
           <InputErrorMessage error={errors?.amount} />
         </div>
         {govTokenSymbol && (
-          <p className="font-mono text-sm uppercase text-secondary">
+          <p className="font-mono text-sm text-secondary uppercase">
             ${govTokenSymbol}
           </p>
         )}
