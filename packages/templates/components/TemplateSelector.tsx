@@ -2,8 +2,7 @@ import { FC } from 'react'
 
 import { Template, useTemplatesForVotingModuleType } from '@dao-dao/templates'
 import { Modal } from '@dao-dao/ui'
-
-import { useDAOInfoContext } from './DAOInfoContext'
+import { VotingModuleType } from '@dao-dao/utils'
 
 interface TemplateDisplayItemProps {
   template: Template
@@ -36,16 +35,17 @@ export const TemplateDisplayItem: FC<TemplateDisplayItemProps> = ({
   )
 }
 
-interface TemplateSelectorProps {
+export interface TemplateSelectorProps {
   onClose: () => void
   onSelectTemplate: (template: Template) => void
+  votingModuleType: VotingModuleType
 }
 
 export const TemplateSelector: FC<TemplateSelectorProps> = ({
   onClose,
   onSelectTemplate,
+  votingModuleType,
 }) => {
-  const { votingModuleType } = useDAOInfoContext()
   const templates = useTemplatesForVotingModuleType(votingModuleType)
 
   return (

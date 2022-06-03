@@ -1,4 +1,4 @@
-import { useState, FunctionComponent } from 'react'
+import React, { useState, FunctionComponent, ReactNode } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
@@ -6,6 +6,7 @@ import {
   useWallet,
   useGovernanceTokenInfo,
   useStakingInfo,
+  stakingLoadingAtom,
 } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
@@ -18,22 +19,20 @@ import {
   StakingMode,
   StakingModal as StatelessStakingModal,
   Modal,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  cleanChainError,
 } from '@dao-dao/utils'
-
-import ConnectWalletButton from './ConnectWalletButton'
-import { Loader } from './Loader'
-import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
-import { stakingLoadingAtom } from '@/atoms/status'
-import { cleanChainError } from '@/util/cleanChainError'
 
 interface StakingModalProps {
   defaultMode: StakingMode
   onClose: () => void
+  connectWalletButton: ReactNode
+  loader: ReactNode
+  coreAddress: string
 }
 
 export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
@@ -45,9 +44,10 @@ export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
 const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   defaultMode,
   onClose,
+  connectWalletButton,
+  coreAddress,
 }) => {
   const { address: walletAddress, connected, refreshBalances } = useWallet()
-  const { coreAddress } = useOrgInfoContext()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
   const [amount, setAmount] = useState(0)
@@ -159,7 +159,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(cleanChainError(err.message))
+          toast.error(
+            cleanChainError(err instanceof Error ? err.message : `${err}`)
+          )
         } finally {
           setStakingLoading(false)
         }
@@ -226,7 +228,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(cleanChainError(err.message))
+          toast.error(
+            cleanChainError(err instanceof Error ? err.message : `${err}`)
+          )
         } finally {
           setStakingLoading(false)
         }
@@ -262,7 +266,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(cleanChainError(err.message))
+          toast.error(
+            cleanChainError(err instanceof Error ? err.message : `${err}`)
+          )
         } finally {
           setStakingLoading(false)
         }
@@ -278,7 +284,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   if (!connected) {
     return (
       <StakingModalWrapper onClose={onClose}>
-        <ConnectWalletButton />
+        {connectWalletButton}
       </StakingModalWrapper>
     )
   }
@@ -309,19 +315,16 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 }
 
 type StakingModalWrapperProps = Pick<StakingModalProps, 'onClose'>
-const StakingModalWrapper: FunctionComponent<StakingModalWrapperProps> = ({
-  children,
-  onClose,
-}) => (
+export const StakingModalWrapper: FunctionComponent<
+  StakingModalWrapperProps
+> = ({ children, onClose }) => (
   <Modal containerClassName="!p-40" onClose={onClose}>
     {children}
   </Modal>
 )
 
 const StakingModalLoader: FunctionComponent<
-  Omit<StakingModalWrapperProps, 'children'>
+  Omit<StakingModalWrapperProps, 'children'> & { loader: ReactNode }
 > = (props) => (
-  <StakingModalWrapper {...props}>
-    <Loader size={40} />
-  </StakingModalWrapper>
+  <StakingModalWrapper {...props}>{props.loader}</StakingModalWrapper>
 )

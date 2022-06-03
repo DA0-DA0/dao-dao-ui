@@ -10,6 +10,7 @@ import {
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { allCw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+import { SuspenseLoader } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
@@ -92,9 +93,9 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
 }
 
 export const RemoveTokenComponent: TemplateComponent = (props) => (
-  <props.SuspenseLoader fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerRemoveTokenComponent {...props} />
-  </props.SuspenseLoader>
+  </SuspenseLoader>
 )
 
 export const useTransformRemoveTokenToCosmos: UseTransformToCosmos<
@@ -116,7 +117,7 @@ export const useTransformRemoveTokenToCosmos: UseTransformToCosmos<
           },
         },
       }),
-    []
+    [coreAddress]
   )
 
 export const useDecodeRemoveTokenCosmosMsg: UseDecodeCosmosMsg<

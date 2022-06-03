@@ -27,6 +27,7 @@ import {
 import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
 import { SubmitButton } from '@dao-dao/ui'
 import {
+  cleanChainError,
   convertDenomToMicroDenomWithDecimals,
   CW20STAKEDBALANCEVOTING_CODE_ID,
   CW20_CODE_ID,
@@ -49,7 +50,6 @@ import {
   NEW_ORG_CW20_DECIMALS,
 } from '@/atoms/org'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
-import { cleanChainError } from '@/util/cleanChainError'
 
 export type CustomValidation = (
   values: NewOrg,

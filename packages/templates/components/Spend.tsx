@@ -42,7 +42,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
   readOnly,
   options: { nativeBalances, cw20Balances },
 }) => {
-  const { register, watch, clearErrors, setValue } = useFormContext()
+  const { register, watch, setValue } = useFormContext()
 
   const spendAmount = watch(getLabel('amount'))
   const spendDenom = watch(getLabel('denom'))
@@ -51,7 +51,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
     id: string,
     amount: string
   ): string | boolean => {
-    const native = nativeBalances.find((coin) => coin.denom === id)
+    const native = nativeBalances.find(({ denom }) => denom === id)
     if (native) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
         native.amount,
@@ -63,7 +63,9 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount}).`
+        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} ${nativeTokenLabel(
+          id
+        )}).`
       )
     }
     const cw20 = cw20Balances.find(({ address }) => address === id)
@@ -88,17 +90,6 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
       return `Can't spend more tokens than are in the DAO treasury (0 ${nativeHumanReadable}).`
     }
     return 'Unrecognized denom.'
-  }
-
-  // The amount and denom fields are dependent on each other for validation. If
-  // one has a valid validation result, the other one as well. This wrapper ensures
-  // that react-hook-form is informed as such.
-  const validatePossibleSpendWrapper = (denom: string, amount: string) => {
-    const valid = validatePossibleSpend(denom, amount)
-    if (typeof valid == 'boolean' && valid) {
-      clearErrors([getLabel('denom'), getLabel('amount')])
-    }
-    return valid
   }
 
   const amountDecimals = useMemo(
@@ -143,8 +134,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
           validation={[
             validateRequired,
             validatePositive,
-            (amount: string) =>
-              validatePossibleSpendWrapper(spendDenom, amount),
+            (amount: string) => validatePossibleSpend(spendDenom, amount),
           ]}
         />
         <SelectInput
@@ -154,7 +144,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
           label={getLabel('denom')}
           register={register}
           validation={[
-            (denom: string) => validatePossibleSpendWrapper(denom, spendAmount),
+            (denom: string) => validatePossibleSpend(denom, spendAmount),
           ]}
         >
           {nativeBalances.map(({ denom }) => (
@@ -181,8 +171,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <InputErrorMessage error={errors?.amount} />
-          <InputErrorMessage error={errors?.denom} />
+          <InputErrorMessage error={errors?.amount ?? errors?.denom} />
           <InputErrorMessage error={errors?.to} />
         </div>
       </div>

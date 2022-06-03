@@ -8,6 +8,7 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   VotingModuleType,
@@ -15,7 +16,6 @@ import {
 
 import { ContractCard, LoadingContractCard } from '../ContractCard'
 import { useOrgInfoContext } from '../OrgPageWrapper'
-import { SuspenseLoader } from '../SuspenseLoader'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
 

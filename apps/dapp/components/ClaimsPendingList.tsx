@@ -1,11 +1,10 @@
 import { FC } from 'react'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { ClaimsListItem } from '@dao-dao/ui'
+import { ClaimsListItem, SuspenseLoader } from '@dao-dao/ui'
 
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 
 interface ClaimsPendingListProps {
   onClaimAvailable: () => void

@@ -1,9 +1,9 @@
-import { ComponentType, FunctionComponent } from 'react'
+import { FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { InputLabel, SuspenseLoaderProps } from '@dao-dao/ui'
+import { InputLabel } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -23,9 +23,6 @@ export type TemplateComponentProps<T = undefined> = {
   onRemove?: () => void
   errors?: FieldErrors
   readOnly?: boolean
-  SuspenseLoader: ComponentType<
-    Omit<SuspenseLoaderProps, 'ErrorBoundaryComponent'>
-  >
 } & (T extends undefined ? {} : { options: T })
 
 export type TemplateComponent<T = undefined> = FunctionComponent<
@@ -74,13 +71,10 @@ export interface GetDefaultsProps {
 }
 
 // The props needed to render a template from a message.
-export interface TemplateRendererComponentProps {
+export interface TemplateRendererProps {
   coreAddress: string
   votingModuleType: VotingModuleType
   message: { [key: string]: any }
-  SuspenseLoader: ComponentType<
-    Omit<SuspenseLoaderProps, 'ErrorBoundaryComponent'>
-  >
 }
 
 export interface TokenInfoDisplayProps {
@@ -98,7 +92,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
     ) : tokenInfo ? (
       <div className="space-y-2">
         <InputLabel name="Token info" />
-        <pre className="overflow-auto p-2 rounded-lg border text-secondary border-secondary">
+        <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
           {JSON.stringify(tokenInfo, null, 2)}
         </pre>
       </div>
@@ -107,7 +101,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
 )
 
 export const TemplateComponentLoader = () => (
-  <div className="p-3 my-2 rounded-lg bg-primary">
+  <div className="p-3 my-2 bg-primary rounded-lg">
     <Loader />
   </div>
 )

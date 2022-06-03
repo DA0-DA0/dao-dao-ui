@@ -1,13 +1,15 @@
 import { ArrowUpIcon, LinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
-import { Dollar, Staked, Apr, WalletAvatar } from '@dao-dao/icons'
+import { Dollar, Staked, Apr, Wallet } from '@dao-dao/icons'
+import { VotingModuleType } from '@dao-dao/utils'
 
 import { HeroStat, HeroStatLink } from './Stat'
 
 const formatZeroes = (num: number) => new Intl.NumberFormat().format(num)
 
 export interface HeroStatsProps {
+  votingModuleType: VotingModuleType
   data?: {
     members?: number
     denom?: string
@@ -22,37 +24,42 @@ export interface HeroStatsProps {
   }
 }
 
-export const HeroStats: FC<HeroStatsProps> = ({ data }) => (
+export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => (
   <div className="flex flex-wrap gap-x-8 gap-y-4 justify-center items-center py-8 px-6 w-full">
-    {(!data ||
-      (data.totalSupply !== undefined && data.denom !== undefined)) && (
-      <HeroStat
-        Icon={Dollar}
-        title="Total supply:"
-        value={data ? `${formatZeroes(data.totalSupply!)} ${data.denom!}` : ''}
-      />
-    )}
-    {(!data || data.members !== undefined) && (
-      <HeroStat
-        Icon={WalletAvatar}
-        title="Members:"
-        value={data ? data.members!.toLocaleString() : ''}
-      />
-    )}
-    {(!data || data.stakedPercent !== undefined) && (
-      <HeroStat
-        Icon={Staked}
-        title="Staked:"
-        value={data ? `${data.stakedPercent!}%` : ''}
-      />
-    )}
-    {(!data || data.unstakingDuration !== undefined) && (
-      <HeroStat
-        Icon={ArrowUpIcon}
-        title="Unstaking period:"
-        value={data ? data.unstakingDuration! : ''}
-      />
-    )}
+    {(!data || (data.totalSupply !== undefined && data.denom !== undefined)) &&
+      votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
+        <HeroStat
+          Icon={Dollar}
+          title="Total supply:"
+          value={
+            data ? `${formatZeroes(data.totalSupply!)} ${data.denom!}` : ''
+          }
+        />
+      )}
+    {(!data || data.members !== undefined) &&
+      votingModuleType === VotingModuleType.Cw4Voting && (
+        <HeroStat
+          Icon={Wallet}
+          title="Members:"
+          value={data ? data.members!.toLocaleString() : ''}
+        />
+      )}
+    {(!data || data.stakedPercent !== undefined) &&
+      votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
+        <HeroStat
+          Icon={Staked}
+          title="Staked:"
+          value={data ? `${data.stakedPercent!}%` : ''}
+        />
+      )}
+    {(!data || data.unstakingDuration !== undefined) &&
+      votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
+        <HeroStat
+          Icon={ArrowUpIcon}
+          title="Unstaking period:"
+          value={data ? data.unstakingDuration! : ''}
+        />
+      )}
     {(!data || data.aprReward !== undefined) && (
       <HeroStat
         Icon={Apr}

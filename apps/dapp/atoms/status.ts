@@ -43,8 +43,3 @@ export const noKeplrAccountAtom = atom<boolean>({
   key: 'noKeplrAccountAtom',
   default: false,
 })
-
-export const stakingLoadingAtom = atom<boolean>({
-  key: 'stakingLoading',
-  default: false,
-})

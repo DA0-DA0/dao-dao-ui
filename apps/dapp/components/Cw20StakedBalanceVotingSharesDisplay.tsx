@@ -3,22 +3,20 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { StakingModal, ConnectWalletButton } from '@dao-dao/common'
 import {
+  stakingLoadingAtom,
   useGovernanceTokenInfo,
   useStakingInfo,
   useWallet,
 } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { BalanceCard, StakingMode } from '@dao-dao/ui'
+import { BalanceCard, StakingMode, SuspenseLoader } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { ClaimsPendingList } from './ClaimsPendingList'
-import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { StakingModal } from './StakingModal'
-import { SuspenseLoader } from './SuspenseLoader'
-import { stakingLoadingAtom } from '@/atoms/status'
 
 const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
   const { coreAddress } = useOrgInfoContext()
@@ -138,7 +136,10 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
       <ClaimsPendingList onClaimAvailable={refreshBalances} />
       {showStakingDefaultMode !== undefined && (
         <StakingModal
+          connectWalletButton={<ConnectWalletButton />}
+          coreAddress={coreAddress}
           defaultMode={showStakingDefaultMode}
+          loader={Loader}
           onClose={() => setShowStakingDefaultMode(undefined)}
         />
       )}

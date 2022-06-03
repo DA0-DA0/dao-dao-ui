@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   useWallet,
   useGovernanceTokenInfo,
@@ -18,23 +19,23 @@ import {
   useCastVote,
   useExecute,
 } from '@dao-dao/state/hooks/cw-proposal-single'
-import { TemplateRendererComponent } from '@dao-dao/templates'
 import {
   Breadcrumbs,
   StakingMode,
   V1ProposalDetails,
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  cleanChainError,
   cosmWasmClientRouter,
   VotingModuleType,
 } from '@dao-dao/utils'
 
-import ConnectWalletButton from '@/components/ConnectWalletButton'
-import { PageLoader } from '@/components/Loader'
+import { Loader, PageLoader } from '@/components/Loader'
 import { ProposalNotFound } from '@/components/org/NotFound'
 import {
   makeGetOrgStaticProps,
@@ -43,9 +44,6 @@ import {
   useOrgInfoContext,
 } from '@/components/OrgPageWrapper'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { StakingModal } from '@/components/StakingModal'
-import { SuspenseLoader } from '@/components/SuspenseLoader'
-import { cleanChainError } from '@/util/cleanChainError'
 
 const InnerProposal: FC = () => {
   const router = useRouter()
@@ -98,7 +96,9 @@ const InnerProposal: FC = () => {
         toast.success('Vote successfully cast.')
       } catch (err) {
         console.error(err)
-        toast.error(cleanChainError(err.message))
+        toast.error(
+          cleanChainError(err instanceof Error ? err.message : `${err}`)
+        )
       }
 
       setLoading(false)
@@ -122,7 +122,9 @@ const InnerProposal: FC = () => {
       )
     } catch (err) {
       console.error(err)
-      toast.error(cleanChainError(err.message))
+      toast.error(
+        cleanChainError(err instanceof Error ? err.message : `${err}`)
+      )
     }
 
     setLoading(false)
@@ -181,8 +183,6 @@ const InnerProposal: FC = () => {
           </div>
 
           <V1ProposalDetails
-            SuspenseLoader={SuspenseLoader}
-            TemplateRendererComponent={TemplateRendererComponent}
             connectWalletButton={<ConnectWalletButton />}
             connected={connected}
             coreAddress={coreAddress}
@@ -194,7 +194,10 @@ const InnerProposal: FC = () => {
             showStaking={showStaking}
             stakingModal={
               <StakingModal
+                connectWalletButton={<ConnectWalletButton />}
+                coreAddress={coreAddress}
                 defaultMode={StakingMode.Stake}
+                loader={Loader}
                 onClose={() => setShowStaking(false)}
               />
             }

@@ -8,14 +8,15 @@ import {
 import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'
+import { ErrorBoundary } from '@dao-dao/ui'
 
 export interface SuspenseLoaderProps extends SuspenseProps {
-  ErrorBoundaryComponent: ComponentType
+  ErrorBoundaryComponent?: ComponentType
   forceFallback?: boolean
 }
 
 export const SuspenseLoader: FunctionComponent<SuspenseLoaderProps> = ({
-  ErrorBoundaryComponent,
+  ErrorBoundaryComponent = ErrorBoundary,
   forceFallback,
   fallback,
   children,

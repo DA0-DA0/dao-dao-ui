@@ -25,6 +25,7 @@
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@dao-dao/templates": "*",
+    "@dao-dao/common": "*",
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@headlessui/react": "^1.4.2",

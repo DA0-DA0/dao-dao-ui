@@ -64,7 +64,16 @@ export const nativeBalancesSelector = selectorFamily({
 
       get(refreshWalletBalancesIdAtom(address))
 
-      return await client.getAllBalances(address)
+      const balances = [...(await client.getAllBalances(address))]
+      // Add native denom if not present.
+      if (!balances.some(({ denom }) => denom === NATIVE_DENOM)) {
+        balances.push({
+          amount: '0',
+          denom: NATIVE_DENOM,
+        })
+      }
+
+      return balances
     },
 })
 

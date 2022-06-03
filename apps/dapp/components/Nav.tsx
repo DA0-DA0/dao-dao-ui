@@ -3,16 +3,15 @@ import { MenuIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
 
-import { Logo } from '@dao-dao/ui'
+import { ConnectWalletButton } from '@dao-dao/common'
+import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 
-import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
 import { PinnedOrgNavList } from './PinnedOrgNavList'
-import { SuspenseLoader } from './SuspenseLoader'
 
 type NavProps = {
   onMenuClick?: () => void

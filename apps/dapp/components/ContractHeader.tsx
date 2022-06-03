@@ -6,10 +6,10 @@ import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   ContractHeader as StatelessContractHeader,
   ContractHeaderLoader,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 
 const ContractHeaderInternal: FC = () => {
   const { coreAddress } = useOrgInfoContext()

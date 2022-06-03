@@ -16,7 +16,9 @@
     "icons": "yarn workspace @dao-dao/icons",
     "state": "yarn workspace @dao-dao/state",
     "ui": "yarn workspace @dao-dao/ui",
-    "utils": "yarn workspace @dao-dao/utils"
+    "utils": "yarn workspace @dao-dao/utils",
+    "templates": "yarn workspace @dao-dao/templates",
+    "common": "yarn workspace @dao-dao/common"
   },
   "devDependencies": {
     "turbo": "latest"

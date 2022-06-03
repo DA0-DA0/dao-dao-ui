@@ -7,13 +7,12 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, useState } from 'react'
 
-import { Logo } from '@dao-dao/ui'
+import { ConnectWalletButton } from '@dao-dao/common'
+import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
-import ConnectWalletButton from './ConnectWalletButton'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
 import { MobilePinnedOrgNavList } from './PinnedOrgNavList'
-import { SuspenseLoader } from './SuspenseLoader'
 
 interface SmallScreenNavProps {
   className?: string

@@ -1,5 +1,5 @@
 {
-  "name": "@dao-dao/templates",
+  "name": "@dao-dao/common",
   "version": "0.1.0",
   "scripts": {
     "format": "eslint . --fix",
@@ -9,6 +9,7 @@
     "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
     "@dao-dao/utils": "*",
+    "@dao-dao/templates": "*",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },

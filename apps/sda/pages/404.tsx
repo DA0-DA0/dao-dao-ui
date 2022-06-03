@@ -2,9 +2,9 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { ErrorPage } from '@dao-dao/ui'
+import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 
-import { Header, SuspenseLoader } from '@/components'
+import { Header } from '@/components'
 
 const Custom404: NextPage = () => {
   const router = useRouter()

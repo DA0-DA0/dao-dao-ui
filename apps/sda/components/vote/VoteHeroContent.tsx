@@ -12,9 +12,11 @@ import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
+  VotingModuleType,
 } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
 
+import { useDAOInfoContext } from '../DAOInfoContext'
 import { Loader } from '../Loader'
 import { VoteHero } from './Hero'
 import { useApr } from '@/hooks'
@@ -23,11 +25,12 @@ import { DAO_ADDRESS, DEFAULT_IMAGE_URL, VOTE_EXTERNAL_URL } from '@/util'
 export const VoteHeroContentLoader = () => (
   <>
     <VoteHero.Header image={<Loader size="100%" />} />
-    <VoteHero.Stats />
+    <VoteHero.Stats votingModuleType={useDAOInfoContext().votingModuleType} />
   </>
 )
 
 export const VoteHeroContent = () => {
+  const { votingModuleType } = useDAOInfoContext()
   const config = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })
   )
@@ -40,7 +43,7 @@ export const VoteHeroContent = () => {
     fetchProposalDepositTokenInfo: true,
   })
   const { cw4VotingMembers } = useVotingModule(DAO_ADDRESS, {
-    fetchCw4VotingMembers: true,
+    fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,
   })
 
   const { threshold } = proposalModuleConfig
@@ -95,6 +98,7 @@ export const VoteHeroContent = () => {
               }
             : undefined,
         }}
+        votingModuleType={votingModuleType}
       />
     </>
   )

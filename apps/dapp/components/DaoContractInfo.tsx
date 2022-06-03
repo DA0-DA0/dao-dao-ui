@@ -9,7 +9,11 @@ import {
   useStakingInfo,
 } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
+import {
+  CopyToClipboardAccent,
+  GovInfoListItem,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 import {
   humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
@@ -19,7 +23,6 @@ import { processThresholdData } from '@dao-dao/utils/v1'
 import { DaoTreasury } from './DaoTreasury'
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 
 interface DaoContractInfoProps {
   hideTreasury?: boolean

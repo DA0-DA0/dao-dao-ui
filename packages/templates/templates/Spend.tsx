@@ -8,8 +8,8 @@ import {
   allCw20TokenListSelector,
 } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeBankMessage,
@@ -38,7 +38,7 @@ export const spendDefaults = ({
 }: GetDefaultsProps): SpendData => ({
   to: walletAddress,
   amount: 1,
-  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
+  denom: NATIVE_DENOM,
 })
 
 const InnerSpendComponent: TemplateComponent = (props) => {
@@ -84,9 +84,9 @@ const InnerSpendComponent: TemplateComponent = (props) => {
 }
 
 export const SpendComponent: TemplateComponent = (props) => (
-  <props.SuspenseLoader fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerSpendComponent {...props} />
-  </props.SuspenseLoader>
+  </SuspenseLoader>
 )
 
 export const useTransformSpendToCosmos: UseTransformToCosmos<SpendData> = (

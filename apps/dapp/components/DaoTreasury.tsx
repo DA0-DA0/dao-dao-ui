@@ -4,11 +4,10 @@ import { useRecoilValue } from 'recoil'
 
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { Button } from '@dao-dao/ui'
+import { Button, SuspenseLoader } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 import { TreasuryBalances } from './TreasuryBalances'
 import { addToken } from '@/util/addToken'
 

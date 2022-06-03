@@ -1,11 +1,14 @@
 import { FC } from 'react'
 
 import { useVotingModule, useWallet } from '@dao-dao/state'
-import { MultisigMemberList, MultisigMemberListLoader } from '@dao-dao/ui'
+import {
+  MultisigMemberList,
+  MultisigMemberListLoader,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 
 interface Cw4VotingMemberListProps {
   primaryText?: boolean

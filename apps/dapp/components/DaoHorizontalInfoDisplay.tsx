@@ -7,14 +7,17 @@ import {
   useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
-import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
+import {
+  HorizontalInfo,
+  HorizontalInfoSection,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   VotingModuleType,
 } from '@dao-dao/utils'
 
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 
 const DaoHorizontalInfoDisplayInternal: FC = () => {
   const { coreAddress, votingModuleType } = useOrgInfoContext()

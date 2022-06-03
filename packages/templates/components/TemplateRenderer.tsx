@@ -1,19 +1,21 @@
-import { FunctionComponent } from 'react'
+import { FC, FunctionComponent } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CosmosMessageDisplay } from '@dao-dao/ui'
+import { CosmosMessageDisplay, SuspenseLoader } from '@dao-dao/ui'
 
 import {
-  TemplateRendererComponentProps,
+  TemplateRendererProps,
   TemplateComponentLoader,
   DecodeCosmosMsgMatch,
   Template,
 } from '.'
 import { useTemplatesForVotingModuleType } from '..'
 
-const InnerTemplateRendererComponent: FunctionComponent<
-  TemplateRendererComponentProps
-> = ({ coreAddress, votingModuleType, message, SuspenseLoader }) => {
+const InnerTemplateComponent: FunctionComponent<TemplateRendererProps> = ({
+  coreAddress,
+  votingModuleType,
+  message,
+}) => {
   const templates = useTemplatesForVotingModuleType(votingModuleType)
   // Call relevant template hooks in the same order every time.
   // Note: Ensure custom is the last message template since it will match
@@ -43,7 +45,6 @@ const InnerTemplateRendererComponent: FunctionComponent<
     <FormProvider {...formMethods}>
       <form>
         <Component
-          SuspenseLoader={SuspenseLoader}
           coreAddress={coreAddress}
           getLabel={(field: string) => field}
           readOnly
@@ -53,10 +54,8 @@ const InnerTemplateRendererComponent: FunctionComponent<
   )
 }
 
-export const TemplateRendererComponent: FunctionComponent<
-  TemplateRendererComponentProps
-> = (props) => (
-  <props.SuspenseLoader fallback={<TemplateComponentLoader />}>
-    <InnerTemplateRendererComponent {...props} />
-  </props.SuspenseLoader>
+export const TemplateRenderer: FC<TemplateRendererProps> = (props) => (
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
+    <InnerTemplateComponent {...props} />
+  </SuspenseLoader>
 )

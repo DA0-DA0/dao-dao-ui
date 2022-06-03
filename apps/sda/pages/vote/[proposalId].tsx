@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   useWallet,
   useProposalModule,
@@ -30,19 +31,17 @@ import {
   CHAIN_RPC_ENDPOINT,
   CI,
   VotingModuleType,
+  cleanChainError,
 } from '@dao-dao/utils'
 
 import {
+  Loader,
   makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
-  StakingModal,
-  SuspenseLoader,
-  TemplateRendererComponent,
   useDAOInfoContext,
-  WalletConnectButton,
 } from '@/components'
-import { cleanChainError, DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 const InnerProposal: FC = () => {
   const router = useRouter()
@@ -103,7 +102,9 @@ const InnerProposal: FC = () => {
         toast.success('Vote successfully cast.')
       } catch (err) {
         console.error(err)
-        toast.error(cleanChainError(err.message))
+        toast.error(
+          cleanChainError(err instanceof Error ? err.message : `${err}`)
+        )
       }
 
       setLoading(false)
@@ -127,7 +128,9 @@ const InnerProposal: FC = () => {
       )
     } catch (err) {
       console.error(err)
-      toast.error(cleanChainError(err.message))
+      toast.error(
+        cleanChainError(err instanceof Error ? err.message : `${err}`)
+      )
     }
 
     setLoading(false)
@@ -175,9 +178,7 @@ const InnerProposal: FC = () => {
         </div>
 
         <V1ProposalDetails
-          SuspenseLoader={SuspenseLoader}
-          TemplateRendererComponent={TemplateRendererComponent}
-          connectWalletButton={<WalletConnectButton />}
+          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           connected={connected}
           coreAddress={DAO_ADDRESS}
           loading={loading}
@@ -188,7 +189,10 @@ const InnerProposal: FC = () => {
           showStaking={showStaking}
           stakingModal={
             <StakingModal
+              connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+              coreAddress={DAO_ADDRESS}
               defaultMode={StakingMode.Stake}
+              loader={Loader}
               onClose={() => setShowStaking(false)}
             />
           }

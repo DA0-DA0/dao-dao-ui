@@ -131,4 +131,4 @@ export const useTemplatesForVotingModuleType = (
   )
 
 export * from './components/common'
-export * from './components/TemplateRendererComponent'
+export * from './components/TemplateRenderer'

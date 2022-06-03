@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { useCallback, useState } from 'react'
+import { ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitHandler,
@@ -20,10 +20,11 @@ import {
 } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   Template,
+  TemplateKey,
   useTemplatesForVotingModuleType,
   UseTransformToCosmos,
 } from '@dao-dao/templates'
-import { TemplateKey } from '@dao-dao/templates'
+import { TemplateSelector } from '@dao-dao/templates/components'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -35,12 +36,16 @@ import {
   Tooltip,
   TextInput,
 } from '@dao-dao/ui'
-import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
+import {
+  validateRequired,
+  decodedMessagesString,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
-import { SuspenseLoader, TemplateSelector } from '.'
-import { useDAOInfoContext } from './DAOInfoContext'
-import { WalletConnectButton } from './WalletConnectButton'
-import { DAO_ADDRESS } from '@/util'
+enum ProposeSubmitValue {
+  Preview = 'Preview',
+  Submit = 'Submit',
+}
 
 interface TemplateKeyAndData {
   key: TemplateKey
@@ -57,16 +62,24 @@ export interface ProposalData extends Omit<FormProposalData, 'templateData'> {
   messages: CosmosMsgFor_Empty[]
 }
 
-interface ProposalFormProps {
+export interface CreateProposalFormProps {
   onSubmit: (data: ProposalData) => void
   loading: boolean
+  coreAddress: string
+  votingModuleType: VotingModuleType
+  connectWalletButton?: ReactNode
 }
 
-export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
+export const CreateProposalForm = ({
+  onSubmit,
+  loading,
+  coreAddress,
+  votingModuleType,
+  connectWalletButton,
+}: CreateProposalFormProps) => {
   const { connected, address: walletAddress } = useWallet()
-  const { votingModuleType } = useDAOInfoContext()
 
-  const { proposalModuleConfig } = useProposalModule(DAO_ADDRESS)
+  const { proposalModuleConfig } = useProposalModule(coreAddress)
 
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(
@@ -88,7 +101,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const votingPowerAtHeight = useRecoilValue(
     walletAddress
       ? votingPowerAtHeightSelector({
-          contractAddress: DAO_ADDRESS,
+          contractAddress: coreAddress,
           params: [
             {
               address: walletAddress,
@@ -101,7 +114,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
 
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
-    pauseInfoSelector({ contractAddress: DAO_ADDRESS })
+    pauseInfoSelector({ contractAddress: coreAddress })
   )
   const isPaused = pauseInfo && 'Paused' in pauseInfo
 
@@ -126,11 +139,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
   const proposalTitle = watch('title')
   const proposalTemplateData = watch('templateData')
 
-  const {
-    fields: templateDataFields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { append, remove } = useFieldArray({
     name: 'templateData',
     control,
     shouldUnregister: true,
@@ -148,31 +157,40 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
       ...acc,
       [template.key]: {
         template,
-        transform: template.useTransformToCosmos(DAO_ADDRESS),
+        transform: template.useTransformToCosmos(coreAddress),
       },
     }),
     {}
   )
 
   const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
-    ({ templateData, ...data }) =>
+    ({ templateData, ...data }, event) => {
+      const nativeEvent = event?.nativeEvent as SubmitEvent
+      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+
+      if (submitterValue === ProposeSubmitValue.Preview) {
+        setShowPreview((p) => !p)
+        return
+      }
+
       onSubmit({
         ...data,
         messages: templateData
           .map(({ key, data }) => templatesAndTransforms[key]?.transform(data))
           // Filter out undefined messages.
           .filter(Boolean) as CosmosMsgFor_Empty[],
-      }),
+      })
+    },
     // templatesAndTransforms changes every render, causing unnecessary
     // re-renders, but templates doesn't change, so we can use it as a
     // replacement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onSubmit, templates]
+    [onSubmit, templates, setShowPreview]
   )
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(onSubmitForm)}>
+      <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmitForm)}>
         {showPreview && (
           <>
             <div className="max-w-prose">
@@ -215,7 +233,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
             <InputErrorMessage error={errors.description} />
           </div>
           <ul className="list-none">
-            {templateDataFields.map(({ key }, index) => {
+            {(proposalTemplateData ?? []).map(({ key }, index) => {
               const Component = templatesAndTransforms[key]?.template?.Component
               if (!Component) {
                 throw new Error(`Error detecting template type ${key}`)
@@ -224,8 +242,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
               return (
                 <li key={index}>
                   <Component
-                    SuspenseLoader={SuspenseLoader}
-                    coreAddress={DAO_ADDRESS}
+                    coreAddress={coreAddress}
                     errors={errors.templateData?.[index]?.data || {}}
                     getLabel={(fieldName) =>
                       `templateData.${index}.data.${fieldName}`
@@ -263,17 +280,18 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
                 disabled={!canPropose || !canPayDeposit || isPaused}
                 loading={loading}
                 type="submit"
+                value={ProposeSubmitValue.Submit}
               >
                 Publish{' '}
                 <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
           ) : (
-            <WalletConnectButton />
+            connectWalletButton
           )}
           <Button
-            onClick={() => setShowPreview((p) => !p)}
-            type="button"
+            type="submit"
+            value={ProposeSubmitValue.Preview}
             variant="secondary"
           >
             {showPreview ? (
@@ -301,6 +319,7 @@ export const ProposalForm = ({ onSubmit, loading }: ProposalFormProps) => {
             })
             setShowTemplateSelector(false)
           }}
+          votingModuleType={votingModuleType}
         />
       )}
     </FormProvider>

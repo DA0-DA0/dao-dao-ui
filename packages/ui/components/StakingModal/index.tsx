@@ -1,1 +1,1 @@
-export { StakingMode, StakingModal } from './StakingModal'
+export * from './StakingModal'

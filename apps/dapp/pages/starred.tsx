@@ -3,13 +3,12 @@ import { NextPage } from 'next'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { LoadingScreen } from '@dao-dao/ui'
+import { LoadingScreen, SuspenseLoader } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { EmptyOrgCard } from '@/components/EmptyDaoCard'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { ActionMenu, PinnedOrgCard } from '@/components/starred'
-import { SuspenseLoader } from '@/components/SuspenseLoader'
 
 const InnerStarred: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)

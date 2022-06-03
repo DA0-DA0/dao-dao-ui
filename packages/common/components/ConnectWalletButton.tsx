@@ -1,8 +1,14 @@
 import { isMobile } from '@walletconnect/browser-utils'
+import clsx from 'clsx'
 import { FC } from 'react'
 
 import { useWallet } from '@dao-dao/state'
-import { WalletConnect, MobileWalletConnect, NoMobileWallet } from '@dao-dao/ui'
+import {
+  WalletConnect,
+  MobileWalletConnect,
+  NoMobileWallet,
+  WalletConnectProps,
+} from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -11,8 +17,15 @@ import {
   CHAIN_ID,
 } from '@dao-dao/utils'
 
-// Connection errors handled in Layout component.
-const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
+export interface ConnectWalletButtonProps extends Partial<WalletConnectProps> {
+  mobile?: boolean
+}
+
+export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
+  mobile,
+  className,
+  ...props
+}) => {
   const {
     connect,
     disconnect,
@@ -27,7 +40,8 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
     nativeBalance ?? 0,
     NATIVE_DECIMALS
   )
-  const chainDenomHuman = convertDenomToHumanReadableDenom(NATIVE_DENOM)
+  const chainDenomHuman =
+    convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
 
   if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {
     return <NoMobileWallet />
@@ -35,7 +49,7 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
 
   return mobile ? (
     <MobileWalletConnect
-      className="w-full"
+      className={clsx('w-full', className)}
       connected={connected}
       onConnect={connect}
       onDisconnect={isMobileWeb ? undefined : disconnect}
@@ -43,10 +57,11 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
       walletName={name}
+      {...props}
     />
   ) : (
     <WalletConnect
-      className="w-full"
+      className={clsx('w-full', className)}
       connected={connected}
       onConnect={connect}
       onDisconnect={isMobileWeb ? undefined : disconnect}
@@ -54,8 +69,7 @@ const ConnectWalletButton: FC<{ mobile?: boolean }> = ({ mobile }) => {
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
       walletName={name}
+      {...props}
     />
   )
 }
-
-export default ConnectWalletButton

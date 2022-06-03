@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { CreateProposalForm } from '@dao-dao/common'
 import {
   blockHeightSelector,
   refreshProposalsIdAtom,
@@ -14,21 +15,22 @@ import {
 import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
 import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
 import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { CopyToClipboard } from '@dao-dao/ui'
+import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
+import { cleanChainError } from '@dao-dao/utils'
 
 import {
   Loader,
   makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
-  ProposalForm,
   ProposalsInfo,
-  SuspenseLoader,
+  useDAOInfoContext,
 } from '@/components'
-import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
+import { DAO_ADDRESS, expirationExpired } from '@/util'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
+  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
@@ -99,7 +101,7 @@ const InnerProposalCreate = () => {
           console.error(err)
           toast.error(
             `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
-              err.message
+              err instanceof Error ? err.message : `${err}`
             )})`
           )
           return
@@ -122,7 +124,9 @@ const InnerProposalCreate = () => {
         router.push(`/vote/${proposalId}`)
       } catch (err) {
         console.error(err)
-        toast.error(cleanChainError(err.message))
+        toast.error(
+          cleanChainError(err instanceof Error ? err.message : `${err}`)
+        )
       }
 
       setLoading(false)
@@ -147,7 +151,12 @@ const InnerProposalCreate = () => {
         <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
 
         <SuspenseLoader fallback={<Loader />}>
-          <ProposalForm loading={loading} onSubmit={onProposalSubmit} />
+          <CreateProposalForm
+            coreAddress={DAO_ADDRESS}
+            loading={loading}
+            onSubmit={onProposalSubmit}
+            votingModuleType={votingModuleType}
+          />
         </SuspenseLoader>
       </div>
 

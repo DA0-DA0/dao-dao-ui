@@ -6,6 +6,7 @@ import { FunctionComponent, PropsWithChildren } from 'react'
 import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
 import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
 import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
+import { SuspenseLoader } from '@dao-dao/ui'
 import {
   cosmWasmClientRouter,
   CHAIN_RPC_ENDPOINT,
@@ -13,7 +14,7 @@ import {
   parseVotingModuleContractName,
 } from '@dao-dao/utils'
 
-import { Header, Loader, SuspenseLoader, DAOInfoContext, DAOInfo } from '.'
+import { Header, Loader, DAOInfoContext, DAOInfo } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
@@ -120,6 +121,6 @@ export const makeGetStaticProps: GetStaticPropsMaker =
     } catch (error) {
       console.error(error)
       // Throw error to trigger 500.
-      throw new Error('An unexpected error occurred. Please try again later.')
+      throw error
     }
   }

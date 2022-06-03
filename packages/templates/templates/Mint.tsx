@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 
 import { useGovernanceTokenInfo } from '@dao-dao/state'
+import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -43,9 +44,9 @@ const InnerMintComponent: TemplateComponent = (props) => {
 }
 
 export const MintComponent: TemplateComponent = (props) => (
-  <props.SuspenseLoader fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerMintComponent {...props} />
-  </props.SuspenseLoader>
+  </SuspenseLoader>
 )
 
 export const useTransformMintToCosmos: UseTransformToCosmos<MintData> = (

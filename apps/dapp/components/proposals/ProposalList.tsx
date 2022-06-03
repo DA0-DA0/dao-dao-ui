@@ -9,11 +9,10 @@ import {
 
 import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
 import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
-import { ProposalLine, Button } from '@dao-dao/ui'
+import { ProposalLine, Button, SuspenseLoader } from '@dao-dao/ui'
 
 import { Loader } from '../Loader'
 import { useOrgInfoContext } from '../OrgPageWrapper'
-import { SuspenseLoader } from '../SuspenseLoader'
 import {
   proposalListCountAtom,
   proposalStartBeforesAtom,

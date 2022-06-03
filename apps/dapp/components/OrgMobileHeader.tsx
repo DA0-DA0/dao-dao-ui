@@ -5,10 +5,10 @@ import { useVotingModule } from '@dao-dao/state'
 import {
   MobileHeader as StatelessMobileHeader,
   MobileHeaderLoader,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 
 import { useOrgInfoContext } from './OrgPageWrapper'
-import { SuspenseLoader } from './SuspenseLoader'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
 

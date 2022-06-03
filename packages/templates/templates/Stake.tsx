@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
+import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertDenomToHumanReadableDenom,
   StakeType,
@@ -56,9 +57,9 @@ const InnerStakeComponent: TemplateComponent = (props) => {
 }
 
 export const StakeComponent: TemplateComponent = (props) => (
-  <props.SuspenseLoader fallback={<TemplateComponentLoader />}>
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerStakeComponent {...props} />
-  </props.SuspenseLoader>
+  </SuspenseLoader>
 )
 
 export const useTransformStakeToCosmos: UseTransformToCosmos<StakeData> = () =>

@@ -9,12 +9,16 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 
 import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
-import { Button, GradientWrapper, LoadingScreen, Logo } from '@dao-dao/ui'
+import {
+  Button,
+  GradientWrapper,
+  LoadingScreen,
+  Logo,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
-
-import { SuspenseLoader } from '@/components/SuspenseLoader'
 
 const EnterAppButton = ({ small }: { small?: boolean }) => (
   <Link href="/starred">

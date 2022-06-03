@@ -11,6 +11,7 @@ import {
   StarButton,
   Breadcrumbs,
   MobileMenuTab,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -31,7 +32,6 @@ import {
   useOrgInfoContext,
 } from '@/components/OrgPageWrapper'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { addToken } from '@/util/addToken'
 import { getFastAverageColor } from '@/util/colors'
 

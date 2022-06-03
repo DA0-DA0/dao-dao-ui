@@ -3,26 +3,64 @@
 import type { NextPage } from 'next'
 import React, { useState } from 'react'
 
+import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { Pie } from '@dao-dao/icons'
-import { useWallet, useGovernanceTokenInfo } from '@dao-dao/state'
-import { StakingMode, TooltipIcon } from '@dao-dao/ui'
+import {
+  useWallet,
+  useGovernanceTokenInfo,
+  useVotingModule,
+} from '@dao-dao/state'
+import {
+  MultisigMemberList,
+  MultisigMemberListLoader,
+  StakingMode,
+  TooltipIcon,
+  SuspenseLoader,
+} from '@dao-dao/ui'
+import { VotingModuleType } from '@dao-dao/utils'
 
 import {
   StakeHeader,
   PageWrapper,
   PageWrapperProps,
-  StakingModal,
   makeGetStaticProps,
   Loader,
-  SuspenseLoader,
   StakedBalanceCard,
   UnstakedBalanceCard,
   ClaimsList,
   StakeHeaderLoader,
   BalanceCardLoader,
-  WalletConnectButton,
 } from '@/components'
 import { DAO_ADDRESS } from '@/util'
+
+const InnerMembers = () => {
+  const { connected, address: walletAddress } = useWallet()
+  const { cw4VotingMembers, walletVotingWeight, totalVotingWeight } =
+    useVotingModule(DAO_ADDRESS, {
+      fetchCw4VotingMembers: true,
+    })
+
+  if (!cw4VotingMembers || totalVotingWeight === undefined) {
+    throw new Error('Failed to load page data.')
+  }
+
+  return (
+    <>
+      <div className="space-y-8">
+        {!connected && <ConnectWalletButton className="!w-auto" />}
+
+        <SuspenseLoader fallback={<MultisigMemberListLoader loader={Loader} />}>
+          <MultisigMemberList
+            members={cw4VotingMembers}
+            totalWeight={totalVotingWeight}
+            walletAddress={walletAddress}
+            walletWeight={walletVotingWeight}
+          />
+        </SuspenseLoader>
+      </div>
+    </>
+  )
+}
 
 const InnerStake = () => {
   const { connected } = useWallet()
@@ -101,13 +139,16 @@ const InnerStake = () => {
             </SuspenseLoader>
           </>
         ) : (
-          <WalletConnectButton />
+          <ConnectWalletButton className="!w-auto" />
         )}
       </div>
 
       {showStakingDefaultMode !== undefined && (
         <StakingModal
+          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+          coreAddress={DAO_ADDRESS}
           defaultMode={showStakingDefaultMode}
+          loader={Loader}
           onClose={() => setShowStakingDefaultMode(undefined)}
         />
       )}
@@ -115,12 +156,20 @@ const InnerStake = () => {
   )
 }
 
-const StakePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
+const MembersOrStakePage: NextPage<PageWrapperProps> = ({
+  children: _,
+  ...props
+}) => (
   <PageWrapper {...props}>
-    <InnerStake />
+    {props?.daoInfo?.votingModuleType === VotingModuleType.Cw4Voting ? (
+      <InnerMembers />
+    ) : props?.daoInfo?.votingModuleType ===
+      VotingModuleType.Cw20StakedBalanceVoting ? (
+      <InnerStake />
+    ) : null}
   </PageWrapper>
 )
 
-export default StakePage
+export default MembersOrStakePage
 
 export const getStaticProps = makeGetStaticProps()
