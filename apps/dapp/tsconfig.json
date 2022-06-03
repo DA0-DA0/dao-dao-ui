@@ -6,6 +6,11 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../packages/templates/components/AddToken.tsx"
+  ],
   "exclude": ["node_modules", "tools"]
 }

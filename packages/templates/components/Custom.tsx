@@ -7,14 +7,6 @@ import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { TemplateComponent } from './common'
 
-export interface CustomData {
-  message: string
-}
-
-export const customDefaults = (): CustomData => ({
-  message: '{}',
-})
-
 export const CustomComponent: TemplateComponent = ({
   getLabel,
   onRemove,
@@ -28,7 +20,7 @@ export const CustomComponent: TemplateComponent = ({
   // that we are in a nested object nor wrapped nicely like we do
   // with register.
   return (
-    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
+    <div className="flex flex-col p-3 my-2 rounded-lg bg-primary">
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center mb-2">
           <h2 className="text-3xl">🤖</h2>
@@ -92,22 +84,3 @@ export const CustomComponent: TemplateComponent = ({
     </div>
   )
 }
-
-export const transformCustomToCosmos = (data: CustomData) => {
-  let msg
-  try {
-    msg = JSON5.parse(data.message)
-  } catch (err) {
-    console.error(`internal error. unparsable message: (${data.message})`, err)
-    return
-  }
-  // Convert the wasm message component to base64
-  if (msg.wasm) msg = makeWasmMessage(msg)
-  return msg
-}
-
-export const transformCosmosToCustom = (
-  msg: Record<string, any>
-): CustomData => ({
-  message: JSON.stringify(msg, undefined, 2),
-})

@@ -1,9 +1,9 @@
 import { FC } from 'react'
 
+import { Template, useTemplatesForVotingModuleType } from '@dao-dao/templates'
 import { Modal } from '@dao-dao/ui'
-import { Template } from '@dao-dao/ui/components/templates'
 
-import { templates } from './templates'
+import { useDAOInfoContext } from './DAOInfoContext'
 
 interface TemplateDisplayItemProps {
   template: Template
@@ -44,20 +44,25 @@ interface TemplateSelectorProps {
 export const TemplateSelector: FC<TemplateSelectorProps> = ({
   onClose,
   onSelectTemplate,
-}) => (
-  <Modal onClose={onClose}>
-    <div className="flex justify-between items-center mb-6">
-      <h1 className="header-text">Proposal message templates</h1>
-    </div>
-    <ul className="flex flex-col gap-3 list-none">
-      {templates.map((template, index) => (
-        <li key={index}>
-          <TemplateDisplayItem
-            onClick={() => onSelectTemplate(template)}
-            template={template}
-          />
-        </li>
-      ))}
-    </ul>
-  </Modal>
-)
+}) => {
+  const { votingModuleType } = useDAOInfoContext()
+  const templates = useTemplatesForVotingModuleType(votingModuleType)
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="header-text">Proposal message templates</h1>
+      </div>
+      <ul className="flex flex-col gap-3 list-none">
+        {templates.map((template, index) => (
+          <li key={index}>
+            <TemplateDisplayItem
+              onClick={() => onSelectTemplate(template)}
+              template={template}
+            />
+          </li>
+        ))}
+      </ul>
+    </Modal>
+  )
+}

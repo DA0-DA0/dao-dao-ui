@@ -4,16 +4,16 @@ import { useRouter } from 'next/router'
 import { FunctionComponent, PropsWithChildren } from 'react'
 
 import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT, CI } from '@dao-dao/utils'
-
+import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
+import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
 import {
-  Header,
-  Loader,
-  SuspenseLoader,
-  DAOInfoContext,
-  DAOInfo,
-  DefaultDAOInfo,
-} from '.'
+  cosmWasmClientRouter,
+  CHAIN_RPC_ENDPOINT,
+  CI,
+  parseVotingModuleContractName,
+} from '@dao-dao/utils'
+
+import { Header, Loader, SuspenseLoader, DAOInfoContext, DAOInfo } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
@@ -46,7 +46,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
         title={title}
       />
 
-      <DAOInfoContext.Provider value={daoInfo || DefaultDAOInfo}>
+      <DAOInfoContext.Provider value={daoInfo}>
         <Header />
 
         {/* Suspend children so SEO stays intact while page loads. */}
@@ -81,12 +81,23 @@ export const makeGetStaticProps: GetStaticPropsMaker =
     }
 
     try {
-      const client = new QueryClient(
-        await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
-        DAO_ADDRESS
-      )
+      const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
+      const client = new QueryClient(cwClient, DAO_ADDRESS)
 
       const config = await client.config()
+
+      const votingModuleAddress = await client.votingModule()
+      const {
+        info: { contract: votingModuleContractName },
+      }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
+        await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
+
+      const votingModuleType = parseVotingModuleContractName(
+        votingModuleContractName
+      )
+      if (!votingModuleType) {
+        throw new Error('Failed to determine voting module type.')
+      }
 
       return {
         props: {
@@ -97,6 +108,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           daoInfo: {
+            votingModuleType,
             name: config.name,
             imageUrl: config.image_url ?? null,
           },

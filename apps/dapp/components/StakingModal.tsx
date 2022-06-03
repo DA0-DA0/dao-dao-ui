@@ -96,6 +96,20 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       : constSelector(undefined)
   )
 
+  if (
+    !governanceTokenInfo ||
+    !stakingContractAddress ||
+    !stakingContractConfig ||
+    sumClaimsAvailable === undefined ||
+    unstakedBalance === undefined ||
+    walletStaked === undefined ||
+    totalStaked === undefined ||
+    stakedBalance === undefined ||
+    totalValue === undefined
+  ) {
+    throw new Error('Failed to load data.')
+  }
+
   const doStake = useSend({
     contractAddress: governanceTokenAddress ?? '',
     sender: walletAddress ?? '',
@@ -110,15 +124,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   })
 
   const onAction = async (mode: StakingMode, amount: number) => {
-    if (
-      !connected ||
-      !governanceTokenInfo ||
-      !stakingContractAddress ||
-      !totalValue ||
-      !totalStaked ||
-      !stakedBalance
-    )
-      return
+    if (!connected) {
+      toast.error('Connect your wallet before doing that.')
+    }
 
     setStakingLoading(true)
 
@@ -273,17 +281,6 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         <ConnectWalletButton />
       </StakingModalWrapper>
     )
-  }
-
-  // Don't render until ready.
-  if (
-    !governanceTokenInfo ||
-    !stakingContractConfig ||
-    sumClaimsAvailable === undefined ||
-    unstakedBalance === undefined ||
-    walletStaked === undefined
-  ) {
-    return <StakingModalLoader onClose={onClose} />
   }
 
   return (

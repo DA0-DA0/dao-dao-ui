@@ -1,6 +1,6 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import {
@@ -18,6 +18,7 @@ import {
   useCastVote,
   useExecute,
 } from '@dao-dao/state/hooks/cw-proposal-single'
+import { TemplateRendererComponent } from '@dao-dao/templates'
 import {
   Breadcrumbs,
   StakingMode,
@@ -25,7 +26,12 @@ import {
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui'
-import { CHAIN_RPC_ENDPOINT, CI, cosmWasmClientRouter } from '@dao-dao/utils'
+import {
+  CHAIN_RPC_ENDPOINT,
+  CI,
+  cosmWasmClientRouter,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
 import ConnectWalletButton from '@/components/ConnectWalletButton'
 import { PageLoader } from '@/components/Loader'
@@ -39,13 +45,11 @@ import {
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { StakingModal } from '@/components/StakingModal'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
-import { TemplateRendererComponent } from '@/components/templates'
 import { cleanChainError } from '@/util/cleanChainError'
 
-// TODO: Add cw4-voting support.
 const InnerProposal: FC = () => {
   const router = useRouter()
-  const { coreAddress, name: orgName } = useOrgInfoContext()
+  const { coreAddress, votingModuleType, name: orgName } = useOrgInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
@@ -130,7 +134,22 @@ const InnerProposal: FC = () => {
     refreshProposalAndAll,
   ])
 
-  if (!proposalResponse || !governanceTokenInfo || !proposalModuleConfig) {
+  const denomConversionDecimals = useMemo(
+    () =>
+      votingModuleType === VotingModuleType.Cw4Voting
+        ? 0
+        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+          governanceTokenInfo
+        ? governanceTokenInfo.decimals
+        : undefined,
+    [votingModuleType, governanceTokenInfo]
+  )
+
+  if (
+    !proposalResponse ||
+    !proposalModuleConfig ||
+    denomConversionDecimals === undefined
+  ) {
     throw new Error('Failed to load page data.')
   }
 
@@ -162,9 +181,11 @@ const InnerProposal: FC = () => {
           </div>
 
           <V1ProposalDetails
+            SuspenseLoader={SuspenseLoader}
             TemplateRendererComponent={TemplateRendererComponent}
             connectWalletButton={<ConnectWalletButton />}
             connected={connected}
+            coreAddress={coreAddress}
             loading={loading}
             onExecute={onExecute}
             onVote={onVote}
@@ -177,6 +198,7 @@ const InnerProposal: FC = () => {
                 onClose={() => setShowStaking(false)}
               />
             }
+            votingModuleType={votingModuleType}
             walletVote={voteResponse?.vote?.vote ?? undefined}
             walletWeightPercent={
               votingPowerAtHeight
@@ -191,13 +213,13 @@ const InnerProposal: FC = () => {
             <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
             <V1ProposalInfoVoteStatus
+              denomConversionDecimals={denomConversionDecimals}
               maxVotingSeconds={
                 'time' in proposalModuleConfig.max_voting_period
                   ? proposalModuleConfig.max_voting_period.time
                   : undefined
               }
               proposal={proposalResponse.proposal}
-              tokenDecimals={governanceTokenInfo.decimals}
             />
           </div>
         </div>
@@ -214,13 +236,13 @@ const InnerProposal: FC = () => {
 
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
         <V1ProposalInfoVoteStatus
+          denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period
               ? proposalModuleConfig.max_voting_period.time
               : undefined
           }
           proposal={proposalResponse.proposal}
-          tokenDecimals={governanceTokenInfo.decimals}
         />
       </div>
     </div>

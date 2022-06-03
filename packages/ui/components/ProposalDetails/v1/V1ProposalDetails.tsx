@@ -6,18 +6,25 @@ import {
   Status,
   Vote as VoteChoice,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import { decodedMessagesString, decodeMessages } from '@dao-dao/utils'
+import { TemplateRendererComponentProps } from '@dao-dao/templates'
+import {
+  decodedMessagesString,
+  decodeMessages,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
+import { SuspenseLoaderProps } from '../../..'
 import { Button } from '../../Button'
 import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'
 import { Execute } from '../../Execute'
 import { MarkdownPreview } from '../../MarkdownPreview'
-import { TemplateRendererComponentProps } from '../../templates'
 import { Vote } from '../../Vote'
 import { V1ProposalMessageTemplateList } from './V1ProposalMessageTemplateList'
 import { VoteDisplay } from './VoteDisplay'
 
 interface V1ProposalDetailsProps {
+  coreAddress: string
+  votingModuleType: VotingModuleType
   proposal: Proposal
   walletVote: VoteChoice | undefined
   walletWeightPercent: number
@@ -30,9 +37,14 @@ interface V1ProposalDetailsProps {
   onVote: (choice: VoteChoice) => void
   connected: boolean
   connectWalletButton?: ReactNode
+  SuspenseLoader: ComponentType<
+    Omit<SuspenseLoaderProps, 'ErrorBoundaryComponent'>
+  >
 }
 
 export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
+  coreAddress,
+  votingModuleType,
   proposal,
   walletVote,
   walletWeightPercent,
@@ -45,6 +57,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
   onVote,
   connected,
   connectWalletButton,
+  SuspenseLoader,
 }) => {
   const decodedMessages = decodeMessages(proposal.msgs)
   const [showRaw, setShowRaw] = useState(false)
@@ -66,8 +79,11 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
             />
           ) : (
             <V1ProposalMessageTemplateList
+              SuspenseLoader={SuspenseLoader}
               TemplateRendererComponent={TemplateRendererComponent}
+              coreAddress={coreAddress}
               msgs={proposal.msgs}
+              votingModuleType={votingModuleType}
             />
           )
         ) : (

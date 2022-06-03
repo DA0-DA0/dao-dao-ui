@@ -7,10 +7,11 @@ import {
   votingPowerAtHeightSelector,
 } from '../recoil/selectors/clients/cw-core'
 import { listAllMembersSelector } from '../recoil/selectors/clients/cw4-group'
+import { groupContractSelector } from '../recoil/selectors/clients/cw4-voting'
 import { useWallet } from './useWallet'
 
 interface UseVotingModuleOptions {
-  cw4VotingGroupAddress?: string
+  fetchCw4VotingMembers?: boolean
 }
 
 interface UseVotingModuleResponse {
@@ -22,7 +23,7 @@ interface UseVotingModuleResponse {
 
 export const useVotingModule = (
   coreAddress: string,
-  { cw4VotingGroupAddress }: UseVotingModuleOptions = {}
+  { fetchCw4VotingMembers }: UseVotingModuleOptions = {}
 ): UseVotingModuleResponse => {
   const { address: walletAddress } = useWallet()
   const votingModuleAddress = useRecoilValue(
@@ -53,6 +54,15 @@ export const useVotingModule = (
     ? Number(_totalVotingWeight)
     : undefined
   const isMember = walletVotingWeight ? walletVotingWeight > 0 : undefined
+
+  const cw4VotingGroupAddress = useRecoilValue(
+    fetchCw4VotingMembers && votingModuleAddress
+      ? groupContractSelector({
+          contractAddress: votingModuleAddress,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
 
   let cw4VotingMembers = useRecoilValue(
     cw4VotingGroupAddress

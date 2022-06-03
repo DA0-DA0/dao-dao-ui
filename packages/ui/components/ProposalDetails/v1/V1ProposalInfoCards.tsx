@@ -32,7 +32,7 @@ interface V1ProposalInfoCardProps {
 
 interface V1ProposalInfoVoteStatusProps {
   proposal: Proposal
-  tokenDecimals: number
+  denomConversionDecimals: number
   // Undefined if max voting period is in blocks.
   maxVotingSeconds?: number
 }
@@ -143,23 +143,35 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
 
 export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
   proposal,
-  tokenDecimals,
+  denomConversionDecimals,
   maxVotingSeconds,
 }) => {
   const localeOptions = { maximumSignificantDigits: 3 }
 
   const yesVotes = Number(
-    convertMicroDenomToDenomWithDecimals(proposal.votes.yes, tokenDecimals)
+    convertMicroDenomToDenomWithDecimals(
+      proposal.votes.yes,
+      denomConversionDecimals
+    )
   )
   const noVotes = Number(
-    convertMicroDenomToDenomWithDecimals(proposal.votes.no, tokenDecimals)
+    convertMicroDenomToDenomWithDecimals(
+      proposal.votes.no,
+      denomConversionDecimals
+    )
   )
   const abstainVotes = Number(
-    convertMicroDenomToDenomWithDecimals(proposal.votes.abstain, tokenDecimals)
+    convertMicroDenomToDenomWithDecimals(
+      proposal.votes.abstain,
+      denomConversionDecimals
+    )
   )
 
   const totalWeight = Number(
-    convertMicroDenomToDenomWithDecimals(proposal.total_power, tokenDecimals)
+    convertMicroDenomToDenomWithDecimals(
+      proposal.total_power,
+      denomConversionDecimals
+    )
   )
 
   const turnoutTotal = yesVotes + noVotes + abstainVotes

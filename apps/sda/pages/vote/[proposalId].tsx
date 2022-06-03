@@ -1,7 +1,7 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import {
@@ -25,22 +25,29 @@ import {
   V1ProposalInfoCard,
   V1ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT, CI } from '@dao-dao/utils'
+import {
+  cosmWasmClientRouter,
+  CHAIN_RPC_ENDPOINT,
+  CI,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
 import {
   makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
   StakingModal,
+  SuspenseLoader,
   TemplateRendererComponent,
+  useDAOInfoContext,
   WalletConnectButton,
 } from '@/components'
 import { cleanChainError, DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
-// TODO: Add cw4-voting support.
 const InnerProposal: FC = () => {
   const router = useRouter()
 
+  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
@@ -132,7 +139,22 @@ const InnerProposal: FC = () => {
     refreshProposalAndAll,
   ])
 
-  if (!proposalResponse || !governanceTokenInfo || !proposalModuleConfig) {
+  const denomConversionDecimals = useMemo(
+    () =>
+      votingModuleType === VotingModuleType.Cw4Voting
+        ? 0
+        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+          governanceTokenInfo
+        ? governanceTokenInfo.decimals
+        : undefined,
+    [votingModuleType, governanceTokenInfo]
+  )
+
+  if (
+    !proposalResponse ||
+    !proposalModuleConfig ||
+    denomConversionDecimals === undefined
+  ) {
     throw new Error('Failed to load page data.')
   }
 
@@ -153,9 +175,11 @@ const InnerProposal: FC = () => {
         </div>
 
         <V1ProposalDetails
+          SuspenseLoader={SuspenseLoader}
           TemplateRendererComponent={TemplateRendererComponent}
           connectWalletButton={<WalletConnectButton />}
           connected={connected}
+          coreAddress={DAO_ADDRESS}
           loading={loading}
           onExecute={onExecute}
           onVote={onVote}
@@ -168,6 +192,7 @@ const InnerProposal: FC = () => {
               onClose={() => setShowStaking(false)}
             />
           }
+          votingModuleType={votingModuleType}
           walletVote={voteResponse?.vote?.vote ?? undefined}
           walletWeightPercent={
             votingPowerAtHeight
@@ -182,13 +207,13 @@ const InnerProposal: FC = () => {
           <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
           <V1ProposalInfoVoteStatus
+            denomConversionDecimals={denomConversionDecimals}
             maxVotingSeconds={
               'time' in proposalModuleConfig.max_voting_period
                 ? proposalModuleConfig.max_voting_period.time
                 : undefined
             }
             proposal={proposalResponse.proposal}
-            tokenDecimals={governanceTokenInfo.decimals}
           />
         </div>
       </div>
@@ -205,13 +230,13 @@ const InnerProposal: FC = () => {
 
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
         <V1ProposalInfoVoteStatus
+          denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period
               ? proposalModuleConfig.max_voting_period.time
               : undefined
           }
           proposal={proposalResponse.proposal}
-          tokenDecimals={governanceTokenInfo.decimals}
         />
       </div>
     </div>

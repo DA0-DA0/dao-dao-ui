@@ -1,8 +1,9 @@
 /** @type {import("tailwindcss/tailwind-config").TailwindConfig} */
 const tailwindConfig = {
+  content: ['*.{js,jsx,ts,tsx}'],
   content: [
-    './{components,pages,services,templates}/**/*.{js,jsx,ts,tsx}',
-    '../../packages/{ui,state,templates}/**/*.{js,jsx,ts,tsx}',
+    './{components,templates}/**/*.{js,jsx,ts,tsx}',
+    '../{ui,state}/**/*.{js,jsx,ts,tsx}',
   ],
   presets: [require('@dao-dao/ui/tailwind/config')],
 }

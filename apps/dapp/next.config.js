@@ -7,6 +7,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/icons',
   '@dao-dao/utils',
   '@dao-dao/state',
+  '@dao-dao/templates',
 ])
 
 /** @type {import("next").NextConfig} */

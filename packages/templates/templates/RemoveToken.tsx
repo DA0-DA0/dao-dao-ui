@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import {
   constSelector,
@@ -8,16 +8,25 @@ import {
 } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { cw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { allCw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+import { makeWasmMessage } from '@dao-dao/utils'
+
 import {
   RemoveTokenComponent as StatelessRemoveTokenComponent,
   TemplateComponent,
   TemplateComponentLoader,
-} from '@dao-dao/ui/components/templates'
+  UseDecodeCosmosMsg,
+  UseTransformToCosmos,
+} from '../components'
 
-import { SuspenseLoader } from '..'
-import { DAO_ADDRESS } from '@/util'
+export interface RemoveTokenData {
+  address: string
+}
+
+export const removeTokenDefaults = (): RemoveTokenData => ({
+  address: '',
+})
 
 const InnerRemoveTokenComponent: TemplateComponent = (props) => {
   const { getLabel } = props
@@ -44,7 +53,9 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
 
   const existingTokenAddresses =
     useRecoilValue(
-      cw20TokenListSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
+      allCw20TokenListSelector({
+        contractAddress: props.coreAddress,
+      })
     ) ?? []
   const existingTokenInfos =
     useRecoilValue(
@@ -81,7 +92,47 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
 }
 
 export const RemoveTokenComponent: TemplateComponent = (props) => (
-  <SuspenseLoader fallback={<TemplateComponentLoader />}>
+  <props.SuspenseLoader fallback={<TemplateComponentLoader />}>
     <InnerRemoveTokenComponent {...props} />
-  </SuspenseLoader>
+  </props.SuspenseLoader>
 )
+
+export const useTransformRemoveTokenToCosmos: UseTransformToCosmos<
+  RemoveTokenData
+> = (coreAddress: string) =>
+  useCallback(
+    (data: RemoveTokenData) =>
+      makeWasmMessage({
+        wasm: {
+          execute: {
+            contract_addr: coreAddress,
+            funds: [],
+            msg: {
+              update_cw20_token_list: {
+                to_add: [],
+                to_remove: [data.address],
+              },
+            },
+          },
+        },
+      }),
+    []
+  )
+
+export const useDecodeRemoveTokenCosmosMsg: UseDecodeCosmosMsg<
+  RemoveTokenData
+> = (msg: Record<string, any>) =>
+  'wasm' in msg &&
+  'execute' in msg.wasm &&
+  'update_cw20_token_list' in msg.wasm.execute.msg &&
+  'to_add' in msg.wasm.execute.msg.update_cw20_token_list &&
+  msg.wasm.execute.msg.update_cw20_token_list.to_add.length === 0 &&
+  'to_remove' in msg.wasm.execute.msg.update_cw20_token_list &&
+  msg.wasm.execute.msg.update_cw20_token_list.to_remove.length === 1
+    ? {
+        match: true,
+        data: {
+          address: msg.wasm.execute.msg.update_cw20_token_list.to_remove[0],
+        },
+      }
+    : { match: false }

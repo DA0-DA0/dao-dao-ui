@@ -20,7 +20,7 @@ import { StakingModal } from './StakingModal'
 import { SuspenseLoader } from './SuspenseLoader'
 import { stakingLoadingAtom } from '@/atoms/status'
 
-const InnerYourShares: FC = () => {
+const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
   const { coreAddress } = useOrgInfoContext()
   const config = useRecoilValue(
     configSelector({ contractAddress: coreAddress })
@@ -146,18 +146,20 @@ const InnerYourShares: FC = () => {
   )
 }
 
-interface YourSharesProps {
+interface Cw20StakedBalanceVotingSharesDisplayProps {
   primaryText?: boolean
 }
 
-export const YourShares: FC<YourSharesProps> = ({ primaryText }) => (
+export const Cw20StakedBalanceVotingSharesDisplay: FC<
+  Cw20StakedBalanceVotingSharesDisplayProps
+> = ({ primaryText }) => (
   <>
     <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
       Your shares
     </h2>
 
     <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-      <InnerYourShares />
+      <InnerCw20StakedBalanceVotingSharesDisplay />
     </SuspenseLoader>
   </>
 )

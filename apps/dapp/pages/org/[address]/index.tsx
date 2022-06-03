@@ -17,11 +17,12 @@ import { VotingModuleType } from '@dao-dao/utils'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { ContractHeader } from '@/components/ContractHeader'
 import { ContractProposalsDisplay } from '@/components/ContractProposalsDisplay'
+import { Cw20StakedBalanceVotingSharesDisplay } from '@/components/Cw20StakedBalanceVotingSharesDisplay'
+import { Cw4VotingMemberList } from '@/components/Cw4VotingMemberList'
 import { DaoContractInfo } from '@/components/DaoContractInfo'
 import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
 import { DaoTreasury } from '@/components/DaoTreasury'
 import { PageLoader } from '@/components/Loader'
-import { MultisigMemberList } from '@/components/MultisigMemberList'
 import { OrgMobileHeader } from '@/components/OrgMobileHeader'
 import {
   makeGetOrgStaticProps,
@@ -31,7 +32,6 @@ import {
 } from '@/components/OrgPageWrapper'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
-import { YourShares } from '@/components/YourShares'
 import { addToken } from '@/util/addToken'
 import { getFastAverageColor } from '@/util/colors'
 
@@ -94,9 +94,11 @@ const InnerMobileDaoHome: FC = () => {
           <ContractProposalsDisplay />
         )}
         {tab === MobileMenuTabSelection.Members && (
-          <MultisigMemberList primaryText />
+          <Cw4VotingMemberList primaryText />
         )}
-        {tab === MobileMenuTabSelection.Staking && <YourShares primaryText />}
+        {tab === MobileMenuTabSelection.Staking && (
+          <Cw20StakedBalanceVotingSharesDisplay primaryText />
+        )}
         {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
           <DaoContractInfo hideTreasury />
@@ -171,10 +173,10 @@ const InnerOrgHome: FC = () => {
             </div>
             <div className="block mt-4 lg:hidden">
               {votingModuleType === VotingModuleType.Cw4Voting ? (
-                <MultisigMemberList />
+                <Cw4VotingMemberList />
               ) : votingModuleType ===
                 VotingModuleType.Cw20StakedBalanceVoting ? (
-                <YourShares />
+                <Cw20StakedBalanceVotingSharesDisplay />
               ) : null}
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
@@ -188,9 +190,9 @@ const InnerOrgHome: FC = () => {
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
         {votingModuleType === VotingModuleType.Cw4Voting ? (
-          <MultisigMemberList />
+          <Cw4VotingMemberList />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
-          <YourShares />
+          <Cw20StakedBalanceVotingSharesDisplay />
         ) : null}
       </div>
     </div>

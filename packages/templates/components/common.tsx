@@ -1,11 +1,11 @@
-import { FunctionComponent } from 'react'
+import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-
-import { InputLabel } from '../input'
-import { Loader } from '../Loader'
+import { InputLabel, SuspenseLoaderProps } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/ui/components/Loader'
+import { VotingModuleType } from '@dao-dao/utils'
 
 export enum TemplateKey {
   Spend = 'spend',
@@ -18,15 +18,36 @@ export enum TemplateKey {
 
 // A component which will render a template's input form.
 export type TemplateComponentProps<T = undefined> = {
+  coreAddress: string
   getLabel: (field: string) => string
   onRemove?: () => void
   errors?: FieldErrors
   readOnly?: boolean
+  SuspenseLoader: ComponentType<
+    Omit<SuspenseLoaderProps, 'ErrorBoundaryComponent'>
+  >
 } & (T extends undefined ? {} : { options: T })
 
 export type TemplateComponent<T = undefined> = FunctionComponent<
   TemplateComponentProps<T>
 >
+
+export type UseTransformToCosmos<D extends {} = any> = (
+  coreAddress: string
+) => (data: D) => CosmosMsgFor_Empty
+
+export interface DecodeCosmosMsgNoMatch {
+  match: false
+  data?: never
+}
+export interface DecodeCosmosMsgMatch<D extends {} = any> {
+  match: true
+  data: D
+}
+export type UseDecodeCosmosMsg<D extends {} = any> = (
+  msg: Record<string, any>,
+  coreAddress: string
+) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
 
 // Defines a new template.
 export interface Template<O extends {} = any, D extends {} = any> {
@@ -36,10 +57,14 @@ export interface Template<O extends {} = any, D extends {} = any> {
   Component: TemplateComponent<O>
   // Get default for fields in form display.
   getDefaults: (props: GetDefaultsProps) => D
-  // Convert template data to CosmosMsgFor_Empty.
-  toCosmosMsg: (data: D, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
-  // Convert decoded msg data to fields in form display.
-  fromCosmosMsg: (msg: Record<string, any>, props: FromCosmosMsgProps) => D
+  // Hook to make function to convert template data to CosmosMsgFor_Empty.
+  useTransformToCosmos: UseTransformToCosmos<D>
+  // Hook to convert decoded msg data to fields in form display.
+  // Should return undefined until a match can be confirmed or rejected.
+  // If confirmed, data should be returned too.
+  useDecodeCosmosMsg: UseDecodeCosmosMsg<D>
+  // Voting module types that this template supports.
+  votingModuleTypes: VotingModuleType[]
 }
 
 // The contextual information provided to templates when getting
@@ -48,26 +73,17 @@ export interface GetDefaultsProps {
   walletAddress: string
 }
 
-// The contextual information provided to templates when transforming
-// from form inputs to cosmos messages.
-export interface ToCosmosMsgProps {
-  daoAddress: string
-  govTokenAddress: string
-  govTokenDecimals: number
-}
-
-// The contextual information provided to templates when transforming
-// from cosmos messages to values.
-export interface FromCosmosMsgProps {
-  govTokenDecimals: number
-}
-
 // The props needed to render a template from a message.
 export interface TemplateRendererComponentProps {
+  coreAddress: string
+  votingModuleType: VotingModuleType
   message: { [key: string]: any }
+  SuspenseLoader: ComponentType<
+    Omit<SuspenseLoaderProps, 'ErrorBoundaryComponent'>
+  >
 }
 
-export type TokenInfoDisplayProps = {
+export interface TokenInfoDisplayProps {
   loadingTokenInfo?: boolean
   tokenInfo?: TokenInfoResponse
 }
@@ -80,9 +96,9 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
     {loadingTokenInfo ? (
       <Loader />
     ) : tokenInfo ? (
-      <div>
+      <div className="space-y-2">
         <InputLabel name="Token info" />
-        <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
+        <pre className="overflow-auto p-2 rounded-lg border text-secondary border-secondary">
           {JSON.stringify(tokenInfo, null, 2)}
         </pre>
       </div>
@@ -91,7 +107,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
 )
 
 export const TemplateComponentLoader = () => (
-  <div className="p-3 my-2 bg-primary rounded-lg">
+  <div className="p-3 my-2 rounded-lg bg-primary">
     <Loader />
   </div>
 )

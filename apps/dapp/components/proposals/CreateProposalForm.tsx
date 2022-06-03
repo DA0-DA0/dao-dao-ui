@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitHandler,
@@ -11,7 +11,6 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { Airplane } from '@dao-dao/icons'
 import {
   useWallet,
-  useGovernanceTokenInfo,
   useProposalModule,
   walletCw20BalanceSelector,
 } from '@dao-dao/state'
@@ -19,6 +18,12 @@ import {
   pauseInfoSelector,
   votingPowerAtHeightSelector,
 } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import {
+  Template,
+  TemplateKey,
+  useTemplatesForVotingModuleType,
+  UseTransformToCosmos,
+} from '@dao-dao/templates'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -30,12 +35,11 @@ import {
   Tooltip,
   TextInput,
 } from '@dao-dao/ui'
-import { TemplateKey, ToCosmosMsgProps } from '@dao-dao/ui/components/templates'
 import { validateRequired, decodedMessagesString } from '@dao-dao/utils'
 
 import ConnectWalletButton from '../ConnectWalletButton'
 import { useOrgInfoContext } from '../OrgPageWrapper'
-import { templateMap, templateToCosmosMsg } from '../templates'
+import { SuspenseLoader } from '../SuspenseLoader'
 import { TemplateSelector } from '../TemplateSelector'
 
 interface TemplateKeyAndData {
@@ -62,10 +66,8 @@ export const CreateProposalForm = ({
   onSubmit,
   loading,
 }: CreateProposalFormProps) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress, votingModuleType } = useOrgInfoContext()
   const { connected, address: walletAddress } = useWallet()
-  const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo(coreAddress)
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
 
@@ -127,44 +129,45 @@ export const CreateProposalForm = ({
   const proposalTitle = watch('title')
   const proposalTemplateData = watch('templateData')
 
-  const {
-    fields: templateDataFields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { append, remove } = useFieldArray({
     name: 'templateData',
     control,
     shouldUnregister: true,
   })
 
-  const toCosmosMsgProps: ToCosmosMsgProps | undefined =
-    governanceTokenAddress && governanceTokenInfo
-      ? {
-          daoAddress: coreAddress,
-          govTokenAddress: governanceTokenAddress,
-          govTokenDecimals: governanceTokenInfo.decimals,
-        }
-      : undefined
+  const templates = useTemplatesForVotingModuleType(votingModuleType)
+  // Call relevant template hooks in the same order every time.
+  const templatesAndTransforms: Partial<
+    Record<
+      TemplateKey,
+      { template: Template; transform: ReturnType<UseTransformToCosmos> }
+    >
+  > = templates.reduce(
+    (acc, template) => ({
+      ...acc,
+      [template.key]: {
+        template,
+        transform: template.useTransformToCosmos(coreAddress),
+      },
+    }),
+    {}
+  )
 
-  // Need these props to convert data to the expected message format.
-  // Should be defined at this point since useRecoilValue suspends.
-  if (!toCosmosMsgProps) {
-    throw new Error('Failed to retrieve governance token info.')
-  }
-
-  const onSubmitForm: SubmitHandler<FormProposalData> = ({
-    templateData,
-    ...data
-  }) =>
-    onSubmit({
-      ...data,
-      messages: templateData
-        .map(({ key, data }) =>
-          templateToCosmosMsg(key, data, toCosmosMsgProps)
-        )
-        // Filter out undefined messages.
-        .filter(Boolean) as CosmosMsgFor_Empty[],
-    })
+  const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
+    ({ templateData, ...data }) =>
+      onSubmit({
+        ...data,
+        messages: templateData
+          .map(({ key, data }) => templatesAndTransforms[key]?.transform(data))
+          // Filter out undefined messages.
+          .filter(Boolean) as CosmosMsgFor_Empty[],
+      }),
+    // templatesAndTransforms changes every render, causing unnecessary
+    // re-renders, but templates doesn't change, so we can use it as a
+    // replacement.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onSubmit, templates]
+  )
 
   return (
     <FormProvider {...formMethods}>
@@ -181,7 +184,7 @@ export const CreateProposalForm = ({
               value={decodedMessagesString(
                 proposalTemplateData
                   .map(({ key, data }) =>
-                    templateToCosmosMsg(key, data, toCosmosMsgProps)
+                    templatesAndTransforms[key]?.transform(data)
                   )
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
@@ -211,12 +214,17 @@ export const CreateProposalForm = ({
             <InputErrorMessage error={errors.description} />
           </div>
           <ul className="list-none">
-            {templateDataFields.map(({ key }, index) => {
-              const { Component } = templateMap[key]
+            {(proposalTemplateData ?? []).map(({ key }, index) => {
+              const Component = templatesAndTransforms[key]?.template?.Component
+              if (!Component) {
+                throw new Error(`Error detecting template type ${key}`)
+              }
 
               return (
                 <li key={index}>
                   <Component
+                    SuspenseLoader={SuspenseLoader}
+                    coreAddress={coreAddress}
                     errors={errors.templateData?.[index]?.data || {}}
                     getLabel={(fieldName) =>
                       `templateData.${index}.data.${fieldName}`

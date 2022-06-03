@@ -17,12 +17,11 @@ import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 const DaoHorizontalInfoDisplayInternal: FC = () => {
-  const { coreAddress, votingModuleType, cw4GroupAddress } = useOrgInfoContext()
+  const { coreAddress, votingModuleType } = useOrgInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-  const { totalVotingWeight, cw4VotingMembers } = useVotingModule(
-    coreAddress,
-    cw4GroupAddress ? { cw4VotingGroupAddress: cw4GroupAddress } : {}
-  )
+  const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
+    fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,
+  })
   const { proposalCount } = useProposalModule(coreAddress, {
     fetchProposalCount: true,
   })
@@ -33,8 +32,9 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
 
   const stakedPercent =
     votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-    totalVotingWeight &&
-    governanceTokenInfo
+    totalVotingWeight !== undefined &&
+    governanceTokenInfo &&
+    Number(governanceTokenInfo.total_supply) > 0
       ? (
           (100 * totalVotingWeight) /
           Number(governanceTokenInfo.total_supply)

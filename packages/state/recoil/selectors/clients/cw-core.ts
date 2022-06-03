@@ -193,6 +193,44 @@ export const cw20TokenListSelector = selectorFamily<
     },
 })
 
+const CW20_TOKEN_LIST_LIMIT = 10
+export const allCw20TokenListSelector = selectorFamily<
+  Cw20TokenListResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreAllCw20TokenList',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      let startAt: string | undefined
+
+      const tokenList: Cw20TokenListResponse = []
+      while (true) {
+        const response = await get(
+          cw20TokenListSelector({
+            ...queryClientParams,
+            params: [{ startAt, limit: CW20_TOKEN_LIST_LIMIT }],
+          })
+        )
+        if (!response?.length) break
+
+        // Don't double-add last token since we set startAt to it for
+        // the next query.
+        tokenList.push(...response.slice(0, -1))
+        startAt = response[response.length - 1]
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < CW20_TOKEN_LIST_LIMIT) {
+          // Add last token to the list since we ignored it.
+          tokenList.push(response[response.length - 1])
+          break
+        }
+      }
+
+      return tokenList
+    },
+})
+
 export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }

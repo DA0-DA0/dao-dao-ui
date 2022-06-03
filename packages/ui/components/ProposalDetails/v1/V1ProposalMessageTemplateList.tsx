@@ -1,22 +1,39 @@
 import { ComponentType, FC } from 'react'
 
+import { TemplateRendererComponentProps } from '@dao-dao/templates'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { decodeMessages } from '@dao-dao/utils'
+import { decodeMessages, VotingModuleType } from '@dao-dao/utils'
+
+import { SuspenseLoaderProps } from '../../..'
 
 interface V1ProposalMessageTemplateListProps {
+  coreAddress: string
+  votingModuleType: VotingModuleType
   msgs: CosmosMsgFor_Empty[]
-  TemplateRendererComponent: ComponentType<{
-    message: { [key: string]: any }
-  }>
+  TemplateRendererComponent: ComponentType<TemplateRendererComponentProps>
+  SuspenseLoader: ComponentType<
+    Omit<SuspenseLoaderProps, 'ErrorBoundaryComponent'>
+  >
 }
 
 export const V1ProposalMessageTemplateList: FC<
   V1ProposalMessageTemplateListProps
-> = ({ msgs, TemplateRendererComponent }) => (
+> = ({
+  coreAddress,
+  votingModuleType,
+  msgs,
+  TemplateRendererComponent,
+  SuspenseLoader,
+}) => (
   <>
     {msgs.map((msg, index) => (
       <div key={index}>
-        <TemplateRendererComponent message={decodeMessages([msg])[0]} />
+        <TemplateRendererComponent
+          SuspenseLoader={SuspenseLoader}
+          coreAddress={coreAddress}
+          message={decodeMessages([msg])[0]}
+          votingModuleType={votingModuleType}
+        />
       </div>
     ))}
   </>

@@ -14,8 +14,6 @@ import {
   validateAddress,
   validatePositive,
   validateRequired,
-  makeBankMessage,
-  makeWasmMessage,
 } from '@dao-dao/utils'
 import {
   NATIVE_DECIMALS,
@@ -23,30 +21,10 @@ import {
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
-import {
-  FromCosmosMsgProps,
-  GetDefaultsProps,
-  TemplateComponent,
-  ToCosmosMsgProps,
-} from './common'
-
-export interface SpendData {
-  to: string
-  amount: number
-  denom: string
-}
-
-export const spendDefaults = ({
-  walletAddress,
-}: GetDefaultsProps): SpendData => ({
-  to: walletAddress,
-  amount: 1,
-  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
-})
+import { TemplateComponent } from './common'
 
 interface SpendOptions {
   nativeBalances: readonly Coin[]
@@ -145,12 +123,18 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
             () =>
               setValue(
                 getLabel('amount'),
-                (Number(spendAmount) + 1).toString()
+                Math.max(
+                  Number(spendAmount) + 1,
+                  1 / 10 ** amountDecimals
+                ).toString()
               ),
             () =>
               setValue(
                 getLabel('amount'),
-                (Number(spendAmount) - 1).toString()
+                Math.max(
+                  Number(spendAmount) - 1,
+                  1 / 10 ** amountDecimals
+                ).toString()
               ),
           ]}
           register={register}
@@ -209,83 +193,4 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
       )}
     </div>
   )
-}
-
-export const transformSpendToCosmos = (
-  data: SpendData,
-  { govTokenDecimals }: ToCosmosMsgProps
-) => {
-  if (data.denom === NATIVE_DENOM || data.denom.startsWith('ibc/')) {
-    const decimals = nativeTokenDecimals(data.denom)!
-    const amount = convertDenomToMicroDenomWithDecimals(data.amount, decimals)
-    const bank = makeBankMessage(amount, data.to, data.denom)
-    return { bank }
-  }
-
-  const amount = convertDenomToMicroDenomWithDecimals(
-    data.amount,
-    govTokenDecimals
-  )
-
-  return makeWasmMessage({
-    wasm: {
-      execute: {
-        contract_addr: data.denom,
-        funds: [],
-        msg: {
-          transfer: {
-            recipient: data.to,
-            amount: amount,
-          },
-        },
-      },
-    },
-  })
-}
-
-export const transformCosmosToSpend = (
-  msg: Record<string, any>,
-  { govTokenDecimals }: FromCosmosMsgProps
-): SpendData | null => {
-  if (
-    'bank' in msg &&
-    'send' in msg.bank &&
-    'amount' in msg.bank.send &&
-    msg.bank.send.amount.length === 1 &&
-    'amount' in msg.bank.send.amount[0] &&
-    'denom' in msg.bank.send.amount[0] &&
-    'to_address' in msg.bank.send
-  ) {
-    const denom = msg.bank.send.amount[0].denom
-    if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
-      return {
-        to: msg.bank.send.to_address,
-        amount: convertMicroDenomToDenomWithDecimals(
-          msg.bank.send.amount[0].amount,
-          nativeTokenDecimals(denom)!
-        ),
-        denom,
-      }
-    }
-  }
-
-  if (
-    'wasm' in msg &&
-    'execute' in msg.wasm &&
-    'contract_addr' in msg.wasm.execute &&
-    'transfer' in msg.wasm.execute.msg &&
-    'recipient' in msg.wasm.execute.msg.transfer &&
-    'amount' in msg.wasm.execute.msg.transfer
-  ) {
-    return {
-      to: msg.wasm.execute.msg.transfer.recipient,
-      amount: convertMicroDenomToDenomWithDecimals(
-        msg.wasm.execute.msg.transfer.amount,
-        govTokenDecimals
-      ),
-      denom: msg.wasm.execute.contract_addr,
-    }
-  }
-
-  return null
 }

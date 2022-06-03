@@ -1,37 +1,31 @@
 import { FC } from 'react'
 
 import { useVotingModule, useWallet } from '@dao-dao/state'
-import {
-  MultisigMemberList as StatelessMultisigMemberList,
-  MultisigMemberListLoader,
-} from '@dao-dao/ui'
+import { MultisigMemberList, MultisigMemberListLoader } from '@dao-dao/ui'
 
 import { Loader } from './Loader'
 import { useOrgInfoContext } from './OrgPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
-interface MultisigMemberListProps {
+interface Cw4VotingMemberListProps {
   primaryText?: boolean
 }
 
-const InnerMultisigMemberList: FC<MultisigMemberListProps> = ({
+const InnerCw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
   primaryText,
 }) => {
-  const { coreAddress, cw4GroupAddress } = useOrgInfoContext()
-  if (!cw4GroupAddress) {
-    throw new Error('Failed to load data.')
-  }
+  const { coreAddress } = useOrgInfoContext()
 
   const { address: walletAddress } = useWallet()
   const { walletVotingWeight, totalVotingWeight, cw4VotingMembers } =
-    useVotingModule(coreAddress, { cw4VotingGroupAddress: cw4GroupAddress })
+    useVotingModule(coreAddress, { fetchCw4VotingMembers: true })
 
   if (totalVotingWeight === undefined || !cw4VotingMembers) {
     throw new Error('Failed to load data.')
   }
 
   return (
-    <StatelessMultisigMemberList
+    <MultisigMemberList
       members={cw4VotingMembers}
       primaryText={primaryText}
       totalWeight={totalVotingWeight}
@@ -41,7 +35,7 @@ const InnerMultisigMemberList: FC<MultisigMemberListProps> = ({
   )
 }
 
-export const MultisigMemberList: FC<MultisigMemberListProps> = ({
+export const Cw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
   primaryText,
 }) => (
   <SuspenseLoader
@@ -49,6 +43,6 @@ export const MultisigMemberList: FC<MultisigMemberListProps> = ({
       <MultisigMemberListLoader loader={<Loader />} primaryText={primaryText} />
     }
   >
-    <InnerMultisigMemberList primaryText={primaryText} />
+    <InnerCw4VotingMemberList primaryText={primaryText} />
   </SuspenseLoader>
 )

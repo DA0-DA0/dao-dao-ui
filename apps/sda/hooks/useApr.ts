@@ -3,6 +3,7 @@ import { useRecoilValue, constSelector } from 'recoil'
 import { useStakingInfo } from '@dao-dao/state'
 import { rewardsRateSelector } from '@dao-dao/state/recoil/selectors/clients/cw-rewards'
 import { totalValueSelector } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
+import { JUNO_BLOCKS_PER_YEAR } from '@dao-dao/utils'
 
 import { DAO_ADDRESS, REWARDS_ADDRESS } from '@/util'
 
@@ -15,7 +16,6 @@ export const useApr = () => {
       ? rewardsRateSelector(REWARDS_ADDRESS)
       : constSelector(undefined)
   )
-  const blocks_per_year = 5086451
   const totalValueStaked = useRecoilValue(
     stakingContractAddress
       ? totalValueSelector({ contractAddress: stakingContractAddress })
@@ -23,7 +23,7 @@ export const useApr = () => {
   )
   const apr =
     totalValueStaked && rate
-      ? (Number(rate) * blocks_per_year) / Number(totalValueStaked.total)
+      ? (Number(rate) * JUNO_BLOCKS_PER_YEAR) / Number(totalValueStaked.total)
       : undefined
 
   return apr

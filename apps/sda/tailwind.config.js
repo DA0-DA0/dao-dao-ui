@@ -2,7 +2,7 @@
 const tailwindConfig = {
   content: [
     './{components,pages,services,templates}/**/*.{js,jsx,ts,tsx}',
-    '../../packages/{ui,state}/**/*.{js,jsx,ts,tsx}',
+    '../../packages/{ui,state,templates}/**/*.{js,jsx,ts,tsx}',
   ],
   presets: [require('@dao-dao/ui/tailwind/config')],
   theme: {

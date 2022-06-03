@@ -6,6 +6,7 @@ import {
   useGovernanceTokenInfo,
   useStakingInfo,
   useProposalModule,
+  useVotingModule,
 } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
@@ -26,13 +27,11 @@ export const VoteHeroContentLoader = () => (
   </>
 )
 
-// TODO: Add cw4-voting support.
 export const VoteHeroContent = () => {
-  const daoConfig = useRecoilValue(
+  const config = useRecoilValue(
     configSelector({ contractAddress: DAO_ADDRESS })
   )
-  const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo(DAO_ADDRESS)
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const apr = useApr()
   const { stakingContractConfig, totalStaked } = useStakingInfo(DAO_ADDRESS, {
     fetchTotalStaked: true,
@@ -40,54 +39,61 @@ export const VoteHeroContent = () => {
   const { proposalModuleConfig } = useProposalModule(DAO_ADDRESS, {
     fetchProposalDepositTokenInfo: true,
   })
+  const { cw4VotingMembers } = useVotingModule(DAO_ADDRESS, {
+    fetchCw4VotingMembers: true,
+  })
 
   const { threshold } = proposalModuleConfig
     ? processThresholdData(proposalModuleConfig.threshold)
     : { threshold: undefined }
 
-  if (
-    !daoConfig ||
-    !governanceTokenAddress ||
-    !governanceTokenInfo ||
-    apr === undefined ||
-    !stakingContractConfig ||
-    totalStaked === undefined ||
-    !proposalModuleConfig ||
-    !threshold
-  )
+  if (!config || !proposalModuleConfig || !threshold)
     return <VoteHeroContentLoader />
 
   return (
     <>
       <VoteHero.Header
-        description={daoConfig.description}
+        description={config.description}
         image={
           <img
             alt="logo"
             className="w-full h-full"
-            src={daoConfig.image_url ?? DEFAULT_IMAGE_URL}
+            src={config.image_url ?? DEFAULT_IMAGE_URL}
           />
         }
-        title={daoConfig.name}
+        title={config.name}
       />
       <VoteHero.Stats
         data={{
-          denom: governanceTokenInfo.name,
-          totalSupply: convertMicroDenomToDenomWithDecimals(
-            governanceTokenInfo.total_supply,
-            governanceTokenInfo.decimals
-          ),
-          stakedPercent: Number(
-            (
-              (totalStaked / Number(governanceTokenInfo.total_supply)) *
-              100
-            ).toLocaleString()
-          ),
-          aprReward: apr * 100,
-          unstakingDuration: stakingContractConfig.unstaking_duration
-            ? humanReadableDuration(stakingContractConfig.unstaking_duration)
-            : 'None',
-          link: VOTE_EXTERNAL_URL,
+          members: cw4VotingMembers?.length,
+          denom: governanceTokenInfo?.name,
+          totalSupply: governanceTokenInfo
+            ? convertMicroDenomToDenomWithDecimals(
+                governanceTokenInfo.total_supply,
+                governanceTokenInfo.decimals
+              )
+            : undefined,
+          stakedPercent:
+            totalStaked !== undefined && governanceTokenInfo
+              ? Number(
+                  (
+                    (totalStaked / Number(governanceTokenInfo.total_supply)) *
+                    100
+                  ).toLocaleString()
+                )
+              : undefined,
+          aprReward: apr !== undefined ? apr * 100 : undefined,
+          unstakingDuration: stakingContractConfig
+            ? stakingContractConfig.unstaking_duration
+              ? humanReadableDuration(stakingContractConfig.unstaking_duration)
+              : 'None'
+            : undefined,
+          link: VOTE_EXTERNAL_URL
+            ? {
+                title: 'junoswap.com',
+                url: VOTE_EXTERNAL_URL,
+              }
+            : undefined,
         }}
       />
     </>

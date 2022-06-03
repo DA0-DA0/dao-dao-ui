@@ -2,9 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "InstantiateMsg",
   "type": "object",
-  "required": [
-    "token_info"
-  ],
+  "required": ["token_info"],
   "properties": {
     "active_threshold": {
       "anyOf": [
@@ -25,15 +23,11 @@
       "oneOf": [
         {
           "type": "object",
-          "required": [
-            "absolute_count"
-          ],
+          "required": ["absolute_count"],
           "properties": {
             "absolute_count": {
               "type": "object",
-              "required": [
-                "count"
-              ],
+              "required": ["count"],
               "properties": {
                 "count": {
                   "$ref": "#/definitions/Uint128"
@@ -45,15 +39,11 @@
         },
         {
           "type": "object",
-          "required": [
-            "percentage"
-          ],
+          "required": ["percentage"],
           "properties": {
             "percentage": {
               "type": "object",
-              "required": [
-                "percent"
-              ],
+              "required": ["percent"],
               "properties": {
                 "percent": {
                   "$ref": "#/definitions/Decimal"
@@ -71,10 +61,7 @@
     },
     "Cw20Coin": {
       "type": "object",
-      "required": [
-        "address",
-        "amount"
-      ],
+      "required": ["address", "amount"],
       "properties": {
         "address": {
           "type": "string"
@@ -93,9 +80,7 @@
       "oneOf": [
         {
           "type": "object",
-          "required": [
-            "height"
-          ],
+          "required": ["height"],
           "properties": {
             "height": {
               "type": "integer",
@@ -107,9 +92,7 @@
         {
           "description": "Time in seconds",
           "type": "object",
-          "required": [
-            "time"
-          ],
+          "required": ["time"],
           "properties": {
             "time": {
               "type": "integer",
@@ -126,9 +109,7 @@
         {
           "description": "Store the Logo as an SVG file. The content must conform to the spec at https://en.wikipedia.org/wiki/Scalable_Vector_Graphics (The contract should do some light-weight sanity-check validation)",
           "type": "object",
-          "required": [
-            "svg"
-          ],
+          "required": ["svg"],
           "properties": {
             "svg": {
               "$ref": "#/definitions/Binary"
@@ -139,9 +120,7 @@
         {
           "description": "Store the Logo as a PNG file. This will likely only support up to 64x64 or so within the 5KB limit.",
           "type": "object",
-          "required": [
-            "png"
-          ],
+          "required": ["png"],
           "properties": {
             "png": {
               "$ref": "#/definitions/Binary"
@@ -155,10 +134,7 @@
       "type": "object",
       "properties": {
         "description": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "logo": {
           "anyOf": [
@@ -171,16 +147,10 @@
           ]
         },
         "marketing": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "project": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       }
     },
@@ -190,9 +160,7 @@
         {
           "description": "A reference to an externally hosted logo. Must be a valid HTTP or HTTPS URL.",
           "type": "object",
-          "required": [
-            "url"
-          ],
+          "required": ["url"],
           "properties": {
             "url": {
               "type": "string"
@@ -203,9 +171,7 @@
         {
           "description": "Logo content stored on the blockchain. Enforce maximum size of 5KB on all variants",
           "type": "object",
-          "required": [
-            "embedded"
-          ],
+          "required": ["embedded"],
           "properties": {
             "embedded": {
               "$ref": "#/definitions/EmbeddedLogo"
@@ -219,15 +185,11 @@
       "oneOf": [
         {
           "type": "object",
-          "required": [
-            "existing"
-          ],
+          "required": ["existing"],
           "properties": {
             "existing": {
               "type": "object",
-              "required": [
-                "staking_contract_address"
-              ],
+              "required": ["staking_contract_address"],
               "properties": {
                 "staking_contract_address": {
                   "type": "string"
@@ -239,15 +201,11 @@
         },
         {
           "type": "object",
-          "required": [
-            "new"
-          ],
+          "required": ["new"],
           "properties": {
             "new": {
               "type": "object",
-              "required": [
-                "staking_code_id"
-              ],
+              "required": ["staking_code_id"],
               "properties": {
                 "staking_code_id": {
                   "type": "integer",
@@ -274,16 +232,11 @@
       "oneOf": [
         {
           "type": "object",
-          "required": [
-            "existing"
-          ],
+          "required": ["existing"],
           "properties": {
             "existing": {
               "type": "object",
-              "required": [
-                "address",
-                "staking_contract"
-              ],
+              "required": ["address", "staking_contract"],
               "properties": {
                 "address": {
                   "type": "string"
@@ -298,9 +251,7 @@
         },
         {
           "type": "object",
-          "required": [
-            "new"
-          ],
+          "required": ["new"],
           "properties": {
             "new": {
               "type": "object",
