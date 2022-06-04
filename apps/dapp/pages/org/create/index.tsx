@@ -1,67 +1,40 @@
+import Emoji from 'a11y-react-emoji'
 import { FC } from 'react'
 
-import {
-  ImageSelector,
-  InputErrorMessage,
-  TextAreaInput,
-  TextInput,
-} from '@dao-dao/ui'
-import { validateRequired } from '@dao-dao/utils'
-
-import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
+import { NewOrgStructure } from '@/atoms/newOrg'
+import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
+import { CreateOrgStructure } from '@/components/org/create/CreateOrgStructure'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
 const CreateOrgPage: FC = () => {
-  const { register, formOnSubmit, watch, errors, Navigation } =
-    useCreateOrgForm(0)
+  const { watchedNewOrg, setValue, formWrapperProps } = useCreateOrgForm(0)
 
   return (
     <>
       <SmallScreenNav />
-      <CreateOrgHeader />
 
-      <form className="p-6 pt-2 mx-auto max-w-[800px]" onSubmit={formOnSubmit}>
-        <div className="flex flex-row gap-8 items-stretch p-8 bg-disabled rounded-lg">
-          <div className="flex flex-col gap-4 justify-center">
-            <ImageSelector
-              className="!bg-card !border-0"
-              error={errors.imageUrl}
-              label="imageUrl"
-              register={register}
-              watch={watch}
-            />
+      <CreateOrgFormWrapper {...formWrapperProps}>
+        <div className="flex flex-col gap-6 items-stretch sm:flex-row md:flex-col xl:flex-row">
+          <CreateOrgStructure
+            description="Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members."
+            emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
+            newOrg={watchedNewOrg}
+            setValue={setValue}
+            structure={NewOrgStructure.Simple}
+            title="Simple"
+          />
 
-            <p className="text-disabled">Add an image</p>
-          </div>
-
-          <div className="flex flex-col flex-1 gap-2">
-            <div>
-              <TextInput
-                error={errors.name}
-                label="name"
-                placeholder="Organization's name..."
-                register={register}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.name} />
-            </div>
-
-            <div>
-              <TextAreaInput
-                error={errors.description}
-                label="description"
-                placeholder="Organization's description..."
-                register={register}
-                rows={4}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-          </div>
+          <CreateOrgStructure
+            description="Fluid organization with many members who leave and join frequently. Members can join and leave without permission by exchanging governance shares."
+            emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
+            newOrg={watchedNewOrg}
+            setValue={setValue}
+            structure={NewOrgStructure.UsingGovToken}
+            title="Governance Token-based"
+          />
         </div>
-
-        {Navigation}
-      </form>
+      </CreateOrgFormWrapper>
     </>
   )
 }

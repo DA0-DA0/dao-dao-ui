@@ -7,8 +7,9 @@ import {
   convertDurationWithUnitsToHumanReadableString,
   convertThresholdValueToHumanReadableString,
   GovernanceTokenType,
-} from '@/atoms/org'
-import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
+  NewOrgStructure,
+} from '@/atoms/newOrg'
+import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
 import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'
 import {
   TokenDistribution,
@@ -18,16 +19,16 @@ import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
 const CreateOrgReviewPage: FC = () => {
-  const { formOnSubmit, watch, Navigation, creating } = useCreateOrgForm(2)
+  const { watchedNewOrg, creating, formWrapperProps } = useCreateOrgForm(3)
 
-  const values = watch()
+  const governanceTokenEnabled =
+    watchedNewOrg.structure === NewOrgStructure.UsingGovToken
 
   return (
     <>
       <SmallScreenNav />
-      <CreateOrgHeader />
 
-      <form className="p-6 pt-2 mx-auto max-w-[800px]" onSubmit={formOnSubmit}>
+      <CreateOrgFormWrapper {...formWrapperProps}>
         <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
             <div className="flex flex-col gap-2 items-center text-center">
@@ -36,38 +37,39 @@ const CreateOrgReviewPage: FC = () => {
                   'animate-spin': creating,
                 })}
               >
-                {values.imageUrl ? (
+                {watchedNewOrg.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     alt="Org Logo"
                     className="w-full h-full"
-                    src={values.imageUrl}
+                    src={watchedNewOrg.imageUrl}
                   />
                 ) : (
                   <Logo alt="DAO DAO logo" height="100%" width="100%" />
                 )}
               </div>
-              <p className="text-xl">{values.name}</p>
+              <p className="text-xl">{watchedNewOrg.name}</p>
             </div>
 
             <div className="flex flex-col gap-2">
               <InputLabel className="text-sm" mono name="Description" />
-              <p className="text-lg">{values.description}</p>
+              <p className="text-lg">{watchedNewOrg.description}</p>
             </div>
           </div>
 
-          {(!values.governanceTokenEnabled ||
-            values.governanceTokenOptions.type === GovernanceTokenType.New) && (
+          {(!governanceTokenEnabled ||
+            watchedNewOrg.governanceTokenOptions.type ===
+              GovernanceTokenType.New) && (
             <>
               <div className="w-full h-[1px] bg-card"></div>
 
               <div className="mx-auto w-5/6">
-                {values.governanceTokenEnabled &&
-                values.governanceTokenOptions.type ===
+                {governanceTokenEnabled &&
+                watchedNewOrg.governanceTokenOptions.type ===
                   GovernanceTokenType.New ? (
-                  <TokenDistribution watch={watch} />
+                  <TokenDistribution newOrg={watchedNewOrg} />
                 ) : (
-                  <VotingPowerDistribution watch={watch} />
+                  <VotingPowerDistribution newOrg={watchedNewOrg} />
                 )}
               </div>
             </>
@@ -78,53 +80,52 @@ const CreateOrgReviewPage: FC = () => {
           <CreateOrgReviewStat
             title="Threshold"
             value={convertThresholdValueToHumanReadableString(
-              values.thresholdQuorum.threshold
+              watchedNewOrg.thresholdQuorum.threshold
             )}
           />
           <CreateOrgReviewStat
             title="Quorum"
             value={convertThresholdValueToHumanReadableString(
-              values.thresholdQuorum.quorum
+              watchedNewOrg.thresholdQuorum.quorum
             )}
           />
           <CreateOrgReviewStat
             title="Prop. duration"
             value={convertDurationWithUnitsToHumanReadableString(
-              values.votingDuration
+              watchedNewOrg.votingDuration
             )}
           />
-          {values.governanceTokenEnabled &&
-            !!values.governanceTokenOptions.proposalDeposit?.value && (
+          {governanceTokenEnabled &&
+            !!watchedNewOrg.governanceTokenOptions.proposalDeposit?.value && (
               <>
                 <CreateOrgReviewStat
                   title="Prop. deposit"
-                  value={`${values.governanceTokenOptions.proposalDeposit.value}`}
+                  value={`${watchedNewOrg.governanceTokenOptions.proposalDeposit.value}`}
                 />
                 <CreateOrgReviewStat
                   title="Prop. refunds"
                   value={
-                    values.governanceTokenOptions.proposalDeposit.refundFailed
+                    watchedNewOrg.governanceTokenOptions.proposalDeposit
+                      .refundFailed
                       ? 'Yes'
                       : 'No'
                   }
                 />
               </>
             )}
-          {values.governanceTokenEnabled && (
+          {governanceTokenEnabled && (
             <>
               <CreateOrgReviewStat title="Gov. tokens" value="Enabled" />
               <CreateOrgReviewStat
                 title="Unregister duration"
                 value={convertDurationWithUnitsToHumanReadableString(
-                  values.governanceTokenOptions.unregisterDuration
+                  watchedNewOrg.governanceTokenOptions.unregisterDuration
                 )}
               />
             </>
           )}
         </div>
-
-        {Navigation}
-      </form>
+      </CreateOrgFormWrapper>
     </>
   )
 }

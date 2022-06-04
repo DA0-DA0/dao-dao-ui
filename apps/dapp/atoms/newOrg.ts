@@ -62,28 +62,34 @@ export const convertThresholdValueToHumanReadableString = (
   value: ThresholdValue
 ): string => (value === 'majority' ? 'Majority' : `${value}%`)
 
+export enum NewOrgStructure {
+  Simple,
+  UsingGovToken,
+}
+
 export enum GovernanceTokenType {
   New,
   Existing,
 }
 
 export interface NewOrg {
+  structure: NewOrgStructure
   name: string
   description: string
   imageUrl?: string
   groups: NewOrgGroup[]
   _groupsError?: undefined
   votingDuration: DurationWithUnits
-  governanceTokenEnabled: boolean
   governanceTokenOptions: {
     type?: GovernanceTokenType
-    newGovernanceToken: {
+    newInfo: {
       initialTreasuryBalance: number
       imageUrl?: string
       symbol: string
       name: string
     }
     existingGovernanceTokenAddress?: string
+    // TODO: Fetch and display.
     _existingGovernanceTokenInfo?: {
       imageUrl?: string
       symbol: string
@@ -114,6 +120,7 @@ export interface NewOrgGroupMember {
 }
 
 export const DefaultNewOrg: NewOrg = {
+  structure: NewOrgStructure.Simple,
   name: '',
   description: '',
   groups: [
@@ -127,10 +134,9 @@ export const DefaultNewOrg: NewOrg = {
     value: 1,
     units: DurationUnits.Weeks,
   },
-  governanceTokenEnabled: false,
   governanceTokenOptions: {
     type: GovernanceTokenType.New,
-    newGovernanceToken: {
+    newInfo: {
       initialTreasuryBalance: 1000000,
       symbol: '',
       name: '',

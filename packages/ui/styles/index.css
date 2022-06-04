@@ -83,6 +83,7 @@ input[type='number']::-webkit-outer-spin-button {
      */
     --accent: 253, 18, 69;
     --very-light: 255, 255, 255;
+    --brand-active: 134, 56, 229;
   }
 
   .dark {

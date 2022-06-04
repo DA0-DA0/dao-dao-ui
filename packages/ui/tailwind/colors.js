@@ -43,9 +43,11 @@ const backgroundColor = {
   'very-light': generateColorClass('very-light', 1),
   tab: generateColorClass('light', 0.7),
   'tab-hover': generateColorClass('brand', 0.2),
+  'brand-active': generateColorClass('brand-active', 0.15),
 }
 
 const borderColor = {
+  disabled: generateColorClass('dark', 0.03),
   inactive: generateColorClass('dark', 0.05),
   default: generateColorClass('dark', 0.15),
   focus: generateColorClass('dark', 0.25),

@@ -1,5 +1,5 @@
 import Emoji from 'a11y-react-emoji'
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
 import { PlaceholderToken } from '@dao-dao/icons'
@@ -29,116 +29,48 @@ import {
   DEFAULT_NEW_ORG_THRESHOLD_PERCENT,
   DurationUnitsValues,
   GovernanceTokenType,
+  NewOrgStructure,
   NEW_ORG_CW20_DECIMALS,
-} from '@/atoms/org'
+} from '@/atoms/newOrg'
 import {
   CreateOrgConfigCard,
   CreateOrgConfigCardWrapper,
 } from '@/components/org/create/CreateOrgConfigCard'
+import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
 import { CreateOrgGroup } from '@/components/org/create/CreateOrgGroup'
-import { CreateOrgHeader } from '@/components/org/create/CreateOrgHeader'
 import {
-  TokenDistribution,
   useVotingPowerDistributionData,
   VotingPowerChart,
 } from '@/components/org/create/Distributions'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { CustomValidation, useCreateOrgForm } from '@/hooks/useCreateOrgForm'
+import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
 interface NewGroupNameForm {
   name: string
 }
 
 const CreateOrgVotingPage: FC = () => {
-  // Validate group weights and member proportions add up to 100%.
-  const _validateGroups: CustomValidation = useCallback(
-    (
-      { groups },
-      errors,
-      setError,
-      clearErrors,
-      // Only set or clear error if error is already set. This is useful
-      // to ensure errors are up to date as values change without showing
-      // errors for values that are still being input and are not ready for
-      // validation.
-      noNewErrors = false
-    ) => {
-      let valid = true
-
-      if (!noNewErrors || errors._groupsError) {
-        const totalWeight =
-          groups.reduce(
-            (acc, { weight, members }) => acc + weight * members.length,
-            0
-          ) || 0
-        // Ensure voting power has been given to at least one member.
-        if (totalWeight === 0) {
-          setError('_groupsError', {
-            message:
-              'You have not given anyone voting power. Add some members to your org.',
-          })
-          valid = false
-        } else {
-          clearErrors('_groupsError')
-        }
-      }
-
-      groups.forEach((group, groupIndex) => {
-        if (noNewErrors && !errors.groups?.[groupIndex]?._error) {
-          return
-        }
-
-        if (group.members.length === 0) {
-          setError(`groups.${groupIndex}._error`, {
-            message: 'No members have been added.',
-          })
-          valid = false
-        } else {
-          clearErrors(`groups.${groupIndex}._error`)
-        }
-      })
-
-      return valid
-    },
-    []
-  )
-
   const {
+    watchedNewOrg,
     control,
     register,
-    formOnSubmit,
     watch,
     errors,
     setValue,
     resetField,
-    Navigation,
     getValues,
-    setError,
-    clearErrors,
-  } = useCreateOrgForm(1, _validateGroups)
+    formWrapperProps,
+  } = useCreateOrgForm(2)
 
-  const _groups = watch('groups')
+  const _groups = watchedNewOrg.groups
   const _groupsChangedString = _groups
-    .map(({ weight, members }, idx) => `${idx}:${weight}:${members.join('_')}`)
+    .map(
+      ({ weight, members }, idx) =>
+        `${idx}:${weight}:${members.length}:${members
+          .map(({ address }) => address)
+          .join('_')}`
+    )
     .join()
-
-  // To call manually when changing data.
-  const validateGroups = useCallback(
-    (noNewErrors = false) =>
-      _validateGroups(getValues(), errors, setError, clearErrors, noNewErrors),
-    [_validateGroups, getValues, errors, setError, clearErrors]
-  )
-  // Check voting weights when any group weight changes, or groups/members
-  // are added / removed. Only update existing errors, not creating any
-  // new errors. New errors will be displayed on attempted submit/page
-  // progression as usual.
-  useEffect(() => {
-    validateGroups(true)
-  }, [
-    validateGroups,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    _groupsChangedString,
-  ])
 
   const {
     fields: groups,
@@ -159,7 +91,8 @@ const CreateOrgVotingPage: FC = () => {
     ({ name }) => {
       appendGroup({
         name,
-        weight: getValues('governanceTokenEnabled') ? 1000 : 1,
+        weight:
+          getValues('structure') === NewOrgStructure.UsingGovToken ? 1000 : 1,
         members: [],
       })
       setAddGroupModalOpen(false)
@@ -169,21 +102,18 @@ const CreateOrgVotingPage: FC = () => {
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
-  const threshold = watch('thresholdQuorum.threshold')
-  const quorum = watch('thresholdQuorum.quorum')
+  const threshold = watchedNewOrg.thresholdQuorum.threshold
+  const quorum = watchedNewOrg.thresholdQuorum.quorum
 
-  const newTokenImageUrl = watch(
-    'governanceTokenOptions.newGovernanceToken.imageUrl'
-  )
+  const newTokenImageUrl = watchedNewOrg.governanceTokenOptions.newInfo.imageUrl
 
-  const governanceTokenEnabled = watch('governanceTokenEnabled')
+  const governanceTokenEnabled =
+    watchedNewOrg.structure === NewOrgStructure.UsingGovToken
   // Only count treasury balance when creating new governance token.
   const initialTreasuryBalance =
     governanceTokenEnabled &&
-    watch('governanceTokenOptions.type') === GovernanceTokenType.New
-      ? watch(
-          'governanceTokenOptions.newGovernanceToken.initialTreasuryBalance'
-        ) || 0
+    watchedNewOrg.governanceTokenOptions.type === GovernanceTokenType.New
+      ? watchedNewOrg.governanceTokenOptions.newInfo.initialTreasuryBalance || 0
       : 0
   const memberWeightAllocated = useMemo(
     () =>
@@ -205,20 +135,11 @@ const CreateOrgVotingPage: FC = () => {
   return (
     <>
       <SmallScreenNav />
-      <CreateOrgHeader />
 
-      <form
-        className="flex flex-col gap-8 p-6 pt-2 mx-auto max-w-[800px]"
-        onSubmit={formOnSubmit}
+      <CreateOrgFormWrapper
+        containerClassName="flex flex-col gap-8"
+        {...formWrapperProps}
       >
-        <div>
-          <p className="primary-text">Configure voting share</p>
-          <p className="mt-1 secondary-text">
-            This will determine how much voting share different members of the
-            org have when they vote on proposals.
-          </p>
-        </div>
-
         <div className="mx-auto w-full max-w-md">
           <VotingPowerChart data={entries} />
         </div>
@@ -230,11 +151,11 @@ const CreateOrgVotingPage: FC = () => {
               control={control}
               errors={errors}
               groupIndex={idx}
+              newOrg={watchedNewOrg}
               register={register}
               remove={onlyOneGroup ? undefined : () => removeGroup(idx)}
               setValue={setValue}
               showColorDotOnMember={onlyOneGroup}
-              watch={watch}
             />
           ))}
 
@@ -267,12 +188,12 @@ const CreateOrgVotingPage: FC = () => {
               () =>
                 setValue(
                   'votingDuration.value',
-                  Math.max(watch('votingDuration.value') + 1, 1)
+                  Math.max(watchedNewOrg.votingDuration.value + 1, 1)
                 ),
               () =>
                 setValue(
                   'votingDuration.value',
-                  Math.max(watch('votingDuration.value') - 1, 1)
+                  Math.max(watchedNewOrg.votingDuration.value - 1, 1)
                 ),
             ]}
             register={register}
@@ -295,34 +216,8 @@ const CreateOrgVotingPage: FC = () => {
           </SelectInput>
         </CreateOrgConfigCard>
 
-        <div className="flex flex-row gap-4 items-center">
-          <FormSwitch
-            label="governanceTokenEnabled"
-            // Reset option changes configured when switch was enabled.
-            onToggle={(newValue) =>
-              !newValue && resetField('governanceTokenOptions')
-            }
-            setValue={setValue}
-            watch={watch}
-          />
-
-          <div className="flex flex-col gap-1">
-            <InputLabel
-              className="!body-text"
-              name="(Advanced) Enable governance tokens"
-            />
-            <p className="caption-text">
-              Use fungible governance tokens to assign voting weight.
-            </p>
-          </div>
-        </div>
-
         {governanceTokenEnabled && (
           <div className="space-y-3">
-            <div className="p-10 bg-disabled rounded-lg">
-              <TokenDistribution watch={watch} />
-            </div>
-
             <RadioInput
               label="governanceTokenOptions.type"
               options={[
@@ -339,7 +234,7 @@ const CreateOrgVotingPage: FC = () => {
               watch={watch}
             />
             <CreateOrgConfigCardWrapper className="gap-8 mb-9">
-              {watch('governanceTokenOptions.type') ===
+              {watchedNewOrg.governanceTokenOptions.type ===
               GovernanceTokenType.New ? (
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
@@ -351,14 +246,14 @@ const CreateOrgVotingPage: FC = () => {
                           <NumberInput
                             containerClassName="grow"
                             error={
-                              errors.governanceTokenOptions?.newGovernanceToken
+                              errors.governanceTokenOptions?.newInfo
                                 ?.initialTreasuryBalance
                             }
-                            label="governanceTokenOptions.newGovernanceToken.initialTreasuryBalance"
+                            label="governanceTokenOptions.newInfo.initialTreasuryBalance"
                             onPlusMinus={[
                               () =>
                                 setValue(
-                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryBalance',
+                                  'governanceTokenOptions.newInfo.initialTreasuryBalance',
                                   Math.max(
                                     initialTreasuryBalance + 1,
                                     1 / 10 ** NEW_ORG_CW20_DECIMALS
@@ -366,7 +261,7 @@ const CreateOrgVotingPage: FC = () => {
                                 ),
                               () =>
                                 setValue(
-                                  'governanceTokenOptions.newGovernanceToken.initialTreasuryBalance',
+                                  'governanceTokenOptions.newInfo.initialTreasuryBalance',
                                   Math.max(
                                     initialTreasuryBalance - 1,
                                     1 / 10 ** NEW_ORG_CW20_DECIMALS
@@ -395,22 +290,21 @@ const CreateOrgVotingPage: FC = () => {
                               />
                             )}
 
-                            {watch(
-                              'governanceTokenOptions.newGovernanceToken.symbol'
-                            ) || 'Token'}
+                            {watchedNewOrg.governanceTokenOptions.newInfo
+                              .symbol || 'Token'}
                           </div>
                         </div>
 
                         <InputErrorMessage
                           error={
-                            errors.governanceTokenOptions?.newGovernanceToken
+                            errors.governanceTokenOptions?.newInfo
                               ?.initialTreasuryBalance
                           }
                         />
                       </div>
                     </div>
 
-                    <p className="self-end my-2 max-w-prose text-right tertiary-text">
+                    <p className="my-2 secondary-text">
                       {totalWeightAllocated.toLocaleString(undefined, {
                         maximumFractionDigits: NEW_ORG_CW20_DECIMALS,
                       })}{' '}
@@ -443,10 +337,9 @@ const CreateOrgVotingPage: FC = () => {
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
-                            errors.governanceTokenOptions?.newGovernanceToken
-                              ?.imageUrl
+                            errors.governanceTokenOptions?.newInfo?.imageUrl
                           }
-                          label="governanceTokenOptions.newGovernanceToken.imageUrl"
+                          label="governanceTokenOptions.newInfo.imageUrl"
                           register={register}
                           size={36}
                           watch={watch}
@@ -462,20 +355,14 @@ const CreateOrgVotingPage: FC = () => {
 
                       <div>
                         <TextInput
-                          error={
-                            errors.governanceTokenOptions?.newGovernanceToken
-                              ?.symbol
-                          }
-                          label="governanceTokenOptions.newGovernanceToken.symbol"
+                          error={errors.governanceTokenOptions?.newInfo?.symbol}
+                          label="governanceTokenOptions.newInfo.symbol"
                           placeholder="Define a symbol..."
                           register={register}
                           validation={[validateRequired, validateTokenSymbol]}
                         />
                         <InputErrorMessage
-                          error={
-                            errors.governanceTokenOptions?.newGovernanceToken
-                              ?.symbol
-                          }
+                          error={errors.governanceTokenOptions?.newInfo?.symbol}
                         />
                       </div>
                     </div>
@@ -485,20 +372,14 @@ const CreateOrgVotingPage: FC = () => {
 
                       <div>
                         <TextInput
-                          error={
-                            errors.governanceTokenOptions?.newGovernanceToken
-                              ?.name
-                          }
-                          label="governanceTokenOptions.newGovernanceToken.name"
+                          error={errors.governanceTokenOptions?.newInfo?.name}
+                          label="governanceTokenOptions.newInfo.name"
                           placeholder="Name your token..."
                           register={register}
                           validation={[validateRequired]}
                         />
                         <InputErrorMessage
-                          error={
-                            errors.governanceTokenOptions?.newGovernanceToken
-                              ?.name
-                          }
+                          error={errors.governanceTokenOptions?.newInfo?.name}
                         />
                       </div>
                     </div>
@@ -540,8 +421,8 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.proposalDeposit.value',
                       Math.max(
-                        watch('governanceTokenOptions.proposalDeposit.value') +
-                          1,
+                        watchedNewOrg.governanceTokenOptions.proposalDeposit
+                          .value + 1,
                         0
                       )
                     ),
@@ -549,8 +430,8 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.proposalDeposit.value',
                       Math.max(
-                        watch('governanceTokenOptions.proposalDeposit.value') -
-                          1,
+                        watchedNewOrg.governanceTokenOptions.proposalDeposit
+                          .value - 1,
                         0
                       )
                     ),
@@ -562,7 +443,7 @@ const CreateOrgVotingPage: FC = () => {
               />
             </CreateOrgConfigCard>
 
-            {!!watch('governanceTokenOptions.proposalDeposit.value') && (
+            {!!watchedNewOrg.governanceTokenOptions.proposalDeposit.value && (
               <CreateOrgConfigCard
                 description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
                 image={<Emoji label="finger pointing up" symbol="👆" />}
@@ -570,9 +451,8 @@ const CreateOrgVotingPage: FC = () => {
               >
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
-                    {watch(
-                      'governanceTokenOptions.proposalDeposit.refundFailed'
-                    )
+                    {watchedNewOrg.governanceTokenOptions.proposalDeposit
+                      .refundFailed
                       ? 'Yes'
                       : 'No'}
                   </p>
@@ -604,9 +484,8 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.unregisterDuration.value',
                       Math.max(
-                        watch(
-                          'governanceTokenOptions.unregisterDuration.value'
-                        ) + 1,
+                        watchedNewOrg.governanceTokenOptions.unregisterDuration
+                          .value + 1,
                         0
                       )
                     ),
@@ -614,9 +493,8 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.unregisterDuration.value',
                       Math.max(
-                        watch(
-                          'governanceTokenOptions.unregisterDuration.value'
-                        ) - 1,
+                        watchedNewOrg.governanceTokenOptions.unregisterDuration
+                          .value - 1,
                         0
                       )
                     ),
@@ -669,7 +547,7 @@ const CreateOrgVotingPage: FC = () => {
           </div>
         </div>
 
-        {watch('_changeThresholdQuorumEnabled') && (
+        {watchedNewOrg._changeThresholdQuorumEnabled && (
           <div className="space-y-3">
             <CreateOrgConfigCard
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
@@ -772,9 +650,7 @@ const CreateOrgVotingPage: FC = () => {
             </CreateOrgConfigCard>
           </div>
         )}
-
-        {Navigation}
-      </form>
+      </CreateOrgFormWrapper>
 
       {addGroupModalOpen && (
         <Modal onClose={() => setAddGroupModalOpen(false)}>

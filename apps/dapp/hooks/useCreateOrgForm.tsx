@@ -1,9 +1,7 @@
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  FieldPath,
   FieldValues,
-  FormState,
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
@@ -11,9 +9,9 @@ import {
   UseFormSetError,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
+import { mountedInBrowserAtom, useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -47,56 +45,40 @@ import {
   GovernanceTokenType,
   NewOrg,
   newOrgAtom,
+  NewOrgStructure,
   NEW_ORG_CW20_DECIMALS,
-} from '@/atoms/org'
+} from '@/atoms/newOrg'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 
-export type CustomValidation = (
-  values: NewOrg,
-  errors: FormState<NewOrg>['errors'],
-  setError: UseFormSetError<NewOrg>,
+export type ValidateOrgFormPage = (
+  newOrg: NewOrg,
   clearErrors: UseFormClearErrors<NewOrg>,
-  noNewErrors?: boolean
+  setError?: UseFormSetError<NewOrg>
 ) => boolean
 
-interface OrgFormPage {
+export interface OrgFormPage {
   href: string
-  label: string
-  ensureFieldSetBeforeContinuing?: FieldPath<NewOrg>
+  title: string
+  subtitle?: string
+  validate?: ValidateOrgFormPage
 }
 
-export const createOrgFormPages: OrgFormPage[] = [
-  {
-    href: '/org/create',
-    label: '1. Describe your org',
-    ensureFieldSetBeforeContinuing: 'name',
-  },
-  {
-    href: '/org/create/voting',
-    label: '2. Configure voting',
-  },
-  {
-    href: '/org/create/review',
-    label: '3. Review and submit',
-  },
-]
-
-enum CreateOrgSubmitLabel {
+export enum CreateOrgSubmitLabel {
   Back = 'Back',
   Continue = 'Continue',
   Review = 'Review',
   CreateOrg = 'Create Org',
 }
 
-export const useCreateOrgForm = (
-  pageIndex: number,
-  customValidation?: CustomValidation
-) => {
+export const useCreateOrgForm = (pageIndex: number) => {
   const router = useRouter()
-  const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
   const { connected, address: walletAddress, refreshBalances } = useWallet()
-  const [creating, setCreating] = useState(false)
+
+  const currentPage = useMemo(() => createOrgFormPages[pageIndex], [pageIndex])
+  const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
+  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const setPinnedAddresses = useSetRecoilState(pinnedAddressesAtom)
+  const [creating, setCreating] = useState(false)
 
   const {
     handleSubmit,
@@ -111,20 +93,38 @@ export const useCreateOrgForm = (
     clearErrors,
   } = useForm({ defaultValues: newOrg })
 
-  // Ensure previous pages are valid and navigate if not.
+  const watchedNewOrg = watch()
+
+  const invalidPages = createOrgFormPages.map(
+    ({ validate }) =>
+      // Don't pass setError because we don't want to set new errors. Only
+      // update existing or clear them if fields become valid.
+      // Invalid fields error on submit attempt.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      !(validate?.(watchedNewOrg, clearErrors) ?? true)
+  )
+
+  // Ensure previous pages are valid and navigate back if not.
   useEffect(() => {
     if (!router.isReady) return
 
-    const invalidPreviousPage = createOrgFormPages.find(
-      ({ ensureFieldSetBeforeContinuing }, idx) =>
-        idx < pageIndex &&
-        !!ensureFieldSetBeforeContinuing &&
-        !getValues(ensureFieldSetBeforeContinuing)
-    )
-    if (invalidPreviousPage) {
-      router.push(invalidPreviousPage.href)
+    const firstInvalidPageIndex = invalidPages.findIndex(Boolean)
+    if (
+      // If no index found, no invalid page.
+      firstInvalidPageIndex > -1 &&
+      firstInvalidPageIndex < pageIndex
+    ) {
+      router.push(createOrgFormPages[firstInvalidPageIndex].href)
     }
-  }, [router, pageIndex, getValues])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    router,
+    pageIndex,
+    // Stringify invalid booleans to prevent unnecessary refresh since
+    // invalidPages gets a new reference on every re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    invalidPages.map(String).join(),
+  ])
 
   const instantiate = useInstantiate({
     codeId: CWCORE_CODE_ID,
@@ -133,6 +133,9 @@ export const useCreateOrgForm = (
 
   const onSubmit: SubmitHandler<NewOrg> = useCallback(
     async (values, event) => {
+      // If navigating, no need to display errors.
+      clearErrors()
+
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
@@ -163,23 +166,25 @@ export const useCreateOrgForm = (
         return
       }
 
-      // Continue to the next page.
+      // Save values to state.
       setNewOrg((prevNewOrg) => ({
         ...prevNewOrg,
         ...values,
       }))
 
+      // Navigate pages.
+      const pageDelta = parseSubmitterValueDelta(submitterValue)
       router.push(
         createOrgFormPages[
-          submitterValue === CreateOrgSubmitLabel.Back
-            ? Math.max(0, pageIndex - 1)
-            : submitterValue === CreateOrgSubmitLabel.Review
-            ? createOrgFormPages.length - 1
-            : Math.min(createOrgFormPages.length - 1, pageIndex + 1)
+          Math.min(
+            Math.max(0, pageIndex + pageDelta),
+            createOrgFormPages.length - 1
+          )
         ].href
       )
     },
     [
+      clearErrors,
       setNewOrg,
       router,
       pageIndex,
@@ -195,51 +200,58 @@ export const useCreateOrgForm = (
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
-      // Allow Back press without required fields.
-      if (submitterValue === CreateOrgSubmitLabel.Back)
+      // Allow backwards navigation without valid fields.
+      const pageDelta = parseSubmitterValueDelta(submitterValue)
+      if (pageDelta < 0) {
         return onSubmit(getValues(), event)
+      }
     },
     [getValues, onSubmit]
   )
 
-  const currentPage = useMemo(() => createOrgFormPages[pageIndex], [pageIndex])
-  const showBack = useMemo(() => pageIndex > 0, [pageIndex])
-  const showNext = useMemo(
-    () => pageIndex < createOrgFormPages.length,
-    [pageIndex]
-  )
-  const Navigation = (
-    <div
-      className="flex flex-row items-center mt-8"
-      // justify-end doesn't work in tailwind for some reason
-      style={{ justifyContent: showBack ? 'space-between' : 'flex-end' }}
-    >
-      {showBack && (
-        <SubmitButton
-          disabled={creating}
-          label={CreateOrgSubmitLabel.Back}
-          variant="secondary"
-        />
-      )}
-      {showNext && (
-        <SubmitButton
-          disabled={
-            !router.isReady ||
-            (!!currentPage.ensureFieldSetBeforeContinuing &&
-              !watch(currentPage.ensureFieldSetBeforeContinuing)) ||
-            creating
-          }
-          label={
-            pageIndex < createOrgFormPages.length - 2
-              ? CreateOrgSubmitLabel.Continue
-              : pageIndex === createOrgFormPages.length - 2
-              ? CreateOrgSubmitLabel.Review
-              : CreateOrgSubmitLabel.CreateOrg
-          }
-        />
-      )}
-    </div>
-  )
+  const Navigation = useMemo(() => {
+    const showBack = pageIndex > 0
+    const showNext = pageIndex < createOrgFormPages.length
+
+    return (
+      <div
+        className="flex flex-row items-center mt-8"
+        // justify-end doesn't work in tailwind for some reason
+        style={{ justifyContent: showBack ? 'space-between' : 'flex-end' }}
+      >
+        {showBack && (
+          <SubmitButton
+            disabled={creating}
+            label={CreateOrgSubmitLabel.Back}
+            variant="secondary"
+          />
+        )}
+        {showNext && (
+          <SubmitButton
+            disabled={!mountedInBrowser || invalidPages[pageIndex] || creating}
+            label={
+              pageIndex < createOrgFormPages.length - 2
+                ? CreateOrgSubmitLabel.Continue
+                : // Second to last links to the Review page.
+                pageIndex === createOrgFormPages.length - 2
+                ? CreateOrgSubmitLabel.Review
+                : // Last page creates the org.
+                  CreateOrgSubmitLabel.CreateOrg
+            }
+          />
+        )}
+      </div>
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    pageIndex,
+    creating,
+    mountedInBrowser,
+    // Stringify invalid booleans to prevent unnecessary refresh since
+    // invalidPages gets a new reference on every re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    invalidPages.map(String).join(),
+  ])
 
   const _handleSubmit = useMemo(
     () => handleSubmit(onSubmit, onError),
@@ -248,17 +260,26 @@ export const useCreateOrgForm = (
 
   const formOnSubmit = useCallback(
     (...args: Parameters<typeof _handleSubmit>) => {
+      const nativeEvent = args[0]?.nativeEvent as SubmitEvent
+      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+      const pageDelta = parseSubmitterValueDelta(submitterValue)
+
       // Validate here instead of in onSubmit since custom errors prevent
-      // form submission. customValidation will set/clear custom errors.
-      customValidation?.(getValues(), errors, setError, clearErrors)
+      // form submission, and we still want to be able to move backwards.
+      currentPage.validate?.(
+        watchedNewOrg,
+        clearErrors,
+        // On back press, don't set new errors.
+        pageDelta < 0 ? undefined : setError
+      )
 
       return _handleSubmit(...args)
     },
-    [_handleSubmit, customValidation, getValues, errors, setError, clearErrors]
+    [currentPage, watchedNewOrg, clearErrors, setError, _handleSubmit]
   )
 
   return {
-    formOnSubmit,
+    watchedNewOrg,
     errors,
     register,
     getValues,
@@ -268,8 +289,85 @@ export const useCreateOrgForm = (
     resetField,
     setError,
     clearErrors,
-    Navigation,
     creating,
+    formWrapperProps: {
+      Navigation,
+      onSubmit: formOnSubmit,
+      currentPageIndex: pageIndex,
+      currentPage,
+    },
+  }
+}
+
+export const createOrgFormPages: OrgFormPage[] = [
+  {
+    href: '/org/create',
+    title: 'Choose a structure',
+    validate: ({ structure }) => structure !== undefined,
+  },
+  {
+    href: '/org/create/describe',
+    title: 'Describe the organization',
+    validate: ({ name }) => name.trim().length > 0,
+  },
+  {
+    href: '/org/create/voting',
+    title: 'Configure voting distribution',
+    subtitle:
+      'This will determine how much voting share different members of the org have when they vote on proposals.',
+    // Validate group weights and member proportions add up to 100%.
+    validate: ({ groups }, clearErrors, setError) => {
+      let valid = true
+
+      const totalWeight =
+        groups.reduce(
+          (acc, { weight, members }) => acc + weight * members.length,
+          0
+        ) || 0
+      // Ensure voting power has been given to at least one member.
+      if (totalWeight === 0) {
+        setError?.('_groupsError', {
+          message:
+            'You have not given anyone voting power. Add some members to your org.',
+        })
+        valid = false
+      } else {
+        clearErrors('_groupsError')
+      }
+
+      groups.forEach((group, groupIndex) => {
+        if (group.members.length === 0) {
+          setError?.(`groups.${groupIndex}._error`, {
+            message: 'No members have been added.',
+          })
+          valid = false
+        } else {
+          clearErrors(`groups.${groupIndex}._error`)
+        }
+      })
+
+      return valid
+    },
+  },
+  {
+    href: '/org/create/review',
+    title: 'Review and submit',
+  },
+]
+
+const parseSubmitterValueDelta = (value: string): number => {
+  switch (value) {
+    case CreateOrgSubmitLabel.Back:
+      return -1
+    case CreateOrgSubmitLabel.Continue:
+    case CreateOrgSubmitLabel.Review:
+      return 1
+    default:
+      // Pass a number to step that many pages in either direction.
+      const valueNumber = parseInt(value, 10)
+      if (!isNaN(valueNumber) && valueNumber !== 0) return valueNumber
+
+      return 0
   }
 }
 
@@ -278,15 +376,15 @@ const createOrg = async (
   values: NewOrg
 ) => {
   const {
+    structure,
     name,
     description,
     imageUrl,
     groups,
     votingDuration,
-    governanceTokenEnabled,
     governanceTokenOptions: {
       unregisterDuration,
-      newGovernanceToken,
+      newInfo,
       existingGovernanceTokenAddress,
       proposalDeposit,
       ...governanceTokenOptions
@@ -294,17 +392,18 @@ const createOrg = async (
     thresholdQuorum: { threshold, quorum },
   } = values
 
+  const governanceTokenEnabled = structure === NewOrgStructure.UsingGovToken
+
   try {
     let votingModuleInstantiateMsg
     if (governanceTokenEnabled) {
       let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
       if (governanceTokenOptions.type === GovernanceTokenType.New) {
-        if (!newGovernanceToken) {
+        if (!newInfo) {
           throw new Error('New governance token info not provided.')
         }
 
-        const { initialTreasuryBalance, imageUrl, symbol, name } =
-          newGovernanceToken
+        const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
 
         const microInitialBalances: Cw20Coin[] = groups.flatMap(
           ({ weight, members }) =>

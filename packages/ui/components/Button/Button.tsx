@@ -81,7 +81,8 @@ function ButtonComponent(
   ) : variant === 'ghost' ? (
     <button
       className={clsx(
-        'flex flex-row gap-2 items-center text-secondary hover:text-primary transition link-text',
+        'flex flex-row gap-2 items-center text-secondary transition link-text',
+        { 'hover:text-primary': !isDisabled },
         className,
         contentContainerClassName
       )}

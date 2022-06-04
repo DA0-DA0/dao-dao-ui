@@ -8,16 +8,20 @@ import {
 import clsx from 'clsx'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { Pie, Bar } from 'react-chartjs-2'
-import { UseFormWatch } from 'react-hook-form'
 
 import { InputLabel, useThemeContext } from '@dao-dao/ui'
 
-import { GovernanceTokenType, NewOrg, NewOrgGroup } from '@/atoms/org'
+import {
+  GovernanceTokenType,
+  NewOrg,
+  NewOrgGroup,
+  NewOrgStructure,
+} from '@/atoms/newOrg'
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale)
 
 interface DistributionProps {
-  watch: UseFormWatch<NewOrg>
+  newOrg: NewOrg
 }
 
 const getDarkRgb = () =>
@@ -25,10 +29,11 @@ const getDarkRgb = () =>
     ? getComputedStyle(document.body).getPropertyValue('--dark')
     : undefined
 
-export const TokenDistribution: FC<DistributionProps> = ({ watch }) => {
-  const { governanceTokenEnabled, governanceTokenOptions, groups } = watch()
+export const TokenDistribution: FC<DistributionProps> = ({ newOrg }) => {
+  const { structure, governanceTokenOptions, groups } = newOrg
+
   if (
-    !governanceTokenEnabled ||
+    structure !== NewOrgStructure.UsingGovToken ||
     governanceTokenOptions.type !== GovernanceTokenType.New
   )
     throw new Error(
@@ -47,7 +52,7 @@ export const TokenDistribution: FC<DistributionProps> = ({ watch }) => {
   )
 
   const data = useMemo(() => {
-    const { initialTreasuryBalance } = governanceTokenOptions.newGovernanceToken
+    const { initialTreasuryBalance } = governanceTokenOptions.newInfo
 
     const totalWeight =
       (groups.reduce(
@@ -100,10 +105,13 @@ export const TokenDistribution: FC<DistributionProps> = ({ watch }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     groups
       .map(
-        ({ weight, members }, idx) => `${idx}:${weight}:${members.join('_')}`
+        ({ weight, members }, idx) =>
+          `${idx}:${weight}:${members.length}:${members
+            .map(({ address }) => address)
+            .join('_')}`
       )
       .join(),
-    governanceTokenOptions.newGovernanceToken.initialTreasuryBalance,
+    governanceTokenOptions.newInfo.initialTreasuryBalance,
     darkRgb,
   ])
 
@@ -123,6 +131,42 @@ export const TokenDistribution: FC<DistributionProps> = ({ watch }) => {
 
       <TokenDistributionPie data={data.entries} />
       <Legend data={data.legend} />
+    </div>
+  )
+}
+
+export const VotingPowerDistribution: FC<DistributionProps> = ({
+  newOrg: { groups },
+}) => {
+  const { onlyOneGroup, entries } = useVotingPowerDistributionData(
+    groups,
+    groups
+      .map(
+        ({ weight, members }, idx) =>
+          `${idx}:${weight}:${members.length}:${members
+            .map(({ address }) => address)
+            .join('_')}`
+      )
+      .join(),
+    true
+  )
+
+  return (
+    <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
+      <InputLabel
+        className="text-sm text-center"
+        labelProps={{ className: 'justify-center' }}
+        mono
+        name="Voting Power Distribution"
+      />
+      <InputLabel
+        className="text-sm text-center"
+        mono
+        name={onlyOneGroup ? 'Members' : 'Groups'}
+      />
+
+      <VotingPowerChart data={entries} />
+      <Legend data={entries} />
     </div>
   )
 }
@@ -166,38 +210,6 @@ export const useVotingPowerDistributionData = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
     groupsChangedString,
   ])
-
-export const VotingPowerDistribution: FC<DistributionProps> = ({ watch }) => {
-  const groups = watch('groups')
-  const { onlyOneGroup, entries } = useVotingPowerDistributionData(
-    groups,
-    groups
-      .map(
-        ({ weight, members }, idx) => `${idx}:${weight}:${members.join('_')}`
-      )
-      .join(),
-    true
-  )
-
-  return (
-    <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <InputLabel
-        className="text-sm text-center"
-        labelProps={{ className: 'justify-center' }}
-        mono
-        name="Voting Power Distribution"
-      />
-      <InputLabel
-        className="text-sm text-center"
-        mono
-        name={onlyOneGroup ? 'Members' : 'Groups'}
-      />
-
-      <VotingPowerChart data={entries} />
-      <Legend data={entries} />
-    </div>
-  )
-}
 
 interface Entry {
   name?: string

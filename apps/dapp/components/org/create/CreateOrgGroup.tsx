@@ -6,7 +6,6 @@ import {
   useFieldArray,
   UseFormRegister,
   UseFormSetValue,
-  UseFormWatch,
 } from 'react-hook-form'
 
 import {
@@ -22,9 +21,10 @@ import {
 } from '@dao-dao/utils'
 
 import { distributionColors } from './Distributions'
-import { NewOrg, NEW_ORG_CW20_DECIMALS } from '@/atoms/org'
+import { NewOrg, NewOrgStructure, NEW_ORG_CW20_DECIMALS } from '@/atoms/newOrg'
 
 interface CreateOrgGroupProps {
+  newOrg: NewOrg
   groupIndex: number
   // Display color dots next to each member instead of each group.
   // When there is only one group, all members are displayed on the chart,
@@ -33,7 +33,6 @@ interface CreateOrgGroupProps {
   control: Control<NewOrg, any>
   register: UseFormRegister<NewOrg>
   errors: FormState<NewOrg>['errors']
-  watch: UseFormWatch<NewOrg>
   setValue: UseFormSetValue<NewOrg>
   remove?: () => void
 }
@@ -41,6 +40,7 @@ interface CreateOrgGroupProps {
 export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   // Don't pass along to member.
   remove,
+  newOrg,
   ...props
 }) => {
   const {
@@ -49,9 +49,9 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     register,
     errors,
     setValue,
-    watch,
     showColorDotOnMember,
   } = props
+
   const {
     fields: members,
     append: appendMember,
@@ -61,7 +61,8 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     name: `groups.${groupIndex}.members`,
   })
 
-  const governanceTokenEnabled = watch('governanceTokenEnabled')
+  const governanceTokenEnabled =
+    newOrg.structure === NewOrgStructure.UsingGovToken
 
   return (
     <div className="p-6 bg-disabled rounded-lg">
@@ -78,7 +79,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               ></div>
             )}
 
-            <p className="title-text">{watch(`groups.${groupIndex}.name`)}</p>
+            <p className="title-text">{newOrg.groups?.[groupIndex]?.name}</p>
           </div>
           <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
         </div>
@@ -97,7 +98,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                     setValue(
                       `groups.${groupIndex}.weight`,
                       Math.max(
-                        watch(`groups.${groupIndex}.weight`) + 1,
+                        (newOrg.groups?.[groupIndex]?.weight ?? 0) + 1,
                         governanceTokenEnabled
                           ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
                           : 1
@@ -107,7 +108,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                     setValue(
                       `groups.${groupIndex}.weight`,
                       Math.max(
-                        watch(`groups.${groupIndex}.weight`) - 1,
+                        (newOrg.groups?.[groupIndex]?.weight ?? 0) - 1,
                         governanceTokenEnabled
                           ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
                           : 1
@@ -165,7 +166,8 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   )
 }
 
-interface CreateOrgGroupMemberProps extends CreateOrgGroupProps {
+interface CreateOrgGroupMemberProps
+  extends Omit<CreateOrgGroupProps, 'newOrg'> {
   memberIndex: number
 }
 
