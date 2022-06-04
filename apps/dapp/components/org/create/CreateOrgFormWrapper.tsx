@@ -34,7 +34,7 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
     />
 
     <form className="flex flex-row items-stretch" {...props}>
-      <div className="overflow-y-auto flex-1 p-6 mx-auto w-full max-w-[800px] h-screen">
+      <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-screen">
         <div className="mb-8">
           <h2 className="mb-4 header-text">Create an org</h2>
 
