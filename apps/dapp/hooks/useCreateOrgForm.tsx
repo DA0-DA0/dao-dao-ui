@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FieldValues,
+  FormState,
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
@@ -52,6 +53,7 @@ import { pinnedAddressesAtom } from '@/atoms/pinned'
 
 export type ValidateOrgFormPage = (
   newOrg: NewOrg,
+  errors: FormState<NewOrg>['errors'],
   clearErrors: UseFormClearErrors<NewOrg>,
   setError?: UseFormSetError<NewOrg>
 ) => boolean
@@ -101,7 +103,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
       // update existing or clear them if fields become valid.
       // Invalid fields error on submit attempt.
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      !(validate?.(watchedNewOrg, clearErrors) ?? true)
+      !(validate?.(watchedNewOrg, errors, clearErrors) ?? true)
   )
 
   // Ensure previous pages are valid and navigate back if not.
@@ -268,6 +270,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
       // form submission, and we still want to be able to move backwards.
       currentPage.validate?.(
         watchedNewOrg,
+        errors,
         clearErrors,
         // On back press, don't set new errors.
         pageDelta < 0 ? undefined : setError
@@ -275,7 +278,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
 
       return _handleSubmit(...args)
     },
-    [currentPage, watchedNewOrg, clearErrors, setError, _handleSubmit]
+    [currentPage, watchedNewOrg, errors, clearErrors, setError, _handleSubmit]
   )
 
   return {
@@ -316,7 +319,7 @@ export const createOrgFormPages: OrgFormPage[] = [
     subtitle:
       'This will determine how much voting share different members of the org have when they vote on proposals.',
     // Validate group weights and member proportions add up to 100%.
-    validate: ({ groups }, clearErrors, setError) => {
+    validate: ({ groups }, errors, clearErrors, setError) => {
       let valid = true
 
       const totalWeight =
@@ -331,7 +334,7 @@ export const createOrgFormPages: OrgFormPage[] = [
             'You have not given anyone voting power. Add some members to your org.',
         })
         valid = false
-      } else {
+      } else if (errors?._groupsError) {
         clearErrors('_groupsError')
       }
 
@@ -341,7 +344,7 @@ export const createOrgFormPages: OrgFormPage[] = [
             message: 'No members have been added.',
           })
           valid = false
-        } else {
+        } else if (errors?.groups?.[groupIndex]?._error) {
           clearErrors(`groups.${groupIndex}._error`)
         }
       })
