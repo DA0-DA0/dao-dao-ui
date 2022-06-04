@@ -31,7 +31,7 @@ export const CreateOrgStructure: FC<CreateOrgStructureProps> = ({
         'flex basis-0 flex-col grow gap-6 items-center p-8 text-center rounded-lg border-2 transition cursor-pointer',
         {
           'bg-disabled border-transparent': !selected,
-          'border-focus bg-brand-active': selected,
+          'bg-brand-active border-focus': selected,
         }
       )}
       onClick={() => setValue('structure', structure)}
