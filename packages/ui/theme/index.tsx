@@ -1,4 +1,4 @@
-import { createContext, FC, useContext } from 'react'
+import { createContext, FC, useContext, useEffect, useState } from 'react'
 
 export type UpdateThemeFn = (themeName: Theme) => void
 export type SetAccentColorFn = (accentColor: string | undefined) => void
@@ -54,3 +54,26 @@ export const ThemeProvider: FC<IThemeContext> = ({
 )
 
 export const useThemeContext = () => useContext(ThemeContext)
+
+export const useNamedThemeColor = (colorName: string) => {
+  const { themeChangeCount } = useThemeContext()
+
+  const [color, setColor] = useState<string | undefined>(
+    getNamedColorFromDOM(colorName)
+  )
+  useEffect(
+    () => {
+      setColor(getNamedColorFromDOM(colorName))
+    },
+    // Re-fetch color when theme changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [themeChangeCount]
+  )
+
+  return color
+}
+
+const getNamedColorFromDOM = (colorName: string) =>
+  typeof getComputedStyle !== 'undefined'
+    ? getComputedStyle(document.body).getPropertyValue(`--${colorName}`)
+    : undefined

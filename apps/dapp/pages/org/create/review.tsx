@@ -11,10 +11,7 @@ import {
 } from '@/atoms/newOrg'
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
 import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'
-import {
-  TokenDistribution,
-  VotingPowerDistribution,
-} from '@/components/org/create/Distributions'
+import { VotingPowerDistribution } from '@/components/org/create/Distributions'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -64,13 +61,7 @@ const CreateOrgReviewPage: FC = () => {
               <div className="w-full h-[1px] bg-card"></div>
 
               <div className="mx-auto w-5/6">
-                {governanceTokenEnabled &&
-                watchedNewOrg.governanceTokenOptions.type ===
-                  GovernanceTokenType.New ? (
-                  <TokenDistribution newOrg={watchedNewOrg} />
-                ) : (
-                  <VotingPowerDistribution newOrg={watchedNewOrg} />
-                )}
+                <VotingPowerDistribution newOrg={watchedNewOrg} />
               </div>
             </>
           )}

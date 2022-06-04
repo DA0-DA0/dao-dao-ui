@@ -62,16 +62,6 @@ const CreateOrgVotingPage: FC = () => {
     formWrapperProps,
   } = useCreateOrgForm(2)
 
-  const _groups = watchedNewOrg.groups
-  const _groupsChangedString = _groups
-    .map(
-      ({ weight, members }, idx) =>
-        `${idx}:${weight}:${members.length}:${members
-          .map(({ address }) => address)
-          .join('_')}`
-    )
-    .join()
-
   const {
     fields: groups,
     append: appendGroup,
@@ -117,18 +107,30 @@ const CreateOrgVotingPage: FC = () => {
       : 0
   const memberWeightAllocated = useMemo(
     () =>
-      _groups.reduce(
+      watchedNewOrg.groups.reduce(
         (acc, { weight, members }) => acc + weight * members.length,
         0
       ) || 0,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [_groupsChangedString]
+    [
+      // Groups reference does not change even if contents do, so we need a
+      // primitive to use for memoization comparison.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      watchedNewOrg.groups
+        .map(
+          ({ weight, members }, idx) =>
+            `${idx}:${weight}:${members.length}:${members
+              .map(({ address }) => address)
+              .join('_')}`
+        )
+        .join(),
+    ]
   )
   const totalWeightAllocated = memberWeightAllocated + initialTreasuryBalance
 
   const { onlyOneGroup, entries } = useVotingPowerDistributionData(
-    _groups,
-    _groupsChangedString,
+    watchedNewOrg,
+    false,
     false
   )
 

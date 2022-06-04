@@ -6,28 +6,18 @@ import {
   LinearScale,
 } from 'chart.js'
 import clsx from 'clsx'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useMemo } from 'react'
 import { Pie, Bar } from 'react-chartjs-2'
 
-import { InputLabel, useThemeContext } from '@dao-dao/ui'
+import { InputLabel, useNamedThemeColor } from '@dao-dao/ui'
 
-import {
-  GovernanceTokenType,
-  NewOrg,
-  NewOrgGroup,
-  NewOrgStructure,
-} from '@/atoms/newOrg'
+import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale)
 
 interface DistributionProps {
   newOrg: NewOrg
 }
-
-const getDarkRgb = () =>
-  typeof getComputedStyle !== 'undefined'
-    ? getComputedStyle(document.body).getPropertyValue('--dark')
-    : undefined
 
 export const TokenDistribution: FC<DistributionProps> = ({ newOrg }) => {
   const { structure, governanceTokenOptions, groups } = newOrg
@@ -40,16 +30,7 @@ export const TokenDistribution: FC<DistributionProps> = ({ newOrg }) => {
       'TokenDistribution can only be displayed when using a new governance token.'
     )
 
-  const { themeChangeCount } = useThemeContext()
-  const [darkRgb, setDarkRgb] = useState<string>()
-  useEffect(
-    () => {
-      setDarkRgb(getDarkRgb())
-    },
-    // Re-fetch color when theme changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [themeChangeCount]
-  )
+  const darkRgb = useNamedThemeColor('dark')
 
   const data = useMemo(() => {
     const { initialTreasuryBalance } = governanceTokenOptions.newInfo
@@ -135,19 +116,10 @@ export const TokenDistribution: FC<DistributionProps> = ({ newOrg }) => {
   )
 }
 
-export const VotingPowerDistribution: FC<DistributionProps> = ({
-  newOrg: { groups },
-}) => {
+export const VotingPowerDistribution: FC<DistributionProps> = ({ newOrg }) => {
   const { onlyOneGroup, entries } = useVotingPowerDistributionData(
-    groups,
-    groups
-      .map(
-        ({ weight, members }, idx) =>
-          `${idx}:${weight}:${members.length}:${members
-            .map(({ address }) => address)
-            .join('_')}`
-      )
-      .join(),
+    newOrg,
+    true,
     true
   )
 
@@ -172,18 +144,32 @@ export const VotingPowerDistribution: FC<DistributionProps> = ({
 }
 
 export const useVotingPowerDistributionData = (
-  groups: NewOrgGroup[],
-  // Groups reference does not change even if contents do, so we need a
-  // primitive to use for memoization comparison.
-  groupsChangedString: string,
-  sort: boolean
-) =>
-  useMemo(() => {
+  {
+    structure,
+    groups,
+    governanceTokenOptions: {
+      type,
+      newInfo: { initialTreasuryBalance: _initialTreasuryBalance },
+    },
+  }: NewOrg,
+  sort: boolean,
+  includeTreasuryWhenApplicable: boolean
+) => {
+  const darkRgb = useNamedThemeColor('dark')
+
+  return useMemo(() => {
+    const initialTreasuryBalance =
+      includeTreasuryWhenApplicable &&
+      structure === NewOrgStructure.UsingGovToken &&
+      type === GovernanceTokenType.New
+        ? _initialTreasuryBalance
+        : undefined
+
     const totalWeight =
-      groups.reduce(
+      (groups.reduce(
         (acc, { weight, members }) => acc + weight * members.length,
         0
-      ) || 0
+      ) || 0) + (initialTreasuryBalance ?? 0)
 
     // If one group case, specially handle and display all members.
     const onlyOneGroup = groups.length === 1
@@ -203,13 +189,38 @@ export const useVotingPowerDistributionData = (
       entries.sort((a, b) => b.percent - a.percent)
     }
 
+    // If set, add treasury to beginning, even if 0, to always display it.
+    if (initialTreasuryBalance !== undefined) {
+      const treasuryEntry = {
+        name: 'Treasury',
+        percent: (initialTreasuryBalance / totalWeight) * 100,
+        color: `rgba(${darkRgb}, 0.08)`,
+      }
+      entries.splice(0, 0, treasuryEntry)
+    }
+
     return { entries, onlyOneGroup }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    structure,
+    type,
+    _initialTreasuryBalance,
     sort,
+    darkRgb,
+    includeTreasuryWhenApplicable,
+    // Groups reference does not change even if contents do, so we need a
+    // primitive to use for memoization comparison.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    groupsChangedString,
+    groups
+      .map(
+        ({ weight, members }, idx) =>
+          `${idx}:${weight}:${members.length}:${members
+            .map(({ address }) => address)
+            .join('_')}`
+      )
+      .join(),
   ])
+}
 
 interface Entry {
   name?: string
@@ -242,16 +253,7 @@ const TokenDistributionPie: FC<DataProps> = ({ data }) => (
 )
 
 export const VotingPowerChart: FC<DataProps> = ({ data }) => {
-  const { themeChangeCount } = useThemeContext()
-  const [darkRgb, setDarkRgb] = useState<string>()
-  useEffect(
-    () => {
-      setDarkRgb(getDarkRgb())
-    },
-    // Re-fetch color when theme changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [themeChangeCount]
-  )
+  const darkRgb = useNamedThemeColor('dark')
 
   return (
     <div className="justify-self-center">
