@@ -21,6 +21,7 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
   containerClassName?: string
   sizing?: 'sm' | 'md'
   required?: boolean
+  setValueAs?: (value: any) => any
 }
 
 /**
@@ -45,12 +46,26 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   className,
   containerClassName,
   required,
+  setValueAs,
   ...props
 }: NumberInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
+  const sharedProps = {
+    defaultValue,
+    disabled,
+    step,
+    type: 'number',
+    ...props,
+    ...register(label, {
+      required: required && 'Required',
+      validate,
+      ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
+    }),
+  }
 
   if (onPlusMinus) {
     return (
@@ -86,16 +101,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
             'w-full text-right bg-transparent border-none outline-none ring-none body-text',
             className
           )}
-          defaultValue={defaultValue}
-          disabled={disabled}
-          step={step}
-          type="number"
-          {...props}
-          {...register(label, {
-            required: required && 'Required',
-            validate,
-            valueAsNumber: true,
-          })}
+          {...sharedProps}
         />
       </div>
     )
@@ -108,16 +114,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
         { 'ring-1 ring-error': error },
         className
       )}
-      defaultValue={defaultValue}
-      disabled={disabled}
-      step={step}
-      type="number"
-      {...props}
-      {...register(label, {
-        required: required && 'Required',
-        validate,
-        valueAsNumber: true,
-      })}
+      {...sharedProps}
     />
   )
 }

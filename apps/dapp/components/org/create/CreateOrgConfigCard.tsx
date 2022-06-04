@@ -29,7 +29,7 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
       </div>
     </div>
 
-    <div className="flex flex-row gap-2 items-center self-end mt-4">
+    <div className="flex flex-row gap-2 items-stretch self-end mt-4">
       {children}
     </div>
     <InputErrorMessage className="self-end" error={error} />

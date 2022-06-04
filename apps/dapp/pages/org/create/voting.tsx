@@ -572,6 +572,12 @@ const CreateOrgVotingPage: FC = () => {
                       ),
                   ]}
                   register={register}
+                  // Override numeric value setter since the select below
+                  // attempts to set 'majority', but registering the field
+                  // with the numeric setter causes validation issues.
+                  setValueAs={(value) =>
+                    value === 'majority' ? 'majority' : Number(value)
+                  }
                   sizing="sm"
                   step={0.001}
                   validation={[validatePositive, validateRequired]}
@@ -589,13 +595,10 @@ const CreateOrgVotingPage: FC = () => {
                   )
                 }
                 validation={[validateRequired]}
+                value={threshold === 'majority' ? 'majority' : '%'}
               >
-                <option selected={threshold !== 'majority'} value="%">
-                  %
-                </option>
-                <option selected={threshold === 'majority'} value="majority">
-                  Majority
-                </option>
+                <option value="%">%</option>
+                <option value="majority">Majority</option>
               </SelectInput>
             </CreateOrgConfigCard>
 
@@ -622,6 +625,12 @@ const CreateOrgVotingPage: FC = () => {
                       ),
                   ]}
                   register={register}
+                  // Override numeric value setter since the select below
+                  // attempts to set 'majority', but registering the field
+                  // with the numeric setter causes validation issues.
+                  setValueAs={(value) =>
+                    value === 'majority' ? 'majority' : Number(value)
+                  }
                   sizing="sm"
                   step={0.001}
                   validation={[validateNonNegative, validateRequired]}
@@ -639,13 +648,10 @@ const CreateOrgVotingPage: FC = () => {
                   )
                 }
                 validation={[validateRequired]}
+                value={quorum === 'majority' ? 'majority' : '%'}
               >
-                <option selected={quorum !== 'majority'} value="%">
-                  %
-                </option>
-                <option selected={quorum === 'majority'} value="majority">
-                  Majority
-                </option>
+                <option value="%">%</option>
+                <option value="majority">Majority</option>
               </SelectInput>
             </CreateOrgConfigCard>
           </div>
