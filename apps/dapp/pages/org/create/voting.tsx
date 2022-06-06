@@ -131,6 +131,7 @@ const CreateOrgVotingPage: FC = () => {
   const { onlyOneGroup, entries } = useVotingPowerDistributionData(
     watchedNewOrg,
     false,
+    false,
     false
   )
 

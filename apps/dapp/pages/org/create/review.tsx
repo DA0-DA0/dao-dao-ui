@@ -6,12 +6,11 @@ import { InputLabel, Logo } from '@dao-dao/ui'
 import {
   convertDurationWithUnitsToHumanReadableString,
   convertThresholdValueToHumanReadableString,
-  GovernanceTokenType,
   NewOrgStructure,
 } from '@/atoms/newOrg'
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
 import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'
-import { VotingPowerDistribution } from '@/components/org/create/Distributions'
+import { VotingPowerPieDistribution } from '@/components/org/create/Distributions'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
@@ -54,17 +53,11 @@ const CreateOrgReviewPage: FC = () => {
             </div>
           </div>
 
-          {(!governanceTokenEnabled ||
-            watchedNewOrg.governanceTokenOptions.type ===
-              GovernanceTokenType.New) && (
-            <>
-              <div className="w-full h-[1px] bg-card"></div>
+          <div className="w-full h-[1px] bg-card"></div>
 
-              <div className="mx-auto w-5/6">
-                <VotingPowerDistribution newOrg={watchedNewOrg} />
-              </div>
-            </>
-          )}
+          <div className="mx-auto w-5/6">
+            <VotingPowerPieDistribution newOrg={watchedNewOrg} />
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">

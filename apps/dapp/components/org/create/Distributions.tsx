@@ -4,6 +4,7 @@ import {
   CategoryScale,
   Chart as ChartJS,
   LinearScale,
+  Tooltip,
 } from 'chart.js'
 import clsx from 'clsx'
 import { FC, useMemo } from 'react'
@@ -13,112 +14,47 @@ import { InputLabel, useNamedThemeColor } from '@dao-dao/ui'
 
 import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale)
+declare module 'chart.js' {
+  interface TooltipPositionerMap {
+    center: TooltipPositionerFunction<ChartType>
+  }
+}
+
+Tooltip.positioners.center = function (elements, eventPosition) {
+  const pos = Tooltip.positioners.average.bind(this)(elements, eventPosition)
+
+  return (
+    pos && {
+      x: pos.x / 2,
+      y: pos.y,
+      xAlign: 'center',
+      yAlign: 'bottom',
+    }
+  )
+}
+
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip)
+
+interface Entry {
+  name?: string
+  value: number
+  color: string
+}
+
+interface DataProps {
+  data: Entry[]
+}
 
 interface DistributionProps {
   newOrg: NewOrg
 }
 
-export const TokenDistribution: FC<DistributionProps> = ({ newOrg }) => {
-  const { structure, governanceTokenOptions, groups } = newOrg
-
-  if (
-    structure !== NewOrgStructure.UsingGovToken ||
-    governanceTokenOptions.type !== GovernanceTokenType.New
-  )
-    throw new Error(
-      'TokenDistribution can only be displayed when using a new governance token.'
-    )
-
-  const darkRgb = useNamedThemeColor('dark')
-
-  const data = useMemo(() => {
-    const { initialTreasuryBalance } = governanceTokenOptions.newInfo
-
-    const totalWeight =
-      (groups.reduce(
-        (acc, { weight, members }) => acc + weight * members.length,
-        0
-      ) || 0) + initialTreasuryBalance
-
-    // If one group case, specially handle and display all members.
-    const onlyOneGroup = groups.length === 1
-
-    const entries = groups
-      .flatMap(({ weight, members }, groupIndex) =>
-        members.map((_, memberIndex) => ({
-          percent: (weight / totalWeight) * 100,
-          color:
-            distributionColors[
-              (onlyOneGroup ? memberIndex : groupIndex) %
-                distributionColors.length
-            ],
-        }))
-      )
-      .sort((a, b) => b.percent - a.percent)
-    const legend = (
-      onlyOneGroup
-        ? groups[0].members.map(({ address }, memberIndex) => ({
-            name: address,
-            percent: (groups[0].weight / totalWeight) * 100,
-            color: distributionColors[memberIndex % distributionColors.length],
-          }))
-        : groups.map(({ name, weight, members }, groupIndex) => ({
-            name,
-            percent: ((weight * members.length) / totalWeight) * 100,
-            color: distributionColors[groupIndex % distributionColors.length],
-          }))
-    ).sort((a, b) => b.percent - a.percent)
-
-    // Add treasury to the beginning, even if 0, so we display it always.
-    const treasuryEntry = {
-      name: 'Treasury',
-      percent: (initialTreasuryBalance / totalWeight) * 100,
-      color: `rgba(${darkRgb}, 0.08)`,
-    }
-    entries.splice(0, 0, treasuryEntry)
-    legend.splice(0, 0, treasuryEntry)
-
-    return { entries, legend, onlyOneGroup }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // Groups reference does not change even if contents do.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    groups
-      .map(
-        ({ weight, members }, idx) =>
-          `${idx}:${weight}:${members.length}:${members
-            .map(({ address }) => address)
-            .join('_')}`
-      )
-      .join(),
-    governanceTokenOptions.newInfo.initialTreasuryBalance,
-    darkRgb,
-  ])
-
-  return (
-    <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <InputLabel
-        className="text-sm text-center"
-        labelProps={{ className: 'justify-center' }}
-        mono
-        name="Token Distribution"
-      />
-      <InputLabel
-        className="text-sm text-center"
-        mono
-        name={data.onlyOneGroup ? 'Members' : 'Groups'}
-      />
-
-      <TokenDistributionPie data={data.entries} />
-      <Legend data={data.legend} />
-    </div>
-  )
-}
-
-export const VotingPowerDistribution: FC<DistributionProps> = ({ newOrg }) => {
+export const VotingPowerPieDistribution: FC<DistributionProps> = ({
+  newOrg,
+}) => {
   const { onlyOneGroup, entries } = useVotingPowerDistributionData(
     newOrg,
+    true,
     true,
     true
   )
@@ -137,7 +73,7 @@ export const VotingPowerDistribution: FC<DistributionProps> = ({ newOrg }) => {
         name={onlyOneGroup ? 'Members' : 'Groups'}
       />
 
-      <VotingPowerChart data={entries} />
+      <PieChart data={entries} />
       <Legend data={entries} />
     </div>
   )
@@ -152,6 +88,7 @@ export const useVotingPowerDistributionData = (
       newInfo: { initialTreasuryBalance: _initialTreasuryBalance },
     },
   }: NewOrg,
+  proportion: boolean,
   sort: boolean,
   includeTreasuryWhenApplicable: boolean
 ) => {
@@ -174,26 +111,26 @@ export const useVotingPowerDistributionData = (
     // If one group case, specially handle and display all members.
     const onlyOneGroup = groups.length === 1
 
-    const entries = onlyOneGroup
+    const entries: Entry[] = onlyOneGroup
       ? groups[0].members.map(({ address }, memberIndex) => ({
           name: address,
-          percent: (groups[0].weight / totalWeight) * 100,
+          value: groups[0].weight * (proportion ? 100 / totalWeight : 1),
           color: distributionColors[memberIndex % distributionColors.length],
         }))
       : groups.map(({ name, weight, members }, groupIndex) => ({
           name,
-          percent: ((weight * members.length) / totalWeight) * 100,
+          value: weight * members.length * (proportion ? 100 / totalWeight : 1),
           color: distributionColors[groupIndex % distributionColors.length],
         }))
     if (sort) {
-      entries.sort((a, b) => b.percent - a.percent)
+      entries.sort((a, b) => b.value - a.value)
     }
 
     // If set, add treasury to beginning, even if 0, to always display it.
     if (initialTreasuryBalance !== undefined) {
-      const treasuryEntry = {
+      const treasuryEntry: Entry = {
         name: 'Treasury',
-        percent: (initialTreasuryBalance / totalWeight) * 100,
+        value: initialTreasuryBalance * (proportion ? 100 / totalWeight : 1),
         color: `rgba(${darkRgb}, 0.08)`,
       }
       entries.splice(0, 0, treasuryEntry)
@@ -208,6 +145,7 @@ export const useVotingPowerDistributionData = (
     sort,
     darkRgb,
     includeTreasuryWhenApplicable,
+    proportion,
     // Groups reference does not change even if contents do, so we need a
     // primitive to use for memoization comparison.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,23 +160,13 @@ export const useVotingPowerDistributionData = (
   ])
 }
 
-interface Entry {
-  name?: string
-  percent: number
-  color: string
-}
-
-interface DataProps {
-  data: Entry[]
-}
-
-const TokenDistributionPie: FC<DataProps> = ({ data }) => (
+const PieChart: FC<DataProps> = ({ data }) => (
   <Pie
     className="justify-self-center !w-32 !h-32 md:!w-48 md:!h-48"
     data={{
       datasets: [
         {
-          data: data.map(({ percent }) => percent),
+          data: data.map(({ value: percent }) => percent),
           backgroundColor: data.map(({ color }) => color),
           borderWidth: 0,
         },
@@ -262,16 +190,23 @@ export const VotingPowerChart: FC<DataProps> = ({ data }) => {
           labels: data.map(({ name }) => name),
           datasets: [
             {
-              data: data.map(({ percent }) => percent),
+              data: data.map(({ value: percent }) => percent),
               backgroundColor: data.map(({ color }) => color),
               borderWidth: 0,
             },
           ],
         }}
         options={{
-          // Disable all events (hover, tooltip, etc.)
-          events: [],
-          animation: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                title: (items) => items[0].label || "Member's address...",
+                label: () => '',
+              },
+              titleMarginBottom: 0,
+              position: 'center',
+            },
+          },
           // Horizontal bar chart
           indexAxis: 'y',
           responsive: true,
@@ -309,7 +244,7 @@ interface LegendItemProps {
 }
 
 const LegendItem: FC<LegendItemProps> = ({
-  data: { name, percent, color },
+  data: { name, value: percent, color },
 }) => (
   <div
     key={name}
@@ -334,4 +269,23 @@ const LegendItem: FC<LegendItemProps> = ({
   </div>
 )
 
-export const distributionColors = ['#FC82A4', '#954EE8', '#DC30D3', '#FD6386']
+// Linear from purple to orange/yellow.
+const _distributionColors = [
+  '#5B58E2',
+  '#4744AC',
+  '#6642CE',
+  '#954FE7',
+  '#BA73DD',
+  '#DE73C0',
+  '#FC81A4',
+  '#EE7969',
+  '#F4925A',
+  '#F1B671',
+]
+// Increase speed of color transition by doing every other in a loop.
+// For 10 colors, even indexes from 0 to 8, then odd indexes from 1 to 9.
+export const distributionColors = _distributionColors.map((_, idx) =>
+  idx < _distributionColors.length / 2
+    ? _distributionColors[idx * 2]
+    : _distributionColors[(idx - _distributionColors.length / 2) * 2 + 1]
+)
