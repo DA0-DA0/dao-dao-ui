@@ -20,9 +20,9 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
 import { NewOrg, NewOrgStructure, NEW_ORG_CW20_DECIMALS } from '@/atoms/newOrg'
-import { CornerGradient } from './CornerGradient'
 
 interface CreateOrgGroupProps {
   newOrg: NewOrg

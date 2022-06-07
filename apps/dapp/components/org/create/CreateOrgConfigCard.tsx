@@ -3,6 +3,7 @@ import { ComponentProps, ReactNode, FC } from 'react'
 import { FieldError } from 'react-hook-form'
 
 import { InputErrorMessage } from '@dao-dao/ui'
+
 import { CornerGradient } from './CornerGradient'
 
 interface CreateOrgConfigCardProps extends ComponentProps<'div'> {
@@ -43,7 +44,7 @@ export const CreateOrgConfigCardWrapper: FC<
 > = ({ children, className, accentColor, ...rest }) => (
   <div
     className={clsx(
-      'flex flex-col items-stretch p-6 bg-disabled rounded-lg relative',
+      'flex relative flex-col items-stretch p-6 bg-disabled rounded-lg',
       className
     )}
     {...rest}

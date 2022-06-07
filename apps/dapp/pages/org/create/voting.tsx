@@ -187,11 +187,11 @@ const CreateOrgVotingPage: FC = () => {
         </div>
 
         <CreateOrgConfigCard
+          accentColor="#c3935e1a"
           description="The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final."
           error={errors.votingDuration?.value || errors.votingDuration?.units}
           image={<Emoji label="hourglass" symbol="⏳" />}
           title="Voting duration"
-          accentColor="#c3935e1a"
         >
           <NumberInput
             error={errors.votingDuration?.value}
@@ -420,11 +420,11 @@ const CreateOrgVotingPage: FC = () => {
             </CreateOrgConfigCardWrapper>
 
             <CreateOrgConfigCard
+              accentColor="#fccd031a"
               description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
               error={errors.governanceTokenOptions?.proposalDeposit?.value}
               image={<Emoji label="banknote" symbol="💵" />}
               title="Proposal deposit"
-              accentColor="#fccd031a"
             >
               <NumberInput
                 error={errors.governanceTokenOptions?.proposalDeposit?.value}
@@ -458,10 +458,10 @@ const CreateOrgVotingPage: FC = () => {
 
             {!!watchedNewOrg.governanceTokenOptions.proposalDeposit.value && (
               <CreateOrgConfigCard
+                accentColor="#fed3581a"
                 description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
                 image={<Emoji label="finger pointing up" symbol="👆" />}
                 title="Refund failed proposals"
-                accentColor="#fed3581a"
               >
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
@@ -482,6 +482,7 @@ const CreateOrgVotingPage: FC = () => {
             )}
 
             <CreateOrgConfigCard
+              accentColor="#cf434b1a"
               description="In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
               error={
                 errors.governanceTokenOptions?.unregisterDuration?.value ||
@@ -489,7 +490,6 @@ const CreateOrgVotingPage: FC = () => {
               }
               image={<Emoji label="alarm clock" symbol="⏰" />}
               title="Unregister duration"
-              accentColor="#cf434b1a"
             >
               <NumberInput
                 error={errors.governanceTokenOptions?.unregisterDuration?.value}
@@ -565,11 +565,11 @@ const CreateOrgVotingPage: FC = () => {
         {watchedNewOrg._changeThresholdQuorumEnabled && (
           <div className="space-y-3">
             <CreateOrgConfigCard
+              accentColor="rgba(95, 94, 254, 0.1)"
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
               error={errors.thresholdQuorum?.threshold}
               image={<Emoji label="ballot box" symbol="🗳️" />}
               title="Passing threshold"
-              accentColor="rgba(95, 94, 254, 0.1)"
             >
               {threshold !== 'majority' && (
                 <NumberInput
@@ -619,11 +619,11 @@ const CreateOrgVotingPage: FC = () => {
             </CreateOrgConfigCard>
 
             <CreateOrgConfigCard
+              accentColor="#fefe891a"
               description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have an org with many inactive members, setting this value too high may make it difficult to pass proposals."
               error={errors.thresholdQuorum?.quorum}
               image={<Emoji label="megaphone" symbol="📣" />}
               title="Quorum"
-              accentColor="#fefe891a"
             >
               {quorum !== 'majority' && (
                 <NumberInput

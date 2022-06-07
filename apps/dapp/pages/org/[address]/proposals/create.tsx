@@ -122,7 +122,7 @@ const InnerProposalCreate = () => {
           'proposal_id'
         ).value
         refreshProposals()
-        router.push(`/vote/${proposalId}`)
+        router.push(`/org/${coreAddress}/proposals/${proposalId}`)
       } catch (err) {
         console.error(err)
         toast.error(

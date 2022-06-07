@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { FC } from 'react'
 
-import { InputLabel, Logo } from '@dao-dao/ui'
+import { Logo } from '@dao-dao/ui'
 
 import {
   convertDurationWithUnitsToHumanReadableString,
@@ -48,8 +48,8 @@ const CreateOrgReviewPage: FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="caption-text font-mono">Description</p>
-              <p className="secondary-text text-lg">
+              <p className="font-mono caption-text">Description</p>
+              <p className="text-lg secondary-text">
                 {watchedNewOrg.description}
               </p>
             </div>
