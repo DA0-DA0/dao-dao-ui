@@ -20,7 +20,7 @@ const CreateOrgPage: FC = () => {
       <SmallScreenNav />
 
       <CreateOrgFormWrapper {...formWrapperProps}>
-        <div className="flex flex-row gap-8 items-stretch p-8 bg-disabled rounded-lg">
+        <div className="flex relative flex-row gap-8 items-stretch p-8 bg-disabled rounded-lg">
           <div className="flex flex-col gap-4 justify-center">
             <ImageSelector
               className="!bg-card !border-0"

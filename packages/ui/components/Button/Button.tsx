@@ -27,6 +27,7 @@ function ButtonComponent(
     loading = false,
     className,
     contentContainerClassName,
+    type = 'button',
     ...rest
   }: ButtonProps,
   ref?: ForwardedRef<any>
@@ -54,7 +55,7 @@ function ButtonComponent(
       )}
       disabled={isDisabled}
       ref={ref}
-      type="button"
+      type={type}
       {...rest}
     >
       <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
@@ -88,7 +89,7 @@ function ButtonComponent(
       )}
       disabled={isDisabled}
       ref={ref}
-      type="button"
+      type={type}
       {...rest}
     >
       {children}

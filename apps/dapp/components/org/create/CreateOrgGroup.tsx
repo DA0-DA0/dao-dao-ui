@@ -64,8 +64,18 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
   const governanceTokenEnabled =
     newOrg.structure === NewOrgStructure.UsingGovToken
 
+  const groupColor = distributionColors[groupIndex % distributionColors.length]
+
   return (
-    <div className="p-6 bg-disabled rounded-lg">
+    <div className="relative p-6 bg-disabled rounded-lg">
+      {!showColorDotOnMember && (
+        <div
+          className="absolute top-0 left-0 -z-10 w-full h-full rounded-lg"
+          style={{
+            backgroundImage: `radial-gradient(22.07% 77.03% at 3.52% 7.35%, ${groupColor}1A 0%, rgba(var(--light), 0) 100%)`,
+          }}
+        ></div>
+      )}
       <div className="flex flex-row gap-8 justify-between items-center">
         <div>
           <div className="flex flex-row gap-4 items-center">
@@ -73,8 +83,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               <div
                 className="shrink-0 w-2 h-2 rounded-full"
                 style={{
-                  backgroundColor:
-                    distributionColors[groupIndex % distributionColors.length],
+                  backgroundColor: groupColor,
                 }}
               ></div>
             )}
@@ -157,7 +166,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               onClick={remove}
               variant="secondary"
             >
-              Remove group
+              <TrashIcon className="w-4 h-4" />
             </Button>
           )}
         </div>
@@ -207,8 +216,8 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
       />
     </div>
 
-    <button className="justify-self-end" onClick={remove}>
-      <TrashIcon className="text-error" height="1.4rem" width="1.4rem" />
+    <button className="justify-self-end p-1" onClick={remove}>
+      <TrashIcon className="w-4 h-4 text-error" />
     </button>
   </div>
 )

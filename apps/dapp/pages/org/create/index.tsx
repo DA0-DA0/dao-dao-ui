@@ -15,7 +15,7 @@ const CreateOrgPage: FC = () => {
       <SmallScreenNav />
 
       <CreateOrgFormWrapper {...formWrapperProps}>
-        <div className="flex flex-col gap-6 items-stretch sm:flex-row md:flex-col xl:flex-row">
+        <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateOrgStructure
             description="Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members."
             emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
@@ -26,7 +26,7 @@ const CreateOrgPage: FC = () => {
           />
 
           <CreateOrgStructure
-            description="Fluid organization with many members who leave and join frequently. Members can join and leave without permission by exchanging governance shares."
+            description="Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares."
             emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
             newOrg={watchedNewOrg}
             setValue={setValue}

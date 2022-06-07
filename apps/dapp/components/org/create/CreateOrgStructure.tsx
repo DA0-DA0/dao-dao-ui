@@ -28,19 +28,22 @@ export const CreateOrgStructure: FC<CreateOrgStructureProps> = ({
   return (
     <div
       className={clsx(
-        'flex basis-0 flex-col grow gap-6 items-center p-8 text-center rounded-lg border-2 transition cursor-pointer',
+        'flex basis-0 flex-col grow justify-between items-center p-9 text-center rounded-lg border-2 transition cursor-pointer',
         {
-          'bg-disabled border-transparent': !selected,
+          'bg-disabled border-transparent hover:border-focus': !selected,
           'bg-brand-active border-focus': selected,
         }
       )}
       onClick={() => setValue('structure', structure)}
     >
-      {emoji}
-      <p className="header-text">{title}</p>
+      <div>
+        {emoji}
+        <p className="mt-6 primary-text">{title}</p>
 
-      <div className="flex flex-col grow gap-6 justify-end items-center">
-        <p className="secondary-text">{description}</p>
+        <p className="mt-4 secondary-text">{description}</p>
+      </div>
+
+      <div className="mt-10">
         <RadioButton selected={selected} />
       </div>
     </div>

@@ -170,7 +170,7 @@ const CreateOrgVotingPage: FC = () => {
               }}
               variant="secondary"
             >
-              Add another group
+              Add a group
             </Button>
 
             <InputErrorMessage error={errors._groupsError} />
