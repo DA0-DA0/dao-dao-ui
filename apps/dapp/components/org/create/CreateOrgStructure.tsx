@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import { FC, ReactNode } from 'react'
-import { UseFormSetValue } from 'react-hook-form'
 
 import { RadioButton } from '@dao-dao/ui'
 
@@ -12,7 +11,7 @@ interface CreateOrgStructureProps {
   title: string
   description: string
   structure: NewOrgStructure
-  setValue: UseFormSetValue<NewOrg>
+  onChange: (structure: NewOrgStructure) => void
 }
 
 export const CreateOrgStructure: FC<CreateOrgStructureProps> = ({
@@ -21,7 +20,7 @@ export const CreateOrgStructure: FC<CreateOrgStructureProps> = ({
   title,
   description,
   structure,
-  setValue,
+  onChange,
 }) => {
   const selected = newOrg.structure === structure
 
@@ -34,7 +33,7 @@ export const CreateOrgStructure: FC<CreateOrgStructureProps> = ({
           'bg-brand-active border-focus': selected,
         }
       )}
-      onClick={() => setValue('structure', structure)}
+      onClick={() => onChange(structure)}
     >
       {emoji}
       <p className="header-text">{title}</p>
