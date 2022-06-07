@@ -14,11 +14,9 @@ import {
   useWallet,
   useProposalModule,
   walletCw20BalanceSelector,
+  useVotingModule,
 } from '@dao-dao/state'
-import {
-  pauseInfoSelector,
-  votingPowerAtHeightSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import { pauseInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   Template,
   TemplateKey,
@@ -71,9 +69,10 @@ export const CreateProposalForm = ({
   votingModuleType,
   connectWalletButton,
 }: CreateProposalFormProps) => {
-  const { connected, address: walletAddress } = useWallet()
+  const { connected } = useWallet()
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress)
 
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(
@@ -90,21 +89,6 @@ export const CreateProposalForm = ({
     proposalModuleConfig?.deposit_info?.deposit === '0' ||
     Number(depositTokenBalance?.balance) >=
       Number(proposalModuleConfig?.deposit_info?.deposit)
-
-  // Info about if sufficent voting power to create a proposal.
-  const votingPowerAtHeight = useRecoilValue(
-    walletAddress
-      ? votingPowerAtHeightSelector({
-          contractAddress: coreAddress,
-          params: [
-            {
-              address: walletAddress,
-            },
-          ],
-        })
-      : constSelector(undefined)
-  )
-  const canPropose = votingPowerAtHeight && votingPowerAtHeight.power !== '0'
 
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
@@ -277,17 +261,17 @@ export const CreateProposalForm = ({
           {connected ? (
             <Tooltip
               label={
-                !canPropose
-                  ? 'You must have staked governance tokens to create a proposal'
+                !isMember
+                  ? 'You must be a member of the org to create a proposal.'
                   : !canPayDeposit
-                  ? 'You do not have enough unstaked tokens to pay the proposal deposit'
+                  ? 'You do not have enough unstaked tokens to pay the proposal deposit.'
                   : isPaused
-                  ? 'The DAO is paused'
+                  ? 'The DAO is paused.'
                   : undefined
               }
             >
               <Button
-                disabled={!canPropose || !canPayDeposit || isPaused}
+                disabled={!isMember || !canPayDeposit || isPaused}
                 loading={loading}
                 type="submit"
                 value={ProposeSubmitValue.Submit}
