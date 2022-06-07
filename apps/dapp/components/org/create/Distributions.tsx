@@ -61,17 +61,10 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
 
   return (
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <InputLabel
-        className="text-sm text-center"
-        labelProps={{ className: 'justify-center' }}
-        mono
-        name="Voting Power Distribution"
-      />
-      <InputLabel
-        className="text-sm text-center"
-        mono
-        name={onlyOneGroup ? 'Members' : 'Groups'}
-      />
+      <p className="caption-text font-mono text-center">Voting Power</p>
+      <p className="caption-text font-mono">
+        {onlyOneGroup ? 'Members' : 'Groups'}
+      </p>
 
       <PieChart data={entries} />
       <Legend data={entries} />

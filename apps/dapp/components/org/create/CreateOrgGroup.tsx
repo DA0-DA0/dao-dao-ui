@@ -22,6 +22,7 @@ import {
 
 import { distributionColors } from './Distributions'
 import { NewOrg, NewOrgStructure, NEW_ORG_CW20_DECIMALS } from '@/atoms/newOrg'
+import { CornerGradient } from './CornerGradient'
 
 interface CreateOrgGroupProps {
   newOrg: NewOrg
@@ -68,14 +69,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
 
   return (
     <div className="relative p-6 bg-disabled rounded-lg">
-      {!showColorDotOnMember && (
-        <div
-          className="absolute top-0 left-0 -z-10 w-full h-full rounded-lg"
-          style={{
-            backgroundImage: `radial-gradient(22.07% 77.03% at 3.52% 7.35%, ${groupColor}1A 0%, rgba(var(--light), 0) 100%)`,
-          }}
-        ></div>
-      )}
+      {!showColorDotOnMember && <CornerGradient color={`${groupColor}1A`} />}
       <div className="flex flex-row gap-8 justify-between items-center">
         <div>
           <div className="flex flex-row gap-4 items-center">

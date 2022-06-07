@@ -191,6 +191,7 @@ const CreateOrgVotingPage: FC = () => {
           error={errors.votingDuration?.value || errors.votingDuration?.units}
           image={<Emoji label="hourglass" symbol="⏳" />}
           title="Voting duration"
+          accentColor="#c3935e1a"
         >
           <NumberInput
             error={errors.votingDuration?.value}
@@ -423,6 +424,7 @@ const CreateOrgVotingPage: FC = () => {
               error={errors.governanceTokenOptions?.proposalDeposit?.value}
               image={<Emoji label="banknote" symbol="💵" />}
               title="Proposal deposit"
+              accentColor="#fccd031a"
             >
               <NumberInput
                 error={errors.governanceTokenOptions?.proposalDeposit?.value}
@@ -459,6 +461,7 @@ const CreateOrgVotingPage: FC = () => {
                 description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
                 image={<Emoji label="finger pointing up" symbol="👆" />}
                 title="Refund failed proposals"
+                accentColor="#fed3581a"
               >
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
@@ -486,6 +489,7 @@ const CreateOrgVotingPage: FC = () => {
               }
               image={<Emoji label="alarm clock" symbol="⏰" />}
               title="Unregister duration"
+              accentColor="#cf434b1a"
             >
               <NumberInput
                 error={errors.governanceTokenOptions?.unregisterDuration?.value}
@@ -565,6 +569,7 @@ const CreateOrgVotingPage: FC = () => {
               error={errors.thresholdQuorum?.threshold}
               image={<Emoji label="ballot box" symbol="🗳️" />}
               title="Passing threshold"
+              accentColor="rgba(95, 94, 254, 0.1)"
             >
               {threshold !== 'majority' && (
                 <NumberInput
@@ -618,6 +623,7 @@ const CreateOrgVotingPage: FC = () => {
               error={errors.thresholdQuorum?.quorum}
               image={<Emoji label="megaphone" symbol="📣" />}
               title="Quorum"
+              accentColor="#fefe891a"
             >
               {quorum !== 'majority' && (
                 <NumberInput

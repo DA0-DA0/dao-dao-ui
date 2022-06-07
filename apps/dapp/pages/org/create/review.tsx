@@ -25,12 +25,12 @@ const CreateOrgReviewPage: FC = () => {
       <SmallScreenNav />
 
       <CreateOrgFormWrapper {...formWrapperProps}>
-        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
+        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-t-lg md:gap-10 md:py-10">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
             <div className="flex flex-col gap-2 items-center text-center">
               <div
                 className={clsx('overflow-hidden w-24 h-24 rounded-full', {
-                  'animate-spin': creating,
+                  'animate-spin-medium': creating,
                 })}
               >
                 {watchedNewOrg.imageUrl ? (
@@ -48,8 +48,10 @@ const CreateOrgReviewPage: FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <InputLabel className="text-sm" mono name="Description" />
-              <p className="text-lg">{watchedNewOrg.description}</p>
+              <p className="caption-text font-mono">Description</p>
+              <p className="secondary-text text-lg">
+                {watchedNewOrg.description}
+              </p>
             </div>
           </div>
 
