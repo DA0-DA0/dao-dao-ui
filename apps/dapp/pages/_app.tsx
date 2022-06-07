@@ -8,11 +8,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect, FC } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import {
-  activeThemeAtom,
-  mountedInBrowserAtom,
-  WalletProvider,
-} from '@dao-dao/state'
+import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { Theme, ThemeProvider, Notifications } from '@dao-dao/ui'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -66,9 +62,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
 
 const dApp: FC<AppProps> = (props) => (
   <RecoilRoot>
-    <WalletProvider>
-      <InnerApp {...props} />
-    </WalletProvider>
+    <InnerApp {...props} />
   </RecoilRoot>
 )
 
