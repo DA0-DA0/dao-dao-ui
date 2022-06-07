@@ -119,6 +119,13 @@ export interface NewOrgGroupMember {
   address: string
 }
 
+// Default percent when selecting the percent option for custom threshold.
+export const DEFAULT_NEW_ORG_THRESHOLD_PERCENT: ThresholdValue = 75
+// Default weight when adding a new group for a simple org.
+export const DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT = 1
+// Default weight when adding a new group for a governance token-based org.
+export const DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT = 1000
+
 export const DefaultNewOrg: NewOrg = {
   structure: NewOrgStructure.Simple,
   name: '',
@@ -126,8 +133,12 @@ export const DefaultNewOrg: NewOrg = {
   groups: [
     {
       name: 'Members',
-      weight: 1,
-      members: [],
+      weight: DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+      members: [
+        {
+          address: '',
+        },
+      ],
     },
   ],
   votingDuration: {
@@ -137,7 +148,7 @@ export const DefaultNewOrg: NewOrg = {
   governanceTokenOptions: {
     type: GovernanceTokenType.New,
     newInfo: {
-      initialTreasuryBalance: 1000000,
+      initialTreasuryBalance: 100000,
       symbol: '',
       name: '',
     },
@@ -156,8 +167,6 @@ export const DefaultNewOrg: NewOrg = {
     quorum: 20,
   },
 }
-// Default percent when selecting the percent option for custom threshold.
-export const DEFAULT_NEW_ORG_THRESHOLD_PERCENT: ThresholdValue = 75
 export const NEW_ORG_CW20_DECIMALS = 6
 
 export const newOrgAtom = atom<NewOrg>({

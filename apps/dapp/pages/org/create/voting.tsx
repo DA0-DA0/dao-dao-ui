@@ -26,6 +26,8 @@ import {
 
 import {
   DefaultNewOrg,
+  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT,
+  DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
   DEFAULT_NEW_ORG_THRESHOLD_PERCENT,
   DurationUnitsValues,
   GovernanceTokenType,
@@ -82,8 +84,14 @@ const CreateOrgVotingPage: FC = () => {
       appendGroup({
         name,
         weight:
-          getValues('structure') === NewOrgStructure.UsingGovToken ? 1000 : 1,
-        members: [],
+          getValues('structure') === NewOrgStructure.UsingGovToken
+            ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
+            : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+        members: [
+          {
+            address: '',
+          },
+        ],
       })
       setAddGroupModalOpen(false)
     },
@@ -130,6 +138,7 @@ const CreateOrgVotingPage: FC = () => {
 
   const { onlyOneGroup, entries } = useVotingPowerDistributionData(
     watchedNewOrg,
+    false,
     false,
     false
   )
