@@ -10,9 +10,9 @@ import {
   UseFormSetError,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { mountedInBrowserAtom, useWallet } from '@dao-dao/state'
+import { useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -24,7 +24,6 @@ import {
   Member,
 } from '@dao-dao/state/clients/cw4-voting'
 import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
-import { SubmitButton } from '@dao-dao/ui'
 import {
   cleanChainError,
   convertDenomToMicroDenomWithDecimals,
@@ -78,7 +77,6 @@ export const useCreateOrgForm = (pageIndex: number) => {
 
   const currentPage = useMemo(() => createOrgFormPages[pageIndex], [pageIndex])
   const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
-  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const setPinnedAddresses = useSetRecoilState(pinnedAddressesAtom)
   const [creating, setCreating] = useState(false)
 
@@ -211,50 +209,6 @@ export const useCreateOrgForm = (pageIndex: number) => {
     [getValues, onSubmit]
   )
 
-  const Navigation = useMemo(() => {
-    const showBack = pageIndex > 0
-    const showNext = pageIndex < createOrgFormPages.length
-
-    return (
-      <div
-        className="flex flex-row items-center mt-8"
-        // justify-end doesn't work in tailwind for some reason
-        style={{ justifyContent: showBack ? 'space-between' : 'flex-end' }}
-      >
-        {showBack && (
-          <SubmitButton
-            disabled={creating}
-            label={CreateOrgSubmitLabel.Back}
-            variant="secondary"
-          />
-        )}
-        {showNext && (
-          <SubmitButton
-            disabled={!mountedInBrowser || invalidPages[pageIndex] || creating}
-            label={
-              pageIndex < createOrgFormPages.length - 2
-                ? CreateOrgSubmitLabel.Continue
-                : // Second to last links to the Review page.
-                pageIndex === createOrgFormPages.length - 2
-                ? CreateOrgSubmitLabel.Review
-                : // Last page creates the org.
-                  CreateOrgSubmitLabel.CreateOrg
-            }
-          />
-        )}
-      </div>
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    pageIndex,
-    creating,
-    mountedInBrowser,
-    // Stringify invalid booleans to prevent unnecessary refresh since
-    // invalidPages gets a new reference on every re-render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    invalidPages.map(String).join(),
-  ])
-
   const _handleSubmit = useMemo(
     () => handleSubmit(onSubmit, onError),
     [handleSubmit, onSubmit, onError]
@@ -294,10 +248,10 @@ export const useCreateOrgForm = (pageIndex: number) => {
     clearErrors,
     creating,
     formWrapperProps: {
-      Navigation,
       onSubmit: formOnSubmit,
       currentPageIndex: pageIndex,
       currentPage,
+      creating,
     },
   }
 }
@@ -367,7 +321,7 @@ const parseSubmitterValueDelta = (value: string): number => {
       return 1
     default:
       // Pass a number to step that many pages in either direction.
-      const valueNumber = parseInt(value, 10)
+      const valueNumber = parseInt(value || '1', 10)
       if (!isNaN(valueNumber) && valueNumber !== 0) return valueNumber
 
       return 0

@@ -74,6 +74,13 @@ export const ImageSelectorModal = <
           autoFocus
           error={error}
           label={label}
+          onKeyDown={(e) => {
+            // Prevent submitting form on enter.
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              onClose()
+            }
+          }}
           register={register}
           validation={validation}
         />
