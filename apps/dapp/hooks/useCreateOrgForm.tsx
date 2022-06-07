@@ -155,8 +155,16 @@ export const useCreateOrgForm = (pageIndex: number) => {
 
               router.push(`/org/${address}`)
               toast.success('Org created.')
+              // Don't stop creating loading on success since we're
+              // navigating, and it's weird when loading stops and
+              // nothing happens for a sec.
             }
-          } finally {
+          } catch (err) {
+            console.error(err)
+            toast.error(
+              cleanChainError(err instanceof Error ? err.message : `${err}`)
+            )
+
             setCreating(false)
           }
         } else {
@@ -351,155 +359,148 @@ const createOrg = async (
 
   const governanceTokenEnabled = structure === NewOrgStructure.UsingGovToken
 
-  try {
-    let votingModuleInstantiateMsg
-    if (governanceTokenEnabled) {
-      let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
-      if (governanceTokenOptions.type === GovernanceTokenType.New) {
-        if (!newInfo) {
-          throw new Error('New governance token info not provided.')
-        }
+  let votingModuleInstantiateMsg
+  if (governanceTokenEnabled) {
+    let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
+    if (governanceTokenOptions.type === GovernanceTokenType.New) {
+      if (!newInfo) {
+        throw new Error('New governance token info not provided.')
+      }
 
-        const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
+      const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
 
-        const microInitialBalances: Cw20Coin[] = groups.flatMap(
-          ({ weight, members }) =>
-            members.map(({ address }) => ({
-              address,
-              amount: convertDenomToMicroDenomWithDecimals(
-                weight,
-                NEW_ORG_CW20_DECIMALS
-              ),
-            }))
-        )
-        const microInitialTreasuryBalance =
-          convertDenomToMicroDenomWithDecimals(
-            initialTreasuryBalance,
-            NEW_ORG_CW20_DECIMALS
-          )
+      const microInitialBalances: Cw20Coin[] = groups.flatMap(
+        ({ weight, members }) =>
+          members.map(({ address }) => ({
+            address,
+            amount: convertDenomToMicroDenomWithDecimals(
+              weight,
+              NEW_ORG_CW20_DECIMALS
+            ),
+          }))
+      )
+      const microInitialTreasuryBalance = convertDenomToMicroDenomWithDecimals(
+        initialTreasuryBalance,
+        NEW_ORG_CW20_DECIMALS
+      )
 
-        tokenInfo = {
-          new: {
-            code_id: CW20_CODE_ID,
-            decimals: NEW_ORG_CW20_DECIMALS,
-            initial_balances: microInitialBalances,
-            initial_dao_balance: microInitialTreasuryBalance,
-            label: name,
-            marketing: imageUrl ? { logo: { url: imageUrl } } : null,
-            name,
-            staking_code_id: STAKECW20_CODE_ID,
-            symbol,
-            unstaking_duration:
-              convertDurationWithUnitsToDuration(unregisterDuration),
-          },
-        }
-      } else {
-        if (!existingGovernanceTokenAddress) {
-          throw new Error('Existing governance token address not provided.')
-        }
+      tokenInfo = {
+        new: {
+          code_id: CW20_CODE_ID,
+          decimals: NEW_ORG_CW20_DECIMALS,
+          initial_balances: microInitialBalances,
+          initial_dao_balance: microInitialTreasuryBalance,
+          label: name,
+          marketing: imageUrl ? { logo: { url: imageUrl } } : null,
+          name,
+          staking_code_id: STAKECW20_CODE_ID,
+          symbol,
+          unstaking_duration:
+            convertDurationWithUnitsToDuration(unregisterDuration),
+        },
+      }
+    } else {
+      if (!existingGovernanceTokenAddress) {
+        throw new Error('Existing governance token address not provided.')
+      }
 
-        tokenInfo = {
-          existing: {
-            address: existingGovernanceTokenAddress,
-            staking_contract: {
-              new: {
-                staking_code_id: STAKECW20_CODE_ID,
-                unstaking_duration:
-                  convertDurationWithUnitsToDuration(unregisterDuration),
-              },
+      tokenInfo = {
+        existing: {
+          address: existingGovernanceTokenAddress,
+          staking_contract: {
+            new: {
+              staking_code_id: STAKECW20_CODE_ID,
+              unstaking_duration:
+                convertDurationWithUnitsToDuration(unregisterDuration),
             },
           },
-        }
+        },
       }
-
-      const cw20StakedBalanceVotingInstantiateMsg: Cw20StakedBalanceVotingInstantiateMsg =
-        { token_info: tokenInfo }
-
-      validateCw20StakedBalanceVotingInstantiateMsg(
-        cw20StakedBalanceVotingInstantiateMsg
-      )
-      votingModuleInstantiateMsg = cw20StakedBalanceVotingInstantiateMsg
-    } else {
-      const initialMembers: Member[] = groups.flatMap(({ weight, members }) =>
-        members.map(({ address }) => ({
-          addr: address,
-          weight,
-        }))
-      )
-
-      const cw4VotingInstantiateMsg: Cw4VotingInstantiateMsg = {
-        cw4_group_code_id: CW4GROUP_CODE_ID,
-        initial_members: initialMembers,
-      }
-
-      validateCw4VotingInstantiateMsg(cw4VotingInstantiateMsg)
-      votingModuleInstantiateMsg = cw4VotingInstantiateMsg
     }
 
-    const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
-      {
-        allow_revoting: false,
-        deposit_info:
-          governanceTokenEnabled &&
-          typeof proposalDeposit?.value === 'number' &&
-          proposalDeposit.value > 0
-            ? {
-                deposit: proposalDeposit.value.toString(),
-                refund_failed_proposals: proposalDeposit.refundFailed,
-                token: { voting_module_token: {} },
-              }
-            : null,
-        max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
-        only_members_execute: true,
-        threshold: {
-          threshold_quorum: {
-            quorum: convertThresholdValueToPercentageThreshold(quorum),
-            threshold: convertThresholdValueToPercentageThreshold(threshold),
-          },
-        },
-      }
-    validateCwProposalSingleInstantiateMsg(cwProposalSingleModuleInstantiateMsg)
+    const cw20StakedBalanceVotingInstantiateMsg: Cw20StakedBalanceVotingInstantiateMsg =
+      { token_info: tokenInfo }
 
-    const cwCoreInstantiateMsg: CwCoreInstantiateMsg = {
-      admin: null,
-      automatically_add_cw20s: true,
-      automatically_add_cw721s: true,
-      description,
-      image_url: imageUrl ?? null,
-      name,
-      proposal_modules_instantiate_info: [
-        {
-          admin: { core_contract: {} },
-          code_id: CWPROPOSALSINGLE_CODE_ID,
-          label: `org_${name}_cw-proposal-single`,
-          msg: Buffer.from(
-            JSON.stringify(cwProposalSingleModuleInstantiateMsg),
-            'utf8'
-          ).toString('base64'),
-        },
-      ],
-      voting_module_instantiate_info: {
+    validateCw20StakedBalanceVotingInstantiateMsg(
+      cw20StakedBalanceVotingInstantiateMsg
+    )
+    votingModuleInstantiateMsg = cw20StakedBalanceVotingInstantiateMsg
+  } else {
+    const initialMembers: Member[] = groups.flatMap(({ weight, members }) =>
+      members.map(({ address }) => ({
+        addr: address,
+        weight,
+      }))
+    )
+
+    const cw4VotingInstantiateMsg: Cw4VotingInstantiateMsg = {
+      cw4_group_code_id: CW4GROUP_CODE_ID,
+      initial_members: initialMembers,
+    }
+
+    validateCw4VotingInstantiateMsg(cw4VotingInstantiateMsg)
+    votingModuleInstantiateMsg = cw4VotingInstantiateMsg
+  }
+
+  const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg = {
+    allow_revoting: false,
+    deposit_info:
+      governanceTokenEnabled &&
+      typeof proposalDeposit?.value === 'number' &&
+      proposalDeposit.value > 0
+        ? {
+            deposit: proposalDeposit.value.toString(),
+            refund_failed_proposals: proposalDeposit.refundFailed,
+            token: { voting_module_token: {} },
+          }
+        : null,
+    max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
+    only_members_execute: true,
+    threshold: {
+      threshold_quorum: {
+        quorum: convertThresholdValueToPercentageThreshold(quorum),
+        threshold: convertThresholdValueToPercentageThreshold(threshold),
+      },
+    },
+  }
+  validateCwProposalSingleInstantiateMsg(cwProposalSingleModuleInstantiateMsg)
+
+  const cwCoreInstantiateMsg: CwCoreInstantiateMsg = {
+    admin: null,
+    automatically_add_cw20s: true,
+    automatically_add_cw721s: true,
+    description,
+    image_url: imageUrl ?? null,
+    name,
+    proposal_modules_instantiate_info: [
+      {
         admin: { core_contract: {} },
-        code_id: governanceTokenEnabled
-          ? CW20STAKEDBALANCEVOTING_CODE_ID
-          : CW4VOTING_CODE_ID,
-        label: governanceTokenEnabled
-          ? `org_${name}_cw20-staked-balance-voting`
-          : `org_${name}_cw4-voting`,
+        code_id: CWPROPOSALSINGLE_CODE_ID,
+        label: `org_${name}_cw-proposal-single`,
         msg: Buffer.from(
-          JSON.stringify(votingModuleInstantiateMsg),
+          JSON.stringify(cwProposalSingleModuleInstantiateMsg),
           'utf8'
         ).toString('base64'),
       },
-    }
-
-    const { contractAddress } = await instantiate(
-      cwCoreInstantiateMsg,
-      cwCoreInstantiateMsg.name
-    )
-    return contractAddress
-  } catch (err) {
-    console.error(err)
-    toast.error(cleanChainError(err instanceof Error ? err.message : `${err}`))
+    ],
+    voting_module_instantiate_info: {
+      admin: { core_contract: {} },
+      code_id: governanceTokenEnabled
+        ? CW20STAKEDBALANCEVOTING_CODE_ID
+        : CW4VOTING_CODE_ID,
+      label: governanceTokenEnabled
+        ? `org_${name}_cw20-staked-balance-voting`
+        : `org_${name}_cw4-voting`,
+      msg: Buffer.from(
+        JSON.stringify(votingModuleInstantiateMsg),
+        'utf8'
+      ).toString('base64'),
+    },
   }
+
+  const { contractAddress } = await instantiate(
+    cwCoreInstantiateMsg,
+    cwCoreInstantiateMsg.name
+  )
+  return contractAddress
 }
