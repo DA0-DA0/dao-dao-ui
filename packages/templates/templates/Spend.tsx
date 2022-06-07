@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { nativeBalancesSelector } from '@dao-dao/state'
+import { nativeBalancesSelector, useWallet } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import {
   allCw20BalancesSelector,
@@ -19,11 +19,11 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  GetDefaultsProps,
   SpendComponent as StatelessSpendComponent,
   TemplateComponent,
   TemplateComponentLoader,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
@@ -33,13 +33,15 @@ export interface SpendData {
   denom: string
 }
 
-export const spendDefaults = ({
-  walletAddress,
-}: GetDefaultsProps): SpendData => ({
-  to: walletAddress,
-  amount: 1,
-  denom: NATIVE_DENOM,
-})
+export const useSpendDefaults: UseDefaults<SpendData> = () => {
+  const { address } = useWallet()
+
+  return {
+    to: address ?? '',
+    amount: 1,
+    denom: NATIVE_DENOM,
+  }
+}
 
 const InnerSpendComponent: TemplateComponent = (props) => {
   const nativeBalances =

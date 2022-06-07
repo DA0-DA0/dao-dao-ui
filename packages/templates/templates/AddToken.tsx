@@ -9,6 +9,7 @@ import {
   AddTokenComponent as StatelessAddTokenComponent,
   TemplateComponent,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
@@ -16,7 +17,7 @@ export interface AddTokenData {
   address: string
 }
 
-export const addTokenDefaults = (): AddTokenData => ({
+export const useAddTokenDefaults: UseDefaults<AddTokenData> = () => ({
   address: '',
 })
 

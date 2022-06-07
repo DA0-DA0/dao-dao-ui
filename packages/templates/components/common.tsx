@@ -40,6 +40,8 @@ export type TemplateComponent<T = undefined> = FunctionComponent<
   TemplateComponentProps<T>
 >
 
+export type UseDefaults<D extends {} = any> = (coreAddress: string) => D
+
 export type UseTransformToCosmos<D extends {} = any> = (
   coreAddress: string
 ) => (data: D) => CosmosMsgFor_Empty
@@ -63,8 +65,8 @@ export interface Template<O extends {} = any, D extends {} = any> {
   label: string
   description: string
   Component: TemplateComponent<O>
-  // Get default for fields in form display.
-  getDefaults: (props: GetDefaultsProps) => D
+  // Hook to get default fields for form display.
+  useDefaults: UseDefaults<D>
   // Hook to make function to convert template data to CosmosMsgFor_Empty.
   useTransformToCosmos: UseTransformToCosmos<D>
   // Hook to convert decoded msg data to fields in form display.
@@ -73,12 +75,6 @@ export interface Template<O extends {} = any, D extends {} = any> {
   useDecodeCosmosMsg: UseDecodeCosmosMsg<D>
   // Voting module types that this template supports.
   votingModuleTypes: VotingModuleType[]
-}
-
-// The contextual information provided to templates when getting
-// default values for the template data.
-export interface GetDefaultsProps {
-  walletAddress: string
 }
 
 // The props needed to render a template from a message.

@@ -20,6 +20,7 @@ import {
   TemplateComponent,
   TemplateComponentLoader,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
@@ -31,16 +32,12 @@ export interface StakeData {
   denom: string
 }
 
-export const stakeDefaults = (): StakeData => {
-  const denom = convertDenomToHumanReadableDenom(NATIVE_DENOM)
-
-  return {
-    stakeType: stakeActions[0].type,
-    validator: '',
-    amount: 1,
-    denom,
-  }
-}
+export const useStakeDefaults: UseDefaults<StakeData> = () => ({
+  stakeType: stakeActions[0].type,
+  validator: '',
+  amount: 1,
+  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
+})
 
 const InnerStakeComponent: TemplateComponent = (props) => {
   const nativeBalances =

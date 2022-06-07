@@ -18,6 +18,7 @@ import {
   TemplateComponent,
   TemplateComponentLoader,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
@@ -25,7 +26,7 @@ export interface RemoveTokenData {
   address: string
 }
 
-export const removeTokenDefaults = (): RemoveTokenData => ({
+export const useRemoveTokenDefaults: UseDefaults<RemoveTokenData> = () => ({
   address: '',
 })
 

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 
-import { useGovernanceTokenInfo } from '@dao-dao/state'
+import { useGovernanceTokenInfo, useWallet } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
@@ -10,11 +10,11 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  GetDefaultsProps,
   MintComponent as StatelessMintComponent,
   TemplateComponent,
   TemplateComponentLoader,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
@@ -23,12 +23,14 @@ export interface MintData {
   amount: number
 }
 
-export const mintDefaults = ({
-  walletAddress,
-}: GetDefaultsProps): MintData => ({
-  to: walletAddress,
-  amount: 1,
-})
+export const useMintDefaults: UseDefaults<MintData> = (): MintData => {
+  const { address } = useWallet()
+
+  return {
+    to: address ?? '',
+    amount: 1,
+  }
+}
 
 const InnerMintComponent: TemplateComponent = (props) => {
   const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)

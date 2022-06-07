@@ -28,6 +28,7 @@ import {
 import {
   FormProposalData,
   TemplateSelector,
+  UseDefaults,
 } from '@dao-dao/templates/components'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
@@ -141,10 +142,14 @@ export const CreateProposalForm = ({
 
   const templates = useTemplatesForVotingModuleType(votingModuleType)
   // Call relevant template hooks in the same order every time.
-  const templatesAndTransforms: Partial<
+  const templatesWithData: Partial<
     Record<
       TemplateKey,
-      { template: Template; transform: ReturnType<UseTransformToCosmos> }
+      {
+        template: Template
+        transform: ReturnType<UseTransformToCosmos>
+        defaults: ReturnType<UseDefaults>
+      }
     >
   > = templates.reduce(
     (acc, template) => ({
@@ -152,6 +157,7 @@ export const CreateProposalForm = ({
       [template.key]: {
         template,
         transform: template.useTransformToCosmos(coreAddress),
+        defaults: template.useDefaults(coreAddress),
       },
     }),
     {}
@@ -172,7 +178,7 @@ export const CreateProposalForm = ({
       onSubmit({
         ...data,
         messages: templateData
-          .map(({ key, data }) => templatesAndTransforms[key]?.transform(data))
+          .map(({ key, data }) => templatesWithData[key]?.transform(data))
           // Filter out undefined messages.
           .filter(Boolean) as CosmosMsgFor_Empty[],
       })
@@ -207,7 +213,7 @@ export const CreateProposalForm = ({
               value={decodedMessagesString(
                 proposalTemplateData
                   .map(({ key, data }) =>
-                    templatesAndTransforms[key]?.transform(data)
+                    templatesWithData[key]?.transform(data)
                   )
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
@@ -238,7 +244,7 @@ export const CreateProposalForm = ({
           </div>
           <ul className="list-none">
             {(proposalTemplateData ?? []).map(({ key }, index) => {
-              const Component = templatesAndTransforms[key]?.template?.Component
+              const Component = templatesWithData[key]?.template?.Component
               if (!Component) {
                 throw new Error(`Error detecting template type ${key}`)
               }
@@ -321,10 +327,10 @@ export const CreateProposalForm = ({
       {showTemplateSelector && (
         <TemplateSelector
           onClose={() => setShowTemplateSelector(false)}
-          onSelectTemplate={({ key, getDefaults }) => {
+          onSelectTemplate={({ key }) => {
             append({
               key,
-              data: getDefaults({ walletAddress: walletAddress ?? '' }),
+              data: templatesWithData[key]?.defaults ?? {},
             })
             setShowTemplateSelector(false)
           }}

@@ -3,13 +3,17 @@ import { useCallback, useMemo } from 'react'
 
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { UseDecodeCosmosMsg, UseTransformToCosmos } from '../components'
+import {
+  UseDecodeCosmosMsg,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '../components'
 
 export interface CustomData {
   message: string
 }
 
-export const customDefaults = (): CustomData => ({
+export const useCustomDefaults: UseDefaults<CustomData> = () => ({
   message: '{}',
 })
 
