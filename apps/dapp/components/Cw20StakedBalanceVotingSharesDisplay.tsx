@@ -151,16 +151,15 @@ interface Cw20StakedBalanceVotingSharesDisplayProps {
   primaryText?: boolean
 }
 
-export const Cw20StakedBalanceVotingSharesDisplay: FC<
-  Cw20StakedBalanceVotingSharesDisplayProps
-> = ({ primaryText }) => (
-  <>
-    <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
-      Your shares
-    </h2>
+export const Cw20StakedBalanceVotingSharesDisplay: FC<Cw20StakedBalanceVotingSharesDisplayProps> =
+  ({ primaryText }) => (
+    <>
+      <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
+        Your shares
+      </h2>
 
-    <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-      <InnerCw20StakedBalanceVotingSharesDisplay />
-    </SuspenseLoader>
-  </>
-)
+      <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
+        <InnerCw20StakedBalanceVotingSharesDisplay />
+      </SuspenseLoader>
+    </>
+  )

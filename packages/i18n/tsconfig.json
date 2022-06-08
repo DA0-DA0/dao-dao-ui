@@ -1,0 +1,5 @@
+{
+  "extends": "@dao-dao/tsconfig/react-library.json",
+  "include": ["**/*.ts", "**/*.tsx", "../utils/validation/makeValidateMsg.ts"],
+  "exclude": ["node_modules"]
+}

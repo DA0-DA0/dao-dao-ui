@@ -8,6 +8,7 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { ArrowUpRight, Discord, Github, Twitter } from '@dao-dao/icons'
 import {
   Button,
@@ -24,7 +25,7 @@ const EnterAppButton = ({ small }: { small?: boolean }) => (
   <Link href="/starred">
     <a>
       <Button size={small ? 'sm' : 'lg'}>
-        Enter the app{' '}
+        {i18n.t('Ener the app')}
         <ArrowUpRight color="currentColor" height="10px" width="10px" />
       </Button>
     </a>
@@ -78,7 +79,7 @@ const Home: NextPage = () => (
               className="flex gap-2 items-center"
               href="https://docs.daodao.zone"
             >
-              Documentation
+              {i18n.t('Documentation')}
               <ArrowUpRight color="currentColor" height="10px" width="10px" />
             </a>
             <div className="hidden md:block">
@@ -88,10 +89,10 @@ const Home: NextPage = () => (
         </div>
       </nav>
       <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
-        DAOs for everyone
+        {i18n.t('short tagline')}
       </h1>
       <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
-        Simple, capable, free DAO tooling. Built with love, by DAO DAO, on Juno.
+        {i18n.t('long tagline')}
       </p>
       <div className="mx-auto mb-12">
         <EnterAppButton />
@@ -99,20 +100,20 @@ const Home: NextPage = () => (
       <div className="mx-3">
         <div className="flex flex-row flex-wrap gap-3 justify-center">
           <InfoCard
-            body="Create and grow a DAO for your community with a simple user interface. No command line required."
-            title="Create DAOs"
+            body={i18n.t('Create DAO tagline')}
+            title={i18n.t('Create DAOs')}
           >
             <PlusSmIcon className="w-6" />
           </InfoCard>
           <InfoCard
-            body="Proposals can do anything you can do on chain. They pass when the community votes on them."
-            title="Propose and vote"
+            body={i18n.t('Propose and vote tagline')}
+            title={i18n.t('Propose and vote')}
           >
             <ScaleIcon className="w-6" />
           </InfoCard>
           <InfoCard
-            body="DAO DAO DAOs can manage IBC assets, instantiate smart contracts, and manage entire protocols."
-            title="IBC enabled"
+            body={i18n.t('IBC enabled tagline')}
+            title={i18n.t('IBC enabled')}
           >
             <StarIcon className="w-6" />
           </InfoCard>
@@ -126,7 +127,7 @@ const Home: NextPage = () => (
               rel="noreferrer"
               target="_blank"
             >
-              Powered by Juno
+              {i18n.t('Powered by Juno')}
               <ArrowNarrowRightIcon
                 className="inline mb-0.5 w-6 h-4 font-light"
                 style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
