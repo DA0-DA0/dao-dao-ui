@@ -16,8 +16,8 @@ const InnerTemplateComponent: FunctionComponent<TemplateRendererProps> = ({
   votingModuleType,
   message,
 }) => {
-  const templates = useTemplatesForVotingModuleType(votingModuleType)
   // Call relevant template hooks in the same order every time.
+  const templates = useTemplatesForVotingModuleType(votingModuleType)
   // Note: Ensure custom is the last message template since it will match
   // most proposals and we return the first successful message match.
   const templateMatches = templates.map((template) => ({

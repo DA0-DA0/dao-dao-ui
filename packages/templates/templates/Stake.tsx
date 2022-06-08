@@ -12,18 +12,22 @@ import {
   makeDistributeMessage,
   makeStakingMessage,
   convertDenomToMicroDenomWithDecimals,
+  VotingModuleType,
 } from '@dao-dao/utils'
 
 import {
   stakeActions,
   StakeComponent as StatelessStakeComponent,
+  Template,
   TemplateComponent,
   TemplateComponentLoader,
+  TemplateKey,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
-export interface StakeData {
+interface StakeData {
   stakeType: StakeType
   validator: string
   fromValidator?: string
@@ -31,38 +35,14 @@ export interface StakeData {
   denom: string
 }
 
-export const stakeDefaults = (): StakeData => {
-  const denom = convertDenomToHumanReadableDenom(NATIVE_DENOM)
+const useDefaults: UseDefaults<StakeData> = () => ({
+  stakeType: stakeActions[0].type,
+  validator: '',
+  amount: 1,
+  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
+})
 
-  return {
-    stakeType: stakeActions[0].type,
-    validator: '',
-    amount: 1,
-    denom,
-  }
-}
-
-const InnerStakeComponent: TemplateComponent = (props) => {
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
-
-  return (
-    <StatelessStakeComponent
-      {...props}
-      options={{
-        nativeBalances,
-      }}
-    />
-  )
-}
-
-export const StakeComponent: TemplateComponent = (props) => (
-  <SuspenseLoader fallback={<TemplateComponentLoader />}>
-    <InnerStakeComponent {...props} />
-  </SuspenseLoader>
-)
-
-export const useTransformStakeToCosmos: UseTransformToCosmos<StakeData> = () =>
+const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
   useCallback((data: StakeData) => {
     if (data.stakeType === StakeType.WithdrawDelegatorReward) {
       return makeDistributeMessage(data.validator)
@@ -80,7 +60,7 @@ export const useTransformStakeToCosmos: UseTransformToCosmos<StakeData> = () =>
     )
   }, [])
 
-export const useDecodeStakeCosmosMsg: UseDecodeCosmosMsg<StakeData> = (
+const useDecodeCosmosMsg: UseDecodeCosmosMsg<StakeData> = (
   msg: Record<string, any>
 ) => {
   const denom = convertDenomToHumanReadableDenom(
@@ -145,4 +125,38 @@ export const useDecodeStakeCosmosMsg: UseDecodeCosmosMsg<StakeData> = (
 
     return { match: false }
   }, [msg, denom])
+}
+
+const InnerStakeComponent: TemplateComponent = (props) => {
+  const nativeBalances =
+    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+
+  return (
+    <StatelessStakeComponent
+      {...props}
+      options={{
+        nativeBalances,
+      }}
+    />
+  )
+}
+
+const Component: TemplateComponent = (props) => (
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
+    <InnerStakeComponent {...props} />
+  </SuspenseLoader>
+)
+
+export const stakeTemplate: Template<StakeData> = {
+  key: TemplateKey.Stake,
+  label: '📤 Staking',
+  description: 'Manage native token staking.',
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodeCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
 }

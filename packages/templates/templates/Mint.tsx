@@ -1,55 +1,41 @@
 import { useCallback, useMemo } from 'react'
 
-import { useGovernanceTokenInfo } from '@dao-dao/state'
+import { useGovernanceTokenInfo, useWallet } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeExecutableMintMessage,
   makeMintMessage,
+  VotingModuleType,
 } from '@dao-dao/utils'
 
 import {
-  GetDefaultsProps,
   MintComponent as StatelessMintComponent,
+  Template,
   TemplateComponent,
   TemplateComponentLoader,
+  TemplateKey,
   UseDecodeCosmosMsg,
+  UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
-export interface MintData {
+interface MintData {
   to: string
   amount: number
 }
 
-export const mintDefaults = ({
-  walletAddress,
-}: GetDefaultsProps): MintData => ({
-  to: walletAddress,
-  amount: 1,
-})
+const useDefaults: UseDefaults<MintData> = (): MintData => {
+  const { address } = useWallet()
 
-const InnerMintComponent: TemplateComponent = (props) => {
-  const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)
-
-  return (
-    <StatelessMintComponent
-      {...props}
-      options={{
-        govTokenSymbol: governanceTokenInfo?.symbol ?? 'gov tokens',
-      }}
-    />
-  )
+  return {
+    to: address ?? '',
+    amount: 1,
+  }
 }
 
-export const MintComponent: TemplateComponent = (props) => (
-  <SuspenseLoader fallback={<TemplateComponentLoader />}>
-    <InnerMintComponent {...props} />
-  </SuspenseLoader>
-)
-
-export const useTransformMintToCosmos: UseTransformToCosmos<MintData> = (
+const useTransformToCosmos: UseTransformToCosmos<MintData> = (
   coreAddress: string
 ) => {
   const { governanceTokenAddress, governanceTokenInfo } =
@@ -74,7 +60,7 @@ export const useTransformMintToCosmos: UseTransformToCosmos<MintData> = (
   )
 }
 
-export const useDecodeMintCosmosMsg: UseDecodeCosmosMsg<MintData> = (
+const useDecodeCosmosMsg: UseDecodeCosmosMsg<MintData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
@@ -111,4 +97,34 @@ export const useDecodeMintCosmosMsg: UseDecodeCosmosMsg<MintData> = (
 
     return { match: false }
   }, [governanceTokenAddress, governanceTokenInfo.decimals, msg])
+}
+
+const InnerMintComponent: TemplateComponent = (props) => {
+  const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)
+
+  return (
+    <StatelessMintComponent
+      {...props}
+      options={{
+        govTokenSymbol: governanceTokenInfo?.symbol ?? 'gov tokens',
+      }}
+    />
+  )
+}
+
+const Component: TemplateComponent = (props) => (
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
+    <InnerMintComponent {...props} />
+  </SuspenseLoader>
+)
+
+export const mintTemplate: Template<MintData> = {
+  key: TemplateKey.Mint,
+  label: '🌿 Mint',
+  description: 'Mint new governance tokens.',
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodeCosmosMsg,
+  votingModuleTypes: [VotingModuleType.Cw20StakedBalanceVoting],
 }
