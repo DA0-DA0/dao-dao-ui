@@ -3,6 +3,7 @@ import { MenuIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
@@ -35,7 +36,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
       </div>
       <div className="ml-1 text-sm">
         <div className="mt-[20px]">
-          <h3 className="mb-[16px] font-mono caption-text">Orgs</h3>
+          <h3 className="mb-[16px] font-mono caption-text">{i18n.t('DAO_other')}</h3>
 
           <SuspenseLoader
             fallback={<Loader className="!justify-start ml-2" size={20} />}
@@ -47,7 +48,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
             <NavListItem
               href="/org/explore"
               icon={ArrowRightIcon}
-              text="All Orgs"
+              text={i18n.t('Explore DAOs')}
             />
           </ul>
         </div>
@@ -65,7 +66,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
         <li className="mb-2">
           <ExternalLinkIcon className="inline mr-2 w-5 h-5" />
           <a href="https://docs.daodao.zone" rel="noreferrer" target="_blank">
-            Docs
+            {i18n.t('Documentation')}
           </a>
         </li>
         <li>
@@ -75,7 +76,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
             rel="noreferrer"
             target="_blank"
           >
-            Feedback
+            {i18n.t('Feedback')}
           </a>
         </li>
       </ul>

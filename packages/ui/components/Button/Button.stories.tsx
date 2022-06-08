@@ -1,5 +1,6 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import React from 'react'
+import i18n from '@dao-dao/i18n'
 
 // import { ChevronDownIcon } from '@heroicons/react/outline'
 // import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
@@ -21,7 +22,7 @@ Primary.args = {
   variant: 'primary',
   size: 'lg',
   disabled: false,
-  children: 'Connect wallet',
+  children: {i18n.t('Connect wallet')}
 }
 
 export const Secondary = Template.bind({})

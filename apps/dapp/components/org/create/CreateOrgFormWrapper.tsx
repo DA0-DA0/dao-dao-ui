@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SubmitButton } from '@dao-dao/ui'
 
+import i18n from '@dao-dao/i18n'
 import { CreateOrgNav } from './CreateOrgNav'
 import {
   createOrgFormPages,
@@ -40,8 +41,8 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
     <>
       <NextSeo
         openGraph={{
-          title: 'Create an org',
-          description: 'Create a new organization.',
+          title: {i18n.t('Create a DAO')},
+          description: {i18n.t('Create a DAO (long)')},
         }}
         title="Create an org"
       />
@@ -56,7 +57,7 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
 
         <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg">
           <div className="mb-8">
-            <h2 className="mb-4 header-text">Create an org</h2>
+            <h2 className="mb-4 header-text">{i18n.t('Create a DAO')}</h2>
 
             <div className="mb-10 md:hidden">
               <CreateOrgNav currentPageIndex={currentPageIndex} />

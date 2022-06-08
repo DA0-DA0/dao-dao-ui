@@ -2,6 +2,7 @@ import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Wallet, Copy } from '@dao-dao/icons'
 
 import { Button } from './Button'
@@ -60,7 +61,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
       {...buttonProps}
     >
       <Wallet fill="currentColor" height="20px" width="20px" />
-      <p className="text-light link-text">Connect wallet</p>
+      <p className="text-light link-text">{i18n.t('Connect wallet')}</p>
     </Button>
   )
 
