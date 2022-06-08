@@ -2,6 +2,8 @@ import { SearchIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
+import i18n from '@dao-dao/i18n'
+
 interface SearchBoxInternalProps {
   refine: (...args: any[]) => any
   currentRefinement: string
@@ -17,7 +19,7 @@ const SearchBoxInternal: FC<SearchBoxInternalProps> = ({
     <input
       className="w-full bg-transparent focus:outline-none secondary-text focus:ring-none"
       onChange={(event) => refine(event.currentTarget.value)}
-      placeholder="Search"
+      placeholder={i18n.t('Search')}
       type="text"
       value={currentRefinement}
     />

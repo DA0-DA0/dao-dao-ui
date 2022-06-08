@@ -6,6 +6,10 @@ const en = {
   'Create a DAO': 'Create a $t(DAO_zero)',
   'Create a DAO (long)': 'You\'re not a member of any $t(DAO_many). Why not create one?',
   'Explore DAOs': 'Explore all $t(DAO_other)',
+  'Search': 'Search',
+  'Search for a DAO': 'Search for a $t(DAO_zero)',
+
+
   'short tagline': '$t(DAO_other) for everyone.',
   'long tagline':
   'Simple, capable, and free $t(DAO_zero) tooling. Built with love, by DAO DAO, on Juno.',
