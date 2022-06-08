@@ -11,26 +11,28 @@ import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { allCw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
 
 import {
   RemoveTokenComponent as StatelessRemoveTokenComponent,
+  Template,
   TemplateComponent,
   TemplateComponentLoader,
+  TemplateKey,
   UseDecodeCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
-export interface RemoveTokenData {
+interface RemoveTokenData {
   address: string
 }
 
-export const useRemoveTokenDefaults: UseDefaults<RemoveTokenData> = () => ({
+const useDefaults: UseDefaults<RemoveTokenData> = () => ({
   address: '',
 })
 
-const InnerRemoveTokenComponent: TemplateComponent = (props) => {
+const InnerComponent: TemplateComponent = (props) => {
   const { getLabel, errors } = props
 
   const { watch, setError, clearErrors } = useFormContext()
@@ -110,15 +112,15 @@ const InnerRemoveTokenComponent: TemplateComponent = (props) => {
   )
 }
 
-export const RemoveTokenComponent: TemplateComponent = (props) => (
+const Component: TemplateComponent = (props) => (
   <SuspenseLoader fallback={<TemplateComponentLoader />}>
-    <InnerRemoveTokenComponent {...props} />
+    <InnerComponent {...props} />
   </SuspenseLoader>
 )
 
-export const useTransformRemoveTokenToCosmos: UseTransformToCosmos<
-  RemoveTokenData
-> = (coreAddress: string) =>
+const useTransformToCosmos: UseTransformToCosmos<RemoveTokenData> = (
+  coreAddress: string
+) =>
   useCallback(
     (data: RemoveTokenData) =>
       makeWasmMessage({
@@ -138,9 +140,9 @@ export const useTransformRemoveTokenToCosmos: UseTransformToCosmos<
     [coreAddress]
   )
 
-export const useDecodeRemoveTokenCosmosMsg: UseDecodeCosmosMsg<
-  RemoveTokenData
-> = (msg: Record<string, any>) =>
+const useDecodeCosmosMsg: UseDecodeCosmosMsg<RemoveTokenData> = (
+  msg: Record<string, any>
+) =>
   useMemo(
     () =>
       'wasm' in msg &&
@@ -159,3 +161,17 @@ export const useDecodeRemoveTokenCosmosMsg: UseDecodeCosmosMsg<
         : { match: false },
     [msg]
   )
+
+export const removeTokenTemplate: Template<RemoveTokenData> = {
+  key: TemplateKey.RemoveToken,
+  label: '⭕️ Remove Treasury Token',
+  description: 'Remove a token from your treasury.',
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodeCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
+}

@@ -16,24 +16,27 @@ import {
   makeWasmMessage,
   nativeTokenDecimals,
   NATIVE_DENOM,
+  VotingModuleType,
 } from '@dao-dao/utils'
 
 import {
   SpendComponent as StatelessSpendComponent,
+  Template,
   TemplateComponent,
   TemplateComponentLoader,
+  TemplateKey,
   UseDecodeCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
-export interface SpendData {
+interface SpendData {
   to: string
   amount: number
   denom: string
 }
 
-export const useSpendDefaults: UseDefaults<SpendData> = () => {
+const useDefaults: UseDefaults<SpendData> = () => {
   const { address } = useWallet()
 
   return {
@@ -43,55 +46,7 @@ export const useSpendDefaults: UseDefaults<SpendData> = () => {
   }
 }
 
-const InnerSpendComponent: TemplateComponent = (props) => {
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
-
-  const cw20AddressesAndBalances =
-    useRecoilValue(
-      allCw20BalancesSelector({
-        contractAddress: props.coreAddress,
-      })
-    ) ?? []
-  const cw20Infos =
-    useRecoilValue(
-      waitForAll(
-        cw20AddressesAndBalances.map(({ addr }) =>
-          tokenInfoSelector({ contractAddress: addr, params: [] })
-        )
-      )
-    ) ?? []
-  const cw20Balances = cw20AddressesAndBalances
-    .map(({ addr, balance }, idx) => ({
-      address: addr,
-      balance,
-      info: cw20Infos[idx],
-    }))
-    // If undefined token info response, ignore the token.
-    .filter(({ info }) => !!info) as {
-    address: string
-    balance: string
-    info: TokenInfoResponse
-  }[]
-
-  return (
-    <StatelessSpendComponent
-      {...props}
-      options={{
-        nativeBalances,
-        cw20Balances,
-      }}
-    />
-  )
-}
-
-export const SpendComponent: TemplateComponent = (props) => (
-  <SuspenseLoader fallback={<TemplateComponentLoader />}>
-    <InnerSpendComponent {...props} />
-  </SuspenseLoader>
-)
-
-export const useTransformSpendToCosmos: UseTransformToCosmos<SpendData> = (
+const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   coreAddress: string
 ) => {
   const cw20Addresses = useRecoilValue(
@@ -159,7 +114,7 @@ export const useTransformSpendToCosmos: UseTransformToCosmos<SpendData> = (
   )
 }
 
-export const useDecodeSpendCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
+const useDecodeCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   const spentTokenAddress =
@@ -228,4 +183,66 @@ export const useDecodeSpendCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
 
     return { match: false }
   }, [msg, spentTokenDecimals])
+}
+
+const InnerSpendComponent: TemplateComponent = (props) => {
+  const nativeBalances =
+    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+
+  const cw20AddressesAndBalances =
+    useRecoilValue(
+      allCw20BalancesSelector({
+        contractAddress: props.coreAddress,
+      })
+    ) ?? []
+  const cw20Infos =
+    useRecoilValue(
+      waitForAll(
+        cw20AddressesAndBalances.map(({ addr }) =>
+          tokenInfoSelector({ contractAddress: addr, params: [] })
+        )
+      )
+    ) ?? []
+  const cw20Balances = cw20AddressesAndBalances
+    .map(({ addr, balance }, idx) => ({
+      address: addr,
+      balance,
+      info: cw20Infos[idx],
+    }))
+    // If undefined token info response, ignore the token.
+    .filter(({ info }) => !!info) as {
+    address: string
+    balance: string
+    info: TokenInfoResponse
+  }[]
+
+  return (
+    <StatelessSpendComponent
+      {...props}
+      options={{
+        nativeBalances,
+        cw20Balances,
+      }}
+    />
+  )
+}
+
+const Component: TemplateComponent = (props) => (
+  <SuspenseLoader fallback={<TemplateComponentLoader />}>
+    <InnerSpendComponent {...props} />
+  </SuspenseLoader>
+)
+
+export const spendTemplate: Template<SpendData> = {
+  key: TemplateKey.Spend,
+  label: '💵 Spend',
+  description: 'Spend native or cw20 tokens from the treasury.',
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodeCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
 }

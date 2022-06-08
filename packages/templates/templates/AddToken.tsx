@@ -3,25 +3,27 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
 
 import {
   AddTokenComponent as StatelessAddTokenComponent,
+  Template,
   TemplateComponent,
+  TemplateKey,
   UseDecodeCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
 
-export interface AddTokenData {
+interface AddTokenData {
   address: string
 }
 
-export const useAddTokenDefaults: UseDefaults<AddTokenData> = () => ({
+const useDefaults: UseDefaults<AddTokenData> = () => ({
   address: '',
 })
 
-export const AddTokenComponent: TemplateComponent = (props) => {
+const Component: TemplateComponent = (props) => {
   const { getLabel, errors } = props
 
   const { watch, setError, clearErrors } = useFormContext()
@@ -69,9 +71,9 @@ export const AddTokenComponent: TemplateComponent = (props) => {
   )
 }
 
-export const useTransformAddTokenToCosmos: UseTransformToCosmos<
-  AddTokenData
-> = (coreAddress: string) =>
+const useTransformToCosmos: UseTransformToCosmos<AddTokenData> = (
+  coreAddress: string
+) =>
   useCallback(
     (data: AddTokenData) =>
       makeWasmMessage({
@@ -91,7 +93,7 @@ export const useTransformAddTokenToCosmos: UseTransformToCosmos<
     [coreAddress]
   )
 
-export const useDecodeAddTokenCosmosMsg: UseDecodeCosmosMsg<AddTokenData> = (
+const useDecodeCosmosMsg: UseDecodeCosmosMsg<AddTokenData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -112,3 +114,17 @@ export const useDecodeAddTokenCosmosMsg: UseDecodeCosmosMsg<AddTokenData> = (
         : { match: false },
     [msg]
   )
+
+export const addTokenTemplate: Template<AddTokenData> = {
+  key: TemplateKey.AddToken,
+  label: '🔘 Add Treasury Token',
+  description: 'Add a token to your treasury.',
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodeCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
+}

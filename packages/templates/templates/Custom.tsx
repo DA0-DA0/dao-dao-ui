@@ -1,25 +1,26 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
 
 import {
+  Template,
+  TemplateKey,
   UseDecodeCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
+import { CustomComponent as Component } from '../components'
 
-export interface CustomData {
+interface CustomData {
   message: string
 }
 
-export const useCustomDefaults: UseDefaults<CustomData> = () => ({
+const useDefaults: UseDefaults<CustomData> = () => ({
   message: '{}',
 })
 
-export const useTransformCustomToCosmos: UseTransformToCosmos<
-  CustomData
-> = () =>
+const useTransformToCosmos: UseTransformToCosmos<CustomData> = () =>
   useCallback((data: CustomData) => {
     let msg
     try {
@@ -36,7 +37,7 @@ export const useTransformCustomToCosmos: UseTransformToCosmos<
     return msg
   }, [])
 
-export const useDecodeCustomCosmosMsg: UseDecodeCosmosMsg<CustomData> = (
+const useDecodeCosmosMsg: UseDecodeCosmosMsg<CustomData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -48,3 +49,17 @@ export const useDecodeCustomCosmosMsg: UseDecodeCosmosMsg<CustomData> = (
     }),
     [msg]
   )
+
+export const customTemplate: Template<CustomData> = {
+  key: TemplateKey.Custom,
+  label: '🤖 Custom',
+  description: 'Perform any custom action a wallet can.',
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodeCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
+}
