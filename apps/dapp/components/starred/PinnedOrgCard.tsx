@@ -14,6 +14,7 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import i18n from '@dao-dao/i18n'
 import { ContractCard, LoadingContractCard } from '../ContractCard'
 import { useOrgInfoContext } from '../OrgPageWrapper'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
@@ -45,7 +46,7 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
     walletVotingWeight === undefined ||
     proposalCount === undefined
   ) {
-    throw new Error('Failed to load data.')
+    throw new Error(i18n.t('error.loadingData'))
   }
 
   return (

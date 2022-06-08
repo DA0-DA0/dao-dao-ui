@@ -9,6 +9,7 @@ import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { EmptyOrgCard } from '@/components/EmptyDaoCard'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { ActionMenu, PinnedOrgCard } from '@/components/starred'
+import i18n from '@dao-dao/i18n'
 
 const InnerStarred: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
@@ -23,10 +24,10 @@ const InnerStarred: FC = () => {
             <ActionMenu />
           </div>
 
-          <h1 className="header-text">Starred</h1>
+          <h1 className="header-text">{i18n.t('Starred')} </h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
-            Orgs
+            {i18n.t('DAO', {count: 100})}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedAddresses.length ? (

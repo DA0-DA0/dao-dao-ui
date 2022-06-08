@@ -1,6 +1,7 @@
 import { PlusIcon, MapIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import i18n from '@dao-dao/i18n'
 
 const ActionItem = ({
   href,
@@ -27,12 +28,12 @@ export const ActionMenu = () => (
       <ActionItem
         href="/org/create"
         icon={<PlusIcon className="w-4" />}
-        text="Create an Org"
+        text={i18n.t('Create a DAO')}
       />
       <ActionItem
         href="/org/list"
         icon={<MapIcon className="w-4" />}
-        text="Explore all Orgs"
+        text={i18n.t('Explore DAOs')}
       />
     </div>
   </div>

@@ -1,10 +1,11 @@
 import { EmptyContractCard } from './EmptyContractCard'
+import i18n from '@dao-dao/i18n'
 
 export const EmptyOrgCard = () => (
   <EmptyContractCard
     backgroundUrl={'/empty-state-dao.jpeg'}
-    description={'You are not a member of any orgs. Why not create one?'}
+  description={i18n.t('Create a DAO (long)')}
     href="/org/create"
-    title="Create an Org"
+    title={i18n.t('Create a DAO')}
   />
 )
