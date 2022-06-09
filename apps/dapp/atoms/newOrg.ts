@@ -132,7 +132,7 @@ export const DefaultNewOrg: NewOrg = {
   description: '',
   groups: [
     {
-      name: '',
+      name: 'Core team',
       weight: DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
       members: [
         {

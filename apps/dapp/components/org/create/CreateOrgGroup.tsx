@@ -84,16 +84,19 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               ></div>
             )}
 
-            <TextInput
-              className="grow"
-              error={errors.groups?.[groupIndex]?.name}
-              label={`groups.${groupIndex}.name`}
-              placeholder="Core Team..."
-              register={register}
-              validation={[validateRequired]}
-            />
+            <div className="flex flex-row grow gap-2 items-center">
+              <TooltipIcon label="This name is just for your reference when creating the org. For example: 'Core team' or 'Developers'." />
+
+              <TextInput
+                className="grow"
+                error={errors.groups?.[groupIndex]?.name}
+                label={`groups.${groupIndex}.name`}
+                placeholder="Tier name..."
+                register={register}
+                validation={[validateRequired]}
+              />
+            </div>
           </div>
-          <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
           <InputErrorMessage error={errors.groups?.[groupIndex]?.name} />
         </div>
 
@@ -175,6 +178,8 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
             </Button>
           )}
         </div>
+
+        <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
       </div>
     </div>
   )

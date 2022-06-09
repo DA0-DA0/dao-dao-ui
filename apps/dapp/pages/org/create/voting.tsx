@@ -14,7 +14,6 @@ import {
   RadioInput,
   SelectInput,
   TextInput,
-  TooltipIcon,
 } from '@dao-dao/ui'
 import {
   validateContractAddress,
@@ -142,30 +141,26 @@ const CreateOrgVotingPage: FC = () => {
           ))}
 
           <div className="flex flex-col">
-            <div className="flex flex-row gap-2 items-center">
-              <Button
-                className="self-start"
-                onClick={() =>
-                  appendGroup({
-                    name: '',
-                    weight:
-                      getValues('structure') === NewOrgStructure.UsingGovToken
-                        ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
-                        : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
-                    members: [
-                      {
-                        address: '',
-                      },
-                    ],
-                  })
-                }
-                variant="secondary"
-              >
-                Add another tier
-              </Button>
-
-              <TooltipIcon label="This name is just for your reference when creating the org. For example: 'Core team' or 'Developers'." />
-            </div>
+            <Button
+              className="self-start"
+              onClick={() =>
+                appendGroup({
+                  name: '',
+                  weight:
+                    getValues('structure') === NewOrgStructure.UsingGovToken
+                      ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
+                      : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+                  members: [
+                    {
+                      address: '',
+                    },
+                  ],
+                })
+              }
+              variant="secondary"
+            >
+              Add another tier
+            </Button>
 
             <InputErrorMessage error={errors._groupsError} />
           </div>
