@@ -1,4 +1,4 @@
-import { XIcon } from '@heroicons/react/outline'
+import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
 import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
@@ -8,6 +8,7 @@ import {
 } from '@dao-dao/utils/validation'
 
 import {
+  TemplateCard,
   TemplateComponent,
   TokenInfoDisplay,
   TokenInfoDisplayProps,
@@ -23,18 +24,11 @@ export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
   const { register } = useFormContext()
 
   return (
-    <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
-      <div className="flex gap-2 justify-between items-center">
-        <div className="flex gap-2 items-center">
-          <h2 className="text-3xl">🔘</h2>
-          <h2>Add Treasury Token</h2>
-        </div>
-        {onRemove && (
-          <button onClick={onRemove} type="button">
-            <XIcon className="h-4" />
-          </button>
-        )}
-      </div>
+    <TemplateCard
+      emoji={<Emoji label="Token" symbol="🔘" />}
+      onRemove={onRemove}
+      title="Add Treasury Token"
+    >
       <div className="flex flex-col gap-2">
         <InputLabel name="Token address" />
         <AddressInput
@@ -48,6 +42,6 @@ export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
       </div>
 
       <TokenInfoDisplay {...options} />
-    </div>
+    </TemplateCard>
   )
 }

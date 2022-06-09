@@ -1,5 +1,6 @@
 import { Coin } from '@cosmjs/stargate'
-import { InformationCircleIcon, XIcon } from '@heroicons/react/outline'
+import { InformationCircleIcon } from '@heroicons/react/outline'
+import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
 import {
@@ -23,7 +24,7 @@ import {
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
-import { TemplateComponent } from './common'
+import { TemplateCard, TemplateComponent } from './common'
 
 export const stakeActions: { type: StakeType; name: string }[] = [
   {
@@ -55,7 +56,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
   readOnly,
   options: { nativeBalances },
 }) => {
-  const { register, watch, clearErrors } = useFormContext()
+  const { register, watch, clearErrors, setValue } = useFormContext()
 
   const stakeType = watch(getLabel('stakeType'))
   const amount = watch(getLabel('amount'))
@@ -110,20 +111,12 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
   }
 
   return (
-    <div className="p-3 my-2 bg-primary rounded-lg">
-      <div className="flex justify-between w-full">
-        <div className="flex flex-wrap gap-2 items-center w-24">
-          <h2 className="text-3xl">📤</h2>
-          <h2>Stake</h2>
-        </div>
-        {onRemove && (
-          <button onClick={onRemove} type="button">
-            <XIcon className="h-4" />
-          </button>
-        )}
-      </div>
-
-      <div className="flex gap-4 mt-4">
+    <TemplateCard
+      emoji={<Emoji label="Box" symbol="📤" />}
+      onRemove={onRemove}
+      title="Stake"
+    >
+      <div className="flex flex-row gap-4 mt-2">
         <SelectInput
           defaultValue={stakeActions[0].type}
           disabled={readOnly}
@@ -141,9 +134,22 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
         {stakeType !== StakeType.WithdrawDelegatorReward && (
           <>
             <NumberInput
+              containerClassName="grow"
               disabled={readOnly}
               error={errors?.amount}
               label={getLabel('amount')}
+              onPlusMinus={[
+                () =>
+                  setValue(
+                    getLabel('amount'),
+                    Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
+                  ),
+                () =>
+                  setValue(
+                    getLabel('amount'),
+                    Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
+                  ),
+              ]}
               register={register}
               step={1 / 10 ** NATIVE_DECIMALS}
               validation={[
@@ -178,13 +184,11 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <InputErrorMessage error={errors?.denom} />
-      </div>
+      <InputErrorMessage error={errors?.denom ?? errors?.amount} />
 
       {stakeType === StakeType.Redelegate && (
         <>
-          <h3 className="mt-4 mb-1">From Validator</h3>
+          <h3 className="mt-2 mb-1">From Validator</h3>
           <div className="form-control">
             <AddressInput
               disabled={readOnly}
@@ -201,7 +205,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
         </>
       )}
 
-      <h3 className="mt-4 mb-1">
+      <h3 className="mt-2 mb-1">
         {stakeType === StakeType.Redelegate ? 'To Validator' : 'Validator'}
       </h3>
       <div className="form-control">
@@ -214,9 +218,7 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <InputErrorMessage error={errors?.validator} />
-      </div>
+      <InputErrorMessage error={errors?.validator} />
 
       <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
         <InformationCircleIcon className="h-4" />
@@ -225,6 +227,6 @@ export const StakeComponent: TemplateComponent<StakeOptions> = ({
           before executing.
         </p>
       </div>
-    </div>
+    </TemplateCard>
   )
 }
