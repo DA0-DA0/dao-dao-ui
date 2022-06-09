@@ -3,8 +3,8 @@ import { FC, useCallback } from 'react'
 
 import {
   DefaultNewOrg,
-  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT,
-  DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
   NewOrgStructure,
 } from '@/atoms/newOrg'
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
@@ -19,19 +19,19 @@ const CreateOrgPage: FC = () => {
     (structure: NewOrgStructure) => {
       setValue('structure', structure)
 
-      // Swap initial group voting power to the default for the structure
-      // if the groups have not yet been changed.
+      // Swap initial tier voting power to the default for the structure
+      // if the tiers have not yet been changed.
       if (
-        watchedNewOrg.groups.length === 1 &&
-        watchedNewOrg.groups[0].name === DefaultNewOrg.groups[0].name &&
-        watchedNewOrg.groups[0].members.length === 1 &&
-        watchedNewOrg.groups[0].members[0].address === ''
+        watchedNewOrg.tiers.length === 1 &&
+        watchedNewOrg.tiers[0].name === DefaultNewOrg.tiers[0].name &&
+        watchedNewOrg.tiers[0].members.length === 1 &&
+        watchedNewOrg.tiers[0].members[0].address === ''
       ) {
         setValue(
-          'groups.0.weight',
+          'tiers.0.weight',
           structure === NewOrgStructure.UsingGovToken
-            ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
-            : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT
+            ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT
+            : DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT
         )
       }
     },

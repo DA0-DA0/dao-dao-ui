@@ -53,7 +53,7 @@ interface DistributionProps {
 export const VotingPowerPieDistribution: FC<DistributionProps> = ({
   newOrg,
 }) => {
-  const { onlyOneGroup, entries } = useVotingPowerDistributionData(
+  const { onlyOneTier, entries } = useVotingPowerDistributionData(
     newOrg,
     true,
     true,
@@ -64,7 +64,7 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
       <p className="font-mono text-center caption-text">Voting Power</p>
       <p className="font-mono caption-text">
-        {onlyOneGroup ? 'Members' : 'Groups'}
+        {onlyOneTier ? 'Members' : 'Tiers'}
       </p>
 
       <PieChart data={entries} />
@@ -76,7 +76,7 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
 export const useVotingPowerDistributionData = (
   {
     structure,
-    groups,
+    tiers,
     governanceTokenOptions: {
       type,
       newInfo: { initialTreasuryBalance: _initialTreasuryBalance },
@@ -97,34 +97,34 @@ export const useVotingPowerDistributionData = (
         : undefined
 
     // Only display valid addresses.
-    const groupsWithValidMembers = groups.map(({ members, ...group }) => ({
-      ...group,
+    const tiersWithValidMembers = tiers.map(({ members, ...tier }) => ({
+      ...tier,
       members: members.filter(({ address }) =>
         isValidAddress(address, CHAIN_BECH32_PREFIX)
       ),
     }))
 
     const totalWeight =
-      (groupsWithValidMembers.reduce(
+      (tiersWithValidMembers.reduce(
         (acc, { weight, members }) => acc + weight * members.length,
         0
       ) || 0) + (initialTreasuryBalance ?? 0)
 
-    // If one group case, specially handle and display all members.
-    const onlyOneGroup = groupsWithValidMembers.length === 1
+    // If one tier case, specially handle and display all members.
+    const onlyOneTier = tiersWithValidMembers.length === 1
 
-    let entries: Entry[] = onlyOneGroup
-      ? groupsWithValidMembers[0].members.map(({ address }, memberIndex) => ({
+    let entries: Entry[] = onlyOneTier
+      ? tiersWithValidMembers[0].members.map(({ address }, memberIndex) => ({
           name: address,
           value:
-            groupsWithValidMembers[0].weight *
+            tiersWithValidMembers[0].weight *
             (proportion ? 100 / totalWeight : 1),
           color: distributionColors[memberIndex % distributionColors.length],
         }))
-      : groupsWithValidMembers.map(({ name, weight, members }, groupIndex) => ({
+      : tiersWithValidMembers.map(({ name, weight, members }, tierIndex) => ({
           name,
           value: weight * members.length * (proportion ? 100 / totalWeight : 1),
-          color: distributionColors[groupIndex % distributionColors.length],
+          color: distributionColors[tierIndex % distributionColors.length],
         }))
     if (sort) {
       entries.sort((a, b) => b.value - a.value)
@@ -140,7 +140,7 @@ export const useVotingPowerDistributionData = (
       entries.splice(0, 0, treasuryEntry)
     }
 
-    return { entries, onlyOneGroup }
+    return { entries, onlyOneTier }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     structure,
@@ -150,10 +150,10 @@ export const useVotingPowerDistributionData = (
     darkRgb,
     includeTreasuryWhenApplicable,
     proportion,
-    // Groups reference does not change even if contents do, so we need a
+    // Tiers reference does not change even if contents do, so we need a
     // primitive to use for memoization comparison.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    groups
+    tiers
       .map(
         ({ weight, members }, idx) =>
           `${idx}:${weight}:${members.length}:${members

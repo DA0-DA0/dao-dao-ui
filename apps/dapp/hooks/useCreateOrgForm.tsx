@@ -280,34 +280,34 @@ export const createOrgFormPages: OrgFormPage[] = [
     title: 'Configure voting distribution',
     subtitle:
       'This will determine how much voting share different members of the org have when they vote on proposals.',
-    // Validate group weights and member proportions add up to 100%.
-    validate: ({ groups }, errors, clearErrors, setError) => {
+    // Validate tier weights and member proportions add up to 100%.
+    validate: ({ tiers }, errors, clearErrors, setError) => {
       let valid = true
 
       const totalWeight =
-        groups.reduce(
+        tiers.reduce(
           (acc, { weight, members }) => acc + weight * members.length,
           0
         ) || 0
       // Ensure voting power has been given to at least one member.
       if (totalWeight === 0) {
-        setError?.('_groupsError', {
+        setError?.('_tiersError', {
           message:
             'You have not given anyone voting power. Add some members to your org.',
         })
         valid = false
-      } else if (errors?._groupsError) {
-        clearErrors('_groupsError')
+      } else if (errors?._tiersError) {
+        clearErrors('_tiersError')
       }
 
-      groups.forEach((group, groupIndex) => {
-        if (group.members.length === 0) {
-          setError?.(`groups.${groupIndex}._error`, {
+      tiers.forEach((tier, tierIndex) => {
+        if (tier.members.length === 0) {
+          setError?.(`tiers.${tierIndex}._error`, {
             message: 'No members have been added.',
           })
           valid = false
-        } else if (errors?.groups?.[groupIndex]?._error) {
-          clearErrors(`groups.${groupIndex}._error`)
+        } else if (errors?.tiers?.[tierIndex]?._error) {
+          clearErrors(`tiers.${tierIndex}._error`)
         }
       })
 
@@ -345,7 +345,7 @@ const createOrg = async (
     name,
     description,
     imageUrl,
-    groups,
+    tiers,
     votingDuration,
     governanceTokenOptions: {
       unregisterDuration,
@@ -369,7 +369,7 @@ const createOrg = async (
 
       const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
 
-      const microInitialBalances: Cw20Coin[] = groups.flatMap(
+      const microInitialBalances: Cw20Coin[] = tiers.flatMap(
         ({ weight, members }) =>
           members.map(({ address }) => ({
             address,
@@ -426,7 +426,7 @@ const createOrg = async (
     )
     votingModuleInstantiateMsg = cw20StakedBalanceVotingInstantiateMsg
   } else {
-    const initialMembers: Member[] = groups.flatMap(({ weight, members }) =>
+    const initialMembers: Member[] = tiers.flatMap(({ weight, members }) =>
       members.map(({ address }) => ({
         addr: address,
         weight,

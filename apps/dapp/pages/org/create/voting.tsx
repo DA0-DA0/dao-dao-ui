@@ -25,8 +25,8 @@ import {
 
 import {
   DefaultNewOrg,
-  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT,
-  DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_ORG_THRESHOLD_PERCENT,
   DurationUnitsValues,
   GovernanceTokenType,
@@ -38,7 +38,7 @@ import {
   CreateOrgConfigCardWrapper,
 } from '@/components/org/create/CreateOrgConfigCard'
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
-import { CreateOrgGroup } from '@/components/org/create/CreateOrgGroup'
+import { CreateOrgTier } from '@/components/org/create/CreateOrgTier'
 import {
   useVotingPowerDistributionData,
   VotingPowerChart,
@@ -60,12 +60,12 @@ const CreateOrgVotingPage: FC = () => {
   } = useCreateOrgForm(2)
 
   const {
-    fields: groups,
-    append: appendGroup,
-    remove: removeGroup,
+    fields: tiers,
+    append: appendTier,
+    remove: removeTier,
   } = useFieldArray({
     control,
-    name: 'groups',
+    name: 'tiers',
   })
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
@@ -85,16 +85,16 @@ const CreateOrgVotingPage: FC = () => {
       : 0
   const memberWeightAllocated = useMemo(
     () =>
-      watchedNewOrg.groups.reduce(
+      watchedNewOrg.tiers.reduce(
         (acc, { weight, members }) => acc + weight * members.length,
         0
       ) || 0,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      // Groups reference does not change even if contents do, so we need a
+      // Tiers reference does not change even if contents do, so we need a
       // primitive to use for memoization comparison.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      watchedNewOrg.groups
+      watchedNewOrg.tiers
         .map(
           ({ weight, members }, idx) =>
             `${idx}:${weight}:${members.length}:${members
@@ -106,7 +106,7 @@ const CreateOrgVotingPage: FC = () => {
   )
   const totalWeightAllocated = memberWeightAllocated + initialTreasuryBalance
 
-  const { onlyOneGroup, entries } = useVotingPowerDistributionData(
+  const { onlyOneTier, entries } = useVotingPowerDistributionData(
     watchedNewOrg,
     false,
     false,
@@ -126,17 +126,17 @@ const CreateOrgVotingPage: FC = () => {
         </div>
 
         <div className="flex flex-col gap-4 items-stretch">
-          {groups.map(({ id }, idx) => (
-            <CreateOrgGroup
+          {tiers.map(({ id }, idx) => (
+            <CreateOrgTier
               key={id}
               control={control}
               errors={errors}
-              groupIndex={idx}
               newOrg={watchedNewOrg}
               register={register}
-              remove={onlyOneGroup ? undefined : () => removeGroup(idx)}
+              remove={onlyOneTier ? undefined : () => removeTier(idx)}
               setValue={setValue}
-              showColorDotOnMember={onlyOneGroup}
+              showColorDotOnMember={onlyOneTier}
+              tierIndex={idx}
             />
           ))}
 
@@ -144,12 +144,12 @@ const CreateOrgVotingPage: FC = () => {
             <Button
               className="self-start"
               onClick={() =>
-                appendGroup({
+                appendTier({
                   name: '',
                   weight:
                     getValues('structure') === NewOrgStructure.UsingGovToken
-                      ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
-                      : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+                      ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT
+                      : DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
                   members: [
                     {
                       address: '',
@@ -162,7 +162,7 @@ const CreateOrgVotingPage: FC = () => {
               Add another tier
             </Button>
 
-            <InputErrorMessage error={errors._groupsError} />
+            <InputErrorMessage error={errors._tiersError} />
           </div>
         </div>
 

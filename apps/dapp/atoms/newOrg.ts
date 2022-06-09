@@ -77,8 +77,8 @@ export interface NewOrg {
   name: string
   description: string
   imageUrl?: string
-  groups: NewOrgGroup[]
-  _groupsError?: undefined
+  tiers: NewOrgTier[]
+  _tiersError?: undefined
   votingDuration: DurationWithUnits
   governanceTokenOptions: {
     type?: GovernanceTokenType
@@ -108,32 +108,32 @@ export interface NewOrg {
   }
 }
 
-export interface NewOrgGroup {
+export interface NewOrgTier {
   name: string
   weight: number
-  members: NewOrgGroupMember[]
+  members: NewOrgTierMember[]
   _error?: undefined
 }
 
-export interface NewOrgGroupMember {
+export interface NewOrgTierMember {
   address: string
 }
 
 // Default percent when selecting the percent option for custom threshold.
 export const DEFAULT_NEW_ORG_THRESHOLD_PERCENT: ThresholdValue = 75
-// Default weight when adding a new group for a simple org.
-export const DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT = 1
-// Default weight when adding a new group for a governance token-based org.
-export const DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT = 1000
+// Default weight when adding a new tier for a simple org.
+export const DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT = 1
+// Default weight when adding a new tier for a governance token-based org.
+export const DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT = 1000
 
 export const DefaultNewOrg: NewOrg = {
   structure: NewOrgStructure.Simple,
   name: '',
   description: '',
-  groups: [
+  tiers: [
     {
       name: 'Core team',
-      weight: DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+      weight: DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
       members: [
         {
           address: '',

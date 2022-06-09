@@ -26,12 +26,12 @@ import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
 import { NewOrg, NewOrgStructure, NEW_ORG_CW20_DECIMALS } from '@/atoms/newOrg'
 
-interface CreateOrgGroupProps {
+interface CreateOrgTierProps {
   newOrg: NewOrg
-  groupIndex: number
-  // Display color dots next to each member instead of each group.
-  // When there is only one group, all members are displayed on the chart,
-  // so the colors correspond to members instead of groups.
+  tierIndex: number
+  // Display color dots next to each member instead of each tier.
+  // When there is only one tier, all members are displayed on the chart,
+  // so the colors correspond to members instead of tiers.
   showColorDotOnMember: boolean
   control: Control<NewOrg, any>
   register: UseFormRegister<NewOrg>
@@ -40,14 +40,14 @@ interface CreateOrgGroupProps {
   remove?: () => void
 }
 
-export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
+export const CreateOrgTier: FC<CreateOrgTierProps> = ({
   // Don't pass along to member.
   remove,
   newOrg,
   ...props
 }) => {
   const {
-    groupIndex,
+    tierIndex,
     control,
     register,
     errors,
@@ -61,17 +61,17 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     remove: removeMember,
   } = useFieldArray({
     control,
-    name: `groups.${groupIndex}.members`,
+    name: `tiers.${tierIndex}.members`,
   })
 
   const governanceTokenEnabled =
     newOrg.structure === NewOrgStructure.UsingGovToken
 
-  const groupColor = distributionColors[groupIndex % distributionColors.length]
+  const tierColor = distributionColors[tierIndex % distributionColors.length]
 
   return (
     <div className="relative p-6 bg-disabled rounded-lg">
-      {!showColorDotOnMember && <CornerGradient color={`${groupColor}1A`} />}
+      {!showColorDotOnMember && <CornerGradient color={`${tierColor}1A`} />}
       <div className="flex flex-row gap-8 justify-between items-center">
         <div className="grow">
           <div className="flex flex-row grow gap-4 items-center">
@@ -79,7 +79,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               <div
                 className="shrink-0 w-2 h-2 rounded-full"
                 style={{
-                  backgroundColor: groupColor,
+                  backgroundColor: tierColor,
                 }}
               ></div>
             )}
@@ -89,15 +89,15 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
 
               <TextInput
                 className="grow"
-                error={errors.groups?.[groupIndex]?.name}
-                label={`groups.${groupIndex}.name`}
+                error={errors.tiers?.[tierIndex]?.name}
+                label={`tiers.${tierIndex}.name`}
                 placeholder="Tier name..."
                 register={register}
                 validation={[validateRequired]}
               />
             </div>
           </div>
-          <InputErrorMessage error={errors.groups?.[groupIndex]?.name} />
+          <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
         </div>
 
         <div className="flex flex-col items-center">
@@ -107,14 +107,14 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
             </p>
             <div>
               <NumberInput
-                error={errors.groups?.[groupIndex]?.weight}
-                label={`groups.${groupIndex}.weight`}
+                error={errors.tiers?.[tierIndex]?.weight}
+                label={`tiers.${tierIndex}.weight`}
                 onPlusMinus={[
                   () =>
                     setValue(
-                      `groups.${groupIndex}.weight`,
+                      `tiers.${tierIndex}.weight`,
                       Math.max(
-                        (newOrg.groups?.[groupIndex]?.weight ?? 0) + 1,
+                        (newOrg.tiers?.[tierIndex]?.weight ?? 0) + 1,
                         governanceTokenEnabled
                           ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
                           : 1
@@ -122,9 +122,9 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
                     ),
                   () =>
                     setValue(
-                      `groups.${groupIndex}.weight`,
+                      `tiers.${tierIndex}.weight`,
                       Math.max(
-                        (newOrg.groups?.[groupIndex]?.weight ?? 0) - 1,
+                        (newOrg.tiers?.[tierIndex]?.weight ?? 0) - 1,
                         governanceTokenEnabled
                           ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
                           : 1
@@ -147,13 +147,13 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
             <TooltipIcon label="Want to add members with different voting power? Add another tier." />
           </div>
 
-          <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />
+          <InputErrorMessage error={errors.tiers?.[tierIndex]?.weight} />
         </div>
       </div>
 
       <div className="flex flex-col gap-2 items-stretch mt-4">
         {members.map(({ id }, idx) => (
-          <CreateOrgGroupMember
+          <CreateOrgTierMember
             key={id}
             memberIndex={idx}
             remove={() => removeMember(idx)}
@@ -179,19 +179,18 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
           )}
         </div>
 
-        <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
+        <InputErrorMessage error={errors.tiers?.[tierIndex]?._error} />
       </div>
     </div>
   )
 }
 
-interface CreateOrgGroupMemberProps
-  extends Omit<CreateOrgGroupProps, 'newOrg'> {
+interface CreateOrgTierMemberProps extends Omit<CreateOrgTierProps, 'newOrg'> {
   memberIndex: number
 }
 
-const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
-  groupIndex,
+const CreateOrgTierMember: FC<CreateOrgTierMemberProps> = ({
+  tierIndex,
   memberIndex,
   register,
   errors,
@@ -213,8 +212,8 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
 
         <AddressInput
           containerClassName="grow"
-          error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
-          label={`groups.${groupIndex}.members.${memberIndex}.address`}
+          error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
+          label={`tiers.${tierIndex}.members.${memberIndex}.address`}
           placeholder="Member's address..."
           register={register}
           validation={[validateAddress, validateRequired]}
@@ -222,7 +221,7 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
       </div>
 
       <InputErrorMessage
-        error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
+        error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
       />
     </div>
 
