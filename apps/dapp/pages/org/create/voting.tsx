@@ -2,6 +2,7 @@ import Emoji from 'a11y-react-emoji'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import { PlaceholderToken } from '@dao-dao/icons'
 import {
   Button,
@@ -179,7 +180,7 @@ const CreateOrgVotingPage: FC = () => {
               }}
               variant="secondary"
             >
-              Add a group
+              {i18n.t('Add tier')}
             </Button>
 
             <InputErrorMessage error={errors._groupsError} />
@@ -188,10 +189,10 @@ const CreateOrgVotingPage: FC = () => {
 
         <CreateOrgConfigCard
           accentColor="#c3935e1a"
-          description="The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final."
+          description={i18n.t('Voting duration description')}
           error={errors.votingDuration?.value || errors.votingDuration?.units}
           image={<Emoji label="hourglass" symbol="⏳" />}
-          title="Voting duration"
+          title={i18n.t('Voting duration')}
         >
           <NumberInput
             error={errors.votingDuration?.value}
@@ -459,9 +460,9 @@ const CreateOrgVotingPage: FC = () => {
             {!!watchedNewOrg.governanceTokenOptions.proposalDeposit.value && (
               <CreateOrgConfigCard
                 accentColor="#fed3581a"
-                description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
+                description={i18n.t('Proposal deposit refund description')}
                 image={<Emoji label="finger pointing up" symbol="👆" />}
-                title="Refund failed proposals"
+                title={i18n.t('Proposal deposit refund')}
               >
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
@@ -483,13 +484,13 @@ const CreateOrgVotingPage: FC = () => {
 
             <CreateOrgConfigCard
               accentColor="#cf434b1a"
-              description="In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
+              description={i18n.t('Unstaking period description')}
               error={
                 errors.governanceTokenOptions?.unregisterDuration?.value ||
                 errors.governanceTokenOptions?.unregisterDuration?.units
               }
               image={<Emoji label="alarm clock" symbol="⏰" />}
-              title="Unregister duration"
+              title={i18n.t('Unstaking period')}
             >
               <NumberInput
                 error={errors.governanceTokenOptions?.unregisterDuration?.value}
@@ -569,7 +570,7 @@ const CreateOrgVotingPage: FC = () => {
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
               error={errors.thresholdQuorum?.threshold}
               image={<Emoji label="ballot box" symbol="🗳️" />}
-              title="Passing threshold"
+              title={i18n.t('Passing threshold')}
             >
               {threshold !== 'majority' && (
                 <NumberInput
@@ -614,16 +615,16 @@ const CreateOrgVotingPage: FC = () => {
                 value={threshold === 'majority' ? 'majority' : '%'}
               >
                 <option value="%">%</option>
-                <option value="majority">Majority</option>
+                <option value="majority">{i18n.t('Majority')}</option>
               </SelectInput>
             </CreateOrgConfigCard>
 
             <CreateOrgConfigCard
               accentColor="#fefe891a"
-              description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have an org with many inactive members, setting this value too high may make it difficult to pass proposals."
+              description={i18n.t('Quorum description')}
               error={errors.thresholdQuorum?.quorum}
               image={<Emoji label="megaphone" symbol="📣" />}
-              title="Quorum"
+              title={i18n.t('Quorum')}
             >
               {quorum !== 'majority' && (
                 <NumberInput
@@ -668,7 +669,7 @@ const CreateOrgVotingPage: FC = () => {
                 value={quorum === 'majority' ? 'majority' : '%'}
               >
                 <option value="%">%</option>
-                <option value="majority">Majority</option>
+                <option value="majority">{i18n.t('Majority')}</option>
               </SelectInput>
             </CreateOrgConfigCard>
           </div>
@@ -681,7 +682,7 @@ const CreateOrgVotingPage: FC = () => {
             className="flex flex-col gap-2 items-stretch"
             onSubmit={newGroupNameHandleSubmit(onSubmitNewGroupName)}
           >
-            <InputLabel name="Group name" />
+            <InputLabel name={i18n.t('Tier name')}  />
             <TextInput
               autoFocus
               label="name"
@@ -689,12 +690,10 @@ const CreateOrgVotingPage: FC = () => {
               validation={[validateRequired]}
             />
             <p className="caption-text">
-              This name is just for your reference when creating the org.
-              <br />
-              For example: &apos;Core team&apos; or &apos;Developers&apos;.
+              {i18n.t('Tier description')}
             </p>
 
-            <SubmitButton className="mt-4 w-full" label="Add group" />
+            <SubmitButton className="mt-4 w-full" label={i18n.t('Add tier')} />
           </form>
         </Modal>
       )}
@@ -704,13 +703,10 @@ const CreateOrgVotingPage: FC = () => {
           containerClassName="flex flex-col gap-4"
           onClose={() => setShowThresholdQuorumWarning(false)}
         >
-          <p className="header-text">Warning!</p>
+          <p className="header-text">{i18n.t('Watch out!')}</p>
 
           <p className="body-text">
-            This is an advanced feature. Threshold and quorum can interact in
-            counterintuitive ways. If you configure them without fully
-            understanding how they work, you may end up locking your org, making
-            it impossible to pass proposals.
+            {i18n.t('Advanced configuration warning')}
           </p>
 
           <a
@@ -726,7 +722,7 @@ const CreateOrgVotingPage: FC = () => {
             className="self-end"
             onClick={() => setShowThresholdQuorumWarning(false)}
           >
-            I understand the danger.
+          {i18n.t('I understand')}
           </Button>
         </Modal>
       )}

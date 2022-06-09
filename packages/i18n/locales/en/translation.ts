@@ -10,24 +10,42 @@ const en = {
   Review: 'Review',
   // 'Remaining' as in: 'Remaining: 5 hours'
   'Remaining (time)': 'Remaining',
-  // c.f., "ok", "understood", "alright"
+  // 'ok.' 'understood.' 'alright.'
   'Got it': 'Got it',
+  // 'warning!' 'danger!' 'pay attention!'
+  'Watch out!': 'Watch out!',
+  // acknowledge that you have understood the danger.
+  'I understand': 'I accept the danger',
 
   // DAO vocabulary
   Members: 'Members',
-  Staking: 'Staking',
+  Addresses: 'Addresses',
   Treasury: 'Treasury',
   Info: 'Info',
   'Voting weight': 'Voting weight',
-  'Passing threshold': 'Passing threshold',
-  Quorum: 'Quorum',
+
   'Voting duration': 'Voting duration',
+  'Voting duration description': 'The amount of time that a proposal will remain open for voting. After this time elapses, the proposal will either pass or fail.',
+
   'Proposal deposit': 'Proposal deposit',
-  'Proposal deposit refund': '$t(Proposal deposit) refund',
+  'Proposal deposit description': 'The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation.',
+
+  Staking: 'Staking',
+  'Unstaking period': 'Unstaking period',
+  'Unstaking period description': "In order to vote, members must stake their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unstake them. This setting configures how long members have to wait after unstaking their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your DAO's governance.",
+
+  'Passing threshold': 'Passing threshold',
+  'Passing threshold description': "The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it.",
+
+  Quorum: 'Quorum',
+  'Quorum description': 'The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have an org with many inactive members, setting this value too high may make it difficult to pass proposals.',
+
+
+  'Proposal deposit refund': 'Refund failed proposals',
+  'Proposal deposit refund description': 'Should a failed proposal have its deposit refunded to the proposer? (Proposals that pass will always have their deposit returned). Turning this on, particularly when proposal deposits are high, may encourage members to deliberate with other members before creating a proposal.',
+
   'Governance token': 'Governance token',
   Majority: 'Majority',
-  Addresses: 'Addresses',
-  'Unstaking period': 'Unstaking period',
   'Vote status': 'Vote status',
   'Ratio of votes': 'Ratio of votes',
   Yes: 'Yes',
@@ -53,9 +71,12 @@ const en = {
   // TODO redo numbers
   Message_one: 'Message',
   Message_other: 'Messages',
-  // DAO mechanics
-  'All abstain clarification': 'All abstain clarification',
+
+  // Descriptions of DAO mechanics
+  // think: what the words above mean, and how they fit together.
+  'All abstain clarification': 'All abstain', // TODO  change to 'All abstain' as the key
   'All abstain clarification (long)': 'When all abstain, a proposal will fail',
+
   // Components of a DAO
   //
   // NOTE: Make sure these terms harmonize
@@ -115,11 +136,12 @@ const en = {
   // configure voting
   'Member address placeholder': "Member's address",
   'Add member': 'Add member',
-  // TODO teirs
-  // TODO per member
-  'Voting duration description': 'The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final.',
-  'Proposal deposit description': 'The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation.',
-  'Unregister duration': "In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
+  Tier: 'Tier',
+  'Tier name': 'Tier name',
+  'Tier description': 'The "class" of member. For example: "Core developers," "friends and family." These names are only for your reference.',
+  'Add tier': 'Add tier',
+  'Advanced configuration warning': 'This is an advanced feature. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you may end up locking your org, making it impossible to pass proposals.',
+
 
 
   // Viewing your relation to a DAO
