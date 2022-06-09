@@ -25,7 +25,10 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
     <div
       className={clsx(
         'flex flex-col gap-4 py-2 px-6 lg:hidden',
-        expanded && 'pb-6 border-b border-inactive',
+        {
+          'h-16': !expanded,
+          'pb-6 border-b border-inactive': expanded,
+        },
         className
       )}
     >

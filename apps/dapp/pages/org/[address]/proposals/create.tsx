@@ -133,16 +133,17 @@ const InnerProposalCreate = () => {
       setLoading(false)
     },
     [
-      blockHeight,
       connected,
-      createProposal,
+      blockHeight,
+      proposalModuleConfig,
       currentAllowance,
       proposalModuleAddress,
       increaseAllowance,
-      proposalModuleConfig,
       refreshBalances,
-      router,
+      createProposal,
       refreshProposals,
+      router,
+      coreAddress,
     ]
   )
 

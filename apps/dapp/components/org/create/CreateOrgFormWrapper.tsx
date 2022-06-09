@@ -46,7 +46,11 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
         title="Create an org"
       />
 
-      <form className="flex flex-row items-stretch" {...props}>
+      <form
+        // SmallScreenNav is 4rem tall, so account for it on <lg screens.
+        className="flex flex-row items-stretch h-[calc(100vh-4rem)] lg:h-screen"
+        {...props}
+      >
         {/* Ghost submit button for enter key press. */}
         <SubmitButton
           className="!p-0"
@@ -54,7 +58,7 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
           label=""
         />
 
-        <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg">
+        <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full">
           <div className="mb-8">
             <h2 className="mb-4 header-text">Create an org</h2>
 
