@@ -29,7 +29,7 @@ export const Switch: FC<SwitchProps> = ({
       },
       className
     )}
-    onClick={!disabled ? onClick : () => null}
+    onClick={disabled ? undefined : onClick}
   >
     <div
       className={clsx(

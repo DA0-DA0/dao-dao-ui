@@ -132,9 +132,9 @@ export const ImageSelector = <
       <button
         className={clsx(
           'flex shrink-0 bg-center bg-cover rounded-full border border-inactive transition',
-          !disabled && 'hover:ring',
-          center && 'justify-center items-center mx-auto',
           {
+            'hover:ring': !disabled,
+            'justify-center items-center mx-auto': center,
             'ring ring-error': error,
             'w-24 h-24': size === undefined,
           },

@@ -35,7 +35,16 @@ type UpdateInfoData = ConfigResponse
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
   const config = useRecoilValue(
     configSelector({ contractAddress: coreAddress })
-  )!
+  ) ?? {
+    name: '',
+    description: '',
+    automatically_add_cw20s: true,
+    automatically_add_cw721s: true,
+  }
+  // We should really never hit the ?? case. The configSelector only
+  // returns undefined if the client can not be loaded. If the client
+  // can not be loaded, everything else will go terribly wrong before
+  // this breaks.
   return config
 }
 
@@ -192,7 +201,7 @@ const useDecodeCosmosMsg: UseDecodeCosmosMsg<UpdateInfoData> = (
 export const updateInfoTemplate: Template<UpdateInfoData> = {
   key: TemplateKey.UpdateInfo,
   label: 'ℹ️ Update Info',
-  description: 'Update your DAOs name, image, and description.',
+  description: "Update your DAO's name, image, and description.",
   Component,
   useDefaults,
   useTransformToCosmos,
