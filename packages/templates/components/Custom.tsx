@@ -1,11 +1,12 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
 import { CodeMirrorInput } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
-import { TemplateComponent } from './common'
+import { TemplateCard, TemplateComponent } from './common'
 
 export const CustomComponent: TemplateComponent = ({
   getLabel,
@@ -20,18 +21,11 @@ export const CustomComponent: TemplateComponent = ({
   // that we are in a nested object nor wrapped nicely like we do
   // with register.
   return (
-    <div className="flex flex-col p-3 my-2 bg-primary rounded-lg">
-      <div className="flex justify-between items-center">
-        <div className="flex gap-2 items-center mb-2">
-          <h2 className="text-3xl">🤖</h2>
-          <h2>Custom</h2>
-        </div>
-        {onRemove && (
-          <button onClick={onRemove} type="button">
-            <XIcon className="h-4" />
-          </button>
-        )}
-      </div>
+    <TemplateCard
+      emoji={<Emoji label="Robot" symbol="🤖" />}
+      onRemove={onRemove}
+      title="Custom"
+    >
       <CodeMirrorInput
         control={control}
         error={errors?.message}
@@ -55,6 +49,7 @@ export const CustomComponent: TemplateComponent = ({
           },
         ]}
       />
+
       <div className="mt-2">
         {errors?.message ? (
           <p className="flex gap-1 items-center text-sm text-error">
@@ -81,6 +76,6 @@ export const CustomComponent: TemplateComponent = ({
           </p>
         )}
       </div>
-    </div>
+    </TemplateCard>
   )
 }

@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/stargate'
-import { XIcon } from '@heroicons/react/outline'
+import Emoji from 'a11y-react-emoji'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -24,7 +24,7 @@ import {
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
-import { TemplateComponent } from './common'
+import { TemplateCard, TemplateComponent } from './common'
 
 interface SpendOptions {
   nativeBalances: readonly Coin[]
@@ -100,86 +100,86 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
   )
 
   return (
-    <div className="flex justify-between items-center p-3 my-2 bg-primary rounded-lg">
-      <div className="flex flex-wrap gap-4 items-center">
-        <div className="flex flex-wrap gap-2 items-center w-24">
-          <h2 className="text-3xl">💵</h2>
-          <h2>Spend</h2>
+    <TemplateCard
+      emoji={<Emoji label="Money" symbol="💵" />}
+      onRemove={onRemove}
+      title="Spend"
+    >
+      <div className="flex flex-row gap-4 items-center">
+        <div className="flex flex-row gap-2 items-center">
+          <NumberInput
+            disabled={readOnly}
+            error={errors?.amount}
+            label={getLabel('amount')}
+            onPlusMinus={[
+              () =>
+                setValue(
+                  getLabel('amount'),
+                  Math.max(
+                    Number(spendAmount) + 1,
+                    1 / 10 ** amountDecimals
+                  ).toString()
+                ),
+              () =>
+                setValue(
+                  getLabel('amount'),
+                  Math.max(
+                    Number(spendAmount) - 1,
+                    1 / 10 ** amountDecimals
+                  ).toString()
+                ),
+            ]}
+            register={register}
+            sizing="auto"
+            step={1 / 10 ** amountDecimals}
+            validation={[
+              validateRequired,
+              validatePositive,
+              (amount: string) => validatePossibleSpend(spendDenom, amount),
+            ]}
+          />
+
+          <SelectInput
+            defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
+            disabled={readOnly}
+            error={errors?.denom}
+            label={getLabel('denom')}
+            register={register}
+            validation={[
+              (denom: string) => validatePossibleSpend(denom, spendAmount),
+            ]}
+          >
+            {nativeBalances.map(({ denom }) => (
+              <option key={denom} value={denom}>
+                ${nativeTokenLabel(denom)}
+              </option>
+            ))}
+            {cw20Balances.map(({ address, info: { symbol } }) => (
+              <option key={address} value={address}>
+                ${symbol}
+              </option>
+            ))}
+          </SelectInput>
         </div>
-        <NumberInput
-          disabled={readOnly}
-          error={errors?.amount}
-          label={getLabel('amount')}
-          onPlusMinus={[
-            () =>
-              setValue(
-                getLabel('amount'),
-                Math.max(
-                  Number(spendAmount) + 1,
-                  1 / 10 ** amountDecimals
-                ).toString()
-              ),
-            () =>
-              setValue(
-                getLabel('amount'),
-                Math.max(
-                  Number(spendAmount) - 1,
-                  1 / 10 ** amountDecimals
-                ).toString()
-              ),
-          ]}
-          register={register}
-          sizing="md"
-          step={1 / 10 ** amountDecimals}
-          validation={[
-            validateRequired,
-            validatePositive,
-            (amount: string) => validatePossibleSpend(spendDenom, amount),
-          ]}
-        />
-        <SelectInput
-          defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
-          disabled={readOnly}
-          error={errors?.denom}
-          label={getLabel('denom')}
-          register={register}
-          validation={[
-            (denom: string) => validatePossibleSpend(denom, spendAmount),
-          ]}
-        >
-          {nativeBalances.map(({ denom }) => (
-            <option key={denom} value={denom}>
-              ${nativeTokenLabel(denom)}
-            </option>
-          ))}
-          {cw20Balances.map(({ address, info: { symbol } }) => (
-            <option key={address} value={address}>
-              ${symbol}
-            </option>
-          ))}
-        </SelectInput>
-        <div className="flex gap-2 items-center">
-          <p className="font-mono secondary-text">{'->'}</p>
-          <div className="flex flex-col">
-            <AddressInput
-              disabled={readOnly}
-              error={errors?.to}
-              label={getLabel('to')}
-              register={register}
-              validation={[validateRequired, validateAddress]}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <InputErrorMessage error={errors?.amount ?? errors?.denom} />
-          <InputErrorMessage error={errors?.to} />
+
+        <p className="font-mono text-2xl secondary-text">&#10142;</p>
+
+        <div className="grow">
+          <AddressInput
+            containerClassName="grow"
+            disabled={readOnly}
+            error={errors?.to}
+            label={getLabel('to')}
+            register={register}
+            validation={[validateRequired, validateAddress]}
+          />
         </div>
       </div>
-      {onRemove && (
-        <button onClick={onRemove} type="button">
-          <XIcon className="h-4" />
-        </button>
-      )}
-    </div>
+
+      <div className="flex flex-col gap-2">
+        <InputErrorMessage error={errors?.amount ?? errors?.denom} />
+        <InputErrorMessage error={errors?.to} />
+      </div>
+    </TemplateCard>
   )
 }

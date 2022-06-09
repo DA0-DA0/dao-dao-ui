@@ -1,12 +1,18 @@
-import { XIcon } from '@heroicons/react/outline'
+import Emoji from 'a11y-react-emoji'
+import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { Button } from '@dao-dao/ui'
-import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
+import {
+  AddressInput,
+  Button,
+  InputErrorMessage,
+  InputLabel,
+} from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import {
+  TemplateCard,
   TemplateComponent,
   TokenInfoDisplay,
   TokenInfoDisplayProps,
@@ -16,38 +22,6 @@ interface Token {
   address: string
   info: TokenInfoResponse
 }
-
-interface AddressSelectorProps {
-  onSelect: (address: string) => void
-  selectedAddress: string
-  tokenOptions: Token[]
-  readOnly?: boolean
-}
-
-const AddressSelector = ({
-  onSelect,
-  selectedAddress,
-  tokenOptions,
-  readOnly,
-}: AddressSelectorProps) => (
-  <div className="grid grid-cols-5 gap-1">
-    {tokenOptions.map(({ address, info }) => (
-      <Button
-        key={address}
-        className={`${
-          address === selectedAddress ? '' : 'bg-transparent text-secondary'
-        }`}
-        disabled={readOnly}
-        onClick={() => onSelect(address)}
-        size="sm"
-        type="button"
-        variant="secondary"
-      >
-        ${info.symbol}
-      </Button>
-    ))}
-  </div>
-)
 
 type RemoveTokenOptions = TokenInfoDisplayProps & {
   existingTokens: Token[]
@@ -69,51 +43,51 @@ export const RemoveTokenComponent: TemplateComponent<RemoveTokenOptions> = ({
     'This token is not in the DAO treasury.'
 
   return (
-    <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
-      <div className="flex gap-2 justify-between items-center">
-        <div className="flex gap-2 items-center">
-          <h2 className="text-3xl">⭕️</h2>
-          <h2>Remove Treasury Token</h2>
-        </div>
-        {onRemove && (
-          <button onClick={onRemove} type="button">
-            <XIcon className="h-4" />
-          </button>
-        )}
-      </div>
-      {existingTokens.length > 0 ? (
+    <TemplateCard
+      emoji={<Emoji label="Token" symbol="⭕️" />}
+      onRemove={onRemove}
+      title="Remove Treasury Token"
+    >
+      {existingTokens.length > 0 && (
         <>
-          <div className="flex flex-col gap-1 my-3">
-            <AddressSelector
-              onSelect={(address) => setValue(getLabel('address'), address)}
-              readOnly={readOnly}
-              selectedAddress={tokenAddress}
-              tokenOptions={existingTokens}
-            />
-          </div>
-          <div className="flex flex-col gap-2 mb-3">
-            <InputLabel name="Token address" />
-            <AddressInput
-              disabled={readOnly}
-              error={errors?.address}
-              label={getLabel('address')}
-              register={register}
-              validation={[
-                validateRequired,
-                validateContractAddress,
-                validateIsTreasuryToken,
-              ]}
-            />
-            <InputErrorMessage error={errors?.address} />
+          <InputLabel name="Existing Tokens" />
+          <div className="grid grid-cols-5 gap-1 mb-2">
+            {existingTokens.map(({ address, info }) => (
+              <Button
+                key={address}
+                className={clsx('text-center', {
+                  'text-secondary bg-transparent': address !== tokenAddress,
+                })}
+                disabled={readOnly}
+                onClick={() => setValue(getLabel('address'), address)}
+                size="sm"
+                type="button"
+                variant="secondary"
+              >
+                ${info.symbol}
+              </Button>
+            ))}
           </div>
         </>
-      ) : (
-        <p className="italic text-error">
-          The treasury currently has no tokens.
-        </p>
       )}
 
+      <div className="flex flex-col gap-2 mb-3">
+        <InputLabel name="Token address" />
+        <AddressInput
+          disabled={readOnly}
+          error={errors?.address}
+          label={getLabel('address')}
+          register={register}
+          validation={[
+            validateRequired,
+            validateContractAddress,
+            validateIsTreasuryToken,
+          ]}
+        />
+        <InputErrorMessage error={errors?.address} />
+      </div>
+
       <TokenInfoDisplay {...options} />
-    </div>
+    </TemplateCard>
   )
 }

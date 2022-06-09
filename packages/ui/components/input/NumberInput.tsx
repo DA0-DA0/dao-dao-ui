@@ -19,7 +19,7 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
   step?: string | number
   onPlusMinus?: [() => void, () => void]
   containerClassName?: string
-  sizing?: 'sm' | 'md'
+  sizing?: 'sm' | 'md' | 'auto'
   required?: boolean
   setValueAs?: (value: any) => any
 }
@@ -67,17 +67,23 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
     }),
   }
 
+  const _containerClassName = clsx(
+    'py-2 px-3 bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+    {
+      'ring-1 ring-error': error,
+      'w-28': sizing === 'sm',
+      'w-40': sizing === 'md',
+      'w-28 md:w-32 lg:w-40': sizing === 'auto',
+    },
+    containerClassName
+  )
+
   if (onPlusMinus) {
     return (
       <div
         className={clsx(
-          'flex gap-1 items-center py-2 px-3 text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
-          {
-            'ring-1 ring-error': error,
-            'w-28': sizing === 'sm',
-            'w-40': sizing === 'md',
-          },
-          containerClassName
+          'flex flex-row gap-1 items-center text-sm',
+          _containerClassName
         )}
       >
         <button
@@ -109,11 +115,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
 
   return (
     <input
-      className={clsx(
-        'py-2 px-3 bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
-        { 'ring-1 ring-error': error },
-        className
-      )}
+      className={clsx('body-text', _containerClassName)}
       {...sharedProps}
     />
   )
