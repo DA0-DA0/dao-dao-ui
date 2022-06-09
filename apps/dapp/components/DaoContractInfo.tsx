@@ -51,7 +51,9 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
   return (
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
       <div className="mb-4 md:mb-0">
-        <h2 className="mb-4 md:mb-6 primary-text">{i18n.t('Governance details')}</h2>
+        <h2 className="mb-4 md:mb-6 primary-text">
+          {i18n.t('Governance details')}
+        </h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           {stakingContractConfig && (
             <GovInfoListItem
@@ -91,8 +93,8 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
               />
               <li className="flex flex-row items-center caption-text">
                 <span className="flex gap-1 items-center">
-                  <Votes fill="currentColor" width="16px" />{' '}
-                  // TODO - solve with i18n
+                  <Votes fill="currentColor" width="16px" /> // TODO - solve
+                  with i18n
                   {convertMicroDenomToDenomWithDecimals(
                     proposalModuleConfig.deposit_info.deposit,
                     governanceTokenInfo.decimals
@@ -112,12 +114,14 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
           </li>
           {governanceTokenAddress && (
             <li>
-              {i18n.t('Governance token')} <CopyToClipboardAccent value={governanceTokenAddress} />
+              {i18n.t('Governance token')}{' '}
+              <CopyToClipboardAccent value={governanceTokenAddress} />
             </li>
           )}
           {stakingContractAddress && (
             <li>
-              {i18n.t('Staking')} <CopyToClipboardAccent value={stakingContractAddress} />
+              {i18n.t('Staking')}{' '}
+              <CopyToClipboardAccent value={stakingContractAddress} />
             </li>
           )}
         </ul>
@@ -134,7 +138,9 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
 const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => (
   <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
     <div className="mb-4 md:mb-0">
-      <h2 className="mb-4 md:mb-6 primary-text">{i18n.t('Governance details')}</h2>
+      <h2 className="mb-4 md:mb-6 primary-text">
+        {i18n.t('Governance details')}
+      </h2>
       <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
         <GovInfoListItem
           icon={<ChartPieIcon className="inline w-4" />}
@@ -169,7 +175,8 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => (
           {i18n.t('Treasury')} <CopyToClipboardAccent loading value="juno..." />
         </li>
         <li>
-         {i18n.t('Governance token')} <CopyToClipboardAccent loading value="juno..." />
+          {i18n.t('Governance token')}{' '}
+          <CopyToClipboardAccent loading value="juno..." />
         </li>
         <li>
           {i18n.t('Staking')} <CopyToClipboardAccent loading value="juno..." />

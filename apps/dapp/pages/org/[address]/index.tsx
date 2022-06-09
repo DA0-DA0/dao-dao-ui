@@ -67,14 +67,14 @@ const InnerMobileDaoHome: FC = () => {
             icon="👥"
             onClick={makeTabSetter(MobileMenuTabSelection.Members)}
             selected={tab === MobileMenuTabSelection.Members}
-          text={i18n.t('Members')}
+            text={i18n.t('Members')}
           />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
           <MobileMenuTab
             icon="💵"
             onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
             selected={tab === MobileMenuTabSelection.Staking}
-          text={i18n.t('Staking')}
+            text={i18n.t('Staking')}
           />
         ) : null}
         <MobileMenuTab
@@ -148,7 +148,9 @@ const InnerOrgHome: FC = () => {
                 {isMember && (
                   <div className="flex flex-row gap-2 items-center">
                     <MemberCheck fill="currentColor" width="16px" />
-                    <p className="text-sm text-primary">{i18n.t('You are a member')}</p>
+                    <p className="text-sm text-primary">
+                      {i18n.t('You are a member')}
+                    </p>
                   </div>
                 )}
                 <StarButton

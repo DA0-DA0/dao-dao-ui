@@ -212,7 +212,9 @@ const InnerProposal: FC = () => {
           />
 
           <div className="lg:hidden">
-            <h3 className="mb-6 text-base font-medium">{i18n.t('Vote status')}</h3>
+            <h3 className="mb-6 text-base font-medium">
+              {i18n.t('Vote status')}
+            </h3>
 
             <V1ProposalInfoVoteStatus
               denomConversionDecimals={denomConversionDecimals}
@@ -236,7 +238,9 @@ const InnerProposal: FC = () => {
           walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
-        <h3 className="mt-8 mb-6 text-base font-medium">{i18n.t('Vote status')}</h3>
+        <h3 className="mt-8 mb-6 text-base font-medium">
+          {i18n.t('Vote status')}
+        </h3>
         <V1ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={

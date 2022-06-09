@@ -15,10 +15,12 @@ export const NoKeplrAccountModal: FC<NoKeplrAccountModalProps> = ({
   return (
     <Modal onClose={onClose}>
       <h1 className="header-text">{i18n.t('Configure wallet to continue')}</h1>
-      { grafs.map(graf => <p className="mt-6 mb-6 body-text">{graf}</p>) }
+      {grafs.map((graf) => (
+        <p className="mt-6 mb-6 body-text">{graf}</p>
+      ))}
       <Button onClick={onClose}>
-      Got it <ChevronRightIcon className="w-4" />
+        Got it <ChevronRightIcon className="w-4" />
       </Button>
-      </Modal>
+    </Modal>
   )
 }

@@ -24,7 +24,7 @@ export const SearchPage: FC = () => (
           <h1 className="header-text">{i18n.t('DAO_other')}</h1>
           <Link href="/org/create" passHref>
             <Button size="sm">
-             {i18n.t('Create a DAO')} <PlusIcon className="inline w-4 h-4" />
+              {i18n.t('Create a DAO')} <PlusIcon className="inline w-4 h-4" />
             </Button>
           </Link>
         </div>

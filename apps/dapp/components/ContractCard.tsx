@@ -81,13 +81,13 @@ function ContractCardBase({
             {proposals != undefined && (
               <p className="text-sm">
                 <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-                {i18n.t('proposal', {count: proposals})}
+                {i18n.t('proposal', { count: proposals })}
               </p>
             )}
             {weight != undefined && (
               <p className="text-sm text-valid text-success">
                 <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-                {i18n.t('Voting weight', {count: weight})}
+                {i18n.t('Voting weight', { count: weight })}
               </p>
             )}
           </div>
