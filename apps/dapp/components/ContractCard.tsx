@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'
 import {
@@ -80,13 +81,13 @@ function ContractCardBase({
             {proposals != undefined && (
               <p className="text-sm">
                 <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-                {proposals} proposal{weight != 1 && 's'}
+                {i18n.t('proposal', {count: proposals})}
               </p>
             )}
             {weight != undefined && (
               <p className="text-sm text-valid text-success">
                 <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-                {weight} vote{weight != 1 && 's'}
+                {i18n.t('Voting weight', {count: weight})}
               </p>
             )}
           </div>

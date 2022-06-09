@@ -1,4 +1,5 @@
 const en = {
+  // TODO - not zero
   'DAO_zero': 'DAO',
   'DAO_other': 'DAOs',
   'Dark theme': 'Dark theme',
@@ -8,6 +9,33 @@ const en = {
   'Explore DAOs': 'Explore all $t(DAO_other)',
   'Search': 'Search',
   'Search for a DAO': 'Search for a $t(DAO_zero)',
+// TODO - refactor
+  'Proposals': 'Proposals',
+  'proposal_zero': '{{count}} proposals',
+  'proposal_one': '{{count}} proposal',
+  'proposal_other': '{{count}} proposals',
+
+  'Voting weight': 'Voting weight: {{count}}',
+
+  'Members':'Members',
+  'Staking':'Staking',
+  'Treasury':'Treasury',
+  'Info':'Info',
+
+  'You are a member':'You\'re a member',
+  'Governance details': 'Governance details',
+  'Passing threshold': 'Passing threshold',
+  'Quorum': 'Quorum',
+  'Proposal deposit': 'Proposal deposit',
+  'Governance token': 'Governance token',
+  'Majority': 'Majority',
+  'Addresses': 'Addresses',
+  'On': 'On',
+  'Off': 'Off',
+  'Unstaking period': 'Unstaking period',
+  'None': 'None',
+
+
 
 
   'short tagline': '$t(DAO_other) for everyone.',
@@ -27,7 +55,7 @@ const en = {
     'DAOs can manage IBC assets, instantiate smart contracts, and manage entire protocols.',
   'Powered by Juno': 'Powered by Juno',
   'Connect wallet': 'Connect wallet',
-  'Starred': 'Starred',
+  'Starred': 'Home',
   'Need wallet to continue': 'You\'ll need wallet to continue',
   'Need wallet to continue (long)': 'Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet',
   'Install Keplr': 'Install Keplr',
