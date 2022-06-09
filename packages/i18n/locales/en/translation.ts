@@ -75,46 +75,64 @@ const en = {
   // Names for UI states
   'Dark theme': 'Dark theme',
   'Light theme': 'Light theme',
+  // Names for UI places
+  Documentation: 'Documentation',
+  Feedback: 'Feedback',
   // Names for UI actions
   // (think: names for things you can use the UI *do*)
+  'Explore DAOs': 'Explore all DAOs',
+  // TODO DRY
   'Create a DAO': 'Create a DAO',
   'Create a DAO (long)':
     "You're not a member of any DAOs. Why not create one?",
-  'Explore DAOs': 'Explore all DAOs',
-  Search: 'Search',
-  'Search for a DAO': 'Search for a DAO',
   'Create DAO': 'Create DAO',
+  // TODO DRY
+  Search: 'Search',
+  'Search for a DAO': 'Search for a DAO', // TODO placeholder?
 
-  // DAO membership
-  'You are a member': "You're a member",
 
   // DAO creation steps
   'Choose a structure': 'Choose a structure',
   'Describe the DAO': 'Describe the DAO',
   'Configure voting': 'Configure voting',
-  'Configure voting description': 'This will determine how much voting share different members of the DAO have when they vote on proposals.',
+  'Configure voting description': 'Add members, configure voting thresholds, and (optionally) use governance tokens to determine voting share.',
   'Review and submit': 'Review and submit',
+
   // Choosing a DAO's structure
   'Simple DAO': 'Simple DAO',
   'Simple DAO description': 'Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.',
   'Gov token DAO': 'Token-based DAO',
   'Gov token DAO description': 'Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares.',
-  // Create
+
+  // Configuring a DAO's description
   'DAO name placeholder': "DAO's name...",
   'DAO description placeholder': "DAO's description...",
   'Add an image': 'Add an image',
   'Image URL': 'Image URL',
   'Image URL tooltip': 'A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg',
+
+  // Configuring a DAO's membership and voting system
   // configure voting
   'Member address placeholder': "Member's address",
   'Add member': 'Add member',
   // TODO teirs
   // TODO per member
-  // config cards
   'Voting duration description': 'The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final.',
-  'Proposal deposit description'
+  'Proposal deposit description': 'The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation.',
+  'Unregister duration': "In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
 
-  // connecting a wallet
+
+  // Viewing your relation to a DAO
+  'You are a member': "You're a member",
+  // TODO staking/tokens you hold
+
+
+  // Connect a wallet
+  //
+  // NOTE: We need to communicate with users about wallets because
+  // wallets are poorly designed, poorly supported by major browsers,
+  // and poorly understood, in that order. I recommend literal
+  // translations here, even if they're clunky.
   'Need wallet to continue': "You'll need wallet to continue",
   'Need wallet to continue (long)':
     'Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet',
@@ -129,8 +147,6 @@ const en = {
   'short tagline': '$t(DAO_other) for everyone.',
   'long tagline':
     'Simple, capable, and free $t(DAO_zero) tooling. Built with love, by DAO DAO, on Juno.',
-  Documentation: 'Documentation',
-  Feedback: 'Feedback',
   'Enter the app': 'Enter the app',
   'Create DAOs ': 'Create DAOs.',
   'Create DAO tagline':
