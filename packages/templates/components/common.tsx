@@ -13,6 +13,7 @@ export enum TemplateKey {
   Stake = 'stake',
   AddToken = 'addToken',
   RemoveToken = 'removeToken',
+  UpdateInfo = 'updateInfo',
   Custom = 'custom',
 }
 
