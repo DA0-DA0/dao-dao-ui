@@ -61,7 +61,7 @@ export const convertThresholdValueToPercentageThreshold = (
     : { percent: (value / 100).toFixed(2) }
 export const convertThresholdValueToHumanReadableString = (
   value: ThresholdValue
-): string => (value === 'majority' ? 'Majority' : `${value}%`)
+): string => (value === 'majority' ? i18n.t('Majority') : `${value}%`)
 
 export enum NewOrgStructure {
   Simple,

@@ -9,14 +9,8 @@ const en = {
   Back: 'Back',
   Continue: 'Continue',
   Review: 'Review',
-  // 'Remaining' as in: 'Remaining: 5 hours'
-  'Remaining (time)': 'Remaining',
-  // 'ok.' 'understood.' 'alright.'
-  'Got it': 'Got it',
-  // 'warning!' 'danger!' 'pay attention!'
-  'Watch out!': 'Watch out!',
-  // acknowledge that you have understood the danger.
-  'I understand': 'I accept the danger',
+  // as opposed to 'Disabled'
+  Enabled: 'Enabled',
 
   // DAO vocabulary
   //
@@ -53,6 +47,8 @@ const en = {
 
   'Proposal deposit refund': 'Refund failed proposals',
   'Proposal deposit refund description': 'Should a failed proposal have its deposit refunded to the proposer? (Proposals that pass will always have their deposit returned). Turning this on, particularly when proposal deposits are high, may encourage members to deliberate with other members before creating a proposal.',
+  // this is the "mass noun" of a Proposal deposit refund - like "issuing lots of refunds"
+  'Refunds': 'Refunds',
 
   // votes
   'Vote status': 'Vote status',
@@ -103,14 +99,18 @@ const en = {
   'Favorite': 'Favorite',
 
   // Names for UI states
+  //
   'Dark theme': 'Dark theme',
   'Light theme': 'Light theme',
+  // 'Remaining' as in: 'Remaining: 5 hours'
+  'Remaining (time)': 'Remaining',
   // Names for UI places
   Documentation: 'Documentation',
   Feedback: 'Feedback',
 
   // Names for UI actions
   // (think: names for things you can use the UI *do*)
+  //
   'Explore DAOs': 'Explore all DAOs',
   // TODO DRY
   'Create a DAO': 'Create a DAO',
@@ -122,10 +122,26 @@ const en = {
   'Search for a DAO': 'Search for a DAO', // TODO placeholder?
   // TODO ?? underspecified?
   Manage: 'Manage',
+
+  // Viewing your relation to a DAO
+  'You are a member': "You're a member",
   'Add an image': 'Add an image',
+  // TODO staking/unstaking???
+
+  // Confirmations
+  //
+  // 'ok.' 'understood.' 'alright.'
+  'Got it': 'Got it',
+  // 'warning!' 'danger!' 'pay attention!'
+  'Watch out!': 'Watch out!',
+  // acknowledge that you have understood the danger.
+  'I understand': 'I accept the danger',
+  // acknowledge that you have accepted a binding agreement
+  'I accept the terms': 'I accept the terms',
 
 
   // DAO creation steps
+  //
   'Choose a structure': 'Choose a structure',
   'Describe the DAO': 'Describe the DAO',
   'Configure voting': 'Configure voting',
@@ -139,44 +155,41 @@ const en = {
   'Gov token DAO description': 'Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares.',
 
   // Configuring a DAO's description
-  'DAO name placeholder': "DAO's name...",
-  'DAO description placeholder': "DAO's description...",
+  'DAO name placeholder': "Your DAO's name",
+  'DAO description': 'DAO description',
+  'DAO description placeholder': 'Decribe your DAO',
   'Image URL': 'Image URL',
   'Image URL tooltip': 'A link an image. For example: https://moonphase.is/image.svg',
 
   // Configuring a DAO's membership and voting system
-  // configure voting
+  //
   'Member address placeholder': "Member's address",
   'Add member': 'Add member',
   'per member': 'per member',
-
-  Tier: 'Tier',
+  // tiers of members
+  Tier_one: 'Tier',
+  Tier_other: 'Tiers',
   'Tier name': 'Tier name',
   'Tier description': 'The "class" of member. For example: "Core developers," "friends and family." These names are only for your reference.',
   'Add tier': 'Add tier',
   'Default tier name': 'Core contributors',
-
+  // governance token configuration
   'Create a token': 'Create a token',
   'Use existing token': 'Use an existing token',
   // TODO move up to gov token?
   'Gov token name': 'Token name',
-  'Gov token placeholder': 'A token name (e.g., DogDAO)',
+  'Gov token placeholder': 'A token name (e.g., "DogDAO token")',
   'Ticker symbol': 'Ticker symbol',
-  'Ticker symbol placeholder': 'A ticker symbol (e.g., DOG)',
+  'Ticker symbol placeholder': 'A ticker symbol (e.g., "DOG")',
   'Token image': 'Token image',
   'Treasury balance': 'Treasury balance',
   // TODO smarter / more localized ways to do percentages?
   'Treasury balance description': "{{numberOfTokensMinted, number}} tokens will be minted. {{memberPercent, number(minimumFractionDigits:2)}}% will be sent to members according to the distribution above. The reamining {{treasuryPercent, number(minimumFractionDigits:2)}}% will go to the DAO's treasury, where they can be distributed later via governance proposal.",
-
+  // advanced voting configuration
   'Advanced voting configuration': 'Advanced configuration',
   'Advanced voting configuration description': 'Configure passing threshold and quorum.',
   'Advanced configuration warning': 'This is an advanced feature. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.',
 
-
-
-  // Viewing your relation to a DAO
-  'You are a member': "You're a member",
-  // TODO staking/tokens you hold
 
 
   // Connect a wallet
@@ -194,7 +207,9 @@ const en = {
   'Configure wallet to continue (long)':
     "You have Keplr installed, but it doesn't seem like you've set up a wallet. To continue, open the Keplr extension and set up a wallet.\nTo open the Keplr extension press the puzzle icon in the top right of your browser and then press the Keplr button. Once you've done that, a new page will open where you'll be able to create a new account. Configure your wallet to continue",
 
-
+  // TOS and BETA
+  'Beta warning': 'DAO DAO is in beta, and has not yet been audited. Do not keep large sums of money in your DAO, and do not use your DAO for anything mission critical.',
+  'Terms of service': 'DAO DAO TOOLING IS PROVIDED "AS IS", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contracts will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.',
 
   // DAO DAO landing page
   'short tagline': '$t(DAO_other) for everyone.',

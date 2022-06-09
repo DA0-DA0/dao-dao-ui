@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Logo } from '@dao-dao/ui'
 
 import {
@@ -48,7 +49,7 @@ const CreateOrgReviewPage: FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="font-mono caption-text">Description</p>
+              <p className="font-mono caption-text">{i18n.t('DAO description')}</p>
               <p className="text-lg secondary-text">
                 {watchedNewOrg.description}
               </p>
@@ -64,19 +65,19 @@ const CreateOrgReviewPage: FC = () => {
 
         <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">
           <CreateOrgReviewStat
-            title="Threshold"
+            title={i18n.t('Passing threshold')}
             value={convertThresholdValueToHumanReadableString(
               watchedNewOrg.thresholdQuorum.threshold
             )}
           />
           <CreateOrgReviewStat
-            title="Quorum"
+            title={i18n.t('Quorum')}
             value={convertThresholdValueToHumanReadableString(
               watchedNewOrg.thresholdQuorum.quorum
             )}
           />
           <CreateOrgReviewStat
-            title="Prop. duration"
+            title={i18n.t('Voting duration')}
             value={convertDurationWithUnitsToHumanReadableString(
               watchedNewOrg.votingDuration
             )}
@@ -85,25 +86,25 @@ const CreateOrgReviewPage: FC = () => {
             !!watchedNewOrg.governanceTokenOptions.proposalDeposit?.value && (
               <>
                 <CreateOrgReviewStat
-                  title="Prop. deposit"
+                  title={i18n.t('Proposal deposit')}
                   value={`${watchedNewOrg.governanceTokenOptions.proposalDeposit.value}`}
                 />
                 <CreateOrgReviewStat
-                  title="Prop. refunds"
+                  title={i18n.t('Proposal deposit refund')}
                   value={
                     watchedNewOrg.governanceTokenOptions.proposalDeposit
                       .refundFailed
-                      ? 'Yes'
-                      : 'No'
+                      ? i18n.t('On')
+                      : i18n.t('Off')
                   }
                 />
               </>
             )}
           {governanceTokenEnabled && (
             <>
-              <CreateOrgReviewStat title="Gov. tokens" value="Enabled" />
+              <CreateOrgReviewStat title={i18n.t('Governance tokens')} value={i18n.t('Enabled')} />
               <CreateOrgReviewStat
-                title="Unregister duration"
+                title={i18n.t('Unstaking period')}
                 value={convertDurationWithUnitsToHumanReadableString(
                   watchedNewOrg.governanceTokenOptions.unregisterDuration
                 )}

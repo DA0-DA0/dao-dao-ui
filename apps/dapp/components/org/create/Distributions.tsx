@@ -64,7 +64,7 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
       <p className="font-mono text-center caption-text">{i18n.t('Voting weight')}</p>
       <p className="font-mono caption-text">
-        {onlyOneGroup ? 'Members' : 'Groups'}
+        {onlyOneGroup ? i18n.t('Members') : i18n.t('Tier', { count: 1000 })}
       </p>
 
       <PieChart data={entries} />
@@ -194,7 +194,7 @@ export const VotingPowerChart: FC<DataProps> = ({ data }) => {
           plugins: {
             tooltip: {
               callbacks: {
-                title: (items) => items[0].label || "Member's address...",
+                title: (items) => items[0].label || i18n.t('Member address placeholder'),
                 label: () => '',
               },
               titleMarginBottom: 0,
