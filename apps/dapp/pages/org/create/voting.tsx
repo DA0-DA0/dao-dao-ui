@@ -1,6 +1,6 @@
 import Emoji from 'a11y-react-emoji'
-import { FC, useCallback, useMemo, useState } from 'react'
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { FC, useMemo, useState } from 'react'
+import { useFieldArray } from 'react-hook-form'
 
 import { PlaceholderToken } from '@dao-dao/icons'
 import {
@@ -13,8 +13,8 @@ import {
   NumberInput,
   RadioInput,
   SelectInput,
-  SubmitButton,
   TextInput,
+  TooltipIcon,
 } from '@dao-dao/ui'
 import {
   validateContractAddress,
@@ -47,10 +47,6 @@ import {
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
 
-interface NewGroupNameForm {
-  name: string
-}
-
 const CreateOrgVotingPage: FC = () => {
   const {
     watchedNewOrg,
@@ -72,31 +68,6 @@ const CreateOrgVotingPage: FC = () => {
     control,
     name: 'groups',
   })
-
-  const [addGroupModalOpen, setAddGroupModalOpen] = useState(false)
-  const {
-    handleSubmit: newGroupNameHandleSubmit,
-    register: newGroupNameRegister,
-    reset: newGroupNameReset,
-  } = useForm<NewGroupNameForm>()
-  const onSubmitNewGroupName: SubmitHandler<NewGroupNameForm> = useCallback(
-    ({ name }) => {
-      appendGroup({
-        name,
-        weight:
-          getValues('structure') === NewOrgStructure.UsingGovToken
-            ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
-            : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
-        members: [
-          {
-            address: '',
-          },
-        ],
-      })
-      setAddGroupModalOpen(false)
-    },
-    [appendGroup, getValues]
-  )
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
@@ -171,16 +142,30 @@ const CreateOrgVotingPage: FC = () => {
           ))}
 
           <div className="flex flex-col">
-            <Button
-              className="self-start"
-              onClick={() => {
-                newGroupNameReset()
-                setAddGroupModalOpen(true)
-              }}
-              variant="secondary"
-            >
-              Add a group
-            </Button>
+            <div className="flex flex-row gap-2 items-center">
+              <Button
+                className="self-start"
+                onClick={() =>
+                  appendGroup({
+                    name: '',
+                    weight:
+                      getValues('structure') === NewOrgStructure.UsingGovToken
+                        ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT
+                        : DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
+                    members: [
+                      {
+                        address: '',
+                      },
+                    ],
+                  })
+                }
+                variant="secondary"
+              >
+                Add another tier
+              </Button>
+
+              <TooltipIcon label="This name is just for your reference when creating the org. For example: 'Core team' or 'Developers'." />
+            </div>
 
             <InputErrorMessage error={errors._groupsError} />
           </div>
@@ -674,30 +659,6 @@ const CreateOrgVotingPage: FC = () => {
           </div>
         )}
       </CreateOrgFormWrapper>
-
-      {addGroupModalOpen && (
-        <Modal onClose={() => setAddGroupModalOpen(false)}>
-          <form
-            className="flex flex-col gap-2 items-stretch"
-            onSubmit={newGroupNameHandleSubmit(onSubmitNewGroupName)}
-          >
-            <InputLabel name="Group name" />
-            <TextInput
-              autoFocus
-              label="name"
-              register={newGroupNameRegister}
-              validation={[validateRequired]}
-            />
-            <p className="caption-text">
-              This name is just for your reference when creating the org.
-              <br />
-              For example: &apos;Core team&apos; or &apos;Developers&apos;.
-            </p>
-
-            <SubmitButton className="mt-4 w-full" label="Add group" />
-          </form>
-        </Modal>
-      )}
 
       {showThresholdQuorumWarning && (
         <Modal

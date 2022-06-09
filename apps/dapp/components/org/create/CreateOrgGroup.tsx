@@ -13,6 +13,8 @@ import {
   Button,
   InputErrorMessage,
   NumberInput,
+  TextInput,
+  TooltipIcon,
 } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -71,8 +73,8 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
     <div className="relative p-6 bg-disabled rounded-lg">
       {!showColorDotOnMember && <CornerGradient color={`${groupColor}1A`} />}
       <div className="flex flex-row gap-8 justify-between items-center">
-        <div>
-          <div className="flex flex-row gap-4 items-center">
+        <div className="grow">
+          <div className="flex flex-row grow gap-4 items-center">
             {!showColorDotOnMember && (
               <div
                 className="shrink-0 w-2 h-2 rounded-full"
@@ -82,9 +84,17 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               ></div>
             )}
 
-            <p className="title-text">{newOrg.groups?.[groupIndex]?.name}</p>
+            <TextInput
+              className="grow"
+              error={errors.groups?.[groupIndex]?.name}
+              label={`groups.${groupIndex}.name`}
+              placeholder="Core Team..."
+              register={register}
+              validation={[validateRequired]}
+            />
           </div>
           <InputErrorMessage error={errors.groups?.[groupIndex]?._error} />
+          <InputErrorMessage error={errors.groups?.[groupIndex]?.name} />
         </div>
 
         <div className="flex flex-col items-center">
@@ -131,6 +141,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               <br />
               member
             </p>
+            <TooltipIcon label="Want to add members with different voting power? Add another tier." />
           </div>
 
           <InputErrorMessage error={errors.groups?.[groupIndex]?.weight} />

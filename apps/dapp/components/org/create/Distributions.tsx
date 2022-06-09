@@ -11,6 +11,7 @@ import { FC, useMemo } from 'react'
 import { Pie, Bar } from 'react-chartjs-2'
 
 import { useNamedThemeColor } from '@dao-dao/ui'
+import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
 import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
 
@@ -95,22 +96,32 @@ export const useVotingPowerDistributionData = (
         ? _initialTreasuryBalance
         : undefined
 
+    // Only display valid addresses.
+    const groupsWithValidMembers = groups.map(({ members, ...group }) => ({
+      ...group,
+      members: members.filter(({ address }) =>
+        isValidAddress(address, CHAIN_BECH32_PREFIX)
+      ),
+    }))
+
     const totalWeight =
-      (groups.reduce(
+      (groupsWithValidMembers.reduce(
         (acc, { weight, members }) => acc + weight * members.length,
         0
       ) || 0) + (initialTreasuryBalance ?? 0)
 
     // If one group case, specially handle and display all members.
-    const onlyOneGroup = groups.length === 1
+    const onlyOneGroup = groupsWithValidMembers.length === 1
 
-    const entries: Entry[] = onlyOneGroup
-      ? groups[0].members.map(({ address }, memberIndex) => ({
+    let entries: Entry[] = onlyOneGroup
+      ? groupsWithValidMembers[0].members.map(({ address }, memberIndex) => ({
           name: address,
-          value: groups[0].weight * (proportion ? 100 / totalWeight : 1),
+          value:
+            groupsWithValidMembers[0].weight *
+            (proportion ? 100 / totalWeight : 1),
           color: distributionColors[memberIndex % distributionColors.length],
         }))
-      : groups.map(({ name, weight, members }, groupIndex) => ({
+      : groupsWithValidMembers.map(({ name, weight, members }, groupIndex) => ({
           name,
           value: weight * members.length * (proportion ? 100 / totalWeight : 1),
           color: distributionColors[groupIndex % distributionColors.length],
@@ -262,23 +273,17 @@ const LegendItem: FC<LegendItemProps> = ({
   </div>
 )
 
-// Linear from purple to orange/yellow.
-const _distributionColors = [
-  '#5B58E2',
-  '#4744AC',
-  '#6642CE',
-  '#954FE7',
-  '#BA73DD',
-  '#DE73C0',
-  '#FC81A4',
-  '#EE7969',
-  '#F4925A',
-  '#F1B671',
+// 1-10 linear from purple to orange/yellow.
+// Intersperse colors so similar colors are not adjacent.
+export const distributionColors = [
+  '#5B58E2', // 1
+  '#954FE7', // 4
+  '#FC81A4', // 7
+  '#F1B671', // 10
+  '#4744AC', // 2
+  '#BA73DD', // 5
+  '#EE7969', // 8
+  '#6642CE', // 3
+  '#DE73C0', // 6
+  '#F4925A', // 9
 ]
-// Increase speed of color transition by doing every other in a loop.
-// For 10 colors, even indexes from 0 to 8, then odd indexes from 1 to 9.
-export const distributionColors = _distributionColors.map((_, idx) =>
-  idx < _distributionColors.length / 2
-    ? _distributionColors[idx * 2]
-    : _distributionColors[(idx - _distributionColors.length / 2) * 2 + 1]
-)

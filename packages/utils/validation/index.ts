@@ -1,6 +1,7 @@
 import Ajv from 'ajv'
 import JSON5 from 'json5'
 
+import { CHAIN_BECH32_PREFIX } from '../constants'
 import cosmosMsgSchema from '../cosmos_msg.json'
 import {
   isValidAddress,
@@ -10,8 +11,6 @@ import {
 import { isValidUrl } from '../isValidUrl'
 
 export * from './instantiate'
-
-const CHAIN_PREFIX = process.env.NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
 
 export const validateRequired = (
   v: string | number | boolean | null | undefined
@@ -34,17 +33,17 @@ export const validatePercent = (v: string | number) => {
 }
 
 export const validateAddress = (v: string) =>
-  isValidAddress(v, CHAIN_PREFIX) || 'Invalid address'
+  isValidAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
 
 export const validateValidatorAddress = (v: string) =>
-  isValidValidatorAddress(v, CHAIN_PREFIX) || 'Invalid address'
+  isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
 
 export const validateUrl = (v: string) =>
   isValidUrl(v) ||
   'Invalid URL link, must start with https and end with png/jpeg/gif.'
 
 export const validateContractAddress = (v: string) =>
-  isValidContractAddress(v, CHAIN_PREFIX) || 'Invalid contract address'
+  isValidContractAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid contract address'
 
 export const validateJSON = (v: string) => {
   try {
