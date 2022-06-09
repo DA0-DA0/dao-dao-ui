@@ -1,6 +1,7 @@
 import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { TriangleUp } from '@dao-dao/icons'
 import {
   Proposal,
@@ -253,16 +254,16 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
       {threshold &&
         (quorum && effectiveQuorumValue !== undefined ? (
           <>
-            <p className="mb-3 text-sm body-text">Ratio of votes</p>
+            <p className="mb-3 text-sm body-text">{i18n.t('Ratio of votes')}</p>
 
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  Yes{' '}
+                  {i18n.t('Yes')}{' '}
                   {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
                 <p key="no" className="text-error">
-                  No {turnoutNoPercent.toLocaleString(undefined, localeOptions)}
+                  {i18n.t('No')} {turnoutNoPercent.toLocaleString(undefined, localeOptions)}
                   %
                 </p>,
               ]
@@ -282,7 +283,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                Abstain{' '}
+                {i18n.t('Abstain')}{' '}
                 {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}
                 %
               </p>
@@ -347,7 +348,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
-                        Passing{' '}
+                       {i18n.t('Passing')} {' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -355,7 +356,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                       </>
                     ) : (
                       <>
-                        Failing{' '}
+                       {i18n.t('Failing')} {' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
@@ -369,7 +370,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
 
             <div className="flex flex-row justify-between mt-4 mb-1">
               <p className="overflow-hidden text-sm text-ellipsis body-text">
-                Turnout
+                {i18n.t('Turnout')}
               </p>
 
               <p className="font-mono text-xs text-tertiary">
@@ -418,13 +419,13 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
               <Tooltip label="This proportion of voting weight must vote on a proposal for it to pass.">
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
-                    Quorum: <span className="font-mono">{quorum.display}</span>
+                    {i18n.t('Quorum')}: <span className="font-mono">{quorum.display}</span>
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {quorumMet ? (
                       <>
-                        Reached{' '}
+                       {i18n.t('Reached')}  {' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -432,7 +433,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                       </>
                     ) : (
                       <>
-                        Not met{' '}
+                        {i18n.t('Not met')} {' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
@@ -447,17 +448,17 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
         ) : (
           <>
             <p className="overflow-hidden mb-3 text-sm text-ellipsis body-text">
-              Turnout
+              {i18n.t('Turnout')}
             </p>
 
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  Yes {totalYesPercent.toLocaleString(undefined, localeOptions)}
+                  {i18n.t('Yes')} {totalYesPercent.toLocaleString(undefined, localeOptions)}
                   %
                 </p>,
                 <p key="no" className="text-error">
-                  No {totalNoPercent.toLocaleString(undefined, localeOptions)}%
+                    {i18n.t('No')} {totalNoPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
               ]
                 .sort(() => yesVotes - noVotes)
@@ -476,7 +477,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                Abstain{' '}
+                  {i18n.t('Abstain')} {' '}
                 {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
               </p>
             </div>
@@ -541,7 +542,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
-                        Reached{' '}
+                        {i18n.t('Reached')}{' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -549,7 +550,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                       </>
                     ) : (
                       <>
-                        Not met{' '}
+                        {i18n.t('Not met')}{' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
@@ -615,10 +616,10 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
 
       {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
-          <p className="font-mono text-tertiary">All abstain clarification</p>
+          <p className="font-mono text-tertiary">{i18n.t('All abstain clarification')}</p>
 
           <p className="mt-2 body-text">
-            When all abstain, a proposal will fail.
+            {i18n.t('All abstain clarification (long)')}
           </p>
         </div>
       )}

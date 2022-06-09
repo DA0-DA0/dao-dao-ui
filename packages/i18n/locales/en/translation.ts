@@ -27,6 +27,7 @@ const en = {
   'Passing threshold': 'Passing threshold',
   'Quorum': 'Quorum',
   'Proposal deposit': 'Proposal deposit',
+  'Proposal deposit refund': '$t(Proposal deposit) refund',
   'Governance token': 'Governance token',
   'Majority': 'Majority',
   'Addresses': 'Addresses',
@@ -34,6 +35,19 @@ const en = {
   'Off': 'Off',
   'Unstaking period': 'Unstaking period',
   'None': 'None',
+
+  'Vote status': 'Vote status',
+  'Ratio of votes': 'Ratio of votes',
+  'Yes': 'Yes',
+  'No': 'No',
+  'Abstain': 'Abstain',
+  'Passing': 'Passing',
+  'Failing': 'Failing',
+  'Turnout': 'Turnout',
+  'Reached': 'Reached',
+  'Not met': 'Not met',
+  'All abstain clarification': 'All abstain clarification',
+  'All abstain clarification (long)': 'When all abstain, a proposal will fail',
 
 
 
@@ -62,8 +76,12 @@ const en = {
  'Configure wallet to continue': 'Configure your wallet to continue',
  'Configure wallet to continue (long)': 'You have Keplr installed, but it doesn\'t seem like you\'ve set up a wallet. To continue, open the Keplr extension and set up a wallet.\nTo open the Keplr extension press the puzzle icon in the top right of your browser and then press the Keplr button. Once you\'ve done that, a new page will open where you\'ll be able to create a new account. Configure your wallet to continue',
   'Got it': 'Got it',
+  'success': {
+    'voteCast': 'Vote successfully cast.',
+    'proposalExecuted': 'Executed successfully',
+  },
   'error': {
-    'loadingData': 'Failed to load data',
+    'loadingData': 'Failed to load data.',
   },
 }
 

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import i18n from '@dao-dao/i18n'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   useWallet,
@@ -93,7 +94,7 @@ const InnerProposal: FC = () => {
         })
 
         refreshProposalAndAll()
-        toast.success('Vote successfully cast.')
+        toast.success(i18n.t('success.voteCast'))
       } catch (err) {
         console.error(err)
         toast.error(
@@ -117,9 +118,7 @@ const InnerProposal: FC = () => {
       })
 
       refreshProposalAndAll()
-      toast.success(
-        `Executed successfully. Transaction hash (${response.transactionHash}) can be found in the proposal details.`
-      )
+      toast.success(i18n.t('success.proposalExecuted'))
     } catch (err) {
       console.error(err)
       toast.error(
@@ -152,7 +151,7 @@ const InnerProposal: FC = () => {
     !proposalModuleConfig ||
     denomConversionDecimals === undefined
   ) {
-    throw new Error('Failed to load page data.')
+    throw new Error(i18n.t('error.loadingData'))
   }
 
   const memberWhenProposalCreated =
@@ -213,7 +212,7 @@ const InnerProposal: FC = () => {
           />
 
           <div className="lg:hidden">
-            <h3 className="mb-6 text-base font-medium">Referendum status</h3>
+            <h3 className="mb-6 text-base font-medium">{i18n.t('Vote status')}</h3>
 
             <V1ProposalInfoVoteStatus
               denomConversionDecimals={denomConversionDecimals}
@@ -237,7 +236,7 @@ const InnerProposal: FC = () => {
           walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
-        <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
+        <h3 className="mt-8 mb-6 text-base font-medium">{i18n.t('Vote status')}</h3>
         <V1ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
