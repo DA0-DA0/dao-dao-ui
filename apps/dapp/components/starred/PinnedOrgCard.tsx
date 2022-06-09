@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { useRecoilValue, useRecoilState } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import {
   nativeBalanceSelector,
   useGovernanceTokenInfo,
@@ -14,7 +15,6 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
-import i18n from '@dao-dao/i18n'
 import { ContractCard, LoadingContractCard } from '../ContractCard'
 import { useOrgInfoContext } from '../OrgPageWrapper'
 import { pinnedAddressesAtom } from '@/atoms/pinned'

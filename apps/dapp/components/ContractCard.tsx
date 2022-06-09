@@ -87,7 +87,7 @@ function ContractCardBase({
             {weight != undefined && (
               <p className="text-sm text-valid text-success">
                 <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-                {i18n.t('Voting weight', { count: weight })}
+                {i18n.t('Voting weight')}: {weight}
               </p>
             )}
           </div>

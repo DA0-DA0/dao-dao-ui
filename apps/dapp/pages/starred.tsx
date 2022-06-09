@@ -3,13 +3,13 @@ import { NextPage } from 'next'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { LoadingScreen, SuspenseLoader } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { EmptyOrgCard } from '@/components/EmptyDaoCard'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { ActionMenu, PinnedOrgCard } from '@/components/starred'
-import i18n from '@dao-dao/i18n'
 
 const InnerStarred: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
@@ -24,7 +24,7 @@ const InnerStarred: FC = () => {
             <ActionMenu />
           </div>
 
-          <h1 className="header-text">{i18n.t('Starred')} </h1>
+          <h1 className="header-text">{i18n.t('Home page')} </h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
             {i18n.t('DAO', { count: 100 })}

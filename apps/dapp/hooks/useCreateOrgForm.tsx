@@ -12,6 +12,7 @@ import {
 import toast from 'react-hot-toast'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
@@ -65,10 +66,10 @@ export interface OrgFormPage {
 }
 
 export enum CreateOrgSubmitLabel {
-  Back = 'Back',
-  Continue = 'Continue',
-  Review = 'Review',
-  CreateOrg = 'Create Org',
+  Back = i18n.t('Back'),
+  Continue = i18n.t('Continue'),
+  Review = i18n.t('Review'),
+  CreateOrg = i18n.t('Create DAO'),
 }
 
 export const useCreateOrgForm = (pageIndex: number) => {
@@ -267,19 +268,18 @@ export const useCreateOrgForm = (pageIndex: number) => {
 export const createOrgFormPages: OrgFormPage[] = [
   {
     href: '/org/create',
-    title: 'Choose a structure',
+    title: i18n.t('Choose a structure'),
     validate: ({ structure }) => structure !== undefined,
   },
   {
     href: '/org/create/describe',
-    title: 'Describe the organization',
+    title: i18n.t('Describe the DAO'),
     validate: ({ name }) => name.trim().length > 0,
   },
   {
     href: '/org/create/voting',
-    title: 'Configure voting distribution',
-    subtitle:
-      'This will determine how much voting share different members of the org have when they vote on proposals.',
+    title: i18n.t('Configure voting'),
+    subtitle: i18n.t('Configure voting description'),
     // Validate group weights and member proportions add up to 100%.
     validate: ({ groups }, errors, clearErrors, setError) => {
       let valid = true
@@ -292,8 +292,7 @@ export const createOrgFormPages: OrgFormPage[] = [
       // Ensure voting power has been given to at least one member.
       if (totalWeight === 0) {
         setError?.('_groupsError', {
-          message:
-            'You have not given anyone voting power. Add some members to your org.',
+          message: i18n.t('errors.noVotingPower'),
         })
         valid = false
       } else if (errors?._groupsError) {
@@ -303,7 +302,7 @@ export const createOrgFormPages: OrgFormPage[] = [
       groups.forEach((group, groupIndex) => {
         if (group.members.length === 0) {
           setError?.(`groups.${groupIndex}._error`, {
-            message: 'No members have been added.',
+            message: i18n.t('errors.noMembers'),
           })
           valid = false
         } else if (errors?.groups?.[groupIndex]?._error) {
@@ -316,7 +315,7 @@ export const createOrgFormPages: OrgFormPage[] = [
   },
   {
     href: '/org/create/review',
-    title: 'Review and submit',
+    title: i18n.t('Review and submit'),
   },
 ]
 
@@ -364,7 +363,7 @@ const createOrg = async (
     let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
     if (governanceTokenOptions.type === GovernanceTokenType.New) {
       if (!newInfo) {
-        throw new Error('New governance token info not provided.')
+        throw new Error(i18n.t('errors.noGovTokenInfo'))
       }
 
       const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
@@ -401,7 +400,7 @@ const createOrg = async (
       }
     } else {
       if (!existingGovernanceTokenAddress) {
-        throw new Error('Existing governance token address not provided.')
+        throw new Error(i18n.t('errors.noGovTokenAddr'))
       }
 
       tokenInfo = {

@@ -1,6 +1,7 @@
 import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useState } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import {
   Proposal,
   Status,
@@ -62,7 +63,9 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
       <div className="mt-6">
         <MarkdownPreview markdown={proposal.description} />
       </div>
-      <div className="mt-9 mb-3 font-mono caption-text">Messages</div>
+      <div className="mt-9 mb-3 font-mono caption-text">
+        {i18n.t('Message', { count: 100 })}
+      </div>
       <div className="max-w-3xl">
         {decodedMessages?.length ? (
           showRaw ? (

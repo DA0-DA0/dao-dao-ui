@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
+
 import { Button } from '../Button'
 import { LogoNoBorder } from '../Logo'
 import { BalanceIcon } from './BalanceIcon'
@@ -33,7 +35,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
     )}
     <div className="flex justify-end">
       <Button onClick={onManage} size="sm" variant="secondary">
-        Manage
+        {i18n.t('Manage')}
       </Button>
     </div>
   </div>

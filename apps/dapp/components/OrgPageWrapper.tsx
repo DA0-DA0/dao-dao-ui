@@ -8,6 +8,7 @@ import {
   useContext,
 } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import {
   ConfigResponse,
   CwCoreQueryClient as QueryClient,
@@ -132,7 +133,7 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
       // Excluding `info` will render OrgNotFound.
       return {
         props: {
-          title: 'Org not found',
+          title: i18n.t('error.DAONotFound'),
           description: '',
         },
       }

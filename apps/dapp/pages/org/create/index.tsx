@@ -1,6 +1,8 @@
 import Emoji from 'a11y-react-emoji'
 import { FC, useCallback } from 'react'
 
+import i18n from '@dao-dao/i18n'
+
 import {
   DefaultNewOrg,
   DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_GROUP_WEIGHT,
@@ -45,21 +47,21 @@ const CreateOrgPage: FC = () => {
       <CreateOrgFormWrapper {...formWrapperProps}>
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateOrgStructure
-            description="Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members."
+            description={i18n.t('Simple DAO description')}
             emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
             newOrg={watchedNewOrg}
             onChange={onChange}
             structure={NewOrgStructure.Simple}
-            title="Simple"
+            title={i18n.t('Simple DAO')}
           />
 
           <CreateOrgStructure
-            description="Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares."
+            description={i18n.t('Gov token DAO description')}
             emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
             newOrg={watchedNewOrg}
             onChange={onChange}
             structure={NewOrgStructure.UsingGovToken}
-            title="Governance Token-based"
+            title={i18n.t('Gov token DAO')}
           />
         </div>
       </CreateOrgFormWrapper>

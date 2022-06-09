@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import {
   ImageSelector,
   InputErrorMessage,
@@ -30,7 +31,7 @@ const CreateOrgPage: FC = () => {
               watch={watch}
             />
 
-            <p className="text-disabled">Add an image</p>
+            <p className="text-disabled">{i18n.t('Add an image')}</p>
           </div>
 
           <div className="flex flex-col flex-1 gap-2">
@@ -38,7 +39,7 @@ const CreateOrgPage: FC = () => {
               <TextInput
                 error={errors.name}
                 label="name"
-                placeholder="Organization's name..."
+                placeholder={i18n.t('DAO name placeholder')}
                 register={register}
                 validation={[validateRequired]}
               />
@@ -49,7 +50,7 @@ const CreateOrgPage: FC = () => {
               <TextAreaInput
                 error={errors.description}
                 label="description"
-                placeholder="Organization's description..."
+                placeholder={i18n.t('DAO description placeholder')}
                 register={register}
                 rows={4}
               />

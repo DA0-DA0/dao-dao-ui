@@ -3,8 +3,8 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import i18n from '@dao-dao/i18n'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import i18n from '@dao-dao/i18n'
 import {
   useWallet,
   useGovernanceTokenInfo,

@@ -3,8 +3,8 @@ import { MenuIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
 import { ConnectWalletButton } from '@dao-dao/common'
+import i18n from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 

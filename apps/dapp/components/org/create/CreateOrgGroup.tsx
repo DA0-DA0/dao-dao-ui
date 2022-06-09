@@ -8,6 +8,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import {
   AddressInput,
   Button,
@@ -152,7 +153,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
             onClick={() => appendMember({ address: '' })}
             variant="secondary"
           >
-            Add member
+            {i18n.t('Add member')}
           </Button>
           {remove && (
             <Button
@@ -199,7 +200,7 @@ const CreateOrgGroupMember: FC<CreateOrgGroupMemberProps> = ({
           containerClassName="grow"
           error={errors.groups?.[groupIndex]?.members?.[memberIndex]?.address}
           label={`groups.${groupIndex}.members.${memberIndex}.address`}
-          placeholder="Member's address..."
+          placeholder={i18n.t('Member address placeholder')}
           register={register}
           validation={[validateAddress, validateRequired]}
         />

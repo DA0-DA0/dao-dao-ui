@@ -2,6 +2,8 @@ import { StarIcon as StarOutline } from '@heroicons/react/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/solid'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
+
 import { useThemeContext } from '../../theme'
 
 export interface StarButtonProps {
@@ -27,7 +29,7 @@ export const StarButton: FC<StarButtonProps> = ({ pinned, onPin }) => {
         <StarOutline className="inline mr-1 w-[20px]" />
       )}
       <span className="inline hidden md:block">
-        {pinned ? 'Starred' : 'Star'}
+        {pinned ? i18n.t('Favorited') : i18n.t('Favorite')}
       </span>
     </button>
   )

@@ -140,7 +140,7 @@ const InnerOrgHome: FC = () => {
             <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
-                  ['/starred', 'Home'],
+                  ['/starred', i18n.t('Home page')],
                   [router.asPath, orgName],
                 ]}
               />

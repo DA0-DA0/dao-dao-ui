@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
@@ -20,7 +21,7 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
 }) => (
   <div className="p-6 mt-2 w-full rounded-lg border shadow border-base-300">
     <h2 className="font-mono text-sm text-secondary">
-      Unclaimed (unstaked ${tokenInfo.symbol})
+      {i18n.t('Unclaimed')} (unstaked ${tokenInfo.symbol})
     </h2>
     {loading ? (
       <div className="inline-block mt-2 animate-spin-medium">
@@ -37,7 +38,7 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
         className="normal-case btn-outline btn btn-xs border-secondary"
         onClick={onClaim}
       >
-        Claim
+        {i18n.t('Claim')}
       </button>
     </div>
   </div>

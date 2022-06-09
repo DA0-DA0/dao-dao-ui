@@ -1,5 +1,6 @@
-import { EmptyContractCard } from './EmptyContractCard'
 import i18n from '@dao-dao/i18n'
+
+import { EmptyContractCard } from './EmptyContractCard'
 
 export const EmptyOrgCard = () => (
   <EmptyContractCard

@@ -10,6 +10,7 @@ import clsx from 'clsx'
 import { FC, useMemo } from 'react'
 import { Pie, Bar } from 'react-chartjs-2'
 
+import i18n from '@dao-dao/i18n'
 import { useNamedThemeColor } from '@dao-dao/ui'
 
 import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
@@ -61,7 +62,7 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
 
   return (
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <p className="font-mono text-center caption-text">Voting Power</p>
+      <p className="font-mono text-center caption-text">{i18n.t('Voting weight')}</p>
       <p className="font-mono caption-text">
         {onlyOneGroup ? 'Members' : 'Groups'}
       </p>
