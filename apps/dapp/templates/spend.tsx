@@ -98,12 +98,9 @@ export const SpendComponent: TemplateComponent = ({
               decimals: cw20Info[idx].decimals,
             })
           )
-      })
+      }) &&
+      setValue(getLabel('denom'), defaultSymbol)
   }, [isFromCSV, cw20Info, tokenList, getValues, getLabel, defaultSymbol])
-
-  useEffect(() => {
-    isFromCSV && setValue(getLabel('denom'), defaultSymbol)
-  }, [isFromCSV, setValue, getLabel, defaultSymbol])
 
   const validatePossibleSpend = (
     denom: string,
