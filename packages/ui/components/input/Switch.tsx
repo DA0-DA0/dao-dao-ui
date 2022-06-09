@@ -7,6 +7,7 @@ interface SwitchProps {
   onClick?: () => void
   className?: string
   sizing?: 'sm' | 'lg'
+  disabled?: boolean
 }
 
 export const Switch: FC<SwitchProps> = ({
@@ -14,6 +15,7 @@ export const Switch: FC<SwitchProps> = ({
   onClick,
   className,
   sizing = 'lg',
+  disabled,
 }) => (
   <div
     className={clsx(
@@ -27,7 +29,7 @@ export const Switch: FC<SwitchProps> = ({
       },
       className
     )}
-    onClick={onClick}
+    onClick={disabled ? undefined : onClick}
   >
     <div
       className={clsx(
@@ -65,6 +67,7 @@ interface FormSwitchProps<
   watch: UseFormWatch<FieldValues>
   setValue: UseFormSetValue<FieldValues>
   onToggle?: (newValue: boolean) => void
+  disabled?: boolean
 }
 
 export const FormSwitch = <

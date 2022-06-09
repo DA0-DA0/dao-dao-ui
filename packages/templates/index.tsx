@@ -10,12 +10,14 @@ import {
   addTokenTemplate,
   removeTokenTemplate,
   customTemplate,
+  updateInfoTemplate,
 } from './templates'
 
 export const templates: Template[] = [
   spendTemplate,
   mintTemplate,
   stakeTemplate,
+  updateInfoTemplate,
   addTokenTemplate,
   removeTokenTemplate,
   // Ensure custom is always last for two reasons:

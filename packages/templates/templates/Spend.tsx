@@ -117,22 +117,22 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
 const useDecodeCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
-  const spentTokenAddress =
+  const isTransfer =
     'wasm' in msg &&
     'execute' in msg.wasm &&
-    'contract_addr' in msg.wasm.execute
-      ? msg.wasm.execute.contract_addr
-      : undefined
+    'contract_addr' in msg.wasm.execute &&
+    'transfer' in msg.wasm.execute.msg &&
+    'recipient' in msg.wasm.execute.msg.transfer &&
+    'amount' in msg.wasm.execute.msg.transfer
+
+  const spentTokenAddress = isTransfer
+    ? msg.wasm.execute.contract_addr
+    : undefined
   const spentTokenDecimals = useRecoilValue(
     spentTokenAddress
       ? tokenInfoSelector({ contractAddress: spentTokenAddress, params: [] })
       : constSelector(undefined)
   )?.decimals
-
-  // Nothing yet to return about the match.
-  if (spentTokenDecimals === undefined) {
-    throw new Error('Failed to load data.')
-  }
 
   return useMemo(() => {
     if (
@@ -160,14 +160,7 @@ const useDecodeCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
       }
     }
 
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      'transfer' in msg.wasm.execute.msg &&
-      'recipient' in msg.wasm.execute.msg.transfer &&
-      'amount' in msg.wasm.execute.msg.transfer
-    ) {
+    if (isTransfer && spentTokenDecimals !== undefined) {
       return {
         match: true,
         data: {
@@ -182,7 +175,7 @@ const useDecodeCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
     }
 
     return { match: false }
-  }, [msg, spentTokenDecimals])
+  }, [msg, spentTokenDecimals, isTransfer])
 }
 
 const InnerSpendComponent: TemplateComponent = (props) => {
