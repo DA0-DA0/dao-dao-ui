@@ -2,6 +2,7 @@
 const en = {
 
   // words - mere words
+  //
   On: 'On',
   Off: 'Off',
   None: 'None',
@@ -18,11 +19,20 @@ const en = {
   'I understand': 'I accept the danger',
 
   // DAO vocabulary
-  Members: 'Members',
+  //
+  Members: 'Members', // TODO add counting
   Addresses: 'Addresses',
   Treasury: 'Treasury',
   Info: 'Info',
   'Voting weight': 'Voting weight',
+
+  'Governance token_one': 'Governance token',
+  'Governance token_other': 'Governance tokens',
+  'Governance token address': 'Governance token address', // TODO find and replace
+  'Token contract address': 'Token contract address', // TODO find and replace
+
+  Claim: 'Claim',
+  Unclaimed: 'Unclaimed',
 
   'Voting duration': 'Voting duration',
   'Voting duration description': 'The amount of time that a proposal will remain open for voting. After this time elapses, the proposal will either pass or fail.',
@@ -44,8 +54,7 @@ const en = {
   'Proposal deposit refund': 'Refund failed proposals',
   'Proposal deposit refund description': 'Should a failed proposal have its deposit refunded to the proposer? (Proposals that pass will always have their deposit returned). Turning this on, particularly when proposal deposits are high, may encourage members to deliberate with other members before creating a proposal.',
 
-  'Governance token': 'Governance token',
-  Majority: 'Majority',
+  // votes
   'Vote status': 'Vote status',
   'Ratio of votes': 'Ratio of votes',
   Yes: 'Yes',
@@ -55,10 +64,10 @@ const en = {
   Failing: 'Failing',
   Turnout: 'Turnout',
   Reached: 'Reached',
+  Majority: 'Majority',
   'Not met': 'Not met',
-  Claim: 'Claim',
-  Unclaimed: 'Unclaimed',
-  Manage: 'Manage',
+
+  // what do we call them?
   // TODO - refactor
   // TODO - not zero
   DAO_zero: 'DAO',
@@ -99,6 +108,7 @@ const en = {
   // Names for UI places
   Documentation: 'Documentation',
   Feedback: 'Feedback',
+
   // Names for UI actions
   // (think: names for things you can use the UI *do*)
   'Explore DAOs': 'Explore all DAOs',
@@ -110,6 +120,9 @@ const en = {
   // TODO DRY
   Search: 'Search',
   'Search for a DAO': 'Search for a DAO', // TODO placeholder?
+  // TODO ?? underspecified?
+  Manage: 'Manage',
+  'Add an image': 'Add an image',
 
 
   // DAO creation steps
@@ -128,19 +141,36 @@ const en = {
   // Configuring a DAO's description
   'DAO name placeholder': "DAO's name...",
   'DAO description placeholder': "DAO's description...",
-  'Add an image': 'Add an image',
   'Image URL': 'Image URL',
-  'Image URL tooltip': 'A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg',
+  'Image URL tooltip': 'A link an image. For example: https://moonphase.is/image.svg',
 
   // Configuring a DAO's membership and voting system
   // configure voting
   'Member address placeholder': "Member's address",
   'Add member': 'Add member',
+  'per member': 'per member',
+
   Tier: 'Tier',
   'Tier name': 'Tier name',
   'Tier description': 'The "class" of member. For example: "Core developers," "friends and family." These names are only for your reference.',
   'Add tier': 'Add tier',
-  'Advanced configuration warning': 'This is an advanced feature. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you may end up locking your org, making it impossible to pass proposals.',
+  'Default tier name': 'Core contributors',
+
+  'Create a token': 'Create a token',
+  'Use existing token': 'Use an existing token',
+  // TODO move up to gov token?
+  'Gov token name': 'Token name',
+  'Gov token placeholder': 'A token name (e.g., DogDAO)',
+  'Ticker symbol': 'Ticker symbol',
+  'Ticker symbol placeholder': 'A ticker symbol (e.g., DOG)',
+  'Token image': 'Token image',
+  'Treasury balance': 'Treasury balance',
+  // TODO smarter / more localized ways to do percentages?
+  'Treasury balance description': "{{numberOfTokensMinted, number}} tokens will be minted. {{memberPercent, number(minimumFractionDigits:2)}}% will be sent to members according to the distribution above. The reamining {{treasuryPercent, number(minimumFractionDigits:2)}}% will go to the DAO's treasury, where they can be distributed later via governance proposal.",
+
+  'Advanced voting configuration': 'Advanced configuration',
+  'Advanced voting configuration description': 'Configure passing threshold and quorum.',
+  'Advanced configuration warning': 'This is an advanced feature. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.',
 
 
 
@@ -155,6 +185,7 @@ const en = {
   // wallets are poorly designed, poorly supported by major browsers,
   // and poorly understood, in that order. I recommend literal
   // translations here, even if they're clunky.
+  //
   'Need wallet to continue': "You'll need wallet to continue",
   'Need wallet to continue (long)':
     'Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet',
@@ -192,12 +223,15 @@ const en = {
 
   error: {
     loadingData: 'Failed to load data.',
+    invalidAddress: "Invalid address.", // TODO search for and replace these
+    invalidCosmosMessage: "Invalid Cosmos message.", // TODO search for and replace these
     DAONotFound: 'DAO not found.',
     proposalNotfound: 'Proposal not found.',
     noVotingPower: 'You have not given anyone voting power. Add some members to your DAO.',
     noMembers: "You haven't added any members to your DAO",
     noGovTokenInfo: "You didn't give enough information about your governance token.",
     noGovTokenAddr: "You didn't provide an address for your governance token.",
+    fieldRequired: "This field is required.", // TODO find and replace
   },
 }
 

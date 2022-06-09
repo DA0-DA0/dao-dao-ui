@@ -91,7 +91,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
         <div className="flex flex-col items-center">
           <div className="flex flex-row gap-2 items-center">
             <p className="text-right caption-text">
-              {governanceTokenEnabled ? 'Tokens' : 'Voting power'}
+              {governanceTokenEnabled ? i18n.t('Governance token', { count: 1000}) : i18n.t('Voting weight') }
             </p>
             <div>
               <NumberInput
@@ -128,9 +128,7 @@ export const CreateOrgGroup: FC<CreateOrgGroupProps> = ({
               />
             </div>
             <p className="secondary-text">
-              per
-              <br />
-              member
+              {i18n.t('per member')}
             </p>
           </div>
 

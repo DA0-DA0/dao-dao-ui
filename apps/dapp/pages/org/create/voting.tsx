@@ -235,11 +235,11 @@ const CreateOrgVotingPage: FC = () => {
               label="governanceTokenOptions.type"
               options={[
                 {
-                  label: 'Create new token',
+                  label: i18n.t('Create a token'),
                   value: GovernanceTokenType.New,
                 },
                 {
-                  label: 'Use existing token',
+                  label: i18n.t('Use existing token'),
                   value: GovernanceTokenType.Existing,
                 },
               ]}
@@ -252,7 +252,7 @@ const CreateOrgVotingPage: FC = () => {
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
                     <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">Treasury balance</p>
+                      <p className="primary-text">{i18n.t('Treasury balance')}</p>
 
                       <div>
                         <div className="flex flex-row grow gap-4 items-center">
@@ -318,35 +318,25 @@ const CreateOrgVotingPage: FC = () => {
                     </div>
 
                     <p className="my-2 secondary-text">
-                      {totalWeightAllocated.toLocaleString(undefined, {
-                        maximumFractionDigits: NEW_ORG_CW20_DECIMALS,
-                      })}{' '}
-                      tokens will be minted.{' '}
-                      {totalWeightAllocated === 0
-                        ? 0
-                        : (
+
+                      {i18n.t('Treasury balance description', {
+                        'numberOfTokensMinted': totalWeightAllocated,
+                        'memberPercent': totalWeightAllocated === 0 ? 0 : (
                             (memberWeightAllocated / totalWeightAllocated) *
-                            100
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                      % will be sent to the members according to the
-                      distribution above. The remaining{' '}
-                      {totalWeightAllocated === 0
-                        ? 0
-                        : (
+                              100
+                          ),
+                        'treasuryPercent': totalWeightAllocated === 0 ? 0 : (
                             (initialTreasuryBalance / totalWeightAllocated) *
-                            100
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                      % will begin in the treasury.
+                              100
+                          ),
+                      })}
+
                     </p>
                   </div>
 
                   <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">
                     <div className="flex flex-col gap-2 justify-between items-start">
-                      <InputLabel mono name="Token image" />
+                      <InputLabel mono name={i18n.t('Token image')} />
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
@@ -358,19 +348,19 @@ const CreateOrgVotingPage: FC = () => {
                           watch={watch}
                         />
                         <p className="hidden text-disabled sm:block">
-                          Add an image
+                          {i18n.t('Add an image')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name="Symbol" />
+                      <InputLabel mono name={i18n.t('Ticker symbol')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.symbol}
                           label="governanceTokenOptions.newInfo.symbol"
-                          placeholder="Define a symbol..."
+                          placeholder={i18n.t('Ticker symbol placeholder')}
                           register={register}
                           validation={[validateRequired, validateTokenSymbol]}
                         />
@@ -381,13 +371,13 @@ const CreateOrgVotingPage: FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name="Name" />
+                      <InputLabel mono name={i18n.t('Gov token name')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.name}
                           label="governanceTokenOptions.newInfo.name"
-                          placeholder="Name your token..."
+                          placeholder={i18n.t('Gov token placeholder')}
                           register={register}
                           validation={[validateRequired]}
                         />
@@ -555,10 +545,10 @@ const CreateOrgVotingPage: FC = () => {
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name="(Advanced) Change threshold and quorum"
+              name={i18n.t('Advanced voting configuration')}
             />
             <p className="caption-text">
-              Configure voting threshold and quorum.
+            {i18n.t('Advanced voting configuration description')}
             </p>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { atom } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/state/clients/cw-core'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
 
@@ -132,7 +133,7 @@ export const DefaultNewOrg: NewOrg = {
   description: '',
   groups: [
     {
-      name: 'Members',
+      name: i18n.t('Default tier name'),
       weight: DEFAULT_NEW_ORG_SIMPLE_INITIAL_GROUP_WEIGHT,
       members: [
         {
