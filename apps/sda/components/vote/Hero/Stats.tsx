@@ -1,6 +1,7 @@
 import { ArrowUpIcon, LinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Dollar, Staked, Apr, Wallet } from '@dao-dao/icons'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -30,7 +31,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => (
       votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
         <HeroStat
           Icon={Dollar}
-          title="Total supply:"
+          title={i18n.t('Total supply') + ':'}
           value={
             data ? `${formatZeroes(data.totalSupply!)} ${data.denom!}` : ''
           }
@@ -40,7 +41,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => (
       votingModuleType === VotingModuleType.Cw4Voting && (
         <HeroStat
           Icon={Wallet}
-          title="Members:"
+          title={i18n.t('Members') + ':'}
           value={data ? data.members!.toLocaleString() : ''}
         />
       )}
@@ -48,7 +49,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => (
       votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
         <HeroStat
           Icon={Staked}
-          title="Staked:"
+          title={i18n.t('Staked') + ':'}
           value={data ? `${data.stakedPercent!}%` : ''}
         />
       )}
@@ -56,7 +57,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => (
       votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
         <HeroStat
           Icon={ArrowUpIcon}
-          title="Unstaking period:"
+          title={i18n.t('Unstaking period') + '+'}
           value={data ? data.unstakingDuration! : ''}
         />
       )}

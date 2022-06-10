@@ -396,7 +396,7 @@ const CreateOrgVotingPage: FC = () => {
                         ?.existingGovernanceTokenAddress
                     }
                     label="governanceTokenOptions.existingGovernanceTokenAddress"
-                    placeholder="Token contract address..."
+                    placeholder={i18n.t('Token contract address')}
                     register={register}
                     validation={[validateContractAddress, validateRequired]}
                   />

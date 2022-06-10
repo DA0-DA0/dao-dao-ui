@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { StakingModal, ConnectWalletButton } from '@dao-dao/common'
 import {
   stakingLoadingAtom,
@@ -65,7 +66,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
             denom={governanceTokenInfo.symbol}
             loading={stakingLoading}
             onManage={() => setShowStakingDefaultMode(StakingMode.Stake)}
-            title="Balance"
+            title={i18n.t('Your balance')}
           />
         </li>
         <li>
@@ -77,7 +78,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
             denom={governanceTokenInfo.symbol}
             loading={stakingLoading}
             onManage={() => setShowStakingDefaultMode(StakingMode.Unstake)}
-            title={`Voting power (staked ${governanceTokenInfo.symbol})`}
+            title={i18n.t('Your voting power')}
           />
         </li>
         {!!sumClaimsAvailable && (
@@ -155,7 +156,7 @@ export const Cw20StakedBalanceVotingSharesDisplay: FC<Cw20StakedBalanceVotingSha
   ({ primaryText }) => (
     <>
       <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
-        Your shares
+        {i18n.t('Your voting weight')}
       </h2>
 
       <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>

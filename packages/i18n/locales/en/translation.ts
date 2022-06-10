@@ -14,16 +14,18 @@ const en = {
 
   // DAO vocabulary
   //
-  Members: 'Members', // TODO add counting
+  Members: 'Members',
   Addresses: 'Addresses',
   Treasury: 'Treasury',
   Info: 'Info',
-  'Voting weight': 'Voting weight',
+  'Voting weight': 'Voting power',
 
   'Governance token_one': 'Governance token',
   'Governance token_other': 'Governance tokens',
-  'Governance token address': 'Governance token address', // TODO find and replace
-  'Token contract address': 'Token contract address', // TODO find and replace
+  'Governance token address': 'Governance token address',
+  'Token contract address': 'Token contract address',
+  'Total supply': 'Total supply',
+  'Total supply amount': '{{amount}} ${{tokenSymbol}} total supply',
 
   Claim: 'Claim',
   Unclaimed: 'Unclaimed',
@@ -35,6 +37,8 @@ const en = {
   'Proposal deposit description': 'The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation.',
 
   Staking: 'Staking',
+  Staked: 'Staked',
+  'Percent staked': '{{percent, number(minimumFractionDigits:0)}}% ${{tokenSymbol}} staked',
   'Unstaking period': 'Unstaking period',
   'Unstaking period description': "In order to vote, members must stake their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unstake them. This setting configures how long members have to wait after unstaking their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your DAO's governance.",
 
@@ -69,6 +73,7 @@ const en = {
   DAO_zero: 'DAO',
   DAO_other: 'DAOs',
   Proposals: 'Proposals',
+  'Proposals created': '{{proposalCount, number}} proposals created',
   // TODO redo numbers
   proposal_zero: '{{count}} proposals',
   proposal_one: '{{count}} proposal',
@@ -89,7 +94,7 @@ const en = {
   // See DAO vocabulary, above.
   'DAO name': 'DAO name',
   // these are
-  'Governance details': 'Governance details',
+  'Governance details': 'Governance details', // TODO where doe sthis appear?
 
   // DAO DAO UI
   //
@@ -112,21 +117,24 @@ const en = {
   // (think: names for things you can use the UI *do*)
   //
   'Explore DAOs': 'Explore all DAOs',
-  // TODO DRY
   'Create a DAO': 'Create a DAO',
-  'Create a DAO (long)':
-    "You're not a member of any DAOs. Why not create one?",
   'Create DAO': 'Create DAO',
-  // TODO DRY
+  'Prompt to create a DAO':
+    "You're not a member of any DAOs. Why not create one?",
   Search: 'Search',
   'Search for a DAO': 'Search for a DAO', // TODO placeholder?
   // TODO ?? underspecified?
   Manage: 'Manage',
+  'Manage staking': 'Manage staking',
+  'Add an image': 'Add an image',
 
   // Viewing your relation to a DAO
   'You are a member': "You're a member",
-  'Add an image': 'Add an image',
   // TODO staking/unstaking???
+  'Your equity': 'Your voting power',
+  'Member voting weights': 'Member voting power',
+  'Your balance': 'Your balance',
+  'Your voting weight': 'Your voting power',
 
   // Confirmations
   //
@@ -207,11 +215,14 @@ const en = {
   'Configure wallet to continue (long)':
     "You have Keplr installed, but it doesn't seem like you've set up a wallet. To continue, open the Keplr extension and set up a wallet.\nTo open the Keplr extension press the puzzle icon in the top right of your browser and then press the Keplr button. Once you've done that, a new page will open where you'll be able to create a new account. Configure your wallet to continue",
 
-  // TOS and BETA
+  // Beta warning
   'Beta warning': 'DAO DAO is in beta, and has not yet been audited. Do not keep large sums of money in your DAO, and do not use your DAO for anything mission critical.',
+
+  // ToS
   'Terms of service': 'DAO DAO TOOLING IS PROVIDED "AS IS", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contracts will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.',
 
-  // DAO DAO landing page
+  // Landing page
+  // TODO - namespace?
   'short tagline': '$t(DAO_other) for everyone.',
   'long tagline':
     'Simple, capable, and free $t(DAO_zero) tooling. Built with love, by DAO DAO, on Juno.',
@@ -229,13 +240,15 @@ const en = {
   'Connect wallet': 'Connect wallet',
   'Home page': 'Home',
 
-
-
+  // Success!
+  //
   success: {
     voteCast: 'Vote successfully cast.',
     proposalExecuted: 'Executed successfully',
   },
 
+  // Errors
+  //
   error: {
     loadingData: 'Failed to load data.',
     invalidAddress: "Invalid address.", // TODO search for and replace these

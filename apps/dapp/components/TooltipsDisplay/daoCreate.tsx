@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 
 import { TooltipResponse } from '@/components/TooltipsDisplay'
 
+// TODO are we still using these? i think not...
 export interface DaoCreateData {
   deposit: string
   description: string

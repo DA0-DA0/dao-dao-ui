@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   durationIsNonZero,
@@ -100,7 +101,7 @@ export const StakingModal: FC<StakingModalProps> = ({
   return (
     <Modal onClose={onClose}>
       <div className="flex justify-between items-center">
-        <h1 className="header-text">Manage staking</h1>
+        <h1 className="header-text">{i18n.t('Manage staking')}</h1>
       </div>
 
       <div className="flex gap-1 py-[20px] mb-2 border-b border-inactive">

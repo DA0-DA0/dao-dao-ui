@@ -1,6 +1,7 @@
 import { XIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
 import {
   validateContractAddress,
@@ -36,7 +37,7 @@ export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
         )}
       </div>
       <div className="flex flex-col gap-2">
-        <InputLabel name="Token address" />
+        <InputLabel name={i18n.t('Governance token address')} />
         <AddressInput
           disabled={readOnly}
           error={errors?.address}

@@ -1,6 +1,7 @@
 import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Pencil } from '@dao-dao/icons'
 import {
   useGovernanceTokenInfo,
@@ -53,11 +54,13 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
           governanceTokenInfo ? (
           <>
-            {convertMicroDenomToDenomWithDecimals(
-              governanceTokenInfo.total_supply,
-              governanceTokenInfo.decimals
-            ).toLocaleString()}{' '}
-            ${governanceTokenInfo.symbol} total supply
+              {i18n.t('Total supply amount', {
+                amount: convertMicroDenomToDenomWithDecimals(
+                  governanceTokenInfo.total_supply,
+                  governanceTokenInfo.decimals
+                ).toLocaleString(),
+                tokenSymbol: governanceTokenInfo.symbol,
+              })}
           </>
         ) : null}
       </HorizontalInfoSection>
@@ -66,12 +69,15 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         stakedPercent !== undefined && (
           <HorizontalInfoSection>
             <LibraryIcon className="inline w-4" />
-            {stakedPercent}% ${governanceTokenInfo.symbol} staked
+            {i18n.t('Percent staked', {
+              percent: stakedPercent,
+              tokenSymbol: governanceTokenInfo.symbol,
+            })}
           </HorizontalInfoSection>
         )}
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {proposalCount} proposals created
+        {i18n.t('Proposals created', { proposalCount: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
   )

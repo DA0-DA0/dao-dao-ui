@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { FC, ReactNode } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Member } from '@dao-dao/state/clients/cw4-voting'
 import { VoteBalanceCard } from '@dao-dao/ui'
 
@@ -25,7 +26,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          Your shares
+        {i18n.t('Your voting weight')}
         </h2>
         <ul className="mt-3 list-none">
           <li>
@@ -44,7 +45,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          Member shares
+        {i18n.t('Member voting wieghts')}
         </h2>
         <ul className="mt-2 list-none">
           {members.map((member) => (
