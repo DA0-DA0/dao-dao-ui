@@ -36,9 +36,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
       </div>
       <div className="ml-1 text-sm">
         <div className="mt-[20px]">
-          <h3 className="mb-[16px] font-mono caption-text">
-            {i18n.t('DAOs')}
-          </h3>
+          <h3 className="mb-[16px] font-mono caption-text">{i18n.t('DAOs')}</h3>
 
           <SuspenseLoader
             fallback={<Loader className="!justify-start ml-2" size={20} />}

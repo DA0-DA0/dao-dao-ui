@@ -252,7 +252,9 @@ const CreateOrgVotingPage: FC = () => {
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
                     <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">{i18n.t('Treasury balance')}</p>
+                      <p className="primary-text">
+                        {i18n.t('Treasury balance')}
+                      </p>
 
                       <div>
                         <div className="flex flex-row grow gap-4 items-center">
@@ -318,19 +320,19 @@ const CreateOrgVotingPage: FC = () => {
                     </div>
 
                     <p className="my-2 secondary-text">
-
                       {i18n.t('Treasury balance description', {
-                        'numberOfTokensMinted': totalWeightAllocated,
-                        'memberPercent': totalWeightAllocated === 0 ? 0 : (
-                            (memberWeightAllocated / totalWeightAllocated) *
-                              100
-                          ),
-                        'treasuryPercent': totalWeightAllocated === 0 ? 0 : (
-                            (initialTreasuryBalance / totalWeightAllocated) *
-                              100
-                          ),
+                        numberOfTokensMinted: totalWeightAllocated,
+                        memberPercent:
+                          totalWeightAllocated === 0
+                            ? 0
+                            : (memberWeightAllocated / totalWeightAllocated) *
+                              100,
+                        treasuryPercent:
+                          totalWeightAllocated === 0
+                            ? 0
+                            : (initialTreasuryBalance / totalWeightAllocated) *
+                              100,
                       })}
-
                     </p>
                   </div>
 
@@ -548,7 +550,7 @@ const CreateOrgVotingPage: FC = () => {
               name={i18n.t('Advanced voting configuration')}
             />
             <p className="caption-text">
-            {i18n.t('Advanced voting configuration description')}
+              {i18n.t('Advanced voting configuration description')}
             </p>
           </div>
         </div>
@@ -672,16 +674,14 @@ const CreateOrgVotingPage: FC = () => {
             className="flex flex-col gap-2 items-stretch"
             onSubmit={newGroupNameHandleSubmit(onSubmitNewGroupName)}
           >
-            <InputLabel name={i18n.t('Tier name')}  />
+            <InputLabel name={i18n.t('Tier name')} />
             <TextInput
               autoFocus
               label="name"
               register={newGroupNameRegister}
               validation={[validateRequired]}
             />
-            <p className="caption-text">
-              {i18n.t('Tier description')}
-            </p>
+            <p className="caption-text">{i18n.t('Tier description')}</p>
 
             <SubmitButton className="mt-4 w-full" label={i18n.t('Add tier')} />
           </form>
@@ -712,7 +712,7 @@ const CreateOrgVotingPage: FC = () => {
             className="self-end"
             onClick={() => setShowThresholdQuorumWarning(false)}
           >
-          {i18n.t('I understand')}
+            {i18n.t('I understand')}
           </Button>
         </Modal>
       )}

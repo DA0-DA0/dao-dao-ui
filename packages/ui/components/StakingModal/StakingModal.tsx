@@ -87,7 +87,9 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0 ? undefined : i18n.t('error.cannotTxZeroTokens')
+      return claimableTokens > 0
+        ? undefined
+        : i18n.t('error.cannotTxZeroTokens')
     }
     if (amount <= 0) {
       return i18n.t('error.cannotTxZeroTokens')
@@ -264,7 +266,8 @@ const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
     <h2 className="link-text">
       {mode == StakingMode.Unstake
         ? i18n.t('You are about to unstake')
-        : i18n.t('Unstaking period') + `: ${humanReadableDuration(unstakingDuration)}`}
+        : i18n.t('Unstaking period') +
+          `: ${humanReadableDuration(unstakingDuration)}`}
     </h2>
     <p className="mt-3">
       {i18n.t('Unstaking mechanics', {

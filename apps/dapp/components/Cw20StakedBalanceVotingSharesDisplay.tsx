@@ -3,8 +3,8 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
 import { StakingModal, ConnectWalletButton } from '@dao-dao/common'
+import i18n from '@dao-dao/i18n'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
@@ -101,16 +101,16 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
       {unstakedGovTokenBalance ? (
         <div className="p-6 mt-2 w-full bg-primary rounded-lg">
           <h3 className="mb-4 link-text">
-           {i18n.t('You have unstaked tokens', {
-             amount: convertMicroDenomToDenomWithDecimals(
-              unstakedGovTokenBalance,
-              governanceTokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 }),
-             tokenSymbol: governanceTokenInfo.symbol,
-           })}
+            {i18n.t('You have unstaked tokens', {
+              amount: convertMicroDenomToDenomWithDecimals(
+                unstakedGovTokenBalance,
+                governanceTokenInfo.decimals
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 }),
+              tokenSymbol: governanceTokenInfo.symbol,
+            })}
           </h3>
           <p className="secondary-text">
-          {i18n.t('You have unstaked tokens explanation')}
+            {i18n.t('You have unstaked tokens explanation')}
           </p>
           <div className="flex justify-end mt-4">
             <button

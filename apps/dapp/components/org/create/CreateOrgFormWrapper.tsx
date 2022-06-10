@@ -44,7 +44,7 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
           title: i18n.t('Create a DAO'),
           description: i18n.t('Create a DAO'),
         }}
-    title={i18n.t('Create a DAO')}
+        title={i18n.t('Create a DAO')}
       />
 
       <form className="flex flex-row items-stretch" {...props}>

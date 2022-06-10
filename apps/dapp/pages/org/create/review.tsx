@@ -49,7 +49,9 @@ const CreateOrgReviewPage: FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="font-mono caption-text">{i18n.t('DAO description')}</p>
+              <p className="font-mono caption-text">
+                {i18n.t('DAO description')}
+              </p>
               <p className="text-lg secondary-text">
                 {watchedNewOrg.description}
               </p>
@@ -102,7 +104,10 @@ const CreateOrgReviewPage: FC = () => {
             )}
           {governanceTokenEnabled && (
             <>
-              <CreateOrgReviewStat title={i18n.t('Governance tokens')} value={i18n.t('Enabled')} />
+              <CreateOrgReviewStat
+                title={i18n.t('Governance tokens')}
+                value={i18n.t('Enabled')}
+              />
               <CreateOrgReviewStat
                 title={i18n.t('Unstaking period')}
                 value={convertDurationWithUnitsToHumanReadableString(

@@ -618,9 +618,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
 
       {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
-          <p className="font-mono text-tertiary">
-            {i18n.t('All abstain')}
-          </p>
+          <p className="font-mono text-tertiary">{i18n.t('All abstain')}</p>
 
           <p className="mt-2 body-text">
             {i18n.t('All abstain clarification')}

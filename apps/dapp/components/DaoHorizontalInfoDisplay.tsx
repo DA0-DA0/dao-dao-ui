@@ -54,13 +54,13 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
           governanceTokenInfo ? (
           <>
-              {i18n.t('Total supply amount', {
-                amount: convertMicroDenomToDenomWithDecimals(
-                  governanceTokenInfo.total_supply,
-                  governanceTokenInfo.decimals
-                ).toLocaleString(),
-                tokenSymbol: governanceTokenInfo.symbol,
-              })}
+            {i18n.t('Total supply amount', {
+              amount: convertMicroDenomToDenomWithDecimals(
+                governanceTokenInfo.total_supply,
+                governanceTokenInfo.decimals
+              ).toLocaleString(),
+              tokenSymbol: governanceTokenInfo.symbol,
+            })}
           </>
         ) : null}
       </HorizontalInfoSection>
