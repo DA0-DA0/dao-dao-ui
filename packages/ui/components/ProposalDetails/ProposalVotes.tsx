@@ -27,14 +27,14 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
 }) => (
   <>
     <hr className="border-default" />
-    <h3 className="mt-9 mb-5 link-text">All votes</h3>
-    <div className="flex flex-col divide-y divide-inactive">
+    <h3 className="mt-8 mb-5 link-text">All votes</h3>
+    <div className="flex flex-col mb-5 divide-y divide-inactive">
       {votes.map((vote, index) => (
         <VoteRow {...vote} key={index} />
       ))}
     </div>
     {canLoadMore && (
-      <div className="mt-2">
+      <div className="-mt-3 mb-5">
         <Button
           loading={loadingMore}
           onClick={onLoadMore}
@@ -66,7 +66,7 @@ export const VoteRow: FC<VoteInfo> = ({ vote, voter, weight }) => {
       </button>
       <VoteDisplay vote={vote} />
       <p className="font-mono text-primary caption-text">
-        %
+        %{' '}
         {zeroPad(
           weight.toLocaleString(undefined, {
             minimumFractionDigits: 6,

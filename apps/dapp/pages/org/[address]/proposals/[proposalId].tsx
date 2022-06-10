@@ -215,7 +215,7 @@ const InnerProposal: FC = () => {
             }
           />
 
-          <div className="lg:hidden">
+          <div className="max-w-3xl lg:hidden">
             <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
             <ProposalInfoVoteStatus
@@ -230,7 +230,7 @@ const InnerProposal: FC = () => {
           </div>
         </div>
 
-        <div className="mx-6 mt-11">
+        <div className="mx-6 mt-8 max-w-3xl md:mx-0">
           <ProposalVotes coreAddress={coreAddress} proposalId={proposalId} />
         </div>
       </div>

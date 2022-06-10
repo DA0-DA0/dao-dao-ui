@@ -6,7 +6,7 @@ import {
   ProposalResponse,
   Status,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import { VoteDisplay } from '@dao-dao/ui/components/ProposalDetails/v1/VoteDisplay'
+import { VoteDisplay } from '@dao-dao/ui/components/ProposalDetails/VoteDisplay'
 import { StatusIcons } from '@dao-dao/ui/components/StatusIcons'
 import { getProposalEnd, pad, titlecase } from '@dao-dao/utils'
 

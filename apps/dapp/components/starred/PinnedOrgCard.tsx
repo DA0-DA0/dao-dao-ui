@@ -15,7 +15,6 @@ import {
 } from '@dao-dao/utils'
 
 import { ContractCard, LoadingContractCard } from '../ContractCard'
-import { useOrgInfoContext } from '../OrgPageWrapper'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 import { addToken } from '@/util/addToken'
 
@@ -24,13 +23,11 @@ interface PinnedOrgCardProps {
 }
 
 const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
-  const { votingModuleType } = useOrgInfoContext()
-
   const config = useRecoilValue(configSelector({ contractAddress: address }))
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(address)
-  const { walletVotingWeight } = useVotingModule(address)
+  const { walletVotingWeight, votingModuleType } = useVotingModule(address)
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })
@@ -69,13 +66,15 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
         walletVotingWeight === undefined
           ? undefined
           : votingModuleType === VotingModuleType.Cw4Voting
-          ? walletVotingWeight
+          ? walletVotingWeight.toLocaleString()
           : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
             governanceTokenInfo
           ? convertMicroDenomToDenomWithDecimals(
               walletVotingWeight,
               governanceTokenInfo.decimals
-            )
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })
           : undefined
       }
     />

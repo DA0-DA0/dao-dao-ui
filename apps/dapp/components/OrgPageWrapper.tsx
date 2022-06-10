@@ -26,6 +26,7 @@ import {
   CI,
   parseVotingModuleContractName,
   VotingModuleType,
+  validateContractAddress,
 } from '@dao-dao/utils'
 
 import { OrgNotFound } from './org/NotFound'
@@ -50,8 +51,17 @@ const DefaultOrgInfo: OrgInfo = {
   name: '',
   imageUrl: null,
 }
-const OrgInfoContext = createContext<OrgInfo>(DefaultOrgInfo)
-export const useOrgInfoContext = () => useContext(OrgInfoContext)
+const OrgInfoContext = createContext<OrgInfo | null>(null)
+export const useOrgInfoContext = () => {
+  const context = useContext(OrgInfoContext)
+  if (!context) {
+    throw new Error(
+      'useOrgInfoContext can only be used in a descendant of OrgInfoContext.'
+    )
+  }
+
+  return context
+}
 
 export type OrgPageWrapperProps = PropsWithChildren<{
   url?: string
@@ -128,7 +138,11 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
     }
 
     // If invalid address, display not found.
-    if (typeof address !== 'string' || !address) {
+    if (
+      typeof address !== 'string' ||
+      !address ||
+      validateContractAddress(address) !== true
+    ) {
       // Excluding `info` will render OrgNotFound.
       return {
         props: {
@@ -202,6 +216,22 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
       }
     } catch (error) {
       console.error(error)
+
+      if (
+        error instanceof Error &&
+        (error.message.includes('not found') ||
+          error.message.includes('Error parsing into type') ||
+          error.message.includes('unknown variant'))
+      ) {
+        // Excluding `info` will render OrgNotFound.
+        return {
+          props: {
+            title: 'Org not found',
+            description: '',
+          },
+        }
+      }
+
       // Throw error to trigger 500.
       throw error
     }

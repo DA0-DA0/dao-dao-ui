@@ -30,7 +30,7 @@ export const ActionMenu = () => (
         text="Create an Org"
       />
       <ActionItem
-        href="/org/list"
+        href="/org/explore"
         icon={<MapIcon className="w-4" />}
         text="Explore all Orgs"
       />

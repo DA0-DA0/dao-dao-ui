@@ -20,7 +20,7 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
     useProposalInfo(coreAddress, proposalId)
 
   if (!proposal || !proposalModuleAddress) {
-    throw new Error('Failed to load info.')
+    throw new Error('Failed to load data.')
   }
 
   const totalPower = Number(proposal.total_power)
@@ -35,10 +35,10 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
         },
       ],
     })
-  )?.votes.map(({ vote, voter, weight }) => ({
+  )?.votes.map(({ vote, voter, power }) => ({
     vote,
     voter,
-    weight: (Number(weight) / totalPower) * 100,
+    weight: (Number(power) / totalPower) * 100,
   }))
 
   const [votes, setVotes] = useState(initalVotes ?? [])
@@ -67,10 +67,10 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
                   ],
                 })
               )
-            )?.votes.map(({ vote, voter, weight }) => ({
+            )?.votes.map(({ vote, voter, power }) => ({
               vote,
               voter,
-              weight: (Number(weight) / totalPower) * 100,
+              weight: (Number(power) / totalPower) * 100,
             })) ?? []
 
           setCanLoadMore(newVotes.length === 30)

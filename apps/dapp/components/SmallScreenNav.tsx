@@ -57,7 +57,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
 
             <ul className="mt-2 list-none">
               <NavListItem
-                href="/org/list"
+                href="/org/explore"
                 icon={ArrowRightIcon}
                 text="All Orgs"
               />
