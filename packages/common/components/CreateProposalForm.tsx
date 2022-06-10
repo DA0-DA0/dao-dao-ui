@@ -244,14 +244,13 @@ export const CreateProposalForm = ({
               return (
                 <li key={index}>
                   <Component
+                    allTemplatesWithData={proposalTemplateData}
                     coreAddress={coreAddress}
                     errors={errors.templateData?.[index]?.data || {}}
                     getLabel={(fieldName) =>
                       `templateData.${index}.data.${fieldName}`
                     }
-                    indexInType={proposalTemplateData
-                      .filter(({ key }) => key === templateData.key)
-                      .indexOf(templateData)}
+                    index={index}
                     onRemove={() => remove(index)}
                   />
                 </li>

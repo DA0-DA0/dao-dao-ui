@@ -6,6 +6,7 @@ import { VotingModuleType } from '@dao-dao/utils'
 
 import { Template, DecodeCosmosMsgMatch } from '.'
 import { useTemplatesForVotingModuleType } from '..'
+import { TemplateKey } from './common'
 import { TemplateComponentLoader } from './TemplateCard'
 
 type Message = { [key: string]: any }
@@ -64,14 +65,16 @@ const InnerTemplatesRenderer: FunctionComponent<TemplatesRendererProps> = ({
         {messagesWithTemplates.map((messageWithTemplate, index) =>
           messageWithTemplate.template ? (
             <messageWithTemplate.template.Component
+              allTemplatesWithData={messagesWithTemplates.map(
+                ({ template, data }) => ({
+                  // Custom matches everything, so this should not matter.
+                  key: template?.key ?? TemplateKey.Custom,
+                  data,
+                })
+              )}
               coreAddress={coreAddress}
               getLabel={(field: string) => `${index}.${field}`}
-              indexInType={messagesWithTemplates
-                .filter(
-                  ({ template }) =>
-                    template?.key === messageWithTemplate.template.key
-                )
-                .indexOf(messageWithTemplate)}
+              index={index}
               proposalId={proposalId}
               readOnly
             />

@@ -36,12 +36,8 @@ export type TemplateComponentProps<T = undefined> = {
   onRemove?: () => void
   errors?: FieldErrors
   readOnly?: boolean
-  // Index of the template in the list of templates of the same type.
-  // For example, if there are two templates of type "spend", and a
-  // proposal contained Spend, Mint, and Spend, the first Spend would
-  // have index 0, the Mint would have index 0, and the second Spend
-  // would have index 1.
-  indexInType: number
+  allTemplatesWithData: TemplateKeyAndData[]
+  index: number
 } & (T extends undefined ? {} : { options: T })
 
 export type TemplateComponent<T = undefined> = FunctionComponent<
