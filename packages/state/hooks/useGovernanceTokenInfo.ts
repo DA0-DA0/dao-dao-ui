@@ -1,19 +1,19 @@
-import { useMemo } from 'react'
 import { useRecoilValue, constSelector } from 'recoil'
 
-import { govTokenInfoSelector, useWallet } from '@dao-dao/state'
+import { useWallet } from '@dao-dao/state'
 import {
-  infoSelector,
-  votingModuleSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { balanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+  balanceSelector,
+  tokenInfoSelector,
+} from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import {
   stakingContractSelector,
   tokenContractSelector,
 } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import { tokenUSDPriceSelector } from '@dao-dao/state/recoil/selectors/price'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { parseVotingModuleContractName, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType } from '@dao-dao/utils'
+
+import { useVotingModule } from './useVotingModule'
 
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
@@ -22,8 +22,9 @@ interface UseGovernanceTokenInfoOptions {
 }
 
 interface UseGovernanceTokenInfoResponse {
-  votingModuleAddress?: string
+  votingModuleType?: VotingModuleType
   stakingContractAddress?: string
+  governanceTokenShouldExist: boolean
   governanceTokenAddress?: string
   governanceTokenInfo?: TokenInfoResponse
   /// Optional
@@ -44,40 +45,27 @@ export const useGovernanceTokenInfo = (
   }: UseGovernanceTokenInfoOptions = {}
 ): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
-
-  const votingModuleAddress = useRecoilValue(
-    votingModuleSelector({ contractAddress: coreAddress })
-  )
-  // All `info` queries are the same, so just use cw-core's info query.
-  const votingModuleInfo = useRecoilValue(
-    votingModuleAddress
-      ? infoSelector({ contractAddress: votingModuleAddress })
-      : constSelector(undefined)
-  )
-  // Ensure using the cw20 voting module.
-  const governanceTokenExists = useMemo(
-    () =>
-      votingModuleInfo?.info.contract
-        ? parseVotingModuleContractName(votingModuleInfo.info.contract) ===
-          VotingModuleType.Cw20StakedBalanceVoting
-        : false,
-    [votingModuleInfo]
-  )
+  const { votingModuleAddress, votingModuleType } = useVotingModule(coreAddress)
+  const governanceTokenShouldExist =
+    votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
 
   const stakingContractAddress = useRecoilValue(
-    votingModuleAddress && governanceTokenExists
+    votingModuleAddress && governanceTokenShouldExist
       ? stakingContractSelector({ contractAddress: votingModuleAddress })
       : constSelector(undefined)
   )
 
   const governanceTokenAddress = useRecoilValue(
-    votingModuleAddress && governanceTokenExists
+    votingModuleAddress && governanceTokenShouldExist
       ? tokenContractSelector({ contractAddress: votingModuleAddress })
       : constSelector(undefined)
   )
   const governanceTokenInfo = useRecoilValue(
     governanceTokenAddress
-      ? govTokenInfoSelector(governanceTokenAddress)
+      ? tokenInfoSelector({
+          contractAddress: governanceTokenAddress,
+          params: [],
+        })
       : constSelector(undefined)
   )
 
@@ -114,8 +102,9 @@ export const useGovernanceTokenInfo = (
   )
 
   return {
-    votingModuleAddress,
+    votingModuleType,
     stakingContractAddress,
+    governanceTokenShouldExist,
     governanceTokenAddress,
     governanceTokenInfo,
     /// Optional

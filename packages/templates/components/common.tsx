@@ -15,6 +15,7 @@ export enum TemplateKey {
   AddToken = 'addToken',
   RemoveToken = 'removeToken',
   UpdateInfo = 'updateInfo',
+  UpdateProposalConfig = 'updateProposalConfig',
   Custom = 'custom',
 }
 
