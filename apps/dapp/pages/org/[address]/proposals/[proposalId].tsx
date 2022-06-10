@@ -150,7 +150,8 @@ const InnerProposal: FC = () => {
   if (
     !proposalResponse ||
     !proposalModuleConfig ||
-    denomConversionDecimals === undefined
+    denomConversionDecimals === undefined ||
+    proposalId === undefined
   ) {
     throw new Error('Failed to load page data.')
   }
@@ -190,6 +191,7 @@ const InnerProposal: FC = () => {
             onExecute={onExecute}
             onVote={onVote}
             proposal={proposalResponse.proposal}
+            proposalId={proposalId}
             setShowStaking={setShowStaking}
             showStaking={showStaking}
             stakingModal={

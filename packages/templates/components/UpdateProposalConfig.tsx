@@ -16,7 +16,8 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { TemplateCard, TemplateComponent } from './common'
+import { TemplateComponent } from './common'
+import { TemplateCard } from './TemplateCard'
 
 export interface UpdateProposalConfigOptions {
   governanceTokenSymbol?: string

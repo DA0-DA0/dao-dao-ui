@@ -8,11 +8,11 @@ import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
 import {
   Template,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
+  UpdateInfoComponent as Component,
 } from '../components'
-import { UpdateInfoComponent as Component } from '../components'
 
 type UpdateInfoData = ConfigResponse
 
@@ -53,7 +53,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = (
     [coreAddress]
   )
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<UpdateInfoData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -97,7 +97,7 @@ export const updateInfoTemplate: Template<UpdateInfoData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [
     VotingModuleType.Cw20StakedBalanceVoting,
     VotingModuleType.Cw4Voting,

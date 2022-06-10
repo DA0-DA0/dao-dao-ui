@@ -1,11 +1,12 @@
 import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
-import { FC, ReactNode, useState } from 'react'
+import { FC, ReactNode, useMemo, useState } from 'react'
 
 import {
   Proposal,
   Status,
   Vote as VoteChoice,
 } from '@dao-dao/state/clients/cw-proposal-single'
+import { TemplatesRenderer } from '@dao-dao/templates/components'
 import {
   decodedMessagesString,
   decodeMessages,
@@ -17,13 +18,13 @@ import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'
 import { Execute } from '../../Execute'
 import { MarkdownPreview } from '../../MarkdownPreview'
 import { Vote } from '../../Vote'
-import { V1ProposalMessageTemplateList } from './V1ProposalMessageTemplateList'
 import { VoteDisplay } from './VoteDisplay'
 
 interface V1ProposalDetailsProps {
   coreAddress: string
   votingModuleType: VotingModuleType
   proposal: Proposal
+  proposalId: number
   walletVote: VoteChoice | undefined
   walletWeightPercent: number
   loading: boolean
@@ -40,6 +41,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
   coreAddress,
   votingModuleType,
   proposal,
+  proposalId,
   walletVote,
   walletWeightPercent,
   loading,
@@ -51,7 +53,10 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
   connected,
   connectWalletButton,
 }) => {
-  const decodedMessages = decodeMessages(proposal.msgs)
+  const decodedMessages = useMemo(
+    () => decodeMessages(proposal.msgs),
+    [proposal.msgs]
+  )
   const [showRaw, setShowRaw] = useState(false)
 
   return (
@@ -70,9 +75,10 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
               value={decodedMessagesString(proposal.msgs)}
             />
           ) : (
-            <V1ProposalMessageTemplateList
+            <TemplatesRenderer
               coreAddress={coreAddress}
-              msgs={proposal.msgs}
+              messages={decodedMessages}
+              proposalId={proposalId}
               votingModuleType={votingModuleType}
             />
           )

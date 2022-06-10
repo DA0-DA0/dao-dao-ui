@@ -23,12 +23,12 @@ import {
   SpendComponent as StatelessSpendComponent,
   Template,
   TemplateComponent,
-  TemplateComponentLoader,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
+import { TemplateComponentLoader } from '../components/TemplateCard'
 
 interface SpendData {
   to: string
@@ -114,7 +114,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   )
 }
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<SpendData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   const isTransfer =
@@ -233,7 +233,7 @@ export const spendTemplate: Template<SpendData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [
     VotingModuleType.Cw20StakedBalanceVoting,
     VotingModuleType.Cw4Voting,

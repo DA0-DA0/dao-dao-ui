@@ -13,7 +13,8 @@ import {
 } from '@dao-dao/ui'
 import { validateUrl, validateRequired } from '@dao-dao/utils'
 
-import { TemplateCard, TemplateComponent } from './common'
+import { TemplateComponent } from './common'
+import { TemplateCard } from './TemplateCard'
 
 export const UpdateInfoComponent: TemplateComponent = ({
   getLabel,

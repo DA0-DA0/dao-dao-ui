@@ -10,7 +10,7 @@ import {
   Template,
   TemplateComponent,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
@@ -93,7 +93,7 @@ const useTransformToCosmos: UseTransformToCosmos<AddTokenData> = (
     [coreAddress]
   )
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<AddTokenData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -122,7 +122,7 @@ export const addTokenTemplate: Template<AddTokenData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [
     VotingModuleType.Cw20StakedBalanceVoting,
     VotingModuleType.Cw4Voting,

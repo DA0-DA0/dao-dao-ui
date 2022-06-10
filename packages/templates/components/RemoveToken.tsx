@@ -11,12 +11,9 @@ import {
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
-import {
-  TemplateCard,
-  TemplateComponent,
-  TokenInfoDisplay,
-  TokenInfoDisplayProps,
-} from './common'
+import { TemplateComponent } from './common'
+import { TemplateCard } from './TemplateCard'
+import { TokenInfoDisplayProps, TokenInfoDisplay } from './TokenInfoDisplay'
 
 interface Token {
   address: string

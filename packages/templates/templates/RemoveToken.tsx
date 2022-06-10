@@ -17,12 +17,12 @@ import {
   RemoveTokenComponent as StatelessRemoveTokenComponent,
   Template,
   TemplateComponent,
-  TemplateComponentLoader,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
+import { TemplateComponentLoader } from '../components/TemplateCard'
 
 interface RemoveTokenData {
   address: string
@@ -140,7 +140,7 @@ const useTransformToCosmos: UseTransformToCosmos<RemoveTokenData> = (
     [coreAddress]
   )
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<RemoveTokenData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveTokenData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -169,7 +169,7 @@ export const removeTokenTemplate: Template<RemoveTokenData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [
     VotingModuleType.Cw20StakedBalanceVoting,
     VotingModuleType.Cw4Voting,

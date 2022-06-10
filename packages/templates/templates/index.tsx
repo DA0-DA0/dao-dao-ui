@@ -1,5 +1,7 @@
 export * from './AddToken'
 export * from './Custom'
+export * from './Execute'
+export * from './Instantiate'
 export * from './Mint'
 export * from './RemoveToken'
 export * from './Spend'
