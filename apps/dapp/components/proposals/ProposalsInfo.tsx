@@ -32,7 +32,7 @@ export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
             ? convertMicroDenomToDenomWithDecimals(
                 proposalModuleConfig.deposit_info.deposit,
                 proposalDepositTokenInfo.decimals
-              ).toLocaleString() +
+              ).toLocaleString(undefined, { maximumFractionDigits: 6 }) +
               ' ' +
               proposalDepositTokenInfo?.symbol
             : 'None',

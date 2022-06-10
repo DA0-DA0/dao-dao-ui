@@ -1,7 +1,10 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { parseVotingModuleContractName, VotingModuleType } from '@dao-dao/utils'
+
 import { Member } from '../clients/cw4-voting'
 import {
+  infoSelector,
   totalPowerAtHeightSelector,
   votingModuleSelector,
   votingPowerAtHeightSelector,
@@ -16,6 +19,8 @@ interface UseVotingModuleOptions {
 
 interface UseVotingModuleResponse {
   isMember: boolean | undefined
+  votingModuleAddress: string | undefined
+  votingModuleType: VotingModuleType | undefined
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
   cw4VotingMembers?: Member[]
@@ -29,6 +34,16 @@ export const useVotingModule = (
   const votingModuleAddress = useRecoilValue(
     votingModuleSelector({ contractAddress: coreAddress })
   )
+
+  // All `info` queries are the same, so just use cw-core's info query.
+  const votingModuleInfo = useRecoilValue(
+    votingModuleAddress
+      ? infoSelector({ contractAddress: votingModuleAddress })
+      : constSelector(undefined)
+  )
+  const votingModuleType =
+    votingModuleInfo &&
+    parseVotingModuleContractName(votingModuleInfo.info.contract)
 
   const _walletVotingWeight = useRecoilValue(
     walletAddress && votingModuleAddress
@@ -74,6 +89,8 @@ export const useVotingModule = (
 
   return {
     isMember,
+    votingModuleAddress,
+    votingModuleType,
     walletVotingWeight,
     totalVotingWeight,
     cw4VotingMembers,
