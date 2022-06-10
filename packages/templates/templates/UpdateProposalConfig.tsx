@@ -18,7 +18,7 @@ import {
 import {
   Template,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
   UpdateProposalConfigComponent,
@@ -252,7 +252,7 @@ const Component: TemplateComponent = (props) => {
   )
 }
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<UpdateProposalConfigData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
@@ -349,7 +349,7 @@ export const updateProposalConfigTemplate: Template<UpdateProposalConfigData> =
     Component,
     useDefaults,
     useTransformToCosmos,
-    useDecodeCosmosMsg,
+    useDecodedCosmosMsg,
     votingModuleTypes: [
       VotingModuleType.Cw20StakedBalanceVoting,
       VotingModuleType.Cw4Voting,
