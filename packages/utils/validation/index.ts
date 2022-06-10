@@ -42,8 +42,10 @@ export const validateUrl = (v: string) =>
   isValidUrl(v) ||
   'Invalid URL link, must start with https and end with png/jpeg/gif.'
 
-export const validateContractAddress = (v: string) =>
-  isValidContractAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid contract address'
+export const validateContractAddress = (v: string, required = true) =>
+  (!required && !v) ||
+  isValidContractAddress(v, CHAIN_BECH32_PREFIX) ||
+  'Invalid contract address'
 
 export const validateJSON = (v: string) => {
   try {

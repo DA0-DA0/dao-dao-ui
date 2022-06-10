@@ -3,9 +3,20 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { transactionEventsSelector, useProposalInfo } from '@dao-dao/state'
+import {
+  nativeBalancesSelector,
+  transactionEventsSelector,
+  useProposalInfo,
+} from '@dao-dao/state'
+import { Coin } from '@dao-dao/state/clients/cw-core'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  makeWasmMessage,
+  NATIVE_DECIMALS,
+  VotingModuleType,
+} from '@dao-dao/utils'
 
 import {
   Template,
@@ -18,19 +29,23 @@ import {
 } from '../components'
 
 interface InstantiateData {
+  admin: string
   codeId: number
   label: string
   message: string
+  funds: { denom: string; amount: number }[]
 }
 
 const useDefaults: UseDefaults<InstantiateData> = () => ({
+  admin: '',
   codeId: 0,
   label: '',
   message: '{}',
+  funds: [],
 })
 
 const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
-  useCallback(({ codeId, label, message }: InstantiateData) => {
+  useCallback(({ admin, codeId, label, message, funds }: InstantiateData) => {
     let msg
     try {
       msg = JSON5.parse(message)
@@ -42,9 +57,15 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
     return makeWasmMessage({
       wasm: {
         instantiate: {
-          admin: null,
+          admin: admin || null,
           code_id: codeId,
-          funds: [],
+          funds: funds.map(({ denom, amount }) => ({
+            denom,
+            amount: convertDenomToMicroDenomWithDecimals(
+              amount,
+              NATIVE_DECIMALS
+            ),
+          })),
           label,
           msg,
         },
@@ -61,9 +82,21 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
         ? {
             match: true,
             data: {
+              admin: msg.wasm.instantiate.admin ?? '',
               codeId: msg.wasm.instantiate.code_id,
               label: msg.wasm.instantiate.label,
               message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
+              funds: (msg.wasm.instantiate.funds as Coin[]).map(
+                ({ denom, amount }) => ({
+                  denom,
+                  amount: Number(
+                    convertMicroDenomToDenomWithDecimals(
+                      amount,
+                      NATIVE_DECIMALS
+                    )
+                  ),
+                })
+              ),
             },
           }
         : { match: false },
@@ -71,6 +104,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   )
 
 const Component: TemplateComponent = (props) => {
+  const nativeBalances =
+    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+
   const { proposalResponse, txHash } = useProposalInfo(
     props.coreAddress,
     props.proposalId
@@ -148,6 +184,7 @@ const Component: TemplateComponent = (props) => {
     <StatelessInstantiateComponent
       {...props}
       options={{
+        nativeBalances,
         instantiatedAddress,
       }}
     />

@@ -86,9 +86,10 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
     }
     // If there are no native tokens in the treasury the native balances
     // query will return an empty list.
-    const nativeHumanReadable = convertDenomToHumanReadableDenom(NATIVE_DENOM)
-    if (id === nativeHumanReadable) {
-      return `Can't spend more tokens than are in the DAO treasury (0 ${nativeHumanReadable}).`
+    if (id === NATIVE_DENOM) {
+      return `Can't spend more tokens than are in the DAO treasury (0 ${convertDenomToHumanReadableDenom(
+        NATIVE_DENOM
+      )}).`
     }
     return 'Unrecognized denom.'
   }
@@ -141,7 +142,7 @@ export const SpendComponent: TemplateComponent<SpendOptions> = ({
           />
 
           <SelectInput
-            defaultValue={process.env.NEXT_PUBLIC_FEE_DENOM}
+            defaultValue={NATIVE_DENOM}
             disabled={readOnly}
             error={errors?.denom}
             label={getLabel('denom')}
