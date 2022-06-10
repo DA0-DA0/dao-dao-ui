@@ -65,6 +65,7 @@ const InnerTemplatesRenderer: FunctionComponent<TemplatesRendererProps> = ({
         {messagesWithTemplates.map((messageWithTemplate, index) =>
           messageWithTemplate.template ? (
             <messageWithTemplate.template.Component
+              key={index}
               allTemplatesWithData={messagesWithTemplates.map(
                 ({ template, data }) => ({
                   // Custom matches everything, so this should not matter.

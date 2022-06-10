@@ -1,9 +1,14 @@
+import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
+import { useRecoilValue } from 'recoil'
 
+import { nativeBalancesSelector } from '@dao-dao/state'
 import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  parseEncodedMessage,
+  NATIVE_DECIMALS,
   VotingModuleType,
 } from '@dao-dao/utils'
 
@@ -13,21 +18,24 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ExecuteComponent as Component,
+  ExecuteComponent as StatelessExecuteComponent,
+  TemplateComponent,
 } from '../components'
 
 interface ExecuteData {
   address: string
   message: string
+  funds: { denom: string; amount: number }[]
 }
 
 const useDefaults: UseDefaults<ExecuteData> = () => ({
   address: '',
   message: '{}',
+  funds: [],
 })
 
 const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () =>
-  useCallback(({ address, message }: ExecuteData) => {
+  useCallback(({ address, message, funds }: ExecuteData) => {
     let msg
     try {
       msg = JSON5.parse(message)
@@ -40,7 +48,13 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () =>
       wasm: {
         execute: {
           contract_addr: address,
-          funds: [],
+          funds: funds.map(({ denom, amount }) => ({
+            denom,
+            amount: convertDenomToMicroDenomWithDecimals(
+              amount,
+              NATIVE_DECIMALS
+            ),
+          })),
           msg,
         },
       },
@@ -57,14 +71,37 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
             match: true,
             data: {
               address: msg.wasm.execute.contract_addr,
-              message: JSON.stringify(
-                parseEncodedMessage(msg.wasm.execute.msg) ?? {}
+              message: JSON.stringify(msg.wasm.execute.msg, undefined, 2),
+              funds: (msg.wasm.execute.funds as Coin[]).map(
+                ({ denom, amount }) => ({
+                  denom,
+                  amount: Number(
+                    convertMicroDenomToDenomWithDecimals(
+                      amount,
+                      NATIVE_DECIMALS
+                    )
+                  ),
+                })
               ),
             },
           }
         : { match: false },
     [msg]
   )
+
+const Component: TemplateComponent = (props) => {
+  const nativeBalances =
+    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+
+  return (
+    <StatelessExecuteComponent
+      {...props}
+      options={{
+        nativeBalances,
+      }}
+    />
+  )
+}
 
 export const executeTemplate: Template<ExecuteData> = {
   key: TemplateKey.Execute,

@@ -2,7 +2,6 @@ import { Coin } from '@cosmjs/stargate'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
-import { ComponentProps, FC } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import {
@@ -12,16 +11,10 @@ import {
   InputErrorMessage,
   InputLabel,
   NumberInput,
-  SelectInput,
   TextInput,
 } from '@dao-dao/ui'
 import {
-  convertDenomToHumanReadableDenom,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  nativeTokenLabel,
-  NATIVE_DECIMALS,
   NATIVE_DENOM,
   validateContractAddress,
   validateCosmosMsg,
@@ -30,6 +23,7 @@ import {
 } from '@dao-dao/utils'
 
 import { TemplateComponent } from './common'
+import { NativeCoinSelector } from './NativeCoinSelector'
 import { TemplateCard } from './TemplateCard'
 
 export interface InstantiateOptions {
@@ -48,7 +42,6 @@ export const InstantiateComponent: TemplateComponent<InstantiateOptions> = (
     readOnly,
     options: { instantiatedAddress },
   } = props
-
   const { register, control } = useFormContext()
   const {
     fields: coins,
@@ -124,7 +117,7 @@ export const InstantiateComponent: TemplateComponent<InstantiateOptions> = (
                   code_id: 0,
                   funds: [],
                   label: '',
-                  msg: msg,
+                  msg,
                 },
               },
             })
@@ -146,7 +139,7 @@ export const InstantiateComponent: TemplateComponent<InstantiateOptions> = (
       <InputLabel className="mt-1 -mb-1" name="Funds" />
       <div className="flex flex-col gap-2 items-stretch">
         {coins.map(({ id }, index) => (
-          <CoinSelector
+          <NativeCoinSelector
             key={id}
             {...props}
             errors={errors?.funds?.[index]}
@@ -181,111 +174,5 @@ export const InstantiateComponent: TemplateComponent<InstantiateOptions> = (
         <InputErrorMessage error={errors?.admin} />
       </div>
     </TemplateCard>
-  )
-}
-
-interface CoinSelectorProps
-  extends ComponentProps<typeof InstantiateComponent> {
-  index: number
-}
-
-const CoinSelector: FC<CoinSelectorProps> = ({
-  onRemove,
-  getLabel,
-  errors,
-  readOnly,
-  options: { nativeBalances },
-}) => {
-  const { register, setValue, watch } = useFormContext()
-
-  const watchAmount = watch(getLabel('amount'))
-  const watchDenom = watch(getLabel('denom'))
-
-  const validatePossibleSpend = (
-    id: string,
-    amount: string
-  ): string | boolean => {
-    const native = nativeBalances.find(({ denom }) => denom === id)
-    if (native) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.amount,
-        NATIVE_DECIMALS
-      )
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        NATIVE_DECIMALS
-      )
-      return (
-        Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} ${nativeTokenLabel(
-          id
-        )}).`
-      )
-    }
-    // If there are no native tokens in the treasury the native balances
-    // query will return an empty list.
-    if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the DAO treasury (0 ${convertDenomToHumanReadableDenom(
-        NATIVE_DENOM
-      )}).`
-    }
-    return 'Unrecognized denom.'
-  }
-
-  return (
-    <div>
-      <div className="flex flex-row gap-2 items-stretch">
-        <NumberInput
-          disabled={readOnly}
-          error={errors?.amount}
-          label={getLabel('amount')}
-          onPlusMinus={[
-            () =>
-              setValue(
-                getLabel('amount'),
-                Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
-              ),
-            () =>
-              setValue(
-                getLabel('amount'),
-                Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
-              ),
-          ]}
-          register={register}
-          sizing="auto"
-          step={1 / 10 ** NATIVE_DECIMALS}
-          validation={[
-            validateRequired,
-            validatePositive,
-            (amount: string) => validatePossibleSpend(watchDenom, amount),
-          ]}
-        />
-
-        <SelectInput
-          defaultValue={NATIVE_DENOM}
-          disabled={readOnly}
-          error={errors?.denom}
-          label={getLabel('denom')}
-          register={register}
-          validation={[
-            (denom: string) => validatePossibleSpend(denom, watchAmount),
-          ]}
-        >
-          {nativeBalances.map(({ denom }) => (
-            <option key={denom} value={denom}>
-              ${nativeTokenLabel(denom)}
-            </option>
-          ))}
-        </SelectInput>
-
-        {!readOnly && (
-          <button onClick={onRemove} type="button">
-            <XIcon className="w-4 h-4 text-error" />
-          </button>
-        )}
-      </div>
-
-      <InputErrorMessage error={errors?.amount ?? errors?.denom} />
-    </div>
   )
 }

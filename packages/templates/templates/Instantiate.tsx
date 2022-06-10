@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -8,7 +9,6 @@ import {
   transactionEventsSelector,
   useProposalInfo,
 } from '@dao-dao/state'
-import { Coin } from '@dao-dao/state/clients/cw-core'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   convertDenomToMicroDenomWithDecimals,

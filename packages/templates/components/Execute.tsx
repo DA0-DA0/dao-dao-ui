@@ -1,9 +1,11 @@
+import { Coin } from '@cosmjs/stargate'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
-import { useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import {
+  Button,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
@@ -11,21 +13,33 @@ import {
 } from '@dao-dao/ui'
 import {
   makeWasmMessage,
+  NATIVE_DENOM,
   validateContractAddress,
   validateCosmosMsg,
   validateRequired,
 } from '@dao-dao/utils'
 
 import { TemplateComponent } from './common'
+import { NativeCoinSelector } from './NativeCoinSelector'
 import { TemplateCard } from './TemplateCard'
 
-export const ExecuteComponent: TemplateComponent = ({
-  getLabel,
-  onRemove,
-  errors,
-  readOnly,
-}) => {
+export interface ExecuteOptions {
+  nativeBalances: readonly Coin[]
+  // Only present once executed.
+  instantiatedAddress?: string
+}
+
+export const ExecuteComponent: TemplateComponent<ExecuteOptions> = (props) => {
+  const { getLabel, onRemove, errors, readOnly } = props
   const { register, control } = useFormContext()
+  const {
+    fields: coins,
+    append: appendCoin,
+    remove: removeCoin,
+  } = useFieldArray({
+    control,
+    name: getLabel('funds'),
+  })
 
   return (
     <TemplateCard
@@ -63,9 +77,9 @@ export const ExecuteComponent: TemplateComponent = ({
             msg = makeWasmMessage({
               wasm: {
                 execute: {
-                  contract_addr: msg.contract,
+                  contract_addr: '',
                   funds: [],
-                  msg: msg,
+                  msg,
                 },
               },
             })
@@ -83,6 +97,31 @@ export const ExecuteComponent: TemplateComponent = ({
           <CheckIcon className="inline w-5" /> json is valid
         </p>
       )}
+
+      <InputLabel className="mt-1 -mb-1" name="Funds" />
+      <div className="flex flex-col gap-2 items-stretch">
+        {coins.map(({ id }, index) => (
+          <NativeCoinSelector
+            key={id}
+            {...props}
+            errors={errors?.funds?.[index]}
+            getLabel={(field: string) => getLabel(`funds.${index}.${field}`)}
+            onRemove={() => removeCoin(index)}
+          />
+        ))}
+        {readOnly && coins.length === 0 && (
+          <p className="mt-1 mb-2 text-xs italic text-tertiary">None</p>
+        )}
+        {!readOnly && (
+          <Button
+            className="self-start"
+            onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+            variant="secondary"
+          >
+            Add payment
+          </Button>
+        )}
+      </div>
     </TemplateCard>
   )
 }
