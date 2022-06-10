@@ -1,5 +1,6 @@
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
 
+import i18n from '@dao-dao/i18n'
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import { errorNotify, successNotify } from './toast'
@@ -12,7 +13,7 @@ export const addToken = async (address: string) => {
 
     if (keplr) {
       await keplr.suggestToken(CHAIN_ID, address)
-      successNotify('Added token to Keplr')
+      successNotify(i18n.t('success.addedToken'))
     }
   } catch (err) {
     console.error(err)

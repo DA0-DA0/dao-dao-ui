@@ -11,6 +11,8 @@ const en = {
   Review: 'Review',
   // as opposed to 'Disabled'
   Enabled: 'Enabled',
+  Preview: 'Preview',
+  'Hide preview': 'Hide preview', // a command
 
   // DAO vocabulary
   //
@@ -20,6 +22,25 @@ const en = {
   Info: 'Info',
   'Voting weight': 'Voting power',
 
+  Proposals: 'Proposals',
+  'Proposals created': '{{proposalCount, number}} proposals created',
+  // TODO redo numbers
+  proposal_zero: '{{count}} proposals',
+  proposal_one: '{{count}} proposal',
+  proposal_other: '{{count}} proposals',
+  'Proposal title': 'Proposal title',
+  'Proposal description': 'Proposal description',
+  'Proposal message templates': 'Proposal action templates',
+
+  Staking: 'Staking', // noun
+  Staked: 'Staked', // adjective
+  Stake: 'Stake', // imperative verb
+  Unstaking: 'Unstaking', // noun and adjective
+  Unstake: 'Unstake', // imperative verb
+  Claim: 'Claim', // verb
+  Unclaimed: 'Unclaimed', // adjective
+  'Percent staked': '{{percent, number(minimumFractionDigits:0)}}% ${{tokenSymbol}} staked',
+
   'Governance token_one': 'Governance token',
   'Governance token_other': 'Governance tokens',
   'Governance token address': 'Governance token address',
@@ -27,20 +48,15 @@ const en = {
   'Total supply': 'Total supply',
   'Total supply amount': '{{amount}} ${{tokenSymbol}} total supply',
 
-  Claim: 'Claim',
-  Unclaimed: 'Unclaimed',
-
   'Voting duration': 'Voting duration',
   'Voting duration description': 'The amount of time that a proposal will remain open for voting. After this time elapses, the proposal will either pass or fail.',
 
   'Proposal deposit': 'Proposal deposit',
   'Proposal deposit description': 'The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation.',
 
-  Staking: 'Staking',
-  Staked: 'Staked',
-  'Percent staked': '{{percent, number(minimumFractionDigits:0)}}% ${{tokenSymbol}} staked',
   'Unstaking period': 'Unstaking period',
   'Unstaking period description': "In order to vote, members must stake their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unstake them. This setting configures how long members have to wait after unstaking their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your DAO's governance.",
+  'Unstaking mechanics': "If you unstake now, it will take {{humanReadableTime}} until they are available to you. During that time, you will not recieve staking rewards. You will not be able to cancel the unbonding.",
 
   'Passing threshold': 'Passing threshold',
   'Passing threshold description': "The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it.",
@@ -66,26 +82,18 @@ const en = {
   Reached: 'Reached',
   Majority: 'Majority',
   'Not met': 'Not met',
+  'All abstain clarification': 'All abstain', // TODO  change to 'All abstain' as the key
+  'All abstain clarification (long)': 'When all abstain, a proposal will fail',
 
   // what do we call them?
   // TODO - refactor
   // TODO - not zero
   DAO_zero: 'DAO',
   DAO_other: 'DAOs',
-  Proposals: 'Proposals',
-  'Proposals created': '{{proposalCount, number}} proposals created',
-  // TODO redo numbers
-  proposal_zero: '{{count}} proposals',
-  proposal_one: '{{count}} proposal',
-  proposal_other: '{{count}} proposals',
   // TODO redo numbers
   Message_one: 'Message',
   Message_other: 'Messages',
 
-  // Descriptions of DAO mechanics
-  // think: what the words above mean, and how they fit together.
-  'All abstain clarification': 'All abstain', // TODO  change to 'All abstain' as the key
-  'All abstain clarification (long)': 'When all abstain, a proposal will fail',
 
   // Components of a DAO
   //
@@ -94,7 +102,7 @@ const en = {
   // See DAO vocabulary, above.
   'DAO name': 'DAO name',
   // these are
-  'Governance details': 'Governance details', // TODO where doe sthis appear?
+  'Governance details': 'Governance details', // TODO where does this appear?
 
   // DAO DAO UI
   //
@@ -113,6 +121,18 @@ const en = {
   Documentation: 'Documentation',
   Feedback: 'Feedback',
 
+  // Viewing your relationship to a DAO
+  'You are a member': "You're a member",
+  // TODO staking/unstaking???
+  'Your equity': 'Your voting power',
+  'Member voting weights': 'Member voting power',
+  'Your balance': 'Your balance',
+  'Your voting weight': 'Your voting power',
+  'You are about to unstake': 'You are about to unstake governance tokens',
+  'You have unstaked tokens': 'You have {{amount, number}} unstaked ${{tokenSymbol}}.',
+  'You have unstaked tokens explanation': 'Unstaked tokens do not count toward your share of the vote!',
+  'You must have voting power to create a proposal': 'You must have voting power to create a proposal. Stake tokens to get voting power.',
+
   // Names for UI actions
   // (think: names for things you can use the UI *do*)
   //
@@ -127,14 +147,12 @@ const en = {
   Manage: 'Manage',
   'Manage staking': 'Manage staking',
   'Add an image': 'Add an image',
+  'Choose token amount': 'Choose number of tokens',
+  'Stake tokens': 'Stake your tokens', // imperative verb
+  'Add to Keplr': 'Add token to Keplr.',
+  'Create a proposal': 'Create a proposal',
+  'Add a proposal message': 'Add an action',
 
-  // Viewing your relation to a DAO
-  'You are a member': "You're a member",
-  // TODO staking/unstaking???
-  'Your equity': 'Your voting power',
-  'Member voting weights': 'Member voting power',
-  'Your balance': 'Your balance',
-  'Your voting weight': 'Your voting power',
 
   // Confirmations
   //
@@ -244,7 +262,8 @@ const en = {
   //
   success: {
     voteCast: 'Vote successfully cast.',
-    proposalExecuted: 'Executed successfully',
+    proposalExecuted: 'Executed successfully.',
+    addedToken: 'Added token to Keplr.',
   },
 
   // Errors
@@ -260,6 +279,13 @@ const en = {
     noGovTokenInfo: "You didn't give enough information about your governance token.",
     noGovTokenAddr: "You didn't provide an address for your governance token.",
     fieldRequired: "This field is required.", // TODO find and replace
+    cannotStakeMoreThanYouHave: "You can't stake or unstake more tokens than you have.",
+    cannotTxZeroTokens: "You can't stake, unstake, or claim zero tokens.",
+    notEnoughForDeposit: "You do not have enough tokens in your balance to pay the proposal deposit",
+    daoIsPaused: "You cannot create a proposal when the DAO is paused.",
+    mustBeMemberToCreateProposal: "You must be a member of the DAO to create a proposal",
+    noProposalsFound: 'No proposals found.',
+    noProposalModule: 'This DAO does not have a proposal module.',
   },
 }
 

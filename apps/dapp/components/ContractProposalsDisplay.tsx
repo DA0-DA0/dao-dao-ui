@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { useVotingModule } from '@dao-dao/state'
 import { Button, Tooltip, SuspenseLoader } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
@@ -15,12 +16,12 @@ export const InnerContractProposalsDisplay: FC = () => {
 
   const tooltip = isMember
     ? undefined
-    : 'You must have voting power to create a proposal. Consider staking some tokens.'
+    : i18n.t('You must have voting power to create a proposal')
 
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2 className="primary-text">Proposals</h2>
+        <h2 className="primary-text">{i18n.t('Proposals')}</h2>
 
         <Link
           className={clsx({ 'pointer-events-none': isMember })}
@@ -29,7 +30,7 @@ export const InnerContractProposalsDisplay: FC = () => {
           <a>
             <Tooltip label={tooltip}>
               <Button disabled={!isMember} size="sm">
-                New proposal
+                {i18n.t('Create a proposal')}
               </Button>
             </Tooltip>
           </a>
@@ -48,7 +49,7 @@ export const ContractProposalsDisplay: FC = () => (
   <SuspenseLoader
     fallback={
       <div className="flex justify-between items-center">
-        <h2 className="primary-text">Proposals</h2>
+        <h2 className="primary-text">{i18n.t('Proposals')}</h2>
         <Loader />
       </div>
     }

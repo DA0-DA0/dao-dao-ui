@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Dollar, Pie } from '@dao-dao/icons'
 
 export interface ProposalsInfoProps {
@@ -23,22 +24,22 @@ export const ProposalsInfo: FC<ProposalsInfoProps> = ({ data, className }) => (
   >
     <ProposalInfoStat
       Icon={Dollar}
-      title="Proposal deposit:"
+      title={i18n.t('Proposal deposit')}
       value={data?.macroDeposit ?? ''}
     />
     <ProposalInfoStat
       Icon={Dollar}
-      title="Deposit refund:"
+      title={i18n.t('Proposal deposit refund')}
       value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
     />
     <ProposalInfoStat
       Icon={Pie}
-      title="Passing threshold:"
+      title={i18n.t('Passing threshold')}
       value={data?.passingThresholdString ?? ''}
     />
     <ProposalInfoStat
       Icon={Pie}
-      title="Quorum:"
+      title={i18n.t('Quorum')}
       value={data?.quorumString ?? ''}
     />
   </div>

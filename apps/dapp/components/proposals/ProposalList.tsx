@@ -7,6 +7,7 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
 import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { ProposalLine, Button, SuspenseLoader } from '@dao-dao/ui'
@@ -80,7 +81,7 @@ export const ProposalList: FC = () => {
   )
 
   if (!proposalModuleAddress) {
-    throw new Error('No proposal module found.')
+    throw new Error(i18n.t('error.noProposalModule'))
   }
 
   // Load from Recoil so that loaded propoals are shared by
@@ -98,7 +99,7 @@ export const ProposalList: FC = () => {
   }, [refreshProposalsId, resetStartBefores])
 
   if (!proposalCount) {
-    return <p className="body-text">No proposals found.</p>
+    return <p className="body-text">{i18n.t('error.noProposalsFound')}</p>
   }
 
   // Only allow loading more once proposal ID has been set from previous

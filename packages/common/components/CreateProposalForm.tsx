@@ -29,6 +29,7 @@ import {
   UseDefaults,
 } from '@dao-dao/templates/components'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import i18n from '@dao-dao/i18n'
 import {
   Button,
   MarkdownPreview,
@@ -207,7 +208,7 @@ export const CreateProposalForm = ({
         )}
         <div className={showPreview ? 'hidden' : ''}>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name="Title" />
+            <InputLabel name={i18n.t('Proposal title')}  />
             <TextInput
               error={errors.title}
               label="title"
@@ -217,7 +218,7 @@ export const CreateProposalForm = ({
             <InputErrorMessage error={errors.title} />
           </div>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name="Description" />
+            <InputLabel name={i18n.t('Proposal description')} />
             <TextAreaInput
               error={errors.description}
               label="description"
@@ -253,7 +254,7 @@ export const CreateProposalForm = ({
               type="button"
               variant="secondary"
             >
-              <PlusIcon className="inline h-4" /> Add component
+              <PlusIcon className="inline h-4" /> {i18n.t('Add a proposal message')}
             </Button>
           </div>
         </div>
@@ -262,11 +263,11 @@ export const CreateProposalForm = ({
             <Tooltip
               label={
                 !isMember
-                  ? 'You must be a member of the org to create a proposal.'
+                  ? i18n.t('error.mustBeMemberToCreateProposal')
                   : !canPayDeposit
-                  ? 'You do not have enough unstaked tokens to pay the proposal deposit.'
+                  ? i18n.t('error.notEnoughForDeposit')
                   : isPaused
-                  ? 'The DAO is paused.'
+                  ? i18n.t('error.daoIsPaused')
                   : undefined
               }
             >
@@ -276,7 +277,7 @@ export const CreateProposalForm = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                Publish{' '}
+                {i18n.t('Publish proposal') + ' '}
                 <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
@@ -290,12 +291,12 @@ export const CreateProposalForm = ({
           >
             {showPreview ? (
               <>
-                Hide preview
+                {i18n.t('Hide preview')}
                 <EyeOffIcon className="inline ml-2 h-5 stroke-current" />
               </>
             ) : (
               <>
-                Preview
+                {i18n.t('Preview')}
                 <EyeIcon className="inline ml-2 h-5 stroke-current" />
               </>
             )}

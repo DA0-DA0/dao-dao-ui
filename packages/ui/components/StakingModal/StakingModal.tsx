@@ -87,13 +87,13 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0 ? undefined : "Can't claim zero tokens."
+      return claimableTokens > 0 ? undefined : i18n.t('error.cannotTxZeroTokens')
     }
     if (amount <= 0) {
-      return `Can't ${stakingModeString(mode)} zero tokens.`
+      return i18n.t('error.cannotTxZeroTokens')
     }
     if (amount > maxTx) {
-      return `Can't ${stakingModeString(mode)} more tokens than you own.`
+      return i18n.t('error.cannotStakeMoreThanYouHave')
     }
   }
   error = error || invalidAmount()
@@ -109,20 +109,20 @@ export const StakingModal: FC<StakingModalProps> = ({
           active={mode === StakingMode.Stake}
           onClick={() => setMode(StakingMode.Stake)}
         >
-          Stake
+          {i18n.t('Stake')}
         </ModeButton>
         <ModeButton
           active={mode === StakingMode.Unstake}
           onClick={() => setMode(StakingMode.Unstake)}
         >
-          Unstake
+          {i18n.t('Unstake')}
         </ModeButton>
         {canClaim && (
           <ModeButton
             active={mode === StakingMode.Claim}
             onClick={() => setMode(StakingMode.Claim)}
           >
-            Claim
+            {i18n.t('Claim')}
           </ModeButton>
         )}
       </div>
@@ -189,15 +189,15 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
 }) => (
   <>
     <div className="flex flex-col mt-5">
-      <h2 className="mb-3 primary-text">Choose your token amount</h2>
+      <h2 className="mb-3 primary-text">{i18n.t('Choose token amount')}</h2>
       <AmountSelector amount={amount} max={max} setAmount={setAmount} />
       {amount > max && (
         <span className="mt-1 ml-1 text-error caption-text">
-          Can{"'"}t stake more tokens than you own.
+          {i18n.t('error.cannotStakeMoreThanYouHave')}
         </span>
       )}
       <span className="mt-4 font-mono caption-text">
-        Max available{' '}
+        {i18n.t('Your balance') + ': '}
         {max.toLocaleString(undefined, {
           maximumFractionDigits: tokenDecimals,
         })}
@@ -263,20 +263,13 @@ const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   <div className="mt-3 secondary-text">
     <h2 className="link-text">
       {mode == StakingMode.Unstake
-        ? 'You are about to unstake your tokens.'
-        : `Unstaking period: ${humanReadableDuration(unstakingDuration)}`}
+        ? i18n.t('You are about to unstake')
+        : i18n.t('Unstaking period') + `: ${humanReadableDuration(unstakingDuration)}`}
     </h2>
     <p className="mt-3">
-      There will be {humanReadableDuration(unstakingDuration)} between the time
-      you decide to unstake your tokens and the time you can redeem them.
+      {i18n.t('Unstaking mechanics', {
+        humanReadableTime: humanReadableDuration(unstakingDuration),
+      })}
     </p>
-    <p className="mt-2">During that time you will</p>
-    <ul className="mt-2 ml-4">
-      <li>Not receive staking rewards.</li>
-      <li>Not be able to cancel the unbonding.</li>
-      <li>
-        Need to wait for the unstaking period for the tokens to become liquid.
-      </li>
-    </ul>
   </div>
 )

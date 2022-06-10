@@ -169,7 +169,7 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => (
       </ul>
     </div>
     <div>
-      <h2 className="mb-4 md:mb-6 primary-text">Addresses</h2>
+      <h2 className="mb-4 md:mb-6 primary-text">{i18n.t('Addresses')}</h2>
       <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
         <li>
           {i18n.t('Treasury')} <CopyToClipboardAccent loading value="juno..." />
