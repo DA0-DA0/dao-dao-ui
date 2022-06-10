@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -281,71 +281,73 @@ const useDecodeCosmosMsg: UseDecodeCosmosMsg<UpdateProposalConfigData> = (
       : constSelector(undefined)
   )
 
-  if (
-    'wasm' in msg &&
-    'execute' in msg.wasm &&
-    'update_config' in msg.wasm.execute.msg &&
-    'threshold' in msg.wasm.execute.msg.update_config &&
-    'threshold_quorum' in msg.wasm.execute.msg.update_config.threshold &&
-    'max_voting_period' in msg.wasm.execute.msg.update_config &&
-    'only_members_execute' in msg.wasm.execute.msg.update_config &&
-    'allow_revoting' in msg.wasm.execute.msg.update_config &&
-    'dao' in msg.wasm.execute.msg.update_config
-  ) {
-    const config = msg.wasm.execute.msg.update_config
-    const onlyMembersExecute = config.only_members_execute
-    const depositRequired = !!config.deposit_info
-    const depositInfo = !!config.deposit_info
-      ? {
-          deposit: convertMicroDenomToDenomWithDecimals(
-            Number(config.deposit_info.deposit),
-            maybeTokenContractInfo?.decimals!
-          ),
-          refundFailedProposals: config.deposit_info.refund_failed_proposals,
-        }
-      : undefined
+  return useMemo(() => {
+    if (
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'update_config' in msg.wasm.execute.msg &&
+      'threshold' in msg.wasm.execute.msg.update_config &&
+      'threshold_quorum' in msg.wasm.execute.msg.update_config.threshold &&
+      'max_voting_period' in msg.wasm.execute.msg.update_config &&
+      'only_members_execute' in msg.wasm.execute.msg.update_config &&
+      'allow_revoting' in msg.wasm.execute.msg.update_config &&
+      'dao' in msg.wasm.execute.msg.update_config
+    ) {
+      const config = msg.wasm.execute.msg.update_config
+      const onlyMembersExecute = config.only_members_execute
+      const depositRequired = !!config.deposit_info
+      const depositInfo = !!config.deposit_info
+        ? {
+            deposit: convertMicroDenomToDenomWithDecimals(
+              Number(config.deposit_info.deposit),
+              maybeTokenContractInfo?.decimals!
+            ),
+            refundFailedProposals: config.deposit_info.refund_failed_proposals,
+          }
+        : undefined
 
-    if (!('time' in config.max_voting_period)) {
-      return { match: false }
+      if (!('time' in config.max_voting_period)) {
+        return { match: false }
+      }
+
+      const proposalDuration = config.max_voting_period.time
+      const proposalDurationUnits = 'seconds'
+
+      if (!('threshold_quorum' in config.threshold)) {
+        return { match: false }
+      }
+
+      const threshold = config.threshold.threshold_quorum
+
+      const thresholdType = 'majority' in threshold.threshold ? 'majority' : '%'
+      const thresholdPercentage =
+        'majority' in threshold.threshold
+          ? undefined
+          : Number(threshold.threshold.percent) * 100
+
+      const quorumType = 'majority' in threshold.quorum ? 'majority' : '%'
+      const quorumPercentage =
+        'majority' in threshold.quorum
+          ? undefined
+          : Number(threshold.quorum.percent) * 100
+
+      return {
+        data: {
+          onlyMembersExecute,
+          depositRequired,
+          depositInfo,
+          thresholdType,
+          thresholdPercentage,
+          quorumType,
+          quorumPercentage,
+          proposalDuration,
+          proposalDurationUnits,
+        },
+        match: true,
+      }
     }
-
-    const proposalDuration = config.max_voting_period.time
-    const proposalDurationUnits = 'seconds'
-
-    if (!('threshold_quorum' in config.threshold)) {
-      return { match: false }
-    }
-
-    const threshold = config.threshold.threshold_quorum
-
-    const thresholdType = 'majority' in threshold.threshold ? 'majority' : '%'
-    const thresholdPercentage =
-      'majority' in threshold.threshold
-        ? undefined
-        : Number(threshold.threshold.percent) * 100
-
-    const quorumType = 'majority' in threshold.quorum ? 'majority' : '%'
-    const quorumPercentage =
-      'majority' in threshold.quorum
-        ? undefined
-        : Number(threshold.quorum.percent) * 100
-
-    return {
-      data: {
-        onlyMembersExecute,
-        depositRequired,
-        depositInfo,
-        thresholdType,
-        thresholdPercentage,
-        quorumType,
-        quorumPercentage,
-        proposalDuration,
-        proposalDurationUnits,
-      },
-      match: true,
-    }
-  }
-  return { match: false }
+    return { match: false }
+  }, [msg, maybeTokenContractInfo?.decimals])
 }
 
 export const updateProposalConfigTemplate: Template<UpdateProposalConfigData> =
