@@ -7,12 +7,9 @@ import {
   validateRequired,
 } from '@dao-dao/utils/validation'
 
-import {
-  TemplateCard,
-  TemplateComponent,
-  TokenInfoDisplay,
-  TokenInfoDisplayProps,
-} from './common'
+import { TemplateComponent } from './common'
+import { TemplateCard } from './TemplateCard'
+import { TokenInfoDisplayProps, TokenInfoDisplay } from './TokenInfoDisplay'
 
 export const AddTokenComponent: TemplateComponent<TokenInfoDisplayProps> = ({
   getLabel,

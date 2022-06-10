@@ -6,11 +6,11 @@ import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
 import {
   Template,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
+  CustomComponent as Component,
 } from '../components'
-import { CustomComponent as Component } from '../components'
 
 interface CustomData {
   message: string
@@ -37,7 +37,7 @@ const useTransformToCosmos: UseTransformToCosmos<CustomData> = () =>
     return msg
   }, [])
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<CustomData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<CustomData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -57,7 +57,7 @@ export const customTemplate: Template<CustomData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [
     VotingModuleType.Cw20StakedBalanceVoting,
     VotingModuleType.Cw4Voting,

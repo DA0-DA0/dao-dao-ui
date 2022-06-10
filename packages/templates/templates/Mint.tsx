@@ -14,12 +14,12 @@ import {
   MintComponent as StatelessMintComponent,
   Template,
   TemplateComponent,
-  TemplateComponentLoader,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
+import { TemplateComponentLoader } from '../components/TemplateCard'
 
 interface MintData {
   to: string
@@ -60,7 +60,7 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = (
   )
 }
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<MintData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
@@ -125,6 +125,6 @@ export const mintTemplate: Template<MintData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [VotingModuleType.Cw20StakedBalanceVoting],
 }

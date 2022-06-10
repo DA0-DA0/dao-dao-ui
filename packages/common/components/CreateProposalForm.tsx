@@ -98,6 +98,11 @@ export const CreateProposalForm = ({
 
   const formMethods = useForm<FormProposalData>({
     mode: 'onChange',
+    defaultValues: {
+      title: '',
+      description: '',
+      templateData: [],
+    },
   })
 
   // Unpack here because we use these at the top level as well as
@@ -227,10 +232,13 @@ export const CreateProposalForm = ({
             <InputErrorMessage error={errors.description} />
           </div>
           <ul className="list-none">
-            {(proposalTemplateData ?? []).map(({ key }, index) => {
-              const Component = templatesWithData[key]?.template?.Component
+            {proposalTemplateData.map((templateData, index) => {
+              const Component =
+                templatesWithData[templateData.key]?.template?.Component
               if (!Component) {
-                throw new Error(`Error detecting template type ${key}`)
+                throw new Error(
+                  `Error detecting template type ${templateData.key}`
+                )
               }
 
               return (
@@ -241,6 +249,9 @@ export const CreateProposalForm = ({
                     getLabel={(fieldName) =>
                       `templateData.${index}.data.${fieldName}`
                     }
+                    indexInType={proposalTemplateData
+                      .filter(({ key }) => key === templateData.key)
+                      .indexOf(templateData)}
                     onRemove={() => remove(index)}
                   />
                 </li>
@@ -253,7 +264,7 @@ export const CreateProposalForm = ({
               type="button"
               variant="secondary"
             >
-              <PlusIcon className="inline h-4" /> Add component
+              <PlusIcon className="inline h-4" /> Add action
             </Button>
           </div>
         </div>

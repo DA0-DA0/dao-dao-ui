@@ -122,14 +122,14 @@ const InnerProposalCreate = () => {
         ).value
         refreshProposals()
         router.push(`/vote/${proposalId}`)
+        // Don't stop loading indicator since we are navigating.
       } catch (err) {
         console.error(err)
         toast.error(
           cleanChainError(err instanceof Error ? err.message : `${err}`)
         )
+        setLoading(false)
       }
-
-      setLoading(false)
     },
     [
       blockHeight,

@@ -1,5 +1,6 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { GasPrice } from '@cosmjs/stargate'
+import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import {
@@ -88,5 +89,21 @@ export const nativeBalanceSelector = selectorFamily({
       get(refreshWalletBalancesIdAtom(address))
 
       return await client.getBalance(address, NATIVE_DENOM)
+    },
+})
+
+export const transactionEventsSelector = selectorFamily<
+  Record<string, any>[],
+  string
+>({
+  key: 'transactionEvents',
+  get:
+    (hash: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      if (!client) return
+
+      const tx = await client.getTx(hash)
+      return tx?.rawLog ? JSON5.parse(tx.rawLog)[0].events : undefined
     },
 })

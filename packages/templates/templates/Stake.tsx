@@ -20,12 +20,12 @@ import {
   StakeComponent as StatelessStakeComponent,
   Template,
   TemplateComponent,
-  TemplateComponentLoader,
   TemplateKey,
-  UseDecodeCosmosMsg,
+  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '../components'
+import { TemplateComponentLoader } from '../components/TemplateCard'
 
 interface StakeData {
   stakeType: StakeType
@@ -60,7 +60,7 @@ const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
     )
   }, [])
 
-const useDecodeCosmosMsg: UseDecodeCosmosMsg<StakeData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
   msg: Record<string, any>
 ) => {
   const denom = convertDenomToHumanReadableDenom(
@@ -154,7 +154,7 @@ export const stakeTemplate: Template<StakeData> = {
   Component,
   useDefaults,
   useTransformToCosmos,
-  useDecodeCosmosMsg,
+  useDecodedCosmosMsg,
   votingModuleTypes: [
     VotingModuleType.Cw20StakedBalanceVoting,
     VotingModuleType.Cw4Voting,

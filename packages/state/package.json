@@ -6,6 +6,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@cosmjs/proto-signing": "^0.28.4",
     "@dao-dao/ui": "*",
     "@keplr-wallet/stores": "^0.10.3",
     "@walletconnect/browser-utils": "^1.7.8",

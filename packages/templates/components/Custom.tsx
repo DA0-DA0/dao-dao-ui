@@ -6,7 +6,8 @@ import { useFormContext } from 'react-hook-form'
 import { CodeMirrorInput } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
-import { TemplateCard, TemplateComponent } from './common'
+import { TemplateComponent } from './common'
+import { TemplateCard } from './TemplateCard'
 
 export const CustomComponent: TemplateComponent = ({
   getLabel,
@@ -16,10 +17,6 @@ export const CustomComponent: TemplateComponent = ({
 }) => {
   const { control } = useFormContext()
 
-  // We need to use the real label for this component as the
-  // control structure we pass along can't me made to understand
-  // that we are in a nested object nor wrapped nicely like we do
-  // with register.
   return (
     <TemplateCard
       emoji={<Emoji label="Robot" symbol="🤖" />}
