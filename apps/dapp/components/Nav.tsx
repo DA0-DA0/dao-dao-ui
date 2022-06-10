@@ -37,7 +37,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
       <div className="ml-1 text-sm">
         <div className="mt-[20px]">
           <h3 className="mb-[16px] font-mono caption-text">
-            {i18n.t('DAO_other')}
+            {i18n.t('DAOs')}
           </h3>
 
           <SuspenseLoader

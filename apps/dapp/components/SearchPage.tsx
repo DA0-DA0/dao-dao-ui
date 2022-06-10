@@ -31,7 +31,7 @@ export const SearchPage: FC = () => (
         <div className="px-1 mt-6 mb-3 md:px-2">
           <div className="flex gap-1.5 items-center mb-5">
             <DecorativeTriangle color="currentcolor" height={24} width={24} />
-            <h2 className="primary-text">{i18n.t('Search for a DAO')}</h2>
+            <h2 className="primary-text">{i18n.t('Search placeholder')}</h2>
           </div>
           <SearchBox />
         </div>

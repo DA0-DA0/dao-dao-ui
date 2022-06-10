@@ -27,7 +27,7 @@ const InnerStarred: FC = () => {
           <h1 className="header-text">{i18n.t('Home page')} </h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
-            {i18n.t('DAO', { count: 100 })}
+            {i18n.t('DAOs')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedAddresses.length ? (

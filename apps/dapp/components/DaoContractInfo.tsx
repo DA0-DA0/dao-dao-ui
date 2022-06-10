@@ -52,13 +52,13 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
       <div className="mb-4 md:mb-0">
         <h2 className="mb-4 md:mb-6 primary-text">
-          {i18n.t('Governance details')}
+          {i18n.t('Voting configuration')}
         </h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           {stakingContractConfig && (
             <GovInfoListItem
               icon={<ChartPieIcon className="inline w-4" />}
-              text="Unstaking period"
+              text={i18n.t('Unstaking period')}
               value={
                 stakingContractConfig.unstaking_duration
                   ? humanReadableDuration(
@@ -93,8 +93,7 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
               />
               <li className="flex flex-row items-center caption-text">
                 <span className="flex gap-1 items-center">
-                  <Votes fill="currentColor" width="16px" /> // TODO - solve
-                  with i18n
+                  <Votes fill="currentColor" width="16px" />
                   {convertMicroDenomToDenomWithDecimals(
                     proposalModuleConfig.deposit_info.deposit,
                     governanceTokenInfo.decimals
@@ -139,7 +138,7 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => (
   <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
     <div className="mb-4 md:mb-0">
       <h2 className="mb-4 md:mb-6 primary-text">
-        {i18n.t('Governance details')}
+        {i18n.t('Voting configuration')}
       </h2>
       <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
         <GovInfoListItem

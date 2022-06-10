@@ -16,21 +16,27 @@ const en = {
 
   // DAO vocabulary
   //
+  DAOs: 'DAOs',
   Members: 'Members',
   Addresses: 'Addresses',
   Treasury: 'Treasury',
   Info: 'Info',
-  'Voting weight': 'Voting power',
 
   Proposals: 'Proposals',
-  'Proposals created': '{{proposalCount, number}} proposals created',
-  // TODO redo numbers
-  proposal_zero: '{{count}} proposals',
-  proposal_one: '{{count}} proposal',
-  proposal_other: '{{count}} proposals',
+  proposal_zero: '{{count}} proposals created',
+  proposal_one: '{{count}} proposal created',
+  proposal_other: '{{count}} proposals created',
   'Proposal title': 'Proposal title',
   'Proposal description': 'Proposal description',
+  'Proposal message_one': 'Proposal action',
+  'Proposal message_other': 'Proposal actions',
   'Proposal message templates': 'Proposal action templates',
+
+  'Voting configuration': 'Voting configuration',
+  'Voting weight': 'Voting power',
+
+  'Governance token_one': 'Governance token',
+  'Governance token_other': 'Governance tokens',
 
   Staking: 'Staking', // noun
   Staked: 'Staked', // adjective
@@ -41,12 +47,20 @@ const en = {
   Unclaimed: 'Unclaimed', // adjective
   'Percent staked': '{{percent, number(minimumFractionDigits:0)}}% ${{tokenSymbol}} staked',
 
-  'Governance token_one': 'Governance token',
-  'Governance token_other': 'Governance tokens',
-  'Governance token address': 'Governance token address',
-  'Token contract address': 'Token contract address',
+  'Governance token name': 'Token name',
+  'Governance token placeholder': 'A token name (e.g., "DogDAO token")',
+
+  'Ticker symbol': 'Ticker symbol',
+  'Ticker symbol placeholder': 'A ticker symbol (e.g., "DOG")',
+
+  'Token image': 'Token image',
+  'Treasury balance': 'Treasury balance',
+
   'Total supply': 'Total supply',
   'Total supply amount': '{{amount}} ${{tokenSymbol}} total supply',
+
+  'Governance token address': 'Governance token address',
+  'Token contract address': 'Token contract address',
 
   'Voting duration': 'Voting duration',
   'Voting duration description': 'The amount of time that a proposal will remain open for voting. After this time elapses, the proposal will either pass or fail.',
@@ -82,27 +96,9 @@ const en = {
   Reached: 'Reached',
   Majority: 'Majority',
   'Not met': 'Not met',
-  'All abstain clarification': 'All abstain', // TODO  change to 'All abstain' as the key
-  'All abstain clarification (long)': 'When all abstain, a proposal will fail',
+  'All abstain': 'All abstain',
+  'All abstain clarification': 'When all abstain, a proposal will fail',
 
-  // what do we call them?
-  // TODO - refactor
-  // TODO - not zero
-  DAO_zero: 'DAO',
-  DAO_other: 'DAOs',
-  // TODO redo numbers
-  Message_one: 'Message',
-  Message_other: 'Messages',
-
-
-  // Components of a DAO
-  //
-  // NOTE: Make sure these terms harmonize
-  // with the terms we use for DAOs.
-  // See DAO vocabulary, above.
-  'DAO name': 'DAO name',
-  // these are
-  'Governance details': 'Governance details', // TODO where does this appear?
 
   // DAO DAO UI
   //
@@ -118,13 +114,13 @@ const en = {
   // 'Remaining' as in: 'Remaining: 5 hours'
   'Remaining (time)': 'Remaining',
   // Names for UI places
+  'Home page': 'Home',
   Documentation: 'Documentation',
   Feedback: 'Feedback',
 
   // Viewing your relationship to a DAO
   'You are a member': "You're a member",
-  // TODO staking/unstaking???
-  'Your equity': 'Your voting power',
+  'Your equity': 'Your equity',
   'Member voting weights': 'Member voting power',
   'Your balance': 'Your balance',
   'Your voting weight': 'Your voting power',
@@ -139,19 +135,18 @@ const en = {
   'Explore DAOs': 'Explore all DAOs',
   'Create a DAO': 'Create a DAO',
   'Create DAO': 'Create DAO',
+  'Add an image': 'Add an image',
   'Prompt to create a DAO':
     "You're not a member of any DAOs. Why not create one?",
   Search: 'Search',
-  'Search for a DAO': 'Search for a DAO', // TODO placeholder?
-  // TODO ?? underspecified?
-  Manage: 'Manage',
+  'Search placeholder': 'Search for a DAO',
   'Manage staking': 'Manage staking',
-  'Add an image': 'Add an image',
   'Choose token amount': 'Choose number of tokens',
   'Stake tokens': 'Stake your tokens', // imperative verb
   'Add to Keplr': 'Add token to Keplr.',
   'Create a proposal': 'Create a proposal',
   'Add a proposal message': 'Add an action',
+  'Publish proposal': 'Publish proposal', // a command
 
 
   // Confirmations
@@ -181,6 +176,7 @@ const en = {
   'Gov token DAO description': 'Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares.',
 
   // Configuring a DAO's description
+  'DAO name': 'DAO name',
   'DAO name placeholder': "Your DAO's name",
   'DAO description': 'DAO description',
   'DAO description placeholder': 'Decribe your DAO',
@@ -202,13 +198,6 @@ const en = {
   // governance token configuration
   'Create a token': 'Create a token',
   'Use existing token': 'Use an existing token',
-  // TODO move up to gov token?
-  'Gov token name': 'Token name',
-  'Gov token placeholder': 'A token name (e.g., "DogDAO token")',
-  'Ticker symbol': 'Ticker symbol',
-  'Ticker symbol placeholder': 'A ticker symbol (e.g., "DOG")',
-  'Token image': 'Token image',
-  'Treasury balance': 'Treasury balance',
   // TODO smarter / more localized ways to do percentages?
   'Treasury balance description': "{{numberOfTokensMinted, number}} tokens will be minted. {{memberPercent, number(minimumFractionDigits:2)}}% will be sent to members according to the distribution above. The reamining {{treasuryPercent, number(minimumFractionDigits:2)}}% will go to the DAO's treasury, where they can be distributed later via governance proposal.",
   // advanced voting configuration
@@ -218,13 +207,14 @@ const en = {
 
 
 
-  // Connect a wallet
+  // Managing the user's connection to a wallet
   //
   // NOTE: We need to communicate with users about wallets because
   // wallets are poorly designed, poorly supported by major browsers,
   // and poorly understood, in that order. I recommend literal
   // translations here, even if they're clunky.
   //
+  'Connect wallet': 'Connect wallet',
   'Need wallet to continue': "You'll need wallet to continue",
   'Need wallet to continue (long)':
     'Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet',
@@ -240,23 +230,21 @@ const en = {
   'Terms of service': 'DAO DAO TOOLING IS PROVIDED "AS IS", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contracts will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.',
 
   // Landing page
-  // TODO - namespace?
-  'short tagline': '$t(DAO_other) for everyone.',
-  'long tagline':
-    'Simple, capable, and free $t(DAO_zero) tooling. Built with love, by DAO DAO, on Juno.',
-  'Enter the app': 'Enter the app',
-  'Create DAOs ': 'Create DAOs.',
-  'Create DAO tagline':
+  landingPage: {
+    'short tagline': 'DAOs for everyone.',
+    'long tagline': 'Simple, capable, and free DAO tooling. Built with love, by DAO DAO, on Juno.',
+    'CTA': 'Enter the app',
+    'Create DAOs': 'Create DAOs.',
+    'Create DAOs tagline':
     'Create and grow a DAO for your community with a simple user interface. No command line required.',
-  'Propose and vote': 'Propose and vote',
-  'Propose and vote tagline':
+    'Propose and vote': 'Propose and vote',
+    'Propose and vote tagline':
     'Proposals can do anything you can do on chain. They pass when the community votes on them.',
-  'IBC enabled': 'IBC enabled',
-  'IBC enabled tagline':
+    'IBC enabled': 'IBC enabled',
+    'IBC enabled tagline':
     'DAOs can manage IBC assets, instantiate smart contracts, and manage entire protocols.',
-  'Powered by Juno': 'Powered by Juno',
-  'Connect wallet': 'Connect wallet',
-  'Home page': 'Home',
+    'Powered by Juno': 'Powered by Juno',
+  },
 
   // Success!
   //

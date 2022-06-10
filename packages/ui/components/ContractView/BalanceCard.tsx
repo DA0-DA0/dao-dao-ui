@@ -35,7 +35,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
     )}
     <div className="flex justify-end">
       <Button onClick={onManage} size="sm" variant="secondary">
-        {i18n.t('Manage')}
+        {i18n.t('Manage staking')}
       </Button>
     </div>
   </div>

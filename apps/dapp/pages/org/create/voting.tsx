@@ -371,13 +371,13 @@ const CreateOrgVotingPage: FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={i18n.t('Gov token name')} />
+                      <InputLabel mono name={i18n.t('Governance token name')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.name}
                           label="governanceTokenOptions.newInfo.name"
-                          placeholder={i18n.t('Gov token placeholder')}
+                          placeholder={i18n.t('Governance token placeholder')}
                           register={register}
                           validation={[validateRequired]}
                         />

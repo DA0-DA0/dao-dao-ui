@@ -1,6 +1,6 @@
 // elsehow 13331
 import i18n from 'i18next'
-// import { LanguageDetector } from 'i18next-browser-languagedetector'
+import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
 import en from './locales/en/translation'
@@ -17,10 +17,11 @@ const resources = {
 // TODO LangaugeDetector ?
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
+  .use(LanguageDetector)
   .init({
     resources,
-    fallbackLng: 'en',
-    debug: true,
+    fallbackLng: 'en', // fall back to english if a translation is missing for a given key
+    debug: true, // TODO what does debug do?
     interpolation: {
       // TODO this flag has something to do with preventing XSS, which react
       // purportedly already does. investigate this further.
