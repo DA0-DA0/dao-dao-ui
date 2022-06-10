@@ -171,23 +171,14 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddr)
 
-  const { votingModuleAddress, votingModuleType } = useVotingModule(coreAddr)
+  const { governanceTokenShouldExist, governanceTokenInfo } =
+    useGovernanceTokenInfo(coreAddr)
 
-  const maybeTokenContract = useRecoilValue(
-    votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-      votingModuleAddress
-      ? tokenContractSelector({
-          contractAddress: votingModuleAddress,
-        })
-      : constSelector(undefined)
-  )
-  const maybeTokenContractInfo = useRecoilValue(
-    maybeTokenContract
-      ? tokenInfoSelector({ contractAddress: maybeTokenContract, params: [] })
-      : constSelector(undefined)
-  )
-
-  if (!proposalModuleAddress || !proposalModuleConfig) {
+  if (
+    !proposalModuleAddress ||
+    !proposalModuleConfig ||
+    (governanceTokenShouldExist && !governanceTokenInfo)
+  ) {
     throw new Error('Failed to get proposal module.')
   }
 
@@ -227,7 +218,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
                         // The form won't allow a deposit if a voting
                         // module token isn't being used so we can
                         // safely unwrap here.
-                        maybeTokenContractInfo?.decimals!
+                        governanceTokenInfo?.decimals!
                       ),
                       refund_failed_proposals:
                         data.depositInfo.refundFailedProposals,
@@ -241,7 +232,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
       }),
     [
       proposalModuleAddress,
-      maybeTokenContractInfo?.decimals,
+      governanceTokenInfo?.decimals,
       proposalModuleConfig.allow_revoting,
       proposalModuleConfig.dao,
     ]
