@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { FC, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { mountedInBrowserAtom, useWallet } from '@dao-dao/state'
+import { mountedInBrowserAtom, useWallet, WalletProvider } from '@dao-dao/state'
 import { KeplrNotInstalledError, SITE_TITLE } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
@@ -15,7 +15,7 @@ import {
   installWarningVisibleAtom,
 } from '@/atoms/status'
 
-export const SidebarLayout: FC = ({ children }) => {
+export const SidebarLayoutInner: FC = ({ children }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
     installWarningVisibleAtom
@@ -64,3 +64,9 @@ export const SidebarLayout: FC = ({ children }) => {
     </>
   )
 }
+
+export const SidebarLayout: FC = ({ children }) => (
+  <WalletProvider>
+    <SidebarLayoutInner>{children}</SidebarLayoutInner>
+  </WalletProvider>
+)

@@ -1,2 +1,4 @@
-export * from './v0'
-export * from './v1'
+export * from './ProposalDetails'
+export * from './ProposalInfoCards'
+export * from './ProposalVotes'
+export * from './VoteDisplay'

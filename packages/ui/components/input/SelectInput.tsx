@@ -34,7 +34,7 @@ export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <select
       className={clsx(
-        'py-2 px-3 bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition',
+        'py-2 px-3 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition',
         { 'ring-1 ring-error': error }
       )}
       {...props}

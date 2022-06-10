@@ -12,7 +12,7 @@ import {
   mountedInBrowserAtom,
   WalletProvider,
 } from '@dao-dao/state'
-import { ThemeProvider, Theme, ErrorBoundary } from '@dao-dao/ui'
+import { ThemeProvider, Theme, ErrorBoundary, Notifications } from '@dao-dao/ui'
 import {
   SITE_DESCRIPTION,
   SITE_IMAGE,
@@ -20,7 +20,7 @@ import {
   SITE_URL,
 } from '@dao-dao/utils'
 
-import { Footer, Notifications } from '@/components'
+import { Footer } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)

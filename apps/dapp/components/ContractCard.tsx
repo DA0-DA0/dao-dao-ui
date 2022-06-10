@@ -62,7 +62,7 @@ function ContractCardBase({
             <h3 className="mt-3 max-w-full font-semibold truncate text-md">
               {title}
             </h3>
-            <p className="mt-1 font-mono text-xs text-center text-secondary break-all line-clamp-3">
+            <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
               {body}
             </p>
           </div>

@@ -13,14 +13,14 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
-import { Button } from '../../Button'
-import { CosmosMessageDisplay } from '../../CosmosMessageDisplay'
-import { Execute } from '../../Execute'
-import { MarkdownPreview } from '../../MarkdownPreview'
-import { Vote } from '../../Vote'
+import { Button } from '../Button'
+import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
+import { Execute } from '../Execute'
+import { MarkdownPreview } from '../MarkdownPreview'
+import { Vote } from '../Vote'
 import { VoteDisplay } from './VoteDisplay'
 
-interface V1ProposalDetailsProps {
+interface ProposalDetailsProps {
   coreAddress: string
   votingModuleType: VotingModuleType
   proposal: Proposal
@@ -37,7 +37,7 @@ interface V1ProposalDetailsProps {
   connectWalletButton?: ReactNode
 }
 
-export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
+export const ProposalDetails: FC<ProposalDetailsProps> = ({
   coreAddress,
   votingModuleType,
   proposal,
@@ -109,7 +109,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
       )}
       {proposal.status === Status.Passed && (
         <>
-          <p className="mt-[30px] mb-[12px] font-mono caption-text">Status</p>
+          <p className="mt-6 mb-4 link-text">Status</p>
           <Execute
             loading={loading}
             messages={proposal.msgs.length}
@@ -118,7 +118,7 @@ export const V1ProposalDetails: FC<V1ProposalDetailsProps> = ({
         </>
       )}
 
-      <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
+      <p className="mt-6 mb-4 link-text">Vote</p>
 
       {connected ? (
         <>

@@ -89,6 +89,7 @@ export const useProposalInfo = (
   }, [setRefreshProposalsId, refreshProposal])
 
   return {
+    proposalModuleAddress,
     proposalResponse,
     voteResponse,
     votingPowerAtHeight,

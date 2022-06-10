@@ -16,13 +16,13 @@ import {
 } from '@dao-dao/utils'
 import { ProcessedTQType, processThresholdData } from '@dao-dao/utils/v1'
 
-import { CopyToClipboard } from '../../CopyToClipboard'
-import { Progress } from '../../Progress'
-import { ProposalStatus } from '../../ProposalStatus'
-import { Tooltip } from '../../Tooltip'
+import { CopyToClipboard } from '../CopyToClipboard'
+import { Progress } from '../Progress'
+import { ProposalStatus } from '../ProposalStatus'
+import { Tooltip } from '../Tooltip'
 import { VoteDisplay } from './VoteDisplay'
 
-interface V1ProposalInfoCardProps {
+interface ProposalInfoCardProps {
   proposalResponse: ProposalResponse
   memberWhenProposalCreated: boolean
   walletVote?: Vote
@@ -30,7 +30,7 @@ interface V1ProposalInfoCardProps {
   connected: boolean
 }
 
-interface V1ProposalInfoVoteStatusProps {
+interface ProposalInfoVoteStatusProps {
   proposal: Proposal
   denomConversionDecimals: number
   // Undefined if max voting period is in blocks.
@@ -49,7 +49,7 @@ const YouTooltip: FC<YouTooltipProps> = ({ label }) => (
   </Tooltip>
 )
 
-export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
+export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
   proposalResponse: { id, proposal },
   memberWhenProposalCreated,
   walletVote,
@@ -141,7 +141,7 @@ export const V1ProposalInfoCard: FC<V1ProposalInfoCardProps> = ({
   </div>
 )
 
-export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
+export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
   proposal,
   denomConversionDecimals,
   maxVotingSeconds,

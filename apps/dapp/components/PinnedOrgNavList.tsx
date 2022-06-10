@@ -82,7 +82,7 @@ export const MobilePinnedOrgNavList: FC = () => {
             ) : (
               <Logo alt={`${config.name} logo`} height={50} width={50} />
             )}
-            <h2 className="text-center text-dark line-clamp-2 button-text break-word">
+            <h2 className="text-center text-dark break-words line-clamp-2 button-text">
               {config.name}
             </h2>
           </a>

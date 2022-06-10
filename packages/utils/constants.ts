@@ -38,6 +38,9 @@ export const CHAIN_BECH32_PREFIX = process.env
 export const MICRO_STAKING_DENOM = process.env
   .NEXT_PUBLIC_STAKING_DENOM as string
 
+export const USDC_SWAP_ADDRESS = process.env
+  .NEXT_PUBLIC_USDC_SWAP_ADDRESS as string
+
 export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 export const SEARCH_INDEX = process.env.NEXT_PUBLIC_SEARCH_INDEX as string

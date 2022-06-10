@@ -22,9 +22,9 @@ import {
 import {
   Breadcrumbs,
   StakingMode,
-  V1ProposalDetails,
-  V1ProposalInfoCard,
-  V1ProposalInfoVoteStatus,
+  ProposalDetails,
+  ProposalInfoCard,
+  ProposalInfoVoteStatus,
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
@@ -43,6 +43,7 @@ import {
   OrgPageWrapperProps,
   useOrgInfoContext,
 } from '@/components/OrgPageWrapper'
+import { ProposalVotes } from '@/components/ProposalVotes'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 
 const InnerProposal: FC = () => {
@@ -174,7 +175,7 @@ const InnerProposal: FC = () => {
 
         <div className="flex flex-col gap-6 p-6 md:p-0 md:mt-6">
           <div className="lg:hidden">
-            <V1ProposalInfoCard
+            <ProposalInfoCard
               connected={connected}
               memberWhenProposalCreated={memberWhenProposalCreated}
               proposalExecutionTXHash={txHash}
@@ -183,7 +184,7 @@ const InnerProposal: FC = () => {
             />
           </div>
 
-          <V1ProposalDetails
+          <ProposalDetails
             connectWalletButton={<ConnectWalletButton />}
             connected={connected}
             coreAddress={coreAddress}
@@ -217,7 +218,7 @@ const InnerProposal: FC = () => {
           <div className="lg:hidden">
             <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
-            <V1ProposalInfoVoteStatus
+            <ProposalInfoVoteStatus
               denomConversionDecimals={denomConversionDecimals}
               maxVotingSeconds={
                 'time' in proposalModuleConfig.max_voting_period
@@ -228,10 +229,14 @@ const InnerProposal: FC = () => {
             />
           </div>
         </div>
+
+        <div className="mx-6 mt-11">
+          <ProposalVotes coreAddress={coreAddress} proposalId={proposalId} />
+        </div>
       </div>
       <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">Details</h2>
-        <V1ProposalInfoCard
+        <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
           proposalExecutionTXHash={txHash}
@@ -240,7 +245,7 @@ const InnerProposal: FC = () => {
         />
 
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
-        <V1ProposalInfoVoteStatus
+        <ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period

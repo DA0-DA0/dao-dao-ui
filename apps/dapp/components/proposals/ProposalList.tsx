@@ -11,6 +11,7 @@ import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
 import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 import { ProposalLine, Button, SuspenseLoader } from '@dao-dao/ui'
 
+import { EmptyContractCard } from '../EmptyContractCard'
 import { Loader } from '../Loader'
 import { useOrgInfoContext } from '../OrgPageWrapper'
 import {
@@ -98,7 +99,17 @@ export const ProposalList: FC = () => {
   }, [refreshProposalsId, resetStartBefores])
 
   if (!proposalCount) {
-    return <p className="body-text">No proposals found.</p>
+    return (
+      <div className="flex">
+        <EmptyContractCard
+          backgroundUrl="/empty-state-proposal.jpeg"
+          description="This DAO has no proposals. Why not create one?"
+          fullWidth
+          href={`/org/${coreAddress}/proposals/create`}
+          title="Create a Proposal"
+        />
+      </div>
+    )
   }
 
   // Only allow loading more once proposal ID has been set from previous

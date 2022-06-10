@@ -8,24 +8,24 @@ import { useRouter } from 'next/router'
 import { useState, useEffect, FC } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import {
-  activeThemeAtom,
-  mountedInBrowserAtom,
-  WalletProvider,
-} from '@dao-dao/state'
-import { ErrorBoundary, Theme, ThemeProvider } from '@dao-dao/ui'
+import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
+import { ErrorBoundary, Theme, ThemeProvider, Notifications } from '@dao-dao/ui'
 
 import { HomepageLayout } from '@/components/HomepageLayout'
-import { Notifications } from '@/components/Notifications'
 import { SidebarLayout } from '@/components/SidebarLayout'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
-  const [theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [_theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
   const [accentColor, setAccentColor] = useState<string | undefined>()
+
+  const isHomepage = router.pathname === '/'
+  // Always display the homepage with dark theme.
+  const theme = isHomepage ? Theme.Dark : _theme
+  const Layout = isHomepage ? HomepageLayout : SidebarLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -39,8 +39,6 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
     // Update theme change count.
     setThemeChangeCount((c) => c + 1)
   }, [theme])
-
-  const Layout = router.pathname === '/' ? HomepageLayout : SidebarLayout
 
   return (
     <>
@@ -71,9 +69,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
 
 const dApp: FC<AppProps> = (props) => (
   <RecoilRoot>
-    <WalletProvider>
-      <InnerApp {...props} />
-    </WalletProvider>
+    <InnerApp {...props} />
   </RecoilRoot>
 )
 

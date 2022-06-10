@@ -22,9 +22,9 @@ import {
 } from '@dao-dao/state/hooks/cw-proposal-single'
 import { ErrorPage, StakingMode } from '@dao-dao/ui'
 import {
-  V1ProposalDetails,
-  V1ProposalInfoCard,
-  V1ProposalInfoVoteStatus,
+  ProposalDetails,
+  ProposalInfoCard,
+  ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
 import {
   cosmWasmClientRouter,
@@ -169,7 +169,7 @@ const InnerProposal: FC = () => {
     <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">
       <div className="col-span-2">
         <div className="mb-6 lg:hidden">
-          <V1ProposalInfoCard
+          <ProposalInfoCard
             connected={connected}
             memberWhenProposalCreated={memberWhenProposalCreated}
             proposalExecutionTXHash={txHash}
@@ -178,7 +178,7 @@ const InnerProposal: FC = () => {
           />
         </div>
 
-        <V1ProposalDetails
+        <ProposalDetails
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           connected={connected}
           coreAddress={DAO_ADDRESS}
@@ -212,7 +212,7 @@ const InnerProposal: FC = () => {
         <div className="pb-6 mt-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
-          <V1ProposalInfoVoteStatus
+          <ProposalInfoVoteStatus
             denomConversionDecimals={denomConversionDecimals}
             maxVotingSeconds={
               'time' in proposalModuleConfig.max_voting_period
@@ -226,7 +226,7 @@ const InnerProposal: FC = () => {
 
       <div className="hidden min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">Details</h2>
-        <V1ProposalInfoCard
+        <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
           proposalExecutionTXHash={txHash}
@@ -235,7 +235,7 @@ const InnerProposal: FC = () => {
         />
 
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
-        <V1ProposalInfoVoteStatus
+        <ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period
