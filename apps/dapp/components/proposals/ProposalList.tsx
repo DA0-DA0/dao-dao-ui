@@ -7,8 +7,11 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
-import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
-import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
+import {
+  CwProposalSingleSelectors,
+  refreshProposalsIdAtom,
+  useProposalModule,
+} from '@dao-dao/state'
 import { Button, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
 import { EmptyContractCard } from '../EmptyContractCard'
@@ -38,7 +41,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
 
   const proposalResponses = useRecoilValue(
     listIndex - 1 in startBefores
-      ? reverseProposalsSelector({
+      ? CwProposalSingleSelectors.reverseProposalsSelector({
           contractAddress: proposalModuleAddress,
           params: [
             {

@@ -9,17 +9,13 @@ import {
 } from 'react'
 
 import {
-  ConfigResponse,
-  CwCoreQueryClient as QueryClient,
-} from '@dao-dao/state/clients/cw-core'
-import {
-  InfoResponse as Cw20StakedBalanceVotingInfoResponse,
   Cw20StakedBalanceVotingQueryClient,
-} from '@dao-dao/state/clients/cw20-staked-balance-voting'
-import {
-  InfoResponse as Cw4VotingInfoResponse,
   Cw4VotingQueryClient,
-} from '@dao-dao/state/clients/cw4-voting'
+  CwCoreQueryClient,
+} from '@dao-dao/state'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
+import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
@@ -40,6 +36,7 @@ interface OrgInfo {
   governanceTokenAddress: string | null
   stakingContractAddress: string | null
   name: string
+  description: string
   imageUrl: string | null
 }
 const DefaultOrgInfo: OrgInfo = {
@@ -49,6 +46,7 @@ const DefaultOrgInfo: OrgInfo = {
   governanceTokenAddress: '',
   stakingContractAddress: '',
   name: '',
+  description: '',
   imageUrl: null,
 }
 const OrgInfoContext = createContext<OrgInfo | null>(null)
@@ -154,7 +152,7 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new QueryClient(cwClient, address)
+      const coreClient = new CwCoreQueryClient(cwClient, address)
 
       const config = await coreClient.config()
 
@@ -206,6 +204,7 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
             governanceTokenAddress,
             stakingContractAddress,
             name: config.name,
+            description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,
           },
           ...(await getAdditionalProps?.(config)),

@@ -3,9 +3,8 @@ import clsx from 'clsx'
 import { useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { useProposalModule } from '@dao-dao/state'
+import { CwProposalSingleSelectors, useProposalModule } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
 import { ProposalItem } from './ProposalItem'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
@@ -20,7 +19,7 @@ export const ProposalsContent = () => {
 
   const oldModuleResponses = useRecoilValue(
     OLD_PROPOSALS_ADDRESS
-      ? listProposalsSelector({
+      ? CwProposalSingleSelectors.listProposalsSelector({
           contractAddress: OLD_PROPOSALS_ADDRESS,
           params: [{}],
         })

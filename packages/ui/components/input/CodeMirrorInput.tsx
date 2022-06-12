@@ -3,13 +3,13 @@ import 'codemirror/theme/material.css'
 
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import {
-  FieldError,
-  Path,
-  FieldPathValue,
-  Validate,
   Control,
   Controller,
+  FieldError,
+  FieldPathValue,
   FieldValues,
+  Path,
+  Validate,
 } from 'react-hook-form'
 
 import { useThemeContext } from '../../theme'

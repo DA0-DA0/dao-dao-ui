@@ -7,14 +7,14 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
 import {
+  Cw20BaseHooks,
+  Cw20BaseSelectors,
+  CwProposalSingleHooks,
   blockHeightSelector,
   refreshProposalsIdAtom,
   useProposalModule,
   useWallet,
 } from '@dao-dao/state'
-import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
-import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
-import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { cleanChainError } from '@dao-dao/utils'
 
@@ -39,7 +39,7 @@ const InnerProposalCreate = () => {
 
   const currentAllowance = useRecoilValue(
     proposalModuleConfig?.deposit_info && proposalModuleAddress && walletAddress
-      ? allowanceSelector({
+      ? Cw20BaseSelectors.allowanceSelector({
           contractAddress: proposalModuleConfig.deposit_info.token,
           params: [{ owner: walletAddress, spender: proposalModuleAddress }],
         })
@@ -53,11 +53,11 @@ const InnerProposalCreate = () => {
     [setRefreshProposalsId]
   )
 
-  const increaseAllowance = useIncreaseAllowance({
+  const increaseAllowance = Cw20BaseHooks.useIncreaseAllowance({
     contractAddress: proposalModuleConfig?.deposit_info?.token ?? '',
     sender: walletAddress ?? '',
   })
-  const createProposal = usePropose({
+  const createProposal = CwProposalSingleHooks.usePropose({
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })

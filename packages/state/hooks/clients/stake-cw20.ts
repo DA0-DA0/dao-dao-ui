@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { useCallback } from 'react'
+import { useCallback as StakeCw20Hooks } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { CwProposalSingleClient as ExecuteClient } from '../clients/cw-proposal-single'
+import { StakeCw20Client as ExecuteClient } from '../../clients/stake-cw20'
 import {
-  executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/clients/cw-proposal-single'
-import { FunctionKeyOf } from '../types'
+  executeClient,
+} from '../../recoil/selectors/clients/stake-cw20'
+import { FunctionKeyOf } from '../../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
@@ -17,7 +17,7 @@ const wrapExecuteHook =
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-    return useCallback(
+    return StakeCw20Hooks(
       (...args: Parameters<ExecuteClient[T]>) => {
         if (client)
           return (
@@ -31,12 +31,9 @@ const wrapExecuteHook =
     )
   }
 
-export const usePropose = wrapExecuteHook('propose')
-export const useCastVote = wrapExecuteHook('castVote')
-export const useExecute = wrapExecuteHook('execute')
-export const useClose = wrapExecuteHook('close')
+export const useReceive = wrapExecuteHook('receive')
+export const useUnstake = wrapExecuteHook('unstake')
+export const useClaim = wrapExecuteHook('claim')
 export const useUpdateConfig = wrapExecuteHook('updateConfig')
-export const useAddProposalHook = wrapExecuteHook('addProposalHook')
-export const useRemoveProposalHook = wrapExecuteHook('removeProposalHook')
-export const useAddVoteHook = wrapExecuteHook('addVoteHook')
-export const useRemoveVoteHook = wrapExecuteHook('removeVoteHook')
+export const useAddHook = wrapExecuteHook('addHook')
+export const useRemoveHook = wrapExecuteHook('removeHook')

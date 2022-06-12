@@ -2,12 +2,12 @@ import { FC } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
+  CwCoreSelectors,
   nativeBalanceSelector,
   useGovernanceTokenInfo,
   useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   VotingModuleType,
@@ -23,7 +23,9 @@ interface PinnedOrgCardProps {
 }
 
 const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
-  const config = useRecoilValue(configSelector({ contractAddress: address }))
+  const config = useRecoilValue(
+    CwCoreSelectors.configSelector({ contractAddress: address })
+  )
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(address)

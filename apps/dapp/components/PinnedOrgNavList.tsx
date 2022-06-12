@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { FC } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { Logo } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
@@ -15,7 +15,9 @@ export const PinnedOrgNavList: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const orgConfigs = useRecoilValue(
     waitForAll(
-      pinnedAddresses.map((a) => configSelector({ contractAddress: a }))
+      pinnedAddresses.map((a) =>
+        CwCoreSelectors.configSelector({ contractAddress: a })
+      )
     )
   )
   const orgsWithAddresses = orgConfigs
@@ -46,7 +48,9 @@ export const MobilePinnedOrgNavList: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const orgConfigs = useRecoilValue(
     waitForAll(
-      pinnedAddresses.map((a) => configSelector({ contractAddress: a }))
+      pinnedAddresses.map((a) =>
+        CwCoreSelectors.configSelector({ contractAddress: a })
+      )
     )
   )
   const orgsWithAddresses = orgConfigs

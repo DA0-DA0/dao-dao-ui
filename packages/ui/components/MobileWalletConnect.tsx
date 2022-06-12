@@ -1,13 +1,13 @@
 import {
-  LogoutIcon,
   InformationCircleIcon,
+  LogoutIcon,
   XIcon,
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 
 import { Wallet } from '@dao-dao/icons'
-import { WalletConnectProps, Modal } from '@dao-dao/ui'
+import { Modal, WalletConnectProps } from '@dao-dao/ui'
 import { CHAIN_NAME } from '@dao-dao/utils'
 
 export const MobileWalletConnect: FC<WalletConnectProps> = ({

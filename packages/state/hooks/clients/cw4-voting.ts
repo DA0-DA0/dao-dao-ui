@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { useCallback } from 'react'
+import { useCallback as Cw4VotingHooks } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { Cw4VotingClient as ExecuteClient } from '../clients/cw4-voting'
+import { Cw4VotingClient as ExecuteClient } from '../../clients/cw4-voting'
 import {
-  executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/clients/cw4-voting'
-import { FunctionKeyOf } from '../types'
+  executeClient,
+} from '../../recoil/selectors/clients/cw4-voting'
+import { FunctionKeyOf } from '../../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
@@ -17,7 +17,7 @@ const wrapExecuteHook =
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-    return useCallback(
+    return Cw4VotingHooks(
       (...args: Parameters<ExecuteClient[T]>) => {
         if (client)
           return (

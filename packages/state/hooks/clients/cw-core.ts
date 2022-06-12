@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { useCallback } from 'react'
+import { useCallback as CwCoreHooks } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { validateCwCoreInstantiateMsg } from '@dao-dao/utils'
 
-import { CwCoreClient as ExecuteClient } from '../clients/cw-core'
+import { CwCoreClient as ExecuteClient } from '../../clients/cw-core'
 import {
-  executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/clients/cw-core'
-import { FunctionKeyOf } from '../types'
+  executeClient,
+} from '../../recoil/selectors/clients/cw-core'
+import { FunctionKeyOf } from '../../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
@@ -19,7 +19,7 @@ const wrapExecuteHook =
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-    return useCallback(
+    return CwCoreHooks(
       (...args: Parameters<ExecuteClient[T]>) => {
         if (client)
           return (
@@ -62,7 +62,7 @@ export const useInstantiate = ({ codeId, ...params }: UseInstantiateParams) => {
   const client =
     clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-  return useCallback(
+  return CwCoreHooks(
     (...args: ParametersExceptFirst<ExecuteClient['instantiate']>) => {
       validateCwCoreInstantiateMsg(args[0])
 

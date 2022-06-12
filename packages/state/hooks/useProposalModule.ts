@@ -1,17 +1,15 @@
-import { useRecoilValue, constSelector } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
+import {
+  Cw20BaseSelectors,
+  CwCoreSelectors,
+  CwProposalSingleSelectors,
+} from '@dao-dao/state'
 import {
   ConfigResponse,
   ProposalResponse,
 } from '@dao-dao/state/clients/cw-proposal-single'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { proposalModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import {
-  configSelector,
-  listProposalsSelector,
-  proposalCountSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
-import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 
 interface UseProposalModuleOptions {
   fetchProposalDepositTokenInfo?: boolean
@@ -46,11 +44,14 @@ export const useProposalModule = (
   const proposalModuleAddress = useRecoilValue(
     oldProposalsAddress
       ? constSelector([oldProposalsAddress])
-      : proposalModulesSelector({ contractAddress: coreAddress, params: [{}] })
+      : CwCoreSelectors.proposalModulesSelector({
+          contractAddress: coreAddress,
+          params: [{}],
+        })
   )?.[0]
   const proposalModuleConfig = useRecoilValue(
     proposalModuleAddress
-      ? configSelector({
+      ? CwProposalSingleSelectors.configSelector({
           contractAddress: proposalModuleAddress,
         })
       : constSelector(undefined)
@@ -61,7 +62,7 @@ export const useProposalModule = (
   // Proposal deposit token info
   const proposalDepositTokenInfo = useRecoilValue(
     fetchProposalDepositTokenInfo && proposalModuleConfig?.deposit_info?.token
-      ? tokenInfoSelector({
+      ? Cw20BaseSelectors.tokenInfoSelector({
           contractAddress: proposalModuleConfig.deposit_info.token,
           params: [],
         })
@@ -71,7 +72,7 @@ export const useProposalModule = (
   // Proposal count
   const proposalCount = useRecoilValue(
     fetchProposalCount && proposalModuleAddress
-      ? proposalCountSelector({
+      ? CwProposalSingleSelectors.proposalCountSelector({
           contractAddress: proposalModuleAddress,
         })
       : constSelector(undefined)
@@ -80,7 +81,7 @@ export const useProposalModule = (
   // Proposal responses
   const proposalResponses = useRecoilValue(
     fetchProposalResponses && proposalModuleAddress
-      ? listProposalsSelector({
+      ? CwProposalSingleSelectors.listProposalsSelector({
           contractAddress: proposalModuleAddress,
           params: [{}],
         })

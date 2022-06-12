@@ -3,18 +3,14 @@ import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import {
+  Cw20BaseHooks,
+  StakeCw20Hooks,
+  StakeCw20Selectors,
   stakingLoadingAtom,
   useGovernanceTokenInfo,
   useStakingInfo,
   useWallet,
 } from '@dao-dao/state'
-import { useSend } from '@dao-dao/state/hooks/cw20-base'
-import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
-import {
-  stakedBalanceAtHeightSelector,
-  totalStakedAtHeightSelector,
-  totalValueSelector,
-} from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import {
   Modal,
   StakingMode,
@@ -74,7 +70,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
   const totalStaked = useRecoilValue(
     stakingContractAddress
-      ? totalStakedAtHeightSelector({
+      ? StakeCw20Selectors.totalStakedAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{}],
         })
@@ -83,7 +79,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
   const stakedBalance = useRecoilValue(
     stakingContractAddress && walletAddress
-      ? stakedBalanceAtHeightSelector({
+      ? StakeCw20Selectors.stakedBalanceAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -92,7 +88,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
 
   const totalValue = useRecoilValue(
     stakingContractAddress
-      ? totalValueSelector({ contractAddress: stakingContractAddress })
+      ? StakeCw20Selectors.totalValueSelector({
+          contractAddress: stakingContractAddress,
+        })
       : constSelector(undefined)
   )
 
@@ -110,15 +108,15 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     throw new Error('Failed to load data.')
   }
 
-  const doStake = useSend({
+  const doStake = Cw20BaseHooks.useSend({
     contractAddress: governanceTokenAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const doUnstake = useUnstake({
+  const doUnstake = StakeCw20Hooks.useUnstake({
     contractAddress: stakingContractAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const doClaim = useClaim({
+  const doClaim = StakeCw20Hooks.useClaim({
     contractAddress: stakingContractAddress ?? '',
     sender: walletAddress ?? '',
   })

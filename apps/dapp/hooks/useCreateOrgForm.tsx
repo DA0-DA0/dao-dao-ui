@@ -12,7 +12,7 @@ import {
 import toast from 'react-hot-toast'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { useWallet } from '@dao-dao/state'
+import { CwCoreHooks, useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -23,7 +23,6 @@ import {
   InstantiateMsg as Cw4VotingInstantiateMsg,
   Member,
 } from '@dao-dao/state/clients/cw4-voting'
-import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
 import {
   CW20STAKEDBALANCEVOTING_CODE_ID,
   CW20_CODE_ID,
@@ -126,7 +125,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
     invalidPages.map(String).join(),
   ])
 
-  const instantiate = useInstantiate({
+  const instantiate = CwCoreHooks.useInstantiate({
     codeId: CWCORE_CODE_ID,
     sender: walletAddress ?? '',
   })
@@ -337,7 +336,7 @@ const parseSubmitterValueDelta = (value: string): number => {
 }
 
 const createOrg = async (
-  instantiate: ReturnType<typeof useInstantiate>,
+  instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
   values: NewOrg
 ) => {
   const {

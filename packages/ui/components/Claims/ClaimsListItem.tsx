@@ -4,9 +4,9 @@ import { FC, useEffect, useState } from 'react'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
+  claimAvailable,
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  claimAvailable,
 } from '@dao-dao/utils'
 
 import { BalanceIcon } from '../ContractView/BalanceIcon'

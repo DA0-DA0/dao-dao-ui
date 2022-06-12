@@ -1,13 +1,13 @@
 import { FC, useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { nativeBalancesSelector, useGovernanceTokenInfo } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { allCw20BalancesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
-  marketingInfoSelector,
-  tokenInfoSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+  Cw20BaseSelectors,
+  CwCoreSelectors,
+  nativeBalancesSelector,
+  useGovernanceTokenInfo,
+} from '@dao-dao/state'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { TreasuryBalances as StatelessTreasuryBalances } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -28,7 +28,7 @@ export const TreasuryBalances: FC = () => {
     useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
 
   const _cw20List = useRecoilValue(
-    allCw20BalancesSelector({ contractAddress: coreAddress })
+    CwCoreSelectors.allCw20BalancesSelector({ contractAddress: coreAddress })
   )
   const cw20List = useMemo(() => {
     const list = _cw20List ? [..._cw20List] : []
@@ -50,14 +50,20 @@ export const TreasuryBalances: FC = () => {
   const cw20Info = useRecoilValue(
     waitForAll(
       cw20List.map(({ addr }) =>
-        tokenInfoSelector({ contractAddress: addr, params: [] })
+        Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: addr,
+          params: [],
+        })
       )
     )
   ).filter(Boolean) as TokenInfoResponse[]
   const cw20MarketingInfo = useRecoilValue(
     waitForAll(
       cw20List.map(({ addr }) =>
-        marketingInfoSelector({ contractAddress: addr, params: [] })
+        Cw20BaseSelectors.marketingInfoSelector({
+          contractAddress: addr,
+          params: [],
+        })
       )
     )
   )

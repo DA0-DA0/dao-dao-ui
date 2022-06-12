@@ -1,17 +1,14 @@
 import { useCallback } from 'react'
-import { useRecoilValue, constSelector, useSetRecoilState } from 'recoil'
+import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
+  CwCoreSelectors,
+  CwProposalSingleSelectors,
   proposalExecutionTXHashSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
   useWallet,
 } from '@dao-dao/state'
-import { votingPowerAtHeightSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import {
-  proposalSelector,
-  getVoteSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
 import { useProposalModule } from '.'
 
@@ -34,7 +31,7 @@ export const useProposalInfo = (
 
   const proposalResponse = useRecoilValue(
     proposalModuleAddress && proposalId !== undefined
-      ? proposalSelector({
+      ? CwProposalSingleSelectors.proposalSelector({
           contractAddress: proposalModuleAddress,
           params: [{ proposalId }],
         })
@@ -43,7 +40,7 @@ export const useProposalInfo = (
 
   const voteResponse = useRecoilValue(
     proposalModuleAddress && proposalId !== undefined && walletAddress
-      ? getVoteSelector({
+      ? CwProposalSingleSelectors.getVoteSelector({
           contractAddress: proposalModuleAddress,
           params: [{ proposalId, voter: walletAddress }],
         })
@@ -52,7 +49,7 @@ export const useProposalInfo = (
 
   const votingPowerAtHeight = useRecoilValue(
     walletAddress && proposalResponse
-      ? votingPowerAtHeightSelector({
+      ? CwCoreSelectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           params: [
             {

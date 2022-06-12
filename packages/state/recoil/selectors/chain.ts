@@ -5,9 +5,9 @@ import { selector, selectorFamily } from 'recoil'
 
 import {
   CHAIN_RPC_ENDPOINT,
-  cosmWasmClientRouter,
   GAS_PRICE,
   NATIVE_DENOM,
+  cosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 

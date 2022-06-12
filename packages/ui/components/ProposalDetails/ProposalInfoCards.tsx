@@ -1,4 +1,4 @@
-import { ExternalLinkIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
+import { CheckIcon, ExternalLinkIcon, XIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
 import { TriangleUp } from '@dao-dao/icons'
@@ -10,11 +10,12 @@ import {
 } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   CHAIN_TXN_URL_PREFIX,
+  ProcessedTQType,
   convertMicroDenomToDenomWithDecimals,
   expirationAtTimeToSecondsFromNow,
+  processThresholdData,
   secondsToWdhms,
 } from '@dao-dao/utils'
-import { ProcessedTQType, processThresholdData } from '@dao-dao/utils/v1'
 
 import { CopyToClipboard } from '../CopyToClipboard'
 import { Progress } from '../Progress'

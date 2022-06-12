@@ -1,5 +1,8 @@
-import { ArrowRightIcon, ExternalLinkIcon } from '@heroicons/react/outline'
-import { MenuIcon } from '@heroicons/react/outline'
+import {
+  ArrowRightIcon,
+  ExternalLinkIcon,
+  MenuIcon,
+} from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
 

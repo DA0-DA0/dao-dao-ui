@@ -6,8 +6,10 @@ import {
   ProposalsInfoProps,
   ProposalsInfo as StatelessProposalsInfo,
 } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
-import { processThresholdData } from '@dao-dao/utils/v1'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  processThresholdData,
+} from '@dao-dao/utils'
 
 import { DAO_ADDRESS } from '@/util'
 

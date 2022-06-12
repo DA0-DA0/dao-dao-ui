@@ -1,6 +1,5 @@
 import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
 import {
@@ -8,7 +7,6 @@ import {
   useProposalModule,
   useStakingInfo,
 } from '@dao-dao/state'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
   CopyToClipboardAccent,
   GovInfoListItem,
@@ -17,8 +15,8 @@ import {
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
+  processThresholdData,
 } from '@dao-dao/utils'
-import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { DaoTreasury } from './DaoTreasury'
 import { Loader } from './Loader'
@@ -30,16 +28,13 @@ interface DaoContractInfoProps {
 
 const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
   const { coreAddress } = useOrgInfoContext()
-  const config = useRecoilValue(
-    configSelector({ contractAddress: coreAddress })
-  )
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(coreAddress)
   const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { stakingContractAddress, stakingContractConfig } =
     useStakingInfo(coreAddress)
 
-  if (!config || !proposalModuleConfig) {
+  if (!proposalModuleConfig) {
     throw new Error('Failed to load data.')
   }
 

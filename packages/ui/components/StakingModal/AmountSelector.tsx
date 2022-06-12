@@ -1,4 +1,4 @@
-import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/outline'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
 import { ChangeEvent, FC } from 'react'
 
 export interface AmountSelectorProps {

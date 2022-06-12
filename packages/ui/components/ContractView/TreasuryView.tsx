@@ -1,11 +1,11 @@
 import { FC } from 'react'
 
 import {
+  NATIVE_DENOM,
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
-  convertMicroDenomToDenomWithDecimals,
-  convertDenomToHumanReadableDenom,
-  NATIVE_DENOM,
 } from '@dao-dao/utils'
 
 import { BalanceIcon } from './BalanceIcon'

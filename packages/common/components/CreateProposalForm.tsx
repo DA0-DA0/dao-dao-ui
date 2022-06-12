@@ -20,12 +20,12 @@ import {
 } from '@dao-dao/actions'
 import { Airplane } from '@dao-dao/icons'
 import {
+  CwCoreSelectors,
   useProposalModule,
   useVotingModule,
   useWallet,
   walletCw20BalanceSelector,
 } from '@dao-dao/state'
-import { pauseInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -90,7 +90,7 @@ export const CreateProposalForm = ({
 
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
-    pauseInfoSelector({ contractAddress: coreAddress })
+    CwCoreSelectors.pauseInfoSelector({ contractAddress: coreAddress })
   )
   const isPaused = pauseInfo && 'Paused' in pauseInfo
 

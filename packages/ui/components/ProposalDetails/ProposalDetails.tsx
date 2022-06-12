@@ -1,4 +1,4 @@
-import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
+import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useMemo, useState } from 'react'
 
 import { ActionsRenderer } from '@dao-dao/actions'
@@ -8,9 +8,9 @@ import {
   Vote as VoteChoice,
 } from '@dao-dao/state/clients/cw-proposal-single'
 import {
-  decodedMessagesString,
-  decodeMessages,
   VotingModuleType,
+  decodeMessages,
+  decodedMessagesString,
 } from '@dao-dao/utils'
 
 import { Button } from '../Button'

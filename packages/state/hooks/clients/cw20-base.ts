@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { useCallback } from 'react'
+import { useCallback as Cw20BaseHooks } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { Cw20Client as ExecuteClient } from '../clients/cw20-base'
+import { Cw20Client as ExecuteClient } from '../../clients/cw20-base'
 import {
-  executeClient,
   ExecuteClientParams,
-} from '../recoil/selectors/clients/cw20-base'
-import { FunctionKeyOf } from '../types'
+  executeClient,
+} from '../../recoil/selectors/clients/cw20-base'
+import { FunctionKeyOf } from '../../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
@@ -17,7 +17,7 @@ const wrapExecuteHook =
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-    return useCallback(
+    return Cw20BaseHooks(
       (...args: Parameters<ExecuteClient[T]>) => {
         if (client)
           return (
