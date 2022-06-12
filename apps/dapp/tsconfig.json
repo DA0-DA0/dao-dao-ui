@@ -10,7 +10,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "../../packages/templates/components/AddToken.tsx"
+    "../../packages/actions/components/AddToken.tsx"
   ],
   "exclude": ["node_modules", "tools"]
 }

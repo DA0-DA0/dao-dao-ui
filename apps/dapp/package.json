@@ -21,7 +21,7 @@
     "@cosmjs/stargate": "^0.28.1",
     "@dao-dao/common": "*",
     "@dao-dao/icons": "*",
-    "@dao-dao/templates": "*",
+    "@dao-dao/actions": "*",
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",

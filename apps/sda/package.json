@@ -24,7 +24,7 @@
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
-    "@dao-dao/templates": "*",
+    "@dao-dao/actions": "*",
     "@dao-dao/common": "*",
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",

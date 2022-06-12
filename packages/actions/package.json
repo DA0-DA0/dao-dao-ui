@@ -1,16 +1,19 @@
 {
-  "name": "@dao-dao/common",
+  "name": "@dao-dao/actions",
   "version": "0.1.0",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
+    "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
-    "@dao-dao/actions": "*",
+    "@heroicons/react": "^1.0.6",
+    "a11y-react-emoji": "^1.2.0",
+    "clsx": "^1.1.1",
     "react": "^18.1.0",
+    "react-hook-form": "^7.20.4",
     "recoil": "^0.7.2"
   },
   "devDependencies": {

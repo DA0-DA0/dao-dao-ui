@@ -7,7 +7,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/icons',
   '@dao-dao/utils',
   '@dao-dao/state',
-  '@dao-dao/templates',
+  '@dao-dao/actions',
   '@dao-dao/common',
 ])
 
@@ -27,7 +27,6 @@ let config = {
       'pages',
       'selectors',
       'services',
-      'templates',
       'types',
       'util',
     ],

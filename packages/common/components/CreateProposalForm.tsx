@@ -9,6 +9,15 @@ import {
 } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import {
+  Action,
+  ActionKey,
+  useActionsForVotingModuleType,
+  UseTransformToCosmos,
+  FormProposalData,
+  ActionSelector,
+  UseDefaults,
+} from '@dao-dao/actions'
 import { Airplane } from '@dao-dao/icons'
 import {
   useWallet,
@@ -17,17 +26,6 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import { pauseInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import {
-  Template,
-  TemplateKey,
-  useTemplatesForVotingModuleType,
-  UseTransformToCosmos,
-} from '@dao-dao/templates'
-import {
-  FormProposalData,
-  TemplateSelector,
-  UseDefaults,
-} from '@dao-dao/templates/components'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
@@ -50,7 +48,7 @@ enum ProposeSubmitValue {
   Submit = 'Submit',
 }
 
-export interface ProposalData extends Omit<FormProposalData, 'templateData'> {
+export interface ProposalData extends Omit<FormProposalData, 'actionData'> {
   messages: CosmosMsgFor_Empty[]
 }
 
@@ -101,7 +99,7 @@ export const CreateProposalForm = ({
     defaultValues: {
       title: '',
       description: '',
-      templateData: [],
+      actionData: [],
     },
   })
 
@@ -116,44 +114,44 @@ export const CreateProposalForm = ({
   } = formMethods
 
   const [showPreview, setShowPreview] = useState(false)
-  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showActionSelector, setShowActionSelector] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
-  const proposalTemplateData = watch('templateData')
+  const proposalActionData = watch('actionData')
 
   const { append, remove } = useFieldArray({
-    name: 'templateData',
+    name: 'actionData',
     control,
     shouldUnregister: true,
   })
 
-  const templates = useTemplatesForVotingModuleType(votingModuleType)
-  // Call relevant template hooks in the same order every time.
-  const templatesWithData: Partial<
+  const actions = useActionsForVotingModuleType(votingModuleType)
+  // Call relevant action hooks in the same order every time.
+  const actionsWithData: Partial<
     Record<
-      TemplateKey,
+      ActionKey,
       {
-        template: Template
+        action: Action
         transform: ReturnType<UseTransformToCosmos>
         defaults: ReturnType<UseDefaults>
       }
     >
-  > = templates.reduce(
-    (acc, template) => ({
+  > = actions.reduce(
+    (acc, action) => ({
       ...acc,
-      [template.key]: {
-        template,
-        transform: template.useTransformToCosmos(coreAddress),
-        defaults: template.useDefaults(coreAddress),
+      [action.key]: {
+        action,
+        transform: action.useTransformToCosmos(coreAddress),
+        defaults: action.useDefaults(coreAddress),
       },
     }),
     {}
   )
 
   const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
-    ({ templateData, ...data }, event) => {
+    ({ actionData, ...data }, event) => {
       setShowSubmitErrorNote(false)
 
       const nativeEvent = event?.nativeEvent as SubmitEvent
@@ -166,17 +164,13 @@ export const CreateProposalForm = ({
 
       onSubmit({
         ...data,
-        messages: templateData
-          .map(({ key, data }) => templatesWithData[key]?.transform(data))
+        messages: actionData
+          .map(({ key, data }) => actionsWithData[key]?.transform(data))
           // Filter out undefined messages.
           .filter(Boolean) as CosmosMsgFor_Empty[],
       })
     },
-    // templatesAndTransforms changes every render, causing unnecessary
-    // re-renders, but templates doesn't change, so we can use it as a
-    // replacement.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onSubmit, templates, setShowPreview]
+    [onSubmit, actionsWithData]
   )
 
   const onSubmitError: SubmitErrorHandler<FormProposalData> = useCallback(
@@ -200,10 +194,8 @@ export const CreateProposalForm = ({
             </div>
             <CosmosMessageDisplay
               value={decodedMessagesString(
-                proposalTemplateData
-                  .map(({ key, data }) =>
-                    templatesWithData[key]?.transform(data)
-                  )
+                proposalActionData
+                  .map(({ key, data }) => actionsWithData[key]?.transform(data))
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
               )}
@@ -232,23 +224,21 @@ export const CreateProposalForm = ({
             <InputErrorMessage error={errors.description} />
           </div>
           <ul className="list-none">
-            {proposalTemplateData.map((templateData, index) => {
+            {proposalActionData.map((actionData, index) => {
               const Component =
-                templatesWithData[templateData.key]?.template?.Component
+                actionsWithData[actionData.key]?.action?.Component
               if (!Component) {
-                throw new Error(
-                  `Error detecting template type ${templateData.key}`
-                )
+                throw new Error(`Error detecting action type ${actionData.key}`)
               }
 
               return (
                 <li key={index}>
                   <Component
-                    allTemplatesWithData={proposalTemplateData}
+                    allActionsWithData={proposalActionData}
                     coreAddress={coreAddress}
-                    errors={errors.templateData?.[index]?.data || {}}
+                    errors={errors.actionData?.[index]?.data || {}}
                     getLabel={(fieldName) =>
-                      `templateData.${index}.data.${fieldName}`
+                      `actionData.${index}.data.${fieldName}`
                     }
                     index={index}
                     onRemove={() => remove(index)}
@@ -259,7 +249,7 @@ export const CreateProposalForm = ({
           </ul>
           <div className="mt-2">
             <Button
-              onClick={() => setShowTemplateSelector((s) => !s)}
+              onClick={() => setShowActionSelector((s) => !s)}
               type="button"
               variant="secondary"
             >
@@ -318,15 +308,15 @@ export const CreateProposalForm = ({
         )}
       </form>
 
-      {showTemplateSelector && (
-        <TemplateSelector
-          onClose={() => setShowTemplateSelector(false)}
-          onSelectTemplate={({ key }) => {
+      {showActionSelector && (
+        <ActionSelector
+          onClose={() => setShowActionSelector(false)}
+          onSelectAction={({ key }) => {
             append({
               key,
-              data: templatesWithData[key]?.defaults ?? {},
+              data: actionsWithData[key]?.defaults ?? {},
             })
-            setShowTemplateSelector(false)
+            setShowActionSelector(false)
           }}
           votingModuleType={votingModuleType}
         />
