@@ -5,9 +5,9 @@ import {
   FormState,
   SubmitErrorHandler,
   SubmitHandler,
-  useForm,
   UseFormClearErrors,
   UseFormSetError,
+  useForm,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useRecoilState, useSetRecoilState } from 'recoil'
@@ -25,8 +25,6 @@ import {
 } from '@dao-dao/state/clients/cw4-voting'
 import { useInstantiate } from '@dao-dao/state/hooks/cw-core'
 import {
-  cleanChainError,
-  convertDenomToMicroDenomWithDecimals,
   CW20STAKEDBALANCEVOTING_CODE_ID,
   CW20_CODE_ID,
   CW4GROUP_CODE_ID,
@@ -34,19 +32,21 @@ import {
   CWCORE_CODE_ID,
   CWPROPOSALSINGLE_CODE_ID,
   STAKECW20_CODE_ID,
+  cleanChainError,
+  convertDenomToMicroDenomWithDecimals,
   validateCw20StakedBalanceVotingInstantiateMsg,
   validateCw4VotingInstantiateMsg,
   validateCwProposalSingleInstantiateMsg,
 } from '@dao-dao/utils'
 
 import {
+  GovernanceTokenType,
+  NEW_ORG_CW20_DECIMALS,
+  NewOrg,
+  NewOrgStructure,
   convertDurationWithUnitsToDuration,
   convertThresholdValueToPercentageThreshold,
-  GovernanceTokenType,
-  NewOrg,
   newOrgAtom,
-  NewOrgStructure,
-  NEW_ORG_CW20_DECIMALS,
 } from '@/atoms/newOrg'
 import { pinnedAddressesAtom } from '@/atoms/pinned'
 

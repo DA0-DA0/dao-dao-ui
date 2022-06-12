@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {

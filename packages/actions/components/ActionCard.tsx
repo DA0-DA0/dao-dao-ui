@@ -1,5 +1,5 @@
 import { XIcon } from '@heroicons/react/solid'
-import { ReactNode, FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import { Loader } from '@dao-dao/ui/components/Loader'
 

@@ -20,9 +20,9 @@ import { cleanChainError } from '@dao-dao/utils'
 
 import { Loader, PageLoader } from '@/components/Loader'
 import {
-  makeGetOrgStaticProps,
   OrgPageWrapper,
   OrgPageWrapperProps,
+  makeGetOrgStaticProps,
   useOrgInfoContext,
 } from '@/components/OrgPageWrapper'
 import { ProposalsInfo } from '@/components/proposals/ProposalsInfo'

@@ -1,4 +1,4 @@
-import { useMemo, FunctionComponent, SVGProps } from 'react'
+import { FunctionComponent, SVGProps, useMemo } from 'react'
 
 // Ensure radialGradient ID is unique on the page or else only one icon
 // will render.

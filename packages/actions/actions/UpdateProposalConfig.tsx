@@ -9,19 +9,19 @@ import {
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import {
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {
   Action,
+  ActionComponent,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionComponent,
 } from '..'
 import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 

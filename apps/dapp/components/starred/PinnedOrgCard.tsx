@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { useRecoilValue, useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   nativeBalanceSelector,
@@ -10,8 +10,8 @@ import {
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  convertMicroDenomToDenomWithDecimals,
   VotingModuleType,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { ContractCard, LoadingContractCard } from '../ContractCard'

@@ -4,26 +4,26 @@ import { useRecoilValue } from 'recoil'
 import { nativeBalancesSelector } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  convertDenomToHumanReadableDenom,
-  StakeType,
-  convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
   NATIVE_DENOM,
+  StakeType,
+  VotingModuleType,
+  convertDenomToHumanReadableDenom,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
   makeDistributeMessage,
   makeStakingMessage,
-  convertDenomToMicroDenomWithDecimals,
-  VotingModuleType,
+  nativeTokenDecimals,
 } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {
-  stakeActions,
   Action,
+  ActionCardLoader,
   ActionComponent,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionCardLoader,
+  stakeActions,
 } from '..'
 import { StakeComponent as StatelessStakeComponent } from '../components'
 

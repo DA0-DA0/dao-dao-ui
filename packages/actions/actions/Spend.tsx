@@ -10,23 +10,23 @@ import {
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
+  NATIVE_DENOM,
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeBankMessage,
   makeWasmMessage,
   nativeTokenDecimals,
-  NATIVE_DENOM,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {
   Action,
+  ActionCardLoader,
   ActionComponent,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionCardLoader,
 } from '..'
 import { SpendComponent as StatelessSpendComponent } from '../components'
 

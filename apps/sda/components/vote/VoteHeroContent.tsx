@@ -4,15 +4,15 @@ import { useRecoilValue } from 'recoil'
 
 import {
   useGovernanceTokenInfo,
-  useStakingInfo,
   useProposalModule,
+  useStakingInfo,
   useVotingModule,
 } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
+  VotingModuleType,
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  VotingModuleType,
 } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
 

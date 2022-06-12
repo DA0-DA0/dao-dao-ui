@@ -11,16 +11,16 @@ import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { allCw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {
   Action,
+  ActionCardLoader,
   ActionComponent,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionCardLoader,
 } from '..'
 import { RemoveTokenComponent as StatelessRemoveTokenComponent } from '../components'
 

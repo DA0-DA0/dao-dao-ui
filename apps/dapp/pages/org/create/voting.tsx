@@ -24,14 +24,14 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  DefaultNewOrg,
   DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_ORG_THRESHOLD_PERCENT,
+  DefaultNewOrg,
   DurationUnitsValues,
   GovernanceTokenType,
-  NewOrgStructure,
   NEW_ORG_CW20_DECIMALS,
+  NewOrgStructure,
 } from '@/atoms/newOrg'
 import {
   CreateOrgConfigCard,
@@ -40,8 +40,8 @@ import {
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
 import { CreateOrgTier } from '@/components/org/create/CreateOrgTier'
 import {
-  useVotingPowerDistributionData,
   VotingPowerChart,
+  useVotingPowerDistributionData,
 } from '@/components/org/create/Distributions'
 import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'

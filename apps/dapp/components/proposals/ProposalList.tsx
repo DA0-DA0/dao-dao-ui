@@ -9,7 +9,7 @@ import {
 
 import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
 import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
-import { ProposalLine, Button, SuspenseLoader } from '@dao-dao/ui'
+import { Button, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
 import { EmptyContractCard } from '../EmptyContractCard'
 import { Loader } from '../Loader'

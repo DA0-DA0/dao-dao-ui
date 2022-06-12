@@ -8,7 +8,7 @@ import {
 } from 'chart.js'
 import clsx from 'clsx'
 import { FC, useMemo } from 'react'
-import { Pie, Bar } from 'react-chartjs-2'
+import { Bar, Pie } from 'react-chartjs-2'
 
 import { useNamedThemeColor } from '@dao-dao/ui'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'

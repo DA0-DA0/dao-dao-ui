@@ -15,8 +15,8 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
-  humanReadableDuration,
   convertMicroDenomToDenomWithDecimals,
+  humanReadableDuration,
 } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'
 

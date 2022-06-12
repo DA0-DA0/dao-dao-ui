@@ -1,12 +1,12 @@
 import clsx from 'clsx'
 import {
   FC,
+  RefObject,
   UIEventHandler,
+  createRef,
   useEffect,
   useMemo,
   useState,
-  createRef,
-  RefObject,
 } from 'react'
 
 import { Dao, Votes } from '@dao-dao/icons'

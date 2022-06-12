@@ -4,17 +4,17 @@ import { FC } from 'react'
 
 import { useWallet } from '@dao-dao/state'
 import {
-  WalletConnect,
   MobileWalletConnect,
   NoMobileWallet,
+  WalletConnect,
   WalletConnectProps,
 } from '@dao-dao/ui'
 import {
+  CHAIN_ID,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
-  CHAIN_ID,
 } from '@dao-dao/utils'
 
 export interface ConnectWalletButtonProps extends Partial<WalletConnectProps> {

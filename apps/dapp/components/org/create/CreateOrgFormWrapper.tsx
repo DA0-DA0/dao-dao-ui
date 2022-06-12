@@ -7,9 +7,9 @@ import { SubmitButton } from '@dao-dao/ui'
 
 import { CreateOrgNav } from './CreateOrgNav'
 import {
-  createOrgFormPages,
   CreateOrgSubmitLabel,
   OrgFormPage,
+  createOrgFormPages,
 } from '@/hooks/useCreateOrgForm'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &

@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react'
 
 import {
-  useWallet,
   useGovernanceTokenInfo,
   useStakingInfo,
+  useWallet,
 } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'

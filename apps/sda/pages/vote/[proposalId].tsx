@@ -6,10 +6,10 @@ import toast from 'react-hot-toast'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
-  useWallet,
-  useProposalModule,
   useGovernanceTokenInfo,
   useProposalInfo,
+  useProposalModule,
+  useWallet,
 } from '@dao-dao/state'
 import { CwCoreQueryClient } from '@dao-dao/state/clients/cw-core'
 import {
@@ -27,18 +27,18 @@ import {
   ProposalInfoVoteStatus,
 } from '@dao-dao/ui/components/ProposalDetails'
 import {
-  cosmWasmClientRouter,
   CHAIN_RPC_ENDPOINT,
   CI,
   VotingModuleType,
   cleanChainError,
+  cosmWasmClientRouter,
 } from '@dao-dao/utils'
 
 import {
   Loader,
-  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
+  makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'

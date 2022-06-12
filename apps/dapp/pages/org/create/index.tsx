@@ -2,9 +2,9 @@ import Emoji from 'a11y-react-emoji'
 import { FC, useCallback } from 'react'
 
 import {
-  DefaultNewOrg,
   DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
+  DefaultNewOrg,
   NewOrgStructure,
 } from '@/atoms/newOrg'
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'

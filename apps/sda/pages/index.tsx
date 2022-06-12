@@ -6,30 +6,30 @@ import React, { useState } from 'react'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { Pie } from '@dao-dao/icons'
 import {
-  useWallet,
   useGovernanceTokenInfo,
   useVotingModule,
+  useWallet,
 } from '@dao-dao/state'
 import {
   MultisigMemberList,
   MultisigMemberListLoader,
   StakingMode,
-  TooltipIcon,
   SuspenseLoader,
+  TooltipIcon,
 } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
 import {
-  StakeHeader,
+  BalanceCardLoader,
+  ClaimsList,
+  Loader,
   PageWrapper,
   PageWrapperProps,
-  makeGetStaticProps,
-  Loader,
+  StakeHeader,
+  StakeHeaderLoader,
   StakedBalanceCard,
   UnstakedBalanceCard,
-  ClaimsList,
-  StakeHeaderLoader,
-  BalanceCardLoader,
+  makeGetStaticProps,
 } from '@/components'
 import { DAO_ADDRESS } from '@/util'
 

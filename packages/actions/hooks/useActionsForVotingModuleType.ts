@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { VotingModuleType } from '@dao-dao/utils'
 
-import { actions, Action } from '..'
+import { Action, actions } from '..'
 
 export const useActionsForVotingModuleType = (
   type: VotingModuleType

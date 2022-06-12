@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentProps, ReactNode, FC } from 'react'
+import { ComponentProps, FC, ReactNode } from 'react'
 import { FieldError } from 'react-hook-form'
 
 import { InputErrorMessage } from '@dao-dao/ui'

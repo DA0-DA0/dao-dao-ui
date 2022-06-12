@@ -2,8 +2,8 @@ import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
 import { ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
-  SubmitHandler,
   SubmitErrorHandler,
+  SubmitHandler,
   useFieldArray,
   useForm,
 } from 'react-hook-form'
@@ -12,35 +12,35 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Action,
   ActionKey,
-  useActionsForVotingModuleType,
-  UseTransformToCosmos,
-  FormProposalData,
   ActionSelector,
+  FormProposalData,
   UseDefaults,
+  UseTransformToCosmos,
+  useActionsForVotingModuleType,
 } from '@dao-dao/actions'
 import { Airplane } from '@dao-dao/icons'
 import {
-  useWallet,
   useProposalModule,
-  walletCw20BalanceSelector,
   useVotingModule,
+  useWallet,
+  walletCw20BalanceSelector,
 } from '@dao-dao/state'
 import { pauseInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
   Button,
-  MarkdownPreview,
   CosmosMessageDisplay,
   InputErrorMessage,
   InputLabel,
+  MarkdownPreview,
   TextAreaInput,
-  Tooltip,
   TextInput,
+  Tooltip,
 } from '@dao-dao/ui'
 import {
-  validateRequired,
-  decodedMessagesString,
   VotingModuleType,
+  decodedMessagesString,
+  validateRequired,
 } from '@dao-dao/utils'
 
 enum ProposeSubmitValue {

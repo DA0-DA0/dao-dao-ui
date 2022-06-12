@@ -4,9 +4,9 @@ import { FC } from 'react'
 import { Logo } from '@dao-dao/ui'
 
 import {
+  NewOrgStructure,
   convertDurationWithUnitsToHumanReadableString,
   convertThresholdValueToHumanReadableString,
-  NewOrgStructure,
 } from '@/atoms/newOrg'
 import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
 import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'

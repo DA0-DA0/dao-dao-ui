@@ -1,12 +1,12 @@
-import React, { useState, FunctionComponent, ReactNode } from 'react'
+import React, { FunctionComponent, ReactNode, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import {
-  useWallet,
+  stakingLoadingAtom,
   useGovernanceTokenInfo,
   useStakingInfo,
-  stakingLoadingAtom,
+  useWallet,
 } from '@dao-dao/state'
 import { useSend } from '@dao-dao/state/hooks/cw20-base'
 import { useClaim, useUnstake } from '@dao-dao/state/hooks/stake-cw20'
@@ -16,15 +16,15 @@ import {
   totalValueSelector,
 } from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import {
+  Modal,
   StakingMode,
   StakingModal as StatelessStakingModal,
-  Modal,
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
+  cleanChainError,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  cleanChainError,
 } from '@dao-dao/utils'
 
 interface StakingModalProps {

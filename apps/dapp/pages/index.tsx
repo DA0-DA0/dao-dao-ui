@@ -14,8 +14,8 @@ import {
   GradientWrapper,
   LoadingScreen,
   Logo,
-  SuspenseLoader,
   RotatableLogo,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 

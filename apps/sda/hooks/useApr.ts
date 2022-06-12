@@ -1,4 +1,4 @@
-import { useRecoilValue, constSelector } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import { useStakingInfo } from '@dao-dao/state'
 import { rewardsRateSelector } from '@dao-dao/state/recoil/selectors/clients/cw-rewards'

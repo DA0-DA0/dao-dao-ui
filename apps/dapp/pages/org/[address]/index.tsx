@@ -6,12 +6,12 @@ import { useRecoilState } from 'recoil'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
-  useThemeContext,
-  GradientHero,
-  StarButton,
   Breadcrumbs,
+  GradientHero,
   MobileMenuTab,
+  StarButton,
   SuspenseLoader,
+  useThemeContext,
 } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -26,9 +26,9 @@ import { DaoTreasury } from '@/components/DaoTreasury'
 import { PageLoader } from '@/components/Loader'
 import { OrgMobileHeader } from '@/components/OrgMobileHeader'
 import {
-  makeGetOrgStaticProps,
   OrgPageWrapper,
   OrgPageWrapperProps,
+  makeGetOrgStaticProps,
   useOrgInfoContext,
 } from '@/components/OrgPageWrapper'
 import { SmallScreenNav } from '@/components/SmallScreenNav'

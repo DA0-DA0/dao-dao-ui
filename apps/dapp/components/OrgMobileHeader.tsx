@@ -3,8 +3,8 @@ import { useRecoilState } from 'recoil'
 
 import { useVotingModule } from '@dao-dao/state'
 import {
-  MobileHeader as StatelessMobileHeader,
   MobileHeaderLoader,
+  MobileHeader as StatelessMobileHeader,
   SuspenseLoader,
 } from '@dao-dao/ui'
 

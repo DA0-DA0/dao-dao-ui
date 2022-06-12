@@ -9,8 +9,8 @@ import { CreateProposalForm } from '@dao-dao/common'
 import {
   blockHeightSelector,
   refreshProposalsIdAtom,
-  useWallet,
   useProposalModule,
+  useWallet,
 } from '@dao-dao/state'
 import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
 import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
@@ -20,10 +20,10 @@ import { cleanChainError } from '@dao-dao/utils'
 
 import {
   Loader,
-  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
   ProposalsInfo,
+  makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { DAO_ADDRESS, expirationExpired } from '@/util'

@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil'
 
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {

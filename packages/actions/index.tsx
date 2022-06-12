@@ -1,14 +1,14 @@
 import {
-  spendAction,
-  mintAction,
-  stakeAction,
   addTokenAction,
-  removeTokenAction,
   customAction,
+  executeAction,
+  instantiateAction,
+  mintAction,
+  removeTokenAction,
+  spendAction,
+  stakeAction,
   updateInfoAction,
   updateProposalConfigAction,
-  instantiateAction,
-  executeAction,
 } from './actions'
 import { Action } from './types'
 

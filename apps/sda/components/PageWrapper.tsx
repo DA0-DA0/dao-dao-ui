@@ -8,13 +8,13 @@ import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/st
 import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  cosmWasmClientRouter,
   CHAIN_RPC_ENDPOINT,
   CI,
+  cosmWasmClientRouter,
   parseVotingModuleContractName,
 } from '@dao-dao/utils'
 
-import { Header, Loader, DAOInfoContext, DAOInfo, DefaultDAOInfo } from '.'
+import { DAOInfo, DAOInfoContext, DefaultDAOInfo, Header, Loader } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{

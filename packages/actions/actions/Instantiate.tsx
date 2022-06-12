@@ -11,20 +11,20 @@ import {
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
+  NATIVE_DECIMALS,
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  NATIVE_DECIMALS,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
 import { ActionKey } from '.'
 import {
   Action,
+  ActionComponent,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionComponent,
 } from '..'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components'
 

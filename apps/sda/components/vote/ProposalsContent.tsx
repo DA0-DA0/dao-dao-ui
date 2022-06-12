@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { useMemo } from 'react'
-import { useRecoilValue, constSelector } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import { useProposalModule } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'

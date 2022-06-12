@@ -1,4 +1,4 @@
-import { PlusIcon, MapIcon } from '@heroicons/react/outline'
+import { MapIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 

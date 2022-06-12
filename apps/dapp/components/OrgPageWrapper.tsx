@@ -13,19 +13,19 @@ import {
   CwCoreQueryClient as QueryClient,
 } from '@dao-dao/state/clients/cw-core'
 import {
-  Cw20StakedBalanceVotingQueryClient,
   InfoResponse as Cw20StakedBalanceVotingInfoResponse,
+  Cw20StakedBalanceVotingQueryClient,
 } from '@dao-dao/state/clients/cw20-staked-balance-voting'
 import {
-  Cw4VotingQueryClient,
   InfoResponse as Cw4VotingInfoResponse,
+  Cw4VotingQueryClient,
 } from '@dao-dao/state/clients/cw4-voting'
 import {
-  cosmWasmClientRouter,
   CHAIN_RPC_ENDPOINT,
   CI,
-  parseVotingModuleContractName,
   VotingModuleType,
+  cosmWasmClientRouter,
+  parseVotingModuleContractName,
   validateContractAddress,
 } from '@dao-dao/utils'
 

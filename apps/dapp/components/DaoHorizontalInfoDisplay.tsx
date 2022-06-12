@@ -13,8 +13,8 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
-  convertMicroDenomToDenomWithDecimals,
   VotingModuleType,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { useOrgInfoContext } from './OrgPageWrapper'

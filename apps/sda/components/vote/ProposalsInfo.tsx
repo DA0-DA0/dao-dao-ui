@@ -2,9 +2,9 @@ import { FC } from 'react'
 
 import { useProposalModule } from '@dao-dao/state'
 import {
-  ProposalsInfo as StatelessProposalsInfo,
-  ProposalsInfoProps,
   ProposalsInfoLoader,
+  ProposalsInfoProps,
+  ProposalsInfo as StatelessProposalsInfo,
 } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { processThresholdData } from '@dao-dao/utils/v1'

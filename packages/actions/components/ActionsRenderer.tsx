@@ -5,11 +5,11 @@ import { CosmosMessageDisplay, SuspenseLoader } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
 import {
-  useActionsForVotingModuleType,
   Action,
-  DecodeCosmosMsgMatch,
-  ActionKey,
   ActionCardLoader,
+  ActionKey,
+  DecodeCosmosMsgMatch,
+  useActionsForVotingModuleType,
 } from '..'
 
 type Message = { [key: string]: any }

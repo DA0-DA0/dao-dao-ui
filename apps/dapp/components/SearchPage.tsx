@@ -6,7 +6,7 @@ import { InstantSearch } from 'react-instantsearch-dom'
 
 import { DecorativeTriangle } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
-import { SEARCH_API_KEY, SEARCH_URL, SEARCH_INDEX } from '@dao-dao/utils'
+import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
 import { SearchBox } from './SearchBar'
 import { SearchHits } from './SearchHits'

@@ -1,7 +1,7 @@
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
-  Expiration,
   Threshold as DaoThreshold,
+  Expiration,
   ThresholdResponse,
 } from '@dao-dao/types/contracts/cw3-dao'
 import { Threshold as SigThreshold } from '@dao-dao/types/contracts/cw3-multisig'

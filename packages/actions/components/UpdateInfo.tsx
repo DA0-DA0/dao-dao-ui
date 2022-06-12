@@ -3,17 +3,17 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  ImageSelector,
-  InputLabel,
-  TextInput,
-  InputErrorMessage,
-  TextAreaInput,
-  Tooltip,
   FormSwitch,
+  ImageSelector,
+  InputErrorMessage,
+  InputLabel,
+  TextAreaInput,
+  TextInput,
+  Tooltip,
 } from '@dao-dao/ui'
-import { validateUrl, validateRequired } from '@dao-dao/utils'
+import { validateRequired, validateUrl } from '@dao-dao/utils'
 
-import { ActionComponent, ActionCard } from '..'
+import { ActionCard, ActionComponent } from '..'
 
 export const UpdateInfoComponent: ActionComponent = ({
   getLabel,

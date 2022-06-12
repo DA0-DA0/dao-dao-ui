@@ -11,15 +11,15 @@ import {
   SelectInput,
 } from '@dao-dao/ui'
 import {
-  validateAddress,
-  validatePositive,
-  validateRequired,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
+  validateAddress,
+  validatePositive,
+  validateRequired,
 } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'

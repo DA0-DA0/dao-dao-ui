@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { FC } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'
-import { Button, Tooltip, SuspenseLoader } from '@dao-dao/ui'
+import { Button, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 import { Loader } from '@dao-dao/ui/components/Loader'
 
 import { useOrgInfoContext } from './OrgPageWrapper'

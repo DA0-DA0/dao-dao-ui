@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { StakingModal, ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,

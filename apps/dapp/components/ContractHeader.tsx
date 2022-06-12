@@ -4,8 +4,8 @@ import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
 import { contractInstantiateTimeSelector } from '@dao-dao/state'
 import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
-  ContractHeader as StatelessContractHeader,
   ContractHeaderLoader,
+  ContractHeader as StatelessContractHeader,
   SuspenseLoader,
 } from '@dao-dao/ui'
 

@@ -10,17 +10,17 @@ import { Button, SuspenseLoader } from '@dao-dao/ui'
 import { CI } from '@dao-dao/utils'
 
 import {
-  VoteHeroContent,
+  DescriptionAndAirdropAllocation,
   Loader,
-  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
   ProposalsContent,
-  VoteHero,
-  VoteHeroContentLoader,
   ProposalsInfo,
   ProposalsInfoLoader,
-  DescriptionAndAirdropAllocation,
+  VoteHero,
+  VoteHeroContent,
+  VoteHeroContentLoader,
+  makeGetStaticProps,
 } from '@/components'
 import { PausedBanner } from '@/components/PausedBanner'
 

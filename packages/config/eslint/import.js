@@ -23,6 +23,15 @@ const eslintConfig = {
         },
       },
     ],
+    'sort-imports': [
+      'error',
+      {
+        // Let eslint-plugin-import handle declaration groups above.
+        ignoreDeclarationSort: true,
+        // Sort within import statements.
+        ignoreMemberSort: false,
+      },
+    ],
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
       'warn',

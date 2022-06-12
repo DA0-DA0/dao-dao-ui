@@ -3,9 +3,9 @@ import { FC } from 'react'
 import {
   Control,
   FormState,
-  useFieldArray,
   UseFormRegister,
   UseFormSetValue,
+  useFieldArray,
 } from 'react-hook-form'
 
 import {
@@ -24,7 +24,7 @@ import {
 
 import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
-import { NewOrg, NewOrgStructure, NEW_ORG_CW20_DECIMALS } from '@/atoms/newOrg'
+import { NEW_ORG_CW20_DECIMALS, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
 
 interface CreateOrgTierProps {
   newOrg: NewOrg
