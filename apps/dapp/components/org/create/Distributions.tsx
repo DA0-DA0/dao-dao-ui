@@ -13,7 +13,7 @@ import { Bar, Pie } from 'react-chartjs-2'
 import { useNamedThemeColor } from '@dao-dao/ui'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
-import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
+import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms'
 
 declare module 'chart.js' {
   interface TooltipPositionerMap {

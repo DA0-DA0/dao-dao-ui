@@ -8,9 +8,9 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
-import { pinnedAddressesAtom } from '@/atoms/pinned'
-import { addToken } from '@/util/addToken'
+import { pinnedAddressesAtom } from '@/atoms'
+import { useOrgInfoContext } from '@/components'
+import { addToken } from '@/util'
 
 const OrgMobileHeaderInternal: FC = () => {
   const {

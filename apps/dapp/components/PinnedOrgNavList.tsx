@@ -8,8 +8,8 @@ import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { Logo } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
-import { NavListItem } from './NavListItem'
-import { pinnedAddressesAtom } from '@/atoms/pinned'
+import { pinnedAddressesAtom } from '@/atoms'
+import { NavListItem } from '@/components'
 
 export const PinnedOrgNavList: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)

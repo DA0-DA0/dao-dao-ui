@@ -8,9 +8,8 @@ import {
 } from '@dao-dao/ui'
 import { validateRequired } from '@dao-dao/utils'
 
-import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
+import { CreateOrgFormWrapper, SmallScreenNav } from '@/components'
+import { useCreateOrgForm } from '@/hooks'
 
 const CreateOrgPage: FC = () => {
   const { register, watch, errors, formWrapperProps } = useCreateOrgForm(1)

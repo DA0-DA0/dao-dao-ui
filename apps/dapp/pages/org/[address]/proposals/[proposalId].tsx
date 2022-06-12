@@ -30,16 +30,17 @@ import {
   cosmWasmClientRouter,
 } from '@dao-dao/utils'
 
-import { Loader, PageLoader } from '@/components/Loader'
-import { ProposalNotFound } from '@/components/org/NotFound'
 import {
+  Loader,
   OrgPageWrapper,
   OrgPageWrapperProps,
+  PageLoader,
+  ProposalNotFound,
+  ProposalVotes,
+  SmallScreenNav,
   makeGetOrgStaticProps,
   useOrgInfoContext,
-} from '@/components/OrgPageWrapper'
-import { ProposalVotes } from '@/components/ProposalVotes'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
+} from '@/components'
 
 const InnerProposal: FC = () => {
   const router = useRouter()

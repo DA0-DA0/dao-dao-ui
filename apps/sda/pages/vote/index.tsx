@@ -14,6 +14,7 @@ import {
   Loader,
   PageWrapper,
   PageWrapperProps,
+  PausedBanner,
   ProposalsContent,
   ProposalsInfo,
   ProposalsInfoLoader,
@@ -22,7 +23,6 @@ import {
   VoteHeroContentLoader,
   makeGetStaticProps,
 } from '@/components'
-import { PausedBanner } from '@/components/PausedBanner'
 
 interface InnerVoteProps {
   missionMarkdown: string

@@ -19,8 +19,7 @@ import {
 } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
-import { FeaturedDaos } from '@/components/FeaturedDaos'
-import { HomepageCards } from '@/components/HomepageCards'
+import { FeaturedDaos, HomepageCards } from '@/components'
 
 const EnterAppButton = ({ small }: { small?: boolean }) => (
   <Link href="/starred">

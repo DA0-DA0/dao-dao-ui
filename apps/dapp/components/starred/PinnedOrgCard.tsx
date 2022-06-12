@@ -15,8 +15,8 @@ import {
 } from '@dao-dao/utils'
 
 import { ContractCard, LoadingContractCard } from '../ContractCard'
-import { pinnedAddressesAtom } from '@/atoms/pinned'
-import { addToken } from '@/util/addToken'
+import { pinnedAddressesAtom } from '@/atoms'
+import { addToken } from '@/util'
 
 interface PinnedOrgCardProps {
   address: string

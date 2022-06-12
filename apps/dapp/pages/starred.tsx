@@ -5,10 +5,13 @@ import { useRecoilValue } from 'recoil'
 
 import { LoadingScreen, SuspenseLoader } from '@dao-dao/ui'
 
-import { pinnedAddressesAtom } from '@/atoms/pinned'
-import { EmptyOrgCard } from '@/components/EmptyDaoCard'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { ActionMenu, PinnedOrgCard } from '@/components/starred'
+import { pinnedAddressesAtom } from '@/atoms'
+import {
+  ActionMenu,
+  EmptyOrgCard,
+  PinnedOrgCard,
+  SmallScreenNav,
+} from '@/components'
 
 const InnerStarred: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)

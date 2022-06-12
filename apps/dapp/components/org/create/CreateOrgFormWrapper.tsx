@@ -6,11 +6,7 @@ import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SubmitButton } from '@dao-dao/ui'
 
 import { CreateOrgNav } from './CreateOrgNav'
-import {
-  CreateOrgSubmitLabel,
-  OrgFormPage,
-  createOrgFormPages,
-} from '@/hooks/useCreateOrgForm'
+import { CreateOrgSubmitLabel, OrgFormPage, createOrgFormPages } from '@/hooks'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
   Omit<T, K>

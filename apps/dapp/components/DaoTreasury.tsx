@@ -4,9 +4,8 @@ import { FC } from 'react'
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
-import { TreasuryBalances } from './TreasuryBalances'
-import { addToken } from '@/util/addToken'
+import { TreasuryBalances, useOrgInfoContext } from '@/components'
+import { addToken } from '@/util'
 
 export const DaoTreasury: FC = () => {
   const { coreAddress } = useOrgInfoContext()

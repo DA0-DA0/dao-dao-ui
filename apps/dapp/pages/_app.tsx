@@ -11,8 +11,7 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
-import { HomepageLayout } from '@/components/HomepageLayout'
-import { SidebarLayout } from '@/components/SidebarLayout'
+import { HomepageLayout, SidebarLayout } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()

@@ -32,19 +32,17 @@ import {
   GovernanceTokenType,
   NEW_ORG_CW20_DECIMALS,
   NewOrgStructure,
-} from '@/atoms/newOrg'
+} from '@/atoms'
 import {
   CreateOrgConfigCard,
   CreateOrgConfigCardWrapper,
-} from '@/components/org/create/CreateOrgConfigCard'
-import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
-import { CreateOrgTier } from '@/components/org/create/CreateOrgTier'
-import {
+  CreateOrgFormWrapper,
+  CreateOrgTier,
+  SmallScreenNav,
   VotingPowerChart,
   useVotingPowerDistributionData,
-} from '@/components/org/create/Distributions'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
+} from '@/components'
+import { useCreateOrgForm } from '@/hooks'
 
 const CreateOrgVotingPage: FC = () => {
   const {

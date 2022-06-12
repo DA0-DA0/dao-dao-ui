@@ -7,12 +7,14 @@ import {
   NewOrgStructure,
   convertDurationWithUnitsToHumanReadableString,
   convertThresholdValueToHumanReadableString,
-} from '@/atoms/newOrg'
-import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
-import { CreateOrgReviewStat } from '@/components/org/create/CreateOrgReviewStat'
-import { VotingPowerPieDistribution } from '@/components/org/create/Distributions'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
+} from '@/atoms'
+import {
+  CreateOrgFormWrapper,
+  CreateOrgReviewStat,
+  SmallScreenNav,
+  VotingPowerPieDistribution,
+} from '@/components'
+import { useCreateOrgForm } from '@/hooks'
 
 const CreateOrgReviewPage: FC = () => {
   const { watchedNewOrg, creating, formWrapperProps } = useCreateOrgForm(3)

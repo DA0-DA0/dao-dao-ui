@@ -15,25 +15,24 @@ import {
 } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
-import { pinnedAddressesAtom } from '@/atoms/pinned'
-import { ContractHeader } from '@/components/ContractHeader'
-import { ContractProposalsDisplay } from '@/components/ContractProposalsDisplay'
-import { Cw20StakedBalanceVotingSharesDisplay } from '@/components/Cw20StakedBalanceVotingSharesDisplay'
-import { Cw4VotingMemberList } from '@/components/Cw4VotingMemberList'
-import { DaoContractInfo } from '@/components/DaoContractInfo'
-import { DaoHorizontalInfoDisplay } from '@/components/DaoHorizontalInfoDisplay'
-import { DaoTreasury } from '@/components/DaoTreasury'
-import { PageLoader } from '@/components/Loader'
-import { OrgMobileHeader } from '@/components/OrgMobileHeader'
+import { pinnedAddressesAtom } from '@/atoms'
 import {
+  ContractHeader,
+  ContractProposalsDisplay,
+  Cw20StakedBalanceVotingSharesDisplay,
+  Cw4VotingMemberList,
+  DaoContractInfo,
+  DaoHorizontalInfoDisplay,
+  DaoTreasury,
+  OrgMobileHeader,
   OrgPageWrapper,
   OrgPageWrapperProps,
+  PageLoader,
+  SmallScreenNav,
   makeGetOrgStaticProps,
   useOrgInfoContext,
-} from '@/components/OrgPageWrapper'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { addToken } from '@/util/addToken'
-import { getFastAverageColor } from '@/util/colors'
+} from '@/components'
+import { addToken, getFastAverageColor } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,

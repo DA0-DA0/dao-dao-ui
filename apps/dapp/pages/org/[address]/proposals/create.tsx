@@ -16,18 +16,18 @@ import {
   useWallet,
 } from '@dao-dao/state'
 import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
-import { cleanChainError } from '@dao-dao/utils'
+import { cleanChainError, expirationExpired } from '@dao-dao/utils'
 
-import { Loader, PageLoader } from '@/components/Loader'
 import {
+  Loader,
   OrgPageWrapper,
   OrgPageWrapperProps,
+  PageLoader,
+  ProposalsInfo,
+  SmallScreenNav,
   makeGetOrgStaticProps,
   useOrgInfoContext,
-} from '@/components/OrgPageWrapper'
-import { ProposalsInfo } from '@/components/proposals/ProposalsInfo'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { expirationExpired } from '@/util/expiration'
+} from '@/components'
 
 const InnerProposalCreate = () => {
   const router = useRouter()

@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 
-import { createOrgFormPages } from '@/hooks/useCreateOrgForm'
+import { createOrgFormPages } from '@/hooks'
 
 interface CreateOrgNavProps {
   currentPageIndex: number

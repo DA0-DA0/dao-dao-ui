@@ -13,7 +13,7 @@ import {
   betaWarningAcceptedAtom,
   installWarningVisibleAtom,
   noKeplrAccountAtom,
-} from '@/atoms/status'
+} from '@/atoms'
 
 export const SidebarLayoutInner: FC = ({ children }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)

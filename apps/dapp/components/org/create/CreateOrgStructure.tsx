@@ -3,7 +3,7 @@ import { FC, ReactNode } from 'react'
 
 import { RadioButton } from '@dao-dao/ui'
 
-import { NewOrg, NewOrgStructure } from '@/atoms/newOrg'
+import { NewOrg, NewOrgStructure } from '@/atoms'
 
 interface CreateOrgStructureProps {
   newOrg: NewOrg

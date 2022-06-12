@@ -24,7 +24,7 @@ import {
 
 import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
-import { NEW_ORG_CW20_DECIMALS, NewOrg, NewOrgStructure } from '@/atoms/newOrg'
+import { NEW_ORG_CW20_DECIMALS, NewOrg, NewOrgStructure } from '@/atoms'
 
 interface CreateOrgTierProps {
   newOrg: NewOrg

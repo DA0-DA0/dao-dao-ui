@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 
-import { SearchPage } from '@/components/SearchPage'
+import { SearchPage } from '@/components'
 
 const OrgExplore: NextPage = () => <SearchPage />
 

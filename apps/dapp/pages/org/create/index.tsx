@@ -6,11 +6,13 @@ import {
   DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
   DefaultNewOrg,
   NewOrgStructure,
-} from '@/atoms/newOrg'
-import { CreateOrgFormWrapper } from '@/components/org/create/CreateOrgFormWrapper'
-import { CreateOrgStructure } from '@/components/org/create/CreateOrgStructure'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { useCreateOrgForm } from '@/hooks/useCreateOrgForm'
+} from '@/atoms'
+import {
+  CreateOrgFormWrapper,
+  CreateOrgStructure,
+  SmallScreenNav,
+} from '@/components'
+import { useCreateOrgForm } from '@/hooks'
 
 const CreateOrgPage: FC = () => {
   const { watchedNewOrg, setValue, formWrapperProps } = useCreateOrgForm(0)

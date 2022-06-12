@@ -46,8 +46,8 @@ import {
   convertDurationWithUnitsToDuration,
   convertThresholdValueToPercentageThreshold,
   newOrgAtom,
-} from '@/atoms/newOrg'
-import { pinnedAddressesAtom } from '@/atoms/pinned'
+  pinnedAddressesAtom,
+} from '@/atoms'
 
 export type ValidateOrgFormPage = (
   newOrg: NewOrg,

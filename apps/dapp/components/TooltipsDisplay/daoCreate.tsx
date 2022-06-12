@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { TooltipResponse } from '@/components/TooltipsDisplay'
+import { TooltipResponse } from '@/components'
 
 export interface DaoCreateData {
   deposit: string
