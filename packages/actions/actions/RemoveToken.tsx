@@ -13,16 +13,16 @@ import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-
 import { SuspenseLoader } from '@dao-dao/ui'
 import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
-  RemoveTokenComponent as StatelessRemoveTokenComponent,
   Action,
   ActionComponent,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
   ActionCardLoader,
 } from '..'
+import { RemoveTokenComponent as StatelessRemoveTokenComponent } from '../components'
 
 interface RemoveTokenData {
   address: string

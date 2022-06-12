@@ -18,15 +18,15 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
   Action,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  InstantiateComponent as StatelessInstantiateComponent,
   ActionComponent,
 } from '..'
+import { InstantiateComponent as StatelessInstantiateComponent } from '../components'
 
 interface InstantiateData {
   admin: string

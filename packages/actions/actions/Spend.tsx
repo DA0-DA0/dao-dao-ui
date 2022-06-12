@@ -19,16 +19,16 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
-  SpendComponent as StatelessSpendComponent,
   Action,
   ActionComponent,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
   ActionCardLoader,
 } from '..'
+import { SpendComponent as StatelessSpendComponent } from '../components'
 
 interface SpendData {
   to: string

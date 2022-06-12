@@ -12,15 +12,15 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
   Action,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ExecuteComponent as StatelessExecuteComponent,
   ActionComponent,
 } from '..'
+import { ExecuteComponent as StatelessExecuteComponent } from '../components'
 
 interface ExecuteData {
   address: string

@@ -29,6 +29,7 @@ export const actions: Action[] = [
   customAction,
 ]
 
+export * from './actions'
 export * from './components'
 export * from './hooks'
 export * from './types'

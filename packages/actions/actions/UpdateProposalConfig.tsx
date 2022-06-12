@@ -15,15 +15,15 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
   Action,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  UpdateProposalConfigComponent,
   ActionComponent,
 } from '..'
+import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 
 interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
@@ -245,7 +245,7 @@ const Component: ActionComponent = (props) => {
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
 
   return (
-    <UpdateProposalConfigComponent
+    <StatelessUpdateProposalConfigComponent
       {...props}
       options={{ governanceTokenSymbol: governanceTokenInfo?.symbol }}
     />

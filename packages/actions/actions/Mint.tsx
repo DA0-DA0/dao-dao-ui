@@ -10,16 +10,16 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
-  MintComponent as StatelessMintComponent,
   Action,
   ActionComponent,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
   ActionCardLoader,
 } from '..'
+import { MintComponent as StatelessMintComponent } from '../components'
 
 interface MintData {
   to: string

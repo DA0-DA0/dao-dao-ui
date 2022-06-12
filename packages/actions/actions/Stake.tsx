@@ -15,17 +15,17 @@ import {
   VotingModuleType,
 } from '@dao-dao/utils'
 
+import { ActionKey } from '.'
 import {
   stakeActions,
-  StakeComponent as StatelessStakeComponent,
   Action,
   ActionComponent,
-  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
   ActionCardLoader,
 } from '..'
+import { StakeComponent as StatelessStakeComponent } from '../components'
 
 interface StakeData {
   stakeType: StakeType
