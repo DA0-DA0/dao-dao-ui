@@ -1,7 +1,7 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { FC, ReactNode, useMemo, useState } from 'react'
+import { ComponentType, FC, ReactNode, useMemo, useState } from 'react'
 
-import { ActionsRenderer } from '@dao-dao/actions'
+import { ActionsRendererProps } from '@dao-dao/actions'
 import {
   Proposal,
   Status,
@@ -35,6 +35,7 @@ interface ProposalDetailsProps {
   onVote: (choice: VoteChoice) => void
   connected: boolean
   connectWalletButton?: ReactNode
+  ActionsRenderer: ComponentType<ActionsRendererProps>
 }
 
 export const ProposalDetails: FC<ProposalDetailsProps> = ({
@@ -52,6 +53,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   onVote,
   connected,
   connectWalletButton,
+  ActionsRenderer,
 }) => {
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),

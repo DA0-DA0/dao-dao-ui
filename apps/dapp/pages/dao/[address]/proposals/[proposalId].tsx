@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { ActionsRenderer } from '@dao-dao/actions'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   CwCoreQueryClient,
@@ -181,6 +182,7 @@ const InnerProposal: FC = () => {
           </div>
 
           <ProposalDetails
+            ActionsRenderer={ActionsRenderer}
             connectWalletButton={<ConnectWalletButton />}
             connected={connected}
             coreAddress={coreAddress}

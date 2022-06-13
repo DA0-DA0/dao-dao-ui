@@ -21,7 +21,7 @@
     "common": "yarn workspace @dao-dao/common"
   },
   "devDependencies": {
-    "turbo": "latest"
+    "turbo": "^1.2.16"
   },
   "engines": {
     "npm": ">=7.0.0",

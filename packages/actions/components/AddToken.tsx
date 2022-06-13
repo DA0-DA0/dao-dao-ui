@@ -8,10 +8,7 @@ import {
   TokenInfoDisplay,
   TokenInfoDisplayProps,
 } from '@dao-dao/ui'
-import {
-  validateContractAddress,
-  validateRequired,
-} from '@dao-dao/utils/validation'
+import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
 
