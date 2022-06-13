@@ -5,13 +5,13 @@ import { useRecoilValue } from 'recoil'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 
-import { createOrgFormPages } from '@/hooks'
+import { createDAOFormPages } from '@/hooks'
 
-interface CreateOrgNavProps {
+interface CreateDAONavProps {
   currentPageIndex: number
 }
 
-export const CreateOrgNav: FC<CreateOrgNavProps> = ({ currentPageIndex }) => {
+export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
 
   return (
@@ -21,7 +21,7 @@ export const CreateOrgNav: FC<CreateOrgNavProps> = ({ currentPageIndex }) => {
       </p>
 
       <div className="flex flex-col gap-2 items-start md:gap-5">
-        {createOrgFormPages.map(({ href, title }, index) => (
+        {createDAOFormPages.map(({ href, title }, index) => (
           <Button
             key={href}
             className={clsx('text-sm', {

@@ -9,16 +9,12 @@ import {
 } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms'
-import { useOrgInfoContext } from '@/components'
+import { useDAOInfoContext } from '@/components'
 import { addToken } from '@/util'
 
-const OrgMobileHeaderInternal: FC = () => {
-  const {
-    coreAddress,
-    governanceTokenAddress,
-    name: orgName,
-    imageUrl,
-  } = useOrgInfoContext()
+const DAOMobileHeaderInternal: FC = () => {
+  const { coreAddress, governanceTokenAddress, name, imageUrl } =
+    useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
 
   const [pinnedAddresses, setPinnedAddresses] =
@@ -30,7 +26,7 @@ const OrgMobileHeaderInternal: FC = () => {
       contractAddress={coreAddress}
       imageUrl={imageUrl ?? ''}
       member={isMember ?? false}
-      name={orgName}
+      name={name}
       onPin={() => {
         if (pinned) {
           setPinnedAddresses((p) => p.filter((a) => a !== coreAddress))
@@ -44,12 +40,12 @@ const OrgMobileHeaderInternal: FC = () => {
   )
 }
 
-export const OrgMobileHeader: FC = () => (
+export const DAOMobileHeader: FC = () => (
   <SuspenseLoader
     fallback={
-      <MobileHeaderLoader contractAddress={useOrgInfoContext().coreAddress} />
+      <MobileHeaderLoader contractAddress={useDAOInfoContext().coreAddress} />
     }
   >
-    <OrgMobileHeaderInternal />
+    <DAOMobileHeaderInternal />
   </SuspenseLoader>
 )

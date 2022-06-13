@@ -18,11 +18,11 @@ import { ContractCard, LoadingContractCard } from '../ContractCard'
 import { pinnedAddressesAtom } from '@/atoms'
 import { addToken } from '@/util'
 
-interface PinnedOrgCardProps {
+interface PinnedDAOCardProps {
   address: string
 }
 
-const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
+const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const config = useRecoilValue(
     CwCoreSelectors.configSelector({ contractAddress: address })
   )
@@ -51,7 +51,7 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
     <ContractCard
       balance={nativeBalance}
       description={config.description}
-      href={`/org/${address}`}
+      href={`/dao/${address}`}
       imgUrl={config.image_url}
       name={config.name}
       onPin={() => {
@@ -83,8 +83,8 @@ const InnerPinnedOrgCard: FC<PinnedOrgCardProps> = ({ address }) => {
   )
 }
 
-export const PinnedOrgCard: FC<PinnedOrgCardProps> = (props) => (
+export const PinnedDAOCard: FC<PinnedDAOCardProps> = (props) => (
   <SuspenseLoader fallback={<LoadingContractCard />}>
-    <InnerPinnedOrgCard {...props} />
+    <InnerPinnedDAOCard {...props} />
   </SuspenseLoader>
 )

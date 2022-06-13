@@ -19,19 +19,19 @@ import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
 
 import {
+  DAOPageWrapper,
+  DAOPageWrapperProps,
   Loader,
-  OrgPageWrapper,
-  OrgPageWrapperProps,
   PageLoader,
   ProposalsInfo,
   SmallScreenNav,
-  makeGetOrgStaticProps,
-  useOrgInfoContext,
+  makeGetDAOStaticProps,
+  useDAOInfoContext,
 } from '@/components'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
-  const { coreAddress, votingModuleType } = useOrgInfoContext()
+  const { coreAddress, votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
@@ -122,7 +122,7 @@ const InnerProposalCreate = () => {
           'proposal_id'
         ).value
         refreshProposals()
-        router.push(`/org/${coreAddress}/proposals/${proposalId}`)
+        router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
         // Don't stop loading indicator since we are navigating.
       } catch (err) {
         console.error(err)
@@ -183,15 +183,15 @@ const InnerProposalCreate = () => {
   )
 }
 
-const ProposalCreatePage: NextPage<OrgPageWrapperProps> = ({
+const ProposalCreatePage: NextPage<DAOPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
-  <OrgPageWrapper {...props}>
+  <DAOPageWrapper {...props}>
     <SuspenseLoader fallback={<PageLoader />}>
       <InnerProposalCreate />
     </SuspenseLoader>
-  </OrgPageWrapper>
+  </DAOPageWrapper>
 )
 
 export default ProposalCreatePage
@@ -203,6 +203,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetOrgStaticProps({
+export const getStaticProps = makeGetDAOStaticProps({
   followingTitle: 'Create Proposal',
 })

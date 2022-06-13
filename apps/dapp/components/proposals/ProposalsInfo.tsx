@@ -11,10 +11,10 @@ import {
   processThresholdData,
 } from '@dao-dao/utils'
 
-import { useOrgInfoContext } from '../OrgPageWrapper'
+import { useDAOInfoContext } from '../DAOPageWrapper'
 
 export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { proposalModuleConfig, proposalDepositTokenInfo } = useProposalModule(
     coreAddress,
     {

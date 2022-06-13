@@ -40,42 +40,42 @@ import {
 
 import {
   GovernanceTokenType,
-  NEW_ORG_CW20_DECIMALS,
-  NewOrg,
-  NewOrgStructure,
+  NEW_DAO_CW20_DECIMALS,
+  NewDAO,
+  NewDAOStructure,
   convertDurationWithUnitsToDuration,
   convertThresholdValueToPercentageThreshold,
-  newOrgAtom,
+  newDAOAtom,
   pinnedAddressesAtom,
 } from '@/atoms'
 
-export type ValidateOrgFormPage = (
-  newOrg: NewOrg,
-  errors: FormState<NewOrg>['errors'],
-  clearErrors: UseFormClearErrors<NewOrg>,
-  setError?: UseFormSetError<NewOrg>
+export type ValidateDAOFormPage = (
+  newDAO: NewDAO,
+  errors: FormState<NewDAO>['errors'],
+  clearErrors: UseFormClearErrors<NewDAO>,
+  setError?: UseFormSetError<NewDAO>
 ) => boolean
 
-export interface OrgFormPage {
+export interface DAOFormPage {
   href: string
   title: string
   subtitle?: string
-  validate?: ValidateOrgFormPage
+  validate?: ValidateDAOFormPage
 }
 
-export enum CreateOrgSubmitLabel {
+export enum CreateDAOSubmitLabel {
   Back = 'Back',
   Continue = 'Continue',
   Review = 'Review',
-  CreateOrg = 'Create Org',
+  CreateDAO = 'Create DAO',
 }
 
-export const useCreateOrgForm = (pageIndex: number) => {
+export const useCreateDAOForm = (pageIndex: number) => {
   const router = useRouter()
   const { connected, address: walletAddress, refreshBalances } = useWallet()
 
-  const currentPage = useMemo(() => createOrgFormPages[pageIndex], [pageIndex])
-  const [newOrg, setNewOrg] = useRecoilState(newOrgAtom)
+  const currentPage = useMemo(() => createDAOFormPages[pageIndex], [pageIndex])
+  const [newDAO, setNewDAO] = useRecoilState(newDAOAtom)
   const setPinnedAddresses = useSetRecoilState(pinnedAddressesAtom)
   const [creating, setCreating] = useState(false)
 
@@ -90,17 +90,17 @@ export const useCreateOrgForm = (pageIndex: number) => {
     resetField,
     setError,
     clearErrors,
-  } = useForm({ defaultValues: newOrg })
+  } = useForm({ defaultValues: newDAO })
 
-  const watchedNewOrg = watch()
+  const watchedNewDAO = watch()
 
-  const invalidPages = createOrgFormPages.map(
+  const invalidPages = createDAOFormPages.map(
     ({ validate }) =>
       // Don't pass setError because we don't want to set new errors. Only
       // update existing or clear them if fields become valid.
       // Invalid fields error on submit attempt.
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      !(validate?.(watchedNewOrg, errors, clearErrors) ?? true)
+      !(validate?.(watchedNewDAO, errors, clearErrors) ?? true)
   )
 
   // Ensure previous pages are valid and navigate back if not.
@@ -113,7 +113,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
       firstInvalidPageIndex > -1 &&
       firstInvalidPageIndex < pageIndex
     ) {
-      router.push(createOrgFormPages[firstInvalidPageIndex].href)
+      router.push(createDAOFormPages[firstInvalidPageIndex].href)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -130,7 +130,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
     sender: walletAddress ?? '',
   })
 
-  const onSubmit: SubmitHandler<NewOrg> = useCallback(
+  const onSubmit: SubmitHandler<NewDAO> = useCallback(
     async (values, event) => {
       // If navigating, no need to display errors.
       clearErrors()
@@ -138,12 +138,12 @@ export const useCreateOrgForm = (pageIndex: number) => {
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
-      // Create the org.
-      if (submitterValue === CreateOrgSubmitLabel.CreateOrg) {
+      // Create the DAO.
+      if (submitterValue === CreateDAOSubmitLabel.CreateDAO) {
         if (connected) {
           setCreating(true)
           try {
-            const address = await createOrg(instantiate, values)
+            const address = await createDAO(instantiate, values)
             if (address) {
               // TODO: Figure out better solution for detecting block.
               // New wallet balances will not appear until the next block.
@@ -152,8 +152,8 @@ export const useCreateOrgForm = (pageIndex: number) => {
               refreshBalances()
               setPinnedAddresses((pinned) => [...pinned, address])
 
-              router.push(`/org/${address}`)
-              toast.success('Org created.')
+              router.push(`/dao/${address}`)
+              toast.success('DAO created.')
               // Don't stop creating loading on success since we're
               // navigating, and it's weird when loading stops and
               // nothing happens for a sec.
@@ -167,32 +167,32 @@ export const useCreateOrgForm = (pageIndex: number) => {
             setCreating(false)
           }
         } else {
-          toast.error('Connect a wallet to create an org.')
+          toast.error('Connect a wallet to create a DAO.')
         }
 
         return
       }
 
       // Save values to state.
-      setNewOrg((prevNewOrg) => ({
-        ...prevNewOrg,
+      setNewDAO((prevNewDAO) => ({
+        ...prevNewDAO,
         ...values,
       }))
 
       // Navigate pages.
       const pageDelta = parseSubmitterValueDelta(submitterValue)
       router.push(
-        createOrgFormPages[
+        createDAOFormPages[
           Math.min(
             Math.max(0, pageIndex + pageDelta),
-            createOrgFormPages.length - 1
+            createDAOFormPages.length - 1
           )
         ].href
       )
     },
     [
       clearErrors,
-      setNewOrg,
+      setNewDAO,
       router,
       pageIndex,
       connected,
@@ -230,7 +230,7 @@ export const useCreateOrgForm = (pageIndex: number) => {
       // Validate here instead of in onSubmit since custom errors prevent
       // form submission, and we still want to be able to move backwards.
       currentPage.validate?.(
-        watchedNewOrg,
+        watchedNewDAO,
         errors,
         clearErrors,
         // On back press, don't set new errors.
@@ -239,11 +239,11 @@ export const useCreateOrgForm = (pageIndex: number) => {
 
       return _handleSubmit(...args)
     },
-    [currentPage, watchedNewOrg, errors, clearErrors, setError, _handleSubmit]
+    [currentPage, watchedNewDAO, errors, clearErrors, setError, _handleSubmit]
   )
 
   return {
-    watchedNewOrg,
+    watchedNewDAO,
     errors,
     register,
     getValues,
@@ -263,22 +263,22 @@ export const useCreateOrgForm = (pageIndex: number) => {
   }
 }
 
-export const createOrgFormPages: OrgFormPage[] = [
+export const createDAOFormPages: DAOFormPage[] = [
   {
-    href: '/org/create',
+    href: '/dao/create',
     title: 'Choose a structure',
     validate: ({ structure }) => structure !== undefined,
   },
   {
-    href: '/org/create/describe',
-    title: 'Describe the organization',
+    href: '/dao/create/describe',
+    title: 'Describe the DAO',
     validate: ({ name }) => name.trim().length > 0,
   },
   {
-    href: '/org/create/voting',
+    href: '/dao/create/voting',
     title: 'Configure voting distribution',
     subtitle:
-      'This will determine how much voting share different members of the org have when they vote on proposals.',
+      'This will determine how much voting share different members of the DAO have when they vote on proposals.',
     // Validate tier weights and member proportions add up to 100%.
     validate: ({ tiers }, errors, clearErrors, setError) => {
       let valid = true
@@ -292,7 +292,7 @@ export const createOrgFormPages: OrgFormPage[] = [
       if (totalWeight === 0) {
         setError?.('_tiersError', {
           message:
-            'You have not given anyone voting power. Add some members to your org.',
+            'You have not given anyone voting power. Add some members to your DAO.',
         })
         valid = false
       } else if (errors?._tiersError) {
@@ -314,17 +314,17 @@ export const createOrgFormPages: OrgFormPage[] = [
     },
   },
   {
-    href: '/org/create/review',
+    href: '/dao/create/review',
     title: 'Review and submit',
   },
 ]
 
 const parseSubmitterValueDelta = (value: string): number => {
   switch (value) {
-    case CreateOrgSubmitLabel.Back:
+    case CreateDAOSubmitLabel.Back:
       return -1
-    case CreateOrgSubmitLabel.Continue:
-    case CreateOrgSubmitLabel.Review:
+    case CreateDAOSubmitLabel.Continue:
+    case CreateDAOSubmitLabel.Review:
       return 1
     default:
       // Pass a number to step that many pages in either direction.
@@ -335,9 +335,9 @@ const parseSubmitterValueDelta = (value: string): number => {
   }
 }
 
-const createOrg = async (
+const createDAO = async (
   instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
-  values: NewOrg
+  values: NewDAO
 ) => {
   const {
     structure,
@@ -356,7 +356,7 @@ const createOrg = async (
     thresholdQuorum: { threshold, quorum },
   } = values
 
-  const governanceTokenEnabled = structure === NewOrgStructure.UsingGovToken
+  const governanceTokenEnabled = structure === NewDAOStructure.UsingGovToken
 
   let votingModuleInstantiateMsg
   if (governanceTokenEnabled) {
@@ -374,19 +374,19 @@ const createOrg = async (
             address,
             amount: convertDenomToMicroDenomWithDecimals(
               weight,
-              NEW_ORG_CW20_DECIMALS
+              NEW_DAO_CW20_DECIMALS
             ),
           }))
       )
       const microInitialTreasuryBalance = convertDenomToMicroDenomWithDecimals(
         initialTreasuryBalance,
-        NEW_ORG_CW20_DECIMALS
+        NEW_DAO_CW20_DECIMALS
       )
 
       tokenInfo = {
         new: {
           code_id: CW20_CODE_ID,
-          decimals: NEW_ORG_CW20_DECIMALS,
+          decimals: NEW_DAO_CW20_DECIMALS,
           initial_balances: microInitialBalances,
           initial_dao_balance: microInitialTreasuryBalance,
           label: name,
@@ -475,7 +475,7 @@ const createOrg = async (
       {
         admin: { core_contract: {} },
         code_id: CWPROPOSALSINGLE_CODE_ID,
-        label: `org_${name}_cw-proposal-single`,
+        label: `DAO_${name}_cw-proposal-single`,
         msg: Buffer.from(
           JSON.stringify(cwProposalSingleModuleInstantiateMsg),
           'utf8'
@@ -488,8 +488,8 @@ const createOrg = async (
         ? CW20STAKEDBALANCEVOTING_CODE_ID
         : CW4VOTING_CODE_ID,
       label: governanceTokenEnabled
-        ? `org_${name}_cw20-staked-balance-voting`
-        : `org_${name}_cw4-voting`,
+        ? `DAO_${name}_cw20-staked-balance-voting`
+        : `DAO_${name}_cw4-voting`,
       msg: Buffer.from(
         JSON.stringify(votingModuleInstantiateMsg),
         'utf8'

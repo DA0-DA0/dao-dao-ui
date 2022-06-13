@@ -20,14 +20,14 @@ import {
 
 import { DaoTreasury } from './DaoTreasury'
 import { Loader } from './Loader'
-import { useOrgInfoContext } from './OrgPageWrapper'
+import { useDAOInfoContext } from './DAOPageWrapper'
 
 interface DaoContractInfoProps {
   hideTreasury?: boolean
 }
 
 const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(coreAddress)
   const { proposalModuleConfig } = useProposalModule(coreAddress)

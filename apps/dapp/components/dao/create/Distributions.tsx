@@ -13,7 +13,7 @@ import { Bar, Pie } from 'react-chartjs-2'
 import { useNamedThemeColor } from '@dao-dao/ui'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
-import { GovernanceTokenType, NewOrg, NewOrgStructure } from '@/atoms'
+import { GovernanceTokenType, NewDAO, NewDAOStructure } from '@/atoms'
 
 declare module 'chart.js' {
   interface TooltipPositionerMap {
@@ -47,14 +47,14 @@ interface DataProps {
 }
 
 interface DistributionProps {
-  newOrg: NewOrg
+  newDAO: NewDAO
 }
 
 export const VotingPowerPieDistribution: FC<DistributionProps> = ({
-  newOrg,
+  newDAO,
 }) => {
   const { onlyOneTier, entries } = useVotingPowerDistributionData(
-    newOrg,
+    newDAO,
     true,
     true,
     true
@@ -81,7 +81,7 @@ export const useVotingPowerDistributionData = (
       type,
       newInfo: { initialTreasuryBalance: _initialTreasuryBalance },
     },
-  }: NewOrg,
+  }: NewDAO,
   proportion: boolean,
   sort: boolean,
   includeTreasuryWhenApplicable: boolean
@@ -91,7 +91,7 @@ export const useVotingPowerDistributionData = (
   return useMemo(() => {
     const initialTreasuryBalance =
       includeTreasuryWhenApplicable &&
-      structure === NewOrgStructure.UsingGovToken &&
+      structure === NewDAOStructure.UsingGovToken &&
       type === GovernanceTokenType.New
         ? _initialTreasuryBalance
         : undefined

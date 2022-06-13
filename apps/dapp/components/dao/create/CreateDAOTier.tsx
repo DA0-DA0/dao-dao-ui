@@ -24,26 +24,26 @@ import {
 
 import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
-import { NEW_ORG_CW20_DECIMALS, NewOrg, NewOrgStructure } from '@/atoms'
+import { NEW_DAO_CW20_DECIMALS, NewDAO, NewDAOStructure } from '@/atoms'
 
-interface CreateOrgTierProps {
-  newOrg: NewOrg
+interface CreateDAOTierProps {
+  newDAO: NewDAO
   tierIndex: number
   // Display color dots next to each member instead of each tier.
   // When there is only one tier, all members are displayed on the chart,
   // so the colors correspond to members instead of tiers.
   showColorDotOnMember: boolean
-  control: Control<NewOrg, any>
-  register: UseFormRegister<NewOrg>
-  errors: FormState<NewOrg>['errors']
-  setValue: UseFormSetValue<NewOrg>
+  control: Control<NewDAO, any>
+  register: UseFormRegister<NewDAO>
+  errors: FormState<NewDAO>['errors']
+  setValue: UseFormSetValue<NewDAO>
   remove?: () => void
 }
 
-export const CreateOrgTier: FC<CreateOrgTierProps> = ({
+export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   // Don't pass along to member.
   remove,
-  newOrg,
+  newDAO,
   ...props
 }) => {
   const {
@@ -65,7 +65,7 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
   })
 
   const governanceTokenEnabled =
-    newOrg.structure === NewOrgStructure.UsingGovToken
+    newDAO.structure === NewDAOStructure.UsingGovToken
 
   const tierColor = distributionColors[tierIndex % distributionColors.length]
 
@@ -85,7 +85,7 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
             )}
 
             <div className="flex flex-row grow gap-2 items-center">
-              <TooltipIcon label="This name is just for your reference when creating the org. For example: 'Core team' or 'Developers'." />
+              <TooltipIcon label="This name is just for your reference when creating the DAO. For example: 'Core team' or 'Developers'." />
 
               <TextInput
                 className="grow"
@@ -114,9 +114,9 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
                     setValue(
                       `tiers.${tierIndex}.weight`,
                       Math.max(
-                        (newOrg.tiers?.[tierIndex]?.weight ?? 0) + 1,
+                        (newDAO.tiers?.[tierIndex]?.weight ?? 0) + 1,
                         governanceTokenEnabled
-                          ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
+                          ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
                           : 1
                       )
                     ),
@@ -124,9 +124,9 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
                     setValue(
                       `tiers.${tierIndex}.weight`,
                       Math.max(
-                        (newOrg.tiers?.[tierIndex]?.weight ?? 0) - 1,
+                        (newDAO.tiers?.[tierIndex]?.weight ?? 0) - 1,
                         governanceTokenEnabled
-                          ? 1 / 10 ** NEW_ORG_CW20_DECIMALS
+                          ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
                           : 1
                       )
                     ),
@@ -134,7 +134,7 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
                 register={register}
                 sizing={governanceTokenEnabled ? 'md' : 'sm'}
                 step={
-                  governanceTokenEnabled ? 1 / 10 ** NEW_ORG_CW20_DECIMALS : 1
+                  governanceTokenEnabled ? 1 / 10 ** NEW_DAO_CW20_DECIMALS : 1
                 }
                 validation={[validatePositive, validateRequired]}
               />
@@ -153,7 +153,7 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
 
       <div className="flex flex-col gap-2 items-stretch mt-4">
         {members.map(({ id }, idx) => (
-          <CreateOrgTierMember
+          <CreateDAOTierMember
             key={id}
             memberIndex={idx}
             remove={() => removeMember(idx)}
@@ -185,11 +185,11 @@ export const CreateOrgTier: FC<CreateOrgTierProps> = ({
   )
 }
 
-interface CreateOrgTierMemberProps extends Omit<CreateOrgTierProps, 'newOrg'> {
+interface CreateDAOTierMemberProps extends Omit<CreateDAOTierProps, 'newDAO'> {
   memberIndex: number
 }
 
-const CreateOrgTierMember: FC<CreateOrgTierMemberProps> = ({
+const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
   tierIndex,
   memberIndex,
   register,

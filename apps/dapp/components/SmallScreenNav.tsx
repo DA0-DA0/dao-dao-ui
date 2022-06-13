@@ -12,7 +12,7 @@ import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
-import { MobilePinnedOrgNavList } from './PinnedOrgNavList'
+import { MobilePinnedDAONavList } from './PinnedDAONavList'
 
 interface SmallScreenNavProps {
   className?: string
@@ -47,19 +47,19 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       {expanded && (
         <div>
           <div className="ml-1">
-            <h3 className="mb-2 font-mono caption-text">Orgs</h3>
+            <h3 className="mb-2 font-mono caption-text">DAOs</h3>
 
             <SuspenseLoader
               fallback={<Loader className="!justify-start ml-2" size={20} />}
             >
-              <MobilePinnedOrgNavList />
+              <MobilePinnedDAONavList />
             </SuspenseLoader>
 
             <ul className="mt-2 list-none">
               <NavListItem
-                href="/org/explore"
+                href="/dao/explore"
                 icon={ArrowRightIcon}
-                text="All Orgs"
+                text="All DAOs"
               />
             </ul>
           </div>

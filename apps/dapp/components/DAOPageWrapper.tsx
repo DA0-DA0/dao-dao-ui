@@ -25,9 +25,9 @@ import {
   validateContractAddress,
 } from '@dao-dao/utils'
 
-import { OrgNotFound } from './org/NotFound'
+import { DAONotFound } from './dao/NotFound'
 
-interface OrgInfo {
+interface DAOInfo {
   coreAddress: string
   votingModuleType: VotingModuleType
   // cw4-voting
@@ -39,7 +39,7 @@ interface OrgInfo {
   description: string
   imageUrl: string | null
 }
-const DefaultOrgInfo: OrgInfo = {
+const DefaultDAOInfo: DAOInfo = {
   coreAddress: '',
   votingModuleType: VotingModuleType.Cw4Voting,
   cw4GroupAddress: '',
@@ -49,26 +49,26 @@ const DefaultOrgInfo: OrgInfo = {
   description: '',
   imageUrl: null,
 }
-const OrgInfoContext = createContext<OrgInfo | null>(null)
-export const useOrgInfoContext = () => {
-  const context = useContext(OrgInfoContext)
+const DAOInfoContext = createContext<DAOInfo | null>(null)
+export const useDAOInfoContext = () => {
+  const context = useContext(DAOInfoContext)
   if (!context) {
     throw new Error(
-      'useOrgInfoContext can only be used in a descendant of OrgInfoContext.'
+      'useDAOInfoContext can only be used in a descendant of DAOInfoContext.'
     )
   }
 
   return context
 }
 
-export type OrgPageWrapperProps = PropsWithChildren<{
+export type DAOPageWrapperProps = PropsWithChildren<{
   url?: string
   title: string
   description: string
-  info?: OrgInfo
+  info?: DAOInfo
 }>
 
-export const OrgPageWrapper: FunctionComponent<OrgPageWrapperProps> = ({
+export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
   url,
   title,
   description,
@@ -91,15 +91,15 @@ export const OrgPageWrapper: FunctionComponent<OrgPageWrapperProps> = ({
         title={title}
       />
 
-      {/* We only know an org is not found if info is still empty when
+      {/* We only know a DAO is not found if info is still empty when
        * when the page is ready and not a fallback page.
        */}
       {!info && !isFallback && isReady ? (
-        <OrgNotFound />
+        <DAONotFound />
       ) : (
-        <OrgInfoContext.Provider value={info || DefaultOrgInfo}>
+        <DAOInfoContext.Provider value={info || DefaultDAOInfo}>
           {children}
-        </OrgInfoContext.Provider>
+        </DAOInfoContext.Provider>
       )}
     </>
   )
@@ -117,10 +117,10 @@ interface GetStaticPropsMakerProps {
 }
 type GetStaticPropsMaker = (
   props?: GetStaticPropsMakerProps
-) => GetStaticProps<OrgPageWrapperProps>
+) => GetStaticProps<DAOPageWrapperProps>
 
-// Computes OrgPageWrapperProps for the org with optional alterations.
-export const makeGetOrgStaticProps: GetStaticPropsMaker =
+// Computes DAOPageWrapperProps for the DAO with optional alterations.
+export const makeGetDAOStaticProps: GetStaticPropsMaker =
   ({
     leadingTitle,
     followingTitle,
@@ -141,10 +141,10 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
       !address ||
       validateContractAddress(address) !== true
     ) {
-      // Excluding `info` will render OrgNotFound.
+      // Excluding `info` will render DAONotFound.
       return {
         props: {
-          title: 'Org not found',
+          title: 'DAO not found',
           description: '',
         },
       }
@@ -222,10 +222,10 @@ export const makeGetOrgStaticProps: GetStaticPropsMaker =
           error.message.includes('Error parsing into type') ||
           error.message.includes('unknown variant'))
       ) {
-        // Excluding `info` will render OrgNotFound.
+        // Excluding `info` will render DAONotFound.
         return {
           props: {
-            title: 'Org not found',
+            title: 'DAO not found',
             description: '',
           },
         }

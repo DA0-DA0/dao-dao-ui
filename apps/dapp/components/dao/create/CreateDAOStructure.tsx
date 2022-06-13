@@ -3,26 +3,26 @@ import { FC, ReactNode } from 'react'
 
 import { RadioButton } from '@dao-dao/ui'
 
-import { NewOrg, NewOrgStructure } from '@/atoms'
+import { NewDAO, NewDAOStructure } from '@/atoms'
 
-interface CreateOrgStructureProps {
-  newOrg: NewOrg
+interface CreateDAOStructureProps {
+  newDAO: NewDAO
   emoji: ReactNode
   title: string
   description: string
-  structure: NewOrgStructure
-  onChange: (structure: NewOrgStructure) => void
+  structure: NewDAOStructure
+  onChange: (structure: NewDAOStructure) => void
 }
 
-export const CreateOrgStructure: FC<CreateOrgStructureProps> = ({
-  newOrg,
+export const CreateDAOStructure: FC<CreateDAOStructureProps> = ({
+  newDAO,
   emoji,
   title,
   description,
   structure,
   onChange,
 }) => {
-  const selected = newOrg.structure === structure
+  const selected = newDAO.structure === structure
 
   return (
     <div

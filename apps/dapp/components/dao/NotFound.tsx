@@ -2,13 +2,13 @@ import Link from 'next/link'
 
 import { ErrorPage } from '@dao-dao/ui'
 
-import { useOrgInfoContext } from '../OrgPageWrapper'
+import { useDAOInfoContext } from '../DAOPageWrapper'
 
-export const OrgNotFound = () => (
-  <ErrorPage title="Org Not Found">
+export const DAONotFound = () => (
+  <ErrorPage title="DAO Not Found">
     <p>
-      We couldn{"'"}t find an org with that address. See all orgs on the{' '}
-      <Link href="/org/explore">
+      We couldn{"'"}t find a DAO with that address. See all DAOs on the{' '}
+      <Link href="/dao/explore">
         <a className="underline link-text">explore page</a>
       </Link>
       .
@@ -17,14 +17,14 @@ export const OrgNotFound = () => (
 )
 
 export const ProposalNotFound = () => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
 
   return (
     <ErrorPage title="Proposal Not Found">
       <p>
         We couldn{"'"}t find a proposal with that ID. See all proposals on the{' '}
-        <Link href={`/org/${coreAddress}`}>
-          <a className="underline link-text">org&apos;s home page</a>
+        <Link href={`/dao/${coreAddress}`}>
+          <a className="underline link-text">DAO&apos;s home page</a>
         </Link>
         .
       </p>

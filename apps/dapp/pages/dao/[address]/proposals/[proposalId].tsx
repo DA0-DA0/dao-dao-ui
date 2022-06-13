@@ -31,20 +31,20 @@ import {
 } from '@dao-dao/utils'
 
 import {
+  DAOPageWrapper,
+  DAOPageWrapperProps,
   Loader,
-  OrgPageWrapper,
-  OrgPageWrapperProps,
   PageLoader,
   ProposalNotFound,
   ProposalVotes,
   SmallScreenNav,
-  makeGetOrgStaticProps,
-  useOrgInfoContext,
+  makeGetDAOStaticProps,
+  useDAOInfoContext,
 } from '@/components'
 
 const InnerProposal: FC = () => {
   const router = useRouter()
-  const { coreAddress, votingModuleType, name: orgName } = useOrgInfoContext()
+  const { coreAddress, votingModuleType, name } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
@@ -162,7 +162,7 @@ const InnerProposal: FC = () => {
         <Breadcrumbs
           crumbs={[
             ['/starred', 'Home'],
-            [`/org/${coreAddress}`, orgName],
+            [`/dao/${coreAddress}`, name],
             [router.asPath, `Proposal ${proposalId}`],
           ]}
         />
@@ -255,7 +255,7 @@ const InnerProposal: FC = () => {
   )
 }
 
-interface ProposalPageProps extends OrgPageWrapperProps {
+interface ProposalPageProps extends DAOPageWrapperProps {
   exists: boolean
 }
 
@@ -263,11 +263,11 @@ const ProposalPage: NextPage<ProposalPageProps> = ({
   children: _,
   ...props
 }) => (
-  <OrgPageWrapper {...props}>
+  <DAOPageWrapper {...props}>
     <SuspenseLoader fallback={<PageLoader />}>
       {props.exists ? <InnerProposal /> : <ProposalNotFound />}
     </SuspenseLoader>
-  </OrgPageWrapper>
+  </DAOPageWrapper>
 )
 
 export default ProposalPage
@@ -279,7 +279,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps: GetStaticProps<OrgPageWrapperProps> = async (
+export const getStaticProps: GetStaticProps<DAOPageWrapperProps> = async (
   ...props
 ) => {
   // Don't query chain if running in CI.
@@ -290,12 +290,12 @@ export const getStaticProps: GetStaticProps<OrgPageWrapperProps> = async (
   // If invalid address, fallback to default handler.
   const coreAddress = props[0].params?.address
   if (typeof coreAddress !== 'string' || !coreAddress) {
-    return await makeGetOrgStaticProps()(...props)
+    return await makeGetDAOStaticProps()(...props)
   }
 
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    return await makeGetOrgStaticProps({
+    return await makeGetDAOStaticProps({
       followingTitle: 'Proposal not found',
       getAdditionalProps: () => ({
         exists: false,
@@ -333,7 +333,7 @@ export const getStaticProps: GetStaticProps<OrgPageWrapperProps> = async (
       console.error(err)
     }
 
-    const staticProps = await makeGetOrgStaticProps({
+    const staticProps = await makeGetDAOStaticProps({
       followingTitle: `Proposal ${exists ? '#' + proposalId : 'not found'}`,
     })(...props)
 

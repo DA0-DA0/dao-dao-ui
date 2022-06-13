@@ -62,7 +62,7 @@ export const convertThresholdValueToHumanReadableString = (
   value: ThresholdValue
 ): string => (value === 'majority' ? 'Majority' : `${value}%`)
 
-export enum NewOrgStructure {
+export enum NewDAOStructure {
   Simple,
   UsingGovToken,
 }
@@ -72,12 +72,12 @@ export enum GovernanceTokenType {
   Existing,
 }
 
-export interface NewOrg {
-  structure: NewOrgStructure
+export interface NewDAO {
+  structure: NewDAOStructure
   name: string
   description: string
   imageUrl?: string
-  tiers: NewOrgTier[]
+  tiers: NewDAOTier[]
   _tiersError?: undefined
   votingDuration: DurationWithUnits
   governanceTokenOptions: {
@@ -108,32 +108,32 @@ export interface NewOrg {
   }
 }
 
-export interface NewOrgTier {
+export interface NewDAOTier {
   name: string
   weight: number
-  members: NewOrgTierMember[]
+  members: NewDAOTierMember[]
   _error?: undefined
 }
 
-export interface NewOrgTierMember {
+export interface NewDAOTierMember {
   address: string
 }
 
 // Default percent when selecting the percent option for custom threshold.
-export const DEFAULT_NEW_ORG_THRESHOLD_PERCENT: ThresholdValue = 75
-// Default weight when adding a new tier for a simple org.
-export const DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT = 1
-// Default weight when adding a new tier for a governance token-based org.
-export const DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT = 1000
+export const DEFAULT_NEW_DAO_THRESHOLD_PERCENT: ThresholdValue = 75
+// Default weight when adding a new tier for a simple DAO.
+export const DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT = 1
+// Default weight when adding a new tier for a governance token-based DAO.
+export const DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT = 1000
 
-export const DefaultNewOrg: NewOrg = {
-  structure: NewOrgStructure.Simple,
+export const DefaultNewDAO: NewDAO = {
+  structure: NewDAOStructure.Simple,
   name: '',
   description: '',
   tiers: [
     {
       name: 'Core team',
-      weight: DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
+      weight: DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
       members: [
         {
           address: '',
@@ -167,9 +167,9 @@ export const DefaultNewOrg: NewOrg = {
     quorum: 20,
   },
 }
-export const NEW_ORG_CW20_DECIMALS = 6
+export const NEW_DAO_CW20_DECIMALS = 6
 
-export const newOrgAtom = atom<NewOrg>({
-  key: 'newOrg',
-  default: DefaultNewOrg,
+export const newDAOAtom = atom<NewDAO>({
+  key: 'newDAO',
+  default: DefaultNewDAO,
 })

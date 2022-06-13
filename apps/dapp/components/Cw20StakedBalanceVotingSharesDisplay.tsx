@@ -14,11 +14,11 @@ import { BalanceCard, StakingMode, SuspenseLoader } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { ClaimsPendingList } from './ClaimsPendingList'
+import { useDAOInfoContext } from './DAOPageWrapper'
 import { Loader } from './Loader'
-import { useOrgInfoContext } from './OrgPageWrapper'
 
 const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
-  const { coreAddress, name } = useOrgInfoContext()
+  const { coreAddress, name } = useDAOInfoContext()
   const { governanceTokenInfo, walletBalance: unstakedGovTokenBalance } =
     useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
   const {

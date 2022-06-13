@@ -1,11 +1,11 @@
 import { FC } from 'react'
 
-interface CreateOrgReviewStatProps {
+interface CreateDAOReviewStatProps {
   title: string
   value: string
 }
 
-export const CreateOrgReviewStat: FC<CreateOrgReviewStatProps> = ({
+export const CreateDAOReviewStat: FC<CreateDAOReviewStatProps> = ({
   value,
   title,
 }) => (
