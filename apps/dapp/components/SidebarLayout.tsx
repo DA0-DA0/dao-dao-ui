@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
 import { KeplrNotInstalledError, SITE_TITLE } from '@dao-dao/utils'
 
+import { Loader } from '.'
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
@@ -66,7 +67,7 @@ export const SidebarLayoutInner: FC = ({ children }) => {
 }
 
 export const SidebarLayout: FC = ({ children }) => (
-  <WalletProvider>
+  <WalletProvider renderLoader={() => <Loader size={64} />}>
     <SidebarLayoutInner>{children}</SidebarLayoutInner>
   </WalletProvider>
 )

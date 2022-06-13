@@ -3,7 +3,7 @@ import Emoji from 'a11y-react-emoji'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import {
   AddressInput,
   InputErrorMessage,

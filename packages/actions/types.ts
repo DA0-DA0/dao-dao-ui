@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { CosmosMsg_for_Empty } from '@dao-dao/state/clients/cw-core'
 import { VotingModuleType } from '@dao-dao/utils'
 
 import { ActionKey } from './actions'
@@ -37,7 +37,7 @@ export type UseDefaults<D extends {} = any> = (coreAddress: string) => D
 
 export type UseTransformToCosmos<D extends {} = any> = (
   coreAddress: string
-) => (data: D) => CosmosMsgFor_Empty | undefined
+) => (data: D) => CosmosMsg_for_Empty | undefined
 
 export interface DecodeCosmosMsgNoMatch {
   match: false

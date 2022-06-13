@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { Duration } from '@dao-dao/types/legacy/cw3-dao'
 import {
   convertMicroDenomToDenomWithDecimals,
   durationIsNonZero,

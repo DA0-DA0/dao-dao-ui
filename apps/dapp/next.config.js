@@ -9,6 +9,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/state',
   '@dao-dao/actions',
   '@dao-dao/common',
+  '@dao-dao/v1-types',
 ])
 
 /** @type {import("next").NextConfig} */

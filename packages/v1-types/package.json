@@ -1,0 +1,20 @@
+{
+  "name": "@dao-dao/v1-types",
+  "version": "0.1.0",
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "react": "^18.1.0"
+  },
+  "devDependencies": {
+    "@dao-dao/config": "*",
+    "@dao-dao/tsconfig": "*",
+    "@dao-dao/utils": "*",
+    "@dao-dao/types": "^1.0.0",
+    "typescript": "^4.5.3"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "private": true
+}

@@ -1,7 +1,6 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { ComponentType, FC, ReactNode, useMemo, useState } from 'react'
 
-import { ActionsRendererProps } from '@dao-dao/actions'
 import {
   Proposal,
   Status,
@@ -12,6 +11,7 @@ import {
   decodeMessages,
   decodedMessagesString,
 } from '@dao-dao/utils'
+import { ActionsRendererProps } from '@dao-dao/v1-types'
 
 import { Button } from '../Button'
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'

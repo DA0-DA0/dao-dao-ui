@@ -26,7 +26,7 @@ import {
   useWallet,
   walletCw20BalanceSelector,
 } from '@dao-dao/state'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { CosmosMsg_for_Empty } from '@dao-dao/state/clients/cw-core'
 import {
   Button,
   CosmosMessageDisplay,
@@ -49,7 +49,7 @@ enum ProposeSubmitValue {
 }
 
 export interface ProposalData extends Omit<FormProposalData, 'actionData'> {
-  messages: CosmosMsgFor_Empty[]
+  messages: CosmosMsg_for_Empty[]
 }
 
 export interface CreateProposalFormProps {
@@ -167,7 +167,7 @@ export const CreateProposalForm = ({
         messages: actionData
           .map(({ key, data }) => actionsWithData[key]?.transform(data))
           // Filter out undefined messages.
-          .filter(Boolean) as CosmosMsgFor_Empty[],
+          .filter(Boolean) as CosmosMsg_for_Empty[],
       })
     },
     [onSubmit, actionsWithData]
@@ -197,7 +197,7 @@ export const CreateProposalForm = ({
                 proposalActionData
                   .map(({ key, data }) => actionsWithData[key]?.transform(data))
                   // Filter out undefined messages.
-                  .filter(Boolean) as CosmosMsgFor_Empty[]
+                  .filter(Boolean) as CosmosMsg_for_Empty[]
               )}
             />
           </>

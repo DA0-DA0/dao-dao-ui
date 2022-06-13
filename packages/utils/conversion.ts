@@ -1,5 +1,5 @@
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
+import { Expiration } from '@dao-dao/types/legacy/cw3-dao'
 
 import { secondsToWdhms } from './time'
 

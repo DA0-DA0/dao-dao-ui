@@ -6,9 +6,9 @@ import {
   tokenUSDPriceSelector,
   useWallet,
 } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { VotingModuleType } from '@dao-dao/utils'
 
+import { TokenInfoResponse } from '../clients/cw20-base'
 import { useVotingModule } from './useVotingModule'
 
 interface UseGovernanceTokenInfoOptions {

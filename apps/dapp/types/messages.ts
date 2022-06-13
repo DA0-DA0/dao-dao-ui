@@ -1,4 +1,4 @@
-import { Coin } from '@dao-dao/types/contracts/cw3-dao'
+import { Coin } from '@dao-dao/types/legacy/cw3-dao'
 
 export type MintMsg = {
   wasm: {

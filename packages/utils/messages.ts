@@ -5,12 +5,11 @@ import {
   DistributionMsg,
   StakingMsg,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   CosmosMsgFor_Empty,
   ProposalResponse,
   WasmMsg,
-} from '@dao-dao/types/contracts/cw3-dao'
+} from '@dao-dao/types/legacy/cw3-dao'
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
@@ -132,6 +131,13 @@ export const makeWasmMessage = (message: {
   }
   // Messages such as update or clear admin pass through without modification.
   return msg
+}
+
+interface MintExecuteMsg {
+  mint: {
+    amount: string
+    recipient: string
+  }
 }
 
 export const makeExecutableMintMessage = (

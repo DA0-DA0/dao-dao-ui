@@ -20,7 +20,7 @@ import {
   SITE_URL,
 } from '@dao-dao/utils'
 
-import { Footer } from '@/components'
+import { Footer, Loader } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -112,7 +112,7 @@ const SDA: FC<AppProps> = (props) => (
     />
 
     <RecoilRoot>
-      <WalletProvider>
+      <WalletProvider renderLoader={() => <Loader size={64} />}>
         <InnerApp {...props} />
       </WalletProvider>
     </RecoilRoot>

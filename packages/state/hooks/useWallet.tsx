@@ -9,14 +9,20 @@ import {
   WalletManagerProvider,
   useWalletManager,
 } from 'cosmodal'
-import { FC, createContext, useCallback, useContext, useEffect } from 'react'
+import {
+  ComponentProps,
+  FC,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+} from 'react'
 import {
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
-import { Loader } from '@dao-dao/ui'
 import {
   CHAIN_ID,
   KeplrNotInstalledError,
@@ -206,7 +212,9 @@ const enableKeplr = async (wallet: Wallet, walletClient: WalletClient) => {
   await walletClient.enable(CHAIN_ID)
 }
 
-export const WalletProvider: FC = ({ children }) => {
+export const WalletProvider: FC<
+  Pick<ComponentProps<typeof WalletManagerProvider>, 'renderLoader'>
+> = ({ children, renderLoader }) => {
   const savedConectedWalletId = useRecoilValue(connectedWalletIdAtom)
 
   return (
@@ -243,7 +251,7 @@ export const WalletProvider: FC = ({ children }) => {
           ? AvailableWallets.find((w) => w.isWalletConnect)?.id
           : undefined)
       }
-      renderLoader={() => <Loader size={64} />}
+      renderLoader={renderLoader}
       wallets={AvailableWallets}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>

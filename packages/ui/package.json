@@ -23,7 +23,7 @@
     "@dao-dao/config": "*",
     "@dao-dao/tsconfig": "*",
     "@dao-dao/state": "*",
-    "@dao-dao/actions": "*",
+    "@dao-dao/v1-types": "*",
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-essentials": "^6.4.19",
     "@storybook/addon-interactions": "^6.4.19",
