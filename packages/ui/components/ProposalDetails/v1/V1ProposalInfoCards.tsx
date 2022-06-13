@@ -192,7 +192,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
     yesVotes > 0 &&
     (threshold.value.majority
       ? // Majority
-        yesVotes > (quorum ? turnoutTotal : totalWeight) / 2
+        yesVotes > ((quorum ? turnoutTotal : totalWeight) - abstainVotes) / 2
       : // Percent
         yesVotes >=
         ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
