@@ -18,9 +18,9 @@ import {
   processThresholdData,
 } from '@dao-dao/utils'
 
+import { useDAOInfoContext } from './DAOPageWrapper'
 import { DaoTreasury } from './DaoTreasury'
 import { Loader } from './Loader'
-import { useDAOInfoContext } from './DAOPageWrapper'
 
 interface DaoContractInfoProps {
   hideTreasury?: boolean
