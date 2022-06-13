@@ -14,14 +14,14 @@ import {
   parseVotingModuleContractName,
 } from '@dao-dao/utils'
 
-import { Header, Loader, DAOInfoContext, DAOInfo } from '.'
+import { Header, Loader, DAOInfoContext, DAOInfo, DefaultDAOInfo } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string
   title: string
   description: string
-  daoInfo: DAOInfo
+  daoInfo?: DAOInfo
 }>
 
 export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
@@ -32,6 +32,11 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
   children,
 }) => {
   const { isFallback, isReady } = useRouter()
+
+  // If not on a fallback page, DAO info must be loaded.
+  if (!isFallback && !daoInfo) {
+    throw new Error('DAO info failed to load.')
+  }
 
   return (
     <>
@@ -47,7 +52,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
         title={title}
       />
 
-      <DAOInfoContext.Provider value={daoInfo}>
+      <DAOInfoContext.Provider value={daoInfo || DefaultDAOInfo}>
         <Header />
 
         {/* Suspend children so SEO stays intact while page loads. */}
