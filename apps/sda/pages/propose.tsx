@@ -16,7 +16,7 @@ import {
   useWallet,
 } from '@dao-dao/state'
 import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
-import { cleanChainError } from '@dao-dao/utils'
+import { cleanChainError, expirationExpired } from '@dao-dao/utils'
 
 import {
   Loader,
@@ -26,7 +26,7 @@ import {
   makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
-import { DAO_ADDRESS, expirationExpired } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
