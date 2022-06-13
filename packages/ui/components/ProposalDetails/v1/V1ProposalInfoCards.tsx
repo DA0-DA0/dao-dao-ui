@@ -205,6 +205,12 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
       : // Percent
         turnoutPercent >= quorum.value.percent)
 
+  // Threshold of yes votes needed out of 100 for majority case.
+  // If there are no abstain votes, this should be 50.
+  // If there are 4% abstain votes, this should be 48, since 48%+1 of the 96% non-abstain votes need to be in favor.
+  const majorityThresholdMarker =
+    Math.round(50 - (abstainVotes / 2 / ((quorum ? turnoutTotal : totalWeight) || 1)) * 100)
+
   const helpfulStatusText =
     proposal.status === Status.Open && threshold && quorum
       ? thresholdReached && quorumMet
@@ -290,7 +296,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                   threshold && [
                     {
                       value: threshold.value.majority
-                        ? 50
+                        ? majorityThresholdMarker
                         : threshold.value.percent,
                       color: 'rgba(var(--dark), 0.5)',
                     },
@@ -313,7 +319,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                       ? 'calc(100% - 32px)'
                       : `calc(${
                           threshold.value.majority
-                            ? 50
+                            ? majorityThresholdMarker
                             : threshold.value.percent
                         }% - 17px)`,
                 }}
@@ -494,7 +500,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                 verticalBars={[
                   {
                     value: threshold.value.majority
-                      ? 50
+                      ? majorityThresholdMarker
                       : threshold.value.percent,
                     color: 'rgba(var(--dark), 0.5)',
                   },
@@ -516,7 +522,7 @@ export const V1ProposalInfoVoteStatus: FC<V1ProposalInfoVoteStatusProps> = ({
                       ? 'calc(100% - 32px)'
                       : `calc(${
                           threshold.value.majority
-                            ? 50
+                            ? majorityThresholdMarker
                             : threshold.value.percent
                         }% - 17px)`,
                 }}
