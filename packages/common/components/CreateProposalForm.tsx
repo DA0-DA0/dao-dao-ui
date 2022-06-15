@@ -250,6 +250,7 @@ export const CreateProposalForm = ({
           </ul>
           <div className="mt-2">
             <Button
+              disabled={loading}
               onClick={() => setShowActionSelector((s) => !s)}
               type="button"
               variant="secondary"
@@ -285,6 +286,7 @@ export const CreateProposalForm = ({
             connectWalletButton
           )}
           <Button
+            disabled={loading}
             type="submit"
             value={ProposeSubmitValue.Preview}
             variant="secondary"
