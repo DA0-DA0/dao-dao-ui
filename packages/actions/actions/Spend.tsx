@@ -19,16 +19,18 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import {
+  ActionCardLoader,
+  SpendComponent as StatelessSpendComponent,
+} from '../components'
 import {
   Action,
-  ActionCardLoader,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { SpendComponent as StatelessSpendComponent } from '../components'
+} from '../types'
 
 interface SpendData {
   to: string

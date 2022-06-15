@@ -18,15 +18,15 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { InstantiateComponent as StatelessInstantiateComponent } from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { InstantiateComponent as StatelessInstantiateComponent } from '../components'
+} from '../types'
 
 interface InstantiateData {
   admin: string

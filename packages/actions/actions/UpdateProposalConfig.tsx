@@ -15,15 +15,15 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
+} from '../types'
 
 interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
