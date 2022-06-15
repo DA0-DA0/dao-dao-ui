@@ -8,9 +8,9 @@ import { StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
   ExecuteResult,
-  SigningCosmWasmClient,
-  InstantiateResult,
   InstantiateOptions,
+  InstantiateResult,
+  SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 export type AdminResponse = Addr | null
 export type Addr = string

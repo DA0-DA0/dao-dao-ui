@@ -1,4 +1,4 @@
-import { PlusIcon, MapIcon } from '@heroicons/react/outline'
+import { MapIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
@@ -25,14 +25,14 @@ export const ActionMenu = () => (
   <div className="p-4 bg-primary rounded-md border border-transparent hover:border-btn-secondary">
     <div className="flex flex-col gap-1 font-medium md:gap-0 text-md">
       <ActionItem
-        href="/org/create"
+        href="/dao/create"
         icon={<PlusIcon className="w-4" />}
-        text="Create an Org"
+        text="Create a DAO"
       />
       <ActionItem
-        href="/org/explore"
+        href="/dao/explore"
         icon={<MapIcon className="w-4" />}
-        text="Explore all Orgs"
+        text="Explore all DAOs"
       />
     </div>
   </div>

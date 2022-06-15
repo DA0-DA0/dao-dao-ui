@@ -4,15 +4,15 @@ import '@fontsource/jetbrains-mono/latin.css'
 
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { useState, useEffect, FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
+  WalletProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
-  WalletProvider,
 } from '@dao-dao/state'
-import { ThemeProvider, Theme, ErrorBoundary, Notifications } from '@dao-dao/ui'
+import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import {
   SITE_DESCRIPTION,
   SITE_IMAGE,

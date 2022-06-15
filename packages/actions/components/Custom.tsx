@@ -6,7 +6,7 @@ import { useFormContext } from 'react-hook-form'
 import { CodeMirrorInput } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
-import { ActionComponent, ActionCard } from '..'
+import { ActionCard, ActionComponent } from '..'
 
 export const CustomComponent: ActionComponent = ({
   getLabel,

@@ -5,14 +5,13 @@ import '@fontsource/jetbrains-mono/latin.css'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useState, useEffect, FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
-import { ErrorBoundary, Theme, ThemeProvider, Notifications } from '@dao-dao/ui'
+import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
-import { HomepageLayout } from '@/components/HomepageLayout'
-import { SidebarLayout } from '@/components/SidebarLayout'
+import { HomepageLayout, SidebarLayout } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()

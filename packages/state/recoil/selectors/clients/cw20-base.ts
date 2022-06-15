@@ -6,11 +6,11 @@ import {
   AllowanceResponse,
   BalanceResponse,
   DownloadLogoResponse,
-  MinterResponse,
-  MarketingInfoResponse,
-  TokenInfoResponse,
-  Cw20QueryClient as QueryClient,
   Cw20Client as ExecuteClient,
+  MarketingInfoResponse,
+  MinterResponse,
+  Cw20QueryClient as QueryClient,
+  TokenInfoResponse,
 } from '../../../clients/cw20-base'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'

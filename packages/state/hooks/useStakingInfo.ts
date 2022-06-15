@@ -1,19 +1,14 @@
 import { useCallback } from 'react'
-import { useRecoilValue, constSelector, useSetRecoilState } from 'recoil'
+import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
+  StakeCw20Selectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
   useWallet,
 } from '@dao-dao/state'
 import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
-import {
-  getConfigSelector,
-  claimsSelector,
-  stakedValueSelector,
-  totalValueSelector,
-} from '@dao-dao/state/recoil/selectors/clients/stake-cw20'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useGovernanceTokenInfo } from '.'
@@ -56,7 +51,9 @@ export const useStakingInfo = (
 
   const stakingContractConfig = useRecoilValue(
     stakingContractAddress
-      ? getConfigSelector({ contractAddress: stakingContractAddress })
+      ? StakeCw20Selectors.getConfigSelector({
+          contractAddress: stakingContractAddress,
+        })
       : constSelector(undefined)
   )
 
@@ -89,7 +86,7 @@ export const useStakingInfo = (
 
   const claims = useRecoilValue(
     fetchClaims && walletAddress && stakingContractAddress
-      ? claimsSelector({
+      ? StakeCw20Selectors.claimsSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -110,14 +107,16 @@ export const useStakingInfo = (
   // Total staked
   const totalStaked = useRecoilValue(
     fetchTotalStaked && stakingContractAddress
-      ? totalValueSelector({ contractAddress: stakingContractAddress })
+      ? StakeCw20Selectors.totalValueSelector({
+          contractAddress: stakingContractAddress,
+        })
       : constSelector(undefined)
   )?.total
 
   // Wallet staked
   const walletStaked = useRecoilValue(
     fetchWalletStaked && stakingContractAddress && walletAddress
-      ? stakedValueSelector({
+      ? StakeCw20Selectors.stakedValueSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })

@@ -19,16 +19,7 @@ let config = {
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
   eslint: {
-    dirs: [
-      'atoms',
-      'components',
-      'models',
-      'pages',
-      'selectors',
-      'services',
-      'types',
-      'util',
-    ],
+    dirs: ['components', 'hooks', 'pages', 'types', 'util'],
   },
 }
 

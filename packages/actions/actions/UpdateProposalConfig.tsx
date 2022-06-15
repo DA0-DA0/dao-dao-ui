@@ -2,28 +2,28 @@ import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
+  Cw20BaseSelectors,
+  Cw20StakedBalanceVotingSelectors,
   useGovernanceTokenInfo,
   useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
-import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { tokenContractSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-staked-balance-voting'
 import {
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 import {
   Action,
+  ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionComponent,
-} from '..'
-import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
+} from '../types'
 
 interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
@@ -261,14 +261,17 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   const maybeTokenContract = useRecoilValue(
     votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
       votingModuleAddress
-      ? tokenContractSelector({
+      ? Cw20StakedBalanceVotingSelectors.tokenContractSelector({
           contractAddress: votingModuleAddress,
         })
       : constSelector(undefined)
   )
   const maybeTokenContractInfo = useRecoilValue(
     maybeTokenContract
-      ? tokenInfoSelector({ contractAddress: maybeTokenContract, params: [] })
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: maybeTokenContract,
+          params: [],
+        })
       : constSelector(undefined)
   )
 

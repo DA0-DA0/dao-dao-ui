@@ -3,12 +3,12 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
 import {
+  FormSwitch,
+  InputErrorMessage,
   InputLabel,
   NumberInput,
-  InputErrorMessage,
   SelectInput,
   Tooltip,
-  FormSwitch,
 } from '@dao-dao/ui'
 import {
   validatePercent,
@@ -16,7 +16,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionComponent, ActionCard } from '..'
+import { ActionCard, ActionComponent } from '..'
 
 export interface UpdateProposalConfigOptions {
   governanceTokenSymbol?: string

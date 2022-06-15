@@ -1,8 +1,7 @@
 import { FunctionComponent } from 'react'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { InputLabel } from '@dao-dao/ui'
-import { Loader } from '@dao-dao/ui/components/Loader'
+import { InputLabel, Loader } from '@dao-dao/ui'
 
 export interface TokenInfoDisplayProps {
   loadingTokenInfo?: boolean

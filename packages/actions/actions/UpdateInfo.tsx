@@ -1,24 +1,24 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { UpdateInfoComponent as Component } from '../components'
 import {
   Action,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { UpdateInfoComponent as Component } from '../components'
+} from '../types'
 
 type UpdateInfoData = ConfigResponse
 
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
   const config = useRecoilValue(
-    configSelector({ contractAddress: coreAddress })
+    CwCoreSelectors.configSelector({ contractAddress: coreAddress })
   ) ?? {
     name: '',
     description: '',

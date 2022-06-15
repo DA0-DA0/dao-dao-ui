@@ -1,10 +1,10 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { useState, FC } from 'react'
+import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { Copy } from '@dao-dao/icons'
-import { useThemeContext, Button } from '@dao-dao/ui'
+import { Button, useThemeContext } from '@dao-dao/ui'
 
 const concatAddressImpl = (
   address: string,

@@ -13,17 +13,17 @@ import {
 } from 'react'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Airdrop, Pie, Governance, Hash, Wallet } from '@dao-dao/icons'
+import { Airdrop, Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenomWithDecimals,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   VotingModuleType,
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { Logo, useDAOInfoContext, Footer, WalletAvatarIcon } from '@/components'
+import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
 import { AIRDROP_URL } from '@/util'
 
 interface NavItemData {

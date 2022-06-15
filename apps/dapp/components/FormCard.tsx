@@ -1,4 +1,4 @@
-import { ReactNode, FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 export interface FormCardProps {
   children: ReactNode

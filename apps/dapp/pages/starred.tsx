@@ -5,10 +5,13 @@ import { useRecoilValue } from 'recoil'
 
 import { LoadingScreen, SuspenseLoader } from '@dao-dao/ui'
 
-import { pinnedAddressesAtom } from '@/atoms/pinned'
-import { EmptyOrgCard } from '@/components/EmptyDaoCard'
-import { SmallScreenNav } from '@/components/SmallScreenNav'
-import { ActionMenu, PinnedOrgCard } from '@/components/starred'
+import { pinnedAddressesAtom } from '@/atoms'
+import {
+  ActionMenu,
+  EmptyDAOCard,
+  PinnedDAOCard,
+  SmallScreenNav,
+} from '@/components'
 
 const InnerStarred: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
@@ -26,15 +29,15 @@ const InnerStarred: FC = () => {
           <h1 className="header-text">Starred</h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
-            Orgs
+            DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedAddresses.length ? (
               pinnedAddresses.map((address) => (
-                <PinnedOrgCard key={address} address={address} />
+                <PinnedDAOCard key={address} address={address} />
               ))
             ) : (
-              <EmptyOrgCard />
+              <EmptyDAOCard />
             )}
           </div>
         </div>

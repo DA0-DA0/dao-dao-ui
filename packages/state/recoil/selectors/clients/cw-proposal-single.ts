@@ -1,8 +1,8 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  CwProposalSingleClient as ExecuteClient,
   ConfigResponse,
+  CwProposalSingleClient as ExecuteClient,
   InfoResponse,
   ListProposalsResponse,
   ListVotesResponse,

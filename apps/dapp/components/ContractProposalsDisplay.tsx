@@ -3,14 +3,13 @@ import Link from 'next/link'
 import { FC } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'
-import { Button, Tooltip, SuspenseLoader } from '@dao-dao/ui'
-import { Loader } from '@dao-dao/ui/components/Loader'
+import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
+import { useDAOInfoContext } from './DAOPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
 
 export const InnerContractProposalsDisplay: FC = () => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
 
   const tooltip = isMember
@@ -24,7 +23,7 @@ export const InnerContractProposalsDisplay: FC = () => {
 
         <Link
           className={clsx({ 'pointer-events-none': isMember })}
-          href={`/org/${coreAddress}/proposals/create`}
+          href={`/dao/${coreAddress}/proposals/create`}
         >
           <a>
             <Tooltip label={tooltip}>

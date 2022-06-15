@@ -7,17 +7,17 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
-import { refreshProposalsIdAtom, useProposalModule } from '@dao-dao/state'
-import { reverseProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
-import { ProposalLine, Button, SuspenseLoader } from '@dao-dao/ui'
+import {
+  CwProposalSingleSelectors,
+  refreshProposalsIdAtom,
+  useProposalModule,
+} from '@dao-dao/state'
+import { Button, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
+import { useDAOInfoContext } from '../DAOPageWrapper'
 import { EmptyContractCard } from '../EmptyContractCard'
 import { Loader } from '../Loader'
-import { useOrgInfoContext } from '../OrgPageWrapper'
-import {
-  proposalListCountAtom,
-  proposalStartBeforesAtom,
-} from '@/atoms/proposals'
+import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -26,7 +26,7 @@ interface SingleProposalListProps {
 }
 
 const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { proposalModuleAddress } = useProposalModule(coreAddress)
   if (!proposalModuleAddress) {
     throw new Error('No proposal module found.')
@@ -38,7 +38,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
 
   const proposalResponses = useRecoilValue(
     listIndex - 1 in startBefores
-      ? reverseProposalsSelector({
+      ? CwProposalSingleSelectors.reverseProposalsSelector({
           contractAddress: proposalModuleAddress,
           params: [
             {
@@ -66,7 +66,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
         <ProposalLine
           key={response.id}
           proposalResponse={response}
-          proposalViewUrl={`/org/${coreAddress}/proposals/${response.id}`}
+          proposalViewUrl={`/dao/${coreAddress}/proposals/${response.id}`}
         />
       ))}
     </>
@@ -74,7 +74,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
 }
 
 export const ProposalList: FC = () => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { proposalModuleAddress, proposalCount } = useProposalModule(
     coreAddress,
     { fetchProposalCount: true }
@@ -105,7 +105,7 @@ export const ProposalList: FC = () => {
           backgroundUrl="/empty-state-proposal.jpeg"
           description="This DAO has no proposals. Why not create one?"
           fullWidth
-          href={`/org/${coreAddress}/proposals/create`}
+          href={`/dao/${coreAddress}/proposals/create`}
           title="Create a Proposal"
         />
       </div>

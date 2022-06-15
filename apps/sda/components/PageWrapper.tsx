@@ -3,18 +3,18 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { FunctionComponent, PropsWithChildren } from 'react'
 
-import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
+import { CwCoreQueryClient } from '@dao-dao/state'
 import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
 import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  cosmWasmClientRouter,
   CHAIN_RPC_ENDPOINT,
   CI,
+  cosmWasmClientRouter,
   parseVotingModuleContractName,
 } from '@dao-dao/utils'
 
-import { Header, Loader, DAOInfoContext, DAOInfo, DefaultDAOInfo } from '.'
+import { DAOInfo, DAOInfoContext, DefaultDAOInfo, Header, Loader } from '.'
 import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
@@ -88,7 +88,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const client = new QueryClient(cwClient, DAO_ADDRESS)
+      const client = new CwCoreQueryClient(cwClient, DAO_ADDRESS)
 
       const config = await client.config()
 

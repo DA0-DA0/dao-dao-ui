@@ -3,26 +3,22 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { StakingModal, ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
   useStakingInfo,
   useWallet,
 } from '@dao-dao/state'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { BalanceCard, StakingMode, SuspenseLoader } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { ClaimsPendingList } from './ClaimsPendingList'
+import { useDAOInfoContext } from './DAOPageWrapper'
 import { Loader } from './Loader'
-import { useOrgInfoContext } from './OrgPageWrapper'
 
 const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
-  const { coreAddress } = useOrgInfoContext()
-  const config = useRecoilValue(
-    configSelector({ contractAddress: coreAddress })
-  )
+  const { coreAddress, name } = useDAOInfoContext()
   const { governanceTokenInfo, walletBalance: unstakedGovTokenBalance } =
     useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
   const {
@@ -41,7 +37,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
     useState<StakingMode>()
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  if (!config || !governanceTokenInfo || blockHeight === undefined) {
+  if (!governanceTokenInfo || blockHeight === undefined) {
     throw new Error('Failed to load data.')
   }
 
@@ -116,8 +112,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
               ).toLocaleString(undefined, {
                 maximumSignificantDigits: 3,
               })}% `}
-            more voting power and help you defend your positions for{' '}
-            {config.name}
+            more voting power and help you defend your positions for {name}
             {"'"}s direction.
           </p>
           <div className="flex justify-end mt-4">

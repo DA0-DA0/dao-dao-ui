@@ -23,7 +23,6 @@ let config = {
     dirs: [
       'atoms',
       'components',
-      'models',
       'pages',
       'selectors',
       'services',

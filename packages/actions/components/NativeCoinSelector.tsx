@@ -3,16 +3,16 @@ import { XIcon } from '@heroicons/react/solid'
 import { ComponentProps, FC } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { NumberInput, SelectInput, InputErrorMessage } from '@dao-dao/ui'
+import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
-  convertMicroDenomToDenomWithDecimals,
   NATIVE_DECIMALS,
-  convertDenomToMicroDenomWithDecimals,
-  nativeTokenLabel,
   NATIVE_DENOM,
   convertDenomToHumanReadableDenom,
-  validateRequired,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  nativeTokenLabel,
   validatePositive,
+  validateRequired,
 } from '@dao-dao/utils'
 
 import { ActionComponent } from '..'

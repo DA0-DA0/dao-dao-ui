@@ -6,8 +6,6 @@ import {
   UseFormRegister,
 } from 'react-hook-form'
 
-import { TooltipsDisplay } from './TooltipsDisplay'
-
 export interface TooltipResponse {
   label: string
   content: ReactNode
@@ -36,4 +34,4 @@ export function useTooltipsRegister<
   return [selected, newRegister as UseFormRegister<TFieldValues>]
 }
 
-export default TooltipsDisplay
+export * from './TooltipsDisplay'

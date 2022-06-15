@@ -5,15 +5,15 @@ import {
   AddressInput,
   InputErrorMessage,
   InputLabel,
-  TokenInfoDisplayProps,
   TokenInfoDisplay,
+  TokenInfoDisplayProps,
 } from '@dao-dao/ui'
 import {
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
 
-import { ActionComponent, ActionCard } from '..'
+import { ActionCard, ActionComponent } from '..'
 
 export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
   getLabel,

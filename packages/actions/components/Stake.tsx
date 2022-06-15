@@ -10,16 +10,16 @@ import {
   SelectInput,
 } from '@dao-dao/ui'
 import {
-  validateValidatorAddress,
-  validatePositive,
-  validateRequired,
-  StakeType,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  StakeType,
   convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
+  validatePositive,
+  validateRequired,
+  validateValidatorAddress,
 } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'

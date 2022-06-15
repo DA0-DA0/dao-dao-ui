@@ -1,6 +1,6 @@
 import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { ReactNode, FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 export interface ModalProps {
   children: ReactNode

@@ -1,8 +1,7 @@
 import { FC, useState } from 'react'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { useProposalInfo } from '@dao-dao/state'
-import { listVotesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
+import { CwProposalSingleSelectors, useProposalInfo } from '@dao-dao/state'
 import { ProposalVotes as StatelessProposalVotes } from '@dao-dao/ui'
 
 export interface ProposalVotesProps {
@@ -26,7 +25,7 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
   const totalPower = Number(proposal.total_power)
 
   const initalVotes = useRecoilValue(
-    listVotesSelector({
+    CwProposalSingleSelectors.listVotesSelector({
       contractAddress: proposalModuleAddress,
       params: [
         {
@@ -56,7 +55,7 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
           const newVotes =
             (
               await snapshot.getPromise(
-                listVotesSelector({
+                CwProposalSingleSelectors.listVotesSelector({
                   contractAddress: proposalModuleAddress,
                   params: [
                     {

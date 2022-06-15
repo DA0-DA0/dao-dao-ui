@@ -2,18 +2,18 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { Cw20BaseSelectors } from '@dao-dao/state'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
+} from '../types'
 
 interface AddTokenData {
   address: string
@@ -31,7 +31,10 @@ const Component: ActionComponent = (props) => {
   const tokenAddress = watch(getLabel('address'))
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress
-      ? tokenInfoSelector({ contractAddress: tokenAddress, params: [] })
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: tokenAddress,
+          params: [],
+        })
       : constSelector(undefined)
   )
 

@@ -1,16 +1,16 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { CustomComponent as Component } from '../components'
 import {
   Action,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { CustomComponent as Component } from '../components'
+} from '../types'
 
 interface CustomData {
   message: string

@@ -2,9 +2,9 @@ import { FC, useState } from 'react'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
+  convertMicroDenomToDenomWithDecimals,
   durationIsNonZero,
   humanReadableDuration,
-  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { Modal } from '../Modal'

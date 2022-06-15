@@ -1,4 +1,4 @@
-import { toBase64, toAscii } from '@cosmjs/encoding'
+import { toAscii, toBase64 } from '@cosmjs/encoding'
 
 import {
   BankMsg,
@@ -8,8 +8,8 @@ import {
 import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 import {
   CosmosMsgFor_Empty,
-  WasmMsg,
   ProposalResponse,
+  WasmMsg,
 } from '@dao-dao/types/contracts/cw3-dao'
 
 export function parseEncodedMessage(base64String?: string) {

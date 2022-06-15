@@ -4,19 +4,19 @@ import { isMobile } from '@walletconnect/browser-utils'
 import WalletConnect from '@walletconnect/client'
 import {
   KeplrWalletConnectV1,
-  useWalletManager,
   Wallet,
   WalletClient,
   WalletManagerProvider,
+  useWalletManager,
 } from 'cosmodal'
-import { createContext, FC, useCallback, useContext, useEffect } from 'react'
+import { FC, createContext, useCallback, useContext, useEffect } from 'react'
 import {
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
-import { Loader } from '@dao-dao/ui/components/Loader'
+import { Loader } from '@dao-dao/ui'
 import {
   CHAIN_ID,
   KeplrNotInstalledError,
@@ -24,8 +24,8 @@ import {
   SITE_DESCRIPTION,
   SITE_TITLE,
   SITE_URL,
-  suggestChain,
   WC_ICON_PATH,
+  suggestChain,
 } from '@dao-dao/utils'
 
 import {
@@ -36,8 +36,8 @@ import {
   walletNativeBalanceSelector,
 } from '../recoil'
 import {
-  walletClientAtom,
   connectedWalletIdAtom,
+  walletClientAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
 

@@ -8,12 +8,12 @@ import {
   Button,
   InputErrorMessage,
   InputLabel,
-  TokenInfoDisplayProps,
   TokenInfoDisplay,
+  TokenInfoDisplayProps,
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
-import { ActionComponent, ActionCard } from '..'
+import { ActionCard, ActionComponent } from '..'
 
 interface Token {
   address: string

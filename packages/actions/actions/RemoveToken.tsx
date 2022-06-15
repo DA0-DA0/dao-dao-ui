@@ -7,22 +7,23 @@ import {
   waitForAll,
 } from 'recoil'
 
+import { Cw20BaseSelectors, CwCoreSelectors } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { allCw20TokenListSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
-import { makeWasmMessage, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import {
+  ActionCardLoader,
+  RemoveTokenComponent as StatelessRemoveTokenComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionCardLoader,
-} from '..'
-import { RemoveTokenComponent as StatelessRemoveTokenComponent } from '../components'
+} from '../types'
 
 interface RemoveTokenData {
   address: string
@@ -40,13 +41,16 @@ const InnerComponent: ActionComponent = (props) => {
   const tokenAddress = watch(getLabel('address'))
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress
-      ? tokenInfoSelector({ contractAddress: tokenAddress, params: [] })
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: tokenAddress,
+          params: [],
+        })
       : constSelector(undefined)
   )
 
   const existingTokenAddresses =
     useRecoilValue(
-      allCw20TokenListSelector({
+      CwCoreSelectors.allCw20TokenListSelector({
         contractAddress: props.coreAddress,
       })
     ) ?? []
@@ -54,7 +58,10 @@ const InnerComponent: ActionComponent = (props) => {
     useRecoilValue(
       waitForAll(
         existingTokenAddresses.map((token) =>
-          tokenInfoSelector({ contractAddress: token, params: [] })
+          Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: token,
+            params: [],
+          })
         )
       )
     ) ?? []

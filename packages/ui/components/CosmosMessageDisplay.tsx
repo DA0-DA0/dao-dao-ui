@@ -1,6 +1,5 @@
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-ocean.css'
-import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 
 import { FC } from 'react'

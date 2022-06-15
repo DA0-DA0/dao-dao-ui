@@ -8,7 +8,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionComponent, ActionCard } from '..'
+import { ActionCard, ActionComponent } from '..'
 
 export interface MintOptions {
   govTokenSymbol: string

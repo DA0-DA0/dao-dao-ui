@@ -1,6 +1,6 @@
 import {
-  CW4VOTING_CONTRACT_NAME,
   CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
+  CW4VOTING_CONTRACT_NAME,
 } from './constants'
 
 export enum VotingModuleType {

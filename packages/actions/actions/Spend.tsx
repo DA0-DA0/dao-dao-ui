@@ -1,34 +1,36 @@
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { nativeBalancesSelector, useWallet } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import {
-  allCw20BalancesSelector,
-  allCw20TokenListSelector,
-} from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { tokenInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
+  Cw20BaseSelectors,
+  CwCoreSelectors,
+  nativeBalancesSelector,
+  useWallet,
+} from '@dao-dao/state'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
+  NATIVE_DENOM,
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeBankMessage,
   makeWasmMessage,
   nativeTokenDecimals,
-  NATIVE_DENOM,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import {
+  ActionCardLoader,
+  SpendComponent as StatelessSpendComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionCardLoader,
-} from '..'
-import { SpendComponent as StatelessSpendComponent } from '../components'
+} from '../types'
 
 interface SpendData {
   to: string
@@ -50,14 +52,14 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   coreAddress: string
 ) => {
   const cw20Addresses = useRecoilValue(
-    allCw20TokenListSelector({
+    CwCoreSelectors.allCw20TokenListSelector({
       contractAddress: coreAddress,
     })
   )
   const cw20Infos = useRecoilValue(
     waitForAll(
       (cw20Addresses ?? []).map((contractAddress) =>
-        tokenInfoSelector({ contractAddress, params: [] })
+        Cw20BaseSelectors.tokenInfoSelector({ contractAddress, params: [] })
       )
     )
   )
@@ -130,7 +132,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     : undefined
   const spentTokenDecimals = useRecoilValue(
     spentTokenAddress
-      ? tokenInfoSelector({ contractAddress: spentTokenAddress, params: [] })
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: spentTokenAddress,
+          params: [],
+        })
       : constSelector(undefined)
   )?.decimals
 
@@ -184,7 +189,7 @@ const InnerSpendComponent: ActionComponent = (props) => {
 
   const cw20AddressesAndBalances =
     useRecoilValue(
-      allCw20BalancesSelector({
+      CwCoreSelectors.allCw20BalancesSelector({
         contractAddress: props.coreAddress,
       })
     ) ?? []
@@ -192,7 +197,10 @@ const InnerSpendComponent: ActionComponent = (props) => {
     useRecoilValue(
       waitForAll(
         cw20AddressesAndBalances.map(({ addr }) =>
-          tokenInfoSelector({ contractAddress: addr, params: [] })
+          Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: addr,
+            params: [],
+          })
         )
       )
     ) ?? []

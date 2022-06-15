@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { forwardRef, ForwardedRef, ComponentPropsWithoutRef } from 'react'
+import { ComponentPropsWithoutRef, ForwardedRef, forwardRef } from 'react'
 
 enum SubmitVariant {
   Primary = 'primary',

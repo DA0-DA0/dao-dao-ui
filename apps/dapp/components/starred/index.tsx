@@ -1,2 +1,2 @@
 export * from './ActionMenu'
-export * from './PinnedOrgCard'
+export * from './PinnedDAOCard'

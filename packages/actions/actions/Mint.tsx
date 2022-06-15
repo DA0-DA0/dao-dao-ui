@@ -3,23 +3,25 @@ import { useCallback, useMemo } from 'react'
 import { useGovernanceTokenInfo, useWallet } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeExecutableMintMessage,
   makeMintMessage,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import {
+  ActionCardLoader,
+  MintComponent as StatelessMintComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionCardLoader,
-} from '..'
-import { MintComponent as StatelessMintComponent } from '../components'
+} from '../types'
 
 interface MintData {
   to: string

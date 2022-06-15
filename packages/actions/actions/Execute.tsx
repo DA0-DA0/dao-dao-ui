@@ -5,22 +5,22 @@ import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
 import {
+  NATIVE_DECIMALS,
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  NATIVE_DECIMALS,
-  VotingModuleType,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { ExecuteComponent as StatelessExecuteComponent } from '../components'
 import {
   Action,
+  ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  ActionComponent,
-} from '..'
-import { ExecuteComponent as StatelessExecuteComponent } from '../components'
+} from '../types'
 
 interface ExecuteData {
   address: string

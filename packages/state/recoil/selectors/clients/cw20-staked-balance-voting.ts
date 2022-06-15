@@ -1,15 +1,15 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  ActiveThresholdResponse,
   DaoResponse,
   InfoResponse,
+  IsActiveResponse,
   Cw20StakedBalanceVotingQueryClient as QueryClient,
   StakingContractResponse,
   TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-  ActiveThresholdResponse,
-  IsActiveResponse,
 } from '../../../clients/cw20-staked-balance-voting'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector } from '../chain'

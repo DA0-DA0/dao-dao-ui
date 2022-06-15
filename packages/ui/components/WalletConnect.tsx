@@ -2,7 +2,7 @@ import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 
-import { Wallet, Copy } from '@dao-dao/icons'
+import { Copy, Wallet } from '@dao-dao/icons'
 
 import { Button } from './Button'
 import { ButtonProps } from './Button/Button'
