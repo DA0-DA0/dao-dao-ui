@@ -11,7 +11,7 @@ import {
 
 import { Dao, Votes } from '@dao-dao/icons'
 
-import featuredDaos from './featured_daos.json'
+import { featuredDaos } from '@/util'
 
 export const FeaturedDaos: FC = () => {
   const [clonesWidth, setClonesWidth] = useState(0)
@@ -99,16 +99,6 @@ export const FeaturedDaos: FC = () => {
           ))}
         </div>
       </div>
-      <div className="overflow-hidden py-1 mt-4 w-screen" ref={mirrorRef}>
-        <div className="flex flex-row gap-[16px] w-max">
-          {featuredDaos.map((props) => (
-            <FeaturedCardMirrored {...props} key={props.name} />
-          ))}
-          {featuredDaos.map((props) => (
-            <FeaturedCardMirrored {...props} key={props.name} />
-          ))}
-        </div>
-      </div>
     </>
   )
 }
@@ -147,7 +137,7 @@ interface FillerCardProps {
   className?: string
 }
 
-const FeaturedCard: FC<FillerCardProps> = ({
+export const FeaturedCard: FC<FillerCardProps> = ({
   className,
   image,
   name,
@@ -197,58 +187,4 @@ const FeaturedCard: FC<FillerCardProps> = ({
       </p>
     </div>
   </a>
-)
-
-const FeaturedCardMirrored: FC<FillerCardProps> = ({
-  className,
-  image,
-  name,
-  members,
-  TVL,
-  description,
-}) => (
-  <div
-    className={clsx(
-      'flex relative flex-col items-center p-6 w-[260px] h-[320px] bg-card rounded-lg hover:outline-1 hover:outline-brand hover:outline',
-      className
-    )}
-    style={{
-      WebkitMaskImage:
-        'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, transparent 100%)',
-      maskImage:
-        'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, transparent 100%)',
-    }}
-  >
-    <div className="absolute top-0 left-0 w-full h-[160px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
-    <div
-      className="flex relative justify-center items-center bg-center bg-cover rounded-full"
-      style={{
-        backgroundImage: `url(${image})`,
-        width: '80px',
-        height: '80px',
-      }}
-    >
-      <div
-        className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
-        style={{
-          width: '32px',
-          height: '32px',
-          backgroundImage: 'url(/daotoken.jpg)',
-        }}
-      ></div>
-    </div>
-    <h3 className="mt-5 title-text">{name}</h3>
-    <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
-      {description}
-    </p>
-    <div className="flex flex-col gap-1 mt-5 items-left">
-      <p className="text-sm">
-        <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />${TVL} TVL
-      </p>
-      <p className="text-sm text-valid text-success">
-        <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-        {members} Members
-      </p>
-    </div>
-  </div>
 )

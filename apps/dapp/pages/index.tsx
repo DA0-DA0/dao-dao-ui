@@ -1,12 +1,7 @@
-import { ArrowRightIcon, ScaleIcon } from '@heroicons/react/outline'
-import {
-  ArrowNarrowRightIcon,
-  PlusSmIcon,
-  StarIcon,
-} from '@heroicons/react/solid'
+import { ArrowRightIcon } from '@heroicons/react/outline'
+import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { ReactNode } from 'react'
 
 import i18n from '@dao-dao/i18n'
 import { ArrowUpRight } from '@dao-dao/icons'
@@ -31,37 +26,6 @@ const EnterAppButton = ({ small }: { small?: boolean }) => (
       </Button>
     </a>
   </Link>
-)
-
-const InfoCard = ({
-  title,
-  body,
-  children,
-}: {
-  title: string
-  body: string
-  children: ReactNode
-}) => (
-  <div
-    className="flex relative flex-col justify-around py-4 px-6 mt-2 w-80 h-48 rounded-lg"
-    style={{
-      backgroundColor: 'rgba(var(--brand), 0.08)',
-    }}
-  >
-    <div
-      className="absolute top-0 left-0 -z-10 w-full h-16"
-      style={{
-        backgroundColor: 'rgba(var(--dark), 0.01)',
-      }}
-    ></div>
-    <div className="flex justify-center items-center p-2 mb-7 w-fit h-fit bg-primary rounded">
-      {children}
-    </div>
-    <div>
-      <h3 className="header-text">{title}</h3>
-      <p className="mt-[12px] body-text">{body}</p>
-    </div>
-  </div>
 )
 
 const AnouncementCard = ({}) => (
@@ -135,42 +99,10 @@ const Home: NextPage = () => (
       <div className="my-12 mx-auto md:my-20">
         <AnouncementCard />
       </div>
-      <p className="px-2 mx-auto max-w-prose text-2xl text-center hero-text">
-        Explore DAOs
-        <br />
-        <span className="text-brand">and join a community.</span>
-      </p>
-      <p className="my-6 mx-2 max-w-xl text-center text-tertiary primary-text">
-        DAOs built with DAO DAO manage decentralized exchanges, run grant
-        programs, do security audits, and much, much more.
-      </p>
-      <div className="my-12">
-        <FeaturedDaos />
-      </div>
+
+      <FeaturedDaos />
+
       <div className="mx-3 -mt-10">
-        <h3 className="mb-8 font-mono text-sm text-center primary-text">
-          2,000+ DAOs created and counting...
-        </h3>
-        <div className="flex flex-row flex-wrap gap-3 justify-center">
-          <InfoCard
-            body={i18n.t('landingPage.Create DAOs tagline')}
-            title={i18n.t('landingPage.Create DAOs')}
-          >
-            <PlusSmIcon className="w-4" />
-          </InfoCard>
-          <InfoCard
-            body={i18n.t('landingPage.Propose and vote tagline')}
-            title={i18n.t('landingPage.Propose and vote')}
-          >
-            <ScaleIcon className="w-4" />
-          </InfoCard>
-          <InfoCard
-            body={i18n.t('landingPage.IBC enabled tagline')}
-            title={i18n.t('landingPage.IBC enabled')}
-          >
-            <StarIcon className="w-4" />
-          </InfoCard>
-        </div>
         <div className="flex gap-4 justify-center mx-3 mt-12 w-full md:mt-28">
           <RotatableLogo initialRotation={135} />
           <RotatableLogo initialRotation={90} />

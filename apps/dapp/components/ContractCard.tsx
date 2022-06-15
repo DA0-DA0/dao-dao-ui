@@ -24,6 +24,7 @@ interface ContractCardBaseProps {
   balance?: string
   children: ReactNode
   token?: boolean
+  selected?: boolean
 }
 
 const ContractCardBase: FC<ContractCardBaseProps> = ({
@@ -34,16 +35,15 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
   proposals,
   balance,
   children,
+  selected,
   token = true,
 }) => (
   <Link href={href}>
     <a>
       <div
         className={clsx(
-          'flex relative flex-col justify-between items-center p-6 m-2 bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline',
-          // Make card smaller if no weight. Balances the spacing a
-          // little better.
-          weight === undefined ? 'h-[320px]' : 'h-[300px]'
+          'flex relative flex-col justify-between items-center p-6 w-[260px] h-[320px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline',
+          selected && 'outline-1 outline-brand outline'
         )}
       >
         <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
@@ -64,7 +64,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
           <h3 className="mt-3 max-w-full font-semibold truncate text-md">
             {title}
           </h3>
-          <p className="mt-1 font-mono text-xs text-center text-secondary break-all line-clamp-3">
+          <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
             {body}
           </p>
         </div>
@@ -92,36 +92,6 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
             </p>
           )}
         </div>
-        <h3 className="mt-3 max-w-full font-semibold truncate text-md">
-          {title}
-        </h3>
-        <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
-          {body}
-        </p>
-      </div>
-      <div className="flex flex-col gap-1 items-left">
-        {balance && (
-          <p className="text-sm">
-            <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
-            {convertMicroDenomToDenomWithDecimals(
-              balance,
-              NATIVE_DECIMALS
-            )}{' '}
-            {convertDenomToHumanReadableDenom(NATIVE_DENOM)}
-          </p>
-        )}
-        {proposals !== undefined && (
-          <p className="text-sm">
-            <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-            {proposals} proposal{weight !== '1' && 's'}
-          </p>
-        )}
-        {weight !== undefined && (
-          <p className="text-sm text-valid text-success">
-            <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-            {weight} vote{weight !== '1' && 's'}
-          </p>
-        )}
       </div>
     </a>
   </Link>
@@ -137,6 +107,7 @@ interface ContractCardProps {
   pinned?: boolean
   onPin?: Function
   imgUrl?: string | null
+  selected?: boolean
 }
 
 export const ContractCard: FC<ContractCardProps> = ({
@@ -149,13 +120,15 @@ export const ContractCard: FC<ContractCardProps> = ({
   pinned,
   onPin,
   imgUrl,
+  selected,
 }) => (
-  <div className="relative">
+  <div className="relative w-min">
     <ContractCardBase
       balance={balance}
       body={description}
       href={href}
       proposals={proposals}
+      selected={selected}
       title={name}
       weight={weight}
     >
@@ -188,7 +161,7 @@ export const ContractCard: FC<ContractCardProps> = ({
 )
 
 export const LoadingContractCard = () => (
-  <div className="flex relative flex-col justify-center items-center p-6 m-2 h-[300px]  bg-card from-transparent rounded-lg shadow transition-shadow">
+  <div className="flex relative flex-col justify-center items-center p-6 w-[260px]  h-[320px] bg-card from-transparent rounded-lg shadow transition-shadow">
     <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
     <div className="flex justify-center items-center w-[70px] h-[70px]">
       <div className="inline-block animate-spin">

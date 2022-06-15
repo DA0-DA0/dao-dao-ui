@@ -2,6 +2,7 @@ import {
   ArrowRightIcon,
   MenuAlt1Icon,
   MenuIcon,
+  SearchIcon,
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
@@ -13,6 +14,7 @@ import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
+import { SearchModal } from './SearchModal'
 
 interface SmallScreenNavProps {
   className?: string
@@ -20,6 +22,7 @@ interface SmallScreenNavProps {
 
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const [expanded, setExpanded] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
 
   return (
     <div
@@ -46,9 +49,15 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       </div>
       {expanded && (
         <div>
+          <button
+            className="flex gap-2 items-center p-2 mb-5 w-full bg-primary rounded-lg link-text"
+            onClick={() => setShowSearch(true)}
+          >
+            <SearchIcon className="w-4 h-4" /> Search
+          </button>
+
           <div className="ml-1">
             <h3 className="mb-2 font-mono caption-text">DAOs</h3>
-
             <SuspenseLoader
               fallback={<Loader className="!justify-start ml-2" size={20} />}
             >
@@ -63,6 +72,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
               />
             </ul>
           </div>
+          {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
         </div>
       )}
     </div>
