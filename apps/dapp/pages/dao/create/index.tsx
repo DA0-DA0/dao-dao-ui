@@ -94,25 +94,25 @@ const CreateDAOPage: FC = () => {
           </div>
         </div>
 
-        <p className="my-4">Choose a structure</p>
+        <p className="my-4">{i18n.t('Choose a structure')}</p>
 
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure
-            description={i18n.t('Simple DAO description')}
+            description={i18n.t('Membership-based DAO description')}
             emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.Membership}
-            title={i18n.t('Simple DAO')}
+            title={i18n.t('Membership-based DAO')}
           />
 
           <CreateDAOStructure
-            description={i18n.t('Gov token DAO description')}
+            description={i18n.t('Governance Token-based DAO description')}
             emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.GovernanceToken}
-            title={i18n.t('Gov token DAO')}
+            title={i18n.t('Governance Token-based DAO')}
           />
         </div>
       </CreateDAOFormWrapper>

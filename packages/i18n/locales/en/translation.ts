@@ -184,11 +184,11 @@ const en = {
   'Review and submit': 'Review and submit',
 
   // Choosing a DAO's structure
-  'Simple DAO': 'Simple DAO',
-  'Simple DAO description':
+  'Membership-based DAO': 'Membership-based DAO',
+  'Membership-based DAO description':
     'Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.',
-  'Gov token DAO': 'Token-based DAO',
-  'Gov token DAO description':
+  'Governance Token-based DAO': 'Governance Token-based DAO',
+  'Governance Token-based DAO description':
     'Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares.',
 
   // Configuring a DAO's description
