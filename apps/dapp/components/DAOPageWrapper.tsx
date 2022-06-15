@@ -8,6 +8,7 @@ import {
   useContext,
 } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import {
   Cw20StakedBalanceVotingQueryClient,
   Cw4VotingQueryClient,
@@ -144,7 +145,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       // Excluding `info` will render DAONotFound.
       return {
         props: {
-          title: 'DAO not found',
+          title: i18n.t('error.DAONotFound'),
           description: '',
         },
       }

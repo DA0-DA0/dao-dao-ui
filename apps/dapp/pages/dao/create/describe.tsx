@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import {
   ImageSelector,
   InputErrorMessage,
@@ -29,7 +30,7 @@ const CreateDAOPage: FC = () => {
               watch={watch}
             />
 
-            <p className="text-disabled">Add an image</p>
+            <p className="text-disabled">{i18n.t('Add an image')}</p>
           </div>
 
           <div className="flex flex-col flex-1 gap-2">
@@ -37,7 +38,7 @@ const CreateDAOPage: FC = () => {
               <TextInput
                 error={errors.name}
                 label="name"
-                placeholder="DAO's name..."
+                placeholder={i18n.t('DAO name placeholder')}
                 register={register}
                 validation={[validateRequired]}
               />
@@ -48,7 +49,7 @@ const CreateDAOPage: FC = () => {
               <TextAreaInput
                 error={errors.description}
                 label="description"
-                placeholder="DAO's description..."
+                placeholder={i18n.t('DAO description placeholder')}
                 register={register}
                 rows={4}
               />

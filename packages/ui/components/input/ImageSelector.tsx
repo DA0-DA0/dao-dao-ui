@@ -11,6 +11,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'
@@ -67,8 +68,8 @@ export const ImageSelectorModal = <
       <div className="flex flex-col gap-1">
         <InputLabel
           mono
-          name="Image URL"
-          tooltip="A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg"
+          name={i18n.t('Image URL')}
+          tooltip={i18n.t('Image URL tooltip')}
         />
         <TextInput
           autoFocus

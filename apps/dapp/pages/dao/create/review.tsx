@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Logo } from '@dao-dao/ui'
 
 import {
@@ -50,7 +51,9 @@ const CreateDAOReviewPage: FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="font-mono caption-text">Description</p>
+              <p className="font-mono caption-text">
+                {i18n.t('DAO description')}
+              </p>
               <p className="text-lg secondary-text">
                 {watchedNewDAO.description}
               </p>
@@ -66,19 +69,19 @@ const CreateDAOReviewPage: FC = () => {
 
         <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">
           <CreateDAOReviewStat
-            title="Threshold"
+            title={i18n.t('Passing threshold')}
             value={convertThresholdValueToHumanReadableString(
               watchedNewDAO.thresholdQuorum.threshold
             )}
           />
           <CreateDAOReviewStat
-            title="Quorum"
+            title={i18n.t('Quorum')}
             value={convertThresholdValueToHumanReadableString(
               watchedNewDAO.thresholdQuorum.quorum
             )}
           />
           <CreateDAOReviewStat
-            title="Prop. duration"
+            title={i18n.t('Voting duration')}
             value={convertDurationWithUnitsToHumanReadableString(
               watchedNewDAO.votingDuration
             )}
@@ -87,25 +90,28 @@ const CreateDAOReviewPage: FC = () => {
             !!watchedNewDAO.governanceTokenOptions.proposalDeposit?.value && (
               <>
                 <CreateDAOReviewStat
-                  title="Prop. deposit"
+                  title={i18n.t('Proposal deposit')}
                   value={`${watchedNewDAO.governanceTokenOptions.proposalDeposit.value}`}
                 />
                 <CreateDAOReviewStat
-                  title="Prop. refunds"
+                  title={i18n.t('Proposal deposit refund')}
                   value={
                     watchedNewDAO.governanceTokenOptions.proposalDeposit
                       .refundFailed
-                      ? 'Yes'
-                      : 'No'
+                      ? i18n.t('On')
+                      : i18n.t('Off')
                   }
                 />
               </>
             )}
           {governanceTokenEnabled && (
             <>
-              <CreateDAOReviewStat title="Gov. tokens" value="Enabled" />
               <CreateDAOReviewStat
-                title="Unregister duration"
+                title={i18n.t('Governance tokens')}
+                value={i18n.t('Enabled')}
+              />
+              <CreateDAOReviewStat
+                title={i18n.t('Unstaking period')}
                 value={convertDurationWithUnitsToHumanReadableString(
                   watchedNewDAO.governanceTokenOptions.unregisterDuration
                 )}

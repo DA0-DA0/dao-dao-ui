@@ -1,6 +1,7 @@
 import { ChevronRightIcon, XIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Message } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 
@@ -12,33 +13,9 @@ export const BetaWarningModal: FC<BetaWarningModalProps> = ({ onAccept }) => (
   <div className="flex fixed z-10 justify-center items-center w-screen h-full backdrop-blur-sm backdrop-filter">
     <div className="p-6 max-w-md h-min bg-white rounded-lg border border-focus">
       <div className="mb-6 rounded-md prose prose-sm dark:prose-invert">
-        <h2>Before you continue...</h2>
-        <p>
-          DAO DAO is in beta, and has not yet been audited. <b>Do not</b> keep
-          large sums of money in your DAO, and <b>do not</b> use your DAO for
-          anything mission critical.
-        </p>
-        <p>
-          <a
-            className="text-accent underline hover:no-underline"
-            href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
-            rel="noreferrer"
-            target="_blank"
-          >
-            Give us feedback!
-          </a>{' '}
-          Bug reports and feature requests are welcome.
-        </p>
-        <p>
-          DAO DAO TOOLING IS PROVIDED “AS IS”, AT YOUR OWN RISK, AND WITHOUT
-          WARRANTIES OF ANY KIND. No developer or entity involved in creating
-          the DAO DAO UI or smart contracts will be liable for any claims or
-          damages whatsoever associated with your use, inability to use, or your
-          interaction with other users of DAO DAO tooling, including any direct,
-          indirect, incidental, special, exemplary, punitive or consequential
-          damages, or loss of profits, cryptocurrencies, tokens, or anything
-          else of value.
-        </p>
+        <h2>{i18n.t('Watch out!')}</h2>
+        <p>{i18n.t('Beta warning')}</p>
+        <p>{i18n.t('Terms of service')}</p>
       </div>
       <Button onClick={onAccept}>
         I accept the terms

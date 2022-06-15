@@ -3,6 +3,7 @@ import { NextPage } from 'next'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { LoadingScreen, SuspenseLoader } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms'
@@ -26,10 +27,10 @@ const InnerStarred: FC = () => {
             <ActionMenu />
           </div>
 
-          <h1 className="header-text">Starred</h1>
+          <h1 className="header-text">{i18n.t('Home page')} </h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
-            DAOs
+            {i18n.t('DAOs')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedAddresses.length ? (

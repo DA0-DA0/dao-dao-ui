@@ -1,0 +1,19 @@
+{
+  "name": "@dao-dao/i18n",
+  "version": "0.1.0",
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@dao-dao/config": "*",
+    "@dao-dao/tsconfig": "*"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "private": true,
+  "dependencies": {
+    "i18next": "^21.8.9",
+    "i18next-browser-languagedetector": "^6.1.4",
+    "react-i18next": "^11.17.0"
+  }
+}

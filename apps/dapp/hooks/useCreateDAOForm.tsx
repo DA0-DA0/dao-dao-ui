@@ -12,6 +12,7 @@ import {
 import toast from 'react-hot-toast'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { CwCoreHooks, useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
@@ -139,7 +140,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
       // Create the DAO.
-      if (submitterValue === CreateDAOSubmitLabel.CreateDAO) {
+      if (submitterValue === i18n.t(CreateDAOSubmitLabel.CreateDAO)) {
         if (connected) {
           setCreating(true)
           try {
@@ -266,20 +267,18 @@ export const useCreateDAOForm = (pageIndex: number) => {
 export const createDAOFormPages: DAOFormPage[] = [
   {
     href: '/dao/create',
-    title: 'Choose a structure',
+    title: i18n.t('Choose a structure'),
     validate: ({ structure }) => structure !== undefined,
   },
   {
     href: '/dao/create/describe',
-    title: 'Describe the DAO',
+    title: i18n.t('Describe the DAO'),
     validate: ({ name }) => name.trim().length > 0,
   },
   {
     href: '/dao/create/voting',
-    title: 'Configure voting distribution',
-    subtitle:
-      'This will determine how much voting share different members of the DAO have when they vote on proposals.',
-    // Validate tier weights and member proportions add up to 100%.
+    title: i18n.t('Configure voting'),
+    subtitle: i18n.t('Configure voting description'),
     validate: ({ tiers }, errors, clearErrors, setError) => {
       let valid = true
 
@@ -291,8 +290,7 @@ export const createDAOFormPages: DAOFormPage[] = [
       // Ensure voting power has been given to at least one member.
       if (totalWeight === 0) {
         setError?.('_tiersError', {
-          message:
-            'You have not given anyone voting power. Add some members to your DAO.',
+          message: i18n.t('errors.noVotingPower'),
         })
         valid = false
       } else if (errors?._tiersError) {
@@ -302,7 +300,7 @@ export const createDAOFormPages: DAOFormPage[] = [
       tiers.forEach((tier, tierIndex) => {
         if (tier.members.length === 0) {
           setError?.(`tiers.${tierIndex}._error`, {
-            message: 'No members have been added.',
+            message: i18n.t('errors.noMembers'),
           })
           valid = false
         } else if (errors?.tiers?.[tierIndex]?._error) {
@@ -315,16 +313,16 @@ export const createDAOFormPages: DAOFormPage[] = [
   },
   {
     href: '/dao/create/review',
-    title: 'Review and submit',
+    title: i18n.t('Review and submit'),
   },
 ]
 
 const parseSubmitterValueDelta = (value: string): number => {
   switch (value) {
-    case CreateDAOSubmitLabel.Back:
+    case i18n.t(CreateDAOSubmitLabel.Back):
       return -1
-    case CreateDAOSubmitLabel.Continue:
-    case CreateDAOSubmitLabel.Review:
+    case i18n.t(CreateDAOSubmitLabel.Continue):
+    case i18n.t(CreateDAOSubmitLabel.Review):
       return 1
     default:
       // Pass a number to step that many pages in either direction.
@@ -363,7 +361,7 @@ const createDAO = async (
     let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
     if (governanceTokenOptions.type === GovernanceTokenType.New) {
       if (!newInfo) {
-        throw new Error('New governance token info not provided.')
+        throw new Error(i18n.t('errors.noGovTokenInfo'))
       }
 
       const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
@@ -400,7 +398,7 @@ const createDAO = async (
       }
     } else {
       if (!existingGovernanceTokenAddress) {
-        throw new Error('Existing governance token address not provided.')
+        throw new Error(i18n.t('errors.noGovTokenAddr'))
       }
 
       tokenInfo = {

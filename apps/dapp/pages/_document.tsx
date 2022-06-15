@@ -1,5 +1,6 @@
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
+// TODO refactor these into the translation.
 import {
   SITE_DESCRIPTION,
   SITE_IMAGE,

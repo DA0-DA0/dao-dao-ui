@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import {
   CwCoreSelectors,
   nativeBalanceSelector,
@@ -44,7 +45,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
     walletVotingWeight === undefined ||
     proposalCount === undefined
   ) {
-    throw new Error('Failed to load data.')
+    throw new Error(i18n.t('error.loadingData'))
   }
 
   return (

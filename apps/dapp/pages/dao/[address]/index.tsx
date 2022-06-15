@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -60,34 +61,34 @@ const InnerMobileDaoHome: FC = () => {
           icon="🗳"
           onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
           selected={tab === MobileMenuTabSelection.Proposal}
-          text="Proposal"
+          text={i18n.t('Proposals')}
         />
         {votingModuleType === VotingModuleType.Cw4Voting ? (
           <MobileMenuTab
             icon="👥"
             onClick={makeTabSetter(MobileMenuTabSelection.Members)}
             selected={tab === MobileMenuTabSelection.Members}
-            text="Members"
+            text={i18n.t('Members')}
           />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
           <MobileMenuTab
             icon="💵"
             onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
             selected={tab === MobileMenuTabSelection.Staking}
-            text="Staking"
+            text={i18n.t('Staking')}
           />
         ) : null}
         <MobileMenuTab
           icon="🏛"
           onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
           selected={tab === MobileMenuTabSelection.Treasury}
-          text="Treasury"
+          text={i18n.t('Treasury')}
         />
         <MobileMenuTab
           icon="⚙️"
           onClick={makeTabSetter(MobileMenuTabSelection.Info)}
           selected={tab === MobileMenuTabSelection.Info}
-          text="Info"
+          text={i18n.t('Info')}
         />
       </div>
       <div className="py-5 px-6">
@@ -136,7 +137,7 @@ const InnerDAOHome: FC = () => {
             <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
-                  ['/starred', 'Home'],
+                  ['/starred', i18n.t('Home page')],
                   [router.asPath, name],
                 ]}
               />
@@ -144,7 +145,9 @@ const InnerDAOHome: FC = () => {
                 {isMember && (
                   <div className="flex flex-row gap-2 items-center">
                     <MemberCheck fill="currentColor" width="16px" />
-                    <p className="text-sm text-primary">You{"'"}re a member</p>
+                    <p className="text-sm text-primary">
+                      {i18n.t('You are a member')}
+                    </p>
                   </div>
                 )}
                 <StarButton

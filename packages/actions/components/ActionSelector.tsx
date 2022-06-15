@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Modal } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -21,7 +22,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
   return (
     <Modal onClose={onClose}>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="header-text">Proposal actions</h1>
+        <h1 className="header-text">{i18n.t('Proposal action')}</h1>
       </div>
       <ul className="flex flex-col gap-3 list-none">
         {actions.map((action, index) => (

@@ -4,6 +4,7 @@ import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import i18n from '@dao-dao/i18n'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
@@ -18,7 +19,7 @@ import { useDAOInfoContext } from './DAOPageWrapper'
 import { Loader } from './Loader'
 
 const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
-  const { coreAddress, name } = useDAOInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { governanceTokenInfo, walletBalance: unstakedGovTokenBalance } =
     useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
   const {
@@ -61,7 +62,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
             denom={governanceTokenInfo.symbol}
             loading={stakingLoading}
             onManage={() => setShowStakingDefaultMode(StakingMode.Stake)}
-            title="Balance"
+            title={i18n.t('Your balance')}
           />
         </li>
         <li>
@@ -73,7 +74,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
             denom={governanceTokenInfo.symbol}
             loading={stakingLoading}
             onManage={() => setShowStakingDefaultMode(StakingMode.Unstake)}
-            title={`Voting power (staked ${governanceTokenInfo.symbol})`}
+            title={i18n.t('Your voting power')}
           />
         </li>
         {!!sumClaimsAvailable && (
@@ -88,7 +89,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
               denom={governanceTokenInfo.symbol}
               loading={stakingLoading}
               onManage={() => setShowStakingDefaultMode(StakingMode.Claim)}
-              title={`Pending (unclaimed ${governanceTokenInfo.symbol})`}
+              title={`Pending (unclaimed ${governanceTokenInfo.symbol})`} // TODO i18n
             />
           </li>
         )}
@@ -96,24 +97,16 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
       {unstakedGovTokenBalance ? (
         <div className="p-6 mt-2 w-full bg-primary rounded-lg">
           <h3 className="mb-4 link-text">
-            You have{' '}
-            {convertMicroDenomToDenomWithDecimals(
-              unstakedGovTokenBalance,
-              governanceTokenInfo.decimals
-            ).toLocaleString(undefined, { maximumFractionDigits: 20 })}{' '}
-            unstaked {governanceTokenInfo.symbol}
+            {i18n.t('You have unstaked tokens', {
+              amount: convertMicroDenomToDenomWithDecimals(
+                unstakedGovTokenBalance,
+                governanceTokenInfo.decimals
+              ).toLocaleString(undefined, { maximumFractionDigits: 20 }),
+              tokenSymbol: governanceTokenInfo.symbol,
+            })}
           </h3>
           <p className="secondary-text">
-            Staking them would bring you{' '}
-            {!!stakedGovTokenBalance &&
-              `${(
-                (unstakedGovTokenBalance / stakedGovTokenBalance) *
-                100
-              ).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-              })}% `}
-            more voting power and help you defend your positions for {name}
-            {"'"}s direction.
+            {i18n.t('You have unstaked tokens explanation')}
           </p>
           <div className="flex justify-end mt-4">
             <button
@@ -122,7 +115,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
                 setShowStakingDefaultMode(StakingMode.Stake)
               }}
             >
-              Stake tokens
+              {i18n.t('Stake tokens')}
               <PlusSmIcon className="h-5" />
             </button>
           </div>
@@ -151,7 +144,7 @@ export const Cw20StakedBalanceVotingSharesDisplay: FC<
 > = ({ primaryText }) => (
   <>
     <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
-      Your shares
+      {i18n.t('Your voting weight')}
     </h2>
 
     <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>

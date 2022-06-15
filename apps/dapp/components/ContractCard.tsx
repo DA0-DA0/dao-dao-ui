@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, ReactNode } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'
 import {
@@ -63,7 +64,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
           <h3 className="mt-3 max-w-full font-semibold truncate text-md">
             {title}
           </h3>
-          <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
+          <p className="mt-1 font-mono text-xs text-center text-secondary break-all line-clamp-3">
             {body}
           </p>
         </div>
@@ -81,16 +82,46 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
           {proposals !== undefined && (
             <p className="text-sm">
               <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-              {proposals} proposal{weight !== '1' && 's'}
+              {i18n.t('proposal', { count: proposals })}
             </p>
           )}
           {weight !== undefined && (
             <p className="text-sm text-valid text-success">
               <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-              {weight} vote{weight !== '1' && 's'}
+              {i18n.t('Your voting weight')}: {weight}
             </p>
           )}
         </div>
+        <h3 className="mt-3 max-w-full font-semibold truncate text-md">
+          {title}
+        </h3>
+        <p className="mt-1 font-mono text-xs text-center text-secondary break-words line-clamp-3">
+          {body}
+        </p>
+      </div>
+      <div className="flex flex-col gap-1 items-left">
+        {balance && (
+          <p className="text-sm">
+            <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+            {convertMicroDenomToDenomWithDecimals(
+              balance,
+              NATIVE_DECIMALS
+            )}{' '}
+            {convertDenomToHumanReadableDenom(NATIVE_DENOM)}
+          </p>
+        )}
+        {proposals !== undefined && (
+          <p className="text-sm">
+            <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
+            {proposals} proposal{weight !== '1' && 's'}
+          </p>
+        )}
+        {weight !== undefined && (
+          <p className="text-sm text-valid text-success">
+            <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
+            {weight} vote{weight !== '1' && 's'}
+          </p>
+        )}
       </div>
     </a>
   </Link>

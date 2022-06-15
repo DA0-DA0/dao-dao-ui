@@ -8,6 +8,7 @@ import {
   useFieldArray,
 } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import {
   AddressInput,
   Button,
@@ -103,7 +104,9 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
         <div className="flex flex-col items-center">
           <div className="flex flex-row gap-2 items-center">
             <p className="text-right caption-text">
-              {governanceTokenEnabled ? 'Tokens' : 'Voting power'}
+              {governanceTokenEnabled
+                ? i18n.t('Governance token', { count: 1000 })
+                : i18n.t('Voting weight')}
             </p>
             <div>
               <NumberInput
@@ -139,12 +142,8 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                 validation={[validatePositive, validateRequired]}
               />
             </div>
-            <p className="secondary-text">
-              per
-              <br />
-              member
-            </p>
-            <TooltipIcon label="Want to add members with different voting power? Add another tier." />
+            <p className="secondary-text">{i18n.t('per member')}</p>
+            <TooltipIcon label={i18n.t('Add another tier prompt')} />
           </div>
 
           <InputErrorMessage error={errors.tiers?.[tierIndex]?.weight} />
@@ -166,7 +165,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
             onClick={() => appendMember({ address: '' })}
             variant="secondary"
           >
-            Add member
+            {i18n.t('Add member')}
           </Button>
           {remove && (
             <Button
@@ -214,7 +213,7 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
           containerClassName="grow"
           error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
           label={`tiers.${tierIndex}.members.${memberIndex}.address`}
-          placeholder="Member's address..."
+          placeholder={i18n.t('Member address placeholder')}
           register={register}
           validation={[validateAddress, validateRequired]}
         />

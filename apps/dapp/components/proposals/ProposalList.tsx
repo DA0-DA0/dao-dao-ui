@@ -7,6 +7,7 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import {
   CwProposalSingleSelectors,
   refreshProposalsIdAtom,
@@ -81,7 +82,7 @@ export const ProposalList: FC = () => {
   )
 
   if (!proposalModuleAddress) {
-    throw new Error('No proposal module found.')
+    throw new Error(i18n.t('error.noProposalModule'))
   }
 
   // Load from Recoil so that loaded propoals are shared by
@@ -103,10 +104,10 @@ export const ProposalList: FC = () => {
       <div className="flex">
         <EmptyContractCard
           backgroundUrl="/empty-state-proposal.jpeg"
-          description="This DAO has no proposals. Why not create one?"
+          description={i18n.t('Create first proposal prompt')}
           fullWidth
           href={`/dao/${coreAddress}/proposals/create`}
-          title="Create a Proposal"
+          title={i18n.t('Create a proposal')}
         />
       </div>
     )

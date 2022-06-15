@@ -8,6 +8,7 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
@@ -25,7 +26,7 @@ const EnterAppButton = ({ small }: { small?: boolean }) => (
   <Link href="/starred">
     <a>
       <Button size={small ? 'sm' : 'lg'}>
-        Enter the app{' '}
+        {i18n.t('landingPage.CTA')}
         <ArrowUpRight color="currentColor" height="10px" width="10px" />
       </Button>
     </a>
@@ -113,7 +114,7 @@ const Home: NextPage = () => (
               className="flex gap-2 items-center"
               href="https://docs.daodao.zone"
             >
-              Documentation
+              {i18n.t('Documentation')}
               <ArrowUpRight color="currentColor" height="10px" width="10px" />
             </a>
             <div className="hidden md:block">
@@ -123,10 +124,10 @@ const Home: NextPage = () => (
         </div>
       </nav>
       <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
-        DAOs for everyone
+        {i18n.t('landingPage.short tagline')}
       </h1>
       <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
-        Simple, capable, free DAO tooling. Built with love, by DAO DAO, on Juno.
+        {i18n.t('landingPage.long tagline')}
       </p>
       <div className="mx-auto">
         <EnterAppButton />
@@ -152,20 +153,20 @@ const Home: NextPage = () => (
         </h3>
         <div className="flex flex-row flex-wrap gap-3 justify-center">
           <InfoCard
-            body="Create and grow a DAO for your community with a simple user interface. No command line required."
-            title="Create DAOs"
+            body={i18n.t('landingPage.Create DAOs tagline')}
+            title={i18n.t('landingPage.Create DAOs')}
           >
             <PlusSmIcon className="w-4" />
           </InfoCard>
           <InfoCard
-            body="Proposals can do anything. The community decides what the DAO does."
-            title="Propose and vote"
+            body={i18n.t('landingPage.Propose and vote tagline')}
+            title={i18n.t('landingPage.Propose and vote')}
           >
             <ScaleIcon className="w-4" />
           </InfoCard>
           <InfoCard
-            body="DAOs can manage funds, run smart contracts, and manage entire protocols across multiple, sovereign chains."
-            title="IBC enabled"
+            body={i18n.t('landingPage.IBC enabled tagline')}
+            title={i18n.t('landingPage.IBC enabled')}
           >
             <StarIcon className="w-4" />
           </InfoCard>
@@ -194,7 +195,7 @@ const Home: NextPage = () => (
               rel="noreferrer"
               target="_blank"
             >
-              Powered by Juno
+              {i18n.t('landingPage.Powered by Juno')}
               <ArrowNarrowRightIcon
                 className="inline mb-0.5 w-6 h-4 font-light"
                 style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}

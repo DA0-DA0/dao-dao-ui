@@ -2,6 +2,7 @@ import Emoji from 'a11y-react-emoji'
 import { FC, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import { PlaceholderToken } from '@dao-dao/icons'
 import {
   Button,
@@ -157,7 +158,7 @@ const CreateDAOVotingPage: FC = () => {
               }
               variant="secondary"
             >
-              Add another tier
+              {i18n.t('Add tier')}
             </Button>
 
             <InputErrorMessage error={errors._tiersError} />
@@ -166,10 +167,10 @@ const CreateDAOVotingPage: FC = () => {
 
         <CreateDAOConfigCard
           accentColor="#c3935e1a"
-          description="The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final."
+          description={i18n.t('Voting duration description')}
           error={errors.votingDuration?.value || errors.votingDuration?.units}
           image={<Emoji label="hourglass" symbol="⏳" />}
-          title="Voting duration"
+          title={i18n.t('Voting duration')}
         >
           <NumberInput
             error={errors.votingDuration?.value}
@@ -212,11 +213,11 @@ const CreateDAOVotingPage: FC = () => {
               label="governanceTokenOptions.type"
               options={[
                 {
-                  label: 'Create new token',
+                  label: i18n.t('Create a token'),
                   value: GovernanceTokenType.New,
                 },
                 {
-                  label: 'Use existing token',
+                  label: i18n.t('Use existing token'),
                   value: GovernanceTokenType.Existing,
                 },
               ]}
@@ -229,7 +230,9 @@ const CreateDAOVotingPage: FC = () => {
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
                     <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">Treasury balance</p>
+                      <p className="primary-text">
+                        {i18n.t('Treasury balance')}
+                      </p>
 
                       <div>
                         <div className="flex flex-row grow gap-4 items-center">
@@ -295,35 +298,25 @@ const CreateDAOVotingPage: FC = () => {
                     </div>
 
                     <p className="my-2 secondary-text">
-                      {totalWeightAllocated.toLocaleString(undefined, {
-                        maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
-                      })}{' '}
-                      tokens will be minted.{' '}
-                      {totalWeightAllocated === 0
-                        ? 0
-                        : (
-                            (memberWeightAllocated / totalWeightAllocated) *
-                            100
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                      % will be sent to the members according to the
-                      distribution above. The remaining{' '}
-                      {totalWeightAllocated === 0
-                        ? 0
-                        : (
-                            (initialTreasuryBalance / totalWeightAllocated) *
-                            100
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                      % will begin in the treasury.
+                      {i18n.t('Treasury balance description', {
+                        numberOfTokensMinted: totalWeightAllocated,
+                        memberPercent:
+                          totalWeightAllocated === 0
+                            ? 0
+                            : (memberWeightAllocated / totalWeightAllocated) *
+                              100,
+                        treasuryPercent:
+                          totalWeightAllocated === 0
+                            ? 0
+                            : (initialTreasuryBalance / totalWeightAllocated) *
+                              100,
+                      })}
                     </p>
                   </div>
 
                   <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">
                     <div className="flex flex-col gap-2 justify-between items-start">
-                      <InputLabel mono name="Token image" />
+                      <InputLabel mono name={i18n.t('Token image')} />
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
@@ -335,19 +328,19 @@ const CreateDAOVotingPage: FC = () => {
                           watch={watch}
                         />
                         <p className="hidden text-disabled sm:block">
-                          Add an image
+                          {i18n.t('Add an image')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name="Symbol" />
+                      <InputLabel mono name={i18n.t('Ticker symbol')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.symbol}
                           label="governanceTokenOptions.newInfo.symbol"
-                          placeholder="Define a symbol..."
+                          placeholder={i18n.t('Ticker symbol placeholder')}
                           register={register}
                           validation={[validateRequired, validateTokenSymbol]}
                         />
@@ -358,13 +351,13 @@ const CreateDAOVotingPage: FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name="Name" />
+                      <InputLabel mono name={i18n.t('Governance token name')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.name}
                           label="governanceTokenOptions.newInfo.name"
-                          placeholder="Name your token..."
+                          placeholder={i18n.t('Governance token placeholder')}
                           register={register}
                           validation={[validateRequired]}
                         />
@@ -383,7 +376,7 @@ const CreateDAOVotingPage: FC = () => {
                         ?.existingGovernanceTokenAddress
                     }
                     label="governanceTokenOptions.existingGovernanceTokenAddress"
-                    placeholder="Token contract address..."
+                    placeholder={i18n.t('Token contract address')}
                     register={register}
                     validation={[validateContractAddress, validateRequired]}
                   />
@@ -437,9 +430,9 @@ const CreateDAOVotingPage: FC = () => {
             {!!watchedNewDAO.governanceTokenOptions.proposalDeposit.value && (
               <CreateDAOConfigCard
                 accentColor="#fed3581a"
-                description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
+                description={i18n.t('Proposal deposit refund description')}
                 image={<Emoji label="finger pointing up" symbol="👆" />}
-                title="Refund failed proposals"
+                title={i18n.t('Proposal deposit refund')}
               >
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
@@ -461,13 +454,13 @@ const CreateDAOVotingPage: FC = () => {
 
             <CreateDAOConfigCard
               accentColor="#cf434b1a"
-              description="In order to vote, members must register their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your DAO's governance."
+              description={i18n.t('Unstaking period description')}
               error={
                 errors.governanceTokenOptions?.unregisterDuration?.value ||
                 errors.governanceTokenOptions?.unregisterDuration?.units
               }
               image={<Emoji label="alarm clock" symbol="⏰" />}
-              title="Unregister duration"
+              title={i18n.t('Unstaking period')}
             >
               <NumberInput
                 error={errors.governanceTokenOptions?.unregisterDuration?.value}
@@ -532,10 +525,10 @@ const CreateDAOVotingPage: FC = () => {
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name="(Advanced) Change threshold and quorum"
+              name={i18n.t('Advanced voting configuration')}
             />
             <p className="caption-text">
-              Configure voting threshold and quorum.
+              {i18n.t('Advanced voting configuration description')}
             </p>
           </div>
         </div>
@@ -547,7 +540,7 @@ const CreateDAOVotingPage: FC = () => {
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
               error={errors.thresholdQuorum?.threshold}
               image={<Emoji label="ballot box" symbol="🗳️" />}
-              title="Passing threshold"
+              title={i18n.t('Passing threshold')}
             >
               {threshold !== 'majority' && (
                 <NumberInput
@@ -592,16 +585,16 @@ const CreateDAOVotingPage: FC = () => {
                 value={threshold === 'majority' ? 'majority' : '%'}
               >
                 <option value="%">%</option>
-                <option value="majority">Majority</option>
+                <option value="majority">{i18n.t('Majority')}</option>
               </SelectInput>
             </CreateDAOConfigCard>
 
             <CreateDAOConfigCard
               accentColor="#fefe891a"
-              description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have a DAO with many inactive members, setting this value too high may make it difficult to pass proposals."
+              description={i18n.t('Quorum description')}
               error={errors.thresholdQuorum?.quorum}
               image={<Emoji label="megaphone" symbol="📣" />}
-              title="Quorum"
+              title={i18n.t('Quorum')}
             >
               {quorum !== 'majority' && (
                 <NumberInput
@@ -646,7 +639,7 @@ const CreateDAOVotingPage: FC = () => {
                 value={quorum === 'majority' ? 'majority' : '%'}
               >
                 <option value="%">%</option>
-                <option value="majority">Majority</option>
+                <option value="majority">{i18n.t('Majority')}</option>
               </SelectInput>
             </CreateDAOConfigCard>
           </div>
@@ -658,13 +651,10 @@ const CreateDAOVotingPage: FC = () => {
           containerClassName="flex flex-col gap-4"
           onClose={() => setShowThresholdQuorumWarning(false)}
         >
-          <p className="header-text">Warning!</p>
+          <p className="header-text">{i18n.t('Watch out!')}</p>
 
           <p className="body-text">
-            This is an advanced feature. Threshold and quorum can interact in
-            counterintuitive ways. If you configure them without fully
-            understanding how they work, you may end up locking your DAO, making
-            it impossible to pass proposals.
+            {i18n.t('Advanced configuration warning')}
           </p>
 
           <a
@@ -680,7 +670,7 @@ const CreateDAOVotingPage: FC = () => {
             className="self-end"
             onClick={() => setShowThresholdQuorumWarning(false)}
           >
-            I understand the danger.
+            {i18n.t('I accept the danger')}
           </Button>
         </Modal>
       )}

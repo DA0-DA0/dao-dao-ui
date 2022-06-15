@@ -1,3 +1,4 @@
+import i18n from '@dao-dao/i18n'
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 
 export enum ProcessedTQType {
@@ -37,7 +38,7 @@ export const processThresholdData = (
     if ('majority' in thresholdSource) {
       threshold = {
         type: ProcessedTQType.Majority,
-        display: 'Majority',
+        display: i18n.t('Majority')
       }
     } else {
       const percent = Number(thresholdSource.percent) * 100
@@ -58,7 +59,7 @@ export const processThresholdData = (
     if ('majority' in quorumSource) {
       quorum = {
         type: ProcessedTQType.Majority,
-        display: 'Majority',
+        display: i18n.t('Majority')
       }
     } else {
       const percent = Number(quorumSource.percent) * 100

@@ -1,6 +1,7 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
 
@@ -14,13 +15,13 @@ export const DaoTreasury: FC = () => {
   return (
     <div>
       <div className="flex gap-1 justify-between">
-        <h2 className="primary-text">Treasury</h2>
+        <h2 className="primary-text">{i18n.t('Treasury')}</h2>
         {governanceTokenAddress && (
           <Button
             onClick={() => addToken(governanceTokenAddress)}
             variant="ghost"
           >
-            Add Token <PlusSmIcon className="w-4 h-4" />
+            {i18n.t('Add to Keplr')} <PlusSmIcon className="w-4 h-4" />
           </Button>
         )}
       </div>

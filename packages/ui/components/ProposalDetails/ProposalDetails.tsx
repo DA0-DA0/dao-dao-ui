@@ -2,6 +2,7 @@ import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useMemo, useState } from 'react'
 
 import { ActionsRenderer } from '@dao-dao/actions'
+import i18n from '@dao-dao/i18n'
 import {
   Proposal,
   Status,
@@ -67,7 +68,9 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       <div className="mt-6">
         <MarkdownPreview markdown={proposal.description} />
       </div>
-      <div className="mt-9 mb-3 font-mono caption-text">Messages</div>
+      <div className="mt-9 mb-3 font-mono caption-text">
+        {i18n.t('Proposal action', { count: 100 })}
+      </div>
       <div className="max-w-3xl">
         {decodedMessages?.length ? (
           showRaw ? (
