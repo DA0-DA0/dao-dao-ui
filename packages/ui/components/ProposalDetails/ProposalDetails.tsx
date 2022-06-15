@@ -73,20 +73,18 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           <div className="mt-9 mb-3 font-mono caption-text">
             {i18n.t('Action', { count: decodedMessages.length })}
           </div>
-          <div className="max-w-3xl">
-            {showRaw ? (
-              <CosmosMessageDisplay
-                value={decodedMessagesString(proposal.msgs)}
-              />
-            ) : (
-              <ActionsRenderer
-                coreAddress={coreAddress}
-                messages={decodedMessages}
-                proposalId={proposalId}
-                votingModuleType={votingModuleType}
-              />
-            )}
-          </div>
+          {showRaw ? (
+            <CosmosMessageDisplay
+              value={decodedMessagesString(proposal.msgs)}
+            />
+          ) : (
+            <ActionsRenderer
+              coreAddress={coreAddress}
+              messages={decodedMessages}
+              proposalId={proposalId}
+              votingModuleType={votingModuleType}
+            />
+          )}
         </>
       )}
       {!!decodedMessages.length && (

@@ -168,7 +168,7 @@ const InnerProposal: FC = () => {
 
         <SmallScreenNav className="md:!px-0" />
 
-        <div className="flex flex-col gap-6 p-6 md:p-0 md:mt-6">
+        <div className="flex flex-col gap-6 p-6 max-w-3xl md:p-0 md:mt-6">
           <div className="lg:hidden">
             <ProposalInfoCard
               connected={connected}
