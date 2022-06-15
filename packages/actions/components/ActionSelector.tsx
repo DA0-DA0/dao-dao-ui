@@ -22,7 +22,9 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
   return (
     <Modal onClose={onClose}>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="header-text">{i18n.t('Proposal action')}</h1>
+        <h1 className="header-text">
+          {i18n.t('Proposal action', { count: actions.length })}
+        </h1>
       </div>
       <ul className="flex flex-col gap-3 list-none">
         {actions.map((action, index) => (
