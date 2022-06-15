@@ -68,27 +68,27 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       <div className="mt-6">
         <MarkdownPreview markdown={proposal.description} />
       </div>
-      <div className="mt-9 mb-3 font-mono caption-text">
-        {i18n.t('Proposal action', { count: 100 })}
-      </div>
-      <div className="max-w-3xl">
-        {decodedMessages?.length ? (
-          showRaw ? (
-            <CosmosMessageDisplay
-              value={decodedMessagesString(proposal.msgs)}
-            />
-          ) : (
-            <ActionsRenderer
-              coreAddress={coreAddress}
-              messages={decodedMessages}
-              proposalId={proposalId}
-              votingModuleType={votingModuleType}
-            />
-          )
-        ) : (
-          <pre>[]</pre>
-        )}
-      </div>
+      {!!decodedMessages?.length && (
+        <>
+          <div className="mt-9 mb-3 font-mono caption-text">
+            {i18n.t('Action', { count: decodedMessages.length })}
+          </div>
+          <div className="max-w-3xl">
+            {showRaw ? (
+              <CosmosMessageDisplay
+                value={decodedMessagesString(proposal.msgs)}
+              />
+            ) : (
+              <ActionsRenderer
+                coreAddress={coreAddress}
+                messages={decodedMessages}
+                proposalId={proposalId}
+                votingModuleType={votingModuleType}
+              />
+            )}
+          </div>
+        </>
+      )}
       {!!decodedMessages.length && (
         <div className="mt-4">
           <Button

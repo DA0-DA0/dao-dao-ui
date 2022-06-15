@@ -29,6 +29,8 @@ const en = {
   'Proposal description': 'Proposal description',
   'Proposal action_one': 'Proposal action',
   'Proposal action_other': 'Proposal actions',
+  Action_one: 'Action',
+  Action_other: 'Actions',
 
   'Voting configuration': 'Voting configuration',
   'Voting weight': 'Voting power',
