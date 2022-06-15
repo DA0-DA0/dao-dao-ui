@@ -5,8 +5,8 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
 import { CreateProposalForm } from '@dao-dao/common'
+import i18n from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -149,7 +149,9 @@ const InnerProposalCreate = () => {
   return (
     <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
       <div className="md:w-2/3">
-        <h2 className="mb-4 font-medium text-medium">{i18n.t('Create a proposal')}</h2>
+        <h2 className="mb-4 font-medium text-medium">
+          {i18n.t('Create a proposal')}
+        </h2>
 
         <SuspenseLoader fallback={<Loader />}>
           <CreateProposalForm
@@ -190,5 +192,5 @@ const ProposalCreatePage: NextPage<PageWrapperProps> = ({
 export default ProposalCreatePage
 
 export const getStaticProps = makeGetStaticProps({
-  followingTitle: i18n.t('Create a proposal')
+  followingTitle: i18n.t('Create a proposal'),
 })
