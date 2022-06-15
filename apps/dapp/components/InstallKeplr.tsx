@@ -14,7 +14,9 @@ export const InstallKeplr: FC<InstallKeplrProps> = ({ onClose }) => {
     <Modal onClose={onClose}>
       <h1 className="header-text">{i18n.t('Need wallet to continue')}</h1>
       {grafs.map((graf) => (
-        <p className="mt-6 mb-6 body-text">{graf}</p>
+        <p key={graf} className="mt-6 mb-6 body-text">
+          {graf}
+        </p>
       ))}
       <a href="https://www.keplr.app/" rel="noreferrer" target="_blank">
         <Button>
