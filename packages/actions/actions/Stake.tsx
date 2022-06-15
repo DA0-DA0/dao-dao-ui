@@ -15,17 +15,19 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import {
+  ActionCardLoader,
+  StakeComponent as StatelessStakeComponent,
+  stakeActions,
+} from '../components'
 import {
   Action,
-  ActionCardLoader,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-  stakeActions,
-} from '..'
-import { StakeComponent as StatelessStakeComponent } from '../components'
+} from '../types'
 
 interface StakeData {
   stakeType: StakeType

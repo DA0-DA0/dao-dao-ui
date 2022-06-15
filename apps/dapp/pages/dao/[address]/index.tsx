@@ -1,3 +1,5 @@
+import axios from 'axios'
+import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
@@ -32,7 +34,7 @@ import {
   makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
-import { addToken, getFastAverageColor } from '@/util'
+import { addToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -252,8 +254,15 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
   makeGetDAOStaticProps({
-    getAdditionalProps: async ({ image_url }) =>
-      image_url
-        ? { accentColor: await getFastAverageColor(image_url) }
-        : undefined,
+    getAdditionalProps: async ({ image_url }) => {
+      if (!image_url) return undefined
+
+      const response = await axios.get(image_url, {
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+
+      const result = await getAverageColor(buffer)
+      return { accentColor: result.rgb }
+    },
   })

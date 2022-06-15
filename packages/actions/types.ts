@@ -4,7 +4,18 @@ import { FieldErrors } from 'react-hook-form'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { VotingModuleType } from '@dao-dao/utils'
 
-import { ActionKey } from './actions'
+export enum ActionKey {
+  Spend = 'spend',
+  Mint = 'mint',
+  Stake = 'stake',
+  AddToken = 'addToken',
+  RemoveToken = 'removeToken',
+  UpdateInfo = 'updateInfo',
+  UpdateProposalConfig = 'updateProposalConfig',
+  Instantiate = 'instantiate',
+  Execute = 'execute',
+  Custom = 'custom',
+}
 
 export interface ActionKeyAndData {
   key: ActionKey

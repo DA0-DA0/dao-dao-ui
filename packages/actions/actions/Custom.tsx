@@ -3,14 +3,14 @@ import { useCallback, useMemo } from 'react'
 
 import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { CustomComponent as Component } from '../components'
 import {
   Action,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { CustomComponent as Component } from '../components'
+} from '../types'
 
 interface CustomData {
   message: string

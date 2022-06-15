@@ -5,14 +5,14 @@ import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { UpdateInfoComponent as Component } from '../components'
 import {
   Action,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { UpdateInfoComponent as Component } from '../components'
+} from '../types'
 
 type UpdateInfoData = ConfigResponse
 
