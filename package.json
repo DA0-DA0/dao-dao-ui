@@ -8,8 +8,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "format": "turbo run format && prettier --write \"**/*.{css,json,md}\"",
-    "lint": "turbo run lint && prettier --check \"**/*.{css,json,md}\"",
+    "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue",
+    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
