@@ -12,15 +12,15 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { ExecuteComponent as StatelessExecuteComponent } from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { ExecuteComponent as StatelessExecuteComponent } from '../components'
+} from '../types'
 
 interface ExecuteData {
   address: string

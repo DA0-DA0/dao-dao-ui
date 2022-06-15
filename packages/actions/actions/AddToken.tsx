@@ -5,15 +5,15 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
 import {
   Action,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
+} from '../types'
 
 interface AddTokenData {
   address: string
