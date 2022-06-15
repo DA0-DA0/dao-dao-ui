@@ -8,17 +8,17 @@ import {
 } from '@dao-dao/ui'
 import { validateRequired } from '@dao-dao/utils'
 
-import { CreateOrgFormWrapper, SmallScreenNav } from '@/components'
-import { useCreateOrgForm } from '@/hooks'
+import { CreateDAOFormWrapper, SmallScreenNav } from '@/components'
+import { useCreateDAOForm } from '@/hooks'
 
-const CreateOrgPage: FC = () => {
-  const { register, watch, errors, formWrapperProps } = useCreateOrgForm(1)
+const CreateDAOPage: FC = () => {
+  const { register, watch, errors, formWrapperProps } = useCreateDAOForm(1)
 
   return (
     <>
       <SmallScreenNav />
 
-      <CreateOrgFormWrapper {...formWrapperProps}>
+      <CreateDAOFormWrapper {...formWrapperProps}>
         <div className="flex relative flex-row gap-8 items-stretch p-8 bg-disabled rounded-lg">
           <div className="flex flex-col gap-4 justify-center">
             <ImageSelector
@@ -37,7 +37,7 @@ const CreateOrgPage: FC = () => {
               <TextInput
                 error={errors.name}
                 label="name"
-                placeholder="Organization's name..."
+                placeholder="DAO's name..."
                 register={register}
                 validation={[validateRequired]}
               />
@@ -48,7 +48,7 @@ const CreateOrgPage: FC = () => {
               <TextAreaInput
                 error={errors.description}
                 label="description"
-                placeholder="Organization's description..."
+                placeholder="DAO's description..."
                 register={register}
                 rows={4}
               />
@@ -56,9 +56,9 @@ const CreateOrgPage: FC = () => {
             </div>
           </div>
         </div>
-      </CreateOrgFormWrapper>
+      </CreateDAOFormWrapper>
     </>
   )
 }
 
-export default CreateOrgPage
+export default CreateDAOPage

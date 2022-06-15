@@ -6,7 +6,7 @@ import { InputErrorMessage } from '@dao-dao/ui'
 
 import { CornerGradient } from './CornerGradient'
 
-interface CreateOrgConfigCardProps extends ComponentProps<'div'> {
+interface CreateDAOConfigCardProps extends ComponentProps<'div'> {
   image: ReactNode
   title: string
   description: string
@@ -14,7 +14,7 @@ interface CreateOrgConfigCardProps extends ComponentProps<'div'> {
   accentColor?: string
 }
 
-export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
+export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
   image,
   title,
   description,
@@ -22,7 +22,7 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
   error,
   ...props
 }) => (
-  <CreateOrgConfigCardWrapper {...props}>
+  <CreateDAOConfigCardWrapper {...props}>
     <div className="flex flex-row gap-6 items-start">
       <p className="mt-4 text-[42px]">{image}</p>
 
@@ -36,10 +36,10 @@ export const CreateOrgConfigCard: FC<CreateOrgConfigCardProps> = ({
       {children}
     </div>
     <InputErrorMessage className="self-end" error={error} />
-  </CreateOrgConfigCardWrapper>
+  </CreateDAOConfigCardWrapper>
 )
 
-export const CreateOrgConfigCardWrapper: FC<
+export const CreateDAOConfigCardWrapper: FC<
   ComponentProps<'div'> & { accentColor?: string }
 > = ({ children, className, accentColor, ...rest }) => (
   <div

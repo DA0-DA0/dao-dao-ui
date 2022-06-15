@@ -20,17 +20,17 @@ export const SearchPage: FC = () => (
       <SmallScreenNav />
       <div className="p-4 w-full md:p-6">
         <div className="flex justify-between items-center">
-          <h1 className="header-text">Orgs</h1>
-          <Link href="/org/create" passHref>
+          <h1 className="header-text">DAOs</h1>
+          <Link href="/dao/create" passHref>
             <Button size="sm">
-              Create an Org <PlusIcon className="inline w-4 h-4" />
+              Create a DAO <PlusIcon className="inline w-4 h-4" />
             </Button>
           </Link>
         </div>
         <div className="px-1 mt-6 mb-3 md:px-2">
           <div className="flex gap-1.5 items-center mb-5">
             <DecorativeTriangle color="currentcolor" height={24} width={24} />
-            <h2 className="primary-text">Search for an Org</h2>
+            <h2 className="primary-text">Search for a DAO</h2>
           </div>
           <SearchBox />
         </div>

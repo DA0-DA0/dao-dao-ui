@@ -24,29 +24,29 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_ORG_THRESHOLD_PERCENT,
-  DefaultNewOrg,
+  DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
+  DefaultNewDAO,
   DurationUnitsValues,
   GovernanceTokenType,
-  NEW_ORG_CW20_DECIMALS,
-  NewOrgStructure,
+  NEW_DAO_CW20_DECIMALS,
+  NewDAOStructure,
 } from '@/atoms'
 import {
-  CreateOrgConfigCard,
-  CreateOrgConfigCardWrapper,
-  CreateOrgFormWrapper,
-  CreateOrgTier,
+  CreateDAOConfigCard,
+  CreateDAOConfigCardWrapper,
+  CreateDAOFormWrapper,
+  CreateDAOTier,
   SmallScreenNav,
   VotingPowerChart,
   useVotingPowerDistributionData,
 } from '@/components'
-import { useCreateOrgForm } from '@/hooks'
+import { useCreateDAOForm } from '@/hooks'
 
-const CreateOrgVotingPage: FC = () => {
+const CreateDAOVotingPage: FC = () => {
   const {
-    watchedNewOrg,
+    watchedNewDAO,
     control,
     register,
     watch,
@@ -55,7 +55,7 @@ const CreateOrgVotingPage: FC = () => {
     resetField,
     getValues,
     formWrapperProps,
-  } = useCreateOrgForm(2)
+  } = useCreateDAOForm(2)
 
   const {
     fields: tiers,
@@ -68,22 +68,22 @@ const CreateOrgVotingPage: FC = () => {
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
-  const threshold = watchedNewOrg.thresholdQuorum.threshold
-  const quorum = watchedNewOrg.thresholdQuorum.quorum
+  const threshold = watchedNewDAO.thresholdQuorum.threshold
+  const quorum = watchedNewDAO.thresholdQuorum.quorum
 
-  const newTokenImageUrl = watchedNewOrg.governanceTokenOptions.newInfo.imageUrl
+  const newTokenImageUrl = watchedNewDAO.governanceTokenOptions.newInfo.imageUrl
 
   const governanceTokenEnabled =
-    watchedNewOrg.structure === NewOrgStructure.UsingGovToken
+    watchedNewDAO.structure === NewDAOStructure.UsingGovToken
   // Only count treasury balance when creating new governance token.
   const initialTreasuryBalance =
     governanceTokenEnabled &&
-    watchedNewOrg.governanceTokenOptions.type === GovernanceTokenType.New
-      ? watchedNewOrg.governanceTokenOptions.newInfo.initialTreasuryBalance || 0
+    watchedNewDAO.governanceTokenOptions.type === GovernanceTokenType.New
+      ? watchedNewDAO.governanceTokenOptions.newInfo.initialTreasuryBalance || 0
       : 0
   const memberWeightAllocated = useMemo(
     () =>
-      watchedNewOrg.tiers.reduce(
+      watchedNewDAO.tiers.reduce(
         (acc, { weight, members }) => acc + weight * members.length,
         0
       ) || 0,
@@ -92,7 +92,7 @@ const CreateOrgVotingPage: FC = () => {
       // Tiers reference does not change even if contents do, so we need a
       // primitive to use for memoization comparison.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      watchedNewOrg.tiers
+      watchedNewDAO.tiers
         .map(
           ({ weight, members }, idx) =>
             `${idx}:${weight}:${members.length}:${members
@@ -105,7 +105,7 @@ const CreateOrgVotingPage: FC = () => {
   const totalWeightAllocated = memberWeightAllocated + initialTreasuryBalance
 
   const { onlyOneTier, entries } = useVotingPowerDistributionData(
-    watchedNewOrg,
+    watchedNewDAO,
     false,
     false,
     false
@@ -115,7 +115,7 @@ const CreateOrgVotingPage: FC = () => {
     <>
       <SmallScreenNav />
 
-      <CreateOrgFormWrapper
+      <CreateDAOFormWrapper
         containerClassName="flex flex-col gap-8"
         {...formWrapperProps}
       >
@@ -125,11 +125,11 @@ const CreateOrgVotingPage: FC = () => {
 
         <div className="flex flex-col gap-4 items-stretch">
           {tiers.map(({ id }, idx) => (
-            <CreateOrgTier
+            <CreateDAOTier
               key={id}
               control={control}
               errors={errors}
-              newOrg={watchedNewOrg}
+              newDAO={watchedNewDAO}
               register={register}
               remove={onlyOneTier ? undefined : () => removeTier(idx)}
               setValue={setValue}
@@ -145,9 +145,9 @@ const CreateOrgVotingPage: FC = () => {
                 appendTier({
                   name: '',
                   weight:
-                    getValues('structure') === NewOrgStructure.UsingGovToken
-                      ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT
-                      : DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
+                    getValues('structure') === NewDAOStructure.UsingGovToken
+                      ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
+                      : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
                   members: [
                     {
                       address: '',
@@ -164,7 +164,7 @@ const CreateOrgVotingPage: FC = () => {
           </div>
         </div>
 
-        <CreateOrgConfigCard
+        <CreateDAOConfigCard
           accentColor="#c3935e1a"
           description="The amount of time that a proposal will remain open for voting. After this time elapses, the votes for a proposal will be final."
           error={errors.votingDuration?.value || errors.votingDuration?.units}
@@ -178,12 +178,12 @@ const CreateOrgVotingPage: FC = () => {
               () =>
                 setValue(
                   'votingDuration.value',
-                  Math.max(watchedNewOrg.votingDuration.value + 1, 1)
+                  Math.max(watchedNewDAO.votingDuration.value + 1, 1)
                 ),
               () =>
                 setValue(
                   'votingDuration.value',
-                  Math.max(watchedNewOrg.votingDuration.value - 1, 1)
+                  Math.max(watchedNewDAO.votingDuration.value - 1, 1)
                 ),
             ]}
             register={register}
@@ -204,7 +204,7 @@ const CreateOrgVotingPage: FC = () => {
               </option>
             ))}
           </SelectInput>
-        </CreateOrgConfigCard>
+        </CreateDAOConfigCard>
 
         {governanceTokenEnabled && (
           <div className="space-y-3">
@@ -223,8 +223,8 @@ const CreateOrgVotingPage: FC = () => {
               setValue={setValue}
               watch={watch}
             />
-            <CreateOrgConfigCardWrapper className="gap-8 mb-9">
-              {watchedNewOrg.governanceTokenOptions.type ===
+            <CreateDAOConfigCardWrapper className="gap-8 mb-9">
+              {watchedNewDAO.governanceTokenOptions.type ===
               GovernanceTokenType.New ? (
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
@@ -246,7 +246,7 @@ const CreateOrgVotingPage: FC = () => {
                                   'governanceTokenOptions.newInfo.initialTreasuryBalance',
                                   Math.max(
                                     initialTreasuryBalance + 1,
-                                    1 / 10 ** NEW_ORG_CW20_DECIMALS
+                                    1 / 10 ** NEW_DAO_CW20_DECIMALS
                                   )
                                 ),
                               () =>
@@ -254,12 +254,12 @@ const CreateOrgVotingPage: FC = () => {
                                   'governanceTokenOptions.newInfo.initialTreasuryBalance',
                                   Math.max(
                                     initialTreasuryBalance - 1,
-                                    1 / 10 ** NEW_ORG_CW20_DECIMALS
+                                    1 / 10 ** NEW_DAO_CW20_DECIMALS
                                   )
                                 ),
                             ]}
                             register={register}
-                            step={1 / 10 ** NEW_ORG_CW20_DECIMALS}
+                            step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
                             validation={[validatePositive, validateRequired]}
                           />
 
@@ -280,7 +280,7 @@ const CreateOrgVotingPage: FC = () => {
                               />
                             )}
 
-                            {watchedNewOrg.governanceTokenOptions.newInfo
+                            {watchedNewDAO.governanceTokenOptions.newInfo
                               .symbol || 'Token'}
                           </div>
                         </div>
@@ -296,7 +296,7 @@ const CreateOrgVotingPage: FC = () => {
 
                     <p className="my-2 secondary-text">
                       {totalWeightAllocated.toLocaleString(undefined, {
-                        maximumFractionDigits: NEW_ORG_CW20_DECIMALS,
+                        maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
                       })}{' '}
                       tokens will be minted.{' '}
                       {totalWeightAllocated === 0
@@ -395,9 +395,9 @@ const CreateOrgVotingPage: FC = () => {
                   />
                 </div>
               )}
-            </CreateOrgConfigCardWrapper>
+            </CreateDAOConfigCardWrapper>
 
-            <CreateOrgConfigCard
+            <CreateDAOConfigCard
               accentColor="#fccd031a"
               description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
               error={errors.governanceTokenOptions?.proposalDeposit?.value}
@@ -412,7 +412,7 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.proposalDeposit.value',
                       Math.max(
-                        watchedNewOrg.governanceTokenOptions.proposalDeposit
+                        watchedNewDAO.governanceTokenOptions.proposalDeposit
                           .value + 1,
                         0
                       )
@@ -421,7 +421,7 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.proposalDeposit.value',
                       Math.max(
-                        watchedNewOrg.governanceTokenOptions.proposalDeposit
+                        watchedNewDAO.governanceTokenOptions.proposalDeposit
                           .value - 1,
                         0
                       )
@@ -432,10 +432,10 @@ const CreateOrgVotingPage: FC = () => {
                 step={1}
                 validation={[validateNonNegative]}
               />
-            </CreateOrgConfigCard>
+            </CreateDAOConfigCard>
 
-            {!!watchedNewOrg.governanceTokenOptions.proposalDeposit.value && (
-              <CreateOrgConfigCard
+            {!!watchedNewDAO.governanceTokenOptions.proposalDeposit.value && (
+              <CreateDAOConfigCard
                 accentColor="#fed3581a"
                 description="This parameter determines whether a failed proposal will have its deposit refunded. (Proposals that pass will always have their deposit returned). Turning this off may encourage members to deliberate before creating specific proposals, particularly when proposal deposits are high."
                 image={<Emoji label="finger pointing up" symbol="👆" />}
@@ -443,7 +443,7 @@ const CreateOrgVotingPage: FC = () => {
               >
                 <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
                   <p className="w-[3ch] secondary-text">
-                    {watchedNewOrg.governanceTokenOptions.proposalDeposit
+                    {watchedNewDAO.governanceTokenOptions.proposalDeposit
                       .refundFailed
                       ? 'Yes'
                       : 'No'}
@@ -456,12 +456,12 @@ const CreateOrgVotingPage: FC = () => {
                     watch={watch}
                   />
                 </div>
-              </CreateOrgConfigCard>
+              </CreateDAOConfigCard>
             )}
 
-            <CreateOrgConfigCard
+            <CreateDAOConfigCard
               accentColor="#cf434b1a"
-              description="In order to vote, members must register their tokens with the org. Members who would like to leave the org or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your org's governance."
+              description="In order to vote, members must register their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unregister them. This setting configures how long members have to wait after unregistering their tokens for those tokens to become available. The longer you set this duration, the more sure you can be that people who register their tokens are keen to participate in your DAO's governance."
               error={
                 errors.governanceTokenOptions?.unregisterDuration?.value ||
                 errors.governanceTokenOptions?.unregisterDuration?.units
@@ -477,7 +477,7 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.unregisterDuration.value',
                       Math.max(
-                        watchedNewOrg.governanceTokenOptions.unregisterDuration
+                        watchedNewDAO.governanceTokenOptions.unregisterDuration
                           .value + 1,
                         0
                       )
@@ -486,7 +486,7 @@ const CreateOrgVotingPage: FC = () => {
                     setValue(
                       'governanceTokenOptions.unregisterDuration.value',
                       Math.max(
-                        watchedNewOrg.governanceTokenOptions.unregisterDuration
+                        watchedNewDAO.governanceTokenOptions.unregisterDuration
                           .value - 1,
                         0
                       )
@@ -510,7 +510,7 @@ const CreateOrgVotingPage: FC = () => {
                   </option>
                 ))}
               </SelectInput>
-            </CreateOrgConfigCard>
+            </CreateDAOConfigCard>
           </div>
         )}
 
@@ -540,9 +540,9 @@ const CreateOrgVotingPage: FC = () => {
           </div>
         </div>
 
-        {watchedNewOrg._changeThresholdQuorumEnabled && (
+        {watchedNewDAO._changeThresholdQuorumEnabled && (
           <div className="space-y-3">
-            <CreateOrgConfigCard
+            <CreateDAOConfigCard
               accentColor="rgba(95, 94, 254, 0.1)"
               description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
               error={errors.thresholdQuorum?.threshold}
@@ -585,7 +585,7 @@ const CreateOrgVotingPage: FC = () => {
                     value === 'majority'
                       ? 'majority'
                       : // value === '%'
-                        DEFAULT_NEW_ORG_THRESHOLD_PERCENT
+                        DEFAULT_NEW_DAO_THRESHOLD_PERCENT
                   )
                 }
                 validation={[validateRequired]}
@@ -594,11 +594,11 @@ const CreateOrgVotingPage: FC = () => {
                 <option value="%">%</option>
                 <option value="majority">Majority</option>
               </SelectInput>
-            </CreateOrgConfigCard>
+            </CreateDAOConfigCard>
 
-            <CreateOrgConfigCard
+            <CreateDAOConfigCard
               accentColor="#fefe891a"
-              description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have an org with many inactive members, setting this value too high may make it difficult to pass proposals."
+              description="The minumum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have a DAO with many inactive members, setting this value too high may make it difficult to pass proposals."
               error={errors.thresholdQuorum?.quorum}
               image={<Emoji label="megaphone" symbol="📣" />}
               title="Quorum"
@@ -639,7 +639,7 @@ const CreateOrgVotingPage: FC = () => {
                     value === 'majority'
                       ? 'majority'
                       : // value === '%'
-                        DefaultNewOrg.thresholdQuorum.quorum
+                        DefaultNewDAO.thresholdQuorum.quorum
                   )
                 }
                 validation={[validateRequired]}
@@ -648,10 +648,10 @@ const CreateOrgVotingPage: FC = () => {
                 <option value="%">%</option>
                 <option value="majority">Majority</option>
               </SelectInput>
-            </CreateOrgConfigCard>
+            </CreateDAOConfigCard>
           </div>
         )}
-      </CreateOrgFormWrapper>
+      </CreateDAOFormWrapper>
 
       {showThresholdQuorumWarning && (
         <Modal
@@ -663,7 +663,7 @@ const CreateOrgVotingPage: FC = () => {
           <p className="body-text">
             This is an advanced feature. Threshold and quorum can interact in
             counterintuitive ways. If you configure them without fully
-            understanding how they work, you may end up locking your org, making
+            understanding how they work, you may end up locking your DAO, making
             it impossible to pass proposals.
           </p>
 
@@ -688,4 +688,4 @@ const CreateOrgVotingPage: FC = () => {
   )
 }
 
-export default CreateOrgVotingPage
+export default CreateDAOVotingPage

@@ -7,8 +7,8 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
+import { useDAOInfoContext } from './DAOPageWrapper'
 import { Loader } from './Loader'
-import { useOrgInfoContext } from './OrgPageWrapper'
 
 interface Cw4VotingMemberListProps {
   primaryText?: boolean
@@ -17,7 +17,7 @@ interface Cw4VotingMemberListProps {
 const InnerCw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
   primaryText,
 }) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
 
   const { address: walletAddress } = useWallet()
   const { walletVotingWeight, totalVotingWeight, cw4VotingMembers } =

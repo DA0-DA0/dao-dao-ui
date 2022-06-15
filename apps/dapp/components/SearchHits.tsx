@@ -16,7 +16,7 @@ const Hit = ({ hit }: { hit: Hit }) => (
   <ContractCard
     balance={hit.treasury_balance}
     description={hit.description}
-    href={`/org/${hit.id}`}
+    href={`/dao/${hit.id}`}
     imgUrl={hit.image_url}
     name={hit.name}
     proposals={hit.proposal_count}

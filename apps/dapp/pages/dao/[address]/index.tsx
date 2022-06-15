@@ -1,3 +1,5 @@
+import axios from 'axios'
+import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
@@ -21,18 +23,18 @@ import {
   ContractProposalsDisplay,
   Cw20StakedBalanceVotingSharesDisplay,
   Cw4VotingMemberList,
+  DAOMobileHeader,
+  DAOPageWrapper,
+  DAOPageWrapperProps,
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
   DaoTreasury,
-  OrgMobileHeader,
-  OrgPageWrapper,
-  OrgPageWrapperProps,
   PageLoader,
   SmallScreenNav,
-  makeGetOrgStaticProps,
-  useOrgInfoContext,
+  makeGetDAOStaticProps,
+  useDAOInfoContext,
 } from '@/components'
-import { addToken, getFastAverageColor } from '@/util'
+import { addToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -43,7 +45,7 @@ enum MobileMenuTabSelection {
 }
 
 const InnerMobileDaoHome: FC = () => {
-  const { votingModuleType } = useOrgInfoContext()
+  const { votingModuleType } = useDAOInfoContext()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -51,7 +53,7 @@ const InnerMobileDaoHome: FC = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <OrgMobileHeader />
+        <DAOMobileHeader />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -107,15 +109,11 @@ const InnerMobileDaoHome: FC = () => {
   )
 }
 
-const InnerOrgHome: FC = () => {
+const InnerDAOHome: FC = () => {
   const router = useRouter()
 
-  const {
-    votingModuleType,
-    coreAddress,
-    governanceTokenAddress,
-    name: orgName,
-  } = useOrgInfoContext()
+  const { votingModuleType, coreAddress, governanceTokenAddress, name } =
+    useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
 
   const [pinnedAddresses, setPinnedAddresses] =
@@ -139,7 +137,7 @@ const InnerOrgHome: FC = () => {
               <Breadcrumbs
                 crumbs={[
                   ['/starred', 'Home'],
-                  [router.asPath, orgName],
+                  [router.asPath, name],
                 ]}
               />
               <div className="flex flex-row gap-4 items-center">
@@ -198,7 +196,7 @@ const InnerOrgHome: FC = () => {
   )
 }
 
-interface DaoHomePageProps extends OrgPageWrapperProps {
+interface DaoHomePageProps extends DAOPageWrapperProps {
   accentColor?: string
 }
 
@@ -233,16 +231,16 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
   }, [accentColor, setAccentColor, isReady, isFallback])
 
   return (
-    <OrgPageWrapper {...props}>
+    <DAOPageWrapper {...props}>
       <SuspenseLoader fallback={<PageLoader />}>
         <div className="block md:hidden">
           <InnerMobileDaoHome />
         </div>
         <div className="hidden md:block">
-          <InnerOrgHome />
+          <InnerDAOHome />
         </div>
       </SuspenseLoader>
-    </OrgPageWrapper>
+    </DAOPageWrapper>
   )
 }
 
@@ -255,9 +253,16 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetOrgStaticProps({
-    getAdditionalProps: async ({ image_url }) =>
-      image_url
-        ? { accentColor: await getFastAverageColor(image_url) }
-        : undefined,
+  makeGetDAOStaticProps({
+    getAdditionalProps: async ({ image_url }) => {
+      if (!image_url) return undefined
+
+      const response = await axios.get(image_url, {
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+
+      const result = await getAverageColor(buffer)
+      return { accentColor: result.rgb }
+    },
   })

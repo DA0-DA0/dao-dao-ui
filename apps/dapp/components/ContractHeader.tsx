@@ -8,10 +8,10 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
+import { useDAOInfoContext } from './DAOPageWrapper'
 
 const ContractHeaderInternal: FC = () => {
-  const { coreAddress, name, description, imageUrl } = useOrgInfoContext()
+  const { coreAddress, name, description, imageUrl } = useDAOInfoContext()
   const establishedDate = useRecoilValueLoadable(
     contractInstantiateTimeSelector(coreAddress)
   )

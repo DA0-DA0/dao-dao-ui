@@ -5,22 +5,22 @@ import { useRecoilValue } from 'recoil'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SubmitButton } from '@dao-dao/ui'
 
-import { CreateOrgNav } from './CreateOrgNav'
-import { CreateOrgSubmitLabel, OrgFormPage, createOrgFormPages } from '@/hooks'
+import { CreateDAONav } from './CreateDAONav'
+import { CreateDAOSubmitLabel, DAOFormPage, createDAOFormPages } from '@/hooks'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
   Omit<T, K>
 
-interface CreateOrgFormWrapperProps
+interface CreateDAOFormWrapperProps
   extends RequireKeys<ComponentPropsWithoutRef<'form'>, 'onSubmit'> {
   children: ReactNode
   containerClassName?: string
   currentPageIndex: number
-  currentPage: OrgFormPage
+  currentPage: DAOFormPage
   creating: boolean
 }
 
-export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
+export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
   children,
   containerClassName,
   currentPageIndex,
@@ -36,10 +36,10 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
     <>
       <NextSeo
         openGraph={{
-          title: 'Create an org',
-          description: 'Create a new organization.',
+          title: 'Create a DAO',
+          description: 'Create a new DAO.',
         }}
-        title="Create an org"
+        title="Create a DAO"
       />
 
       <form
@@ -56,10 +56,10 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
 
         <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full">
           <div className="mb-8">
-            <h2 className="mb-4 header-text">Create an org</h2>
+            <h2 className="mb-4 header-text">Create a DAO</h2>
 
             <div className="mb-10 md:hidden">
-              <CreateOrgNav currentPageIndex={currentPageIndex} />
+              <CreateDAONav currentPageIndex={currentPageIndex} />
             </div>
 
             <p className="primary-text">{currentPage.title}</p>
@@ -81,20 +81,20 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
               {showBack && (
                 <SubmitButton
                   disabled={creating}
-                  label={CreateOrgSubmitLabel.Back}
+                  label={CreateDAOSubmitLabel.Back}
                   variant="secondary"
                 />
               )}
               <SubmitButton
                 disabled={!mountedInBrowser || creating}
                 label={
-                  currentPageIndex < createOrgFormPages.length - 2
-                    ? CreateOrgSubmitLabel.Continue
+                  currentPageIndex < createDAOFormPages.length - 2
+                    ? CreateDAOSubmitLabel.Continue
                     : // Second to last links to the Review page.
-                    currentPageIndex === createOrgFormPages.length - 2
-                    ? CreateOrgSubmitLabel.Review
-                    : // Last page creates the org.
-                      CreateOrgSubmitLabel.CreateOrg
+                    currentPageIndex === createDAOFormPages.length - 2
+                    ? CreateDAOSubmitLabel.Review
+                    : // Last page creates the DAO.
+                      CreateDAOSubmitLabel.CreateDAO
                 }
               />
             </div>
@@ -102,7 +102,7 @@ export const CreateOrgFormWrapper: FC<CreateOrgFormWrapperProps> = ({
         </div>
 
         <div className="hidden shrink-0 p-6 pr-20 border-l border-inactive md:block">
-          <CreateOrgNav currentPageIndex={currentPageIndex} />
+          <CreateDAONav currentPageIndex={currentPageIndex} />
         </div>
       </form>
     </>

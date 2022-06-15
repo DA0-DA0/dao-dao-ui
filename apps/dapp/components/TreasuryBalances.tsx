@@ -15,10 +15,10 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
+import { useDAOInfoContext } from './DAOPageWrapper'
 
 export const TreasuryBalances: FC = () => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { governanceTokenAddress, treasuryBalance } = useGovernanceTokenInfo(
     coreAddress,
     { fetchTreasuryBalance: true }

@@ -4,29 +4,29 @@ import { FC } from 'react'
 import { Logo } from '@dao-dao/ui'
 
 import {
-  NewOrgStructure,
+  NewDAOStructure,
   convertDurationWithUnitsToHumanReadableString,
   convertThresholdValueToHumanReadableString,
 } from '@/atoms'
 import {
-  CreateOrgFormWrapper,
-  CreateOrgReviewStat,
+  CreateDAOFormWrapper,
+  CreateDAOReviewStat,
   SmallScreenNav,
   VotingPowerPieDistribution,
 } from '@/components'
-import { useCreateOrgForm } from '@/hooks'
+import { useCreateDAOForm } from '@/hooks'
 
-const CreateOrgReviewPage: FC = () => {
-  const { watchedNewOrg, creating, formWrapperProps } = useCreateOrgForm(3)
+const CreateDAOReviewPage: FC = () => {
+  const { watchedNewDAO, creating, formWrapperProps } = useCreateDAOForm(3)
 
   const governanceTokenEnabled =
-    watchedNewOrg.structure === NewOrgStructure.UsingGovToken
+    watchedNewDAO.structure === NewDAOStructure.UsingGovToken
 
   return (
     <>
       <SmallScreenNav />
 
-      <CreateOrgFormWrapper {...formWrapperProps}>
+      <CreateDAOFormWrapper {...formWrapperProps}>
         <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-t-lg md:gap-10 md:py-10">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
             <div className="flex flex-col gap-2 items-center text-center">
@@ -35,24 +35,24 @@ const CreateOrgReviewPage: FC = () => {
                   'animate-spin-medium': creating,
                 })}
               >
-                {watchedNewOrg.imageUrl ? (
+                {watchedNewDAO.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    alt="Org Logo"
+                    alt="DAO Logo"
                     className="w-full h-full"
-                    src={watchedNewOrg.imageUrl}
+                    src={watchedNewDAO.imageUrl}
                   />
                 ) : (
                   <Logo alt="DAO DAO logo" height="100%" width="100%" />
                 )}
               </div>
-              <p className="text-xl">{watchedNewOrg.name}</p>
+              <p className="text-xl">{watchedNewDAO.name}</p>
             </div>
 
             <div className="flex flex-col gap-2">
               <p className="font-mono caption-text">Description</p>
               <p className="text-lg secondary-text">
-                {watchedNewOrg.description}
+                {watchedNewDAO.description}
               </p>
             </div>
           </div>
@@ -60,40 +60,40 @@ const CreateOrgReviewPage: FC = () => {
           <div className="w-full h-[1px] bg-card"></div>
 
           <div className="mx-auto w-5/6">
-            <VotingPowerPieDistribution newOrg={watchedNewOrg} />
+            <VotingPowerPieDistribution newDAO={watchedNewDAO} />
           </div>
         </div>
 
         <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">
-          <CreateOrgReviewStat
+          <CreateDAOReviewStat
             title="Threshold"
             value={convertThresholdValueToHumanReadableString(
-              watchedNewOrg.thresholdQuorum.threshold
+              watchedNewDAO.thresholdQuorum.threshold
             )}
           />
-          <CreateOrgReviewStat
+          <CreateDAOReviewStat
             title="Quorum"
             value={convertThresholdValueToHumanReadableString(
-              watchedNewOrg.thresholdQuorum.quorum
+              watchedNewDAO.thresholdQuorum.quorum
             )}
           />
-          <CreateOrgReviewStat
+          <CreateDAOReviewStat
             title="Prop. duration"
             value={convertDurationWithUnitsToHumanReadableString(
-              watchedNewOrg.votingDuration
+              watchedNewDAO.votingDuration
             )}
           />
           {governanceTokenEnabled &&
-            !!watchedNewOrg.governanceTokenOptions.proposalDeposit?.value && (
+            !!watchedNewDAO.governanceTokenOptions.proposalDeposit?.value && (
               <>
-                <CreateOrgReviewStat
+                <CreateDAOReviewStat
                   title="Prop. deposit"
-                  value={`${watchedNewOrg.governanceTokenOptions.proposalDeposit.value}`}
+                  value={`${watchedNewDAO.governanceTokenOptions.proposalDeposit.value}`}
                 />
-                <CreateOrgReviewStat
+                <CreateDAOReviewStat
                   title="Prop. refunds"
                   value={
-                    watchedNewOrg.governanceTokenOptions.proposalDeposit
+                    watchedNewDAO.governanceTokenOptions.proposalDeposit
                       .refundFailed
                       ? 'Yes'
                       : 'No'
@@ -103,19 +103,19 @@ const CreateOrgReviewPage: FC = () => {
             )}
           {governanceTokenEnabled && (
             <>
-              <CreateOrgReviewStat title="Gov. tokens" value="Enabled" />
-              <CreateOrgReviewStat
+              <CreateDAOReviewStat title="Gov. tokens" value="Enabled" />
+              <CreateDAOReviewStat
                 title="Unregister duration"
                 value={convertDurationWithUnitsToHumanReadableString(
-                  watchedNewOrg.governanceTokenOptions.unregisterDuration
+                  watchedNewDAO.governanceTokenOptions.unregisterDuration
                 )}
               />
             </>
           )}
         </div>
-      </CreateOrgFormWrapper>
+      </CreateDAOFormWrapper>
     </>
   )
 }
 
-export default CreateOrgReviewPage
+export default CreateDAOReviewPage

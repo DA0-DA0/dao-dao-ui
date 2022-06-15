@@ -8,8 +8,8 @@ import { LoadingScreen, SuspenseLoader } from '@dao-dao/ui'
 import { pinnedAddressesAtom } from '@/atoms'
 import {
   ActionMenu,
-  EmptyOrgCard,
-  PinnedOrgCard,
+  EmptyDAOCard,
+  PinnedDAOCard,
   SmallScreenNav,
 } from '@/components'
 
@@ -29,15 +29,15 @@ const InnerStarred: FC = () => {
           <h1 className="header-text">Starred</h1>
           <h2 className="flex gap-1 items-center mt-4 mb-2 md:mt-6 primary-text">
             <StarIcon className="inline w-4 " />
-            Orgs
+            DAOs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {pinnedAddresses.length ? (
               pinnedAddresses.map((address) => (
-                <PinnedOrgCard key={address} address={address} />
+                <PinnedDAOCard key={address} address={address} />
               ))
             ) : (
-              <EmptyOrgCard />
+              <EmptyDAOCard />
             )}
           </div>
         </div>

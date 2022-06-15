@@ -262,7 +262,7 @@ export const CreateProposalForm = ({
             <Tooltip
               label={
                 !isMember
-                  ? 'You must be a member of the org to create a proposal.'
+                  ? 'You must be a member of the DAO to create a proposal.'
                   : !canPayDeposit
                   ? 'You do not have enough unstaked tokens to pay the proposal deposit.'
                   : isPaused

@@ -2,71 +2,71 @@ import Emoji from 'a11y-react-emoji'
 import { FC, useCallback } from 'react'
 
 import {
-  DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT,
-  DefaultNewOrg,
-  NewOrgStructure,
+  DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DefaultNewDAO,
+  NewDAOStructure,
 } from '@/atoms'
 import {
-  CreateOrgFormWrapper,
-  CreateOrgStructure,
+  CreateDAOFormWrapper,
+  CreateDAOStructure,
   SmallScreenNav,
 } from '@/components'
-import { useCreateOrgForm } from '@/hooks'
+import { useCreateDAOForm } from '@/hooks'
 
-const CreateOrgPage: FC = () => {
-  const { watchedNewOrg, setValue, formWrapperProps } = useCreateOrgForm(0)
+const CreateDAOPage: FC = () => {
+  const { watchedNewDAO, setValue, formWrapperProps } = useCreateDAOForm(0)
 
   const onChange = useCallback(
-    (structure: NewOrgStructure) => {
+    (structure: NewDAOStructure) => {
       setValue('structure', structure)
 
       // Swap initial tier voting power to the default for the structure
       // if the tiers have not yet been changed.
       if (
-        watchedNewOrg.tiers.length === 1 &&
-        watchedNewOrg.tiers[0].name === DefaultNewOrg.tiers[0].name &&
-        watchedNewOrg.tiers[0].members.length === 1 &&
-        watchedNewOrg.tiers[0].members[0].address === ''
+        watchedNewDAO.tiers.length === 1 &&
+        watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name &&
+        watchedNewDAO.tiers[0].members.length === 1 &&
+        watchedNewDAO.tiers[0].members[0].address === ''
       ) {
         setValue(
           'tiers.0.weight',
-          structure === NewOrgStructure.UsingGovToken
-            ? DEFAULT_NEW_ORG_GOV_TOKEN_INITIAL_TIER_WEIGHT
-            : DEFAULT_NEW_ORG_SIMPLE_INITIAL_TIER_WEIGHT
+          structure === NewDAOStructure.UsingGovToken
+            ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
+            : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT
         )
       }
     },
-    [setValue, watchedNewOrg]
+    [setValue, watchedNewDAO]
   )
 
   return (
     <>
       <SmallScreenNav />
 
-      <CreateOrgFormWrapper {...formWrapperProps}>
+      <CreateDAOFormWrapper {...formWrapperProps}>
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
-          <CreateOrgStructure
+          <CreateDAOStructure
             description="Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members."
             emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
-            newOrg={watchedNewOrg}
+            newDAO={watchedNewDAO}
             onChange={onChange}
-            structure={NewOrgStructure.Simple}
+            structure={NewDAOStructure.Simple}
             title="Simple"
           />
 
-          <CreateOrgStructure
+          <CreateDAOStructure
             description="Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares."
             emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
-            newOrg={watchedNewOrg}
+            newDAO={watchedNewDAO}
             onChange={onChange}
-            structure={NewOrgStructure.UsingGovToken}
+            structure={NewDAOStructure.UsingGovToken}
             title="Governance Token-based"
           />
         </div>
-      </CreateOrgFormWrapper>
+      </CreateDAOFormWrapper>
     </>
   )
 }
 
-export default CreateOrgPage
+export default CreateDAOPage

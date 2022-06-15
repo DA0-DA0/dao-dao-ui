@@ -18,16 +18,16 @@ import {
   processThresholdData,
 } from '@dao-dao/utils'
 
+import { useDAOInfoContext } from './DAOPageWrapper'
 import { DaoTreasury } from './DaoTreasury'
 import { Loader } from './Loader'
-import { useOrgInfoContext } from './OrgPageWrapper'
 
 interface DaoContractInfoProps {
   hideTreasury?: boolean
 }
 
 const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(coreAddress)
   const { proposalModuleConfig } = useProposalModule(coreAddress)

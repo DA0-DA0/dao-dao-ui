@@ -11,16 +11,16 @@ import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 import { pinnedAddressesAtom } from '@/atoms'
 import { NavListItem } from '@/components'
 
-export const PinnedOrgNavList: FC = () => {
+export const PinnedDAONavList: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
-  const orgConfigs = useRecoilValue(
+  const daoConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((a) =>
         CwCoreSelectors.configSelector({ contractAddress: a })
       )
     )
   )
-  const orgsWithAddresses = orgConfigs
+  const daosWithAddresses = daoConfigs
     .map((config, idx) => ({
       config,
       address: pinnedAddresses[idx],
@@ -32,10 +32,10 @@ export const PinnedOrgNavList: FC = () => {
 
   return (
     <ul className="ml-2 list-none">
-      {orgsWithAddresses.map(({ config, address }) => (
+      {daosWithAddresses.map(({ config, address }) => (
         <NavListItem
           key={address}
-          href={`/org/${address}`}
+          href={`/dao/${address}`}
           icon={LibraryIcon}
           text={config.name}
         />
@@ -44,16 +44,16 @@ export const PinnedOrgNavList: FC = () => {
   )
 }
 
-export const MobilePinnedOrgNavList: FC = () => {
+export const MobilePinnedDAONavList: FC = () => {
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
-  const orgConfigs = useRecoilValue(
+  const daoConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((a) =>
         CwCoreSelectors.configSelector({ contractAddress: a })
       )
     )
   )
-  const orgsWithAddresses = orgConfigs
+  const daosWithAddresses = daoConfigs
     .map((config, idx) => ({
       config,
       address: pinnedAddresses[idx],
@@ -65,8 +65,8 @@ export const MobilePinnedOrgNavList: FC = () => {
 
   return (
     <ul className="flex overflow-auto gap-1 list-none no-scrollbar">
-      {orgsWithAddresses.map(({ config, address }) => (
-        <Link key={address} href={`/org/${address}`} passHref>
+      {daosWithAddresses.map(({ config, address }) => (
+        <Link key={address} href={`/dao/${address}`} passHref>
           <a
             className="flex flex-col gap-3 items-center p-5 min-w-[100px] max-w-[100px] bg-tab-hover rounded transition"
             style={{

@@ -205,7 +205,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
     yesVotes > 0 &&
     (threshold.type === ProcessedTQType.Majority
       ? // Majority
-        yesVotes > (quorum ? turnoutTotal : totalWeight) / 2
+        yesVotes > ((quorum ? turnoutTotal : totalWeight) - abstainVotes) / 2
       : // Percent
         yesVotes >=
         ((quorum ? turnoutTotal : totalWeight) - abstainVotes) *
@@ -234,7 +234,10 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
   // elements.
   const effectiveThresholdValue =
     threshold.type === ProcessedTQType.Majority
-      ? 50
+      ? // If there are no abstain votes, this should be 50.
+        // If there are 4% abstain votes, this should be 48, since 48%+1 of the 96% non-abstain votes need to be in favor.
+        50 -
+        (abstainVotes / 2 / ((quorum ? turnoutTotal : totalWeight) || 1)) * 100
       : threshold.type === ProcessedTQType.Percent
       ? threshold.value
       : // If absolute, compute percent of total.

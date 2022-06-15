@@ -10,16 +10,18 @@ import {
   makeMintMessage,
 } from '@dao-dao/utils'
 
-import { ActionKey } from '.'
+import {
+  ActionCardLoader,
+  MintComponent as StatelessMintComponent,
+} from '../components'
 import {
   Action,
-  ActionCardLoader,
   ActionComponent,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '..'
-import { MintComponent as StatelessMintComponent } from '../components'
+} from '../types'
 
 interface MintData {
   to: string
