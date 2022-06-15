@@ -94,7 +94,7 @@ export const useVotingPowerDistributionData = (
   return useMemo(() => {
     const initialTreasuryBalance =
       includeTreasuryWhenApplicable &&
-      structure === NewDAOStructure.UsingGovToken &&
+      structure === NewDAOStructure.GovernanceToken &&
       type === GovernanceTokenType.New
         ? _initialTreasuryBalance
         : undefined

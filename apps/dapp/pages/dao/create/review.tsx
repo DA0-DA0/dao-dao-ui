@@ -7,21 +7,23 @@ import { Logo } from '@dao-dao/ui'
 import {
   NewDAOStructure,
   convertDurationWithUnitsToHumanReadableString,
-  convertThresholdValueToHumanReadableString,
 } from '@/atoms'
 import {
   CreateDAOFormWrapper,
+  CreateDAOQuorumCard,
   CreateDAOReviewStat,
+  CreateDAOThresholdCard,
   SmallScreenNav,
   VotingPowerPieDistribution,
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOReviewPage: FC = () => {
-  const { watchedNewDAO, creating, formWrapperProps } = useCreateDAOForm(3)
+  const { watchedNewDAO, creating, formWrapperProps, register, setValue } =
+    useCreateDAOForm(2)
 
   const governanceTokenEnabled =
-    watchedNewDAO.structure === NewDAOStructure.UsingGovToken
+    watchedNewDAO.structure === NewDAOStructure.GovernanceToken
 
   return (
     <>
@@ -69,18 +71,6 @@ const CreateDAOReviewPage: FC = () => {
 
         <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">
           <CreateDAOReviewStat
-            title={i18n.t('Passing threshold')}
-            value={convertThresholdValueToHumanReadableString(
-              watchedNewDAO.thresholdQuorum.threshold
-            )}
-          />
-          <CreateDAOReviewStat
-            title={i18n.t('Quorum')}
-            value={convertThresholdValueToHumanReadableString(
-              watchedNewDAO.thresholdQuorum.quorum
-            )}
-          />
-          <CreateDAOReviewStat
             title={i18n.t('Voting duration')}
             value={convertDurationWithUnitsToHumanReadableString(
               watchedNewDAO.votingDuration
@@ -118,6 +108,21 @@ const CreateDAOReviewPage: FC = () => {
               />
             </>
           )}
+        </div>
+
+        <div className="mt-3 space-y-3">
+          <CreateDAOThresholdCard
+            readOnly
+            register={register}
+            setValue={setValue}
+            value={watchedNewDAO.thresholdQuorum.threshold}
+          />
+          <CreateDAOQuorumCard
+            readOnly
+            register={register}
+            setValue={setValue}
+            value={watchedNewDAO.thresholdQuorum.quorum}
+          />
         </div>
       </CreateDAOFormWrapper>
     </>

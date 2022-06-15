@@ -267,13 +267,9 @@ export const useCreateDAOForm = (pageIndex: number) => {
 export const createDAOFormPages: DAOFormPage[] = [
   {
     href: '/dao/create',
-    title: i18n.t('Choose a structure'),
-    validate: ({ structure }) => structure !== undefined,
-  },
-  {
-    href: '/dao/create/describe',
     title: i18n.t('Describe the DAO'),
-    validate: ({ name }) => name.trim().length > 0,
+    validate: ({ name, structure }) =>
+      name.trim().length > 0 && structure !== undefined,
   },
   {
     href: '/dao/create/voting',
@@ -354,7 +350,7 @@ const createDAO = async (
     thresholdQuorum: { threshold, quorum },
   } = values
 
-  const governanceTokenEnabled = structure === NewDAOStructure.UsingGovToken
+  const governanceTokenEnabled = structure === NewDAOStructure.GovernanceToken
 
   let votingModuleInstantiateMsg
   if (governanceTokenEnabled) {

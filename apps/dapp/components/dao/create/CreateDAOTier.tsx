@@ -66,7 +66,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   })
 
   const governanceTokenEnabled =
-    newDAO.structure === NewDAOStructure.UsingGovToken
+    newDAO.structure === NewDAOStructure.GovernanceToken
 
   const tierColor = distributionColors[tierIndex % distributionColors.length]
 

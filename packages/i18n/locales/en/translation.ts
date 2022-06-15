@@ -192,10 +192,8 @@ const en = {
     'Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares.',
 
   // Configuring a DAO's description
-  'DAO name': 'DAO name',
-  'DAO name placeholder': "Your DAO's name",
-  'DAO description': 'DAO description',
-  'DAO description placeholder': 'Decribe your DAO',
+  'DAO Name': 'DAO Name',
+  'DAO Description': 'DAO Description',
   'Image URL': 'Image URL',
   'Image URL tooltip':
     'A link an image. For example: https://moonphase.is/image.svg',

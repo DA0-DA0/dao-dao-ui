@@ -52,7 +52,7 @@ export enum ThresholdType {
   ThresholdQuorum,
   AbsoluteCount,
 }
-type ThresholdValue = 'majority' | number
+export type ThresholdValue = 'majority' | number
 export const convertThresholdValueToPercentageThreshold = (
   value: ThresholdValue
 ): PercentageThreshold =>
@@ -64,8 +64,8 @@ export const convertThresholdValueToHumanReadableString = (
 ): string => (value === 'majority' ? i18n.t('Majority') : `${value}%`)
 
 export enum NewDAOStructure {
-  Simple,
-  UsingGovToken,
+  Membership,
+  GovernanceToken,
 }
 
 export enum GovernanceTokenType {
@@ -128,7 +128,7 @@ export const DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT = 1
 export const DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT = 1000
 
 export const DefaultNewDAO: NewDAO = {
-  structure: NewDAOStructure.Simple,
+  structure: NewDAOStructure.Membership,
   name: '',
   description: '',
   tiers: [

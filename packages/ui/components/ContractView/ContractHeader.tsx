@@ -50,12 +50,12 @@ export const ContractHeaderLoader: FC<{}> = () => (
 
     <div className="flex flex-col items-center">
       <h1 className="inline invisible mt-5 header-text">
-        {i18n.t('DAO name')}
+        {i18n.t('DAO Name')}
       </h1>
       <EstablishedDateLoader />
     </div>
     <div className="mt-2 mb-4">
-      <p className="invisible">descripton of the DAO</p>
+      <p className="invisible">{i18n.t('DAO Description')}</p>
     </div>
   </div>
 )
