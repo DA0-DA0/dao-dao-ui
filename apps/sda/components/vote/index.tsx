@@ -1,4 +1,5 @@
 export * from './Hero'
-export * from './VoteHeroContent'
+export * from './ProposalItem'
 export * from './ProposalsContent'
 export * from './ProposalsInfo'
+export * from './VoteHeroContent'

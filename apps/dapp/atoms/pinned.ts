@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-import { localStorageEffect } from '@/atoms/localStorageEffect'
+import { localStorageEffect } from '@/atoms'
 
 export const pinnedAddressesAtom = atom<string[]>({
   key: 'pinnedAddresses',

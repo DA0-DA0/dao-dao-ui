@@ -19,9 +19,9 @@
     "@cosmjs/encoding": "^0.28.1",
     "@cosmjs/proto-signing": "^0.28.1",
     "@cosmjs/stargate": "^0.28.1",
+    "@dao-dao/actions": "*",
     "@dao-dao/common": "*",
     "@dao-dao/icons": "*",
-    "@dao-dao/templates": "*",
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
@@ -63,6 +63,7 @@
     "react-markdown": "^8.0.0",
     "recoil": "^0.7.2",
     "rich-markdown-editor": "^11.21.3",
+    "sharp": "^0.30.6",
     "styled-components": "^5.3.3"
   },
   "devDependencies": {

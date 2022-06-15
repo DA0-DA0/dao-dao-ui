@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { FC, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { mountedInBrowserAtom, useWallet, WalletProvider } from '@dao-dao/state'
+import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
 import { KeplrNotInstalledError, SITE_TITLE } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
@@ -11,9 +11,9 @@ import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import {
   betaWarningAcceptedAtom,
-  noKeplrAccountAtom,
   installWarningVisibleAtom,
-} from '@/atoms/status'
+  noKeplrAccountAtom,
+} from '@/atoms'
 
 export const SidebarLayoutInner: FC = ({ children }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)

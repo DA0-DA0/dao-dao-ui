@@ -17,7 +17,7 @@
     "state": "yarn workspace @dao-dao/state",
     "ui": "yarn workspace @dao-dao/ui",
     "utils": "yarn workspace @dao-dao/utils",
-    "templates": "yarn workspace @dao-dao/templates",
+    "actions": "yarn workspace @dao-dao/actions",
     "common": "yarn workspace @dao-dao/common"
   },
   "devDependencies": {

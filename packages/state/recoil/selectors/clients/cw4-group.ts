@@ -8,11 +8,11 @@ import { selectorFamily } from 'recoil'
 
 import {
   AdminResponse,
+  Cw4GroupQueryClient,
   HooksResponse,
   ListMembersResponse,
   MemberResponse,
   TotalWeightResponse,
-  Cw4GroupQueryClient,
 } from '../../../clients/cw4-group'
 import { cosmWasmClientSelector } from '../chain'
 

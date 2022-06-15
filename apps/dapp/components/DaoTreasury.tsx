@@ -1,26 +1,15 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { useGovernanceTokenInfo } from '@dao-dao/state'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { Button, SuspenseLoader } from '@dao-dao/ui'
-import { Loader } from '@dao-dao/ui/components/Loader'
+import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
-import { TreasuryBalances } from './TreasuryBalances'
-import { addToken } from '@/util/addToken'
+import { TreasuryBalances, useDAOInfoContext } from '@/components'
+import { addToken } from '@/util'
 
 export const DaoTreasury: FC = () => {
-  const { coreAddress } = useOrgInfoContext()
-  const config = useRecoilValue(
-    configSelector({ contractAddress: coreAddress })
-  )
+  const { coreAddress } = useDAOInfoContext()
   const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
-
-  if (!config) {
-    throw new Error('Failed to load data.')
-  }
 
   return (
     <div>

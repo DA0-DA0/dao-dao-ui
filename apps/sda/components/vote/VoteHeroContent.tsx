@@ -3,18 +3,18 @@
 import { useRecoilValue } from 'recoil'
 
 import {
+  CwCoreSelectors,
   useGovernanceTokenInfo,
-  useStakingInfo,
   useProposalModule,
+  useStakingInfo,
   useVotingModule,
 } from '@dao-dao/state'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import {
+  VotingModuleType,
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  VotingModuleType,
+  processThresholdData,
 } from '@dao-dao/utils'
-import { processThresholdData } from '@dao-dao/utils/v1'
 
 import { useDAOInfoContext } from '../DAOInfoContext'
 import { Loader } from '../Loader'
@@ -32,7 +32,7 @@ export const VoteHeroContentLoader = () => (
 export const VoteHeroContent = () => {
   const { votingModuleType } = useDAOInfoContext()
   const config = useRecoilValue(
-    configSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const apr = useApr()

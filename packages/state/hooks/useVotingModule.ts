@@ -1,6 +1,6 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { parseVotingModuleContractName, VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
 
 import { Member } from '../clients/cw4-voting'
 import {

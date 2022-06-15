@@ -1,5 +1,8 @@
-import { ArrowRightIcon, ExternalLinkIcon } from '@heroicons/react/outline'
-import { MenuIcon } from '@heroicons/react/outline'
+import {
+  ArrowRightIcon,
+  ExternalLinkIcon,
+  MenuIcon,
+} from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
 
@@ -11,7 +14,7 @@ import ThemeToggle from 'components/ThemeToggle'
 
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
-import { PinnedOrgNavList } from './PinnedOrgNavList'
+import { PinnedDAONavList } from './PinnedDAONavList'
 
 type NavProps = {
   onMenuClick?: () => void
@@ -35,19 +38,19 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => (
       </div>
       <div className="ml-1 text-sm">
         <div className="mt-[20px]">
-          <h3 className="mb-[16px] font-mono caption-text">Orgs</h3>
+          <h3 className="mb-[16px] font-mono caption-text">DAOs</h3>
 
           <SuspenseLoader
             fallback={<Loader className="!justify-start ml-2" size={20} />}
           >
-            <PinnedOrgNavList />
+            <PinnedDAONavList />
           </SuspenseLoader>
 
           <ul className="mt-2 ml-2 list-none">
             <NavListItem
-              href="/org/explore"
+              href="/dao/explore"
               icon={ArrowRightIcon}
-              text="All Orgs"
+              text="All DAOs"
             />
           </ul>
         </div>

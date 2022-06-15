@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import { Airplane } from '@dao-dao/icons'
 

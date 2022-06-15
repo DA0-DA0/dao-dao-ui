@@ -1,15 +1,15 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  ClaimsResponse,
   StakeCw20Client as ExecuteClient,
+  GetConfigResponse,
+  GetHooksResponse,
   StakeCw20QueryClient as QueryClient,
   StakedBalanceAtHeightResponse,
   StakedValueResponse,
   TotalStakedAtHeightResponse,
   TotalValueResponse,
-  GetConfigResponse,
-  GetHooksResponse,
-  ClaimsResponse,
 } from '../../../clients/stake-cw20'
 import {
   refreshClaimsIdAtom,

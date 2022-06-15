@@ -6,39 +6,35 @@ import toast from 'react-hot-toast'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
-  useWallet,
-  useProposalModule,
+  CwCoreQueryClient,
+  CwProposalSingleHooks,
+  CwProposalSingleQueryClient,
   useGovernanceTokenInfo,
   useProposalInfo,
+  useProposalModule,
+  useWallet,
 } from '@dao-dao/state'
-import { CwCoreQueryClient } from '@dao-dao/state/clients/cw-core'
+import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
-  CwProposalSingleQueryClient,
-  Vote,
-} from '@dao-dao/state/clients/cw-proposal-single'
-import {
-  useCastVote,
-  useExecute,
-} from '@dao-dao/state/hooks/cw-proposal-single'
-import { ErrorPage, StakingMode } from '@dao-dao/ui'
-import {
+  ErrorPage,
   ProposalDetails,
   ProposalInfoCard,
   ProposalInfoVoteStatus,
-} from '@dao-dao/ui/components/ProposalDetails'
+  StakingMode,
+} from '@dao-dao/ui'
 import {
-  cosmWasmClientRouter,
   CHAIN_RPC_ENDPOINT,
   CI,
   VotingModuleType,
   cleanChainError,
+  cosmWasmClientRouter,
 } from '@dao-dao/utils'
 
 import {
   Loader,
-  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
+  makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
@@ -77,11 +73,11 @@ const InnerProposal: FC = () => {
     oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
   })
 
-  const castVote = useCastVote({
+  const castVote = CwProposalSingleHooks.useCastVote({
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const executeProposal = useExecute({
+  const executeProposal = CwProposalSingleHooks.useExecute({
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })

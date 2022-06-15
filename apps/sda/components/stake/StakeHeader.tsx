@@ -3,8 +3,11 @@
 import { FunctionComponent } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import {
+  CwCoreSelectors,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from '@dao-dao/state'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
@@ -58,7 +61,7 @@ export const StakeHeaderLoader: FunctionComponent = () => (
 
 export const StakeHeader: FunctionComponent = () => {
   const daoConfig = useRecoilValue(
-    configSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const {
     governanceTokenInfo,

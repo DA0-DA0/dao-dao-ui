@@ -19,13 +19,13 @@
     "@cosmjs/encoding": "^0.28.1",
     "@cosmjs/proto-signing": "^0.28.1",
     "@cosmjs/stargate": "^0.28.1",
+    "@dao-dao/actions": "*",
+    "@dao-dao/common": "*",
     "@dao-dao/icons": "*",
     "@dao-dao/state": "*",
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
-    "@dao-dao/templates": "*",
-    "@dao-dao/common": "*",
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@headlessui/react": "^1.4.2",
@@ -58,6 +58,7 @@
     "react-json-editor-ajrm": "^2.5.13",
     "recoil": "^0.7.2",
     "rich-markdown-editor": "^11.21.3",
+    "sharp": "^0.30.6",
     "styled-components": "^5.3.3"
   },
   "devDependencies": {

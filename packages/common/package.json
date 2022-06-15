@@ -9,7 +9,7 @@
     "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
     "@dao-dao/utils": "*",
-    "@dao-dao/templates": "*",
+    "@dao-dao/actions": "*",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },

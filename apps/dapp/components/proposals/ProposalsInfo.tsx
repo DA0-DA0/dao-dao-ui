@@ -2,17 +2,19 @@ import { FC } from 'react'
 
 import { useProposalModule } from '@dao-dao/state'
 import {
-  ProposalsInfo as StatelessProposalsInfo,
-  ProposalsInfoProps,
   ProposalsInfoLoader,
+  ProposalsInfoProps,
+  ProposalsInfo as StatelessProposalsInfo,
 } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
-import { processThresholdData } from '@dao-dao/utils/v1'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  processThresholdData,
+} from '@dao-dao/utils'
 
-import { useOrgInfoContext } from '../OrgPageWrapper'
+import { useDAOInfoContext } from '../DAOPageWrapper'
 
 export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
-  const { coreAddress } = useOrgInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const { proposalModuleConfig, proposalDepositTokenInfo } = useProposalModule(
     coreAddress,
     {

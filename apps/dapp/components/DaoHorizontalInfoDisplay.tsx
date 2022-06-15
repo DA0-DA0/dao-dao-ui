@@ -13,14 +13,14 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
-  convertMicroDenomToDenomWithDecimals,
   VotingModuleType,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { useOrgInfoContext } from './OrgPageWrapper'
+import { useDAOInfoContext } from './DAOPageWrapper'
 
 const DaoHorizontalInfoDisplayInternal: FC = () => {
-  const { coreAddress, votingModuleType } = useOrgInfoContext()
+  const { coreAddress, votingModuleType } = useDAOInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
     fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,

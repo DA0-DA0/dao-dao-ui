@@ -8,12 +8,12 @@ import { selectorFamily } from 'recoil'
 
 import {
   DaoResponse,
+  Cw4VotingClient as ExecuteClient,
   GroupContractResponse,
   InfoResponse,
+  Cw4VotingQueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-  Cw4VotingClient as ExecuteClient,
-  Cw4VotingQueryClient as QueryClient,
 } from '../../../clients/cw4-voting'
 import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 

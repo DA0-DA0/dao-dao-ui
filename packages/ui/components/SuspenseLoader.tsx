@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router'
 import {
-  FunctionComponent,
-  SuspenseProps,
-  Suspense,
   ComponentType,
+  FunctionComponent,
+  Suspense,
+  SuspenseProps,
 } from 'react'
 import { useRecoilValue } from 'recoil'
 

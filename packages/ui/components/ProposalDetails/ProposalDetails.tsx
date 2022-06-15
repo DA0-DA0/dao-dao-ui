@@ -1,16 +1,16 @@
-import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline'
+import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useMemo, useState } from 'react'
 
+import { ActionsRenderer } from '@dao-dao/actions'
 import {
   Proposal,
   Status,
   Vote as VoteChoice,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import { TemplatesRenderer } from '@dao-dao/templates/components'
 import {
-  decodedMessagesString,
-  decodeMessages,
   VotingModuleType,
+  decodeMessages,
+  decodedMessagesString,
 } from '@dao-dao/utils'
 
 import { Button } from '../Button'
@@ -75,7 +75,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
               value={decodedMessagesString(proposal.msgs)}
             />
           ) : (
-            <TemplatesRenderer
+            <ActionsRenderer
               coreAddress={coreAddress}
               messages={decodedMessages}
               proposalId={proposalId}
