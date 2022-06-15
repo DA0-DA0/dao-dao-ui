@@ -143,15 +143,19 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             <p className="max-w-prose body-text">
               You must have voting power at the time of proposal creation to
               vote.{' '}
-              {stakingModal && (
-                <button
-                  className="underline"
-                  onClick={() => setShowStaking(true)}
-                >
-                  Stake some tokens so you can vote next time?
-                </button>
-              )}
-              {showStaking && stakingModal}
+              {/* Only show staking modal if using staked balance to vote. */}
+              {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+                stakingModal && (
+                  <>
+                    <button
+                      className="underline"
+                      onClick={() => setShowStaking(true)}
+                    >
+                      Stake some tokens so you can vote next time?
+                    </button>
+                    {showStaking && stakingModal}
+                  </>
+                )}
             </p>
           )}
         </>
