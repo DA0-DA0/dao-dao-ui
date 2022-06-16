@@ -7,6 +7,39 @@ import {
   pinnedProposalIDsMarkedDoneAtom,
 } from '@/atoms'
 
+// There are three important pieces of state:
+
+// pinnedAddresses is straightforward: it's just a list of cw-core
+// addresses that have been pinned/favorited.
+
+// pinnedProposalIDsMarkedDone is a map of cw-core address to a list of
+// proposal IDs, which contains the IDs of proposals that have been marked
+// done. This happens when a user clicks the hide button on a proposal on
+// the top of the starred/home page, or when a user casts a vote.
+
+// pinnedLatestProposalIDsMarkedDone is a map of cw-core address to one
+// proposal ID. This is a cache of the latest proposal ID that has been
+// marked as done, allowing the done list above to stay relatively short
+// and not waste the user's browser storage. This also allows us to more
+// efficiently query for the list of all proposals by using the startAfter
+// parameter. If the first 5 proposals are not open on the first load, the
+// home page detects that the first loaded open proposal was #6, and sets
+// the value in this map to 5. The next time the user loads the home page,
+// it will use startAfter:5 when querying the list of proposals. This also
+// takes into account the manual done list. Since the proposals in the done
+// list will be manually filtered out of the query response, this map gets
+// updated to reflect the latest proposal ID that was marked done based on
+// the proposals that get displayed, which then allows us to clear the done
+// list of all values smaller than this latest ID.
+// Example:
+// pinnedProposalIDsMarkedDone: a -> [2, 4]
+// pinnedLatestProposalIDsMarkedDone: a -> 1
+// Upon marking proposal #3 as done, but not before, this should update to:
+// pinnedProposalIDsMarkedDone: a -> []
+// pinnedLatestProposalIDsMarkedDone: a -> 4
+// and #5 will be the first one loaded next time without having to manually
+// filter out 2 and 4 like before, and keeping the localStorage size down.
+
 export const usePinnedDAOs = () => {
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)

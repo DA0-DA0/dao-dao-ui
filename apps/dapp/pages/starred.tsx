@@ -127,6 +127,7 @@ const InnerStarred: FC = () => {
   // may no longer be open for voting, and thus don't need to be fetched.
   // Do this by marking done the proposal ID right before the earliest
   // proposal we fetched for each DAO.
+  // See the comment above the usePinnedDAOs hooks for more details.
   useEffect(() => {
     const updatedDoneProposalIDs = pinned.reduce((acc, { coreAddress }) => {
       const openProposalIDs = openProposalResponses

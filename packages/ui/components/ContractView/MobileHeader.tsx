@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, Logo, HeartButton } from '@dao-dao/ui'
+import { CopyToClipboardMobile, HeartButton, Logo } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 export interface MobileHeaderProps {
