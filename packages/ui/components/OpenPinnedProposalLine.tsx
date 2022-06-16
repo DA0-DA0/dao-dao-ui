@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from '@heroicons/react/solid'
+import { EyeOffIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
@@ -7,6 +7,7 @@ import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { ProposalResponse } from '@dao-dao/state/clients/cw-proposal-single'
 import { getProposalEnd, zeroPad } from '@dao-dao/utils'
 
+import { Tooltip } from '.'
 import { Button } from './Button'
 import { Logo } from './Logo'
 
@@ -97,8 +98,10 @@ export const OpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = (
       </a>
     </Link>
 
-    <Button className="!px-2" onClick={props.markDone} variant="secondary">
-      <CheckCircleIcon className="w-4 h-4" />
-    </Button>
+    <Tooltip label="Hide from this page.">
+      <Button className="!px-2" onClick={props.markDone} variant="secondary">
+        <EyeOffIcon className="w-4 h-4" />
+      </Button>
+    </Tooltip>
   </div>
 )
