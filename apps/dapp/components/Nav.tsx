@@ -70,7 +70,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
             </div>
           </div>
           <button
-            className="flex justify-between items-center p-2 my-5 w-full bg-primary rounded-lg link-text"
+            className="flex justify-between items-center p-2 mt-5 w-full bg-primary rounded-lg hover:outline-brand hover:outline link-text"
             onClick={() => setShowSearch(true)}
           >
             <p className="flex gap-2 items-center">

@@ -39,12 +39,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
     useRecoilState(pinnedAddressesAtom)
   const pinned = pinnedAddresses.includes(address)
 
-  if (
-    !config ||
-    nativeBalance === undefined ||
-    walletVotingWeight === undefined ||
-    proposalCount === undefined
-  ) {
+  if (!config || nativeBalance === undefined || proposalCount === undefined) {
     throw new Error(i18n.t('error.loadingData'))
   }
 
