@@ -1,5 +1,5 @@
-import { StarIcon as StarIconOutline } from '@heroicons/react/outline'
-import { StarIcon as StarIconSolid } from '@heroicons/react/solid'
+import { HeartIcon as HeartIconOutline } from '@heroicons/react/outline'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, ReactNode } from 'react'
@@ -151,9 +151,9 @@ export const ContractCard: FC<ContractCardProps> = ({
     >
       {pinned !== undefined ? (
         pinned ? (
-          <StarIconSolid className="w-[18px] h-[18px]" />
+          <HeartIconSolid className="w-[18px] h-[18px]" />
         ) : (
-          <StarIconOutline className="w-[18px] h-[18px]" />
+          <HeartIconOutline className="w-[18px] h-[18px]" />
         )
       ) : undefined}
     </button>

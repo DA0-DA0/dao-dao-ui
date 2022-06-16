@@ -42,6 +42,7 @@ import {
   makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { usePinnedDAOs } from '@/hooks'
 
 const InnerProposal: FC = () => {
   const router = useRouter()
@@ -78,6 +79,7 @@ const InnerProposal: FC = () => {
     sender: walletAddress ?? '',
   })
 
+  const { markPinnedProposalIdDone } = usePinnedDAOs()
   const onVote = useCallback(
     async (vote: Vote) => {
       if (!connected || proposalId === undefined) return
@@ -90,6 +92,9 @@ const InnerProposal: FC = () => {
           vote,
         })
 
+        // Mark this proposal done so it doesn't show on homepage.
+        markPinnedProposalIdDone(coreAddress, proposalId)
+
         refreshProposalAndAll()
         toast.success(i18n.t('success.voteCast'))
       } catch (err) {
@@ -101,7 +106,14 @@ const InnerProposal: FC = () => {
 
       setLoading(false)
     },
-    [castVote, connected, proposalId, setLoading, refreshProposalAndAll]
+    [
+      connected,
+      proposalId,
+      castVote,
+      markPinnedProposalIdDone,
+      coreAddress,
+      refreshProposalAndAll,
+    ]
   )
 
   const onExecute = useCallback(async () => {

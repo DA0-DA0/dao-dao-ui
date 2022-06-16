@@ -54,7 +54,7 @@ export const useVotingModule = (
       : constSelector(undefined)
   )?.power
   const _totalVotingWeight = useRecoilValue(
-    walletAddress && votingModuleAddress
+    votingModuleAddress
       ? totalPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{}],

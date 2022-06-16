@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import { useRecoilState } from 'recoil'
 
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -8,8 +7,8 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { pinnedAddressesAtom } from '@/atoms'
 import { useDAOInfoContext } from '@/components'
+import { usePinnedDAOs } from '@/hooks'
 import { addToken } from '@/util'
 
 const DAOMobileHeaderInternal: FC = () => {
@@ -17,9 +16,8 @@ const DAOMobileHeaderInternal: FC = () => {
     useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
 
-  const [pinnedAddresses, setPinnedAddresses] =
-    useRecoilState(pinnedAddressesAtom)
-  const pinned = pinnedAddresses.includes(coreAddress)
+  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const pinned = isPinned(coreAddress)
 
   return (
     <StatelessMobileHeader
@@ -29,9 +27,9 @@ const DAOMobileHeaderInternal: FC = () => {
       name={name}
       onPin={() => {
         if (pinned) {
-          setPinnedAddresses((p) => p.filter((a) => a !== coreAddress))
+          setUnpinned(coreAddress)
         } else {
-          setPinnedAddresses((p) => p.concat([coreAddress]))
+          setPinned(coreAddress)
           governanceTokenAddress && addToken(governanceTokenAddress)
         }
       }}

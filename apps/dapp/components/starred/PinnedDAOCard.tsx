@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import i18n from '@dao-dao/i18n'
 import {
@@ -16,7 +16,7 @@ import {
 } from '@dao-dao/utils'
 
 import { ContractCard, LoadingContractCard } from '../ContractCard'
-import { pinnedAddressesAtom } from '@/atoms'
+import { usePinnedDAOs } from '@/hooks'
 import { addToken } from '@/util'
 
 interface PinnedDAOCardProps {
@@ -35,9 +35,8 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
     fetchProposalCount: true,
   })
 
-  const [pinnedAddresses, setPinnedAddresses] =
-    useRecoilState(pinnedAddressesAtom)
-  const pinned = pinnedAddresses.includes(address)
+  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const pinned = isPinned(address)
 
   if (!config || nativeBalance === undefined || proposalCount === undefined) {
     throw new Error(i18n.t('error.loadingData'))
@@ -52,9 +51,9 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
       name={config.name}
       onPin={() => {
         if (pinned) {
-          setPinnedAddresses((p) => p.filter((a) => a !== address))
+          setUnpinned(address)
         } else {
-          setPinnedAddresses((p) => p.concat([address]))
+          setPinned(address)
           governanceTokenAddress && addToken(governanceTokenAddress)
         }
       }}
