@@ -182,6 +182,7 @@ const en = {
   'Configure voting description':
     'Add members, configure voting thresholds, and (optionally) use governance tokens to determine voting share.',
   'Review and submit': 'Review and submit',
+  'Token distribution': 'Token distribution',
 
   // Choosing a DAO's structure
   'Membership-based DAO': 'Membership-based DAO',

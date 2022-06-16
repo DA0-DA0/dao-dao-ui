@@ -41,6 +41,7 @@ import {
 
 import { usePinnedDAOs } from './usePinnedDAOs'
 import {
+  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAO,
@@ -94,6 +95,12 @@ export const useCreateDAOForm = (pageIndex: number) => {
   } = useForm({ defaultValues: newDAO })
 
   const watchedNewDAO = watch()
+  // Determine if tiers have been touched yet.
+  const tiersAreUntouched =
+    watchedNewDAO.tiers.length === 1 &&
+    watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name &&
+    watchedNewDAO.tiers[0].members.length === 1 &&
+    watchedNewDAO.tiers[0].members[0].address === ''
 
   const invalidPages = createDAOFormPages.map(
     ({ validate }) =>
@@ -245,6 +252,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
 
   return {
     watchedNewDAO,
+    tiersAreUntouched,
     errors,
     register,
     getValues,

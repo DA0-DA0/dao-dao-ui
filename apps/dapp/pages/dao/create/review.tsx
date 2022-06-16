@@ -4,35 +4,49 @@ import { FC } from 'react'
 import i18n from '@dao-dao/i18n'
 import { Logo } from '@dao-dao/ui'
 
-import {
-  NewDAOStructure,
-  convertDurationWithUnitsToHumanReadableString,
-} from '@/atoms'
+import { NewDAOStructure } from '@/atoms'
 import {
   CreateDAOFormWrapper,
+  CreateDAOProposalDepositCard,
   CreateDAOQuorumCard,
-  CreateDAOReviewStat,
+  CreateDAORefundFailedProposalDepositCard,
   CreateDAOThresholdCard,
+  CreateDAOUnstakingDurationCard,
+  CreateDAOVotingDurationCard,
   SmallScreenNav,
   VotingPowerPieDistribution,
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOReviewPage: FC = () => {
-  const { watchedNewDAO, creating, formWrapperProps, register, setValue } =
-    useCreateDAOForm(2)
+  const {
+    watchedNewDAO,
+    creating,
+    formWrapperProps,
+    register,
+    setValue,
+    watch,
+  } = useCreateDAOForm(2)
 
   const governanceTokenEnabled =
     watchedNewDAO.structure === NewDAOStructure.GovernanceToken
+
+  const configCardProps = {
+    newDAO: watchedNewDAO,
+    register,
+    setValue,
+    watch,
+    readOnly: true,
+  }
 
   return (
     <>
       <SmallScreenNav />
 
       <CreateDAOFormWrapper {...formWrapperProps}>
-        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-t-lg md:gap-10 md:py-10">
+        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
-            <div className="flex flex-col gap-2 items-center text-center">
+            <div className="flex flex-col items-center">
               <div
                 className={clsx('overflow-hidden w-24 h-24 rounded-full', {
                   'animate-spin-medium': creating,
@@ -49,16 +63,27 @@ const CreateDAOReviewPage: FC = () => {
                   <Logo alt="DAO DAO logo" height="100%" width="100%" />
                 )}
               </div>
-              <p className="text-xl">{watchedNewDAO.name}</p>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <p className="font-mono caption-text">
-                {i18n.t('DAO description')}
-              </p>
-              <p className="text-lg secondary-text">
-                {watchedNewDAO.description}
-              </p>
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <p className="font-mono caption-text">{i18n.t('DAO Name')}</p>
+                <p className="text-xl">{watchedNewDAO.name}</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p className="font-mono caption-text">
+                  {i18n.t('DAO Description')}
+                </p>
+                <p
+                  className={clsx('secondary-text', {
+                    'text-base': watchedNewDAO.description,
+                    'text-sm italic': !watchedNewDAO.description,
+                  })}
+                >
+                  {watchedNewDAO.description || i18n.t('None')}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -69,60 +94,25 @@ const CreateDAOReviewPage: FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded-b border border-t-0 border-inactive">
-          <CreateDAOReviewStat
-            title={i18n.t('Voting duration')}
-            value={convertDurationWithUnitsToHumanReadableString(
-              watchedNewDAO.votingDuration
-            )}
-          />
-          {governanceTokenEnabled &&
-            !!watchedNewDAO.governanceTokenOptions.proposalDeposit?.value && (
-              <>
-                <CreateDAOReviewStat
-                  title={i18n.t('Proposal deposit')}
-                  value={`${watchedNewDAO.governanceTokenOptions.proposalDeposit.value}`}
-                />
-                <CreateDAOReviewStat
-                  title={i18n.t('Proposal deposit refund')}
-                  value={
-                    watchedNewDAO.governanceTokenOptions.proposalDeposit
-                      .refundFailed
-                      ? i18n.t('On')
-                      : i18n.t('Off')
-                  }
-                />
-              </>
-            )}
+        <div className="mt-3 space-y-3">
+          <CreateDAOVotingDurationCard {...configCardProps} />
           {governanceTokenEnabled && (
             <>
-              <CreateDAOReviewStat
-                title={i18n.t('Governance tokens')}
-                value={i18n.t('Enabled')}
-              />
-              <CreateDAOReviewStat
-                title={i18n.t('Unstaking period')}
-                value={convertDurationWithUnitsToHumanReadableString(
-                  watchedNewDAO.governanceTokenOptions.unregisterDuration
-                )}
-              />
+              {!!watchedNewDAO.governanceTokenOptions.proposalDeposit
+                ?.value && (
+                <>
+                  <CreateDAOProposalDepositCard {...configCardProps} />
+                  <CreateDAORefundFailedProposalDepositCard
+                    {...configCardProps}
+                  />
+                </>
+              )}
+
+              <CreateDAOUnstakingDurationCard {...configCardProps} />
             </>
           )}
-        </div>
-
-        <div className="mt-3 space-y-3">
-          <CreateDAOThresholdCard
-            readOnly
-            register={register}
-            setValue={setValue}
-            value={watchedNewDAO.thresholdQuorum.threshold}
-          />
-          <CreateDAOQuorumCard
-            readOnly
-            register={register}
-            setValue={setValue}
-            value={watchedNewDAO.thresholdQuorum.quorum}
-          />
+          <CreateDAOThresholdCard {...configCardProps} />
+          <CreateDAOQuorumCard {...configCardProps} />
         </div>
       </CreateDAOFormWrapper>
     </>
