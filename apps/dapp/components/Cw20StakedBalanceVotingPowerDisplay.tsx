@@ -31,13 +31,13 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
     walletBalance: unstakedGovTokenBalance,
   } = useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
   const {
-    walletStaked: stakedGovTokenBalance,
-    totalStaked,
+    walletStakedValue,
+    totalStakedValue,
     blockHeight,
     sumClaimsAvailable,
   } = useStakingInfo(coreAddress, {
-    fetchWalletStaked: true,
-    fetchTotalStaked: true,
+    fetchWalletStakedValue: true,
+    fetchTotalStakedValue: true,
     fetchClaims: true,
   })
 
@@ -54,8 +54,8 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
   if (
     !connected ||
     unstakedGovTokenBalance === undefined ||
-    stakedGovTokenBalance === undefined ||
-    totalStaked === undefined
+    walletStakedValue === undefined ||
+    totalStakedValue === undefined
   ) {
     return <ConnectWalletButton />
   }
@@ -70,7 +70,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
   return (
     <>
       <div className="flex flex-col gap-2 items-stretch">
-        {unstakedGovTokenBalance > 0 && stakedGovTokenBalance === 0 && (
+        {unstakedGovTokenBalance > 0 && walletStakedValue === 0 && (
           <BalanceCard
             buttonLabel={i18n.t('Stake tokens')}
             icon={<PlusSmIcon className="w-4 h-4" />}
@@ -97,7 +97,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             </p>
           </BalanceCard>
         )}
-        {stakedGovTokenBalance > 0 && (
+        {walletStakedValue > 0 && (
           <BalanceCard
             buttonLabel={i18n.t('Unstake tokens')}
             icon={<MinusSmIcon className="w-4 h-4" />}
@@ -110,8 +110,8 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
                 Your voting power is{' '}
                 <span className="font-bold">
                   {{
-                    powerPercent: (totalStaked
-                      ? (stakedGovTokenBalance / totalStaked) * 100
+                    powerPercent: (totalStakedValue
+                      ? (walletStakedValue / totalStakedValue) * 100
                       : 0
                     ).toLocaleString(undefined, {
                       maximumSignificantDigits: 4,
@@ -123,7 +123,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
                 <span className="font-bold">
                   {{
                     amount: convertMicroDenomToDenomWithDecimals(
-                      stakedGovTokenBalance,
+                      walletStakedValue,
                       governanceTokenInfo.decimals
                     ).toLocaleString(undefined, {
                       maximumFractionDigits: governanceTokenInfo.decimals,
@@ -136,7 +136,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             </p>
           </BalanceCard>
         )}
-        {stakedGovTokenBalance > 0 && unstakedGovTokenBalance > 0 && (
+        {walletStakedValue > 0 && unstakedGovTokenBalance > 0 && (
           <BalanceCard
             buttonLabel={i18n.t('Stake tokens')}
             icon={<PlusSmIcon className="w-4 h-4" />}

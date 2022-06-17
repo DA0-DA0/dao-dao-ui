@@ -65,35 +65,26 @@ export const StakeHeader: FunctionComponent = () => {
   )
   const {
     governanceTokenInfo,
-    treasuryBalance: _treasuryBalance,
+    treasuryBalance: treasuryBalance,
     price: governanceTokenPrice,
   } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchTreasuryBalance: true,
     fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
   const apr = useApr()
-  const { totalStaked } = useStakingInfo(DAO_ADDRESS, {
-    fetchTotalStaked: true,
+  const { totalStakedValue } = useStakingInfo(DAO_ADDRESS, {
+    fetchTotalStakedValue: true,
   })
 
   if (
     !daoConfig ||
     !governanceTokenInfo ||
-    totalStaked === undefined ||
-    _treasuryBalance === undefined ||
+    totalStakedValue === undefined ||
+    treasuryBalance === undefined ||
     apr === undefined
   ) {
     return <StakeHeaderLoader />
   }
-
-  const totalStakedBalance = convertMicroDenomToDenomWithDecimals(
-    totalStaked,
-    governanceTokenInfo.decimals
-  )
-  const treasuryBalance = convertMicroDenomToDenomWithDecimals(
-    _treasuryBalance,
-    governanceTokenInfo.decimals
-  )
 
   return (
     <>
@@ -129,7 +120,10 @@ export const StakeHeader: FunctionComponent = () => {
           </p>
 
           <p className="text-base lg:text-xl header-text">
-            {treasuryBalance.toLocaleString(undefined, {
+            {convertMicroDenomToDenomWithDecimals(
+              treasuryBalance,
+              governanceTokenInfo.decimals
+            ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}{' '}
             {governanceTokenInfo.name}
@@ -144,7 +138,10 @@ export const StakeHeader: FunctionComponent = () => {
           </p>
 
           <p className="text-base lg:text-xl header-text">
-            {totalStakedBalance.toLocaleString(undefined, {
+            {convertMicroDenomToDenomWithDecimals(
+              totalStakedValue,
+              governanceTokenInfo.decimals
+            ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}{' '}
             {governanceTokenInfo.name}

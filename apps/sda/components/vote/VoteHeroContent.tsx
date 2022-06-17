@@ -36,9 +36,12 @@ export const VoteHeroContent = () => {
   )
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const apr = useApr()
-  const { stakingContractConfig, totalStaked } = useStakingInfo(DAO_ADDRESS, {
-    fetchTotalStaked: true,
-  })
+  const { stakingContractConfig, totalStakedValue } = useStakingInfo(
+    DAO_ADDRESS,
+    {
+      fetchTotalStakedValue: true,
+    }
+  )
   const { proposalModuleConfig } = useProposalModule(DAO_ADDRESS, {
     fetchProposalDepositTokenInfo: true,
   })
@@ -77,10 +80,11 @@ export const VoteHeroContent = () => {
               )
             : undefined,
           stakedPercent:
-            totalStaked !== undefined && governanceTokenInfo
+            totalStakedValue !== undefined && governanceTokenInfo
               ? Number(
                   (
-                    (totalStaked / Number(governanceTokenInfo.total_supply)) *
+                    (totalStakedValue /
+                      Number(governanceTokenInfo.total_supply)) *
                     100
                   ).toLocaleString()
                 )
