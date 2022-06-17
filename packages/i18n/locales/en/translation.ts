@@ -68,6 +68,8 @@ const en = {
   'You could have more voting power': 'You could have more voting power.',
   'Stake your remaining tokens to gain voting power':
     'Stake your remaining {{amount}} ${{tokenSymbol}} to gain voting power in {{daoName}}.',
+  'You can now claim your unstaked tokens':
+    'You can now claim your unstaked ${{tokenSymbol}}.',
 
   'Governance token name': 'Token name',
   'Governance token placeholder': 'A token name (e.g., "DogDAO token")',

@@ -1,4 +1,4 @@
-export * from './BalanceCards'
+export * from './BalanceCard'
 export * from './BalanceIcon'
 export * from './BalanceListItem'
 export * from './ContractHeader'
