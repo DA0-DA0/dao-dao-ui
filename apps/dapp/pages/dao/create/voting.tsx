@@ -214,7 +214,7 @@ const CreateDAOVotingPage: FC = () => {
                                 width="2.25rem"
                               />
                             )}
-
+                            $
                             {watchedNewDAO.governanceTokenOptions.newInfo
                               .symbol || 'Token'}
                           </div>

@@ -101,7 +101,7 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
               amount: convertMicroDenomToDenomWithDecimals(
                 unstakedGovTokenBalance,
                 governanceTokenInfo.decimals
-              ).toLocaleString(undefined, { maximumFractionDigits: 20 }),
+              ),
               tokenSymbol: governanceTokenInfo.symbol,
             })}
           </h3>

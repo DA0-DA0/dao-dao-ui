@@ -134,7 +134,7 @@ const en = {
   'Your voting weight': 'Your voting power',
   'You are about to unstake': 'You are about to unstake governance tokens',
   'You have unstaked tokens':
-    'You have {{amount, number}} unstaked ${{tokenSymbol}}.',
+    'You have {{amount, number(maximumFractionDigits:20)}} unstaked ${{tokenSymbol}}.',
   'You have unstaked tokens explanation':
     'Unstaked tokens do not count toward your share of the vote!',
   'You must have voting power to create a proposal':
