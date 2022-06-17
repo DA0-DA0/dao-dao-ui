@@ -94,7 +94,7 @@ const CreateDAOPage: FC = () => {
           </div>
         </div>
 
-        <p className="my-4">{i18n.t('Choose a structure')}</p>
+        <p className="mt-6 mb-4 primary-text">{i18n.t('Choose a structure')}</p>
 
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure

@@ -86,16 +86,15 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
             )}
 
             <div className="flex flex-row grow gap-2 items-center">
-              <TooltipIcon label="This name is just for your reference when creating the DAO. For example: 'Core team' or 'Developers'." />
-
               <TextInput
                 className="grow"
                 error={errors.tiers?.[tierIndex]?.name}
                 label={`tiers.${tierIndex}.name`}
-                placeholder="Tier name..."
+                placeholder={i18n.t('Tier name') + '...'}
                 register={register}
                 validation={[validateRequired]}
               />
+              <TooltipIcon label={i18n.t('Tier description')} />
             </div>
           </div>
           <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
@@ -105,8 +104,10 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
           <div className="flex flex-row gap-2 items-center">
             <p className="text-right caption-text">
               {governanceTokenEnabled
-                ? i18n.t('Governance token', { count: 1000 })
+                ? i18n.t('Governance tokens', { count: 1000 })
                 : i18n.t('Voting weight')}
+              <br />
+              {i18n.t('per member')}
             </p>
             <div>
               <NumberInput
@@ -142,7 +143,6 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                 validation={[validatePositive, validateRequired]}
               />
             </div>
-            <p className="secondary-text">{i18n.t('per member')}</p>
             <TooltipIcon label={i18n.t('Add another tier prompt')} />
           </div>
 

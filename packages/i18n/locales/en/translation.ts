@@ -209,7 +209,7 @@ const en = {
   Tier_other: 'Tiers',
   'Tier name': 'Tier name',
   'Tier description':
-    'The "class" of member. For example: "Core developers," "friends and family." These names are only for your reference.',
+    'The "class" of member. For example: "Core developers" or "friends and family." These names are only for your reference.',
   'Add tier': 'Add tier',
   'Default tier name': 'Core contributors',
   // governance token configuration
