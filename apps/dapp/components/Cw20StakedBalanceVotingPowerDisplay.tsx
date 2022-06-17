@@ -81,7 +81,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             <p className="body-text">
               <Trans i18nKey="stakeTokensToJoin">
                 Stake your{' '}
-                <span className="text-bold">
+                <span className="font-bold">
                   {{
                     amount: convertMicroDenomToDenomWithDecimals(
                       unstakedGovTokenBalance,
@@ -170,7 +170,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             icon={<HandIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Claim)}
-            title={i18n.t('You can now claim your unstaked tokens', {
+            title={i18n.t('Your tokens have unstaked', {
               tokenSymbol: governanceTokenInfo.symbol,
             })}
           >

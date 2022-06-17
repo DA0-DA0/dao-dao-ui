@@ -61,15 +61,14 @@ const en = {
   // Balance cards
   'You are not a member yet!': 'You are not a member of {{daoName}} yet!',
   stakeTokensToJoin:
-    'Stake your <1>{{amount}} ${{tokenSymbol}}</1> to join and vote in {{daoName}}.',
+    'Stake your <2>{{amount}} ${{tokenSymbol}}</2> to join and vote in {{daoName}}.',
   'You are a member!': 'You are a member of {{daoName}}!',
   votingPowerStakedTokens:
-    'Your voting power is <1>{{powerPercent)}}%</1> (<2>{{amount}} ${{tokenSymbol}} staked</2>).',
+    'Your voting power is <2>{{powerPercent}}%</2> (<5>{{amount}} ${{tokenSymbol}} staked</5>).',
   'You could have more voting power': 'You could have more voting power.',
   stakeRemainingForVotingPower:
-    'Stake your <1>remaining {{amount}} ${{tokenSymbol}}</1> to gain voting power in {{daoName}}.',
-  'You can now claim your unstaked tokens':
-    'You can now claim your unstaked ${{tokenSymbol}}.',
+    'Stake your <2>remaining {{amount}} ${{tokenSymbol}}</2> to gain voting power in {{daoName}}.',
+  'Your tokens have unstaked': 'Your ${{tokenSymbol}} tokens have unstaked.',
 
   'Governance token name': 'Token name',
   'Governance token placeholder': 'A token name (e.g., "DogDAO token")',
