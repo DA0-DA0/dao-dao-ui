@@ -12,6 +12,7 @@ const en = {
   Enabled: 'Enabled',
   Preview: 'Preview',
   'Hide preview': 'Hide preview', // a command
+  Create: 'Create',
 
   // DAO vocabulary
   //
@@ -112,6 +113,7 @@ const en = {
   // Names for UI ideas
   Favorited: 'Favorited',
   Favorite: 'Favorite',
+  Featured: 'Featured',
 
   // Names for UI states
   //

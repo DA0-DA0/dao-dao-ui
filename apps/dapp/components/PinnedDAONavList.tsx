@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { FC } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { Logo } from '@dao-dao/ui'
@@ -44,7 +45,7 @@ export const PinnedDAONavList: FC = () => {
       ) : (
         <Link href="/dao/create">
           <a className="flex gap-2 items-center hover:underline link-text">
-            <PlusIcon className="w-3 h-3" /> Create a DAO
+            <PlusIcon className="w-3 h-3" /> {i18n.t('Create a DAO')}
           </a>
         </Link>
       )}

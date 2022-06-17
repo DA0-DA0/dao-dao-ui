@@ -1,17 +1,17 @@
-import { StarIcon as StarOutline } from '@heroicons/react/outline'
-import { StarIcon as StarSolid } from '@heroicons/react/solid'
+import { HeartIcon as HeartOutline } from '@heroicons/react/outline'
+import { HeartIcon as HeartSolid } from '@heroicons/react/solid'
 import { FC } from 'react'
 
 import i18n from '@dao-dao/i18n'
 
 import { useThemeContext } from '../../theme'
 
-export interface StarButtonProps {
+export interface HeartButtonProps {
   pinned: boolean
   onPin: () => void
 }
 
-export const StarButton: FC<StarButtonProps> = ({ pinned, onPin }) => {
+export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
   const { accentColor } = useThemeContext()
 
   return (
@@ -21,14 +21,14 @@ export const StarButton: FC<StarButtonProps> = ({ pinned, onPin }) => {
       style={accentColor ? { color: accentColor } : {}}
     >
       {pinned ? (
-        <StarSolid
+        <HeartSolid
           className="inline mr-1 w-[20px] text-brand"
           style={accentColor ? { color: accentColor } : {}}
         />
       ) : (
-        <StarOutline className="inline mr-1 w-[20px]" />
+        <HeartOutline className="inline mr-1 w-[20px]" />
       )}
-      <span className="inline hidden md:block">
+      <span className="hidden md:block">
         {pinned ? i18n.t('Favorited') : i18n.t('Favorite')}
       </span>
     </button>
