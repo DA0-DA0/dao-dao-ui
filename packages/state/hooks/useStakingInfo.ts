@@ -15,8 +15,8 @@ import { useGovernanceTokenInfo } from '.'
 
 interface UseStakingOptions {
   fetchClaims?: boolean
-  fetchTotalStaked?: boolean
-  fetchWalletStaked?: boolean
+  fetchTotalStakedValue?: boolean
+  fetchWalletStakedValue?: boolean
 }
 
 interface UseStakingResponse {
@@ -32,18 +32,18 @@ interface UseStakingResponse {
   claimsPending?: Claim[]
   claimsAvailable?: Claim[]
   sumClaimsAvailable?: number
-  // Total staked
-  totalStaked?: number
-  // Wallet staked
-  walletStaked?: number
+  // Total staked value
+  totalStakedValue?: number
+  // Wallet staked value
+  walletStakedValue?: number
 }
 
 export const useStakingInfo = (
   coreAddress: string,
   {
     fetchClaims = false,
-    fetchTotalStaked = false,
-    fetchWalletStaked = false,
+    fetchTotalStakedValue = false,
+    fetchWalletStakedValue = false,
   }: UseStakingOptions = {}
 ): UseStakingResponse => {
   const { address: walletAddress } = useWallet()
@@ -104,18 +104,18 @@ export const useStakingInfo = (
     0
   )
 
-  // Total staked
-  const totalStaked = useRecoilValue(
-    fetchTotalStaked && stakingContractAddress
+  // Total staked value
+  const totalStakedValue = useRecoilValue(
+    fetchTotalStakedValue && stakingContractAddress
       ? StakeCw20Selectors.totalValueSelector({
           contractAddress: stakingContractAddress,
         })
       : constSelector(undefined)
   )?.total
 
-  // Wallet staked
-  const walletStaked = useRecoilValue(
-    fetchWalletStaked && stakingContractAddress && walletAddress
+  // Wallet staked value
+  const walletStakedValue = useRecoilValue(
+    fetchWalletStakedValue && stakingContractAddress && walletAddress
       ? StakeCw20Selectors.stakedValueSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
@@ -136,9 +136,13 @@ export const useStakingInfo = (
     claimsPending,
     claimsAvailable,
     sumClaimsAvailable,
-    // Total staked
-    totalStaked: fetchTotalStaked ? Number(totalStaked) : undefined,
-    // Wallet staked
-    walletStaked: fetchWalletStaked ? Number(walletStaked) : undefined,
+    // Total staked value
+    totalStakedValue: fetchTotalStakedValue
+      ? Number(totalStakedValue)
+      : undefined,
+    // Wallet staked value
+    walletStakedValue: fetchWalletStakedValue
+      ? Number(walletStakedValue)
+      : undefined,
   }
 }

@@ -189,8 +189,8 @@ const InnerProposal: FC = () => {
             <StakingModal
               connectWalletButton={<ConnectWalletButton className="!w-auto" />}
               coreAddress={DAO_ADDRESS}
-              defaultMode={StakingMode.Stake}
               loader={Loader}
+              mode={StakingMode.Stake}
               onClose={() => setShowStaking(false)}
             />
           }

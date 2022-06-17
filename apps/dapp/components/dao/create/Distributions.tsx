@@ -64,7 +64,7 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
   return (
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
       <p className="font-mono text-center caption-text">
-        {i18n.t('Voting weight')}
+        {i18n.t('Voting power')}
       </p>
       <p className="font-mono caption-text">
         {onlyOneTier ? i18n.t('Members') : i18n.t('Tier', { count: 1000 })}

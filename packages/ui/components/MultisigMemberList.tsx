@@ -26,7 +26,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          {i18n.t('Your voting weight')}
+          {i18n.t('Your voting power')}
         </h2>
         <ul className="mt-3 list-none">
           <li>
@@ -45,7 +45,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          {i18n.t('Member voting weights')}
+          {i18n.t('Member voting powers')}
         </h2>
         <ul className="mt-2 list-none">
           {members.map((member) => (

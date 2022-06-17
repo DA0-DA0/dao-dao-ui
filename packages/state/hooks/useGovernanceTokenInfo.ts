@@ -6,9 +6,9 @@ import {
   tokenUSDPriceSelector,
   useWallet,
 } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { VotingModuleType } from '@dao-dao/utils'
 
+import { MarketingInfoResponse, TokenInfoResponse } from '../clients/cw20-base'
 import { useVotingModule } from './useVotingModule'
 
 interface UseGovernanceTokenInfoOptions {
@@ -23,6 +23,7 @@ interface UseGovernanceTokenInfoResponse {
   governanceTokenShouldExist: boolean
   governanceTokenAddress?: string
   governanceTokenInfo?: TokenInfoResponse
+  governanceTokenMarketingInfo?: MarketingInfoResponse
   /// Optional
   // Wallet balance
   walletBalance?: number
@@ -68,6 +69,14 @@ export const useGovernanceTokenInfo = (
         })
       : constSelector(undefined)
   )
+  const governanceTokenMarketingInfo = useRecoilValue(
+    governanceTokenAddress
+      ? Cw20BaseSelectors.marketingInfoSelector({
+          contractAddress: governanceTokenAddress,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
 
   /// Optional
 
@@ -107,6 +116,7 @@ export const useGovernanceTokenInfo = (
     governanceTokenShouldExist,
     governanceTokenAddress,
     governanceTokenInfo,
+    governanceTokenMarketingInfo,
     /// Optional
     // Wallet balance
     walletBalance: walletBalance ? Number(walletBalance) : undefined,

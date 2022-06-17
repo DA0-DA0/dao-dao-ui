@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
 import i18n from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -11,8 +11,7 @@ import {
 import { Modal } from '../Modal'
 import { ActionButton } from './ActionButton'
 import { AmountSelector } from './AmountSelector'
-import { ModeButton } from './ModeButton'
-import { PercentSelector } from './PercentSelector'
+import { PercentButton, PercentSelector } from './PercentSelector'
 
 export enum StakingMode {
   Stake,
@@ -33,9 +32,22 @@ export const stakingModeString = (mode: StakingMode) => {
   }
 }
 
+export const stakingModeTitle = (mode: StakingMode) => {
+  switch (mode) {
+    case StakingMode.Stake:
+      return i18n.t('Stake Tokens')
+    case StakingMode.Unstake:
+      return i18n.t('Unstake Tokens')
+    case StakingMode.Claim:
+      return i18n.t('Claim Tokens')
+    default:
+      return 'internal error'
+  }
+}
+
 export interface StakingModalProps {
-  // The mode to start the staking modal in.
-  defaultMode: StakingMode
+  // The mode to open the staking modal in.
+  mode: StakingMode
   // The number of tokens in question.
   amount: number
   // Sets the number of tokens in question.
@@ -54,6 +66,8 @@ export interface StakingModalProps {
   tokenSymbol: string
   // Decimals for the token that is being staked.
   tokenDecimals: number
+  // Proposal deposit for the token that is being staked.
+  proposalDeposit?: number
   // Is there an error?
   error?: string | undefined
   // Are we ready to stake? Ex: is wallet connected?
@@ -63,7 +77,7 @@ export interface StakingModalProps {
 }
 
 export const StakingModal: FC<StakingModalProps> = ({
-  defaultMode,
+  mode,
   amount,
   setAmount,
   onClose,
@@ -76,13 +90,12 @@ export const StakingModal: FC<StakingModalProps> = ({
   unstakingDuration,
   tokenSymbol,
   tokenDecimals,
+  // macrodenom
+  proposalDeposit,
   loading,
   error,
   onAction,
 }) => {
-  const [mode, setMode] = useState(defaultMode)
-  const canClaim = !!claimableTokens
-
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
 
   const invalidAmount = (): string | undefined => {
@@ -98,43 +111,22 @@ export const StakingModal: FC<StakingModalProps> = ({
       return i18n.t('error.cannotStakeMoreThanYouHave')
     }
   }
-  error = error || invalidAmount()
 
   return (
     <Modal onClose={onClose}>
       <div className="flex justify-between items-center">
-        <h1 className="header-text">{i18n.t('Manage staking')}</h1>
+        <h1 className="header-text">{stakingModeTitle(mode)}</h1>
       </div>
 
-      <div className="flex gap-1 py-[20px] mb-2 border-b border-inactive">
-        <ModeButton
-          active={mode === StakingMode.Stake}
-          onClick={() => setMode(StakingMode.Stake)}
-        >
-          {i18n.t('Stake')}
-        </ModeButton>
-        <ModeButton
-          active={mode === StakingMode.Unstake}
-          onClick={() => setMode(StakingMode.Unstake)}
-        >
-          {i18n.t('Unstake')}
-        </ModeButton>
-        {canClaim && (
-          <ModeButton
-            active={mode === StakingMode.Claim}
-            onClick={() => setMode(StakingMode.Claim)}
-          >
-            {i18n.t('Claim')}
-          </ModeButton>
-        )}
-      </div>
       {mode === StakingMode.Stake && (
         <StakeUnstakeModesBody
           amount={amount}
           max={stakableTokens}
           mode={mode}
+          proposalDeposit={proposalDeposit || 5}
           setAmount={(amount: number) => setAmount(amount)}
           tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
           unstakingDuration={unstakingDuration}
         />
       )}
@@ -145,6 +137,7 @@ export const StakingModal: FC<StakingModalProps> = ({
           mode={mode}
           setAmount={(amount: number) => setAmount(amount)}
           tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
           unstakingDuration={unstakingDuration}
         />
       )}
@@ -155,9 +148,9 @@ export const StakingModal: FC<StakingModalProps> = ({
           tokenSymbol={tokenSymbol}
         />
       )}
-      <div className="flex justify-end px-3 pt-6">
+      <div className="flex justify-end pt-6">
         <ActionButton
-          error={error}
+          error={error || invalidAmount()}
           loading={loading}
           mode={mode}
           onClick={() =>
@@ -177,8 +170,10 @@ interface StakeUnstakeModesBodyProps {
   mode: StakingMode
   max: number
   setAmount: (newAmount: number) => void
+  tokenSymbol: string
   tokenDecimals: number
   unstakingDuration: Duration | null
+  proposalDeposit?: number
 }
 
 const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
@@ -186,8 +181,10 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   setAmount,
   mode,
   max,
+  tokenSymbol,
   tokenDecimals,
   unstakingDuration,
+  proposalDeposit,
 }) => (
   <>
     <div className="flex flex-col mt-5">
@@ -211,18 +208,37 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
           setAmount={setAmount}
           tokenDecimals={tokenDecimals}
         />
+        {!!proposalDeposit && max > proposalDeposit && (
+          <PercentButton
+            absoluteOffset={-proposalDeposit}
+            amount={amount}
+            className="mt-1"
+            label={i18n.t('Stake all but proposal deposit', {
+              proposalDeposit: proposalDeposit.toLocaleString(undefined, {
+                maximumFractionDigits: tokenDecimals,
+              }),
+              tokenSymbol,
+            })}
+            max={max}
+            percent={1}
+            setAmount={setAmount}
+            tokenDecimals={tokenDecimals}
+          />
+        )}
       </div>
     </div>
 
-    {unstakingDuration && durationIsNonZero(unstakingDuration) && (
-      <>
-        <hr className="mt-3" />
-        <UnstakingDurationDisplay
-          mode={mode}
-          unstakingDuration={unstakingDuration}
-        />
-      </>
-    )}
+    {mode === StakingMode.Unstake &&
+      unstakingDuration &&
+      durationIsNonZero(unstakingDuration) && (
+        <>
+          <hr className="mt-3" />
+          <UnstakingDurationDisplay
+            mode={mode}
+            unstakingDuration={unstakingDuration}
+          />
+        </>
+      )}
   </>
 )
 
@@ -237,7 +253,7 @@ const ClaimModeBody: FC<ClaimModeBodyProps> = ({
   tokenSymbol,
   tokenDecimals,
 }) => (
-  <div className="flex flex-col py-3 px-6 mt-3">
+  <div className="flex flex-col py-3 mt-3">
     <h2 className="font-medium">
       {convertMicroDenomToDenomWithDecimals(
         amount,

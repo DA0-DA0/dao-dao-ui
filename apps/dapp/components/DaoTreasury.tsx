@@ -14,20 +14,20 @@ export const DaoTreasury: FC = () => {
 
   return (
     <div>
-      <div className="flex gap-1 justify-between">
-        <h2 className="primary-text">{i18n.t('Treasury')}</h2>
-        {governanceTokenAddress && (
-          <Button
-            onClick={() => addToken(governanceTokenAddress)}
-            variant="ghost"
-          >
-            {i18n.t('Add to Keplr')} <PlusSmIcon className="w-4 h-4" />
-          </Button>
-        )}
-      </div>
+      <h2 className="primary-text">{i18n.t('Treasury')}</h2>
       <SuspenseLoader fallback={<Loader />}>
         <TreasuryBalances />
       </SuspenseLoader>
+
+      {governanceTokenAddress && (
+        <Button
+          className="mt-4"
+          onClick={() => addToken(governanceTokenAddress)}
+          variant="secondary"
+        >
+          {i18n.t('Add to Keplr')} <PlusSmIcon className="w-4 h-4" />
+        </Button>
+      )}
     </div>
   )
 }

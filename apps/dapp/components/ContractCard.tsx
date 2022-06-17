@@ -88,7 +88,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
           {weight !== undefined && (
             <p className="text-sm text-valid text-success">
               <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-              {i18n.t('Your voting weight')}: {weight}
+              {i18n.t('Your voting power')}: {weight}
             </p>
           )}
         </div>

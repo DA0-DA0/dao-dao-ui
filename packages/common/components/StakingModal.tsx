@@ -8,6 +8,7 @@ import {
   StakeCw20Selectors,
   stakingLoadingAtom,
   useGovernanceTokenInfo,
+  useProposalModule,
   useStakingInfo,
   useWallet,
 } from '@dao-dao/state'
@@ -24,7 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 interface StakingModalProps {
-  defaultMode: StakingMode
+  mode: StakingMode
   onClose: () => void
   connectWalletButton: ReactNode
   loader: ReactNode
@@ -38,7 +39,7 @@ export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
 )
 
 const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
-  defaultMode,
+  mode,
   onClose,
   connectWalletButton,
   coreAddress,
@@ -61,14 +62,15 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
-    walletStaked,
+    walletStakedValue,
     refreshClaims,
   } = useStakingInfo(coreAddress, {
     fetchClaims: true,
-    fetchWalletStaked: true,
+    fetchWalletStakedValue: true,
   })
+  const { proposalModuleConfig } = useProposalModule(coreAddress)
 
-  const totalStaked = useRecoilValue(
+  const totalStakedBalance = useRecoilValue(
     stakingContractAddress
       ? StakeCw20Selectors.totalStakedAtHeightSelector({
           contractAddress: stakingContractAddress,
@@ -77,7 +79,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       : constSelector(undefined)
   )
 
-  const stakedBalance = useRecoilValue(
+  const walletStakedBalance = useRecoilValue(
     stakingContractAddress && walletAddress
       ? StakeCw20Selectors.stakedBalanceAtHeightSelector({
           contractAddress: stakingContractAddress,
@@ -100,9 +102,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     !stakingContractConfig ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
-    walletStaked === undefined ||
-    totalStaked === undefined ||
-    stakedBalance === undefined ||
+    walletStakedValue === undefined ||
+    totalStakedBalance === undefined ||
+    walletStakedBalance === undefined ||
     totalValue === undefined
   ) {
     throw new Error('Failed to load data.')
@@ -151,7 +153,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           refreshStakingContractBalances()
 
           setAmount(0)
-          toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
+          toast.success(
+            `Staked ${amount.toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })} $${governanceTokenInfo.symbol}`
+          )
 
           // Close once done.
           onClose()
@@ -178,14 +184,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         //
         // => amount_staked = staked_total * value / total_value
         let amountToUnstake =
-          (Number(totalStaked.total) * amount) / Number(totalValue.total)
+          (Number(totalStakedBalance.total) * amount) / Number(totalValue.total)
 
         // We have limited precision and on the contract side division rounds
         // down, so division and multiplication don't commute. Handle the common
         // case here where someone is attempting to unstake all of their funds.
         if (
           Math.abs(
-            Number(stakedBalance.balance) -
+            Number(walletStakedBalance.balance) -
               Number(
                 convertDenomToMicroDenomWithDecimals(
                   amountToUnstake,
@@ -196,7 +202,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
         ) {
           amountToUnstake = Number(
             convertMicroDenomToDenomWithDecimals(
-              stakedBalance.balance,
+              walletStakedBalance.balance,
               governanceTokenInfo.decimals
             )
           )
@@ -220,7 +226,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           refreshStakingContractBalances()
 
           setAmount(0)
-          toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
+          toast.success(
+            `Unstaked ${amount.toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })} $${governanceTokenInfo.symbol}`
+          )
 
           // Close once done.
           onClose()
@@ -254,10 +264,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           refreshStakingContractBalances()
 
           setAmount(0)
+
           toast.success(
-            `Claimed ${sumClaimsAvailable} token${
-              sumClaimsAvailable === 1 ? '' : 's'
-            }`
+            `Claimed ${convertMicroDenomToDenomWithDecimals(
+              sumClaimsAvailable,
+              governanceTokenInfo.decimals
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })} $${governanceTokenInfo.symbol}`
           )
 
           // Close once done.
@@ -291,11 +305,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     <StatelessStakingModal
       amount={amount}
       claimableTokens={sumClaimsAvailable}
-      defaultMode={defaultMode}
       error={connected ? undefined : 'Please connect your wallet.'}
       loading={stakingLoading}
+      mode={mode}
       onAction={onAction}
       onClose={onClose}
+      proposalDeposit={
+        Number(proposalModuleConfig?.deposit_info?.deposit ?? '0') || undefined
+      }
       setAmount={(newAmount) => setAmount(newAmount)}
       stakableTokens={convertMicroDenomToDenomWithDecimals(
         unstakedBalance,
@@ -304,7 +321,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       tokenDecimals={governanceTokenInfo.decimals}
       tokenSymbol={governanceTokenInfo.symbol}
       unstakableTokens={convertMicroDenomToDenomWithDecimals(
-        walletStaked,
+        walletStakedValue,
         governanceTokenInfo.decimals
       )}
       unstakingDuration={stakingContractConfig.unstaking_duration ?? null}

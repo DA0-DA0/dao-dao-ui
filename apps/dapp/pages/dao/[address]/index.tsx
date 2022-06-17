@@ -20,7 +20,7 @@ import { VotingModuleType } from '@dao-dao/utils'
 import {
   ContractHeader,
   ContractProposalsDisplay,
-  Cw20StakedBalanceVotingSharesDisplay,
+  Cw20StakedBalanceVotingPowerDisplay,
   Cw4VotingMemberList,
   DAOMobileHeader,
   DAOPageWrapper,
@@ -98,7 +98,7 @@ const InnerMobileDaoHome: FC = () => {
           <Cw4VotingMemberList primaryText />
         )}
         {tab === MobileMenuTabSelection.Staking && (
-          <Cw20StakedBalanceVotingSharesDisplay primaryText />
+          <Cw20StakedBalanceVotingPowerDisplay primaryText />
         )}
         {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
@@ -172,7 +172,7 @@ const InnerDAOHome: FC = () => {
                 <Cw4VotingMemberList />
               ) : votingModuleType ===
                 VotingModuleType.Cw20StakedBalanceVoting ? (
-                <Cw20StakedBalanceVotingSharesDisplay />
+                <Cw20StakedBalanceVotingPowerDisplay />
               ) : null}
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
@@ -188,7 +188,7 @@ const InnerDAOHome: FC = () => {
         {votingModuleType === VotingModuleType.Cw4Voting ? (
           <Cw4VotingMemberList />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
-          <Cw20StakedBalanceVotingSharesDisplay />
+          <Cw20StakedBalanceVotingPowerDisplay />
         ) : null}
       </div>
     </div>
