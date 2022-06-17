@@ -4,7 +4,7 @@ import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import i18n from '@dao-dao/i18n'
+import i18n, { Trans } from '@dao-dao/i18n'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
@@ -72,77 +72,100 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
       <div className="flex flex-col gap-2 items-stretch">
         {unstakedGovTokenBalance > 0 && stakedGovTokenBalance === 0 && (
           <BalanceCard
-            body={i18n.t('Stake your tokens to join and vote in the DAO', {
-              amount: convertMicroDenomToDenomWithDecimals(
-                unstakedGovTokenBalance,
-                governanceTokenInfo.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: governanceTokenInfo.decimals,
-              }),
-              tokenSymbol: governanceTokenInfo.symbol,
-              daoName: name,
-            })}
             buttonLabel={i18n.t('Stake tokens')}
             icon={<PlusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Stake)}
             title={i18n.t('You are not a member yet!', { daoName: name })}
-          />
+          >
+            <p className="body-text">
+              <Trans key="stakeTokensToJoin">
+                Stake your{' '}
+                <span className="text-bold">
+                  {{
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      unstakedGovTokenBalance,
+                      governanceTokenInfo.decimals
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: governanceTokenInfo.decimals,
+                    }),
+                  }}{' '}
+                  ${{ tokenSymbol: governanceTokenInfo.symbol }}
+                </span>{' '}
+                to join and vote in {{ daoName: name }}.
+              </Trans>
+            </p>
+          </BalanceCard>
         )}
         {stakedGovTokenBalance > 0 && (
           <BalanceCard
-            body={i18n.t('You have voting power from staked tokens', {
-              amount: convertMicroDenomToDenomWithDecimals(
-                stakedGovTokenBalance,
-                governanceTokenInfo.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: governanceTokenInfo.decimals,
-              }),
-              tokenSymbol: governanceTokenInfo.symbol,
-              powerPercent: totalStaked
-                ? (stakedGovTokenBalance / totalStaked) * 100
-                : 0,
-            })}
             buttonLabel={i18n.t('Unstake tokens')}
             icon={<MinusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Unstake)}
             title={i18n.t('You are a member!', { daoName: name })}
-          />
+          >
+            <p className="body-text">
+              <Trans key="votingPowerStakedTokens">
+                Your voting power is{' '}
+                <span className="font-bold">
+                  {{
+                    powerPercent: (totalStaked
+                      ? (stakedGovTokenBalance / totalStaked) * 100
+                      : 0
+                    ).toLocaleString(undefined, {
+                      maximumSignificantDigits: 4,
+                    }),
+                  }}
+                  %
+                </span>{' '}
+                (
+                <span className="font-bold">
+                  {{
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      stakedGovTokenBalance,
+                      governanceTokenInfo.decimals
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: governanceTokenInfo.decimals,
+                    }),
+                  }}{' '}
+                  ${{ tokenSymbol: governanceTokenInfo.symbol }}
+                </span>
+                ).
+              </Trans>
+            </p>
+          </BalanceCard>
         )}
         {stakedGovTokenBalance > 0 && unstakedGovTokenBalance > 0 && (
           <BalanceCard
-            body={i18n.t('Stake your remaining tokens to gain voting power', {
-              amount: convertMicroDenomToDenomWithDecimals(
-                unstakedGovTokenBalance,
-                governanceTokenInfo.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: governanceTokenInfo.decimals,
-              }),
-              tokenSymbol: governanceTokenInfo.symbol,
-              daoName: name,
-            })}
             buttonLabel={i18n.t('Stake tokens')}
             icon={<PlusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Stake)}
             title={i18n.t('You could have more voting power')}
-          />
+          >
+            <p className="body-text">
+              <Trans key="stakeRemainingForVotingPower">
+                Stake your{' '}
+                <span className="font-bold">
+                  remaining{' '}
+                  {{
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      unstakedGovTokenBalance,
+                      governanceTokenInfo.decimals
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: governanceTokenInfo.decimals,
+                    }),
+                  }}{' '}
+                  ${{ tokenSymbol: governanceTokenInfo.symbol }}
+                </span>{' '}
+                to gain voting power in {{ daoName: name }}.
+              </Trans>
+            </p>
+          </BalanceCard>
         )}
         {!!sumClaimsAvailable && (
           <BalanceCard
-            body={
-              <div className="flex flex-row flex-wrap gap-2 items-center mt-2 mb-[22px] title-text">
-                <BalanceIcon iconURI={tokenImageUrl} />
-                {convertMicroDenomToDenomWithDecimals(
-                  sumClaimsAvailable,
-                  governanceTokenInfo.decimals
-                ).toLocaleString(undefined, {
-                  maximumFractionDigits: governanceTokenInfo.decimals,
-                })}{' '}
-                ${governanceTokenInfo.symbol}
-              </div>
-            }
             buttonLabel={i18n.t('Claim tokens')}
             icon={<HandIcon className="w-4 h-4" />}
             loading={stakingLoading}
@@ -150,7 +173,18 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             title={i18n.t('You can now claim your unstaked tokens', {
               tokenSymbol: governanceTokenInfo.symbol,
             })}
-          />
+          >
+            <div className="flex flex-row flex-wrap gap-2 items-center primary-text">
+              <BalanceIcon iconURI={tokenImageUrl} />
+              {convertMicroDenomToDenomWithDecimals(
+                sumClaimsAvailable,
+                governanceTokenInfo.decimals
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: governanceTokenInfo.decimals,
+              })}{' '}
+              ${governanceTokenInfo.symbol}
+            </div>
+          </BalanceCard>
         )}
       </div>
 

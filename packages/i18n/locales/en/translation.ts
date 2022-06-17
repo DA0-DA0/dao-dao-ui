@@ -60,14 +60,14 @@ const en = {
     'Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit',
   // Balance cards
   'You are not a member yet!': 'You are not a member of {{daoName}} yet!',
-  'Stake your tokens to join and vote in the DAO':
-    'Stake your {{amount}} ${{tokenSymbol}} to join and vote in {{daoName}}.',
+  stakeTokensToJoin:
+    'Stake your <1>{{amount}} ${{tokenSymbol}}</1> to join and vote in {{daoName}}.',
   'You are a member!': 'You are a member of {{daoName}}!',
-  'You have voting power from staked tokens':
-    'Your voting power is {{powerPercent, number(maximumFractionDigits:3)}}% ({{amount}} ${{tokenSymbol}} staked).',
+  votingPowerStakedTokens:
+    'Your voting power is <1>{{powerPercent)}}%</1> (<2>{{amount}} ${{tokenSymbol}} staked</2>).',
   'You could have more voting power': 'You could have more voting power.',
-  'Stake your remaining tokens to gain voting power':
-    'Stake your remaining {{amount}} ${{tokenSymbol}} to gain voting power in {{daoName}}.',
+  stakeRemainingForVotingPower:
+    'Stake your remaining <1>{{amount}} ${{tokenSymbol}}</1> to gain voting power in {{daoName}}.',
   'You can now claim your unstaked tokens':
     'You can now claim your unstaked ${{tokenSymbol}}.',
 
