@@ -34,7 +34,7 @@ const en = {
   Action_other: 'Actions',
 
   'Voting configuration': 'Voting configuration',
-  'Voting weight': 'Voting power',
+  'Voting power': 'Voting power',
 
   'Governance token_one': 'Governance token',
   'Governance token_other': 'Governance tokens',
@@ -129,9 +129,9 @@ const en = {
   // Viewing your relationship to a DAO
   'You are a member': "You're a member",
   'Your equity': 'Your equity',
-  'Member voting weights': 'Member voting power',
+  'Member voting powers': 'Member voting powers',
   'Your balance': 'Your balance',
-  'Your voting weight': 'Your voting power',
+  'Your voting power': 'Your voting power',
   'You are about to unstake': 'You are about to unstake governance tokens',
   'You have unstaked tokens':
     'You have {{amount, number(maximumFractionDigits:20)}} unstaked ${{tokenSymbol}}.',

@@ -18,7 +18,7 @@ import { ClaimsPendingList } from './ClaimsPendingList'
 import { useDAOInfoContext } from './DAOPageWrapper'
 import { Loader } from './Loader'
 
-const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
+const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
   const { coreAddress } = useDAOInfoContext()
   const { governanceTokenInfo, walletBalance: unstakedGovTokenBalance } =
     useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
@@ -135,20 +135,20 @@ const InnerCw20StakedBalanceVotingSharesDisplay: FC = () => {
   )
 }
 
-interface Cw20StakedBalanceVotingSharesDisplayProps {
+interface Cw20StakedBalanceVotingPowerDisplayProps {
   primaryText?: boolean
 }
 
-export const Cw20StakedBalanceVotingSharesDisplay: FC<
-  Cw20StakedBalanceVotingSharesDisplayProps
+export const Cw20StakedBalanceVotingPowerDisplay: FC<
+  Cw20StakedBalanceVotingPowerDisplayProps
 > = ({ primaryText }) => (
   <>
     <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
-      {i18n.t('Your voting weight')}
+      {i18n.t('Your voting power')}
     </h2>
 
     <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-      <InnerCw20StakedBalanceVotingSharesDisplay />
+      <InnerCw20StakedBalanceVotingPowerDisplay />
     </SuspenseLoader>
   </>
 )

@@ -420,7 +420,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                 width="36px"
               />
 
-              <Tooltip label="This proportion of voting weight must vote on a proposal for it to pass.">
+              <Tooltip label="This proportion of voting power must vote on a proposal for it to pass.">
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     {i18n.t('Quorum')}:{' '}

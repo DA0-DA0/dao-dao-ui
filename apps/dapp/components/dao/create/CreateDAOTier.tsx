@@ -104,7 +104,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
           <div className="flex flex-row gap-2 items-center">
             <p className="text-right caption-text">
               {governanceTokenEnabled
-                ? i18n.t('Governance tokens', { count: 1000 })
+                ? i18n.t('Governance token', { count: 1000 })
                 : i18n.t('Voting weight')}
               <br />
               {i18n.t('per member')}
