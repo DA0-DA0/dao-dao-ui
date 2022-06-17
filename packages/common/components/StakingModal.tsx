@@ -8,6 +8,7 @@ import {
   StakeCw20Selectors,
   stakingLoadingAtom,
   useGovernanceTokenInfo,
+  useProposalModule,
   useStakingInfo,
   useWallet,
 } from '@dao-dao/state'
@@ -24,7 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 interface StakingModalProps {
-  defaultMode: StakingMode
+  mode: StakingMode
   onClose: () => void
   connectWalletButton: ReactNode
   loader: ReactNode
@@ -38,7 +39,7 @@ export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
 )
 
 const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
-  defaultMode,
+  mode,
   onClose,
   connectWalletButton,
   coreAddress,
@@ -67,6 +68,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     fetchClaims: true,
     fetchWalletStaked: true,
   })
+  const { proposalModuleConfig } = useProposalModule(coreAddress)
 
   const totalStaked = useRecoilValue(
     stakingContractAddress
@@ -291,11 +293,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     <StatelessStakingModal
       amount={amount}
       claimableTokens={sumClaimsAvailable}
-      defaultMode={defaultMode}
       error={connected ? undefined : 'Please connect your wallet.'}
       loading={stakingLoading}
+      mode={mode}
       onAction={onAction}
       onClose={onClose}
+      proposalDeposit={
+        Number(proposalModuleConfig?.deposit_info?.deposit ?? '0') || undefined
+      }
       setAmount={(newAmount) => setAmount(newAmount)}
       stakableTokens={convertMicroDenomToDenomWithDecimals(
         unstakedBalance,

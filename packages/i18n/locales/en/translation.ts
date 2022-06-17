@@ -49,6 +49,26 @@ const en = {
   'Percent staked':
     '{{percent, number(minimumFractionDigits:0)}}% ${{tokenSymbol}} staked',
 
+  // Staking modal
+  'Stake tokens': 'Stake tokens',
+  'Stake Tokens': 'Stake Tokens',
+  'Unstake tokens': 'Unstake tokens',
+  'Unstake Tokens': 'Unstake Tokens',
+  'Claim tokens': 'Claim tokens',
+  'Claim Tokens': 'Claim Tokens',
+  'Stake all but proposal deposit':
+    'Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit',
+  // Balance cards
+  'You are not a member yet!': 'You are not a member of {{daoName}} yet!',
+  'Stake your tokens to join and vote in the DAO':
+    'Stake your {{amount}} ${{tokenSymbol}} to join and vote in {{daoName}}.',
+  'You are a member!': 'You are a member of {{daoName}}!',
+  'You have voting power from staked tokens':
+    'Your voting power is {{powerPercent, number(maximumFractionDigits:3)}}% ({{amount}} ${{tokenSymbol}} staked).',
+  'You could have more voting power': 'You could have more voting power.',
+  'Stake your remaining tokens to gain voting power':
+    'Stake your remaining {{amount}} ${{tokenSymbol}} to gain voting power in {{daoName}}.',
+
   'Governance token name': 'Token name',
   'Governance token placeholder': 'A token name (e.g., "DogDAO token")',
 
@@ -133,10 +153,6 @@ const en = {
   'Your balance': 'Your balance',
   'Your voting power': 'Your voting power',
   'You are about to unstake': 'You are about to unstake governance tokens',
-  'You have unstaked tokens':
-    'You have {{amount, number(maximumFractionDigits:20)}} unstaked ${{tokenSymbol}}.',
-  'You have unstaked tokens explanation':
-    'Unstaked tokens do not count toward your share of the vote!',
   'You must have voting power to create a proposal':
     'You must have voting power to create a proposal. Stake tokens to get voting power.',
 
@@ -153,7 +169,7 @@ const en = {
   'Search placeholder': 'Search for a DAO',
   'Manage staking': 'Manage staking',
   'Choose token amount': 'Choose number of tokens',
-  'Stake tokens': 'Stake your tokens', // imperative verb
+  'Stake your tokens': 'Stake your tokens', // imperative verb
   'Add to Keplr': 'Add token to Keplr',
   'Create a proposal': 'Create a proposal',
   'Create first proposal prompt':

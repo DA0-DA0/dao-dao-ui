@@ -1,4 +1,7 @@
+import clsx from 'clsx'
 import { FC } from 'react'
+
+import { Button } from '../Button'
 
 export interface PercentSelectorProps {
   max: number
@@ -7,37 +10,58 @@ export interface PercentSelectorProps {
   setAmount: (newAmount: number) => void
 }
 
-export const PercentSelector: FC<PercentSelectorProps> = ({
+export const PercentSelector: FC<PercentSelectorProps> = (props) => (
+  <div className="grid grid-cols-5 gap-1">
+    <PercentButton label="10%" percent={0.1} {...props} />
+    <PercentButton label="25%" percent={0.25} {...props} />
+    <PercentButton label="50%" percent={0.5} {...props} />
+    <PercentButton label="75%" percent={0.75} {...props} />
+    <PercentButton label="100%" percent={1} {...props} />
+  </div>
+)
+
+export interface PercentButtonProps {
+  label: string
+  max: number
+  percent: number
+  amount: number
+  setAmount: (newAmount: number) => void
+  tokenDecimals: number
+  className?: string
+  absoluteOffset?: number
+}
+
+export const PercentButton: FC<PercentButtonProps> = ({
+  label,
   max,
+  percent,
   amount,
   setAmount,
   tokenDecimals,
-}) => {
-  const active = (p: number) => max * p === amount
-  const getClassName = (p: number) =>
-    'rounded-md transition hover:bg-secondary link-text font-normal px-2 py-1' +
-    (active(p) ? ' bg-secondary border border-inactive' : '')
-  const getOnClick = (p: number) => () => {
-    setAmount(Number((p * max).toFixed(tokenDecimals)))
-  }
-
-  return (
-    <div className="grid grid-cols-5 gap-1">
-      <button className={getClassName(0.1)} onClick={getOnClick(0.1)}>
-        10%
-      </button>
-      <button className={getClassName(0.25)} onClick={getOnClick(0.25)}>
-        25%
-      </button>
-      <button className={getClassName(0.5)} onClick={getOnClick(0.5)}>
-        50%
-      </button>
-      <button className={getClassName(0.75)} onClick={getOnClick(0.75)}>
-        75%
-      </button>
-      <button className={getClassName(1)} onClick={getOnClick(1)}>
-        100%
-      </button>
-    </div>
-  )
-}
+  className,
+  absoluteOffset,
+}) => (
+  <Button
+    active={
+      (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
+      amount.toFixed(tokenDecimals)
+    }
+    className={clsx('flex flex-row justify-center w-full', className)}
+    onClick={() =>
+      setAmount(
+        Math.min(
+          Math.max(
+            Number(
+              (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals)
+            ),
+            1 / Math.pow(10, tokenDecimals)
+          ),
+          max
+        )
+      )
+    }
+    variant="secondary"
+  >
+    {label}
+  </Button>
+)

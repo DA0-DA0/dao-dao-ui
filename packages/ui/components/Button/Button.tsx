@@ -16,6 +16,7 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   className?: string
   loading?: boolean
   contentContainerClassName?: string
+  active?: boolean
 }
 
 function ButtonComponent(
@@ -28,6 +29,7 @@ function ButtonComponent(
     className,
     contentContainerClassName,
     type = 'button',
+    active,
     ...rest
   }: ButtonProps,
   ref?: ForwardedRef<any>
@@ -42,10 +44,12 @@ function ButtonComponent(
           // Primary
           'text-light bg-btn link-text': variant === 'primary',
           'hover:bg-dark active:bg-toast': variant === 'primary' && !isDisabled,
+          'bg-dark': variant === 'primary' && active,
           // Secondary
           'bg-primary link-text': variant === 'secondary',
           'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
             variant === 'secondary' && !isDisabled,
+          'bg-btn-secondary-hover': variant === 'secondary' && active,
           // Shared
           'bg-btn-disabled': isDisabled,
           'py-[10px]': size === 'lg',
@@ -83,7 +87,7 @@ function ButtonComponent(
     <button
       className={clsx(
         'flex flex-row gap-2 items-center text-secondary transition link-text',
-        { 'hover:text-primary': !isDisabled },
+        { 'hover:text-primary': !isDisabled, 'text-primary': active },
         className,
         contentContainerClassName
       )}
