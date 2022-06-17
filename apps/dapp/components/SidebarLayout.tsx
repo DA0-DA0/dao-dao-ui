@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import { FC, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
@@ -9,13 +10,17 @@ import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
+import { SearchModal } from './SearchModal'
 import {
   betaWarningAcceptedAtom,
   installWarningVisibleAtom,
   noKeplrAccountAtom,
+  searchVisibleAtom,
 } from '@/atoms'
+import { usePlatform } from '@/hooks'
 
 export const SidebarLayoutInner: FC = ({ children }) => {
+  const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
     installWarningVisibleAtom
@@ -24,7 +29,9 @@ export const SidebarLayoutInner: FC = ({ children }) => {
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
+  const [searchVisible, setSearchVisible] = useRecoilState(searchVisibleAtom)
 
+  //! WALLET CONNECTION ERROR MODALS
   const { connectionError } = useWallet()
   useEffect(() => {
     setInstallWarningVisible(connectionError instanceof KeplrNotInstalledError)
@@ -33,6 +40,30 @@ export const SidebarLayoutInner: FC = ({ children }) => {
         connectionError.message === "key doesn't exist"
     )
   }, [connectionError, setInstallWarningVisible, setNoKeplrAccount])
+
+  //! SEARCH MODAL
+  // Hide modal when we nav away.
+  useEffect(() => {
+    setSearchVisible(false)
+  }, [router.asPath, setSearchVisible])
+  // Detect if Mac for checking keypress.
+  const { isMac } = usePlatform()
+  // Handle keypress to show search or not.
+  const handleKeyPress = useCallback(
+    (event) => {
+      if ((!isMac && event.ctrlKey) || event.metaKey) {
+        if (event.key === 'k') {
+          setSearchVisible((showSearch) => !showSearch)
+        }
+      }
+    },
+    [isMac, setSearchVisible]
+  )
+  // Setup search keypress.
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [handleKeyPress])
 
   return (
     <>
@@ -51,6 +82,7 @@ export const SidebarLayoutInner: FC = ({ children }) => {
       {mountedInBrowser && !betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}
+      {searchVisible && <SearchModal onClose={() => setSearchVisible(false)} />}
 
       <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
         <div className="hidden lg:block lg:w-[264px]">

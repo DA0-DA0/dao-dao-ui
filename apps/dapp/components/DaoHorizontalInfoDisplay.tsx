@@ -50,7 +50,9 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
       <HorizontalInfoSection>
         <UsersIcon className="inline w-4" />
         {votingModuleType === VotingModuleType.Cw4Voting && cw4VotingMembers ? (
-          `${cw4VotingMembers.length} members`
+          `${cw4VotingMembers.length} member${
+            cw4VotingMembers.length !== 1 ? 's' : ''
+          }`
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
           governanceTokenInfo ? (
           <>

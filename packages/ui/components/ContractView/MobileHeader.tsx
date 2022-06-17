@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, Logo, StarButton } from '@dao-dao/ui'
+import { CopyToClipboardMobile, HeartButton, Logo } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 export interface MobileHeaderProps {
@@ -53,7 +53,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
               <MemberCheck fill="currentColor" width="16px" />
             </div>
           )}
-          <StarButton onPin={onPin} pinned={pinned} />
+          <HeartButton onPin={onPin} pinned={pinned} />
         </div>
       </div>
       <CopyToClipboardMobile value={contractAddress} />
@@ -82,7 +82,7 @@ export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
       <div className="flex flex-row justify-between">
         <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
         <div className="flex gap-5">
-          <StarButton onPin={() => null} pinned={false} />
+          <HeartButton onPin={() => null} pinned={false} />
         </div>
       </div>
       <CopyToClipboardMobile value={contractAddress} />

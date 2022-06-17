@@ -111,6 +111,44 @@ export const listProposalsSelector = selectorFamily<
     },
 })
 
+export const listAllProposalsSelector = selectorFamily<
+  ListProposalsResponse | undefined,
+  QueryClientParams & { params: Parameters<QueryClient['listProposals']> }
+>({
+  key: 'cwProposalSingleListAllProposals',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      get(refreshProposalsIdAtom)
+
+      const allProposals: ListProposalsResponse['proposals'] = []
+      const limit = params[0].limit ?? 30
+      let { startAfter } = params[0]
+
+      while (true) {
+        const proposals =
+          get(
+            listProposalsSelector({
+              ...queryClientParams,
+              params: [{ startAfter, limit }],
+            })
+          )?.proposals ?? []
+
+        allProposals.push(...proposals)
+
+        // If we did not get all proposals we asked for, we're at the end.
+        if (proposals.length < limit) break
+        // Start after last proposal we got.
+        startAfter = proposals[proposals.length - 1].id
+      }
+
+      return { proposals: allProposals }
+    },
+})
+
 export const reverseProposalsSelector = selectorFamily<
   ReverseProposalsResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['reverseProposals']> }

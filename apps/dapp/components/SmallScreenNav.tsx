@@ -2,10 +2,12 @@ import {
   ArrowRightIcon,
   MenuAlt1Icon,
   MenuIcon,
+  SearchIcon,
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, useState } from 'react'
+import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
@@ -13,6 +15,7 @@ import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
+import { searchVisibleAtom } from '@/atoms'
 
 interface SmallScreenNavProps {
   className?: string
@@ -20,6 +23,7 @@ interface SmallScreenNavProps {
 
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const [expanded, setExpanded] = useState(false)
+  const setSearchVisible = useSetRecoilState(searchVisibleAtom)
 
   return (
     <div
@@ -33,7 +37,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       )}
     >
       <div className="flex gap-6 justify-between items-center">
-        <Link href="/starred" passHref>
+        <Link href="/home" passHref>
           <a>
             <Logo height={28} width={28} />
           </a>
@@ -46,9 +50,15 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       </div>
       {expanded && (
         <div>
+          <button
+            className="flex gap-2 items-center p-2 mb-5 w-full bg-primary rounded-lg link-text"
+            onClick={() => setSearchVisible(true)}
+          >
+            <SearchIcon className="w-4 h-4" /> Search
+          </button>
+
           <div className="ml-1">
             <h3 className="mb-2 font-mono caption-text">DAOs</h3>
-
             <SuspenseLoader
               fallback={<Loader className="!justify-start ml-2" size={20} />}
             >

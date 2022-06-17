@@ -10,7 +10,7 @@ import {
   useForm,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 
 import i18n from '@dao-dao/i18n'
 import { CwCoreHooks, useWallet } from '@dao-dao/state'
@@ -39,6 +39,7 @@ import {
   validateCwProposalSingleInstantiateMsg,
 } from '@dao-dao/utils'
 
+import { usePinnedDAOs } from './usePinnedDAOs'
 import {
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
@@ -47,7 +48,6 @@ import {
   convertDurationWithUnitsToDuration,
   convertThresholdValueToPercentageThreshold,
   newDAOAtom,
-  pinnedAddressesAtom,
 } from '@/atoms'
 
 export type ValidateDAOFormPage = (
@@ -77,7 +77,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
 
   const currentPage = useMemo(() => createDAOFormPages[pageIndex], [pageIndex])
   const [newDAO, setNewDAO] = useRecoilState(newDAOAtom)
-  const setPinnedAddresses = useSetRecoilState(pinnedAddressesAtom)
+  const { setPinned } = usePinnedDAOs()
   const [creating, setCreating] = useState(false)
 
   const {
@@ -151,7 +151,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
               await new Promise((resolve) => setTimeout(resolve, 6500))
 
               refreshBalances()
-              setPinnedAddresses((pinned) => [...pinned, address])
+              setPinned(address)
 
               router.push(`/dao/${address}`)
               toast.success('DAO created.')
@@ -199,7 +199,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
       connected,
       instantiate,
       refreshBalances,
-      setPinnedAddresses,
+      setPinned,
     ]
   )
 

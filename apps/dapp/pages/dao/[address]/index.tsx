@@ -3,7 +3,6 @@ import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
 
 import i18n from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
@@ -11,14 +10,13 @@ import { useVotingModule } from '@dao-dao/state'
 import {
   Breadcrumbs,
   GradientHero,
+  HeartButton,
   MobileMenuTab,
-  StarButton,
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
-import { pinnedAddressesAtom } from '@/atoms'
 import {
   ContractHeader,
   ContractProposalsDisplay,
@@ -35,6 +33,7 @@ import {
   makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { usePinnedDAOs } from '@/hooks'
 import { addToken } from '@/util'
 
 enum MobileMenuTabSelection {
@@ -117,9 +116,8 @@ const InnerDAOHome: FC = () => {
     useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
 
-  const [pinnedAddresses, setPinnedAddresses] =
-    useRecoilState(pinnedAddressesAtom)
-  const pinned = pinnedAddresses.includes(coreAddress)
+  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const pinned = isPinned(coreAddress)
 
   const shouldAddToken = router.query.add_token
   useEffect(() => {
@@ -137,7 +135,7 @@ const InnerDAOHome: FC = () => {
             <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
-                  ['/starred', i18n.t('Home page')],
+                  ['/home', i18n.t('Home page')],
                   [router.asPath, name],
                 ]}
               />
@@ -150,14 +148,12 @@ const InnerDAOHome: FC = () => {
                     </p>
                   </div>
                 )}
-                <StarButton
+                <HeartButton
                   onPin={() => {
                     if (pinned) {
-                      setPinnedAddresses((p) =>
-                        p.filter((a) => a !== coreAddress)
-                      )
+                      setUnpinned(coreAddress)
                     } else {
-                      setPinnedAddresses((p) => p.concat([coreAddress]))
+                      setPinned(coreAddress)
                       governanceTokenAddress && addToken(governanceTokenAddress)
                     }
                   }}

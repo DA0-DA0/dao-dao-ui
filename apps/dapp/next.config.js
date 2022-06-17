@@ -30,6 +30,13 @@ let config = {
       'util',
     ],
   },
+  redirects: async () => [
+    {
+      source: '/starred',
+      destination: '/home',
+      permanent: false,
+    },
+  ],
 }
 
 // Only need rewrites for local development
