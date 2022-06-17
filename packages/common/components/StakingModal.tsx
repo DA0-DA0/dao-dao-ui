@@ -153,7 +153,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           refreshStakingContractBalances()
 
           setAmount(0)
-          toast.success(`Staked ${amount} token${amount === 1 ? '' : 's'}`)
+          toast.success(
+            `Staked ${amount.toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })} $${governanceTokenInfo.symbol}`
+          )
 
           // Close once done.
           onClose()
@@ -222,7 +226,11 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           refreshStakingContractBalances()
 
           setAmount(0)
-          toast.success(`Unstaked ${amount} token${amount === 1 ? '' : 's'}`)
+          toast.success(
+            `Unstaked ${amount.toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })} $${governanceTokenInfo.symbol}`
+          )
 
           // Close once done.
           onClose()
@@ -256,10 +264,14 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
           refreshStakingContractBalances()
 
           setAmount(0)
+
           toast.success(
-            `Claimed ${sumClaimsAvailable} token${
-              sumClaimsAvailable === 1 ? '' : 's'
-            }`
+            `Claimed ${convertMicroDenomToDenomWithDecimals(
+              sumClaimsAvailable,
+              governanceTokenInfo.decimals
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: governanceTokenInfo.decimals,
+            })} $${governanceTokenInfo.symbol}`
           )
 
           // Close once done.

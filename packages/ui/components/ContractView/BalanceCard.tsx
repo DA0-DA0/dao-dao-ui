@@ -31,7 +31,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
         <LogoNoBorder />
       </div>
     ) : typeof body === 'string' ? (
-      <p className="mt-2 mb-4 title-text">{body}</p>
+      <p className="mt-2 mb-4 body-text">{body}</p>
     ) : (
       body
     )}

@@ -1,4 +1,4 @@
-import { MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
+import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
@@ -144,6 +144,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
               </div>
             }
             buttonLabel={i18n.t('Claim tokens')}
+            icon={<HandIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Claim)}
             title={i18n.t('You can now claim your unstaked tokens', {
