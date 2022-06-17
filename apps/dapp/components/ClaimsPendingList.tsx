@@ -17,11 +17,19 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
   const { blockHeight, claimsPending } = useStakingInfo(coreAddress, {
     fetchClaims: true,
   })
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const { governanceTokenInfo, governanceTokenMarketingInfo } =
+    useGovernanceTokenInfo(coreAddress)
 
   if (!blockHeight || !governanceTokenInfo) {
     throw new Error('Failed to load data.')
   }
+
+  const tokenImageUrl =
+    !!governanceTokenMarketingInfo?.logo &&
+    governanceTokenMarketingInfo.logo !== 'embedded' &&
+    'url' in governanceTokenMarketingInfo.logo
+      ? governanceTokenMarketingInfo.logo.url
+      : undefined
 
   return claimsPending?.length ? (
     <>
@@ -33,6 +41,7 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
             key={idx}
             blockHeight={blockHeight}
             claim={claim}
+            iconURI={tokenImageUrl}
             onClaimAvailable={onClaimAvailable}
             tokenInfo={governanceTokenInfo}
           />
