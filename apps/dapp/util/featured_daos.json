@@ -5,7 +5,7 @@
     "image": "https://bafkreibstilkuupryhi74z2ehzqjds6lvjndzd2cjlxucxsc57zs47qxfa.ipfs.nftstorage.link/",
     "members": "1,000+",
     "TVL": "25M",
-    "description": "RAW DAO uses DAO DAO to manages the Junoswap decentralized exchange."
+    "description": "RAW DAO uses DAO DAO to manage the Junoswap decentralized exchange."
   },
   {
     "name": "Security DAO",
@@ -36,7 +36,7 @@
     "href": "https://daodao.zone/multisig/juno18jy629ehmfp2w4nnnyajj955npuw0ryhrvxauff47s65nev8eyuqnpfsd2",
     "image": "https://bafkreihau5dwkvm4pktk6z4gbloy5o32djxl3vpfbwxz6i374byneclwje.ipfs.nftstorage.link",
     "members": "5",
-    "description": "The RAW Foundation Dev Fund uses DAO DAO manage the RAW DAO development fund.",
+    "description": "The RAW Foundation Dev Fund uses DAO DAO to manage the RAW DAO development fund.",
     "TVL": "4.8M"
   },
   {
@@ -85,6 +85,6 @@
     "image": "https://daoup.zone/images/logo.svg",
     "members": "3",
     "TVL": "1.5K",
-    "description": "DAO Up! uses DAO DAO to deploy and manage smart contracts for croudfunding."
+    "description": "DAO Up! uses DAO DAO to deploy and manage smart contracts for crowdfunding."
   }
 ]
