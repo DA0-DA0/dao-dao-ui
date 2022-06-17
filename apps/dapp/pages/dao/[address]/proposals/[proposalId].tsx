@@ -172,7 +172,7 @@ const InnerProposal: FC = () => {
       <div className="col-span-4 w-full md:p-6">
         <Breadcrumbs
           crumbs={[
-            ['/starred', 'Home'],
+            ['/home', i18n.t('Home page')],
             [`/dao/${coreAddress}`, name],
             [router.asPath, `Proposal ${proposalId}`],
           ]}

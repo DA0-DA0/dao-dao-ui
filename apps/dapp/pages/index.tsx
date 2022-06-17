@@ -18,7 +18,7 @@ import { SITE_TITLE } from '@dao-dao/utils'
 import { FeaturedDaos, HomepageCards } from '@/components'
 
 const EnterAppButton = ({ small }: { small?: boolean }) => (
-  <Link href="/starred">
+  <Link href="/home">
     <a>
       <Button size={small ? 'sm' : 'lg'}>
         {i18n.t('landingPage.CTA')}

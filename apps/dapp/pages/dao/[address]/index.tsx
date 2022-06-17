@@ -135,7 +135,7 @@ const InnerDAOHome: FC = () => {
             <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
-                  ['/starred', i18n.t('Home page')],
+                  ['/home', i18n.t('Home page')],
                   [router.asPath, name],
                 ]}
               />

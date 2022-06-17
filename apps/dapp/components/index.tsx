@@ -1,7 +1,7 @@
 export * from './FeaturedDaos'
 export * from './dao'
 export * from './proposals'
-export * from './starred'
+export * from './home'
 export * from './TooltipsDisplay'
 
 export * from './ClaimsPendingList'

@@ -29,7 +29,7 @@ import { FeaturedCard, PinnedDAOCard, SmallScreenNav } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
 import { featuredDaos } from '@/util'
 
-const InnerStarred: FC = () => {
+const InnerHome: FC = () => {
   const {
     pinnedAddresses,
     isProposalIdMarkedDone,
@@ -244,10 +244,10 @@ const InnerStarred: FC = () => {
   )
 }
 
-const StarredPage: NextPage = () => (
+const HomePage: NextPage = () => (
   <SuspenseLoader fallback={<LoadingScreen />}>
-    <InnerStarred />
+    <InnerHome />
   </SuspenseLoader>
 )
 
-export default StarredPage
+export default HomePage

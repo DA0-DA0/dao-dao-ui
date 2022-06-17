@@ -36,7 +36,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       )}
     >
       <div className="flex gap-6 justify-between items-center">
-        <Link href="/starred" passHref>
+        <Link href="/home" passHref>
           <a>
             <Logo height={28} width={28} />
           </a>

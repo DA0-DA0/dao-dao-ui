@@ -15,7 +15,7 @@ import {
 // pinnedProposalIDsMarkedDone is a map of cw-core address to a list of
 // proposal IDs, which contains the IDs of proposals that have been marked
 // done. This happens when a user clicks the hide button on a proposal on
-// the top of the starred/home page, or when a user casts a vote.
+// the top of the homepage, or when a user casts a vote.
 
 // pinnedLatestProposalIDsMarkedDone is a map of cw-core address to one
 // proposal ID. This is a cache of the latest proposal ID that has been

@@ -60,7 +60,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
       <nav className="flex sticky top-0 flex-col justify-between p-6 w-full h-screen text-lg border-r border-inactive">
         <div>
           <div className="flex justify-between items-center lg:justify-start">
-            <Link href="/starred">
+            <Link href="/home">
               <a>
                 <Logo alt={`${SITE_TITLE} Logo`} height={28} width={28} />
               </a>
