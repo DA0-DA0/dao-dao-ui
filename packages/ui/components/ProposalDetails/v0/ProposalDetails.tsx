@@ -99,30 +99,28 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           />
         </>
       )}
-      <p className="mt-[30px] mb-[12px] font-mono caption-text">Vote</p>
-      {proposal.status === 'open' &&
-        !walletVote &&
-        walletWeightPercent !== 0 && (
+      <p className="mt-6 mb-4 link-text">Your vote</p>
+      {proposal.status === 'open' && !walletVote && walletWeightPercent !== 0 && (
+        <div className="max-w-prose">
           <Vote
             loading={loading}
             onVote={onVote}
             voterWeight={walletWeightPercent}
           />
-        )}
+        </div>
+      )}
       {walletVote && (
         <p className="body-text">You voted {walletVote} on this proposal.</p>
       )}
       {proposal.status !== 'open' && !walletVote && (
         <p className="body-text">You did not vote on this proposal.</p>
       )}
-      {walletWeightPercent === 0 && (
+      {walletWeightPercent === 0 && stakingModal && (
         <p className="max-w-prose body-text">
           You must have voting power at the time of proposal creation to vote.{' '}
-          {stakingModal && (
-            <button className="underline" onClick={() => setShowStaking(true)}>
-              Stake some tokens so you can vote next time?
-            </button>
-          )}
+          <button className="underline" onClick={() => setShowStaking(true)}>
+            Stake some tokens so you can vote next time?
+          </button>
           {showStaking && stakingModal}
         </p>
       )}

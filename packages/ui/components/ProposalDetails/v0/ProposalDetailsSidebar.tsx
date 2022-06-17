@@ -125,7 +125,7 @@ export const ProposalDetailsCard: FC<ProposalDetailsCardProps> = ({
             <XIcon className="inline w-4" /> Veto
           </p>
         ) : walletVote ? (
-          <p className="font-mono text-sm text-secondary break-all">
+          <p className="font-mono text-sm text-secondary break-words">
             Unknown: {walletVote}
           </p>
         ) : proposal.status === 'open' ? (

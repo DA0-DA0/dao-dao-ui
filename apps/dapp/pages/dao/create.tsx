@@ -4,6 +4,7 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useSetRecoilState } from 'recoil'
 
 import { Airplane } from '@dao-dao/icons'
@@ -55,7 +56,6 @@ import {
   makeDaoInstantiateWithNewTokenMessage,
   makeDaoInstantiateWithExistingTokenMessage,
 } from '@/util/messagehelpers'
-import { errorNotify, successNotify } from '@/util/toast'
 
 export interface DaoCreateData {
   deposit: string
@@ -141,7 +141,7 @@ const InnerCreateDao: FC = () => {
   const setPinnedDaos = useSetRecoilState(pinnedDaosAtom)
 
   useEffect(() => {
-    if (error) errorNotify(cleanChainError(error))
+    if (error) toast.error(cleanChainError(error))
   }, [error])
 
   const onSubmit = async (data: DaoCreateData) => {
@@ -242,7 +242,7 @@ const InnerCreateDao: FC = () => {
           )
         }
 
-        successNotify('New DAO Created')
+        toast.success('New DAO Created')
       })
       .catch((err: any) => {
         setLoading(false)

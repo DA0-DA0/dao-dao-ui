@@ -63,5 +63,29 @@
     "members": "9",
     "description": "The Terra Dev Fund uses DAO DAO to help Terra projects migrate to Juno.",
     "TVL": "6M"
+  },
+  {
+    "name": "Earth+",
+    "href": "https://daodao.zone/dao/juno1ul4fl7d29wpp98k3elu534pdk9yacd6fypsradgfsgnxkurk0xlqsauwcw",
+    "image": "https://earthpositive.xyz/images/earthplus/earth-logo.jpg",
+    "members": "3",
+    "TVL": "0",
+    "description": "Earth+ validates on Juno and donates 50% of profits to charity."
+  },
+  {
+    "name": "StarryBot",
+    "href": "https://daodao.zone/dao/juno156vlvprfxc4yyu26ute4hu6tjq96pxgt5qqmm0zlt4y0khjetvhqdhmgdm",
+    "image": "https://starrybot.xyz/starrybot.png",
+    "members": "5+",
+    "TVL": "10",
+    "description": "StarryBot uses DAO DAO to manage their token gated Discord bot."
+  },
+  {
+    "name": "DAO Up!",
+    "href": "https://daodao.zone/dao/juno1puc0wp0dhzp9hyvp7tw7edvx496ekewsz0ahrmhtnfaq0tzr0ggs2t42tx",
+    "image": "https://daoup.zone/images/logo.svg",
+    "members": "3",
+    "TVL": "1.5K",
+    "description": "DAO Up! uses DAO DAO to deploy and manage smart contracts for croudfunding."
   }
 ]

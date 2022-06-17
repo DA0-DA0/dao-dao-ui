@@ -13,10 +13,13 @@ import { Dao, Votes } from '@dao-dao/icons'
 
 import featuredDaos from '../util/featured_daos.json'
 
-const useIsVisible = (element: RefObject<Element>) => {
+const useIsVisible = (ref: RefObject<Element>) => {
   const [isVisible, setState] = useState(false)
 
   useEffect(() => {
+    // Copy element into useEffect so that we're sure to unobserve the same one we started with.
+    const element = ref
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         setState(entry.isIntersecting)
@@ -29,7 +32,7 @@ const useIsVisible = (element: RefObject<Element>) => {
     return () => {
       if (element.current) observer.unobserve(element.current)
     }
-  }, [])
+  }, [ref])
 
   return isVisible
 }
@@ -83,7 +86,7 @@ const FeaturedCard: FC<FillerCardProps> = ({
       ></div>
     </div>
     <h3 className="mt-5 title-text">{name}</h3>
-    <p className="mt-2 font-mono text-xs text-center text-secondary line-clamp-3 break-word">
+    <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
       {description}
     </p>
     <div className="flex flex-col gap-1 mt-5 items-left">
@@ -113,9 +116,9 @@ const FeaturedCardMirrored: FC<FillerCardProps> = ({
     )}
     style={{
       WebkitMaskImage:
-        'linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 0%, transparent 100%)',
+        'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, transparent 100%)',
       maskImage:
-        'linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 0%, transparent 100%)',
+        'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, transparent 100%)',
     }}
   >
     <div className="absolute top-0 left-0 w-full h-[160px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
@@ -137,7 +140,7 @@ const FeaturedCardMirrored: FC<FillerCardProps> = ({
       ></div>
     </div>
     <h3 className="mt-5 title-text">{name}</h3>
-    <p className="mt-2 font-mono text-xs text-center text-secondary line-clamp-3 break-word">
+    <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
       {description}
     </p>
     <div className="flex flex-col gap-1 mt-5 items-left">
@@ -203,7 +206,7 @@ export const FeaturedDaos: FC<FeaturedDaosProps> = () => {
           scrollWidth - divWidth - container.scrollLeft
       }
     },
-    [clonesWidth, scrollRef, mirrorRef]
+    [clonesWidth, mirrorRef]
   )
 
   // Set the width of the clones once this component mounts.

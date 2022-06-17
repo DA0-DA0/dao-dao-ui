@@ -1,6 +1,6 @@
-import { ReactNode, FC } from 'react'
+import { ReactNode, FC, useEffect } from 'react'
 
-import { useThemeContext } from '../theme'
+import { Theme, useThemeContext } from '../theme'
 import { LogoNoBorder } from './Logo'
 
 export interface GradientWrapperProps {
@@ -8,14 +8,17 @@ export interface GradientWrapperProps {
 }
 
 export const GradientWrapper: FC<GradientWrapperProps> = ({ children }) => {
-  const theme = useThemeContext()
-  const bg =
-    theme.theme === 'dark'
-      ? 'url(/gradients/BG-Gradient-Dark@2x.png)'
-      : 'url(/gradients/BG-Gradient-Light@2x.png)'
+  const themeContext = useThemeContext()
+
+  // Homepage should always render in dark mode.
+  useEffect(() => {
+    themeContext.updateTheme(Theme.Dark)
+  }, [themeContext])
+
+  const bg = 'url(/gradients/BG-Gradient-Dark@2x.png)'
 
   return (
-    <div className="flex overflow-x-hidden relative flex-col items-center">
+    <div className="dark flex overflow-x-hidden relative flex-col items-center">
       {typeof CSS.supports !== 'undefined' &&
         CSS.supports('backdrop-filter', 'blur(5px)') && (
           <div

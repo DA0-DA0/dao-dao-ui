@@ -1,4 +1,5 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC, useState } from 'react'
 
 import { Abstain, Airplane } from '@dao-dao/icons'
@@ -11,13 +12,19 @@ export interface VoteProps {
   onVote: (choice: VoteChoice) => void
   voterWeight: number
   loading: boolean
+  blur?: boolean
 }
 
-export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
+export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex flex-wrap gap-2 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+    <div
+      className={clsx(
+        'flex flex-col gap-3 p-4 max-w-3xl bg-primary rounded-lg border border-default',
+        blur && 'backdrop-blur-lg'
+      )}
+    >
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">🗳</p>
         <p className="primary-text">Casting</p>
@@ -51,22 +58,6 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
         </Button>
         <Button
           className={`group transition ${
-            selected === VoteChoice.Abstain
-              ? 'bg-tertiary hover:bg-tertiary'
-              : ''
-          }`}
-          onClick={() =>
-            setSelected((s) =>
-              s === VoteChoice.Abstain ? undefined : VoteChoice.Abstain
-            )
-          }
-          variant="secondary"
-        >
-          <Abstain fill="currentColor" />
-          Abstain
-        </Button>
-        <Button
-          className={`group transition ${
             selected === VoteChoice.No ? 'bg-error hover:bg-error' : ''
           }`}
           onClick={() =>
@@ -85,13 +76,31 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading }) => {
           />
           No
         </Button>
+        <Button
+          className={`group transition ${
+            selected === VoteChoice.Abstain
+              ? 'bg-tertiary hover:bg-tertiary'
+              : ''
+          }`}
+          onClick={() =>
+            setSelected((s) =>
+              s === VoteChoice.Abstain ? undefined : VoteChoice.Abstain
+            )
+          }
+          variant="secondary"
+        >
+          <Abstain fill="currentColor" />
+          Abstain
+        </Button>
       </div>
       <Button
         disabled={selected === undefined}
         loading={loading}
         onClick={() => onVote(selected as VoteChoice)}
       >
-        Vote <Airplane stroke="currentColor" />
+        <div className="flex gap-2 justify-center items-center w-full">
+          <p>Cast your vote</p> <Airplane stroke="currentColor" />
+        </div>
       </Button>
     </div>
   )
