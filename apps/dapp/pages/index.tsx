@@ -161,6 +161,23 @@ const Home: NextPage = () => {
           <div className="mt-12">
             <HomepageCards />
           </div>
+          <div className="flex flex-col gap-4 items-center my-12">
+            <h2 className="mx-4 max-w-xl text-center header-text">
+              Create, explore, and join DAOs
+            </h2>
+            <Link href="/starred">
+              <a>
+                <Button size={'lg'}>
+                  {i18n.t('landingPage.CTA')}
+                  <ArrowUpRight
+                    color="currentColor"
+                    height="10px"
+                    width="10px"
+                  />
+                </Button>
+              </a>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 gap-2 my-10 font-mono md:grid-cols-3 caption-text">
             <div className="flex flex-wrap gap-6 items-center mx-2 text-xs">
               <p>DAO DAO v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}</p>
