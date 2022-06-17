@@ -79,7 +79,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             title={i18n.t('You are not a member yet!', { daoName: name })}
           >
             <p className="body-text">
-              <Trans key="stakeTokensToJoin">
+              <Trans i18nKey="stakeTokensToJoin">
                 Stake your{' '}
                 <span className="text-bold">
                   {{
@@ -106,7 +106,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             title={i18n.t('You are a member!', { daoName: name })}
           >
             <p className="body-text">
-              <Trans key="votingPowerStakedTokens">
+              <Trans i18nKey="votingPowerStakedTokens">
                 Your voting power is{' '}
                 <span className="font-bold">
                   {{
@@ -145,7 +145,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             title={i18n.t('You could have more voting power')}
           >
             <p className="body-text">
-              <Trans key="stakeRemainingForVotingPower">
+              <Trans i18nKey="stakeRemainingForVotingPower">
                 Stake your{' '}
                 <span className="font-bold">
                   remaining{' '}

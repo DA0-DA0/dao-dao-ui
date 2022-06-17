@@ -67,7 +67,7 @@ const en = {
     'Your voting power is <1>{{powerPercent)}}%</1> (<2>{{amount}} ${{tokenSymbol}} staked</2>).',
   'You could have more voting power': 'You could have more voting power.',
   stakeRemainingForVotingPower:
-    'Stake your remaining <1>{{amount}} ${{tokenSymbol}}</1> to gain voting power in {{daoName}}.',
+    'Stake your <1>remaining {{amount}} ${{tokenSymbol}}</1> to gain voting power in {{daoName}}.',
   'You can now claim your unstaked tokens':
     'You can now claim your unstaked ${{tokenSymbol}}.',
 
