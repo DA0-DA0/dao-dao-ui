@@ -206,8 +206,8 @@ const InnerProposal: FC = () => {
               <StakingModal
                 connectWalletButton={<ConnectWalletButton />}
                 coreAddress={coreAddress}
-                defaultMode={StakingMode.Stake}
-                loader={Loader}
+                loader={<Loader />}
+                mode={StakingMode.Stake}
                 onClose={() => setShowStaking(false)}
               />
             }
