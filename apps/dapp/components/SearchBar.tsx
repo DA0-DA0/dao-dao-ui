@@ -17,11 +17,11 @@ const SearchBoxInternal: FC<SearchBoxInternalProps> = ({
   currentRefinement,
   refine,
 }) => (
-  <div className="group flex gap-1.5 items-center px-3 max-w-[812px] text-tertiary bg-light rounded-lg border border-focus focus-within:border-default transition">
-    <SearchIcon className="w-4" />
+  <div className="flex items-center px-3 text-tertiary border-b border-default">
+    <SearchIcon className="w-5" />
     <input
       autoFocus
-      className="py-2 w-full bg-transparent focus:outline-none secondary-text focus:ring-none"
+      className="p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
       onChange={(event) => refine(event.currentTarget.value)}
       placeholder={i18n.t('Search')}
       type="text"

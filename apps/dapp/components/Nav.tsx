@@ -4,8 +4,8 @@ import {
   SearchIcon,
 } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC } from 'react'
+import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import i18n from '@dao-dao/i18n'
@@ -14,46 +14,17 @@ import { SITE_TITLE } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 
-import { Loader, PinnedDAONavList, SearchModal } from '@/components'
+import { searchVisibleAtom } from '@/atoms'
+import { Loader, PinnedDAONavList } from '@/components'
+import { usePlatform } from '@/hooks'
 
 type NavProps = {
   onMenuClick?: () => void
 }
 
 export const Nav: FC<NavProps> = ({ onMenuClick }) => {
-  const [showSearch, setShowSearch] = useState(false)
-  const router = useRouter()
-
-  // Hide modal when we nav away.
-  useEffect(() => {
-    setShowSearch(false)
-  }, [router.asPath, setShowSearch])
-
-  const [isMac, setIsMac] = useState(false)
-  useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0)
-  }, [setIsMac])
-
-  const handleKeyPress = useCallback(
-    (event) => {
-      if ((!isMac && event.ctrlKey) || event.metaKey) {
-        if (event.key === 'k') {
-          setShowSearch((showSearch) => !showSearch)
-        }
-      }
-    },
-    [isMac]
-  )
-
-  useEffect(() => {
-    // attach the event listener
-    document.addEventListener('keydown', handleKeyPress)
-
-    // remove the event listener
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [handleKeyPress])
+  const setSearchVisible = useSetRecoilState(searchVisibleAtom)
+  const { isMac } = usePlatform()
 
   return (
     <>
@@ -71,7 +42,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </div>
           <button
             className="flex justify-between items-center p-2 mt-5 w-full bg-primary rounded-lg hover:outline-brand hover:outline link-text"
-            onClick={() => setShowSearch(true)}
+            onClick={() => setSearchVisible(true)}
           >
             <p className="flex gap-2 items-center">
               <SearchIcon className="w-4 h-4" /> Search
@@ -125,7 +96,6 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </ul>
         </div>
       </nav>
-      {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
     </>
   )
 }

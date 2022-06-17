@@ -7,6 +7,7 @@ import {
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, useState } from 'react'
+import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
@@ -14,7 +15,7 @@ import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { Loader } from './Loader'
 import { NavListItem } from './NavListItem'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
-import { SearchModal } from './SearchModal'
+import { searchVisibleAtom } from '@/atoms'
 
 interface SmallScreenNavProps {
   className?: string
@@ -22,7 +23,7 @@ interface SmallScreenNavProps {
 
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const [expanded, setExpanded] = useState(false)
-  const [showSearch, setShowSearch] = useState(false)
+  const setSearchVisible = useSetRecoilState(searchVisibleAtom)
 
   return (
     <div
@@ -51,7 +52,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
         <div>
           <button
             className="flex gap-2 items-center p-2 mb-5 w-full bg-primary rounded-lg link-text"
-            onClick={() => setShowSearch(true)}
+            onClick={() => setSearchVisible(true)}
           >
             <SearchIcon className="w-4 h-4" /> Search
           </button>
@@ -72,7 +73,6 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
               />
             </ul>
           </div>
-          {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
         </div>
       )}
     </div>

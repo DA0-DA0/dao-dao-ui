@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { connectHits } from 'react-instantsearch-dom'
@@ -73,12 +72,7 @@ const HitsInternal: FC<any> = ({ hits }) => {
 
   return (
     <>
-      <div
-        className={clsx(
-          'flex flex-wrap gap-4 justify-center md:justify-start',
-          hits.length && 'mt-4'
-        )}
-      >
+      <div className="flex overflow-hidden overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start">
         {hits.map((hit: Hit, index: number) => (
           <Hit key={hit.id} hit={hit} selected={index === selection} />
         ))}
@@ -86,4 +80,5 @@ const HitsInternal: FC<any> = ({ hits }) => {
     </>
   )
 }
+
 export const SearchHits = connectHits(HitsInternal)

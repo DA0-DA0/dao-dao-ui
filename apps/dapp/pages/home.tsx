@@ -171,7 +171,7 @@ const InnerHome: FC = () => {
     <>
       <SmallScreenNav />
 
-      <div className="px-2 md:py-6 md:px-6">
+      <div className="px-4 md:py-6 md:px-6">
         {openProposalResponses.length > 0 && (
           <div className="mb-6">
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">

@@ -15,15 +15,13 @@ const searchClient = instantMeiliSearch(SEARCH_URL, SEARCH_API_KEY)
 
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => (
   <Modal
-    containerClassName="p-0 border-none w-full max-w-4xl max-w-[850px] h-[600px]"
-    hideCloseButton={true}
+    containerClassName="p-0 border-none w-full max-w-[850px] h-[650px] max-h-[90vh]"
+    hideCloseButton
     onClose={onClose}
   >
     <InstantSearch indexName={SEARCH_INDEX} searchClient={searchClient}>
-      <div className="overflow-hidden overflow-y-auto p-4 w-full h-full bg-primary rounded-lg">
-        <div className="md:sticky md:top-0 md:z-10">
-          <SearchBox />
-        </div>
+      <div className="flex overflow-hidden flex-col w-full h-full bg-primary rounded-lg">
+        <SearchBox />
         <SearchHits />
       </div>
     </InstantSearch>

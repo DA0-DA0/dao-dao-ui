@@ -31,9 +31,7 @@ export const Modal: FC<ModalProps> = ({
     document.addEventListener('keydown', handleKeyPress)
 
     // remove the event listener
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress)
-    }
+    return () => document.removeEventListener('keydown', handleKeyPress)
   }, [handleKeyPress])
 
   return (
