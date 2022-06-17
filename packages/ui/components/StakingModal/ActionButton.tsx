@@ -19,7 +19,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
 }) => (
   <Tooltip label={error}>
     <Button disabled={!!error} loading={loading} onClick={onClick}>
-      <span className="mr-1 capitalize">{stakingModeString(mode)}</span>
+      <span className="capitalize">{stakingModeString(mode)}</span>
     </Button>
   </Tooltip>
 )

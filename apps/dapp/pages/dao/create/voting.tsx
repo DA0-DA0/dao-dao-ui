@@ -1,9 +1,9 @@
-import Emoji from 'a11y-react-emoji'
-import { FC, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
 
 import i18n from '@dao-dao/i18n'
 import { PlaceholderToken } from '@dao-dao/icons'
+import { useWallet } from '@dao-dao/state'
 import {
   Button,
   FormSwitch,
@@ -13,12 +13,10 @@ import {
   Modal,
   NumberInput,
   RadioInput,
-  SelectInput,
   TextInput,
 } from '@dao-dao/ui'
 import {
   validateContractAddress,
-  validateNonNegative,
   validatePositive,
   validateRequired,
   validateTokenSymbol,
@@ -27,18 +25,20 @@ import {
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
-  DefaultNewDAO,
-  DurationUnitsValues,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
 } from '@/atoms'
 import {
-  CreateDAOConfigCard,
   CreateDAOConfigCardWrapper,
   CreateDAOFormWrapper,
+  CreateDAOProposalDepositCard,
+  CreateDAOQuorumCard,
+  CreateDAORefundFailedProposalDepositCard,
+  CreateDAOThresholdCard,
   CreateDAOTier,
+  CreateDAOUnstakingDurationCard,
+  CreateDAOVotingDurationCard,
   SmallScreenNav,
   VotingPowerChart,
   useVotingPowerDistributionData,
@@ -46,8 +46,10 @@ import {
 import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOVotingPage: FC = () => {
+  const { address: walletAddress } = useWallet()
   const {
     watchedNewDAO,
+    tiersAreUntouched,
     control,
     register,
     watch,
@@ -56,7 +58,7 @@ const CreateDAOVotingPage: FC = () => {
     resetField,
     getValues,
     formWrapperProps,
-  } = useCreateDAOForm(2)
+  } = useCreateDAOForm(1)
 
   const {
     fields: tiers,
@@ -67,15 +69,23 @@ const CreateDAOVotingPage: FC = () => {
     name: 'tiers',
   })
 
+  // If wallet connected and empty tiers, fill in as first default.
+  const [loadedPage, setLoadedPage] = useState(false)
+  useEffect(() => {
+    if (loadedPage) return
+    setLoadedPage(true)
+
+    if (!tiersAreUntouched || !walletAddress) return
+    setValue('tiers.0.members.0.address', walletAddress)
+  }, [loadedPage, setValue, tiersAreUntouched, walletAddress])
+
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
-  const threshold = watchedNewDAO.thresholdQuorum.threshold
-  const quorum = watchedNewDAO.thresholdQuorum.quorum
 
   const newTokenImageUrl = watchedNewDAO.governanceTokenOptions.newInfo.imageUrl
 
   const governanceTokenEnabled =
-    watchedNewDAO.structure === NewDAOStructure.UsingGovToken
+    watchedNewDAO.structure === NewDAOStructure.GovernanceToken
   // Only count treasury balance when creating new governance token.
   const initialTreasuryBalance =
     governanceTokenEnabled &&
@@ -112,6 +122,14 @@ const CreateDAOVotingPage: FC = () => {
     false
   )
 
+  const configCardProps = {
+    errors,
+    newDAO: watchedNewDAO,
+    register,
+    setValue,
+    watch,
+  }
+
   return (
     <>
       <SmallScreenNav />
@@ -120,93 +138,6 @@ const CreateDAOVotingPage: FC = () => {
         containerClassName="flex flex-col gap-8"
         {...formWrapperProps}
       >
-        <div className="mx-auto w-full max-w-md">
-          <VotingPowerChart data={entries} />
-        </div>
-
-        <div className="flex flex-col gap-4 items-stretch">
-          {tiers.map(({ id }, idx) => (
-            <CreateDAOTier
-              key={id}
-              control={control}
-              errors={errors}
-              newDAO={watchedNewDAO}
-              register={register}
-              remove={onlyOneTier ? undefined : () => removeTier(idx)}
-              setValue={setValue}
-              showColorDotOnMember={onlyOneTier}
-              tierIndex={idx}
-            />
-          ))}
-
-          <div className="flex flex-col">
-            <Button
-              className="self-start"
-              onClick={() =>
-                appendTier({
-                  name: '',
-                  weight:
-                    getValues('structure') === NewDAOStructure.UsingGovToken
-                      ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-                      : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
-                  members: [
-                    {
-                      address: '',
-                    },
-                  ],
-                })
-              }
-              variant="secondary"
-            >
-              {i18n.t('Add tier')}
-            </Button>
-
-            <InputErrorMessage error={errors._tiersError} />
-          </div>
-        </div>
-
-        <CreateDAOConfigCard
-          accentColor="#c3935e1a"
-          description={i18n.t('Voting duration description')}
-          error={errors.votingDuration?.value || errors.votingDuration?.units}
-          image={<Emoji label="hourglass" symbol="⏳" />}
-          title={i18n.t('Voting duration')}
-        >
-          <NumberInput
-            error={errors.votingDuration?.value}
-            label="votingDuration.value"
-            onPlusMinus={[
-              () =>
-                setValue(
-                  'votingDuration.value',
-                  Math.max(watchedNewDAO.votingDuration.value + 1, 1)
-                ),
-              () =>
-                setValue(
-                  'votingDuration.value',
-                  Math.max(watchedNewDAO.votingDuration.value - 1, 1)
-                ),
-            ]}
-            register={register}
-            sizing="sm"
-            step={1}
-            validation={[validatePositive, validateRequired]}
-          />
-
-          <SelectInput
-            error={errors.votingDuration?.units}
-            label="votingDuration.units"
-            register={register}
-            validation={[validateRequired]}
-          >
-            {DurationUnitsValues.map((type, idx) => (
-              <option key={idx} value={type}>
-                {type}
-              </option>
-            ))}
-          </SelectInput>
-        </CreateDAOConfigCard>
-
         {governanceTokenEnabled && (
           <div className="space-y-3">
             <RadioInput
@@ -224,6 +155,7 @@ const CreateDAOVotingPage: FC = () => {
               setValue={setValue}
               watch={watch}
             />
+
             <CreateDAOConfigCardWrapper className="gap-8 mb-9">
               {watchedNewDAO.governanceTokenOptions.type ===
               GovernanceTokenType.New ? (
@@ -282,7 +214,7 @@ const CreateDAOVotingPage: FC = () => {
                                 width="2.25rem"
                               />
                             )}
-
+                            $
                             {watchedNewDAO.governanceTokenOptions.newInfo
                               .symbol || 'Token'}
                           </div>
@@ -369,14 +301,17 @@ const CreateDAOVotingPage: FC = () => {
                   </div>
                 </>
               ) : (
-                <div>
+                <div className="space-y-2">
+                  <p className="primary-text">
+                    {i18n.t('Token contract address')}
+                  </p>
+
                   <TextInput
                     error={
                       errors.governanceTokenOptions
                         ?.existingGovernanceTokenAddress
                     }
                     label="governanceTokenOptions.existingGovernanceTokenAddress"
-                    placeholder={i18n.t('Token contract address')}
                     register={register}
                     validation={[validateContractAddress, validateRequired]}
                   />
@@ -389,121 +324,74 @@ const CreateDAOVotingPage: FC = () => {
                 </div>
               )}
             </CreateDAOConfigCardWrapper>
+          </div>
+        )}
+        {(!governanceTokenEnabled ||
+          // Only allow token distribution if creating a new token.
+          watchedNewDAO.governanceTokenOptions.type ===
+            GovernanceTokenType.New) && (
+          <>
+            <div className="flex flex-col gap-4 items-stretch">
+              {governanceTokenEnabled && <p>{i18n.t('Token distribution')}</p>}
 
-            <CreateDAOConfigCard
-              accentColor="#fccd031a"
-              description="The number of governance tokens that must be deposited in order to create a proposal. Setting this high may deter spam, but setting it too high may limit broad participation."
-              error={errors.governanceTokenOptions?.proposalDeposit?.value}
-              image={<Emoji label="banknote" symbol="💵" />}
-              title="Proposal deposit"
-            >
-              <NumberInput
-                error={errors.governanceTokenOptions?.proposalDeposit?.value}
-                label="governanceTokenOptions.proposalDeposit.value"
-                onPlusMinus={[
-                  () =>
-                    setValue(
-                      'governanceTokenOptions.proposalDeposit.value',
-                      Math.max(
-                        watchedNewDAO.governanceTokenOptions.proposalDeposit
-                          .value + 1,
-                        0
-                      )
-                    ),
-                  () =>
-                    setValue(
-                      'governanceTokenOptions.proposalDeposit.value',
-                      Math.max(
-                        watchedNewDAO.governanceTokenOptions.proposalDeposit
-                          .value - 1,
-                        0
-                      )
-                    ),
-                ]}
-                register={register}
-                sizing="sm"
-                step={1}
-                validation={[validateNonNegative]}
-              />
-            </CreateDAOConfigCard>
+              {tiers.map(({ id }, idx) => (
+                <CreateDAOTier
+                  key={id}
+                  control={control}
+                  errors={errors}
+                  newDAO={watchedNewDAO}
+                  register={register}
+                  remove={onlyOneTier ? undefined : () => removeTier(idx)}
+                  setValue={setValue}
+                  showColorDotOnMember={onlyOneTier}
+                  tierIndex={idx}
+                />
+              ))}
+
+              <div className="flex flex-col">
+                <Button
+                  className="self-start"
+                  onClick={() =>
+                    appendTier({
+                      name: '',
+                      weight:
+                        getValues('structure') ===
+                        NewDAOStructure.GovernanceToken
+                          ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
+                          : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+                      members: [
+                        {
+                          address: '',
+                        },
+                      ],
+                    })
+                  }
+                  variant="secondary"
+                >
+                  {i18n.t('Add tier')}
+                </Button>
+
+                <InputErrorMessage error={errors._tiersError} />
+              </div>
+            </div>
+
+            <div className="mx-auto w-full max-w-md">
+              <VotingPowerChart data={entries} />
+            </div>
+          </>
+        )}
+
+        <CreateDAOVotingDurationCard {...configCardProps} />
+
+        {governanceTokenEnabled && (
+          <div className="-mt-5 space-y-3">
+            <CreateDAOProposalDepositCard {...configCardProps} />
 
             {!!watchedNewDAO.governanceTokenOptions.proposalDeposit.value && (
-              <CreateDAOConfigCard
-                accentColor="#fed3581a"
-                description={i18n.t('Proposal deposit refund description')}
-                image={<Emoji label="finger pointing up" symbol="👆" />}
-                title={i18n.t('Proposal deposit refund')}
-              >
-                <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
-                  <p className="w-[3ch] secondary-text">
-                    {watchedNewDAO.governanceTokenOptions.proposalDeposit
-                      .refundFailed
-                      ? 'Yes'
-                      : 'No'}
-                  </p>
-
-                  <FormSwitch
-                    label="governanceTokenOptions.proposalDeposit.refundFailed"
-                    setValue={setValue}
-                    sizing="sm"
-                    watch={watch}
-                  />
-                </div>
-              </CreateDAOConfigCard>
+              <CreateDAORefundFailedProposalDepositCard {...configCardProps} />
             )}
 
-            <CreateDAOConfigCard
-              accentColor="#cf434b1a"
-              description={i18n.t('Unstaking period description')}
-              error={
-                errors.governanceTokenOptions?.unregisterDuration?.value ||
-                errors.governanceTokenOptions?.unregisterDuration?.units
-              }
-              image={<Emoji label="alarm clock" symbol="⏰" />}
-              title={i18n.t('Unstaking period')}
-            >
-              <NumberInput
-                error={errors.governanceTokenOptions?.unregisterDuration?.value}
-                label="governanceTokenOptions.unregisterDuration.value"
-                onPlusMinus={[
-                  () =>
-                    setValue(
-                      'governanceTokenOptions.unregisterDuration.value',
-                      Math.max(
-                        watchedNewDAO.governanceTokenOptions.unregisterDuration
-                          .value + 1,
-                        0
-                      )
-                    ),
-                  () =>
-                    setValue(
-                      'governanceTokenOptions.unregisterDuration.value',
-                      Math.max(
-                        watchedNewDAO.governanceTokenOptions.unregisterDuration
-                          .value - 1,
-                        0
-                      )
-                    ),
-                ]}
-                register={register}
-                sizing="sm"
-                step={1}
-                validation={[validateNonNegative, validateRequired]}
-              />
-
-              <SelectInput
-                error={errors.governanceTokenOptions?.unregisterDuration?.units}
-                label="governanceTokenOptions.unregisterDuration.units"
-                register={register}
-                validation={[validateRequired]}
-              >
-                {DurationUnitsValues.map((type, idx) => (
-                  <option key={idx} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </SelectInput>
-            </CreateDAOConfigCard>
+            <CreateDAOUnstakingDurationCard {...configCardProps} />
           </div>
         )}
 
@@ -535,113 +423,8 @@ const CreateDAOVotingPage: FC = () => {
 
         {watchedNewDAO._changeThresholdQuorumEnabled && (
           <div className="space-y-3">
-            <CreateDAOConfigCard
-              accentColor="rgba(95, 94, 254, 0.1)"
-              description="The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it."
-              error={errors.thresholdQuorum?.threshold}
-              image={<Emoji label="ballot box" symbol="🗳️" />}
-              title={i18n.t('Passing threshold')}
-            >
-              {threshold !== 'majority' && (
-                <NumberInput
-                  error={errors.thresholdQuorum?.threshold}
-                  label="thresholdQuorum.threshold"
-                  onPlusMinus={[
-                    () =>
-                      setValue(
-                        'thresholdQuorum.threshold',
-                        Math.max(threshold + 1, 1)
-                      ),
-                    () =>
-                      setValue(
-                        'thresholdQuorum.threshold',
-                        Math.max(threshold - 1, 1)
-                      ),
-                  ]}
-                  register={register}
-                  // Override numeric value setter since the select below
-                  // attempts to set 'majority', but registering the field
-                  // with the numeric setter causes validation issues.
-                  setValueAs={(value) =>
-                    value === 'majority' ? 'majority' : Number(value)
-                  }
-                  sizing="sm"
-                  step={0.001}
-                  validation={[validatePositive, validateRequired]}
-                />
-              )}
-
-              <SelectInput
-                onChange={({ target: { value } }) =>
-                  setValue(
-                    'thresholdQuorum.threshold',
-                    value === 'majority'
-                      ? 'majority'
-                      : // value === '%'
-                        DEFAULT_NEW_DAO_THRESHOLD_PERCENT
-                  )
-                }
-                validation={[validateRequired]}
-                value={threshold === 'majority' ? 'majority' : '%'}
-              >
-                <option value="%">%</option>
-                <option value="majority">{i18n.t('Majority')}</option>
-              </SelectInput>
-            </CreateDAOConfigCard>
-
-            <CreateDAOConfigCard
-              accentColor="#fefe891a"
-              description={i18n.t('Quorum description')}
-              error={errors.thresholdQuorum?.quorum}
-              image={<Emoji label="megaphone" symbol="📣" />}
-              title={i18n.t('Quorum')}
-            >
-              {quorum !== 'majority' && (
-                <NumberInput
-                  error={errors.thresholdQuorum?.quorum}
-                  label="thresholdQuorum.quorum"
-                  onPlusMinus={[
-                    () =>
-                      setValue(
-                        'thresholdQuorum.quorum',
-                        Math.max(quorum + 1, 0)
-                      ),
-                    () =>
-                      setValue(
-                        'thresholdQuorum.quorum',
-                        Math.max(quorum - 1, 0)
-                      ),
-                  ]}
-                  register={register}
-                  // Override numeric value setter since the select below
-                  // attempts to set 'majority', but registering the field
-                  // with the numeric setter causes validation issues.
-                  setValueAs={(value) =>
-                    value === 'majority' ? 'majority' : Number(value)
-                  }
-                  sizing="sm"
-                  step={0.001}
-                  validation={[validateNonNegative, validateRequired]}
-                />
-              )}
-
-              <SelectInput
-                onChange={({ target: { value } }) =>
-                  setValue(
-                    'thresholdQuorum.quorum',
-                    value === 'majority'
-                      ? 'majority'
-                      : // value === '%'
-                        DefaultNewDAO.thresholdQuorum.quorum
-                  )
-                }
-                validation={[validateRequired]}
-                value={quorum === 'majority' ? 'majority' : '%'}
-              >
-                <option value="%">%</option>
-                <option value="majority">{i18n.t('Majority')}</option>
-              </SelectInput>
-            </CreateDAOConfigCard>
+            <CreateDAOThresholdCard {...configCardProps} />
+            <CreateDAOQuorumCard {...configCardProps} />
           </div>
         )}
       </CreateDAOFormWrapper>

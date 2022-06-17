@@ -41,6 +41,7 @@ import {
 
 import { usePinnedDAOs } from './usePinnedDAOs'
 import {
+  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAO,
@@ -94,6 +95,12 @@ export const useCreateDAOForm = (pageIndex: number) => {
   } = useForm({ defaultValues: newDAO })
 
   const watchedNewDAO = watch()
+  // Determine if tiers have been touched yet.
+  const tiersAreUntouched =
+    watchedNewDAO.tiers.length === 1 &&
+    watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name &&
+    watchedNewDAO.tiers[0].members.length === 1 &&
+    watchedNewDAO.tiers[0].members[0].address === ''
 
   const invalidPages = createDAOFormPages.map(
     ({ validate }) =>
@@ -245,6 +252,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
 
   return {
     watchedNewDAO,
+    tiersAreUntouched,
     errors,
     register,
     getValues,
@@ -267,13 +275,9 @@ export const useCreateDAOForm = (pageIndex: number) => {
 export const createDAOFormPages: DAOFormPage[] = [
   {
     href: '/dao/create',
-    title: i18n.t('Choose a structure'),
-    validate: ({ structure }) => structure !== undefined,
-  },
-  {
-    href: '/dao/create/describe',
     title: i18n.t('Describe the DAO'),
-    validate: ({ name }) => name.trim().length > 0,
+    validate: ({ name, structure }) =>
+      name.trim().length > 0 && structure !== undefined,
   },
   {
     href: '/dao/create/voting',
@@ -354,7 +358,7 @@ const createDAO = async (
     thresholdQuorum: { threshold, quorum },
   } = values
 
-  const governanceTokenEnabled = structure === NewDAOStructure.UsingGovToken
+  const governanceTokenEnabled = structure === NewDAOStructure.GovernanceToken
 
   let votingModuleInstantiateMsg
   if (governanceTokenEnabled) {

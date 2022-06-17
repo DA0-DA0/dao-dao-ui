@@ -67,8 +67,7 @@ const InnerStake = () => {
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
 
   // Set to default mode to display, and undefined to hide.
-  const [showStakingDefaultMode, setShowStakingDefaultMode] =
-    useState<StakingMode>()
+  const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
 
   if (!governanceTokenInfo) {
     throw new Error('Failed to load page data.')
@@ -99,7 +98,7 @@ const InnerStake = () => {
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
                   <UnstakedBalanceCard
                     setShowStakingMode={() =>
-                      setShowStakingDefaultMode(StakingMode.Stake)
+                      setShowStakingMode(StakingMode.Stake)
                     }
                   />
                 </SuspenseLoader>
@@ -116,7 +115,7 @@ const InnerStake = () => {
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
                   <StakedBalanceCard
                     setShowStakingMode={() =>
-                      setShowStakingDefaultMode(StakingMode.Unstake)
+                      setShowStakingMode(StakingMode.Unstake)
                     }
                   />
                 </SuspenseLoader>
@@ -134,7 +133,7 @@ const InnerStake = () => {
               }
             >
               <ClaimsList
-                showClaim={() => setShowStakingDefaultMode(StakingMode.Claim)}
+                showClaim={() => setShowStakingMode(StakingMode.Claim)}
               />
             </SuspenseLoader>
           </>
@@ -143,13 +142,13 @@ const InnerStake = () => {
         )}
       </div>
 
-      {showStakingDefaultMode !== undefined && (
+      {showStakingMode !== undefined && (
         <StakingModal
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           coreAddress={DAO_ADDRESS}
-          defaultMode={showStakingDefaultMode}
           loader={Loader}
-          onClose={() => setShowStakingDefaultMode(undefined)}
+          mode={showStakingMode}
+          onClose={() => setShowStakingMode(undefined)}
         />
       )}
     </>

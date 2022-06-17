@@ -87,7 +87,9 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
         )}
       >
         <button
-          className="transition secondary-text hover:body-text"
+          className={clsx('transition secondary-text', {
+            'hover:body-text': !disabled,
+          })}
           disabled={disabled}
           onClick={() => onPlusMinus[0]()}
           type="button"
@@ -95,7 +97,9 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
           <PlusIcon className="w-4" />
         </button>
         <button
-          className="transition secondary-text hover:body-text"
+          className={clsx('transition secondary-text', {
+            'hover:body-text': !disabled,
+          })}
           disabled={disabled}
           onClick={() => onPlusMinus[1]()}
           type="button"

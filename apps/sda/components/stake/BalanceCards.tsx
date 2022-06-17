@@ -81,24 +81,26 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
-  const { totalStaked, walletStaked } = useStakingInfo(DAO_ADDRESS, {
-    fetchTotalStaked: true,
-    fetchWalletStaked: true,
+  const { totalStakedValue, walletStakedValue } = useStakingInfo(DAO_ADDRESS, {
+    fetchTotalStakedValue: true,
+    fetchWalletStakedValue: true,
   })
 
   if (
     !governanceTokenInfo ||
-    totalStaked === undefined ||
-    (connected && walletStaked === undefined)
+    totalStakedValue === undefined ||
+    (connected && walletStakedValue === undefined)
   ) {
     return <BalanceCardLoader />
   }
 
   const votingPower =
-    totalStaked === 0 ? 0 : ((walletStaked ?? 0) / totalStaked) * 100
+    totalStakedValue === 0
+      ? 0
+      : ((walletStakedValue ?? 0) / totalStakedValue) * 100
 
-  const stakedBalance = convertMicroDenomToDenomWithDecimals(
-    walletStaked ?? 0,
+  const stakedValue = convertMicroDenomToDenomWithDecimals(
+    walletStakedValue ?? 0,
     governanceTokenInfo.decimals
   )
 
@@ -108,7 +110,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         <div className="flex flex-row gap-2 items-center">
           <Logo size={20} />
           <p className="text-base">
-            {stakedBalance.toLocaleString(undefined, {
+            {stakedValue.toLocaleString(undefined, {
               maximumFractionDigits: governanceTokenInfo.decimals,
             })}{' '}
             {governanceTokenInfo.name}
@@ -127,7 +129,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         {price && (
           <p className="text-lg font-medium">
             ${' '}
-            {(stakedBalance * price).toLocaleString(undefined, {
+            {(stakedValue * price).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}{' '}
             USD
