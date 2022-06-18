@@ -7785,6 +7785,14 @@ eslint-module-utils@^2.7.0, eslint-module-utils@^2.7.3:
     debug "^3.2.7"
     find-up "^2.1.0"
 
+eslint-plugin-i18next@^6.0.0-4:
+  version "6.0.0-4"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-i18next/-/eslint-plugin-i18next-6.0.0-4.tgz#985be971145697dc083a99c5da07f655e52a1c32"
+  integrity sha512-QF0TpFuk5HkdzKBirXsWvueX50GIu/mhTUtYWSUSHjJcLPugap890XGsyDhOSUpX/tNzX32K43v96InZr7+mmg==
+  dependencies:
+    lodash "^4.17.21"
+    requireindex "~1.1.0"
+
 eslint-plugin-import@2.25.2:
   version "2.25.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.25.2.tgz#b3b9160efddb702fc1636659e71ba1d10adbe9e9"
@@ -7852,6 +7860,11 @@ eslint-plugin-react-hooks@4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.3.0.tgz#318dbf312e06fab1c835a4abef00121751ac1172"
   integrity sha512-XslZy0LnMn+84NEG9jSGR6eGqaZB3133L8xewQo3fQagbQuGt7a63gf+P1NGKZavEYEC3UXaWEAA/AqDkuN6xA==
+
+eslint-plugin-react-i18n@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-i18n/-/eslint-plugin-react-i18n-1.0.3.tgz#5e21101326c61d8487a427f18baf9315877822c8"
+  integrity sha512-fFK2fTP4Ki3e+h3h9Jdul6zzFoonAHZUJFA0wFHzHNocLZrCYQJS9HVaXqjcpb9cTBmxy/aYkgy3nKQpCfqHpA==
 
 eslint-plugin-react@7.29.1:
   version "7.29.1"
@@ -13703,6 +13716,11 @@ require-from-string@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/require-from-string/-/require-from-string-2.0.2.tgz#89a7fdd938261267318eafe14f9c32e598c36909"
   integrity sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==
+
+requireindex@~1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/requireindex/-/requireindex-1.1.0.tgz#e5404b81557ef75db6e49c5a72004893fe03e162"
+  integrity sha512-LBnkqsDE7BZKvqylbmn7lTIVdpx4K/QCduRATpO5R+wtPmky/a8pN1bO2D6wXppn1497AJF9mNjqAXr6bdl9jg==
 
 resize-observer-polyfill@^1.5.1:
   version "1.5.1"
