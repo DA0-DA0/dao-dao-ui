@@ -45,7 +45,7 @@ export const PinnedDAONavList: FC = () => {
       ) : (
         <Link href="/dao/create">
           <a className="flex gap-2 items-center hover:underline link-text">
-            <PlusIcon className="w-3 h-3" /> {i18n.t('Create a DAO')}
+            <PlusIcon className="w-3 h-3" /> {i18n.t('Create')}
           </a>
         </Link>
       )}

@@ -67,13 +67,13 @@ const CreateDAOReviewPage: FC = () => {
 
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">{i18n.t('DAO Name')}</p>
+                <p className="font-mono caption-text">{i18n.t('Name')}</p>
                 <p className="text-xl">{watchedNewDAO.name}</p>
               </div>
 
               <div className="flex flex-col gap-2">
                 <p className="font-mono caption-text">
-                  {i18n.t('DAO Description')}
+                  {i18n.t('Description')}
                 </p>
                 <p
                   className={clsx('secondary-text', {

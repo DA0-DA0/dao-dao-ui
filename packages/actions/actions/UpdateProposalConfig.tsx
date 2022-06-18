@@ -347,7 +347,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
 export const updateProposalConfigAction: Action<UpdateProposalConfigData> = {
   key: ActionKey.UpdateProposalConfig,
   label: '⚙️ Update Voting Config',
-  description: 'Update the voting paramaters for your DAO',
+  description: 'Update the voting paramaters for your DAO.',
   Component,
   useDefaults,
   useTransformToCosmos,

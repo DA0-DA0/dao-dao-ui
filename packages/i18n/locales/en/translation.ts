@@ -200,16 +200,16 @@ const en = {
   'Token distribution': 'Token distribution',
 
   // Choosing a DAO's structure
-  'Membership-based DAO': 'Membership-based DAO',
-  'Membership-based DAO description':
+  'Membership-based': 'Membership-based',
+  'Membership-based description':
     'Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.',
-  'Governance Token-based DAO': 'Governance Token-based DAO',
-  'Governance Token-based DAO description':
+  'Governance Token-based': 'Governance Token-based',
+  'Governance Token-based description':
     'Fluid organization with many members who leave and join frequently. Members can join and leave by exchanging governance shares.',
 
   // Configuring a DAO's description
-  'DAO Name': 'DAO Name',
-  'DAO Description': 'DAO Description',
+  Name: 'Name',
+  Description: 'Description',
   'Image URL': 'Image URL',
   'Image URL tooltip':
     'A link an image. For example: https://moonphase.is/image.svg',

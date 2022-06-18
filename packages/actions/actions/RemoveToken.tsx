@@ -91,7 +91,7 @@ const InnerComponent: ActionComponent = (props) => {
           tokenInfoLoadable.state === 'hasError'
             ? 'Failed to get token info.'
             : existingTokens.length === 0
-            ? 'No tokens in the DAO treasury.'
+            ? 'No tokens in the treasury.'
             : 'Unknown error',
       })
     }
@@ -172,7 +172,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveTokenData> = (
 export const removeTokenAction: Action<RemoveTokenData> = {
   key: ActionKey.RemoveToken,
   label: '⭕️ Remove Treasury Token',
-  description: 'Remove a token from your treasury.',
+  description: "Remove a token from your DAO's treasury.",
   Component,
   useDefaults,
   useTransformToCosmos,

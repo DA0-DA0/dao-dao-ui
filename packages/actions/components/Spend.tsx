@@ -61,7 +61,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} ${nativeTokenLabel(
+        `Can't spend more tokens than are in the treasury (${humanReadableAmount} ${nativeTokenLabel(
           id
         )}).`
       )
@@ -78,13 +78,13 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       )
       return (
         Number(microAmount) <= Number(cw20.balance) ||
-        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} $${cw20.info.symbol}).`
+        `Can't spend more tokens than are in the treasury (${humanReadableAmount} $${cw20.info.symbol}).`
       )
     }
     // If there are no native tokens in the treasury the native balances
     // query will return an empty list.
     if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the DAO treasury (0 ${convertDenomToHumanReadableDenom(
+      return `Can't spend more tokens than are in the treasury (0 ${convertDenomToHumanReadableDenom(
         NATIVE_DENOM
       )}).`
     }

@@ -79,7 +79,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `The DAO treasury ${
+        `The treasury ${
           Number(native.amount) === 0
             ? 'has no'
             : `only has ${humanReadableAmount}`
@@ -91,7 +91,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
     // query will return an empty list, so check explicitly if the
     // native currency is selected.
     if (denom === NATIVE_DENOM) {
-      return `The DAO treasury has no ${humanReadableDenom}, so you can't stake any tokens.`
+      return `The treasury has no ${humanReadableDenom}, so you can't stake any tokens.`
     }
 
     return 'Unrecognized denom.'

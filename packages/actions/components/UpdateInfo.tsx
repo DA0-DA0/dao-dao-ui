@@ -2,6 +2,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import {
   FormSwitch,
   ImageSelector,
@@ -49,7 +50,7 @@ export const UpdateInfoComponent: ActionComponent = ({
               disabled={readOnly}
               error={errors?.name}
               label={getLabel('name')}
-              placeholder="DAO name"
+              placeholder={i18n.t('Name')}
               register={register}
               validation={[validateRequired]}
             />
@@ -60,7 +61,7 @@ export const UpdateInfoComponent: ActionComponent = ({
               disabled={readOnly}
               error={errors?.description}
               label={getLabel('description')}
-              placeholder="DAO description"
+              placeholder={i18n.t('Description')}
               register={register}
               validation={[validateRequired]}
             />

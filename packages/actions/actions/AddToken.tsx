@@ -121,7 +121,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
 export const addTokenAction: Action<AddTokenData> = {
   key: ActionKey.AddToken,
   label: '🔘 Add Treasury Token',
-  description: 'Add a token to your treasury.',
+  description: "Add a token to your DAO's treasury.",
   Component,
   useDefaults,
   useTransformToCosmos,

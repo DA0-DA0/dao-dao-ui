@@ -37,7 +37,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
 
   const validateIsTreasuryToken = (v: string) =>
     existingTokens.some(({ address }) => address === v) ||
-    'This token is not in the DAO treasury.'
+    'This token is not in the treasury.'
 
   return (
     <ActionCard
