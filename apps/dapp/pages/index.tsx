@@ -165,7 +165,7 @@ const Home: NextPage = () => {
             <h2 className="mx-4 max-w-xl text-center header-text">
               Create, explore, and join DAOs
             </h2>
-            <Link href="/starred">
+            <Link href="/home">
               <a>
                 <Button size={'lg'}>
                   {i18n.t('landingPage.CTA')}
