@@ -1,21 +1,15 @@
-import {
-  ArrowRightIcon,
-  MenuAlt1Icon,
-  MenuIcon,
-  SearchIcon,
-} from '@heroicons/react/outline'
+import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, useState } from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { Loader } from './Loader'
-import { NavListItem } from './NavListItem'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
-import { searchVisibleAtom } from '@/atoms'
+import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
 
 interface SmallScreenNavProps {
   className?: string
@@ -24,6 +18,7 @@ interface SmallScreenNavProps {
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const [expanded, setExpanded] = useState(false)
   const setSearchVisible = useSetRecoilState(searchVisibleAtom)
+  const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
 
   return (
     <div
@@ -31,7 +26,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
         'flex flex-col gap-4 py-2 px-6 lg:hidden',
         {
           'h-16': !expanded,
-          'pb-6 border-b border-inactive': expanded,
+          'pb-6 mb-4 border-b border-inactive': expanded,
         },
         className
       )}
@@ -51,28 +46,22 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       {expanded && (
         <div>
           <button
-            className="flex gap-2 items-center p-2 mb-5 w-full bg-primary rounded-lg link-text"
+            className="flex gap-2 items-center p-2 w-full bg-primary rounded-lg link-text"
             onClick={() => setSearchVisible(true)}
           >
             <SearchIcon className="w-4 h-4" /> Search
           </button>
 
-          <div className="ml-1">
-            <h3 className="mb-2 font-mono caption-text">DAOs</h3>
-            <SuspenseLoader
-              fallback={<Loader className="!justify-start ml-2" size={20} />}
-            >
-              <MobilePinnedDAONavList />
-            </SuspenseLoader>
-
-            <ul className="mt-2 list-none">
-              <NavListItem
-                href="/dao/explore"
-                icon={ArrowRightIcon}
-                text="All DAOs"
-              />
-            </ul>
-          </div>
+          {pinnedAddresses.length > 0 && (
+            <div className="mt-5 ml-1">
+              <h3 className="mb-2 font-mono caption-text">DAOs</h3>
+              <SuspenseLoader
+                fallback={<Loader className="!justify-start ml-2" size={20} />}
+              >
+                <MobilePinnedDAONavList />
+              </SuspenseLoader>
+            </div>
+          )}
         </div>
       )}
     </div>
