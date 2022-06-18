@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { FC, ReactNode } from 'react'
 
 import { Button } from '../Button'
@@ -9,6 +10,7 @@ export interface BalanceCardProps {
   buttonLabel: ReactNode
   loading: boolean
   onClick: () => void
+  opaque?: boolean
 }
 
 export const BalanceCard: FC<BalanceCardProps> = ({
@@ -17,15 +19,28 @@ export const BalanceCard: FC<BalanceCardProps> = ({
   buttonLabel,
   loading,
   onClick,
+  opaque,
   children,
 }) => (
-  <div className="py-4 px-6 w-full rounded-lg border border-default">
+  <div
+    className={clsx('p-5 w-full rounded-lg', {
+      'border border-default': !opaque,
+      'bg-primary': opaque,
+    })}
+  >
     {typeof title === 'string' ? (
-      <h2 className="font-bold primary-text">{title}</h2>
+      <h2
+        className={clsx({
+          'font-mono caption-text': !opaque,
+          'link-text': opaque,
+        })}
+      >
+        {title}
+      </h2>
     ) : (
       title
     )}
-    <div className="mt-2 mb-4">
+    <div className="my-4">
       {loading ? (
         <div className="inline-block mt-2 animate-spin-medium">
           <LogoNoBorder />

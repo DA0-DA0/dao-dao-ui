@@ -4,7 +4,7 @@ import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import i18n, { Trans } from '@dao-dao/i18n'
+import i18n from '@dao-dao/i18n'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
@@ -24,7 +24,7 @@ import { useDAOInfoContext } from './DAOPageWrapper'
 import { Loader } from './Loader'
 
 const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
-  const { coreAddress, name } = useDAOInfoContext()
+  const { coreAddress } = useDAOInfoContext()
   const {
     governanceTokenInfo,
     governanceTokenMarketingInfo,
@@ -70,31 +70,38 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
   return (
     <>
       <div className="flex flex-col gap-2 items-stretch">
+        {!unstakedGovTokenBalance &&
+          !walletStakedValue &&
+          !sumClaimsAvailable && (
+            <p className="caption-text">{i18n.t('notAMember')}</p>
+          )}
         {unstakedGovTokenBalance > 0 && walletStakedValue === 0 && (
           <BalanceCard
             buttonLabel={i18n.t('Stake tokens')}
             icon={<PlusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Stake)}
-            title={i18n.t('You are not a member yet!', { daoName: name })}
+            opaque
+            title={i18n.t('notAMemberYet')}
           >
-            <p className="body-text">
-              <Trans i18nKey="stakeTokensToJoin">
-                Stake your{' '}
-                <span className="font-bold">
-                  {{
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      unstakedGovTokenBalance,
-                      governanceTokenInfo.decimals
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits: governanceTokenInfo.decimals,
-                    }),
-                  }}{' '}
-                  ${{ tokenSymbol: governanceTokenInfo.symbol }}
-                </span>{' '}
-                to join and vote in {{ daoName: name }}.
-              </Trans>
-            </p>
+            <div className="flex flex-row gap-2 items-center mb-2">
+              <BalanceIcon iconURI={tokenImageUrl} />
+
+              <p className="font-bold">
+                {convertMicroDenomToDenomWithDecimals(
+                  unstakedGovTokenBalance,
+                  governanceTokenInfo.decimals
+                ).toLocaleString(undefined, {
+                  maximumFractionDigits: governanceTokenInfo.decimals,
+                })}{' '}
+                ${governanceTokenInfo.symbol}
+                <span className="ml-1 secondary-text">
+                  {i18n.t('unstaked')}
+                </span>
+              </p>
+            </div>
+
+            <p className="secondary-text">{i18n.t('stakeToJoinAndVote')}</p>
           </BalanceCard>
         )}
         {walletStakedValue > 0 && (
@@ -103,65 +110,34 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             icon={<MinusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Unstake)}
-            title={i18n.t('You are a member!', { daoName: name })}
+            title={i18n.t('Voting Power')}
           >
-            <p className="body-text">
-              <Trans i18nKey="votingPowerStakedTokens">
-                Your voting power is{' '}
-                <span className="font-bold">
-                  {{
-                    powerPercent: (totalStakedValue
-                      ? (walletStakedValue / totalStakedValue) * 100
-                      : 0
-                    ).toLocaleString(undefined, {
-                      maximumSignificantDigits: 4,
-                    }),
-                  }}
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row gap-2 items-center">
+                <BalanceIcon iconURI={tokenImageUrl} />
+                <p className="title-text">
+                  {(totalStakedValue
+                    ? (walletStakedValue / totalStakedValue) * 100
+                    : 0
+                  ).toLocaleString(undefined, {
+                    maximumSignificantDigits: 4,
+                  })}
                   %
-                </span>{' '}
-                (
-                <span className="font-bold">
-                  {{
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      walletStakedValue,
-                      governanceTokenInfo.decimals
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits: governanceTokenInfo.decimals,
-                    }),
-                  }}{' '}
-                  ${{ tokenSymbol: governanceTokenInfo.symbol }}
-                </span>
-                ).
-              </Trans>
-            </p>
-          </BalanceCard>
-        )}
-        {walletStakedValue > 0 && unstakedGovTokenBalance > 0 && (
-          <BalanceCard
-            buttonLabel={i18n.t('Stake tokens')}
-            icon={<PlusSmIcon className="w-4 h-4" />}
-            loading={stakingLoading}
-            onClick={() => setShowStakingMode(StakingMode.Stake)}
-            title={i18n.t('You could have more voting power')}
-          >
-            <p className="body-text">
-              <Trans i18nKey="stakeRemainingForVotingPower">
-                Stake your{' '}
-                <span className="font-bold">
-                  remaining{' '}
-                  {{
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      unstakedGovTokenBalance,
-                      governanceTokenInfo.decimals
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits: governanceTokenInfo.decimals,
-                    }),
-                  }}{' '}
-                  ${{ tokenSymbol: governanceTokenInfo.symbol }}
-                </span>{' '}
-                to gain voting power in {{ daoName: name }}.
-              </Trans>
-            </p>
+                </p>
+              </div>
+
+              <p className="ml-6 secondary-text">
+                {i18n.t('tokensStaked', {
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    walletStakedValue,
+                    governanceTokenInfo.decimals
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: governanceTokenInfo.decimals,
+                  }),
+                  tokenSymbol: governanceTokenInfo.symbol,
+                })}
+              </p>
+            </div>
           </BalanceCard>
         )}
         {!!sumClaimsAvailable && (
@@ -170,7 +146,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
             icon={<HandIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Claim)}
-            title={i18n.t('Your tokens have unstaked', {
+            title={i18n.t('yourTokensUnstaked', {
               tokenSymbol: governanceTokenInfo.symbol,
             })}
           >
@@ -184,6 +160,37 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
               })}{' '}
               ${governanceTokenInfo.symbol}
             </div>
+          </BalanceCard>
+        )}
+        {walletStakedValue > 0 && unstakedGovTokenBalance > 0 && (
+          <BalanceCard
+            buttonLabel={i18n.t('Stake tokens')}
+            icon={<PlusSmIcon className="w-4 h-4" />}
+            loading={stakingLoading}
+            onClick={() => setShowStakingMode(StakingMode.Stake)}
+            opaque
+            title={i18n.t('couldHaveMoreVotingPower')}
+          >
+            <div className="flex flex-row gap-2 items-center mb-2">
+              <BalanceIcon iconURI={tokenImageUrl} />
+
+              <p className="font-bold">
+                {convertMicroDenomToDenomWithDecimals(
+                  unstakedGovTokenBalance,
+                  governanceTokenInfo.decimals
+                ).toLocaleString(undefined, {
+                  maximumFractionDigits: governanceTokenInfo.decimals,
+                })}{' '}
+                ${governanceTokenInfo.symbol}
+                <span className="ml-1 secondary-text">
+                  {i18n.t('unstaked')}
+                </span>
+              </p>
+            </div>
+
+            <p className="secondary-text">
+              {i18n.t('stakeToIncreaseVotingPower')}
+            </p>
           </BalanceCard>
         )}
       </div>
@@ -211,7 +218,7 @@ export const Cw20StakedBalanceVotingPowerDisplay: FC<
   Cw20StakedBalanceVotingPowerDisplayProps
 > = ({ primaryText }) => (
   <>
-    <h2 className={clsx('mb-2', primaryText ? 'primary-text' : 'title-text')}>
+    <h2 className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}>
       {i18n.t('Your voting power')}
     </h2>
 

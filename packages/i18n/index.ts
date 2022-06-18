@@ -21,7 +21,6 @@ i18n
   .init({
     resources,
     fallbackLng: 'en', // fall back to english if a translation is missing for a given key
-    debug: true, // TODO what does debug do?
     interpolation: {
       // TODO this flag has something to do with preventing XSS, which react
       // purportedly already does. investigate this further.

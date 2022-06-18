@@ -48,6 +48,8 @@ const en = {
   Unclaimed: 'Unclaimed', // adjective
   'Percent staked':
     '{{percent, number(minimumFractionDigits:0)}}% ${{tokenSymbol}} staked',
+  tokensStaked: '{{amount}} ${{tokenSymbol}} staked',
+  unstaked: 'unstaked',
 
   // Staking modal
   'Stake tokens': 'Stake tokens',
@@ -59,16 +61,13 @@ const en = {
   'Stake all but proposal deposit':
     'Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit',
   // Balance cards
-  'You are not a member yet!': 'You are not a member of {{daoName}} yet!',
-  stakeTokensToJoin:
-    'Stake your <2>{{amount}} ${{tokenSymbol}}</2> to join and vote in {{daoName}}.',
-  'You are a member!': 'You are a member of {{daoName}}!',
-  votingPowerStakedTokens:
-    'Your voting power is <2>{{powerPercent}}%</2> (<5>{{amount}} ${{tokenSymbol}} staked</5>).',
-  'You could have more voting power': 'You could have more voting power.',
-  stakeRemainingForVotingPower:
-    'Stake your <2>remaining {{amount}} ${{tokenSymbol}}</2> to gain voting power in {{daoName}}.',
-  'Your tokens have unstaked': 'Your ${{tokenSymbol}} tokens have unstaked.',
+  notAMember: 'You are not a member.',
+  notAMemberYet: 'You are not a member yet.',
+  stakeToJoinAndVote: 'Stake these to join and vote.',
+  'You are a member': 'You are a member.',
+  couldHaveMoreVotingPower: 'You could have more voting power.',
+  stakeToIncreaseVotingPower: 'Stake these to increase your voting power.',
+  yourTokensUnstaked: 'Your ${{tokenSymbol}} tokens have unstaked.',
 
   'Governance token name': 'Token name',
   'Governance token placeholder': 'A token name (e.g., "DogDAO token")',
@@ -148,7 +147,6 @@ const en = {
   Feedback: 'Feedback',
 
   // Viewing your relationship to a DAO
-  'You are a member': "You're a member",
   'Your equity': 'Your equity',
   'Member voting powers': 'Member voting powers',
   'Your balance': 'Your balance',
