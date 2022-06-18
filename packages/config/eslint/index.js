@@ -26,7 +26,11 @@ const eslintConfig = {
   overrides: [
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
-      extends: ['plugin:prettier/recommended'],
+      extends: [
+        'plugin:prettier/recommended',
+        'plugin:react-i18n/recommended',
+        'plugin:i18next/recommended',
+      ],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
