@@ -1,12 +1,9 @@
 import { PauseIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
-import { FC } from 'react'
-import { useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { blockHeightSelector } from '@dao-dao/state'
+import { CwCoreSelectors, blockHeightSelector } from '@dao-dao/state'
 import { Duration, Expiration } from '@dao-dao/state/clients/cw-core'
-import { pauseInfoSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
 import { humanReadableDuration } from '@dao-dao/utils'
 
 import { DAO_ADDRESS } from '@/util'
@@ -36,7 +33,7 @@ export const remainingTime = (
 
 export const PausedBanner: FC<PausedBannerProps> = ({}) => {
   const pauseInfo = useRecoilValue(
-    pauseInfoSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreSelectors.pauseInfoSelector({ contractAddress: DAO_ADDRESS })
   )
   const blockHeight = useRecoilValue(blockHeightSelector)
 

@@ -1,4 +1,5 @@
 import { PlusIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import Link from 'next/link'
 
 export const EmptyContractCard = ({
@@ -17,11 +18,13 @@ export const EmptyContractCard = ({
   return (
     <Link href={href} passHref>
       <a
-        className={`overflow-hidden ${
-          fullWidth ? 'w-full' : 'max-w-[400px]'
-        } rounded-md border border-default hover:border-brand transition ${
-          fullWidth ? undefined : 'md:w-max'
-        }`}
+        className={clsx(
+          'overflow-hidden rounded-md border border-default hover:border-brand transition',
+          {
+            'w-full': fullWidth,
+            'max-w-[400px] md:w-max': !fullWidth,
+          }
+        )}
       >
         <div
           className={'h-72 bg-no-repeat bg-cover opacity-75'}

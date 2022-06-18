@@ -6,10 +6,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@cosmjs/proto-signing": "^0.28.4",
     "@dao-dao/ui": "*",
     "@keplr-wallet/stores": "^0.10.3",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
+    "ajv": "^8.11.0",
     "cosmodal": "https://github.com/NoahSaso/cosmodal#7abc9d43f31693f56d3809dc7a87eeedce3c3ca2",
     "react": "^18.1.0",
     "recoil": "^0.7.2"

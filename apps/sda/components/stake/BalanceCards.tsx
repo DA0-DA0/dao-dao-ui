@@ -1,12 +1,16 @@
 import { FunctionComponent } from 'react'
 
-import { useWallet } from '@dao-dao/state'
+import {
+  useGovernanceTokenInfo,
+  useStakingInfo,
+  useWallet,
+} from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
+import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
 
 interface CardProps {
   setShowStakingMode: () => void
@@ -20,9 +24,9 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
     governanceTokenInfo,
     walletBalance: _unstakedBalance,
     price,
-  } = useGovernanceTokenInfo({
+  } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchWalletBalance: true,
-    fetchPriceInfo: true,
+    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
 
   if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
@@ -74,19 +78,18 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
   const { connected } = useWallet()
-  const { governanceTokenInfo, price } = useGovernanceTokenInfo({
-    fetchPriceInfo: true,
+  const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
+    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
-  const { totalStakedValue: totalStakedValue, walletBalance: _stakedBalance } =
-    useStakingInfo({
-      fetchTotalStakedValue: true,
-      fetchWalletBalance: true,
-    })
+  const { totalStakedValue, walletStakedValue } = useStakingInfo(DAO_ADDRESS, {
+    fetchTotalStakedValue: true,
+    fetchWalletStakedValue: true,
+  })
 
   if (
     !governanceTokenInfo ||
     totalStakedValue === undefined ||
-    (connected && _stakedBalance === undefined)
+    (connected && walletStakedValue === undefined)
   ) {
     return <BalanceCardLoader />
   }
@@ -94,10 +97,10 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   const votingPower =
     totalStakedValue === 0
       ? 0
-      : ((_stakedBalance ?? 0) / totalStakedValue) * 100
+      : ((walletStakedValue ?? 0) / totalStakedValue) * 100
 
-  const stakedBalance = convertMicroDenomToDenomWithDecimals(
-    _stakedBalance ?? 0,
+  const stakedValue = convertMicroDenomToDenomWithDecimals(
+    walletStakedValue ?? 0,
     governanceTokenInfo.decimals
   )
 
@@ -107,7 +110,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         <div className="flex flex-row gap-2 items-center">
           <Logo size={20} />
           <p className="text-base">
-            {stakedBalance.toLocaleString(undefined, {
+            {stakedValue.toLocaleString(undefined, {
               maximumFractionDigits: governanceTokenInfo.decimals,
             })}{' '}
             {governanceTokenInfo.name}
@@ -126,7 +129,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         {price && (
           <p className="text-lg font-medium">
             ${' '}
-            {(stakedBalance * price).toLocaleString(undefined, {
+            {(stakedValue * price).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}{' '}
             USD

@@ -1,45 +1,48 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { useWallet } from '@dao-dao/state'
-import { CwCoreQueryClient } from '@dao-dao/state/clients/cw-core'
+import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
+  CwCoreQueryClient,
+  CwProposalSingleHooks,
   CwProposalSingleQueryClient,
-  Vote,
-} from '@dao-dao/state/clients/cw-proposal-single'
-import {
-  useCastVote,
-  useExecute,
-} from '@dao-dao/state/hooks/cw-proposal-single'
-import { StakingMode } from '@dao-dao/ui'
-import {
-  V1ProposalDetails,
-  V1ProposalInfoCard,
-  V1ProposalInfoVoteStatus,
-} from '@dao-dao/ui/components/ProposalDetails'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
-
-import {
-  makeGetStaticProps,
-  PageWrapper,
-  PageWrapperProps,
-  StakingModal,
-  TemplateRendererComponent,
-  WalletConnectButton,
-} from '@/components'
-import {
-  useProposalModule,
   useGovernanceTokenInfo,
   useProposalInfo,
-} from '@/hooks'
-import { CI, cleanChainError, DAO_ADDRESS } from '@/util'
+  useProposalModule,
+  useWallet,
+} from '@dao-dao/state'
+import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+import {
+  ErrorPage,
+  ProposalDetails,
+  ProposalInfoCard,
+  ProposalInfoVoteStatus,
+  StakingMode,
+} from '@dao-dao/ui'
+import {
+  CHAIN_RPC_ENDPOINT,
+  CI,
+  VotingModuleType,
+  cleanChainError,
+  cosmWasmClientRouter,
+} from '@dao-dao/utils'
 
-const InnerProposal = () => {
+import {
+  Loader,
+  PageWrapper,
+  PageWrapperProps,
+  makeGetStaticProps,
+  useDAOInfoContext,
+} from '@/components'
+import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+
+const InnerProposal: FC = () => {
   const router = useRouter()
 
+  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
@@ -47,16 +50,18 @@ const InnerProposal = () => {
 
   const oldQuery = router.query.old
   const proposalIdQuery = router.query.proposalId
-
   const proposalId =
     typeof proposalIdQuery === 'string' && !isNaN(Number(proposalIdQuery))
       ? Number(proposalIdQuery)
       : undefined
 
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
-  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule({
-    old: !!oldQuery,
-  })
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule(
+    DAO_ADDRESS,
+    {
+      oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
+    }
+  )
 
   const {
     proposalResponse,
@@ -64,13 +69,15 @@ const InnerProposal = () => {
     votingPowerAtHeight,
     txHash,
     refreshProposalAndAll,
-  } = useProposalInfo(proposalId, !!oldQuery)
+  } = useProposalInfo(DAO_ADDRESS, proposalId, {
+    oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
+  })
 
-  const castVote = useCastVote({
+  const castVote = CwProposalSingleHooks.useCastVote({
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const executeProposal = useExecute({
+  const executeProposal = CwProposalSingleHooks.useExecute({
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
@@ -91,7 +98,9 @@ const InnerProposal = () => {
         toast.success('Vote successfully cast.')
       } catch (err) {
         console.error(err)
-        toast.error(cleanChainError(err.message))
+        toast.error(
+          cleanChainError(err instanceof Error ? err.message : `${err}`)
+        )
       }
 
       setLoading(false)
@@ -115,7 +124,9 @@ const InnerProposal = () => {
       )
     } catch (err) {
       console.error(err)
-      toast.error(cleanChainError(err.message))
+      toast.error(
+        cleanChainError(err instanceof Error ? err.message : `${err}`)
+      )
     }
 
     setLoading(false)
@@ -127,7 +138,23 @@ const InnerProposal = () => {
     refreshProposalAndAll,
   ])
 
-  if (!proposalResponse || !governanceTokenInfo || !proposalModuleConfig) {
+  const denomConversionDecimals = useMemo(
+    () =>
+      votingModuleType === VotingModuleType.Cw4Voting
+        ? 0
+        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+          governanceTokenInfo
+        ? governanceTokenInfo.decimals
+        : undefined,
+    [votingModuleType, governanceTokenInfo]
+  )
+
+  if (
+    !proposalResponse ||
+    !proposalModuleConfig ||
+    denomConversionDecimals === undefined ||
+    proposalId === undefined
+  ) {
     throw new Error('Failed to load page data.')
   }
 
@@ -138,7 +165,7 @@ const InnerProposal = () => {
     <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">
       <div className="col-span-2">
         <div className="mb-6 lg:hidden">
-          <V1ProposalInfoCard
+          <ProposalInfoCard
             connected={connected}
             memberWhenProposalCreated={memberWhenProposalCreated}
             proposalExecutionTXHash={txHash}
@@ -147,22 +174,27 @@ const InnerProposal = () => {
           />
         </div>
 
-        <V1ProposalDetails
-          TemplateRendererComponent={TemplateRendererComponent}
-          connectWalletButton={<WalletConnectButton />}
+        <ProposalDetails
+          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           connected={connected}
+          coreAddress={DAO_ADDRESS}
           loading={loading}
           onExecute={onExecute}
           onVote={onVote}
           proposal={proposalResponse.proposal}
+          proposalId={proposalId}
           setShowStaking={setShowStaking}
           showStaking={showStaking}
           stakingModal={
             <StakingModal
-              defaultMode={StakingMode.Stake}
+              connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+              coreAddress={DAO_ADDRESS}
+              loader={Loader}
+              mode={StakingMode.Stake}
               onClose={() => setShowStaking(false)}
             />
           }
+          votingModuleType={votingModuleType}
           walletVote={voteResponse?.vote?.vote ?? undefined}
           walletWeightPercent={
             votingPowerAtHeight
@@ -176,21 +208,21 @@ const InnerProposal = () => {
         <div className="pb-6 mt-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">Referendum status</h3>
 
-          <V1ProposalInfoVoteStatus
+          <ProposalInfoVoteStatus
+            denomConversionDecimals={denomConversionDecimals}
             maxVotingSeconds={
               'time' in proposalModuleConfig.max_voting_period
                 ? proposalModuleConfig.max_voting_period.time
                 : undefined
             }
             proposal={proposalResponse.proposal}
-            tokenDecimals={governanceTokenInfo.decimals}
           />
         </div>
       </div>
 
       <div className="hidden min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">Details</h2>
-        <V1ProposalInfoCard
+        <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
           proposalExecutionTXHash={txHash}
@@ -199,14 +231,14 @@ const InnerProposal = () => {
         />
 
         <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
-        <V1ProposalInfoVoteStatus
+        <ProposalInfoVoteStatus
+          denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period
               ? proposalModuleConfig.max_voting_period.time
               : undefined
           }
           proposal={proposalResponse.proposal}
-          tokenDecimals={governanceTokenInfo.decimals}
         />
       </div>
     </div>
@@ -214,24 +246,19 @@ const InnerProposal = () => {
 }
 
 const ProposalNotFound = () => (
-  <div className="mx-auto mt-4 max-w-prose text-center break-words">
-    <h1 className="text-3xl font-bold">Proposal Not Found</h1>
-    <p className="mt-3">
+  <ErrorPage title="Proposal Not Found">
+    <p>
       We couldn{"'"}t find a proposal with that ID. See all proposals on the{' '}
       <Link href="/vote">
         <a className="underline link-text">Vote</a>
       </Link>{' '}
       page.
     </p>
-  </div>
+  </ErrorPage>
 )
 
-interface ProposalInnerProps {
+interface ProposalPageProps extends PageWrapperProps {
   exists: boolean
-}
-
-type ProposalPageProps = PageWrapperProps & {
-  innerProps: ProposalInnerProps
 }
 
 const ProposalPage: NextPage<ProposalPageProps> = ({
@@ -242,7 +269,7 @@ const ProposalPage: NextPage<ProposalPageProps> = ({
     {/* Need optional chaining due to static path generation.
      *  Fallback page renders without any props on the server.
      */}
-    {props?.innerProps?.exists ? <InnerProposal /> : <ProposalNotFound />}
+    {props?.exists ? <InnerProposal /> : <ProposalNotFound />}
   </PageWrapper>
 )
 
@@ -274,9 +301,7 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
           ...staticProps,
           props: {
             ...staticProps.props,
-            innerProps: {
-              exists: false,
-            },
+            exists: false,
           },
         }
       : staticProps
@@ -321,9 +346,7 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
           ...staticProps,
           props: {
             ...staticProps.props,
-            innerProps: {
-              exists,
-            },
+            exists,
           },
         }
       : staticProps

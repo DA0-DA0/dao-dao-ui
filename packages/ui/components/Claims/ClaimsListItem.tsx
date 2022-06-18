@@ -1,12 +1,13 @@
 import { CheckIcon } from '@heroicons/react/outline'
 import { FC, useEffect, useState } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
+  claimAvailable,
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  claimAvailable,
 } from '@dao-dao/utils'
 
 import { BalanceIcon } from '../ContractView/BalanceIcon'
@@ -100,7 +101,9 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
-        <p className="text-caption">{durationRemainingForHumans} remaining</p>
+        <p className="text-caption">
+          {i18n.t('Remaining (time)', { time: durationRemainingForHumans })}
+        </p>
       )}
     </div>
   )

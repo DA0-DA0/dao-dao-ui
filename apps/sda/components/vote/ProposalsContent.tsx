@@ -1,32 +1,25 @@
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { useMemo } from 'react'
-import { useRecoilValue, constSelector } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
+import { CwProposalSingleSelectors, useProposalModule } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { proposalModulesSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
-import { listProposalsSelector } from '@dao-dao/state/recoil/selectors/clients/cw-proposal-single'
 
 import { ProposalItem } from './ProposalItem'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 export const ProposalsContent = () => {
-  const proposalModuleAddress = useRecoilValue(
-    proposalModulesSelector({ contractAddress: DAO_ADDRESS, params: [{}] })
-  )?.[0]
-
-  const allProposalResponses = useRecoilValue(
-    proposalModuleAddress
-      ? listProposalsSelector({
-          contractAddress: proposalModuleAddress,
-          params: [{}],
-        })
-      : constSelector(undefined)
-  )?.proposals
+  const { proposalResponses: allProposalResponses } = useProposalModule(
+    DAO_ADDRESS,
+    {
+      fetchProposalResponses: true,
+    }
+  )
 
   const oldModuleResponses = useRecoilValue(
     OLD_PROPOSALS_ADDRESS
-      ? listProposalsSelector({
+      ? CwProposalSingleSelectors.listProposalsSelector({
           contractAddress: OLD_PROPOSALS_ADDRESS,
           params: [{}],
         })

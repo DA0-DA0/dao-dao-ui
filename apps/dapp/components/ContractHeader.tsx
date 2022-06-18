@@ -1,42 +1,36 @@
 import { FC } from 'react'
-import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
+import { contractInstantiateTimeSelector } from '@dao-dao/state'
 import {
-  ContractHeader as StatelessContractHeader,
   ContractHeaderLoader,
+  ContractHeader as StatelessContractHeader,
+  SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { SuspenseLoader } from './SuspenseLoader'
-import { contractInstantiateTime } from '@/selectors/contracts'
-import { daoSelector } from '@/selectors/daos'
+import { useDAOInfoContext } from './DAOPageWrapper'
 
-export interface ContractHeaderProps {
-  contractAddress: string
-}
-
-const ContractHeaderInternal: FC<ContractHeaderProps> = ({
-  contractAddress,
-}) => {
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
+const ContractHeaderInternal: FC = () => {
+  const { coreAddress, name, description, imageUrl } = useDAOInfoContext()
   const establishedDate = useRecoilValueLoadable(
-    contractInstantiateTime(contractAddress)
+    contractInstantiateTimeSelector(coreAddress)
   )
 
   return (
     <StatelessContractHeader
-      description={daoInfo.config.description}
+      description={description}
       established={
         (establishedDate.state === 'hasValue' && establishedDate.getValue()) ||
         undefined
       }
-      imgUrl={daoInfo.config.image_url || undefined}
-      name={daoInfo.config.name}
+      imgUrl={imageUrl ?? undefined}
+      name={name}
     />
   )
 }
 
-export const ContractHeader: FC<ContractHeaderProps> = (props) => (
+export const ContractHeader: FC = () => (
   <SuspenseLoader fallback={<ContractHeaderLoader />}>
-    <ContractHeaderInternal {...props} />
+    <ContractHeaderInternal />
   </SuspenseLoader>
 )

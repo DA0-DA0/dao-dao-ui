@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -6,7 +8,16 @@ import {
   Validate,
 } from 'react-hook-form'
 
-export function TextareaInput<
+interface TextAreaInputProps<FieldValues, FieldName extends Path<FieldValues>>
+  extends Omit<ComponentProps<'textarea'>, 'required'> {
+  label: FieldName
+  register: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  required?: boolean
+}
+
+export const TextAreaInput = <
   FieldValues,
   FieldName extends Path<FieldValues>
 >({
@@ -14,22 +25,26 @@ export function TextareaInput<
   register,
   error,
   validation,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  border?: boolean
-}) {
+  className,
+  required,
+  ...rest
+}: TextAreaInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
   return (
     <textarea
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none ring-brand ring-offset-0 border-default border border-default w-full body-text
-        ${error ? ' ring-error ring-1' : ''}`}
-      {...register(label, { validate })}
+      className={clsx(
+        'py-2 px-3 w-full bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
+        {
+          'ring-1 ring-error': error,
+        },
+        className
+      )}
+      {...rest}
+      {...register(label, { required: required && 'Required', validate })}
     ></textarea>
   )
 }

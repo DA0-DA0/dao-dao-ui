@@ -1,14 +1,17 @@
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
+import { PlusIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { useState } from 'react'
 import {
   FieldError,
   FieldPathValue,
   Path,
+  PathValue,
   UseFormRegister,
+  UseFormWatch,
   Validate,
 } from 'react-hook-form'
 
+import i18n from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'
@@ -17,114 +20,148 @@ import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'
 
-export type ImageSelectorModalProps<
-  FieldName extends Path<FieldValues>,
-  FieldValues
-> = {
-  label: FieldName
+// Return the field name paths that have type string.
+export type StringFieldNames<FieldValues> = {
+  [Property in Path<FieldValues>]: PathValue<FieldValues, Property> extends
+    | string
+    | undefined
+    ? Property
+    : never
+}[Path<FieldValues>]
+
+export interface ImageSelectorModalProps<
+  FieldValues,
+  StringFieldName extends StringFieldNames<FieldValues>
+> {
+  label: StringFieldName
   register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
+  watch: UseFormWatch<FieldValues>
   error?: FieldError
-  imageUrl: string
   onClose: () => void
 }
 
-export function ImageSelectorModal<
+export const ImageSelectorModal = <
   FieldValues,
-  FieldName extends Path<FieldValues>
->(props: ImageSelectorModalProps<FieldName, FieldValues>) {
-  const { label, register, error, validation, imageUrl, onClose } = props
+  StringFieldName extends StringFieldNames<FieldValues>
+>({
+  label,
+  register,
+  error,
+  validation,
+  watch,
+  onClose,
+}: ImageSelectorModalProps<FieldValues, StringFieldName>) => {
+  const imageUrl = watch(label) ?? ''
 
   return (
-    <Modal onClose={onClose}>
+    <Modal
+      containerClassName="flex flex-col gap-3 items-center"
+      onClose={onClose}
+    >
       <div
-        className={clsx(
-          'flex relative flex-col gap-3 items-center p-6 max-w-md h-min bg-white',
-          'rounded-lg border border-focus',
-          'cursor-auto'
-        )}
-      >
-        <button
-          className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
-          onClick={onClose}
-          type="button"
-        >
-          <XIcon className="w-4 h-4" />
-        </button>
-        <div
-          aria-label="DAO's Custom Logo"
-          className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
-          role="img"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+        aria-label="DAO's Custom Logo"
+        className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
+        role="img"
+        style={{ backgroundImage: `url(${imageUrl})` }}
+      />
+      <div className="flex flex-col gap-1">
+        <InputLabel
+          mono
+          name={i18n.t('Image URL')}
+          tooltip={i18n.t('Image URL tooltip')}
         />
-        <div className="flex flex-col gap-1">
-          <InputLabel
-            mono
-            name="Image URL"
-            tooltip="A link to the image that you would like to use to represent your governance contract. For example, https://moonphase.is/image.svg"
-          />
-          <TextInput
-            error={error}
-            label={label}
-            register={register}
-            validation={validation}
-          />
-          <InputErrorMessage error={error} />
-        </div>
-        <div className="w-full text-right">
-          <Button onClick={onClose} size="sm" type="button">
-            Done <Airplane color="currentColor" />
-          </Button>
-        </div>
+        <TextInput
+          autoFocus
+          error={error}
+          label={label}
+          onKeyDown={(e) => {
+            // Prevent submitting form on enter.
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              onClose()
+            }
+          }}
+          register={register}
+          validation={validation}
+        />
+        <InputErrorMessage error={error} />
+      </div>
+      <div className="w-full text-right">
+        <Button onClick={onClose} size="sm" type="button">
+          Done <Airplane color="currentColor" />
+        </Button>
       </div>
     </Modal>
   )
 }
 
-export type ImageSelectorProps<
-  FieldName extends Path<FieldValues>,
-  FieldValues
-> = {
-  label: FieldName
+export interface ImageSelectorProps<
+  FieldValues,
+  StringFieldName extends StringFieldNames<FieldValues>
+> {
+  label: StringFieldName
   register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
+  watch: UseFormWatch<FieldValues>
+  disabled?: boolean
   error?: FieldError
-  imageUrl: string
   className?: string
+  size?: string | number
+  center?: boolean
 }
 
-export function ImageSelector<FieldValues, FieldName extends Path<FieldValues>>(
-  props: ImageSelectorProps<FieldName, FieldValues>
-) {
-  const { label, register, error, validation, imageUrl, className } = props
-
+export const ImageSelector = <
+  FieldValues,
+  StringFieldName extends StringFieldNames<FieldValues>
+>({
+  label,
+  register,
+  error,
+  validation,
+  watch,
+  className,
+  disabled,
+  size,
+  center = true,
+}: ImageSelectorProps<FieldValues, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
+  const imageUrl = watch(label) ?? ''
+
   return (
     <>
       <button
         className={clsx(
-          'flex justify-center items-center mx-auto w-24 h-24 bg-center bg-cover',
-          'rounded-full border border-inactive',
-          'hover:ring transition',
-          { 'ring ring-error': error },
+          'flex shrink-0 bg-center bg-cover rounded-full border border-inactive transition',
+          {
+            'hover:ring': !disabled,
+            'justify-center items-center mx-auto': center,
+            'ring ring-error': error,
+            'w-24 h-24': size === undefined,
+          },
           className
         )}
+        disabled={disabled}
         onClick={() => setShowImageSelect(true)}
-        style={{ backgroundImage: `url(${imageUrl})` }}
+        style={{
+          backgroundImage: `url(${imageUrl})`,
+          ...(size !== undefined && { width: size, height: size }),
+        }}
         type="button"
       >
-        <PlusIcon className="w-4" />
+        {!imageUrl && <PlusIcon className="w-4" />}
       </button>
-      <div className={clsx({ hidden: !showImageSelect })}>
+
+      {showImageSelect && (
         <ImageSelectorModal
           error={error}
-          imageUrl={imageUrl}
           label={label}
           onClose={() => setShowImageSelect(false)}
           register={register}
           validation={validation}
+          watch={watch}
         />
-      </div>
+      )}
     </>
   )
 }

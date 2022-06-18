@@ -1,27 +1,67 @@
+import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { ReactNode, FC } from 'react'
+import { FC, ReactNode, useCallback, useEffect } from 'react'
 
 export interface ModalProps {
   children: ReactNode
   onClose: () => void
+  backdropClassName?: string
+  containerClassName?: string
+  hideCloseButton?: boolean
 }
 
-// TODO: Move common Modal window styles here so we can ensure
-// the `cursor-auto` class is set on all of them. The backdrop is
-// clickable to close, but we don't want the cursor to change on
-// the modal window itself.
-export const Modal: FC<ModalProps> = ({ children, onClose }) => (
-  <div
-    className={clsx(
-      'flex fixed top-0 left-0 z-10 justify-center items-center px-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter'
-    )}
-    onClick={
-      onClose
-        ? // Only close if click on backdrop.
-          ({ target, currentTarget }) => target === currentTarget && onClose()
-        : undefined
-    }
-  >
-    {children}
-  </div>
-)
+export const Modal: FC<ModalProps> = ({
+  children,
+  onClose,
+  backdropClassName,
+  containerClassName,
+  hideCloseButton,
+}) => {
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    },
+    [onClose]
+  )
+
+  useEffect(() => {
+    // attach the event listener
+    document.addEventListener('keydown', handleKeyPress)
+
+    // remove the event listener
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [handleKeyPress])
+
+  return (
+    <div
+      className={clsx(
+        'flex fixed top-0 left-0 z-10 justify-center items-center px-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
+        backdropClassName
+      )}
+      onClick={
+        // Only close if click specifically on backdrop.
+        ({ target, currentTarget }) => target === currentTarget && onClose()
+      }
+    >
+      <div
+        className={clsx(
+          'relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto',
+          containerClassName
+        )}
+      >
+        {!hideCloseButton && (
+          <button
+            className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+            onClick={onClose}
+          >
+            <XIcon className="w-4 h-4" />
+          </button>
+        )}
+
+        {children}
+      </div>
+    </div>
+  )
+}

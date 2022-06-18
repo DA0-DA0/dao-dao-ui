@@ -5,34 +5,39 @@ import '@fontsource/jetbrains-mono/latin.css'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useState, useEffect, FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
-import { Theme, ThemeProvider, Notifications } from '@dao-dao/ui'
+import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
-import ErrorBoundary from '@/components/ErrorBoundary'
-import { HomepageLayout } from '@/components/HomepageLayout'
-import { SidebarLayout } from '@/components/SidebarLayout'
+import { HomepageLayout, SidebarLayout } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
-  const [theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [_theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [themeChangeCount, setThemeChangeCount] = useState(0)
   const [accentColor, setAccentColor] = useState<string | undefined>()
+
+  const isHomepage = router.pathname === '/'
+  // Always display the homepage with dark theme.
+  const theme = isHomepage ? Theme.Dark : _theme
+  const Layout = isHomepage ? HomepageLayout : SidebarLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
-  // Ensure correct theme class is set on document.
+  // On theme change, update DOM and state.
   useEffect(() => {
+    // Ensure correct theme class is set on document.
     Object.values(Theme).forEach((value) =>
       document.documentElement.classList.toggle(value, value === theme)
     )
+    // Update theme change count.
+    setThemeChangeCount((c) => c + 1)
   }, [theme])
-
-  const Layout = router.pathname === '/' ? HomepageLayout : SidebarLayout
 
   return (
     <>
@@ -47,6 +52,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
           accentColor={accentColor}
           setAccentColor={setAccentColor}
           theme={theme}
+          themeChangeCount={themeChangeCount}
           updateTheme={setTheme}
         >
           <Layout>

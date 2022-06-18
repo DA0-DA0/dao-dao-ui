@@ -4,9 +4,9 @@ import { selector } from 'recoil'
 
 import {
   CHAIN_ID,
+  NATIVE_DENOM,
   getOfflineSignerAuto,
   getOfflineSignerOnlyAmino,
-  NATIVE_DENOM,
 } from '@dao-dao/utils'
 
 import { refreshWalletBalancesIdAtom } from '../atoms/refresh'

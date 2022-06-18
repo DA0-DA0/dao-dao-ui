@@ -1,4 +1,4 @@
-import { NATIVE_DENOM, NATIVE_DECIMALS } from './constants'
+import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
 import { convertDenomToHumanReadableDenom } from './conversion'
 import ibcAssets from './ibc_assets.json'
 

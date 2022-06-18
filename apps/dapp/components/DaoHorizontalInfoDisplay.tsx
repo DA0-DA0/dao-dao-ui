@@ -1,68 +1,100 @@
 import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
-import { useRecoilValue } from 'recoil'
 
+import i18n from '@dao-dao/i18n'
 import { Pencil } from '@dao-dao/icons'
-import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
-
-import { SuspenseLoader } from './SuspenseLoader'
 import {
-  daoSelector,
-  proposalCount,
-  tokenConfig,
-  totalStaked,
-} from '@/selectors/daos'
+  useGovernanceTokenInfo,
+  useProposalModule,
+  useVotingModule,
+} from '@dao-dao/state'
+import {
+  HorizontalInfo,
+  HorizontalInfoSection,
+  SuspenseLoader,
+} from '@dao-dao/ui'
+import {
+  VotingModuleType,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
 
-export interface DaoHorizontalInfoDisplayProps {
-  contractAddress: string
-}
+import { useDAOInfoContext } from './DAOPageWrapper'
 
-const DaoHorizontalInfoDisplayInternal: FC<DaoHorizontalInfoDisplayProps> = ({
-  contractAddress,
-}) => {
-  const daoInfo = useRecoilValue(daoSelector(contractAddress))
-  const tokenInfo = useRecoilValue(tokenConfig(daoInfo?.gov_token))
-  const stakedTotal = useRecoilValue(totalStaked(daoInfo?.staking_contract))
-  const proposalsTotal = useRecoilValue(proposalCount(contractAddress))
+const DaoHorizontalInfoDisplayInternal: FC = () => {
+  const { coreAddress, votingModuleType } = useDAOInfoContext()
+  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
+    fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,
+  })
+  const { proposalCount } = useProposalModule(coreAddress, {
+    fetchProposalCount: true,
+  })
 
-  const stakedPercent = (
-    (100 * stakedTotal) /
-    Number(tokenInfo?.total_supply)
-  ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
+  if (totalVotingWeight === undefined || proposalCount === undefined) {
+    throw new Error('Failed to load data.')
+  }
+
+  const stakedPercent =
+    votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+    totalVotingWeight !== undefined &&
+    governanceTokenInfo &&
+    Number(governanceTokenInfo.total_supply) > 0
+      ? (
+          (100 * totalVotingWeight) /
+          Number(governanceTokenInfo.total_supply)
+        ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
+      : undefined
 
   return (
     <HorizontalInfo>
       <HorizontalInfoSection>
         <UsersIcon className="inline w-4" />
-        {convertMicroDenomToDenomWithDecimals(
-          tokenInfo.total_supply,
-          tokenInfo.decimals
-        ).toLocaleString()}{' '}
-        ${tokenInfo?.symbol} total supply
+        {votingModuleType === VotingModuleType.Cw4Voting && cw4VotingMembers ? (
+          `${cw4VotingMembers.length} member${
+            cw4VotingMembers.length !== 1 ? 's' : ''
+          }`
+        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+          governanceTokenInfo ? (
+          <>
+            {i18n.t('Total supply amount', {
+              amount: convertMicroDenomToDenomWithDecimals(
+                governanceTokenInfo.total_supply,
+                governanceTokenInfo.decimals
+              ).toLocaleString(),
+              tokenSymbol: governanceTokenInfo.symbol,
+            })}
+          </>
+        ) : null}
       </HorizontalInfoSection>
-      <HorizontalInfoSection>
-        <LibraryIcon className="inline w-4" />
-        {stakedPercent}% ${tokenInfo?.symbol} staked
-      </HorizontalInfoSection>
+      {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+        governanceTokenInfo &&
+        stakedPercent !== undefined && (
+          <HorizontalInfoSection>
+            <LibraryIcon className="inline w-4" />
+            {i18n.t('Percent staked', {
+              percent: stakedPercent,
+              tokenSymbol: governanceTokenInfo.symbol,
+            })}
+          </HorizontalInfoSection>
+        )}
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {proposalsTotal} proposals created
+        {i18n.t('Proposals created', { proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
   )
 }
 
-export const HorizontalInfoDisplayLoader: FC<{}> = () => (
+export const HorizontalInfoDisplayLoader: FC = () => (
   <HorizontalInfo>
-    <HorizontalInfoSection>{undefined}</HorizontalInfoSection>
+    <HorizontalInfoSection>
+      <></>
+    </HorizontalInfoSection>
   </HorizontalInfo>
 )
 
-export const DaoHorizontalInfoDisplay: FC<DaoHorizontalInfoDisplayProps> = (
-  props
-) => (
+export const DaoHorizontalInfoDisplay: FC = () => (
   <SuspenseLoader fallback={<HorizontalInfoDisplayLoader />}>
-    <DaoHorizontalInfoDisplayInternal {...props} />
+    <DaoHorizontalInfoDisplayInternal />
   </SuspenseLoader>
 )

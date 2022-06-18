@@ -3,12 +3,16 @@
 import { FunctionComponent } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { configSelector } from '@dao-dao/state/recoil/selectors/clients/cw-core'
+import {
+  CwCoreSelectors,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from '@dao-dao/state'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
-import { useGovernanceTokenInfo, useStakingInfo } from '@/hooks'
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+import { useApr } from '@/hooks'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL, TOKEN_SWAP_ADDRESS } from '@/util'
 
 export const StakeHeaderLoader: FunctionComponent = () => (
   <>
@@ -57,20 +61,18 @@ export const StakeHeaderLoader: FunctionComponent = () => (
 
 export const StakeHeader: FunctionComponent = () => {
   const daoConfig = useRecoilValue(
-    configSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const {
     governanceTokenInfo,
-    treasuryBalance: _treasuryBalance,
-    walletBalance: _unstakedBalance,
+    treasuryBalance: treasuryBalance,
     price: governanceTokenPrice,
-    apr,
-  } = useGovernanceTokenInfo({
+  } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchTreasuryBalance: true,
-    fetchWalletBalance: true,
-    fetchPriceInfo: true,
+    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
-  const { totalStakedValue: totalStakedValue } = useStakingInfo({
+  const apr = useApr()
+  const { totalStakedValue } = useStakingInfo(DAO_ADDRESS, {
     fetchTotalStakedValue: true,
   })
 
@@ -78,20 +80,11 @@ export const StakeHeader: FunctionComponent = () => {
     !daoConfig ||
     !governanceTokenInfo ||
     totalStakedValue === undefined ||
-    _treasuryBalance === undefined ||
+    treasuryBalance === undefined ||
     apr === undefined
   ) {
     return <StakeHeaderLoader />
   }
-
-  const totalStakedBalance = convertMicroDenomToDenomWithDecimals(
-    totalStakedValue,
-    governanceTokenInfo.decimals
-  )
-  const treasuryBalance = convertMicroDenomToDenomWithDecimals(
-    _treasuryBalance,
-    governanceTokenInfo.decimals
-  )
 
   return (
     <>
@@ -127,7 +120,10 @@ export const StakeHeader: FunctionComponent = () => {
           </p>
 
           <p className="text-base lg:text-xl header-text">
-            {treasuryBalance.toLocaleString(undefined, {
+            {convertMicroDenomToDenomWithDecimals(
+              treasuryBalance,
+              governanceTokenInfo.decimals
+            ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}{' '}
             {governanceTokenInfo.name}
@@ -142,7 +138,10 @@ export const StakeHeader: FunctionComponent = () => {
           </p>
 
           <p className="text-base lg:text-xl header-text">
-            {totalStakedBalance.toLocaleString(undefined, {
+            {convertMicroDenomToDenomWithDecimals(
+              totalStakedValue,
+              governanceTokenInfo.decimals
+            ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}{' '}
             {governanceTokenInfo.name}

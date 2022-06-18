@@ -1,34 +1,3 @@
-export const DAO_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_DAO_CONTRACT_CODE_ID as string,
-  10
-)
-
-export const LEGACY_DAO_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_LEGACY_DAO_CONTRACT_CODE_ID as string
-)
-
-export const CW20_CODE_ID = parseInt(process.env.NEXT_PUBLIC_CW20_CODE_ID!, 10)
-
-export const STAKE_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_STAKE_CW20_CODE_ID as string,
-  10
-)
-
-export const MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_MULTISIG_CODE_ID as string,
-  10
-)
-
-export const LEGACY_MULTISIG_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_LEGACY_MULTISIG_CODE_ID as string,
-  10
-)
-
-export const C4_GROUP_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_C4_GROUP_CODE_ID as string,
-  10
-)
-
 export const CARD_IMAGES_ENABLED =
   process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
 
@@ -74,5 +43,43 @@ export const USDC_SWAP_ADDRESS = process.env
 
 export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
-export const MULTISIG_INDEX = process.env.NEXT_PUBLIC_MULTISIG_INDEX as string
-export const DAO_INDEX = process.env.NEXT_PUBLIC_DAO_INDEX as string
+export const SEARCH_INDEX = process.env.NEXT_PUBLIC_SEARCH_INDEX as string
+
+export const CI = process.env.CI === 'true'
+
+// Contract Code IDs
+export const CW20_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW20_CODE_ID as string,
+  10
+)
+export const CW4GROUP_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW4GROUP_CODE_ID as string,
+  10
+)
+export const CWCORE_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CWCORE_CODE_ID as string,
+  10
+)
+export const CWPROPOSALSINGLE_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CWPROPOSALSINGLE_CODE_ID as string,
+  10
+)
+export const CW4VOTING_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW4VOTING_CODE_ID as string,
+  10
+)
+export const CW20STAKEDBALANCEVOTING_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CODE_ID as string,
+  10
+)
+export const STAKECW20_CODE_ID = parseInt(
+  process.env.NEXT_PUBLIC_STAKECW20_CODE_ID as string,
+  10
+)
+// Contract Names
+export const CW4VOTING_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CW4VOTING_CONTRACT_NAME as string
+export const CW20STAKEDBALANCEVOTING_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CONTRACT_NAME as string
+
+export const JUNO_BLOCKS_PER_YEAR = 5086451

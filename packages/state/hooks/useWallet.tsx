@@ -1,21 +1,22 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
 import { isMobile } from '@walletconnect/browser-utils'
 import WalletConnect from '@walletconnect/client'
 import {
   KeplrWalletConnectV1,
-  useWalletManager,
   Wallet,
   WalletClient,
   WalletManagerProvider,
+  useWalletManager,
 } from 'cosmodal'
-import { FC, useCallback, useEffect } from 'react'
+import { FC, createContext, useCallback, useContext, useEffect } from 'react'
 import {
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
 
-import { Loader } from '@dao-dao/ui/components/Loader'
+import { Loader } from '@dao-dao/ui'
 import {
   CHAIN_ID,
   KeplrNotInstalledError,
@@ -23,8 +24,8 @@ import {
   SITE_DESCRIPTION,
   SITE_TITLE,
   SITE_URL,
-  suggestChain,
   WC_ICON_PATH,
+  suggestChain,
 } from '@dao-dao/utils'
 
 import {
@@ -35,19 +36,99 @@ import {
   walletNativeBalanceSelector,
 } from '../recoil'
 import {
-  walletClientAtom,
   connectedWalletIdAtom,
+  walletClientAtom,
   walletConnectionIdAtom,
 } from '../recoil/atoms/wallet'
 
-export const useWallet = () => {
+const WalletContext = createContext<{
+  connect: () => void
+  disconnect: () => void
+  refreshBalances: () => void
+  address: string | undefined
+  name: string | undefined
+  nativeBalance: number | undefined
+  connected: boolean
+  loading: boolean
+  connectionError: unknown
+  signingClient: SigningCosmWasmClient | undefined
+  isMobileWeb: boolean
+} | null>(null)
+
+const AvailableWallets: Wallet[] = [
+  {
+    id: 'keplr-wallet-extension',
+    name: 'Keplr Wallet',
+    description: 'Keplr Chrome Extension',
+    logoImgUrl: '/keplr-wallet-extension.png',
+    getClient: getKeplrFromWindow,
+    isWalletConnect: false,
+    onSelect: async () => {
+      const hasKeplr = !!(await getKeplrFromWindow())
+      if (!hasKeplr) {
+        throw new KeplrNotInstalledError()
+      }
+    },
+  },
+  // WalletConnect only supports mainnet. Not testnet.
+  ...(CHAIN_ID === 'juno-1'
+    ? [
+        {
+          id: 'walletconnect-keplr',
+          name: 'WalletConnect',
+          description: 'Keplr Mobile',
+          logoImgUrl: '/walletconnect-keplr.png',
+          getClient: async (connector?: WalletConnect) => {
+            if (connector?.connected)
+              return new KeplrWalletConnectV1(connector, [NativeChainInfo])
+            throw new Error('Mobile wallet not connected.')
+          },
+          isWalletConnect: true,
+        },
+      ]
+    : []),
+]
+
+const InnerWalletProvider: FC = ({ children }) => {
+  //! SYNC WALLET MANAGER STATE WITH RECOIL FOR USE IN SELECTORS
+
+  const saveConnectedWalletId = useSetRecoilState(connectedWalletIdAtom)
+  const setWalletClient = useSetRecoilState(walletClientAtom)
+  const setWalletConnectionId = useSetRecoilState(walletConnectionIdAtom)
   const {
     connect,
     disconnect: disconnectCosmodal,
+    connectedWallet,
     connectionError,
     isMobileWeb,
   } = useWalletManager()
-  const saveConnectedWalletId = useSetRecoilState(connectedWalletIdAtom)
+
+  // Save wallet client in recoil atom so it can be used by selectors,
+  // and store wallet ID for future autoconnect.
+  useEffect(() => {
+    setWalletClient(connectedWallet?.client)
+    // Only save wallet ID if wallet is connected, since connectedWallet
+    // is initially null on page load, which interferes with autoconnect.
+    // Clear this manually in the disconnect function of useWallet.
+    if (connectedWallet?.wallet.id) {
+      saveConnectedWalletId(connectedWallet.wallet.id)
+    }
+  }, [connectedWallet, saveConnectedWalletId, setWalletClient])
+
+  // Listen for keplr keystore changes and update as needed.
+  useEffect(() => {
+    const keplrListener = () => {
+      console.log('Keplr keystore changed, reloading client.')
+      // Force refresh of wallet client/info selectors.
+      setWalletConnectionId((id) => id + 1)
+    }
+    window.addEventListener('keplr_keystorechange', keplrListener)
+
+    return () =>
+      window.removeEventListener('keplr_keystorechange', keplrListener)
+  }, [setWalletConnectionId])
+
+  //! WalletContext
 
   // Manually clear saved connected wallet ID to prevent interference with
   // autoconnect. See InnerWalletProvider's useEffect comment.
@@ -91,92 +172,31 @@ export const useWallet = () => {
     [setRefreshWalletBalancesId]
   )
 
-  return {
-    connect,
-    disconnect,
-    refreshBalances,
-    address,
-    name,
-    nativeBalance,
-    // Wallet is connected before the address is loaded, but in
-    // practicality, we only care about the wallet being connected
-    // once the address is loaded.
-    connected: !!address,
-    loading: walletAddressState === 'loading',
-    connectionError,
-    signingClient,
-    isMobileWeb,
-  }
-}
+  // Wallet is connected before the address is loaded, but in
+  // practice, we only care about the wallet being connected once the
+  // address is loaded.
+  const connected = !!address
+  const loading = walletAddressState === 'loading'
 
-const AvailableWallets: Wallet[] = [
-  {
-    id: 'keplr-wallet-extension',
-    name: 'Keplr Wallet',
-    description: 'Keplr Chrome Extension',
-    logoImgUrl: '/keplr-wallet-extension.png',
-    getClient: getKeplrFromWindow,
-    isWalletConnect: false,
-    onSelect: async () => {
-      const hasKeplr = !!(await getKeplrFromWindow())
-      if (!hasKeplr) {
-        throw new KeplrNotInstalledError()
-      }
-    },
-  },
-  // WalletConnect only supports mainnet. Not testnet.
-  ...(CHAIN_ID === 'juno-1'
-    ? [
-        {
-          id: 'walletconnect-keplr',
-          name: 'WalletConnect',
-          description: 'Keplr Mobile',
-          logoImgUrl: '/walletconnect-keplr.png',
-          getClient: async (connector?: WalletConnect) => {
-            if (connector?.connected)
-              return new KeplrWalletConnectV1(connector, [NativeChainInfo])
-            throw new Error('Mobile wallet not connected.')
-          },
-          isWalletConnect: true,
-        },
-      ]
-    : []),
-]
-
-const InnerWalletProvider: FC = ({ children }) => {
-  // SYNC WALLET MANAGER STATE WITH RECOIL FOR USE IN SELECTORS
-
-  const saveConnectedWalletId = useSetRecoilState(connectedWalletIdAtom)
-  const setWalletClient = useSetRecoilState(walletClientAtom)
-  const setWalletConnectionId = useSetRecoilState(walletConnectionIdAtom)
-  const { connectedWallet } = useWalletManager()
-
-  // Save wallet client in recoil atom so it can be used by selectors,
-  // and store wallet ID for future autoconnect.
-  useEffect(() => {
-    setWalletClient(connectedWallet?.client)
-    // Only save wallet ID if wallet is connected, since connectedWallet
-    // is initially null on page load, which interferes with autoconnect.
-    // Clear this manually in the disconnect function of useWallet.
-    if (connectedWallet?.wallet.id) {
-      saveConnectedWalletId(connectedWallet.wallet.id)
-    }
-  }, [connectedWallet, saveConnectedWalletId, setWalletClient])
-
-  // Listen for keplr keystore changes and update as needed.
-  useEffect(() => {
-    const keplrListener = () => {
-      console.log('Keplr keystore changed, reloading client.')
-      // Force refresh of wallet client/info selectors.
-      setWalletConnectionId((id) => id + 1)
-    }
-    window.addEventListener('keplr_keystorechange', keplrListener)
-
-    return () =>
-      window.removeEventListener('keplr_keystorechange', keplrListener)
-  }, [setWalletConnectionId])
-
-  return <>{children}</>
+  return (
+    <WalletContext.Provider
+      value={{
+        connect,
+        disconnect,
+        refreshBalances,
+        address,
+        name,
+        nativeBalance,
+        connected,
+        loading,
+        connectionError,
+        signingClient,
+        isMobileWeb,
+      }}
+    >
+      {children}
+    </WalletContext.Provider>
+  )
 }
 
 const enableKeplr = async (wallet: Wallet, walletClient: WalletClient) => {
@@ -229,4 +249,12 @@ export const WalletProvider: FC = ({ children }) => {
       <InnerWalletProvider>{children}</InnerWalletProvider>
     </WalletManagerProvider>
   )
+}
+
+export const useWallet = () => {
+  const context = useContext(WalletContext)
+  if (!context) {
+    throw new Error('You forgot to wrap your app with WalletProvider.')
+  }
+  return context
 }

@@ -1,11 +1,11 @@
 import { FC } from 'react'
 
 import {
+  NATIVE_DENOM,
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
-  convertMicroDenomToDenomWithDecimals,
-  convertDenomToHumanReadableDenom,
-  NATIVE_DENOM,
 } from '@dao-dao/utils'
 
 import { BalanceIcon } from './BalanceIcon'
@@ -21,6 +21,7 @@ export interface TreasuryBalancesProps {
     symbol: string
     amount: string
     decimals: number
+    imageUrl?: string
   }[]
 }
 
@@ -52,19 +53,17 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
         {convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()}
       </BalanceListItem>
     )}
-    {cw20Tokens.map(({ symbol, amount, decimals }) => {
-      return (
-        <BalanceListItem key={symbol}>
-          <BalanceIcon />
-          {convertMicroDenomToDenomWithDecimals(
-            amount,
-            decimals
-          ).toLocaleString(undefined, {
+    {cw20Tokens.map(({ symbol, amount, decimals, imageUrl }) => (
+      <BalanceListItem key={symbol}>
+        <BalanceIcon iconURI={imageUrl} />
+        {convertMicroDenomToDenomWithDecimals(amount, decimals).toLocaleString(
+          undefined,
+          {
             maximumFractionDigits: decimals,
-          })}{' '}
-          ${symbol}
-        </BalanceListItem>
-      )
-    })}
+          }
+        )}{' '}
+        ${symbol}
+      </BalanceListItem>
+    ))}
   </ul>
 )

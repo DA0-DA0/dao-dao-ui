@@ -1,15 +1,15 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
+import { useProposalInfo } from '@dao-dao/state'
 import {
   ProposalResponse,
   Status,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import { VoteDisplay } from '@dao-dao/ui/components/ProposalDetails/v1/VoteDisplay'
-import { StatusIcons } from '@dao-dao/ui/components/StatusIcons'
+import { StatusIcons, VoteDisplay } from '@dao-dao/ui'
 import { getProposalEnd, pad, titlecase } from '@dao-dao/utils'
 
-import { useProposalInfo } from '@/hooks'
+import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 interface ProposalItemProps {
   proposalResponse: ProposalResponse
@@ -20,7 +20,9 @@ export const ProposalItem = ({
   proposalResponse: { id, proposal },
   old,
 }: ProposalItemProps) => {
-  const { voteResponse } = useProposalInfo(id, old)
+  const { voteResponse } = useProposalInfo(DAO_ADDRESS, id, {
+    oldProposalsAddress: OLD_PROPOSALS_ADDRESS,
+  })
 
   const StatusIcon = StatusIcons[proposal.status]
 

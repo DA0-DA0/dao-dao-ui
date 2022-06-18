@@ -1,1 +1,1 @@
-export { StatusIcons } from './StatusIcons'
+export * from './StatusIcons'

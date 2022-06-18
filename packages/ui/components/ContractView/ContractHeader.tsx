@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import i18n from '@dao-dao/i18n'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 import { Logo } from '../Logo'
@@ -48,11 +49,13 @@ export const ContractHeaderLoader: FC<{}> = () => (
     </div>
 
     <div className="flex flex-col items-center">
-      <h1 className="inline invisible mt-5 header-text">DAO name</h1>
+      <h1 className="inline invisible mt-5 header-text">
+        {i18n.t('DAO Name')}
+      </h1>
       <EstablishedDateLoader />
     </div>
     <div className="mt-2 mb-4">
-      <p className="invisible">descripton of the DAO</p>
+      <p className="invisible">{i18n.t('DAO Description')}</p>
     </div>
   </div>
 )

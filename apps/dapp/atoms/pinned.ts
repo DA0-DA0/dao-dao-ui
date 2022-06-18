@@ -1,24 +1,32 @@
 import { atom } from 'recoil'
 
-import { localStorageEffect } from 'atoms/localStorageEffect'
+import { localStorageEffect } from '@/atoms'
 
-// As a relic of when we were doing non-backwards compatible changes on the
-// testnet we used to namespace a user's favorited DAOs / Multisigs. That
-// namespacing used to occur based on the DAO code ID what was being used so we
-// now lock the namespace to the last DAO code ID before we got stopped removing
-// favorites when the contracts were updated.
-const NAMESPACE = process.env.NEXT_PUBLIC_FAVORITES_NAMESPACE as string
-
-export const pinnedDaosAtom = atom<string[]>({
-  key: 'pinnedDaoAddresses',
+export const pinnedAddressesAtom = atom<string[]>({
+  key: 'pinnedAddresses',
   default: [],
-  effects_UNSTABLE: [localStorageEffect<string[]>(`${NAMESPACE}_pinnedDaos`)],
+  effects: [localStorageEffect('pinnedAddresses')],
 })
 
-export const pinnedMultisigsAtom = atom<string[]>({
-  key: 'pinnedMultisigAddresses',
-  default: [],
-  effects_UNSTABLE: [
-    localStorageEffect<string[]>(`${NAMESPACE}_pinnedMultisigs`),
-  ],
+// When marking a proposal as done, either by voting on it or manually
+// pressing the done button in the open list, add to this list so it gets
+// ignored when fetching the open proposals.
+// Map DAO core address to list of done proposal IDs.
+export const pinnedProposalIDsMarkedDoneAtom = atom<
+  Record<string, number[] | undefined>
+>({
+  key: 'pinnedProposalIDsMarkedDone',
+  default: {},
+  effects: [localStorageEffect('pinnedProposalIDsMarkedDone')],
+})
+
+// Map DAO core address to most recent proposal ID to NOT display on the
+// homepage, for caching purposes. No need to load all proposals every time
+// once all proposals before a certain point are marked done.
+export const pinnedLatestProposalIDsMarkedDoneAtom = atom<
+  Record<string, number | undefined>
+>({
+  key: 'pinnedLatestProposalIDsMarkedDone',
+  default: {},
+  effects: [localStorageEffect('pinnedLatestProposalIDsMarkedDone')],
 })

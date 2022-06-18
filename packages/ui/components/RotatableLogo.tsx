@@ -17,7 +17,7 @@ export const RotatableLogo: FC<RotatableLogoProps> = (props) => {
   return (
     <button
       className="transition"
-      onClick={() => setRotation(rotation + 90)}
+      onClick={() => setRotation((rotation + 90) % 360)}
       style={{
         transform: `rotate(${rotation}deg)`,
       }}

@@ -1,46 +1,33 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
-import { useRouter } from 'next/router'
-import { useCallback } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { FC } from 'react'
 
-import { Button } from '@dao-dao/ui'
-import { Loader } from '@dao-dao/ui/components/Loader'
+import i18n from '@dao-dao/i18n'
+import { useGovernanceTokenInfo } from '@dao-dao/state'
+import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
 
-import { daoSelector } from 'selectors/daos'
-import { addToken } from 'util/addToken'
+import { TreasuryBalances, useDAOInfoContext } from '@/components'
+import { addToken } from '@/util'
 
-import { TreasuryBalances } from './ContractView'
-import { SuspenseLoader } from './SuspenseLoader'
-
-export function DaoTreasury({
-  address,
-  multisig,
-}: {
-  address: string
-  multisig?: boolean
-}) {
-  const router = useRouter()
-  const contractAddress = router.query.contractAddress as string
-
-  const daoInfo = useRecoilValueLoadable(daoSelector(contractAddress))
-
-  const addTokenCallback = useCallback(() => {
-    if (daoInfo.state == 'hasValue') addToken(daoInfo.getValue().gov_token)
-  }, [daoInfo])
+export const DaoTreasury: FC = () => {
+  const { coreAddress } = useDAOInfoContext()
+  const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
 
   return (
     <div>
-      <div className="flex gap-1 justify-between">
-        <h2 className="primary-text">Treasury</h2>
-        {!multisig && (
-          <Button onClick={addTokenCallback} variant="ghost">
-            Add Token <PlusSmIcon className="w-4 h-4" />
-          </Button>
-        )}
-      </div>
+      <h2 className="primary-text">{i18n.t('Treasury')}</h2>
       <SuspenseLoader fallback={<Loader />}>
-        <TreasuryBalances address={address} />
+        <TreasuryBalances />
       </SuspenseLoader>
+
+      {governanceTokenAddress && (
+        <Button
+          className="mt-4"
+          onClick={() => addToken(governanceTokenAddress)}
+          variant="secondary"
+        >
+          {i18n.t('Add to Keplr')} <PlusSmIcon className="w-4 h-4" />
+        </Button>
+      )}
     </div>
   )
 }

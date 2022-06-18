@@ -4,15 +4,15 @@ import '@fontsource/jetbrains-mono/latin.css'
 
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { useState, useEffect, FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
+  WalletProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
-  WalletProvider,
 } from '@dao-dao/state'
-import { ThemeProvider, Theme, Notifications } from '@dao-dao/ui'
+import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import {
   SITE_DESCRIPTION,
   SITE_IMAGE,
@@ -20,21 +20,25 @@ import {
   SITE_URL,
 } from '@dao-dao/utils'
 
-import { ErrorBoundary, Footer } from '@/components'
+import { Footer } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [themeChangeCount, setThemeChangeCount] = useState(0)
   const [accentColor, setAccentColor] = useState<string | undefined>()
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
 
-  // Ensure correct theme class is set on document.
+  // On theme change, update DOM and state.
   useEffect(() => {
+    // Ensure correct theme class is set on document.
     Object.values(Theme).forEach((value) =>
       document.documentElement.classList.toggle(value, value === theme)
     )
+    // Update theme change count.
+    setThemeChangeCount((c) => c + 1)
   }, [theme])
 
   return (
@@ -42,6 +46,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
       accentColor={accentColor}
       setAccentColor={setAccentColor}
       theme={theme}
+      themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
       <ErrorBoundary title="An unexpected error occurred.">

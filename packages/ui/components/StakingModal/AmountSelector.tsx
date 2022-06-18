@@ -1,4 +1,4 @@
-import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/outline'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
 import { ChangeEvent, FC } from 'react'
 
 export interface AmountSelectorProps {
@@ -17,7 +17,7 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
       className={`absolute top-0 left-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-l ${
         amount <= 1 ? 'bg-transparent border border-inactive' : ''
       }`}
-      disabled={amount <= 1}
+      disabled={amount <= 0}
       onClick={() => setAmount(amount - 1)}
     >
       <ChevronLeftIcon className="w-4 h-4" />
@@ -32,9 +32,9 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
     />
     <button
       className={`absolute top-0 right-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-r ${
-        Number(amount) + 1 >= max ? 'bg-transparent border border-inactive' : ''
+        Number(amount) >= max ? 'bg-transparent border border-inactive' : ''
       }`}
-      disabled={amount + 1 >= max}
+      disabled={amount >= max}
       onClick={() => setAmount(amount + 1)}
     >
       <ChevronRightIcon className="w-4 h-4" />

@@ -1,4 +1,5 @@
-import { ReactNode } from 'react'
+import clsx from 'clsx'
+import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -7,34 +8,39 @@ import {
   Validate,
 } from 'react-hook-form'
 
-export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
+interface SelectInputProps<FieldValues, FieldName extends Path<FieldValues>>
+  extends Omit<ComponentProps<'select'>, 'required'> {
+  label?: FieldName
+  register?: UseFormRegister<FieldValues>
+  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  error?: FieldError
+  required?: boolean
+}
+
+export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
   label,
   register,
   error,
   validation,
   children,
-  defaultValue,
-  disabled = false,
-}: {
-  label: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
-  error?: FieldError
-  children: ReactNode
-  defaultValue?: string
-  disabled?: boolean
-}) {
+  required,
+  ...props
+}: SelectInputProps<FieldValues, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
   return (
     <select
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none text-gray-700 ring-brand ring-offset-0 border border-default
-        ${error ? ' ring-error ring-1' : ''}`}
-      defaultValue={defaultValue}
-      disabled={disabled}
-      {...register(label, { validate })}
+      className={clsx(
+        'py-2 px-3 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition',
+        { 'ring-1 ring-error': error }
+      )}
+      {...props}
+      {...(register &&
+        label &&
+        register(label, { required: required && 'Required', validate }))}
     >
       {children}
     </select>

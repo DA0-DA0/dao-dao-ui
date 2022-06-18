@@ -3,24 +3,25 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { FunctionComponent, PropsWithChildren } from 'react'
 
-import { CwCoreQueryClient as QueryClient } from '@dao-dao/state/clients/cw-core'
-import { cosmWasmClientRouter, CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
-
+import { CwCoreQueryClient } from '@dao-dao/state'
+import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
+import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
+import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  Header,
-  Loader,
-  SuspenseLoader,
-  DAOInfoContext,
-  DAOInfo,
-  DefaultDAOInfo,
-} from '.'
-import { CI, DAO_ADDRESS } from '@/util'
+  CHAIN_RPC_ENDPOINT,
+  CI,
+  cosmWasmClientRouter,
+  parseVotingModuleContractName,
+} from '@dao-dao/utils'
+
+import { DAOInfo, DAOInfoContext, DefaultDAOInfo, Header, Loader } from '.'
+import { DAO_ADDRESS } from '@/util'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string
   title: string
   description: string
-  daoInfo: DAOInfo
+  daoInfo?: DAOInfo
 }>
 
 export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
@@ -31,6 +32,11 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
   children,
 }) => {
   const { isFallback, isReady } = useRouter()
+
+  // If not on a fallback page, DAO info must be loaded.
+  if (!isFallback && !daoInfo) {
+    throw new Error('DAO info failed to load.')
+  }
 
   return (
     <>
@@ -81,12 +87,23 @@ export const makeGetStaticProps: GetStaticPropsMaker =
     }
 
     try {
-      const client = new QueryClient(
-        await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
-        DAO_ADDRESS
-      )
+      const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
+      const client = new CwCoreQueryClient(cwClient, DAO_ADDRESS)
 
       const config = await client.config()
+
+      const votingModuleAddress = await client.votingModule()
+      const {
+        info: { contract: votingModuleContractName },
+      }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
+        await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
+
+      const votingModuleType = parseVotingModuleContractName(
+        votingModuleContractName
+      )
+      if (!votingModuleType) {
+        throw new Error('Failed to determine voting module type.')
+      }
 
       return {
         props: {
@@ -97,6 +114,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           daoInfo: {
+            votingModuleType,
             name: config.name,
             imageUrl: config.image_url ?? null,
           },
@@ -108,6 +126,6 @@ export const makeGetStaticProps: GetStaticPropsMaker =
     } catch (error) {
       console.error(error)
       // Throw error to trigger 500.
-      throw new Error('An unexpected error occurred. Please try again later.')
+      throw error
     }
   }

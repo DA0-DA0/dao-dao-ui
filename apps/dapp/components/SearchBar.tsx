@@ -2,22 +2,28 @@ import { SearchIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
+import i18n from '@dao-dao/i18n'
+
 interface SearchBoxInternalProps {
   refine: (...args: any[]) => any
   currentRefinement: string
   isSearchStalled: boolean
 }
 
+// max-w-[812px] set because this is the width of three search hit boxes and
+// their padding. Setting this width then makes the search box align with a
+// set of search results.
 const SearchBoxInternal: FC<SearchBoxInternalProps> = ({
   currentRefinement,
   refine,
 }) => (
-  <div className="group flex gap-1.5 items-center py-2 px-2.5 text-tertiary bg-card rounded-md border border-inactive focus-within:border-default transition">
-    <SearchIcon className="w-4" />
+  <div className="flex items-center px-3 text-tertiary border-b border-default">
+    <SearchIcon className="w-5" />
     <input
-      className="w-full bg-transparent focus:outline-none secondary-text focus:ring-none"
+      autoFocus
+      className="p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
       onChange={(event) => refine(event.currentTarget.value)}
-      placeholder="Search"
+      placeholder={i18n.t('Search')}
       type="text"
       value={currentRefinement}
     />

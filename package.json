@@ -8,15 +8,17 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "format": "turbo run format && prettier --write \"**/*.{css,json,md}\"",
-    "lint": "turbo run lint && prettier --check \"**/*.{css,json,md}\"",
+    "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue",
+    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "icons": "yarn workspace @dao-dao/icons",
     "state": "yarn workspace @dao-dao/state",
     "ui": "yarn workspace @dao-dao/ui",
-    "utils": "yarn workspace @dao-dao/utils"
+    "utils": "yarn workspace @dao-dao/utils",
+    "actions": "yarn workspace @dao-dao/actions",
+    "common": "yarn workspace @dao-dao/common"
   },
   "devDependencies": {
     "turbo": "latest"

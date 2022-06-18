@@ -1,20 +1,21 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  CwCoreClient as ExecuteClient,
+  AdminResponse,
   ConfigResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
   DumpStateResponse,
+  CwCoreClient as ExecuteClient,
   GetItemResponse,
-  ProposalModulesResponse,
   InfoResponse,
   ListItemsResponse,
+  PauseInfoResponse,
+  ProposalModulesResponse,
   CwCoreQueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
-  PauseInfoResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw-core'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
@@ -55,6 +56,21 @@ export const executeClient = selectorFamily<
       return new ExecuteClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
+})
+
+export const adminSelector = selectorFamily<
+  AdminResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreAdmin',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      if (!client) return
+
+      return await client.admin()
+    },
 })
 
 export const configSelector = selectorFamily<
@@ -177,6 +193,44 @@ export const cw20TokenListSelector = selectorFamily<
     },
 })
 
+const CW20_TOKEN_LIST_LIMIT = 10
+export const allCw20TokenListSelector = selectorFamily<
+  Cw20TokenListResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreAllCw20TokenList',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      let startAt: string | undefined
+
+      const tokenList: Cw20TokenListResponse = []
+      while (true) {
+        const response = await get(
+          cw20TokenListSelector({
+            ...queryClientParams,
+            params: [{ startAt, limit: CW20_TOKEN_LIST_LIMIT }],
+          })
+        )
+        if (!response?.length) break
+
+        // Don't double-add last token since we set startAt to it for
+        // the next query.
+        tokenList.push(...response.slice(0, -1))
+        startAt = response[response.length - 1]
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < CW20_TOKEN_LIST_LIMIT) {
+          // Add last token to the list since we ignored it.
+          tokenList.push(response[response.length - 1])
+          break
+        }
+      }
+
+      return tokenList
+    },
+})
+
 export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
@@ -206,6 +260,44 @@ export const cw20BalancesSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
 
       return await client.cw20Balances(...params)
+    },
+})
+
+const CW20_BALANCES_LIMIT = 10
+export const allCw20BalancesSelector = selectorFamily<
+  Cw20BalancesResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreAllCw20Balances',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      let startAt: string | undefined
+
+      const balances: Cw20BalancesResponse = []
+      while (true) {
+        const response = await get(
+          cw20BalancesSelector({
+            ...queryClientParams,
+            params: [{ startAt, limit: CW20_BALANCES_LIMIT }],
+          })
+        )
+        if (!response?.length) break
+
+        // Don't double-add last balance since we set startAt to it for
+        // the next query.
+        balances.push(...response.slice(0, -1))
+        startAt = response[response.length - 1].addr
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < CW20_BALANCES_LIMIT) {
+          // Add last balance to the list since we ignored it.
+          balances.push(response[response.length - 1])
+          break
+        }
+      }
+
+      return balances
     },
 })
 

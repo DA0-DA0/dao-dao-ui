@@ -5,38 +5,42 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { CreateProposalForm } from '@dao-dao/common'
+import i18n from '@dao-dao/i18n'
 import {
+  Cw20BaseHooks,
+  Cw20BaseSelectors,
+  CwProposalSingleHooks,
   blockHeightSelector,
   refreshProposalsIdAtom,
+  useProposalModule,
   useWallet,
 } from '@dao-dao/state'
-import { usePropose } from '@dao-dao/state/hooks/cw-proposal-single'
-import { useIncreaseAllowance } from '@dao-dao/state/hooks/cw20-base'
-import { allowanceSelector } from '@dao-dao/state/recoil/selectors/clients/cw20-base'
-import { CopyToClipboard } from '@dao-dao/ui'
+import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
+import { cleanChainError, expirationExpired } from '@dao-dao/utils'
 
 import {
   Loader,
-  makeGetStaticProps,
   PageWrapper,
   PageWrapperProps,
-  ProposalForm,
   ProposalsInfo,
-  SuspenseLoader,
+  makeGetStaticProps,
+  useDAOInfoContext,
 } from '@/components'
-import { useProposalModule } from '@/hooks'
-import { cleanChainError, DAO_ADDRESS, expirationExpired } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
+  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
-  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule()
+  const { proposalModuleAddress, proposalModuleConfig } =
+    useProposalModule(DAO_ADDRESS)
 
   const currentAllowance = useRecoilValue(
     proposalModuleConfig?.deposit_info && proposalModuleAddress && walletAddress
-      ? allowanceSelector({
+      ? Cw20BaseSelectors.allowanceSelector({
           contractAddress: proposalModuleConfig.deposit_info.token,
           params: [{ owner: walletAddress, spender: proposalModuleAddress }],
         })
@@ -44,17 +48,17 @@ const InnerProposalCreate = () => {
   )
   const blockHeight = useRecoilValue(blockHeightSelector)
 
-  const setRefrehProposalsId = useSetRecoilState(refreshProposalsIdAtom)
+  const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const refreshProposals = useCallback(
-    () => setRefrehProposalsId((id) => id + 1),
-    [setRefrehProposalsId]
+    () => setRefreshProposalsId((id) => id + 1),
+    [setRefreshProposalsId]
   )
 
-  const increaseAllowance = useIncreaseAllowance({
+  const increaseAllowance = Cw20BaseHooks.useIncreaseAllowance({
     contractAddress: proposalModuleConfig?.deposit_info?.token ?? '',
     sender: walletAddress ?? '',
   })
-  const createProposal = usePropose({
+  const createProposal = CwProposalSingleHooks.usePropose({
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
@@ -98,7 +102,7 @@ const InnerProposalCreate = () => {
           console.error(err)
           toast.error(
             `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
-              err.message
+              err instanceof Error ? err.message : `${err}`
             )})`
           )
           return
@@ -119,12 +123,14 @@ const InnerProposalCreate = () => {
         ).value
         refreshProposals()
         router.push(`/vote/${proposalId}`)
+        // Don't stop loading indicator since we are navigating.
       } catch (err) {
         console.error(err)
-        toast.error(cleanChainError(err.message))
+        toast.error(
+          cleanChainError(err instanceof Error ? err.message : `${err}`)
+        )
+        setLoading(false)
       }
-
-      setLoading(false)
     },
     [
       blockHeight,
@@ -143,10 +149,17 @@ const InnerProposalCreate = () => {
   return (
     <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
       <div className="md:w-2/3">
-        <h2 className="mb-4 font-medium text-medium">Create Proposal</h2>
+        <h2 className="mb-4 font-medium text-medium">
+          {i18n.t('Create a proposal')}
+        </h2>
 
         <SuspenseLoader fallback={<Loader />}>
-          <ProposalForm loading={loading} onSubmit={onProposalSubmit} />
+          <CreateProposalForm
+            coreAddress={DAO_ADDRESS}
+            loading={loading}
+            onSubmit={onProposalSubmit}
+            votingModuleType={votingModuleType}
+          />
         </SuspenseLoader>
       </div>
 
@@ -179,5 +192,5 @@ const ProposalCreatePage: NextPage<PageWrapperProps> = ({
 export default ProposalCreatePage
 
 export const getStaticProps = makeGetStaticProps({
-  followingTitle: 'Create Proposal',
+  followingTitle: i18n.t('Create a proposal'),
 })

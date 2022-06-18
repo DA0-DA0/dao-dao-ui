@@ -12,22 +12,18 @@ import {
   useState,
 } from 'react'
 
-import { Airdrop, Pie, Governance, Hash } from '@dao-dao/icons'
+import { ConnectWalletButton } from '@dao-dao/common'
+import { Airdrop, Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
-  convertDenomToHumanReadableDenom,
-  convertMicroDenomToDenomWithDecimals,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  VotingModuleType,
+  convertDenomToHumanReadableDenom,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import {
-  Logo,
-  WalletConnectButton,
-  useDAOInfoContext,
-  Footer,
-  WalletAvatarIcon,
-} from '@/components'
+import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
 import { AIRDROP_URL } from '@/util'
 
 interface NavItemData {
@@ -84,7 +80,7 @@ const NavItem: FunctionComponent<NavItemProps> = ({
 export const Header: FunctionComponent = () => {
   const router = useRouter()
   const { connected, name: walletName, nativeBalance, disconnect } = useWallet()
-  const { name: daoName } = useDAOInfoContext()
+  const { name: daoName, votingModuleType } = useDAOInfoContext()
 
   const [mobileNavVisible, setMobileNavVisible] = useState(false)
 
@@ -114,19 +110,40 @@ export const Header: FunctionComponent = () => {
             },
           ]
         : []),
-      {
-        renderIcon: (color, mobile) => (
-          <Pie
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
-        ),
-        label: 'Stake',
-        href: '/',
-        active: router.pathname === '/',
-        external: false,
-      },
+      ...(votingModuleType === VotingModuleType.Cw4Voting
+        ? [
+            {
+              renderIcon: (color, mobile) => (
+                <Wallet
+                  color={color}
+                  height={mobile ? 16 : 14}
+                  width={mobile ? 16 : 14}
+                />
+              ),
+              label: 'Members',
+              href: '/',
+              active: router.pathname === '/',
+              external: false,
+            },
+          ]
+        : []),
+      ...(votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+        ? [
+            {
+              renderIcon: (color, mobile) => (
+                <Pie
+                  color={color}
+                  height={mobile ? 16 : 14}
+                  width={mobile ? 16 : 14}
+                />
+              ),
+              label: 'Stake',
+              href: '/',
+              active: router.pathname === '/',
+              external: false,
+            },
+          ]
+        : []),
       {
         renderIcon: (color, mobile) => (
           <Governance
@@ -180,11 +197,12 @@ export const Header: FunctionComponent = () => {
         : []),
     ],
     [
-      router.asPath,
+      votingModuleType,
       router.pathname,
-      router.query,
       router.isReady,
       router.isFallback,
+      router.query.proposalId,
+      router.asPath,
     ]
   )
 
@@ -241,7 +259,7 @@ export const Header: FunctionComponent = () => {
           </div>
         ) : (
           <div className="hidden md:block">
-            <WalletConnectButton />
+            <ConnectWalletButton className="!w-auto" />
           </div>
         )}
       </div>
@@ -314,10 +332,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
             </div>
           </div>
         ) : (
-          <WalletConnectButton
-            className="w-full"
-            contentContainerClassName="justify-center"
-          />
+          <ConnectWalletButton contentContainerClassName="justify-center" />
         )}
 
         <div className="flex flex-col gap-1 items-stretch px-1 mt-4 mb-10">

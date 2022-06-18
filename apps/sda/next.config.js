@@ -6,6 +6,8 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/icons',
   '@dao-dao/utils',
   '@dao-dao/state',
+  '@dao-dao/actions',
+  '@dao-dao/common',
 ])
 
 /** @type {import("next").NextConfig} */
@@ -17,17 +19,7 @@ let config = {
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
   eslint: {
-    dirs: [
-      'atoms',
-      'components',
-      'models',
-      'pages',
-      'selectors',
-      'services',
-      'templates',
-      'types',
-      'util',
-    ],
+    dirs: ['components', 'hooks', 'pages', 'types', 'util'],
   },
 }
 

@@ -22,7 +22,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
     <div
       className={clsx(
         'flex flex-col gap-3 p-4 max-w-3xl bg-primary rounded-lg border border-default',
-        blur && 'backdrop-blur-lg'
+        { 'backdrop-blur-lg': blur }
       )}
     >
       <div className="flex gap-2 items-center">
@@ -37,9 +37,9 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
       </div>
       <div className="flex flex-wrap grid-cols-3 gap-2 md:grid">
         <Button
-          className={`group transition ${
-            selected === VoteChoice.Yes ? 'bg-valid hover:bg-valid' : ''
-          }`}
+          className={clsx('group transition', {
+            'bg-valid hover:bg-valid': selected === VoteChoice.Yes,
+          })}
           onClick={() =>
             setSelected((s) =>
               s === VoteChoice.Yes ? undefined : VoteChoice.Yes
@@ -48,18 +48,17 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
           variant="secondary"
         >
           <CheckIcon
-            className={`${
-              selected === VoteChoice.Yes
-                ? 'text-base'
-                : 'text-valid group-hover:text-base'
-            } w-4`}
+            className={clsx('w-4', {
+              'text-base': selected === VoteChoice.Yes,
+              'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
+            })}
           />
           Yes
         </Button>
         <Button
-          className={`group transition ${
-            selected === VoteChoice.No ? 'bg-error hover:bg-error' : ''
-          }`}
+          className={clsx('group transition', {
+            'bg-error hover:bg-error': selected === VoteChoice.No,
+          })}
           onClick={() =>
             setSelected((s) =>
               s === VoteChoice.No ? undefined : VoteChoice.No
@@ -68,20 +67,17 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
           variant="secondary"
         >
           <XIcon
-            className={`${
-              selected === VoteChoice.No
-                ? 'text-base'
-                : 'text-error group-hover:text-base'
-            } w-4`}
+            className={clsx('w-4', {
+              'text-base': selected === VoteChoice.No,
+              'group-hover:text-base text-error': selected !== VoteChoice.No,
+            })}
           />
           No
         </Button>
         <Button
-          className={`group transition ${
-            selected === VoteChoice.Abstain
-              ? 'bg-tertiary hover:bg-tertiary'
-              : ''
-          }`}
+          className={clsx('group transition', {
+            'bg-tertiary hover:bg-tertiary': selected === VoteChoice.Abstain,
+          })}
           onClick={() =>
             setSelected((s) =>
               s === VoteChoice.Abstain ? undefined : VoteChoice.Abstain

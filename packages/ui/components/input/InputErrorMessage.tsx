@@ -1,12 +1,23 @@
+import clsx from 'clsx'
+import { FC } from 'react'
 import { FieldError } from 'react-hook-form'
 
-export function InputErrorMessage({
-  error,
-}: {
+interface InputErrorMessageProps {
   error: FieldError | undefined
-}) {
-  if (error && error.message) {
-    return <span className="mt-1 ml-1 text-xs text-error">{error.message}</span>
-  }
-  return null
+  className?: string
 }
+
+export const InputErrorMessage: FC<InputErrorMessageProps> = ({
+  error,
+  className,
+}) =>
+  error?.message ? (
+    <span
+      className={clsx(
+        'inline-block mt-1 ml-1 max-w-prose text-xs text-error',
+        className
+      )}
+    >
+      {error.message}
+    </span>
+  ) : null

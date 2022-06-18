@@ -1,39 +1,57 @@
-import { FC } from 'react'
+import clsx from 'clsx'
+import { FC, ReactNode } from 'react'
 
 import { Button } from '../Button'
 import { LogoNoBorder } from '../Logo'
-import { BalanceIcon } from './BalanceIcon'
 
 export interface BalanceCardProps {
-  denom: string
-  title: string
-  amount: string
-  onManage: () => void
+  title: ReactNode
+  icon?: ReactNode
+  buttonLabel: ReactNode
   loading: boolean
+  onClick: () => void
+  opaque?: boolean
 }
 
 export const BalanceCard: FC<BalanceCardProps> = ({
-  denom,
   title,
-  amount,
-  onManage,
+  icon,
+  buttonLabel,
   loading,
+  onClick,
+  opaque,
+  children,
 }) => (
-  <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
-    <h2 className="font-mono caption-text">{title}</h2>
-    {loading ? (
-      <div className="inline-block mt-2 animate-spin-medium">
-        <LogoNoBorder />
-      </div>
+  <div
+    className={clsx('p-5 w-full rounded-lg', {
+      'border border-default': !opaque,
+      'bg-primary': opaque,
+    })}
+  >
+    {typeof title === 'string' ? (
+      <h2
+        className={clsx({
+          'font-mono caption-text': !opaque,
+          'link-text': opaque,
+        })}
+      >
+        {title}
+      </h2>
     ) : (
-      <div className="flex flex-row flex-wrap gap-2 items-center mt-2 mb-[22px] title-text">
-        <BalanceIcon />
-        {amount} ${denom}
-      </div>
+      title
     )}
+    <div className="my-4">
+      {loading ? (
+        <div className="inline-block mt-2 animate-spin-medium">
+          <LogoNoBorder />
+        </div>
+      ) : (
+        children
+      )}
+    </div>
     <div className="flex justify-end">
-      <Button onClick={onManage} size="sm" variant="secondary">
-        Manage
+      <Button onClick={onClick} size="sm" variant="secondary">
+        {icon} {buttonLabel}
       </Button>
     </div>
   </div>
