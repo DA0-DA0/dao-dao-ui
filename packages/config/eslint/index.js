@@ -42,6 +42,18 @@ const eslintConfig = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/no-unused-vars': ['off'],
+        'i18next/no-literal-string': [
+          'error',
+          {
+            words: {
+              exclude: [
+                '\\s*DAO\\s*',
+                '\\s*DAO\\s*DAO\\s*v?',
+                '\\s*[.!?%]\\s*',
+              ],
+            },
+          },
+        ],
       },
     },
   ],

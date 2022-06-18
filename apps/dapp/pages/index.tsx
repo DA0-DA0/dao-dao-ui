@@ -4,7 +4,7 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode, useState } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
@@ -18,42 +18,48 @@ import { SITE_TITLE } from '@dao-dao/utils'
 
 import { FeaturedDaos, HomepageCards } from '@/components'
 
-const EnterAppButton = ({ small }: { small?: boolean }) => (
-  <Link href="/home">
-    <a>
-      <Button size={small ? 'sm' : 'lg'}>
-        {i18n.t('landingPage.CTA')}
-        <ArrowUpRight color="currentColor" height="10px" width="10px" />
-      </Button>
-    </a>
-  </Link>
-)
+const EnterAppButton = ({ small }: { small?: boolean }) => {
+  const { t } = useTranslation('splash')
 
-const AnouncementCard = ({}) => (
-  <div
-    className="flex flex-row flex-wrap gap-2 justify-between py-7 px-8 mx-2 max-w-[780px] rounded"
-    style={{
-      backgroundImage:
-        'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--light), 0.7), rgba(var(--light), 0.7))',
-    }}
-  >
-    <div className="flex flex-col gap-1">
-      <h3 className="primary-text">What is a DAO?</h3>
-      <p className="body-text">
-        A DAO is an organization democratically controlled by its members.
-      </p>
-    </div>
-    <a
-      className="flex flex-row gap-1 items-center secondary-text"
-      href="https://nickmerrill.substack.com/p/what-are-daos"
-      rel="noopener noreferrer"
-      target="_blank"
+  return (
+    <Link href="/home">
+      <a>
+        <Button size={small ? 'sm' : 'lg'}>
+          {t('cta')}
+          <ArrowUpRight color="currentColor" height="10px" width="10px" />
+        </Button>
+      </a>
+    </Link>
+  )
+}
+
+const AnouncementCard = () => {
+  const { t } = useTranslation('splash')
+
+  return (
+    <div
+      className="flex flex-row flex-wrap gap-2 justify-between py-7 px-8 mx-2 max-w-[780px] rounded"
+      style={{
+        backgroundImage:
+          'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--light), 0.7), rgba(var(--light), 0.7))',
+      }}
     >
-      <p>Read more</p>
-      <ArrowRightIcon className="w-4 h-3" />
-    </a>
-  </div>
-)
+      <div className="flex flex-col gap-1">
+        <h3 className="primary-text">{t('whatIsADao')}</h3>
+        <p className="body-text">{t('whatIsADaoExplanation')}</p>
+      </div>
+      <a
+        className="flex flex-row gap-1 items-center secondary-text"
+        href="https://nickmerrill.substack.com/p/what-are-daos"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <p>{t('readMore')}</p>
+        <ArrowRightIcon className="w-4 h-3" />
+      </a>
+    </div>
+  )
+}
 
 const StatsCard = ({ children }: { children: ReactNode }) => (
   <div className="flex flex-col gap-1 items-center px-6 md:px-6">
@@ -62,6 +68,8 @@ const StatsCard = ({ children }: { children: ReactNode }) => (
 )
 
 const Home: NextPage = () => {
+  const { t } = useTranslation('splash')
+
   const [tvl, setTVL] = useState<string | undefined>(undefined)
   const [daos, setDaos] = useState<string | undefined>(undefined)
   const [proposals, setProposals] = useState<string | undefined>(undefined)
@@ -100,7 +108,7 @@ const Home: NextPage = () => {
                 className="flex gap-2 items-center"
                 href="https://docs.daodao.zone"
               >
-                {i18n.t('Documentation')}
+                {t('documentation')}
                 <ArrowUpRight color="currentColor" height="10px" width="10px" />
               </a>
               <div className="hidden md:block">
@@ -110,10 +118,10 @@ const Home: NextPage = () => {
           </div>
         </nav>
         <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
-          {i18n.t('landingPage.short tagline')}
+          {t('shortTagline')}
         </h1>
         <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
-          {i18n.t('landingPage.long tagline')}
+          {t('longTagline')}
         </p>
         <div className="mx-auto">
           <EnterAppButton />
@@ -129,19 +137,19 @@ const Home: NextPage = () => {
             <h3 className="header-text">
               {tvl ? '$' + tvl.toLocaleString() : 'loading..'}
             </h3>
-            <p className="caption-text">USDC Total Value in DAOs</p>
+            <p className="caption-text">{t('usdcTotalValue')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
               {daos ? daos.toLocaleString() : 'loading..'}
             </h3>
-            <p className="caption-text">DAOs Created</p>
+            <p className="caption-text">{t('daosCreated')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
               {proposals ? proposals.toLocaleString() : 'loading..'}
             </h3>
-            <p className="caption-text">Proposals Created</p>
+            <p className="caption-text">{t('proposalsCreated')}</p>
           </StatsCard>
         </div>
 
@@ -152,23 +160,22 @@ const Home: NextPage = () => {
             <RotatableLogo initialRotation={45} />
           </div>
           <h2 className="px-4 mt-12 w-full text-center header-text">
-            Transparent governance, entirely on-chain
+            {t('transparentGovernanceOnChain')}
           </h2>
           <p className="px-4 mx-auto mt-4 max-w-xl text-center text-tertiary primary-text">
-            Anyone can see what decisions your DAO made, and who voted for and
-            against them.
+            {t('transparencyExplanation')}
           </p>
           <div className="mt-12">
             <HomepageCards />
           </div>
           <div className="flex flex-col gap-4 items-center my-12">
             <h2 className="mx-4 max-w-xl text-center header-text">
-              Create, explore, and join DAOs
+              {t('createExploreJoin')}
             </h2>
             <Link href="/home">
               <a>
                 <Button size={'lg'}>
-                  {i18n.t('landingPage.CTA')}
+                  {t('cta')}
                   <ArrowUpRight
                     color="currentColor"
                     height="10px"
@@ -187,7 +194,7 @@ const Home: NextPage = () => {
                 rel="noreferrer"
                 target="_blank"
               >
-                {i18n.t('landingPage.Powered by Juno')}
+                {t('poweredByJuno')}
                 <ArrowNarrowRightIcon
                   className="inline mb-0.5 w-6 h-4 font-light"
                   style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
