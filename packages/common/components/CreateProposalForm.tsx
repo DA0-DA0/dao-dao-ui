@@ -306,7 +306,7 @@ export const CreateProposalForm = ({
         </div>
         {showSubmitErrorNote && (
           <p className="mt-2 text-right text-error secondary-text">
-            Correct the errors above before previewing or publishing.
+            {i18n.t('createProposalSubmitValidationError')}
           </p>
         )}
       </form>

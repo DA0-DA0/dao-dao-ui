@@ -1,25 +1,19 @@
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 
 const Custom500: NextPage = () => {
-  const router = useRouter()
+  const { t } = useTranslation()
 
-  /* Only render page once mounted in browser (via SuspenseLoader) to
-   * prevent hydration error. Server renders router.asPath as `/404`
-   * but client renders router.asPath as the redirected/invalid
-   * route.
-   */
   return (
     <SuspenseLoader fallback={null}>
-      <ErrorPage title="500 - Internal Server Error">
+      <ErrorPage title={t('500Title')}>
         <p>
-          An internal server error occured while trying to access{' '}
-          <code>{router.asPath}</code>. Consider returning{' '}
+          {t('internalServerError')}{' '}
           <Link href="/">
-            <a className="link">home</a>
+            <a className="link">{t('considerReturningHome')}</a>
           </Link>
         </p>
       </ErrorPage>

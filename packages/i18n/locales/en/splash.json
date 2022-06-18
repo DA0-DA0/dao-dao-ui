@@ -1,0 +1,16 @@
+{
+  "createExploreJoin": "Create, explore, and join DAOs",
+  "cta": "Enter the app",
+  "daosCreated": "DAOs Created",
+  "documentation": "Documentation",
+  "longTagline": "Simple, capable, and free DAO tooling. Built with love, by DAO DAO, on Juno.",
+  "poweredByJuno": "Powered by Juno",
+  "proposalsCreated": "Proposals Created",
+  "readMore": "Read more",
+  "shortTagline": "DAOs for everyone.",
+  "transparencyExplanation": "Anyone can see what decisions your DAO made, and who voted for and against them.",
+  "transparentGovernanceOnChain": "Transparent governance, entirely on-chain",
+  "usdcTotalValue": "USDC Total Value in DAOs",
+  "whatIsADao": "What is a DAO?",
+  "whatIsADaoExplanation": "A DAO is an organization democratically controlled by its members."
+}

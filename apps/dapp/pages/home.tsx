@@ -177,7 +177,7 @@ const InnerHome: FC = () => {
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
               <div className="flex gap-1 items-center">
                 <DocumentTextIcon className="inline w-4" />
-                {i18n.t('Open proposals')}
+                {i18n.t('openProposals')}
                 <TooltipIcon label="These are open proposals you have not yet voted on for your favorited DAOs shown below." />
               </div>
             </h2>
@@ -204,11 +204,11 @@ const InnerHome: FC = () => {
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
               <div className="flex gap-1 items-center">
                 <HeartIcon className="inline w-4" />
-                {i18n.t('Favorited')}
+                {i18n.t('favorited')}
               </div>
               <Link href="/dao/create" passHref>
                 <Button size="sm">
-                  <PlusIcon className="w-4 h-4" /> {i18n.t('Create')}
+                  <PlusIcon className="w-4 h-4" /> {i18n.t('create')}
                 </Button>
               </Link>
             </h2>
@@ -223,13 +223,13 @@ const InnerHome: FC = () => {
         <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
           <div className="flex gap-1 items-center">
             <SparklesIcon className="inline w-4 " />
-            {i18n.t('Featured')}
+            {i18n.t('featured')}
           </div>
           {/* Show create button here if no pinned DAOs. */}
           {pinnedAddresses.length === 0 && (
             <Link href="/dao/create" passHref>
               <Button size="sm">
-                <PlusIcon className="w-4 h-4" /> {i18n.t('Create')}
+                <PlusIcon className="w-4 h-4" /> {i18n.t('create')}
               </Button>
             </Link>
           )}
