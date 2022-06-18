@@ -17,6 +17,9 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
+  "[json]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
   "css.validate": false,
   "eslint.codeActionsOnSave.mode": "problems",
   "eslint.format.enable": true,

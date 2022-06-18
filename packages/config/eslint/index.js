@@ -25,6 +25,10 @@ const eslintConfig = {
   },
   overrides: [
     {
+      files: ['**/*.json', '**/*.json5', '**/*.jsonc'],
+      extends: ['plugin:jsonc/recommended-with-json', 'plugin:jsonc/prettier'],
+    },
+    {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
       extends: [
         'plugin:prettier/recommended',
