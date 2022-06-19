@@ -1,5 +1,5 @@
 import { OfflineSigner } from '@cosmjs/proto-signing'
-import { KeplrWalletConnectV1 } from 'cosmodal'
+import { KeplrWalletConnectV1 } from '@noahsaso/cosmodal'
 import { selector } from 'recoil'
 
 import {

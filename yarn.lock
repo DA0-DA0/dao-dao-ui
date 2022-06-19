@@ -2976,6 +2976,27 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.1.6.tgz#a350caf42975e7197b24b495b8d764eec7e6a36e"
   integrity sha512-4ZEwiRuZEicXhXqmhw3+de8Z4EpOLQj/gp+D9fFWo6ii6W1kBkNNvvEx4A90ugppu+74pT1lIJnOuz3A9oQeJA==
 
+"@noahsaso/cosmodal@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.4.2.tgz#a0b5a95c3bf8adefc79e6ce68e43c20e02a7772d"
+  integrity sha512-SDEAVdDnMiNVu1IJdwp8x2+hCZHs1TGHjTqiRsUhXdrv/ZlK+s/z/Lzd2MbeoQIpEumQv19wc6xlDpcCtoN3TQ==
+  dependencies:
+    "@cosmjs/launchpad" "^0.27.1"
+    "@cosmjs/proto-signing" "^0.28.0"
+    "@keplr-wallet/common" "^0.9.10"
+    "@keplr-wallet/cosmos" "^0.9.16"
+    "@keplr-wallet/provider" "^0.9.12"
+    "@keplr-wallet/stores" "^0.9.18"
+    "@keplr-wallet/types" "^0.9.12"
+    "@walletconnect/client" "^1.7.8"
+    "@walletconnect/types" "^1.7.8"
+    "@walletconnect/utils" "^1.7.8"
+    eslint-plugin-react "^7.29.4"
+    qrcode.react "^3.0.0"
+    react-modal "^3.14.4"
+    secretjs "^0.17.5"
+    styled-components "^5.3.5"
+
 "@noble/hashes@^1", "@noble/hashes@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.0.0.tgz#d5e38bfbdaba174805a4e649f13be9a9ed3351ae"
@@ -6851,26 +6872,6 @@ cosmjs-types@^0.4.0:
   dependencies:
     long "^4.0.0"
     protobufjs "~6.11.2"
-
-"cosmodal@https://github.com/NoahSaso/cosmodal#7abc9d43f31693f56d3809dc7a87eeedce3c3ca2":
-  version "0.3.7"
-  resolved "https://github.com/NoahSaso/cosmodal#7abc9d43f31693f56d3809dc7a87eeedce3c3ca2"
-  dependencies:
-    "@cosmjs/launchpad" "^0.27.1"
-    "@cosmjs/proto-signing" "^0.28.0"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.16"
-    "@keplr-wallet/provider" "^0.9.12"
-    "@keplr-wallet/stores" "^0.9.18"
-    "@keplr-wallet/types" "^0.9.12"
-    "@walletconnect/client" "^1.7.8"
-    "@walletconnect/types" "^1.7.8"
-    "@walletconnect/utils" "^1.7.8"
-    eslint-plugin-react "^7.29.4"
-    qrcode.react "^3.0.0"
-    react-modal "^3.14.4"
-    secretjs "^0.17.5"
-    styled-components "^5.3.5"
 
 cp-file@^7.0.0:
   version "7.0.0"

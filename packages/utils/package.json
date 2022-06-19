@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "ajv": "^8.11.0",
-    "cosmodal": "https://github.com/NoahSaso/cosmodal#7abc9d43f31693f56d3809dc7a87eeedce3c3ca2",
+    "@noahsaso/cosmodal": "^0.4.2",
     "react": "^18.1.0"
   }
 }

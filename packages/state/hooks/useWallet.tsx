@@ -1,14 +1,14 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
-import { isMobile } from '@walletconnect/browser-utils'
-import WalletConnect from '@walletconnect/client'
 import {
   KeplrWalletConnectV1,
   Wallet,
   WalletClient,
   WalletManagerProvider,
   useWalletManager,
-} from 'cosmodal'
+} from '@noahsaso/cosmodal'
+import { isMobile } from '@walletconnect/browser-utils'
+import WalletConnect from '@walletconnect/client'
 import { FC, createContext, useCallback, useContext, useEffect } from 'react'
 import {
   useRecoilValue,
@@ -60,7 +60,7 @@ const AvailableWallets: Wallet[] = [
     id: 'keplr-wallet-extension',
     name: 'Keplr Wallet',
     description: 'Keplr Chrome Extension',
-    logoImgUrl: '/keplr-wallet-extension.png',
+    imageUrl: '/keplr-wallet-extension.png',
     getClient: getKeplrFromWindow,
     isWalletConnect: false,
     onSelect: async () => {
@@ -77,10 +77,10 @@ const AvailableWallets: Wallet[] = [
           id: 'walletconnect-keplr',
           name: 'WalletConnect',
           description: 'Keplr Mobile',
-          logoImgUrl: '/walletconnect-keplr.png',
-          getClient: async (connector?: WalletConnect) => {
-            if (connector?.connected)
-              return new KeplrWalletConnectV1(connector, [NativeChainInfo])
+          imageUrl: '/walletconnect-keplr.png',
+          getClient: async (walletConnect?: WalletConnect) => {
+            if (walletConnect?.connected)
+              return new KeplrWalletConnectV1(walletConnect, [NativeChainInfo])
             throw new Error('Mobile wallet not connected.')
           },
           isWalletConnect: true,
@@ -199,7 +199,7 @@ const InnerWalletProvider: FC = ({ children }) => {
   )
 }
 
-const enableKeplr = async (wallet: Wallet, walletClient: WalletClient) => {
+const enableWallet = async (wallet: Wallet, walletClient: WalletClient) => {
   if (!wallet.isWalletConnect) {
     await suggestChain(walletClient)
   }
@@ -221,21 +221,12 @@ export const WalletProvider: FC = ({ children }) => {
         modalHeader: '!header-text',
         modalSubheader: '!title-text',
         wallet: '!rounded-lg !bg-card !p-4 !shadow-none',
-        walletIconImg: '!rounded-full',
+        walletImage: '!rounded-full',
         walletName: '!primary-text',
         walletDescription: '!caption-text',
         textContent: '!primary-text',
       }}
-      clientMeta={{
-        name: SITE_TITLE,
-        description: SITE_DESCRIPTION,
-        url: SITE_URL,
-        icons: [
-          (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
-            WC_ICON_PATH,
-        ],
-      }}
-      enableKeplr={enableKeplr}
+      enableWallet={enableWallet}
       preselectedWalletId={
         savedConectedWalletId ??
         // If on a mobile device, default to WalletConnect.
@@ -244,6 +235,15 @@ export const WalletProvider: FC = ({ children }) => {
           : undefined)
       }
       renderLoader={() => <Loader size={64} />}
+      walletConnectClientMeta={{
+        name: SITE_TITLE,
+        description: SITE_DESCRIPTION,
+        url: SITE_URL,
+        icons: [
+          (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
+            WC_ICON_PATH,
+        ],
+      }}
       wallets={AvailableWallets}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>

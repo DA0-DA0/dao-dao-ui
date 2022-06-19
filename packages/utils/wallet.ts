@@ -1,5 +1,5 @@
 import { Keplr } from '@keplr-wallet/types'
-import { KeplrWalletConnectV1 } from 'cosmodal'
+import { KeplrWalletConnectV1 } from '@noahsaso/cosmodal'
 
 import { CHAIN_ID } from './constants'
 import { suggestChain } from './keplr'
