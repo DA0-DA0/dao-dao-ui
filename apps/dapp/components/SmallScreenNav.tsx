@@ -5,6 +5,7 @@ import { FC, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
+import { useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { Loader } from './Loader'
@@ -16,6 +17,7 @@ interface SmallScreenNavProps {
 }
 
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const setSearchVisible = useSetRecoilState(searchVisibleAtom)
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
@@ -49,7 +51,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
             className="flex gap-2 items-center p-2 w-full bg-primary rounded-lg link-text"
             onClick={() => setSearchVisible(true)}
           >
-            <SearchIcon className="w-4 h-4" /> Search
+            <SearchIcon className="w-4 h-4" /> {t('search')}
           </button>
 
           {pinnedAddresses.length > 0 && (

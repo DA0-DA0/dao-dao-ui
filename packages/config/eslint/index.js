@@ -47,9 +47,12 @@ const eslintConfig = {
           {
             words: {
               exclude: [
-                '\\s*DAO\\s*',
+                // Defaults wrapped in whitespace.
+                '\\s*[0-9!-/:-@[-`{-~]+\\s*',
+                '\\s*[A-Z_-]+\\s*',
+                // Additional.
+                '\\s*DAOs?\\s*',
                 '\\s*DAO\\s*DAO\\s*v?',
-                '\\s*[.!?%]\\s*',
               ],
             },
           },

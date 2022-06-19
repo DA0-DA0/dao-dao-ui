@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
+import { t } from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/state/clients/cw-core'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
 
@@ -61,7 +61,7 @@ export const convertThresholdValueToPercentageThreshold = (
     : { percent: (value / 100).toFixed(2) }
 export const convertThresholdValueToHumanReadableString = (
   value: ThresholdValue
-): string => (value === 'majority' ? i18n.t('Majority') : `${value}%`)
+): string => (value === 'majority' ? t('Majority') : `${value}%`)
 
 export enum NewDAOStructure {
   Membership,
@@ -133,7 +133,7 @@ export const DefaultNewDAO: NewDAO = {
   description: '',
   tiers: [
     {
-      name: i18n.t('Default tier name'),
+      name: t('Default tier name'),
       weight: DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
       members: [
         {

@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import { FC, useMemo } from 'react'
 import { Bar, Pie } from 'react-chartjs-2'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { useNamedThemeColor } from '@dao-dao/ui'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
@@ -54,6 +54,7 @@ interface DistributionProps {
 export const VotingPowerPieDistribution: FC<DistributionProps> = ({
   newDAO,
 }) => {
+  const { t } = useTranslation()
   const { onlyOneTier, entries } = useVotingPowerDistributionData(
     newDAO,
     true,
@@ -63,11 +64,9 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
 
   return (
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <p className="font-mono text-center caption-text">
-        {i18n.t('Voting power')}
-      </p>
+      <p className="font-mono text-center caption-text">{t('Voting power')}</p>
       <p className="font-mono caption-text">
-        {onlyOneTier ? i18n.t('Members') : i18n.t('Tier', { count: 1000 })}
+        {onlyOneTier ? t('Members') : t('Tier', { count: 1000 })}
       </p>
 
       <PieChart data={entries} />
@@ -188,6 +187,7 @@ const PieChart: FC<DataProps> = ({ data }) => (
 )
 
 export const VotingPowerChart: FC<DataProps> = ({ data }) => {
+  const { t } = useTranslation()
   const darkRgb = useNamedThemeColor('dark')
 
   return (
@@ -208,7 +208,7 @@ export const VotingPowerChart: FC<DataProps> = ({ data }) => {
             tooltip: {
               callbacks: {
                 title: (items) =>
-                  items[0].label || i18n.t('Member address placeholder'),
+                  items[0].label || t('Member address placeholder'),
                 label: () => '',
               },
               titleMarginBottom: 0,

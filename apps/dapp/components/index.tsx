@@ -4,7 +4,6 @@ export * from './proposals'
 
 export * from './ClaimsPendingList'
 export * from './BetaWarning'
-export * from './ChainEnableModal'
 export * from './CodeIdSelect'
 export * from './ContractCard'
 export * from './ContractHeader'

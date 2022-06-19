@@ -4,7 +4,7 @@ import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   CwCoreQueryClient,
   CwProposalSingleHooks,
@@ -45,6 +45,7 @@ import {
 import { usePinnedDAOs } from '@/hooks'
 
 const InnerProposal: FC = () => {
+  const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress, votingModuleType, name } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
@@ -96,7 +97,7 @@ const InnerProposal: FC = () => {
         markPinnedProposalIdDone(coreAddress, proposalId)
 
         refreshProposalAndAll()
-        toast.success(i18n.t('success.voteCast'))
+        toast.success(t('success.voteCast'))
       } catch (err) {
         console.error(err)
         toast.error(
@@ -113,6 +114,7 @@ const InnerProposal: FC = () => {
       markPinnedProposalIdDone,
       coreAddress,
       refreshProposalAndAll,
+      t,
     ]
   )
 
@@ -127,7 +129,7 @@ const InnerProposal: FC = () => {
       })
 
       refreshProposalAndAll()
-      toast.success(i18n.t('success.proposalExecuted'))
+      toast.success(t('success.proposalExecuted'))
     } catch (err) {
       console.error(err)
       toast.error(
@@ -136,13 +138,7 @@ const InnerProposal: FC = () => {
     }
 
     setLoading(false)
-  }, [
-    executeProposal,
-    connected,
-    proposalId,
-    setLoading,
-    refreshProposalAndAll,
-  ])
+  }, [connected, proposalId, executeProposal, refreshProposalAndAll, t])
 
   const denomConversionDecimals = useMemo(
     () =>
@@ -161,7 +157,7 @@ const InnerProposal: FC = () => {
     denomConversionDecimals === undefined ||
     proposalId === undefined
   ) {
-    throw new Error(i18n.t('error.loadingData'))
+    throw new Error(t('error.loadingData'))
   }
 
   const memberWhenProposalCreated =
@@ -172,7 +168,7 @@ const InnerProposal: FC = () => {
       <div className="col-span-4 w-full md:p-6">
         <Breadcrumbs
           crumbs={[
-            ['/home', i18n.t('Home page')],
+            ['/home', t('Home page')],
             [`/dao/${coreAddress}`, name],
             [router.asPath, `Proposal ${proposalId}`],
           ]}
@@ -223,9 +219,7 @@ const InnerProposal: FC = () => {
           />
 
           <div className="lg:hidden">
-            <h3 className="mb-6 text-base font-medium">
-              {i18n.t('Vote status')}
-            </h3>
+            <h3 className="mb-6 text-base font-medium">{t('Vote status')}</h3>
 
             <ProposalInfoVoteStatus
               denomConversionDecimals={denomConversionDecimals}
@@ -244,7 +238,7 @@ const InnerProposal: FC = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
-        <h2 className="mb-6 text-base font-medium">Details</h2>
+        <h2 className="mb-6 text-base font-medium">{t('details')}</h2>
         <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
@@ -253,9 +247,7 @@ const InnerProposal: FC = () => {
           walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
-        <h3 className="mt-8 mb-6 text-base font-medium">
-          {i18n.t('Vote status')}
-        </h3>
+        <h3 className="mt-8 mb-6 text-base font-medium">{t('Vote status')}</h3>
         <ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={

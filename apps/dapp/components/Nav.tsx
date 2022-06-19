@@ -8,7 +8,7 @@ import { FC } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import i18n from '@dao-dao/i18n'
+import { Trans, useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
@@ -23,6 +23,7 @@ type NavProps = {
 }
 
 export const Nav: FC<NavProps> = ({ onMenuClick }) => {
+  const { t } = useTranslation()
   const setSearchVisible = useSetRecoilState(searchVisibleAtom)
   const { isMac } = usePlatform()
 
@@ -45,7 +46,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
             onClick={() => setSearchVisible(true)}
           >
             <p className="flex gap-2 items-center">
-              <SearchIcon className="w-4 h-4" /> Search
+              <SearchIcon className="w-4 h-4" /> {t('search')}
             </p>
             <p className="text-secondary">{isMac ? '⌘' : '⌃'}K</p>
           </button>
@@ -55,7 +56,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </div>
           <div className="ml-1 text-sm">
             <div className="mt-6">
-              <h3 className="mb-4 font-mono caption-text">Your DAOs</h3>
+              <h3 className="mb-4 font-mono caption-text">{t('yourDAOs')}</h3>
               <SuspenseLoader
                 fallback={<Loader className="!justify-start ml-2" size={20} />}
               >
@@ -66,8 +67,10 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
         </div>
         <div className="ml-1">
           <h3 className="mb-2 font-mono caption-text">
-            dao dao <div className="inline text-error">beta</div> v
-            {process.env.NEXT_PUBLIC_DAO_DAO_VERSION}{' '}
+            <Trans i18nKey="daodaoBetaV">
+              dao dao <div className="inline text-error">beta</div> v
+              {{ version: process.env.NEXT_PUBLIC_DAO_DAO_VERSION }}
+            </Trans>
           </h3>
           <ul className="text-sm list-none link-text">
             <li className="mb-2">
@@ -80,7 +83,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
                 rel="noreferrer"
                 target="_blank"
               >
-                {i18n.t('Documentation')}
+                {t('Documentation')}
               </a>
             </li>
             <li>
@@ -90,7 +93,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
                 rel="noreferrer"
                 target="_blank"
               >
-                {i18n.t('Feedback')}
+                {t('Feedback')}
               </a>
             </li>
           </ul>

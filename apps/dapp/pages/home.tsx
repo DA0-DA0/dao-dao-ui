@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { FC, useEffect, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import {
@@ -30,6 +30,7 @@ import { usePinnedDAOs } from '@/hooks'
 import { featuredDaos } from '@/util'
 
 const InnerHome: FC = () => {
+  const { t } = useTranslation()
   const {
     pinnedAddresses,
     isProposalIdMarkedDone,
@@ -177,7 +178,7 @@ const InnerHome: FC = () => {
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
               <div className="flex gap-1 items-center">
                 <DocumentTextIcon className="inline w-4" />
-                {i18n.t('openProposals')}
+                {t('openProposals')}
                 <TooltipIcon label="These are open proposals you have not yet voted on for your favorited DAOs shown below." />
               </div>
             </h2>
@@ -204,11 +205,11 @@ const InnerHome: FC = () => {
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
               <div className="flex gap-1 items-center">
                 <HeartIcon className="inline w-4" />
-                {i18n.t('favorited')}
+                {t('favorited')}
               </div>
               <Link href="/dao/create" passHref>
                 <Button size="sm">
-                  <PlusIcon className="w-4 h-4" /> {i18n.t('create')}
+                  <PlusIcon className="w-4 h-4" /> {t('create')}
                 </Button>
               </Link>
             </h2>
@@ -223,13 +224,13 @@ const InnerHome: FC = () => {
         <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
           <div className="flex gap-1 items-center">
             <SparklesIcon className="inline w-4 " />
-            {i18n.t('featured')}
+            {t('featured')}
           </div>
           {/* Show create button here if no pinned DAOs. */}
           {pinnedAddresses.length === 0 && (
             <Link href="/dao/create" passHref>
               <Button size="sm">
-                <PlusIcon className="w-4 h-4" /> {i18n.t('create')}
+                <PlusIcon className="w-4 h-4" /> {t('create')}
               </Button>
             </Link>
           )}
