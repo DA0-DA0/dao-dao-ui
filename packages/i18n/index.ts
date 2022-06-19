@@ -1,5 +1,5 @@
 // elsehow 13331
-import i18n from 'i18next'
+import i18n, { t } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { Trans, initReactI18next, useTranslation } from 'react-i18next'
 
@@ -30,4 +30,4 @@ i18n
   })
 
 export default i18n
-export { Trans, useTranslation }
+export { Trans, useTranslation, t }

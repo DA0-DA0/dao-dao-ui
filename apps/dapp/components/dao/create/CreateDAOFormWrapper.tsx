@@ -2,7 +2,7 @@ import { NextSeo } from 'next-seo'
 import { ComponentPropsWithoutRef, FC, ReactNode } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SubmitButton } from '@dao-dao/ui'
 
@@ -29,6 +29,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
   creating,
   ...props
 }) => {
+  const { t } = useTranslation()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
 
   const showBack = currentPageIndex > 0
@@ -37,11 +38,11 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
     <div>
       <NextSeo
         openGraph={{
-          title: i18n.t('Create a DAO'),
+          title: t('Create a DAO'),
           // TODO: different description?
-          description: i18n.t('Create a DAO'),
+          description: t('Create a DAO'),
         }}
-        title={i18n.t('Create a DAO')}
+        title={t('Create a DAO')}
       />
 
       <form
@@ -58,7 +59,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
 
         <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full">
           <div className="mb-8">
-            <h2 className="mb-4 header-text">{i18n.t('Create a DAO')}</h2>
+            <h2 className="mb-4 header-text">{t('Create a DAO')}</h2>
 
             <div className="mb-10 md:hidden">
               <CreateDAONav currentPageIndex={currentPageIndex} />
@@ -83,7 +84,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
               {showBack && (
                 <SubmitButton
                   disabled={creating}
-                  label={i18n.t(CreateDAOSubmitLabel.Back)}
+                  label={t(CreateDAOSubmitLabel.Back)}
                   variant="secondary"
                 />
               )}
@@ -91,12 +92,12 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
                 disabled={!mountedInBrowser || creating}
                 label={
                   currentPageIndex < createDAOFormPages.length - 2
-                    ? i18n.t(CreateDAOSubmitLabel.Continue)
+                    ? t(CreateDAOSubmitLabel.Continue)
                     : // Second to last links to the Review page.
                     currentPageIndex === createDAOFormPages.length - 2
-                    ? i18n.t(CreateDAOSubmitLabel.Review)
+                    ? t(CreateDAOSubmitLabel.Review)
                     : // Last page creates the DAO.
-                      i18n.t(CreateDAOSubmitLabel.CreateDAO)
+                      t(CreateDAOSubmitLabel.CreateDAO)
                 }
               />
             </div>

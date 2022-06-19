@@ -1,7 +1,7 @@
 import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Pencil } from '@dao-dao/icons'
 import {
   useGovernanceTokenInfo,
@@ -21,6 +21,7 @@ import {
 import { useDAOInfoContext } from './DAOPageWrapper'
 
 const DaoHorizontalInfoDisplayInternal: FC = () => {
+  const { t } = useTranslation()
   const { coreAddress, votingModuleType } = useDAOInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
@@ -56,7 +57,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
           governanceTokenInfo ? (
           <>
-            {i18n.t('Total supply amount', {
+            {t('Total supply amount', {
               amount: convertMicroDenomToDenomWithDecimals(
                 governanceTokenInfo.total_supply,
                 governanceTokenInfo.decimals
@@ -71,7 +72,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         stakedPercent !== undefined && (
           <HorizontalInfoSection>
             <LibraryIcon className="inline w-4" />
-            {i18n.t('Percent staked', {
+            {t('Percent staked', {
               percent: stakedPercent,
               tokenSymbol: governanceTokenInfo.symbol,
             })}
@@ -79,7 +80,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         )}
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {i18n.t('Proposals created', { proposalCount })}
+        {t('Proposals created', { proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
   )

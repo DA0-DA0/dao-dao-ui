@@ -1,7 +1,7 @@
 import Emoji from 'a11y-react-emoji'
 import { FC, useCallback } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   ImageSelector,
   InputErrorMessage,
@@ -25,6 +25,7 @@ import {
 import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOPage: FC = () => {
+  const { t } = useTranslation()
   const { register, watch, errors, watchedNewDAO, setValue, formWrapperProps } =
     useCreateDAOForm(0)
 
@@ -66,12 +67,12 @@ const CreateDAOPage: FC = () => {
               watch={watch}
             />
 
-            <p className="text-disabled">{i18n.t('Add an image')}</p>
+            <p className="text-disabled">{t('Add an image')}</p>
           </div>
 
           <div className="flex flex-col flex-1 gap-2">
             <div className="space-y-1">
-              <InputLabel name={i18n.t('Name')} />
+              <InputLabel name={t('Name')} />
               <TextInput
                 error={errors.name}
                 label="name"
@@ -82,7 +83,7 @@ const CreateDAOPage: FC = () => {
             </div>
 
             <div className="space-y-1">
-              <InputLabel name={i18n.t('Description')} />
+              <InputLabel name={t('Description')} />
               <TextAreaInput
                 error={errors.description}
                 label="description"
@@ -94,25 +95,25 @@ const CreateDAOPage: FC = () => {
           </div>
         </div>
 
-        <p className="mt-6 mb-4 primary-text">{i18n.t('Choose a structure')}</p>
+        <p className="mt-6 mb-4 primary-text">{t('Choose a structure')}</p>
 
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure
-            description={i18n.t('Membership-based description')}
+            description={t('Membership-based description')}
             emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.Membership}
-            title={i18n.t('Membership-based')}
+            title={t('Membership-based')}
           />
 
           <CreateDAOStructure
-            description={i18n.t('Governance Token-based description')}
+            description={t('Governance Token-based description')}
             emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.GovernanceToken}
-            title={i18n.t('Governance Token-based')}
+            title={t('Governance Token-based')}
           />
         </div>
       </CreateDAOFormWrapper>

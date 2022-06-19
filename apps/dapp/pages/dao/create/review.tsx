@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Logo } from '@dao-dao/ui'
 
 import { NewDAOStructure } from '@/atoms'
@@ -19,6 +19,7 @@ import {
 import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOReviewPage: FC = () => {
+  const { t } = useTranslation()
   const {
     watchedNewDAO,
     creating,
@@ -67,21 +68,19 @@ const CreateDAOReviewPage: FC = () => {
 
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">{i18n.t('Name')}</p>
+                <p className="font-mono caption-text">{t('Name')}</p>
                 <p className="text-xl">{watchedNewDAO.name}</p>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">
-                  {i18n.t('Description')}
-                </p>
+                <p className="font-mono caption-text">{t('Description')}</p>
                 <p
                   className={clsx('secondary-text', {
                     'text-base': watchedNewDAO.description,
                     'text-sm italic': !watchedNewDAO.description,
                   })}
                 >
-                  {watchedNewDAO.description || i18n.t('None')}
+                  {watchedNewDAO.description || t('None')}
                 </p>
               </div>
             </div>
