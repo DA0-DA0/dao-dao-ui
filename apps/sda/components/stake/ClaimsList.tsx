@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 
+import { useTranslation } from '@dao-dao/i18n'
 import {
   useGovernanceTokenInfo,
   useStakingInfo,
@@ -17,6 +18,7 @@ interface ClaimsListProps {
 export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   showClaim,
 }) => {
+  const { t } = useTranslation()
   const { connected } = useWallet()
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const {
@@ -45,12 +47,12 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
     <>
       <div className="flex flex-row justify-between items-center">
         <p className="text-lg title-text">
-          Unstaking {governanceTokenInfo.name} tokens
+          {t('unstakingNamedTokens', { name: governanceTokenInfo.name })}
         </p>
 
         {!!sumClaimsAvailable && (
           <Button disabled={!connected} onClick={showClaim} variant="secondary">
-            Claim
+            {t('claim')}
           </Button>
         )}
       </div>
@@ -69,9 +71,9 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
           ))}
         </div>
       ) : connected ? (
-        <p>You are not waiting for any tokens to unstake.</p>
+        <p>{t('noTokensUnstaking')}</p>
       ) : (
-        <p>Connect your wallet to view unstaking tokens.</p>
+        <p>{t('connectWalletToViewUnstaking')}</p>
       )}
     </>
   )

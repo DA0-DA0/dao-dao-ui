@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 
+import { Trans, useTranslation } from '@dao-dao/i18n'
 import {
   useGovernanceTokenInfo,
   useStakingInfo,
@@ -19,6 +20,7 @@ interface CardProps {
 export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
+  const { t } = useTranslation()
   const { connected } = useWallet()
   const {
     governanceTokenInfo,
@@ -67,7 +69,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
           onClick={setShowStakingMode}
           variant="secondary"
         >
-          Manage
+          {t('manage')}
         </Button>
       </div>
     </>
@@ -77,6 +79,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
 export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
+  const { t } = useTranslation()
   const { connected } = useWallet()
   const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
@@ -118,10 +121,14 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         </div>
 
         <p className="text-base text-secondary">
-          {votingPower.toLocaleString(undefined, {
-            maximumSignificantDigits: 4,
-          })}
-          % <span className="text-xs text-tertiary">of all voting power</span>
+          <Trans i18nKey="percentOfAllVotingPower">
+            {{
+              percent: votingPower.toLocaleString(undefined, {
+                maximumSignificantDigits: 4,
+              }),
+            }}
+            % <span className="text-xs text-tertiary">of all voting power</span>
+          </Trans>
         </p>
       </div>
 
@@ -142,7 +149,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
           onClick={setShowStakingMode}
           variant="secondary"
         >
-          Manage
+          {t('manage')}
         </Button>
       </div>
     </>

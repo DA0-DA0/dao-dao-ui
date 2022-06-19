@@ -13,6 +13,7 @@ import {
 } from 'react'
 
 import { ConnectWalletButton } from '@dao-dao/common'
+import { useTranslation } from '@dao-dao/i18n'
 import { Airdrop, Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
@@ -278,6 +279,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
   items,
   visible,
 }) => {
+  const { t } = useTranslation()
   const { connected, name: walletName, nativeBalance, disconnect } = useWallet()
 
   const walletBalance =
@@ -295,7 +297,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
       >
         {visible ? (
           <>
-            <span>Close</span>
+            <span>{t('close')}</span>
             <XIcon height="1.1rem" width="1.1rem" />
           </>
         ) : (

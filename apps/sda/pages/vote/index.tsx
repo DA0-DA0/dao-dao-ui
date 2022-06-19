@@ -6,6 +6,7 @@ import { GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FunctionComponent } from 'react'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
 import { CI } from '@dao-dao/utils'
 
@@ -29,6 +30,7 @@ interface InnerVoteProps {
 }
 
 const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
+  const { t } = useTranslation()
   const router = useRouter()
 
   return (
@@ -40,7 +42,7 @@ const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
       </VoteHero>
 
       <div className="flex flex-row justify-between items-center">
-        <h3 className="title-text">Proposals</h3>
+        <h3 className="title-text">{t('proposals')}</h3>
 
         <Button
           className="shrink-0"
@@ -48,7 +50,7 @@ const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
           size="sm"
           type="button"
         >
-          New proposal <PlusIcon className="w-[10px]" />
+          {t('newProposal')} <PlusIcon className="w-[10px]" />
         </Button>
       </div>
 
