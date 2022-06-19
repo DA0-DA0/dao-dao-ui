@@ -15,7 +15,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { ContractCard, LoadingContractCard } from '../ContractCard'
+import { ContractCard, LoadingContractCard } from './ContractCard'
 import { usePinnedDAOs } from '@/hooks'
 import { addToken } from '@/util'
 

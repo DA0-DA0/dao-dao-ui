@@ -51,7 +51,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the DAO treasury (${humanReadableAmount} ${nativeTokenLabel(
+        `Can't spend more tokens than are in the treasury (${humanReadableAmount} ${nativeTokenLabel(
           id
         )}).`
       )
@@ -59,7 +59,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
     // If there are no native tokens in the treasury the native balances
     // query will return an empty list.
     if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the DAO treasury (0 ${convertDenomToHumanReadableDenom(
+      return `Can't spend more tokens than are in the treasury (0 ${convertDenomToHumanReadableDenom(
         NATIVE_DENOM
       )}).`
     }

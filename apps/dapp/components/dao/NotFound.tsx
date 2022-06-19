@@ -9,9 +9,9 @@ import { useDAOInfoContext } from '../DAOPageWrapper'
 export const DAONotFound = () => (
   <ErrorPage title={i18n.t('error.DAONotFound')}>
     <p>
-      We couldn{"'"}t find a DAO with that address. See all DAOs on the{' '}
-      <Link href="/dao/explore">
-        <a className="underline link-text">explore page</a>
+      We couldn{"'"}t find a DAO with that address. Search DAOs on the{' '}
+      <Link href="/home">
+        <a className="underline link-text">home page</a>
       </Link>
       .
     </p>

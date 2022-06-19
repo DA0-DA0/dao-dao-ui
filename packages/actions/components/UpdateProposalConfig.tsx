@@ -51,7 +51,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
     >
       <p className="mb-3 max-w-prose secondary-text">
         This will update the voting configuration for this DAO. A bad
-        configuration can lock this DAO or create unexpected voting outcomes.
+        configuration can lock the DAO or create unexpected voting outcomes.
         Take care. If you have questions, please feel free to ask in the{' '}
         <a
           className="underline"

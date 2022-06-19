@@ -71,7 +71,7 @@ const CreateDAOPage: FC = () => {
 
           <div className="flex flex-col flex-1 gap-2">
             <div className="space-y-1">
-              <InputLabel name={i18n.t('DAO Name')} />
+              <InputLabel name={i18n.t('Name')} />
               <TextInput
                 error={errors.name}
                 label="name"
@@ -82,7 +82,7 @@ const CreateDAOPage: FC = () => {
             </div>
 
             <div className="space-y-1">
-              <InputLabel name={i18n.t('DAO Description')} />
+              <InputLabel name={i18n.t('Description')} />
               <TextAreaInput
                 error={errors.description}
                 label="description"
@@ -98,21 +98,21 @@ const CreateDAOPage: FC = () => {
 
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure
-            description={i18n.t('Membership-based DAO description')}
+            description={i18n.t('Membership-based description')}
             emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.Membership}
-            title={i18n.t('Membership-based DAO')}
+            title={i18n.t('Membership-based')}
           />
 
           <CreateDAOStructure
-            description={i18n.t('Governance Token-based DAO description')}
+            description={i18n.t('Governance Token-based description')}
             emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.GovernanceToken}
-            title={i18n.t('Governance Token-based DAO')}
+            title={i18n.t('Governance Token-based')}
           />
         </div>
       </CreateDAOFormWrapper>
