@@ -1,13 +1,13 @@
 import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 
 import { Header } from '@/components'
 
 const Custom500: NextPage = () => {
-  const router = useRouter()
+  const { t } = useTranslation()
 
   return (
     <>
@@ -19,14 +19,12 @@ const Custom500: NextPage = () => {
        * route.
        */}
       <SuspenseLoader fallback={null}>
-        <ErrorPage title="500 - Internal Server Error">
+        <ErrorPage title={t('500Title')}>
           <p>
-            An internal server error occurred while trying to access{' '}
-            <code>{router.asPath}</code>. Consider returning{' '}
+            {t('internalServerError')}{' '}
             <Link href="/">
-              <a className="underline link-text">home</a>
+              <a className="link">{t('considerReturningHome')}</a>
             </Link>
-            .
           </p>
         </ErrorPage>
       </SuspenseLoader>
