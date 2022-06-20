@@ -142,7 +142,7 @@ const CreateDAOVotingPage: FC = () => {
         {governanceTokenEnabled && (
           <div className="space-y-3">
             <RadioInput
-              label="governanceTokenOptions.type"
+              fieldName="governanceTokenOptions.type"
               options={[
                 {
                   label: t('Create a token'),
@@ -173,7 +173,7 @@ const CreateDAOVotingPage: FC = () => {
                               errors.governanceTokenOptions?.newInfo
                                 ?.initialTreasuryBalance
                             }
-                            label="governanceTokenOptions.newInfo.initialTreasuryBalance"
+                            fieldName="governanceTokenOptions.newInfo.initialTreasuryBalance"
                             onPlusMinus={[
                               () =>
                                 setValue(
@@ -215,7 +215,7 @@ const CreateDAOVotingPage: FC = () => {
                             )}
                             $
                             {watchedNewDAO.governanceTokenOptions.newInfo
-                              .symbol || 'Token'}
+                              .symbol || t('token')}
                           </div>
                         </div>
 
@@ -253,7 +253,7 @@ const CreateDAOVotingPage: FC = () => {
                           error={
                             errors.governanceTokenOptions?.newInfo?.imageUrl
                           }
-                          label="governanceTokenOptions.newInfo.imageUrl"
+                          fieldName="governanceTokenOptions.newInfo.imageUrl"
                           register={register}
                           size={36}
                           watch={watch}
@@ -270,7 +270,7 @@ const CreateDAOVotingPage: FC = () => {
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.symbol}
-                          label="governanceTokenOptions.newInfo.symbol"
+                          fieldName="governanceTokenOptions.newInfo.symbol"
                           placeholder={t('Ticker symbol placeholder')}
                           register={register}
                           validation={[validateRequired, validateTokenSymbol]}
@@ -287,7 +287,7 @@ const CreateDAOVotingPage: FC = () => {
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.name}
-                          label="governanceTokenOptions.newInfo.name"
+                          fieldName="governanceTokenOptions.newInfo.name"
                           placeholder={t('Governance token placeholder')}
                           register={register}
                           validation={[validateRequired]}
@@ -308,7 +308,7 @@ const CreateDAOVotingPage: FC = () => {
                       errors.governanceTokenOptions
                         ?.existingGovernanceTokenAddress
                     }
-                    label="governanceTokenOptions.existingGovernanceTokenAddress"
+                    fieldName="governanceTokenOptions.existingGovernanceTokenAddress"
                     register={register}
                     validation={[validateContractAddress, validateRequired]}
                   />
@@ -394,7 +394,7 @@ const CreateDAOVotingPage: FC = () => {
 
         <div className="flex flex-row gap-4 items-center">
           <FormSwitch
-            label="_changeThresholdQuorumEnabled"
+            fieldName="_changeThresholdQuorumEnabled"
             onToggle={(newValue) => {
               if (newValue) {
                 setShowThresholdQuorumWarning(true)

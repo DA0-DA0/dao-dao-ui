@@ -43,7 +43,7 @@ const eslintConfig = {
       rules: {
         '@typescript-eslint/no-unused-vars': ['off'],
         'i18next/no-literal-string': [
-          'error',
+          'warn',
           {
             mode: 'jsx-only',
             'jsx-attributes': {

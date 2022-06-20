@@ -209,7 +209,7 @@ export const CreateProposalForm = ({
             <InputLabel name={t('Proposal title')} />
             <TextInput
               error={errors.title}
-              label="title"
+              fieldName="title"
               register={register}
               validation={[validateRequired]}
             />
@@ -219,7 +219,7 @@ export const CreateProposalForm = ({
             <InputLabel name={t('Proposal description')} />
             <TextAreaInput
               error={errors.description}
-              label="description"
+              fieldName="description"
               register={register}
               validation={[validateRequired]}
             />
@@ -239,7 +239,7 @@ export const CreateProposalForm = ({
                     allActionsWithData={proposalActionData}
                     coreAddress={coreAddress}
                     errors={errors.actionData?.[index]?.data || {}}
-                    getLabel={(fieldName) =>
+                    getFieldName={(fieldName) =>
                       `actionData.${index}.data.${fieldName}`
                     }
                     index={index}

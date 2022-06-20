@@ -9,7 +9,7 @@ import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 import { ActionCard, ActionComponent } from '..'
 
 export const CustomComponent: ActionComponent = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
@@ -25,7 +25,7 @@ export const CustomComponent: ActionComponent = ({
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        label={getLabel('message')}
+        fieldName={getFieldName('message')}
         readOnly={readOnly}
         validation={[
           (v: string) => {

@@ -2,7 +2,6 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
-import i18n from '@dao-dao/i18n'
 import {
   FormSwitch,
   ImageSelector,
@@ -17,7 +16,7 @@ import { validateRequired, validateUrl } from '@dao-dao/utils'
 import { ActionCard, ActionComponent } from '..'
 
 export const UpdateInfoComponent: ActionComponent = ({
-  getLabel,
+  getFieldName,
   errors,
   onRemove,
   readOnly,
@@ -36,7 +35,7 @@ export const UpdateInfoComponent: ActionComponent = ({
             center={false}
             disabled={readOnly}
             error={errors?.name}
-            label={getLabel('image_url')}
+            fieldName={getFieldName('image_url')}
             register={register}
             validation={[validateUrl]}
             watch={watch}
@@ -49,8 +48,8 @@ export const UpdateInfoComponent: ActionComponent = ({
             <TextInput
               disabled={readOnly}
               error={errors?.name}
-              label={getLabel('name')}
-              placeholder={i18n.t('Name')}
+              fieldName={getFieldName('name')}
+              placeholder={t('Name')}
               register={register}
               validation={[validateRequired]}
             />
@@ -60,8 +59,8 @@ export const UpdateInfoComponent: ActionComponent = ({
             <TextAreaInput
               disabled={readOnly}
               error={errors?.description}
-              label={getLabel('description')}
-              placeholder={i18n.t('Description')}
+              fieldName={getFieldName('description')}
+              placeholder={t('Description')}
               register={register}
               validation={[validateRequired]}
             />
@@ -78,7 +77,7 @@ export const UpdateInfoComponent: ActionComponent = ({
               </div>
               <FormSwitch
                 disabled={readOnly}
-                label={getLabel('automatically_add_cw20s')}
+                fieldName={getFieldName('automatically_add_cw20s')}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}
@@ -94,7 +93,7 @@ export const UpdateInfoComponent: ActionComponent = ({
               </div>
               <FormSwitch
                 disabled={readOnly}
-                label={getLabel('automatically_add_cw721s')}
+                fieldName={getFieldName('automatically_add_cw721s')}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}

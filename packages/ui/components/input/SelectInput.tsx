@@ -10,7 +10,7 @@ import {
 
 interface SelectInputProps<FieldValues, FieldName extends Path<FieldValues>>
   extends Omit<ComponentProps<'select'>, 'required'> {
-  label?: FieldName
+  fieldName?: FieldName
   register?: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
@@ -18,7 +18,7 @@ interface SelectInputProps<FieldValues, FieldName extends Path<FieldValues>>
 }
 
 export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -39,8 +39,8 @@ export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
       )}
       {...props}
       {...(register &&
-        label &&
-        register(label, { required: required && 'Required', validate }))}
+        fieldName &&
+        register(fieldName, { required: required && 'Required', validate }))}
     >
       {children}
     </select>

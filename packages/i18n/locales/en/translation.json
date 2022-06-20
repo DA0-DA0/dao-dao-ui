@@ -277,6 +277,7 @@
   "testnet": "Testnet",
   "tieClarification": "Tie clarification",
   "timeLeft": "Time left",
+  "token": "Token",
   "tokenInfo": "Token info",
   "tokensStaked": "{{amount}} ${{tokenSymbol}} staked",
   "totalStaked": "Total staked",

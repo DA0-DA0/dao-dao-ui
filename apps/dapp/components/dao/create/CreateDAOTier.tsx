@@ -90,7 +90,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               <TextInput
                 className="grow"
                 error={errors.tiers?.[tierIndex]?.name}
-                label={`tiers.${tierIndex}.name`}
+                fieldName={`tiers.${tierIndex}.name`}
                 placeholder={t('Tier name') + '...'}
                 register={register}
                 validation={[validateRequired]}
@@ -113,7 +113,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
             <div>
               <NumberInput
                 error={errors.tiers?.[tierIndex]?.weight}
-                label={`tiers.${tierIndex}.weight`}
+                fieldName={`tiers.${tierIndex}.weight`}
                 onPlusMinus={[
                   () =>
                     setValue(
@@ -216,7 +216,7 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
           <AddressInput
             containerClassName="grow"
             error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
-            label={`tiers.${tierIndex}.members.${memberIndex}.address`}
+            fieldName={`tiers.${tierIndex}.members.${memberIndex}.address`}
             placeholder={t('Member address placeholder')}
             register={register}
             validation={[validateAddress, validateRequired]}

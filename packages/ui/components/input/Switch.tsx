@@ -63,7 +63,7 @@ interface FormSwitchProps<
   FieldValues,
   BooleanFieldName extends BooleanFieldNames<FieldValues>
 > extends Omit<SwitchProps, 'on' | 'onClick'> {
-  label: BooleanFieldName
+  fieldName: BooleanFieldName
   watch: UseFormWatch<FieldValues>
   setValue: UseFormSetValue<FieldValues>
   onToggle?: (newValue: boolean) => void
@@ -74,17 +74,17 @@ export const FormSwitch = <
   FieldValues,
   BooleanFieldName extends BooleanFieldNames<FieldValues>
 >({
-  label,
+  fieldName,
   watch,
   setValue,
   onToggle,
   ...props
 }: FormSwitchProps<FieldValues, BooleanFieldName>) => (
   <Switch
-    on={!!watch(label)}
+    on={!!watch(fieldName)}
     onClick={() => {
-      const newValue = !watch(label) as any
-      setValue(label, newValue)
+      const newValue = !watch(fieldName) as any
+      setValue(fieldName, newValue)
       onToggle?.(newValue)
     }}
     {...props}

@@ -34,11 +34,11 @@ const useDefaults: UseDefaults<RemoveTokenData> = () => ({
 })
 
 const InnerComponent: ActionComponent = (props) => {
-  const { getLabel, errors } = props
+  const { getFieldName, errors } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
-  const tokenAddress = watch(getLabel('address'))
+  const tokenAddress = watch(getFieldName('address'))
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress
       ? Cw20BaseSelectors.tokenInfoSelector({
@@ -79,13 +79,13 @@ const InnerComponent: ActionComponent = (props) => {
   useEffect(() => {
     if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
       if (errors?.address) {
-        clearErrors(getLabel('address'))
+        clearErrors(getFieldName('address'))
       }
       return
     }
 
     if (!errors?.address) {
-      setError(getLabel('address'), {
+      setError(getFieldName('address'), {
         type: 'manual',
         message:
           tokenInfoLoadable.state === 'hasError'
@@ -100,7 +100,7 @@ const InnerComponent: ActionComponent = (props) => {
     errors?.address,
     setError,
     clearErrors,
-    getLabel,
+    getFieldName,
     existingTokens.length,
   ])
 
