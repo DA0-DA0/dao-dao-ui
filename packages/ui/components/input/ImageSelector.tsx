@@ -61,7 +61,7 @@ export const ImageSelectorModal = <
       onClose={onClose}
     >
       <div
-        aria-label="DAO's Custom Logo"
+        aria-label={t('daosLogo')}
         className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
         role="img"
         style={{ backgroundImage: `url(${imageUrl})` }}

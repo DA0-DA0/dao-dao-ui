@@ -283,5 +283,13 @@
   "you": "You",
   "yourDAOs": "Your DAOs",
   "yourTokens": "Your Tokens",
-  "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
+  "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked.",
+  "daosLogo": "DAO's Logo",
+  "daodaoLogo": "DAO DAO Logo",
+  "party": "Party",
+  "rocketShip": "Rocket ship",
+  "hideFromPage": "Hide from this page.",
+  "tokenInfo": "Token info",
+  "ballotBox": "Ballot box",
+  "junoAddress": "Juno address"
 }

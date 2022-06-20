@@ -45,6 +45,20 @@ const eslintConfig = {
         'i18next/no-literal-string': [
           'error',
           {
+            mode: 'jsx-only',
+            'jsx-attributes': {
+              include: [
+                'label',
+                'placeholder',
+                'alt',
+                'title',
+                'aria-label',
+                'aria-placeholder',
+                'name',
+                'description',
+                'subtitle',
+              ],
+            },
             words: {
               exclude: [
                 // Defaults wrapped in whitespace.

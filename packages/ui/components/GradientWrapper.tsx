@@ -9,6 +9,7 @@ export interface GradientWrapperProps {
 export const GradientWrapper: FC<GradientWrapperProps> = ({ children }) => (
   <div className="flex overflow-x-hidden relative flex-col items-center">
     {typeof CSS.supports !== 'undefined' &&
+      // eslint-disable-next-line i18next/no-literal-string
       CSS.supports('backdrop-filter', 'blur(5px)') && (
         <div
           className="absolute top-0 left-1/2 -z-20 mt-[60px] -ml-[250px] text-[#06090B]"
