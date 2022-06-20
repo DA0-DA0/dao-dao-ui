@@ -1,6 +1,7 @@
 export * from './FeaturedDaos'
 export * from './dao'
 export * from './proposals'
+export * from './splash'
 
 export * from './ClaimsPendingList'
 export * from './BetaWarning'
