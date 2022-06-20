@@ -22,8 +22,8 @@ import {
   VoteHero,
   VoteHeroContent,
   VoteHeroContentLoader,
-  makeGetStaticProps,
 } from '@/components'
+import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 
 interface InnerVoteProps {
   missionMarkdown: string
