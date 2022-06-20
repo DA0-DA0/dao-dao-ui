@@ -49,7 +49,8 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
     })}
     {!nativeTokens.length && (
       <BalanceListItem>
-        <BalanceIcon />0 $
+        {/* eslint-disable-next-line i18next/no-literal-string */}
+        <BalanceIcon /> 0 $
         {convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()}
       </BalanceListItem>
     )}

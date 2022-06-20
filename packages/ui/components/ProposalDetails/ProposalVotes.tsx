@@ -2,6 +2,7 @@ import { CheckIcon, DownloadIcon, XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Abstain } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
@@ -24,29 +25,33 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
   canLoadMore,
   loadingMore,
   onLoadMore,
-}) => (
-  <>
-    <hr className="border-default" />
-    <h3 className="mt-8 mb-5 link-text">All votes</h3>
-    <div className="flex flex-col mb-5 divide-y divide-inactive">
-      {votes.map((vote, index) => (
-        <VoteRow {...vote} key={index} />
-      ))}
-    </div>
-    {canLoadMore && (
-      <div className="-mt-3 mb-5">
-        <Button
-          loading={loadingMore}
-          onClick={onLoadMore}
-          size="sm"
-          variant="secondary"
-        >
-          Load more <DownloadIcon className="w-4" />
-        </Button>
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <hr className="border-default" />
+      <h3 className="mt-8 mb-5 link-text">{t('allVotes')}</h3>
+      <div className="flex flex-col mb-5 divide-y divide-inactive">
+        {votes.map((vote, index) => (
+          <VoteRow {...vote} key={index} />
+        ))}
       </div>
-    )}
-  </>
-)
+      {canLoadMore && (
+        <div className="-mt-3 mb-5">
+          <Button
+            loading={loadingMore}
+            onClick={onLoadMore}
+            size="sm"
+            variant="secondary"
+          >
+            {t('loadMore')} <DownloadIcon className="w-4" />
+          </Button>
+        </div>
+      )}
+    </>
+  )
+}
 
 export const VoteRow: FC<VoteInfo> = ({ vote, voter, weight }) => {
   const [copied, setCopied] = useState(false)
@@ -84,17 +89,20 @@ const zeroPad = (number: string, length: number) =>
     ? number
     : new Array(length - number.length + 1).join(' ') + number
 
-const VoteDisplay: FC<{ vote: Vote }> = ({ vote }) =>
-  vote === Vote.Yes ? (
+const VoteDisplay: FC<{ vote: Vote }> = ({ vote }) => {
+  const { t } = useTranslation()
+
+  return vote === Vote.Yes ? (
     <p className="flex gap-1 items-center font-mono text-sm text-valid">
-      <CheckIcon className="inline w-4" /> Yes
+      <CheckIcon className="inline w-4" /> {t('yes')}
     </p>
   ) : vote === Vote.No ? (
     <p className="flex gap-1 items-center font-mono text-sm text-error">
-      <XIcon className="inline w-4" /> No
+      <XIcon className="inline w-4" /> {t('no')}
     </p>
   ) : (
     <p className="flex gap-1 items-center font-mono text-sm text-secondary">
-      <Abstain fill="currentColor" /> Abstain
+      <Abstain fill="currentColor" /> {t('abstain')}
     </p>
   )
+}

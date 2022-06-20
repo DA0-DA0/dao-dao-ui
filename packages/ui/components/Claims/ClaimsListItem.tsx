@@ -1,7 +1,7 @@
 import { CheckIcon } from '@heroicons/react/outline'
 import { FC, useEffect, useState } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
@@ -46,6 +46,7 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   onClaimAvailable,
   iconURI,
 }) => {
+  const { t } = useTranslation()
   const available = claimAvailable(claim, blockHeight)
   const initialDurationRemaining = claimDurationRemaining(claim, blockHeight)
 
@@ -97,12 +98,12 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
 
       {available ? (
         <p className="font-mono text-sm text-secondary">
-          Available
+          {t('available')}
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
         <p className="text-caption">
-          {i18n.t('Remaining (time)', { time: durationRemainingForHumans })}
+          {t('remainingTime', { time: durationRemainingForHumans })}
         </p>
       )}
     </div>

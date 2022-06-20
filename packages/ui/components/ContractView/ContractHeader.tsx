@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 import { Logo } from '../Logo'
@@ -42,20 +42,22 @@ export const ContractHeader: FC<ContractHeaderProps> = ({
   </div>
 )
 
-export const ContractHeaderLoader: FC<{}> = () => (
-  <div className="flex flex-col items-center mt-2">
-    <div className="animate-spin-medium">
-      <Logo alt="DAO DAO logo" height={85} width={85} />
-    </div>
+export const ContractHeaderLoader: FC = () => {
+  const { t } = useTranslation()
 
-    <div className="flex flex-col items-center">
-      <h1 className="inline invisible mt-5 header-text">
-        {i18n.t('DAO Name')}
-      </h1>
-      <EstablishedDateLoader />
+  return (
+    <div className="flex flex-col items-center mt-2">
+      <div className="animate-spin-medium">
+        <Logo alt="DAO DAO logo" height={85} width={85} />
+      </div>
+
+      <div className="flex flex-col items-center">
+        <h1 className="inline invisible mt-5 header-text">{t('Name')}</h1>
+        <EstablishedDateLoader />
+      </div>
+      <div className="mt-2 mb-4">
+        <p className="invisible">{t('Description')}</p>
+      </div>
     </div>
-    <div className="mt-2 mb-4">
-      <p className="invisible">{i18n.t('DAO Description')}</p>
-    </div>
-  </div>
-)
+  )
+}

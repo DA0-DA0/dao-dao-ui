@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { t, useTranslation } from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -35,11 +35,11 @@ export const stakingModeString = (mode: StakingMode) => {
 export const stakingModeTitle = (mode: StakingMode) => {
   switch (mode) {
     case StakingMode.Stake:
-      return i18n.t('Stake Tokens')
+      return t('Stake Tokens')
     case StakingMode.Unstake:
-      return i18n.t('Unstake Tokens')
+      return t('Unstake Tokens')
     case StakingMode.Claim:
-      return i18n.t('Claim Tokens')
+      return t('Claim Tokens')
     default:
       return 'internal error'
   }
@@ -96,19 +96,18 @@ export const StakingModal: FC<StakingModalProps> = ({
   error,
   onAction,
 }) => {
+  const { t } = useTranslation()
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
-      return claimableTokens > 0
-        ? undefined
-        : i18n.t('error.cannotTxZeroTokens')
+      return claimableTokens > 0 ? undefined : t('error.cannotTxZeroTokens')
     }
     if (amount <= 0) {
-      return i18n.t('error.cannotTxZeroTokens')
+      return t('error.cannotTxZeroTokens')
     }
     if (amount > maxTx) {
-      return i18n.t('error.cannotStakeMoreThanYouHave')
+      return t('error.cannotStakeMoreThanYouHave')
     }
   }
 
@@ -185,62 +184,66 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   tokenDecimals,
   unstakingDuration,
   proposalDeposit,
-}) => (
-  <>
-    <div className="flex flex-col mt-5">
-      <h2 className="mb-3 primary-text">{i18n.t('Choose token amount')}</h2>
-      <AmountSelector amount={amount} max={max} setAmount={setAmount} />
-      {amount > max && (
-        <span className="mt-1 ml-1 text-error caption-text">
-          {i18n.t('error.cannotStakeMoreThanYouHave')}
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <div className="flex flex-col mt-5">
+        <h2 className="mb-3 primary-text">{t('Choose token amount')}</h2>
+        <AmountSelector amount={amount} max={max} setAmount={setAmount} />
+        {amount > max && (
+          <span className="mt-1 ml-1 text-error caption-text">
+            {t('error.cannotStakeMoreThanYouHave')}
+          </span>
+        )}
+        <span className="mt-4 font-mono caption-text">
+          {t('Your balance') + ': '}
+          {max.toLocaleString(undefined, {
+            maximumFractionDigits: tokenDecimals,
+          })}
         </span>
-      )}
-      <span className="mt-4 font-mono caption-text">
-        {i18n.t('Your balance') + ': '}
-        {max.toLocaleString(undefined, {
-          maximumFractionDigits: tokenDecimals,
-        })}
-      </span>
-      <div className="mt-4">
-        <PercentSelector
-          amount={amount}
-          max={max}
-          setAmount={setAmount}
-          tokenDecimals={tokenDecimals}
-        />
-        {!!proposalDeposit && max > proposalDeposit && (
-          <PercentButton
-            absoluteOffset={-proposalDeposit}
+        <div className="mt-4">
+          <PercentSelector
             amount={amount}
-            className="mt-1"
-            label={i18n.t('Stake all but proposal deposit', {
-              proposalDeposit: proposalDeposit.toLocaleString(undefined, {
-                maximumFractionDigits: tokenDecimals,
-              }),
-              tokenSymbol,
-            })}
             max={max}
-            percent={1}
             setAmount={setAmount}
             tokenDecimals={tokenDecimals}
           />
-        )}
+          {!!proposalDeposit && max > proposalDeposit && (
+            <PercentButton
+              absoluteOffset={-proposalDeposit}
+              amount={amount}
+              className="mt-1"
+              label={t('Stake all but proposal deposit', {
+                proposalDeposit: proposalDeposit.toLocaleString(undefined, {
+                  maximumFractionDigits: tokenDecimals,
+                }),
+                tokenSymbol,
+              })}
+              max={max}
+              percent={1}
+              setAmount={setAmount}
+              tokenDecimals={tokenDecimals}
+            />
+          )}
+        </div>
       </div>
-    </div>
 
-    {mode === StakingMode.Unstake &&
-      unstakingDuration &&
-      durationIsNonZero(unstakingDuration) && (
-        <>
-          <hr className="mt-3" />
-          <UnstakingDurationDisplay
-            mode={mode}
-            unstakingDuration={unstakingDuration}
-          />
-        </>
-      )}
-  </>
-)
+      {mode === StakingMode.Unstake &&
+        unstakingDuration &&
+        durationIsNonZero(unstakingDuration) && (
+          <>
+            <hr className="mt-3" />
+            <UnstakingDurationDisplay
+              mode={mode}
+              unstakingDuration={unstakingDuration}
+            />
+          </>
+        )}
+    </>
+  )
+}
 
 interface ClaimModeBodyProps {
   amount: number
@@ -252,22 +255,24 @@ const ClaimModeBody: FC<ClaimModeBodyProps> = ({
   amount,
   tokenSymbol,
   tokenDecimals,
-}) => (
-  <div className="flex flex-col py-3 mt-3">
-    <h2 className="font-medium">
-      {convertMicroDenomToDenomWithDecimals(
-        amount,
-        tokenDecimals
-      ).toLocaleString(undefined, {
-        maximumFractionDigits: tokenDecimals,
-      })}{' '}
-      ${tokenSymbol} available
-    </h2>
-    <p className="mt-3 mb-3 text-sm">
-      Claim them to receive your unstaked tokens.
-    </p>
-  </div>
-)
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="flex flex-col py-3 mt-3">
+      <h2 className="font-medium">
+        {convertMicroDenomToDenomWithDecimals(
+          amount,
+          tokenDecimals
+        ).toLocaleString(undefined, {
+          maximumFractionDigits: tokenDecimals,
+        })}{' '}
+        ${tokenSymbol} {t('available')}
+      </h2>
+      <p className="mt-3 mb-3 text-sm">{t('claimToReceiveUnstaked')}</p>
+    </div>
+  )
+}
 
 interface UnstakingDurationDisplayProps {
   unstakingDuration: Duration
@@ -281,12 +286,12 @@ const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   <div className="mt-3 secondary-text">
     <h2 className="link-text">
       {mode == StakingMode.Unstake
-        ? i18n.t('You are about to unstake')
-        : i18n.t('Unstaking period') +
+        ? t('You are about to unstake')
+        : t('Unstaking period') +
           `: ${humanReadableDuration(unstakingDuration)}`}
     </h2>
     <p className="mt-3">
-      {i18n.t('Unstaking mechanics', {
+      {t('Unstaking mechanics', {
         humanReadableTime: humanReadableDuration(unstakingDuration),
       })}
     </p>

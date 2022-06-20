@@ -1,7 +1,13 @@
 // elsehow 13331
 import i18n, { t } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
-import { Trans, initReactI18next, useTranslation } from 'react-i18next'
+import {
+  Trans,
+  WithTranslationProps,
+  initReactI18next,
+  useTranslation,
+  withTranslation,
+} from 'react-i18next'
 
 import enSplash from './locales/en/splash.json'
 import enTranslation from './locales/en/translation.json'
@@ -30,4 +36,5 @@ i18n
   })
 
 export default i18n
-export { Trans, useTranslation, t }
+export { Trans, useTranslation, t, withTranslation }
+export type { WithTranslationProps }
