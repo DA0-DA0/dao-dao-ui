@@ -116,7 +116,8 @@ export const StakeHeader: FunctionComponent = () => {
               maximumFractionDigits: 2,
             }) +
             ' USDC'
-          : ' $ ??'}
+          : // eslint-disable-next-line i18next/no-literal-string
+            ' $ ??'}
       </p>
 
       <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">

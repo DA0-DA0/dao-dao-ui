@@ -100,7 +100,9 @@ const CreateDAOPage: FC = () => {
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure
             description={t('Membership-based description')}
-            emoji={<Emoji className="text-5xl" label="Handshake" symbol="🤝" />}
+            emoji={
+              <Emoji className="text-5xl" label={t('handshake')} symbol="🤝" />
+            }
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.Membership}
@@ -109,7 +111,9 @@ const CreateDAOPage: FC = () => {
 
           <CreateDAOStructure
             description={t('Governance Token-based description')}
-            emoji={<Emoji className="text-5xl" label="Yin yang" symbol="☯️" />}
+            emoji={
+              <Emoji className="text-5xl" label={t('yinYang')} symbol="☯️" />
+            }
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.GovernanceToken}
