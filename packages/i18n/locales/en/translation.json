@@ -152,8 +152,9 @@
   "allAbstain": "All abstain",
   "allAbstainClarification": "When all abstain, a proposal will fail",
   "allVotes": "All votes",
-  "aprReward": "APR reward",
   "apr": "APR",
+  "aprReward": "APR reward",
+  "autoCompoundStakingRewards": "This will automatically compound as staking rewards are distributed.",
   "available": "Available",
   "balanceUnstaked": "Balance (unstaked {{name}})",
   "ballotBox": "Ballot box",
@@ -223,6 +224,7 @@
   "learnMore": "Learn more",
   "loadMore": "Load more",
   "loading": "Loading...",
+  "logo": "Logo",
   "manage": "Manage",
   "members_one": "Member",
   "members_other": "Members",
@@ -284,7 +286,6 @@
   "unstakedTokens": "unstaked ${{tokenSymbol}}",
   "unstakingNamedTokens": "Unstaking {{name}} tokens",
   "vote": "Vote",
-  "autoCompoundStakingRewards": "This will automatically compound as staking rewards are distributed.",
   "voteStatus": "Vote status",
   "votedOnProposal": "You voted {{vote}} on this proposal.",
   "votingPowerStakedAndRewards": "Voting power (staked {{name}} + rewards)",
@@ -294,6 +295,5 @@
   "you": "You",
   "yourDAOs": "Your DAOs",
   "yourTokens": "Your Tokens",
-  "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked.",
-  "logo": "Logo"
+  "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
 }
