@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { FC } from 'react'
+import { GetStaticProps, NextPage } from 'next'
 
 import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Logo } from '@dao-dao/ui'
 
 import { NewDAOStructure } from '@/atoms'
@@ -18,7 +19,7 @@ import {
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
-const CreateDAOReviewPage: FC = () => {
+const CreateDAOReviewPage: NextPage = () => {
   const { t } = useTranslation()
   const {
     watchedNewDAO,
@@ -119,3 +120,9 @@ const CreateDAOReviewPage: FC = () => {
 }
 
 export default CreateDAOReviewPage
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

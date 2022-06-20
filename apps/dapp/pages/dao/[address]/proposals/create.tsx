@@ -26,9 +26,9 @@ import {
   PageLoader,
   ProposalsInfo,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
 const InnerProposalCreate = () => {
   const { t } = useTranslation()

@@ -39,10 +39,10 @@ import {
   ProposalNotFound,
   ProposalVotes,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
 const InnerProposal: FC = () => {
   const { t } = useTranslation()

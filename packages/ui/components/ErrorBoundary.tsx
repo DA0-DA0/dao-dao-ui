@@ -1,6 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 
-import i18n, { withTranslation } from '@dao-dao/i18n'
+import { i18n, withTranslation } from '@dao-dao/i18n'
 import { ErrorPage } from '@dao-dao/ui'
 
 interface ErrorBoundaryProps {

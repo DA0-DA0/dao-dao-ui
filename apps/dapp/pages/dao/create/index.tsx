@@ -1,7 +1,9 @@
 import Emoji from 'a11y-react-emoji'
-import { FC, useCallback } from 'react'
+import { GetStaticProps, NextPage } from 'next'
+import { useCallback } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ImageSelector,
   InputErrorMessage,
@@ -24,7 +26,7 @@ import {
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
-const CreateDAOPage: FC = () => {
+const CreateDAOPage: NextPage = () => {
   const { t } = useTranslation()
   const { register, watch, errors, watchedNewDAO, setValue, formWrapperProps } =
     useCreateDAOForm(0)
@@ -126,3 +128,9 @@ const CreateDAOPage: FC = () => {
 }
 
 export default CreateDAOPage
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

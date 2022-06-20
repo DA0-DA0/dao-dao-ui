@@ -30,10 +30,10 @@ import {
   DaoTreasury,
   PageLoader,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 import { addToken } from '@/util'
 
 enum MobileMenuTabSelection {

@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
+import { appWithTranslation, useTranslation } from '@dao-dao/i18n'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
@@ -74,4 +74,4 @@ const dApp: FC<AppProps> = (props) => (
   </RecoilRoot>
 )
 
-export default dApp
+export default appWithTranslation(dApp)
