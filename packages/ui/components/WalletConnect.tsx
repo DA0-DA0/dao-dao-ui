@@ -2,7 +2,7 @@ import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Copy, Wallet } from '@dao-dao/icons'
 
 import { Button } from './Button'
@@ -30,8 +30,10 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   onDisconnect,
   className,
   ...buttonProps
-}) =>
-  connected ? (
+}) => {
+  const { t } = useTranslation()
+
+  return connected ? (
     <div
       className={clsx(
         'group relative py-2 px-4 bg-primary rounded-lg hover:outline-brand hover:outline',
@@ -61,18 +63,21 @@ export const WalletConnect: FC<WalletConnectProps> = ({
       {...buttonProps}
     >
       <Wallet fill="currentColor" height="20px" width="20px" />
-      <p className="text-light link-text">{i18n.t('Connect wallet')}</p>
+      <p className="text-light link-text">{t('Connect wallet')}</p>
     </Button>
   )
+}
 
 interface CopyButtonProps {
   text: string
 }
 
 const CopyButton: FC<CopyButtonProps> = ({ text }) => {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
+
   return (
-    <Tooltip label="Copy wallet address">
+    <Tooltip label={t('copyWalletAddress')}>
       <button
         onClick={() => {
           navigator.clipboard.writeText(text)
@@ -95,10 +100,14 @@ interface DisconnectButtonProps {
   onClick: () => void
 }
 
-const DisconnectButton: FC<DisconnectButtonProps> = ({ onClick }) => (
-  <Tooltip label="Disconnect wallet">
-    <button onClick={onClick} type="button">
-      <LogoutIcon className="w-[18px]" />
-    </button>
-  </Tooltip>
-)
+const DisconnectButton: FC<DisconnectButtonProps> = ({ onClick }) => {
+  const { t } = useTranslation()
+
+  return (
+    <Tooltip label={t('disconnectWallet')}>
+      <button onClick={onClick} type="button">
+        <LogoutIcon className="w-[18px]" />
+      </button>
+    </Tooltip>
+  )
+}

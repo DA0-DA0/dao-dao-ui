@@ -1,7 +1,9 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Abstain, Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
@@ -16,6 +18,7 @@ export interface VoteProps {
 }
 
 export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
+  const { t } = useTranslation()
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
@@ -26,13 +29,16 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
       )}
     >
       <div className="flex gap-2 items-center">
-        <p className="mr-1 text-2xl">🗳</p>
-        <p className="primary-text">Casting</p>
+        <p className="mr-1 text-2xl">
+          <Emoji label="Ballot box" symbol="🗳" />
+        </p>
+        <p className="primary-text">{t('casting')}</p>
         <p className="secondary-text">
-          {voterWeight.toLocaleString(undefined, {
-            maximumSignificantDigits: 4,
+          {t('percentVotingPower', {
+            percent: voterWeight.toLocaleString(undefined, {
+              maximumSignificantDigits: 4,
+            }),
           })}
-          % voting power
         </p>
       </div>
       <div className="flex flex-wrap grid-cols-3 gap-2 md:grid">
@@ -53,7 +59,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
               'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
             })}
           />
-          Yes
+          {t('yes')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -72,7 +78,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
               'group-hover:text-base text-error': selected !== VoteChoice.No,
             })}
           />
-          No
+          {t('no')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -86,7 +92,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
           variant="secondary"
         >
           <Abstain fill="currentColor" />
-          Abstain
+          {t('abstain')}
         </Button>
       </div>
       <Button
@@ -95,7 +101,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
         onClick={() => onVote(selected as VoteChoice)}
       >
         <div className="flex gap-2 justify-center items-center w-full">
-          <p>Cast your vote</p> <Airplane stroke="currentColor" />
+          <p>{t('castYourVote')}</p> <Airplane stroke="currentColor" />
         </div>
       </Button>
     </div>

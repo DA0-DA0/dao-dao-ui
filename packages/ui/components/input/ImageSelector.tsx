@@ -11,7 +11,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'
@@ -52,6 +52,7 @@ export const ImageSelectorModal = <
   watch,
   onClose,
 }: ImageSelectorModalProps<FieldValues, StringFieldName>) => {
+  const { t } = useTranslation()
   const imageUrl = watch(label) ?? ''
 
   return (
@@ -68,8 +69,8 @@ export const ImageSelectorModal = <
       <div className="flex flex-col gap-1">
         <InputLabel
           mono
-          name={i18n.t('Image URL')}
-          tooltip={i18n.t('Image URL tooltip')}
+          name={t('Image URL')}
+          tooltip={t('Image URL tooltip')}
         />
         <TextInput
           autoFocus
@@ -89,7 +90,7 @@ export const ImageSelectorModal = <
       </div>
       <div className="w-full text-right">
         <Button onClick={onClose} size="sm" type="button">
-          Done <Airplane color="currentColor" />
+          {t('done')} <Airplane color="currentColor" />
         </Button>
       </div>
     </Modal>
