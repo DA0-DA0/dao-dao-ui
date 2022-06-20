@@ -30,10 +30,10 @@ import {
   DaoTreasury,
   PageLoader,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 import { addToken } from '@/util'
 
 enum MobileMenuTabSelection {
@@ -250,7 +250,9 @@ export default DaoHomePage
 // Fallback to loading screen if page has not yet been statically generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =

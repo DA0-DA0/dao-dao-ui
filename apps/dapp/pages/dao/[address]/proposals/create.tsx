@@ -26,9 +26,9 @@ import {
   PageLoader,
   ProposalsInfo,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
@@ -206,7 +206,9 @@ export default ProposalCreatePage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
 export const getStaticProps = makeGetDAOStaticProps({

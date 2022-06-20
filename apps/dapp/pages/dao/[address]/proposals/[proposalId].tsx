@@ -39,10 +39,10 @@ import {
   ProposalNotFound,
   ProposalVotes,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
 const InnerProposal: FC = () => {
   const { t } = useTranslation()
@@ -283,7 +283,9 @@ export default ProposalPage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
 export const getStaticProps: GetStaticProps<DAOPageWrapperProps> = async (

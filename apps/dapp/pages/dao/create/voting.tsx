@@ -1,7 +1,9 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { GetStaticProps, NextPage } from 'next'
+import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
 
 import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { PlaceholderToken } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
@@ -45,7 +47,7 @@ import {
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
-const CreateDAOVotingPage: FC = () => {
+const CreateDAOVotingPage: NextPage = () => {
   const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const {
@@ -457,3 +459,9 @@ const CreateDAOVotingPage: FC = () => {
 }
 
 export default CreateDAOVotingPage
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

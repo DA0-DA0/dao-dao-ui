@@ -1,10 +1,10 @@
-import { ArrowRightIcon } from '@heroicons/react/outline'
 import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
-import type { NextPage } from 'next'
+import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
@@ -16,56 +16,13 @@ import {
 } from '@dao-dao/ui'
 import { SITE_TITLE } from '@dao-dao/utils'
 
-import { FeaturedDaos, HomepageCards } from '@/components'
-
-const EnterAppButton = ({ small }: { small?: boolean }) => {
-  const { t } = useTranslation('splash')
-
-  return (
-    <Link href="/home">
-      <a>
-        <Button size={small ? 'sm' : 'lg'}>
-          {t('cta')}
-          <ArrowUpRight color="currentColor" height="10px" width="10px" />
-        </Button>
-      </a>
-    </Link>
-  )
-}
-
-const AnouncementCard = () => {
-  const { t } = useTranslation('splash')
-
-  return (
-    <div
-      className="flex flex-row flex-wrap gap-2 justify-between py-7 px-8 mx-2 max-w-[780px] rounded"
-      style={{
-        backgroundImage:
-          'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--light), 0.7), rgba(var(--light), 0.7))',
-      }}
-    >
-      <div className="flex flex-col gap-1">
-        <h3 className="primary-text">{t('whatIsADao')}</h3>
-        <p className="body-text">{t('whatIsADaoExplanation')}</p>
-      </div>
-      <a
-        className="flex flex-row gap-1 items-center secondary-text"
-        href="https://nickmerrill.substack.com/p/what-are-daos"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <p>{t('readMore')}</p>
-        <ArrowRightIcon className="w-4 h-3" />
-      </a>
-    </div>
-  )
-}
-
-const StatsCard = ({ children }: { children: ReactNode }) => (
-  <div className="flex flex-col gap-1 items-center px-6 md:px-6">
-    {children}
-  </div>
-)
+import {
+  AnouncementCard,
+  EnterAppButton,
+  FeaturedDaos,
+  HomepageCards,
+  StatsCard,
+} from '@/components'
 
 const Home: NextPage = () => {
   const { t } = useTranslation('splash')
@@ -207,4 +164,11 @@ const Home: NextPage = () => {
     </SuspenseLoader>
   )
 }
+
 export default Home
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['splash'])),
+  },
+})

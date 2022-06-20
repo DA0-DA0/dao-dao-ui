@@ -35,9 +35,9 @@ import {
   Loader,
   PageWrapper,
   PageWrapperProps,
-  makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 const InnerProposal: FC = () => {
@@ -288,7 +288,9 @@ export default ProposalPage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
 export const getStaticProps: GetStaticProps<ProposalPageProps> = async (

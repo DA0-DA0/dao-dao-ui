@@ -7,7 +7,7 @@ import type { AppProps } from 'next/app'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
+import { appWithTranslation, useTranslation } from '@dao-dao/i18n'
 import {
   WalletProvider,
   activeThemeAtom,
@@ -121,4 +121,4 @@ const SDA: FC<AppProps> = (props) => (
   </>
 )
 
-export default SDA
+export default appWithTranslation(SDA)
