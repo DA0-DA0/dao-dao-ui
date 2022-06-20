@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
-import { t, useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -190,6 +190,6 @@ const ProposalCreatePage: NextPage<PageWrapperProps> = ({
 
 export default ProposalCreatePage
 
-export const getStaticProps = makeGetStaticProps({
+export const getStaticProps = makeGetStaticProps((t) => ({
   followingTitle: t('createAProposal'),
-})
+}))

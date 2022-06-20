@@ -303,9 +303,9 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
 
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    const staticProps = await makeGetStaticProps({
-      followingTitle: 'Proposal not found',
-    })(...props)
+    const staticProps = await makeGetStaticProps((t) => ({
+      followingTitle: t('error.proposalNotFound'),
+    }))(...props)
 
     return 'props' in staticProps
       ? {
@@ -348,9 +348,11 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
       console.error(err)
     }
 
-    const staticProps = await makeGetStaticProps({
-      followingTitle: `Proposal ${exists ? '#' + proposalId : 'not found'}`,
-    })(...props)
+    const staticProps = await makeGetStaticProps((t) => ({
+      followingTitle: exists
+        ? `${t('proposals', { count: 1 })} #${proposalId}`
+        : t('error.proposalNotFound'),
+    }))(...props)
 
     return 'props' in staticProps
       ? {
