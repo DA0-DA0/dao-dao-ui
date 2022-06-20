@@ -3,7 +3,6 @@ import i18n, { t } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import {
   Trans,
-  WithTranslationProps,
   initReactI18next,
   useTranslation,
   withTranslation,
@@ -37,4 +36,3 @@ i18n
 
 export default i18n
 export { Trans, useTranslation, t, withTranslation }
-export type { WithTranslationProps }
