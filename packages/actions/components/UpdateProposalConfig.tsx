@@ -25,7 +25,7 @@ export interface UpdateProposalConfigOptions {
 export const UpdateProposalConfigComponent: ActionComponent<
   UpdateProposalConfigOptions
 > = ({
-  getLabel,
+  getFieldName,
   errors,
   onRemove,
   readOnly,
@@ -33,12 +33,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
 }) => {
   const { register, setValue, watch } = useFormContext()
 
-  const depositRequired = watch(getLabel('depositRequired'))
-  const thresholdType = watch(getLabel('thresholdType'))
-  const quorumType = watch(getLabel('quorumType'))
-  const proposalDuration = watch(getLabel('proposalDuration'))
-  const thresholdPercentage = watch(getLabel('thresholdPercentage'))
-  const quorumPercentage = watch(getLabel('quorumPercentage'))
+  const depositRequired = watch(getFieldName('depositRequired'))
+  const thresholdType = watch(getFieldName('thresholdType'))
+  const quorumType = watch(getFieldName('quorumType'))
+  const proposalDuration = watch(getFieldName('proposalDuration'))
+  const thresholdPercentage = watch(getFieldName('thresholdPercentage'))
+  const quorumPercentage = watch(getFieldName('quorumPercentage'))
 
   const percentageThresholdSelected = thresholdType === '%'
   const percentageQuorumSelected = quorumType === '%'
@@ -74,7 +74,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </div>
             <FormSwitch
               disabled={readOnly}
-              label={getLabel('depositRequired')}
+              fieldName={getFieldName('depositRequired')}
               setValue={setValue}
               sizing="sm"
               watch={watch}
@@ -91,7 +91,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
           <FormSwitch
             disabled={readOnly}
-            label={getLabel('onlyMembersExecute')}
+            fieldName={getFieldName('onlyMembersExecute')}
             setValue={setValue}
             sizing="sm"
             watch={watch}
@@ -117,7 +117,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={readOnly}
                 error={errors?.depositInfo?.deposit}
-                label={getLabel('depositInfo.deposit')}
+                fieldName={getFieldName('depositInfo.deposit')}
                 register={register}
                 step={0.000001}
                 validation={[validateRequired, validatePositive]}
@@ -134,7 +134,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               </div>
               <FormSwitch
                 disabled={readOnly}
-                label={getLabel('depositInfo.refundFailedProposals')}
+                fieldName={getFieldName('depositInfo.refundFailedProposals')}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}
@@ -158,16 +158,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={readOnly}
                 error={errors?.thresholdPercentage}
-                label={getLabel('thresholdPercentage')}
+                fieldName={getFieldName('thresholdPercentage')}
                 onPlusMinus={[
                   () =>
                     setValue(
-                      getLabel('thresholdPercentage'),
+                      getFieldName('thresholdPercentage'),
                       Math.max(thresholdPercentage + 1, 1)
                     ),
                   () =>
                     setValue(
-                      getLabel('thresholdPercentage'),
+                      getFieldName('thresholdPercentage'),
                       Math.max(thresholdPercentage - 1, 1)
                     ),
                 ]}
@@ -180,7 +180,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           )}
           <SelectInput
             disabled={readOnly}
-            label={getLabel('thresholdType')}
+            fieldName={getFieldName('thresholdType')}
             register={register}
           >
             <option>majority</option>
@@ -205,16 +205,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={readOnly}
                 error={errors?.quorumPercentage}
-                label={getLabel('quorumPercentage')}
+                fieldName={getFieldName('quorumPercentage')}
                 onPlusMinus={[
                   () =>
                     setValue(
-                      getLabel('quorumPercentage'),
+                      getFieldName('quorumPercentage'),
                       Math.max(quorumPercentage + 1, 1)
                     ),
                   () =>
                     setValue(
-                      getLabel('quorumPercentage'),
+                      getFieldName('quorumPercentage'),
                       Math.max(quorumPercentage - 1, 1)
                     ),
                 ]}
@@ -227,7 +227,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           )}
           <SelectInput
             disabled={readOnly}
-            label={getLabel('quorumType')}
+            fieldName={getFieldName('quorumType')}
             register={register}
           >
             <option>majority</option>
@@ -250,16 +250,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
             <NumberInput
               disabled={readOnly}
               error={errors?.proposalDuration}
-              label={getLabel('proposalDuration')}
+              fieldName={getFieldName('proposalDuration')}
               onPlusMinus={[
                 () =>
                   setValue(
-                    getLabel('proposalDuration'),
+                    getFieldName('proposalDuration'),
                     Math.max(proposalDuration + 1, 1)
                   ),
                 () =>
                   setValue(
-                    getLabel('proposalDuration'),
+                    getFieldName('proposalDuration'),
                     Math.max(proposalDuration - 1, 1)
                   ),
               ]}
@@ -271,7 +271,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
           <SelectInput
             disabled={readOnly}
-            label={getLabel('proposalDurationUnits')}
+            fieldName={getFieldName('proposalDurationUnits')}
             register={register}
           >
             <option>weeks</option>

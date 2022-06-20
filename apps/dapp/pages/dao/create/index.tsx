@@ -62,7 +62,7 @@ const CreateDAOPage: FC = () => {
             <ImageSelector
               className="!bg-card !border-0"
               error={errors.imageUrl}
-              label="imageUrl"
+              fieldName="imageUrl"
               register={register}
               watch={watch}
             />
@@ -75,7 +75,7 @@ const CreateDAOPage: FC = () => {
               <InputLabel name={t('Name')} />
               <TextInput
                 error={errors.name}
-                label="name"
+                fieldName="name"
                 register={register}
                 validation={[validateRequired]}
               />
@@ -86,7 +86,7 @@ const CreateDAOPage: FC = () => {
               <InputLabel name={t('Description')} />
               <TextAreaInput
                 error={errors.description}
-                label="description"
+                fieldName="description"
                 register={register}
                 rows={4}
               />

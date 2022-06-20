@@ -55,7 +55,7 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
         <NumberInput
           disabled={readOnly}
           error={errors?.thresholdQuorum?.threshold}
-          label="thresholdQuorum.threshold"
+          fieldName="thresholdQuorum.threshold"
           onPlusMinus={[
             () =>
               setValue('thresholdQuorum.threshold', Math.max(threshold + 1, 1)),
@@ -119,7 +119,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOConfigCardSharedProps> = ({
         <NumberInput
           disabled={readOnly}
           error={errors?.thresholdQuorum?.quorum}
-          label="thresholdQuorum.quorum"
+          fieldName="thresholdQuorum.quorum"
           onPlusMinus={[
             () => setValue('thresholdQuorum.quorum', Math.max(quorum + 1, 0)),
             () => setValue('thresholdQuorum.quorum', Math.max(quorum - 1, 0)),
@@ -174,7 +174,7 @@ export const CreateDAOVotingDurationCard: FC<
       <NumberInput
         disabled={readOnly}
         error={errors?.votingDuration?.value}
-        label="votingDuration.value"
+        fieldName="votingDuration.value"
         onPlusMinus={[
           () =>
             setValue(
@@ -196,7 +196,7 @@ export const CreateDAOVotingDurationCard: FC<
       <SelectInput
         disabled={readOnly}
         error={errors?.votingDuration?.units}
-        label="votingDuration.units"
+        fieldName="votingDuration.units"
         register={register}
         validation={[validateRequired]}
       >
@@ -237,7 +237,7 @@ export const CreateDAOProposalDepositCard: FC<
       <NumberInput
         disabled={readOnly}
         error={errors?.governanceTokenOptions?.proposalDeposit?.value}
-        label="governanceTokenOptions.proposalDeposit.value"
+        fieldName="governanceTokenOptions.proposalDeposit.value"
         onPlusMinus={[
           () =>
             setValue(
@@ -289,7 +289,7 @@ export const CreateDAORefundFailedProposalDepositCard: FC<
 
         <FormSwitch
           disabled={readOnly}
-          label="governanceTokenOptions.proposalDeposit.refundFailed"
+          fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
           setValue={setValue}
           sizing="sm"
           watch={watch}
@@ -326,7 +326,7 @@ export const CreateDAOUnstakingDurationCard: FC<
       <NumberInput
         disabled={readOnly}
         error={errors?.governanceTokenOptions?.unregisterDuration?.value}
-        label="governanceTokenOptions.unregisterDuration.value"
+        fieldName="governanceTokenOptions.unregisterDuration.value"
         onPlusMinus={[
           () =>
             setValue(
@@ -348,7 +348,7 @@ export const CreateDAOUnstakingDurationCard: FC<
       <SelectInput
         disabled={readOnly}
         error={errors?.governanceTokenOptions?.unregisterDuration?.units}
-        label="governanceTokenOptions.unregisterDuration.units"
+        fieldName="governanceTokenOptions.unregisterDuration.units"
         register={register}
         validation={[validateRequired]}
       >

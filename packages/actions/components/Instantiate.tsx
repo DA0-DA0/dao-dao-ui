@@ -34,7 +34,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   props
 ) => {
   const {
-    getLabel,
+    getFieldName,
     onRemove,
     errors,
     readOnly,
@@ -47,7 +47,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: getLabel('funds'),
+    name: getFieldName('funds'),
   })
 
   return (
@@ -72,7 +72,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           <NumberInput
             disabled={readOnly}
             error={errors?.codeId}
-            label={getLabel('codeId')}
+            fieldName={getFieldName('codeId')}
             register={register}
             sizing="sm"
             step={1}
@@ -86,7 +86,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           <TextInput
             disabled={readOnly}
             error={errors?.label}
-            label={getLabel('label')}
+            fieldName={getFieldName('label')}
             register={register}
             validation={[validateRequired]}
           />
@@ -98,7 +98,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        label={getLabel('message')}
+        fieldName={getFieldName('message')}
         readOnly={readOnly}
         validation={[
           (v: string) => {
@@ -141,7 +141,9 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
             key={id}
             {...props}
             errors={errors?.funds?.[index]}
-            getLabel={(field: string) => getLabel(`funds.${index}.${field}`)}
+            getFieldName={(field: string) =>
+              getFieldName(`funds.${index}.${field}`)
+            }
             onRemove={() => removeCoin(index)}
           />
         ))}
@@ -164,7 +166,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <TextInput
           disabled={readOnly}
           error={errors?.admin}
-          label={getLabel('admin')}
+          fieldName={getFieldName('admin')}
           placeholder={readOnly ? 'None' : 'juno...'}
           register={register}
           validation={[(v: string) => validateContractAddress(v, false)]}

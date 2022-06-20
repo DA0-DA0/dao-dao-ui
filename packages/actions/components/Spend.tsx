@@ -34,7 +34,7 @@ interface SpendOptions {
 }
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
@@ -42,8 +42,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 }) => {
   const { register, watch, setValue } = useFormContext()
 
-  const spendAmount = watch(getLabel('amount'))
-  const spendDenom = watch(getLabel('denom'))
+  const spendAmount = watch(getFieldName('amount'))
+  const spendDenom = watch(getFieldName('denom'))
 
   const validatePossibleSpend = (
     id: string,
@@ -109,11 +109,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           <NumberInput
             disabled={readOnly}
             error={errors?.amount}
-            label={getLabel('amount')}
+            fieldName={getFieldName('amount')}
             onPlusMinus={[
               () =>
                 setValue(
-                  getLabel('amount'),
+                  getFieldName('amount'),
                   Math.max(
                     Number(spendAmount) + 1,
                     1 / 10 ** amountDecimals
@@ -121,7 +121,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ),
               () =>
                 setValue(
-                  getLabel('amount'),
+                  getFieldName('amount'),
                   Math.max(
                     Number(spendAmount) - 1,
                     1 / 10 ** amountDecimals
@@ -142,7 +142,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             defaultValue={NATIVE_DENOM}
             disabled={readOnly}
             error={errors?.denom}
-            label={getLabel('denom')}
+            fieldName={getFieldName('denom')}
             register={register}
             validation={[
               (denom: string) => validatePossibleSpend(denom, spendAmount),
@@ -168,7 +168,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             containerClassName="grow"
             disabled={readOnly}
             error={errors?.to}
-            label={getLabel('to')}
+            fieldName={getFieldName('to')}
             register={register}
             validation={[validateRequired, validateAddress]}
           />

@@ -15,7 +15,7 @@ export interface AddressInputProps<
   FieldValues,
   FieldName extends Path<FieldValues>
 > extends Omit<ComponentPropsWithoutRef<'input'>, 'required'> {
-  label: FieldName
+  fieldName: FieldName
   register: UseFormRegister<FieldValues>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
@@ -26,7 +26,7 @@ export interface AddressInputProps<
 }
 
 export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -61,7 +61,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
         placeholder={t('junoAddress')}
         type="text"
         {...rest}
-        {...register(label, {
+        {...register(fieldName, {
           required: required && 'Required',
           validate,
           onChange,

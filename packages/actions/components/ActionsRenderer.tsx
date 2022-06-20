@@ -77,7 +77,7 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
                 })
               )}
               coreAddress={coreAddress}
-              getLabel={(field: string) => `${index}.${field}`}
+              getFieldName={(field: string) => `${index}.${field}`}
               index={index}
               proposalId={proposalId}
               readOnly

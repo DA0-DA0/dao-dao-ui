@@ -10,7 +10,7 @@ import {
 
 interface TextAreaInputProps<FieldValues, FieldName extends Path<FieldValues>>
   extends Omit<ComponentProps<'textarea'>, 'required'> {
-  label: FieldName
+  fieldName: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
@@ -21,7 +21,7 @@ export const TextAreaInput = <
   FieldValues,
   FieldName extends Path<FieldValues>
 >({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -44,7 +44,7 @@ export const TextAreaInput = <
         className
       )}
       {...rest}
-      {...register(label, { required: required && 'Required', validate })}
+      {...register(fieldName, { required: required && 'Required', validate })}
     ></textarea>
   )
 }

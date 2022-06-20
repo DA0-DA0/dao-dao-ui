@@ -33,7 +33,7 @@ export interface ImageSelectorModalProps<
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 > {
-  label: StringFieldName
+  fieldName: StringFieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
   watch: UseFormWatch<FieldValues>
@@ -45,7 +45,7 @@ export const ImageSelectorModal = <
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 >({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -53,7 +53,7 @@ export const ImageSelectorModal = <
   onClose,
 }: ImageSelectorModalProps<FieldValues, StringFieldName>) => {
   const { t } = useTranslation()
-  const imageUrl = watch(label) ?? ''
+  const imageUrl = watch(fieldName) ?? ''
 
   return (
     <Modal
@@ -75,7 +75,7 @@ export const ImageSelectorModal = <
         <TextInput
           autoFocus
           error={error}
-          label={label}
+          fieldName={fieldName}
           onKeyDown={(e) => {
             // Prevent submitting form on enter.
             if (e.key === 'Enter') {
@@ -101,7 +101,7 @@ export interface ImageSelectorProps<
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 > {
-  label: StringFieldName
+  fieldName: StringFieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
   watch: UseFormWatch<FieldValues>
@@ -116,7 +116,7 @@ export const ImageSelector = <
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 >({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -127,7 +127,7 @@ export const ImageSelector = <
   center = true,
 }: ImageSelectorProps<FieldValues, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
-  const imageUrl = watch(label) ?? ''
+  const imageUrl = watch(fieldName) ?? ''
 
   return (
     <>
@@ -156,7 +156,7 @@ export const ImageSelector = <
       {showImageSelect && (
         <ImageSelectorModal
           error={error}
-          label={label}
+          fieldName={fieldName}
           onClose={() => setShowImageSelect(false)}
           register={register}
           validation={validation}

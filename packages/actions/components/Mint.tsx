@@ -15,14 +15,14 @@ export interface MintOptions {
 }
 
 export const MintComponent: ActionComponent<MintOptions> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
   options: { govTokenSymbol },
 }) => {
   const { register, watch, setValue } = useFormContext()
-  const amount = watch(getLabel('amount'))
+  const amount = watch(getFieldName('amount'))
 
   return (
     <ActionCard
@@ -36,12 +36,18 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             <NumberInput
               disabled={readOnly}
               error={errors?.amount}
-              label={getLabel('amount')}
+              fieldName={getFieldName('amount')}
               onPlusMinus={[
                 () =>
-                  setValue(getLabel('amount'), (Number(amount) + 1).toString()),
+                  setValue(
+                    getFieldName('amount'),
+                    (Number(amount) + 1).toString()
+                  ),
                 () =>
-                  setValue(getLabel('amount'), (Number(amount) - 1).toString()),
+                  setValue(
+                    getFieldName('amount'),
+                    (Number(amount) - 1).toString()
+                  ),
               ]}
               register={register}
               sizing="auto"
@@ -61,7 +67,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             containerClassName="grow"
             disabled={readOnly}
             error={errors?.to}
-            label={getLabel('to')}
+            fieldName={getFieldName('to')}
             register={register}
             validation={[validateRequired, validateAddress]}
           />

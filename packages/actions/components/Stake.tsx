@@ -48,7 +48,7 @@ interface StakeOptions {
 }
 
 export const StakeComponent: ActionComponent<StakeOptions> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
@@ -56,9 +56,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 }) => {
   const { register, watch, clearErrors, setValue } = useFormContext()
 
-  const stakeType = watch(getLabel('stakeType'))
-  const amount = watch(getLabel('amount'))
-  const denom = watch(getLabel('denom'))
+  const stakeType = watch(getFieldName('stakeType'))
+  const amount = watch(getFieldName('amount'))
+  const denom = watch(getFieldName('denom'))
 
   const validatePossibleSpend = (
     denom: string,
@@ -103,7 +103,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   const validatePossibleSpendWrapper = (denom: string, amount: string) => {
     const valid = validatePossibleSpend(denom, amount)
     if (typeof valid === 'boolean' && valid) {
-      clearErrors([getLabel('denom'), getLabel('amount')])
+      clearErrors([getFieldName('denom'), getFieldName('amount')])
     }
     return valid
   }
@@ -119,7 +119,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           defaultValue={stakeActions[0].type}
           disabled={readOnly}
           error={errors?.stakeType}
-          label={getLabel('stakeType')}
+          fieldName={getFieldName('stakeType')}
           register={register}
         >
           {stakeActions.map(({ name, type }, idx) => (
@@ -135,16 +135,16 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
               containerClassName="grow"
               disabled={readOnly}
               error={errors?.amount}
-              label={getLabel('amount')}
+              fieldName={getFieldName('amount')}
               onPlusMinus={[
                 () =>
                   setValue(
-                    getLabel('amount'),
+                    getFieldName('amount'),
                     Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
                   ),
                 () =>
                   setValue(
-                    getLabel('amount'),
+                    getFieldName('amount'),
                     Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
                   ),
               ]}
@@ -160,7 +160,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
             <SelectInput
               disabled={readOnly}
               error={errors?.denom}
-              label={getLabel('denom')}
+              fieldName={getFieldName('denom')}
               register={register}
               validation={[
                 (denom: string) => validatePossibleSpendWrapper(denom, amount),
@@ -191,7 +191,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
             <AddressInput
               disabled={readOnly}
               error={errors?.fromValidator}
-              label={getLabel('fromValidator')}
+              fieldName={getFieldName('fromValidator')}
               register={register}
               validation={[validateValidatorAddress]}
             />
@@ -210,7 +210,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
         <AddressInput
           disabled={readOnly}
           error={errors?.validator}
-          label={getLabel('validator')}
+          fieldName={getFieldName('validator')}
           register={register}
           validation={[validateRequired, validateValidatorAddress]}
         />
