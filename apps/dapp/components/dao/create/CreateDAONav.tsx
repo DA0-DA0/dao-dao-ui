@@ -6,7 +6,7 @@ import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 
-import { createDAOFormPages } from '@/hooks'
+import { useCreateDAOFormPages } from '@/hooks'
 
 interface CreateDAONavProps {
   currentPageIndex: number
@@ -15,6 +15,7 @@ interface CreateDAONavProps {
 export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
   const { t } = useTranslation()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
+  const createDAOFormPages = useCreateDAOFormPages()
 
   return (
     <div>

@@ -1,6 +1,6 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 
-import { t, useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -32,17 +32,24 @@ export const stakingModeString = (mode: StakingMode) => {
   }
 }
 
-export const stakingModeTitle = (mode: StakingMode) => {
-  switch (mode) {
-    case StakingMode.Stake:
-      return t('Stake Tokens')
-    case StakingMode.Unstake:
-      return t('Unstake Tokens')
-    case StakingMode.Claim:
-      return t('Claim Tokens')
-    default:
-      return 'internal error'
-  }
+export const useStakingModeTitle = () => {
+  const { t } = useTranslation()
+
+  return useCallback(
+    (mode: StakingMode) => {
+      switch (mode) {
+        case StakingMode.Stake:
+          return t('Stake Tokens')
+        case StakingMode.Unstake:
+          return t('Unstake Tokens')
+        case StakingMode.Claim:
+          return t('Claim Tokens')
+        default:
+          return 'internal error'
+      }
+    },
+    [t]
+  )
 }
 
 export interface StakingModalProps {
@@ -97,6 +104,7 @@ export const StakingModal: FC<StakingModalProps> = ({
   onAction,
 }) => {
   const { t } = useTranslation()
+  const stakingModeTitle = useStakingModeTitle()
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
 
   const invalidAmount = (): string | undefined => {
@@ -282,18 +290,22 @@ interface UnstakingDurationDisplayProps {
 const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   unstakingDuration,
   mode,
-}) => (
-  <div className="mt-3 secondary-text">
-    <h2 className="link-text">
-      {mode == StakingMode.Unstake
-        ? t('You are about to unstake')
-        : t('Unstaking period') +
-          `: ${humanReadableDuration(unstakingDuration)}`}
-    </h2>
-    <p className="mt-3">
-      {t('Unstaking mechanics', {
-        humanReadableTime: humanReadableDuration(unstakingDuration),
-      })}
-    </p>
-  </div>
-)
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="mt-3 secondary-text">
+      <h2 className="link-text">
+        {mode == StakingMode.Unstake
+          ? t('You are about to unstake')
+          : t('Unstaking period') +
+            `: ${humanReadableDuration(unstakingDuration)}`}
+      </h2>
+      <p className="mt-3">
+        {t('Unstaking mechanics', {
+          humanReadableTime: humanReadableDuration(unstakingDuration),
+        })}
+      </p>
+    </div>
+  )
+}

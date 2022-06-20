@@ -6,12 +6,13 @@ import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
 
 import { TreasuryBalances, useDAOInfoContext } from '@/components'
-import { addToken } from '@/util'
+import { useAddToken } from '@/util'
 
 export const DaoTreasury: FC = () => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
   const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
+  const addToken = useAddToken()
 
   return (
     <div>

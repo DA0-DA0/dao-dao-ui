@@ -34,7 +34,7 @@ import {
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
 import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
-import { addToken } from '@/util'
+import { useAddToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -113,6 +113,7 @@ const InnerMobileDaoHome: FC = () => {
 const InnerDAOHome: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
+  const addToken = useAddToken()
 
   const { votingModuleType, coreAddress, governanceTokenAddress, name } =
     useDAOInfoContext()
@@ -126,7 +127,7 @@ const InnerDAOHome: FC = () => {
     if (shouldAddToken && governanceTokenAddress) {
       addToken(governanceTokenAddress)
     }
-  }, [shouldAddToken, governanceTokenAddress])
+  }, [shouldAddToken, governanceTokenAddress, addToken])
 
   return (
     <div className="flex flex-col items-stretch lg:grid lg:grid-cols-6">
@@ -256,16 +257,18 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps({
-    getAdditionalProps: async ({ image_url }) => {
-      if (!image_url) return undefined
+  makeGetDAOStaticProps(async ({ image_url }) => {
+    if (!image_url) {
+      return
+    }
 
-      const response = await axios.get(image_url, {
-        responseType: 'arraybuffer',
-      })
-      const buffer = Buffer.from(response.data, 'binary')
+    const response = await axios.get(image_url, {
+      responseType: 'arraybuffer',
+    })
+    const buffer = Buffer.from(response.data, 'binary')
+    const result = await getAverageColor(buffer)
 
-      const result = await getAverageColor(buffer)
-      return { accentColor: result.rgb }
-    },
+    return {
+      additionalProps: { accentColor: result.rgb },
+    }
   })

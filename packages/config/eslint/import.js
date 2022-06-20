@@ -110,19 +110,14 @@ const eslintConfig = {
             'Import from root @/ instead of a direct path. Ensure the export has been added to its sibling index.',
         },
         {
-          regex: "from 'react-i18next'",
-          replacement: "from '@dao-dao/i18n'",
-          files: {
-            // Not in this package or the i18n package.
-            ignore: 'packages\\/(config|i18n)\\/.+',
-          },
-          message: 'Import from `@dao-dao/i18n` instead.',
+          regex: "from '(react-)?i18next'",
+          message:
+            'You probably should not be using this. Use the `useTranslation` hook within a component.',
         },
         {
-          regex: 'i18n\\.t',
-          replacement: 't',
+          regex: '_serverOnlyI18n\\??\\.t',
           message:
-            'Use `t` from the `useTranslation` hook if inside a component, or the named import `t` directly from `@dao-dao/i18n` instead.',
+            'You probably should not be using this. See the comment in the `index.ts` of the `@dao-dao/i18n` package.',
         },
       ],
     ],

@@ -108,7 +108,7 @@ export const ProposalList: FC = () => {
           description={t('Create first proposal prompt')}
           fullWidth
           href={`/dao/${coreAddress}/proposals/create`}
-          title={t('Create a proposal')}
+          title={t('createAProposal')}
         />
       </div>
     )

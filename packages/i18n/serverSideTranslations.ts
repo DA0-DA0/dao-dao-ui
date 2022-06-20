@@ -1,3 +1,5 @@
+// Separate file so it's loaded only on the server.
+
 import { serverSideTranslations as _serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 // Use English as default locale.
