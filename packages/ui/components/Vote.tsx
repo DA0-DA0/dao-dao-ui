@@ -30,7 +30,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
     >
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">
-          <Emoji label="Ballot box" symbol="🗳" />
+          <Emoji label={t('ballotBox')} symbol="🗳" />
         </p>
         <p className="primary-text">{t('casting')}</p>
         <p className="secondary-text">

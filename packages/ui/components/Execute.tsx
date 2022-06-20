@@ -27,7 +27,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               className="mr-1 text-2xl"
               onClick={() => setPartyMode(true)}
             >
-              <Emoji label="Party" symbol="🎉" />
+              <Emoji label={t('party')} symbol="🎉" />
             </button>
             <p className="primary-text">{t('passed')}</p>
             <p className="secondary-text">
@@ -59,7 +59,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               }}
               type="button"
             >
-              <Emoji label="Rocket ship" symbol="🚀" />
+              <Emoji label={t('rocketShip')} symbol="🚀" />
             </button>
             <p className="primary-text">{t('executing')}</p>
             <p className="secondary-text">

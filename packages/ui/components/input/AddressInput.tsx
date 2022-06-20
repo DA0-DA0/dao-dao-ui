@@ -8,6 +8,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Wallet } from '@dao-dao/icons'
 
 export interface AddressInputProps<
@@ -36,6 +37,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
   containerClassName,
   ...rest
 }: AddressInputProps<FieldValues, FieldName>) => {
+  const { t } = useTranslation()
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -56,7 +58,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
           className
         )}
         disabled={disabled}
-        placeholder="Juno address"
+        placeholder={t('junoAddress')}
         type="text"
         {...rest}
         {...register(label, {
