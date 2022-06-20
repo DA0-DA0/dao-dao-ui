@@ -55,6 +55,7 @@ export const PinnedDAONavList: FC = () => {
 }
 
 export const MobilePinnedDAONavList: FC = () => {
+  const { t } = useTranslation()
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const daoConfigs = useRecoilValue(
     waitForAll(
@@ -86,7 +87,7 @@ export const MobilePinnedDAONavList: FC = () => {
           >
             {!!config.image_url && HEADER_IMAGES_ENABLED ? (
               <div
-                aria-label="DAO's Custom Logo"
+                aria-label={t('daosLogo')}
                 className="w-[50px] h-[50px] bg-center bg-cover rounded-full"
                 role="img"
                 style={{
@@ -94,7 +95,7 @@ export const MobilePinnedDAONavList: FC = () => {
                 }}
               ></div>
             ) : (
-              <Logo alt={`${config.name} logo`} height={50} width={50} />
+              <Logo alt={t('daodaoLogo')} height={50} width={50} />
             )}
             <h2 className="text-center text-dark break-words line-clamp-2 button-text">
               {config.name}

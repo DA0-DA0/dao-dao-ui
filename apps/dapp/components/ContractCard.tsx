@@ -125,44 +125,48 @@ export const ContractCard: FC<ContractCardProps> = ({
   onPin,
   imgUrl,
   selected,
-}) => (
-  <div className="relative w-min">
-    <ContractCardBase
-      balance={balance}
-      body={description}
-      href={href}
-      proposals={proposals}
-      selected={selected}
-      title={name}
-      weight={weight}
-    >
-      {imgUrl && CARD_IMAGES_ENABLED ? (
-        <div
-          aria-label="DAO's Custom Logo"
-          className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
-          role="img"
-          style={{
-            backgroundImage: `url(${imgUrl})`,
-          }}
-        ></div>
-      ) : (
-        <Logo alt={name} height={80} width={80} />
-      )}
-    </ContractCardBase>
-    <button
-      className="absolute top-[18px] right-[18px] text-brand"
-      onClick={onPin ? (_) => onPin() : undefined}
-    >
-      {pinned !== undefined ? (
-        pinned ? (
-          <HeartIconSolid className="w-[18px] h-[18px]" />
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="relative w-min">
+      <ContractCardBase
+        balance={balance}
+        body={description}
+        href={href}
+        proposals={proposals}
+        selected={selected}
+        title={name}
+        weight={weight}
+      >
+        {imgUrl && CARD_IMAGES_ENABLED ? (
+          <div
+            aria-label={t('daosLogo')}
+            className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
+            role="img"
+            style={{
+              backgroundImage: `url(${imgUrl})`,
+            }}
+          ></div>
         ) : (
-          <HeartIconOutline className="w-[18px] h-[18px]" />
-        )
-      ) : undefined}
-    </button>
-  </div>
-)
+          <Logo alt={name} height={80} width={80} />
+        )}
+      </ContractCardBase>
+      <button
+        className="absolute top-[18px] right-[18px] text-brand"
+        onClick={onPin ? (_) => onPin() : undefined}
+      >
+        {pinned !== undefined ? (
+          pinned ? (
+            <HeartIconSolid className="w-[18px] h-[18px]" />
+          ) : (
+            <HeartIconOutline className="w-[18px] h-[18px]" />
+          )
+        ) : undefined}
+      </button>
+    </div>
+  )
+}
 
 export const LoadingContractCard = () => (
   <div className="flex relative flex-col justify-center items-center p-6 w-[260px]  h-[320px] bg-card from-transparent rounded-lg shadow transition-shadow">

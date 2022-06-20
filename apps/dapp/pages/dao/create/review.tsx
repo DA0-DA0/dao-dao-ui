@@ -56,12 +56,12 @@ const CreateDAOReviewPage: FC = () => {
                 {watchedNewDAO.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    alt="DAO Logo"
+                    alt={t('daosLogo')}
                     className="w-full h-full"
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
-                  <Logo alt="DAO DAO logo" height="100%" width="100%" />
+                  <Logo alt={t('daodaoLogo')} height="100%" width="100%" />
                 )}
               </div>
             </div>

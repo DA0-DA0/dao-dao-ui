@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { useTranslation } from '@dao-dao/i18n'
 import {
   WalletProvider,
   activeThemeAtom,
@@ -23,6 +24,7 @@ import {
 import { Footer } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
+  const { t } = useTranslation()
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
@@ -49,7 +51,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ErrorBoundary title="An unexpected error occurred.">
+      <ErrorBoundary title={t('unexpectedError')}>
         <Component {...pageProps} />
       </ErrorBoundary>
 
