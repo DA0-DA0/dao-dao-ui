@@ -24,9 +24,9 @@ import {
   PageWrapper,
   PageWrapperProps,
   ProposalsInfo,
-  makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerProposalCreate = () => {

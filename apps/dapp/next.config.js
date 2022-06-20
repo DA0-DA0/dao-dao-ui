@@ -32,6 +32,7 @@ let config = {
       'services',
       'types',
       'util',
+      'server',
     ],
   },
   redirects: async () => [

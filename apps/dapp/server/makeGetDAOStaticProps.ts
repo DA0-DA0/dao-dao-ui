@@ -51,7 +51,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       return { notFound: true }
     }
 
-    const i18nProps = serverSideTranslations(locale, ['translation'])
+    const i18nProps = await serverSideTranslations(locale, ['translation'])
 
     // If invalid address, display not found.
     if (

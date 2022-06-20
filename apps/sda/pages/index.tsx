@@ -30,8 +30,8 @@ import {
   StakeHeaderLoader,
   StakedBalanceCard,
   UnstakedBalanceCard,
-  makeGetStaticProps,
 } from '@/components'
+import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerMembers = () => {
