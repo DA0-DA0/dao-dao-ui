@@ -188,8 +188,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={getFieldName('thresholdType')}
             register={register}
           >
-            <option>{t('majority')}</option>
-            <option>%</option>
+            <option value="majority">{t('majority')}</option>
+            <option value="%">%</option>
           </SelectInput>
         </div>
       </div>
@@ -231,8 +231,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={getFieldName('quorumType')}
             register={register}
           >
-            <option>{t('majority')}</option>
-            <option>%</option>
+            <option value="majority">{t('majority')}</option>
+            <option value="%">%</option>
           </SelectInput>
         </div>
       </div>
@@ -272,11 +272,11 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={getFieldName('proposalDurationUnits')}
             register={register}
           >
-            <option>{t('weeks')}</option>
-            <option>{t('days')}</option>
-            <option>{t('hours')}</option>
-            <option>{t('minutes')}</option>
-            <option>{t('seconds')}</option>
+            <option value="weeks">{t('weeks')}</option>
+            <option value="days">{t('days')}</option>
+            <option value="hours">{t('hours')}</option>
+            <option value="minutes">{t('minutes')}</option>
+            <option value="seconds">{t('seconds')}</option>
           </SelectInput>
         </div>
       </div>
