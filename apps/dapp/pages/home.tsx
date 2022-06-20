@@ -4,12 +4,13 @@ import {
   PlusIcon,
   SparklesIcon,
 } from '@heroicons/react/outline'
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { FC, useEffect, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { CwCoreSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import {
@@ -252,3 +253,9 @@ const HomePage: NextPage = () => (
 )
 
 export default HomePage
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

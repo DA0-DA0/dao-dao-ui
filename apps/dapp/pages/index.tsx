@@ -1,10 +1,11 @@
 import { ArrowRightIcon } from '@heroicons/react/outline'
 import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
-import type { NextPage } from 'next'
+import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { ReactNode, useState } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
@@ -207,4 +208,11 @@ const Home: NextPage = () => {
     </SuspenseLoader>
   )
 }
+
 export default Home
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['splash'])),
+  },
+})
