@@ -28,9 +28,9 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label="Token" symbol="🔘" />}
+      emoji={<Emoji label={t('token')} symbol="🔘" />}
       onRemove={onRemove}
-      title="Add Treasury Token"
+      title={t('addTreasuryToken')}
     >
       <div className="flex flex-col gap-2">
         <InputLabel name={t('Governance token address')} />

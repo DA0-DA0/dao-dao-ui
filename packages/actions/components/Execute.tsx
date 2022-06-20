@@ -4,6 +4,7 @@ import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import {
   Button,
   CodeMirrorInput,
@@ -28,6 +29,7 @@ export interface ExecuteOptions {
 }
 
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
+  const { t } = useTranslation()
   const { getFieldName, onRemove, errors, readOnly } = props
   const { register, control } = useFormContext()
   const {
@@ -41,12 +43,12 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   return (
     <ActionCard
-      emoji={<Emoji label="Swords" symbol="⚔️" />}
+      emoji={<Emoji label={t('swords')} symbol="⚔️" />}
       onRemove={onRemove}
-      title="Execute Smart Contract"
+      title={t('executeSmartContract')}
     >
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name="Smart Contract Address" />
+        <InputLabel name={t('smartContractAddress')} />
         <TextInput
           disabled={readOnly}
           error={errors?.address}
@@ -58,7 +60,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         <InputErrorMessage error={errors?.codeId} />
       </div>
 
-      <InputLabel className="-mb-1" name="Message" />
+      <InputLabel className="-mb-1" name={t('message')} />
       <CodeMirrorInput
         control={control}
         error={errors?.message}
@@ -81,7 +83,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                 },
               },
             })
-            return validateCosmosMsg(msg).valid || 'Invalid execute message'
+            return validateCosmosMsg(msg).valid || t('invalidExecuteMessage')
           },
         ]}
       />
@@ -92,11 +94,11 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         </p>
       ) : (
         <p className="flex gap-1 items-center text-sm text-success">
-          <CheckIcon className="inline w-5" /> json is valid
+          <CheckIcon className="inline w-5" /> {t('jsonIsValid')}
         </p>
       )}
 
-      <InputLabel className="mt-1 -mb-1" name="Funds" />
+      <InputLabel className="mt-1 -mb-1" name={t('funds')} />
       <div className="flex flex-col gap-2 items-stretch">
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
@@ -110,7 +112,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           />
         ))}
         {readOnly && coins.length === 0 && (
-          <p className="mt-1 mb-2 text-xs italic text-tertiary">None</p>
+          <p className="mt-1 mb-2 text-xs italic text-tertiary">{t('none')}</p>
         )}
         {!readOnly && (
           <Button
@@ -118,7 +120,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
             variant="secondary"
           >
-            Add payment
+            {t('addPayment')}
           </Button>
         )}
       </div>

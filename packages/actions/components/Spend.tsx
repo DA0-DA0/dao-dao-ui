@@ -3,6 +3,7 @@ import Emoji from 'a11y-react-emoji'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -40,6 +41,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   readOnly,
   options: { nativeBalances, cw20Balances },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   const spendAmount = watch(getFieldName('amount'))
@@ -100,9 +102,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label="Money" symbol="💵" />}
+      emoji={<Emoji label={t('money')} symbol="💵" />}
       onRemove={onRemove}
-      title="Spend"
+      title={t('spend')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
@@ -161,6 +163,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           </SelectInput>
         </div>
 
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <p className="font-mono text-2xl secondary-text">&#10142;</p>
 
         <div className="grow">

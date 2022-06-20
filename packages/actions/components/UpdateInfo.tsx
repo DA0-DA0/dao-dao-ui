@@ -2,6 +2,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import {
   FormSwitch,
   ImageSelector,
@@ -21,13 +22,14 @@ export const UpdateInfoComponent: ActionComponent = ({
   onRemove,
   readOnly,
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   return (
     <ActionCard
-      emoji={<Emoji label="Info" symbol="ℹ️" />}
+      emoji={<Emoji label={t('info')} symbol="ℹ️" />}
       onRemove={onRemove}
-      title="Update Info"
+      title={t('updateInfo')}
     >
       <div className="flex flex-row flex-wrap gap-6 justify-center items-center">
         <div className="flex flex-col gap-4 pl-2">
@@ -40,7 +42,7 @@ export const UpdateInfoComponent: ActionComponent = ({
             validation={[validateUrl]}
             watch={watch}
           />
-          <InputLabel name="Select an image" />
+          <InputLabel name={t('selectAnImage')} />
         </div>
 
         <div className="flex flex-col grow gap-3">
@@ -69,11 +71,13 @@ export const UpdateInfoComponent: ActionComponent = ({
           <div className="flex flex-row flex-wrap gap-2">
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-1">
-                <Tooltip label="Should tokens sent to the DAO get added to the treasury?">
+                <Tooltip label={t('automaticallyAddTokensExplanation')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">Automatically add tokens</p>
+                <p className="w-max secondary-text">
+                  {t('automaticallyAddTokens')}
+                </p>
               </div>
               <FormSwitch
                 disabled={readOnly}
@@ -85,11 +89,13 @@ export const UpdateInfoComponent: ActionComponent = ({
             </div>
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-1">
-                <Tooltip label="Should NFTs sent to the DAO get added to the treasury?">
+                <Tooltip label={t('automaticallyAddNFTsExplanation')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">Automatically add NFTs</p>
+                <p className="w-max secondary-text">
+                  {t('automaticallyAddNFTs')}
+                </p>
               </div>
               <FormSwitch
                 disabled={readOnly}
