@@ -45,6 +45,7 @@
     "codemirror": "^5.65.0",
     "dotenv": "^10.0.0",
     "fast-average-color-node": "^2.1.0",
+    "i18next": "^21.8.10",
     "json-loader": "^0.5.7",
     "json-schema-to-typescript": "^10.1.5",
     "json5": "^2.2.0",

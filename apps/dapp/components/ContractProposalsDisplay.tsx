@@ -30,7 +30,7 @@ export const InnerContractProposalsDisplay: FC = () => {
           <a>
             <Tooltip label={tooltip}>
               <Button disabled={!isMember} size="sm">
-                {t('Create a proposal')}
+                {t('createAProposal')}
               </Button>
             </Tooltip>
           </a>

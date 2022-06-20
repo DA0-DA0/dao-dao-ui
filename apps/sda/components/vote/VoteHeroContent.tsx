@@ -13,7 +13,7 @@ import {
   VotingModuleType,
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  processThresholdData,
+  useProcessThresholdData,
 } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from '../DAOInfoContext'
@@ -49,6 +49,7 @@ export const VoteHeroContent = () => {
     fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,
   })
 
+  const processThresholdData = useProcessThresholdData()
   const { threshold } = proposalModuleConfig
     ? processThresholdData(proposalModuleConfig.threshold)
     : { threshold: undefined }

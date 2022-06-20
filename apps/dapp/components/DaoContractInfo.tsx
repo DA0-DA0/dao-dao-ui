@@ -16,7 +16,7 @@ import {
 import {
   convertMicroDenomToDenomWithDecimals,
   humanReadableDuration,
-  processThresholdData,
+  useProcessThresholdData,
 } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from './DAOPageWrapper'
@@ -40,7 +40,7 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
     throw new Error(t('errors.loadingData'))
   }
 
-  const { threshold, quorum } = processThresholdData(
+  const { threshold, quorum } = useProcessThresholdData()(
     proposalModuleConfig.threshold
   )
 

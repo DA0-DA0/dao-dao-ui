@@ -17,7 +17,7 @@ import {
 
 import { ContractCard, LoadingContractCard } from './ContractCard'
 import { usePinnedDAOs } from '@/hooks'
-import { addToken } from '@/util'
+import { useAddToken } from '@/util'
 
 interface PinnedDAOCardProps {
   address: string
@@ -35,6 +35,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })
+  const addToken = useAddToken()
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)

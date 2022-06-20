@@ -7,7 +7,11 @@ import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SubmitButton } from '@dao-dao/ui'
 
 import { CreateDAONav } from './CreateDAONav'
-import { CreateDAOSubmitLabel, DAOFormPage, createDAOFormPages } from '@/hooks'
+import {
+  CreateDAOSubmitLabel,
+  DAOFormPage,
+  useCreateDAOFormPages,
+} from '@/hooks'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
   Omit<T, K>
@@ -31,6 +35,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
 }) => {
   const { t } = useTranslation()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
+  const createDAOFormPages = useCreateDAOFormPages()
 
   const showBack = currentPageIndex > 0
 

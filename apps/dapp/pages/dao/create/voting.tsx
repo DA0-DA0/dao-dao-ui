@@ -72,15 +72,19 @@ const CreateDAOVotingPage: NextPage = () => {
     name: 'tiers',
   })
 
-  // If wallet connected and empty tiers, fill in as first default.
+  // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
   useEffect(() => {
     if (loadedPage) return
     setLoadedPage(true)
 
-    if (!tiersAreUntouched || !walletAddress) return
-    setValue('tiers.0.members.0.address', walletAddress)
-  }, [loadedPage, setValue, tiersAreUntouched, walletAddress])
+    if (!tiersAreUntouched) return
+
+    setValue('tiers.0.name', t('defaultTierName'))
+    if (walletAddress) {
+      setValue('tiers.0.members.0.address', walletAddress)
+    }
+  }, [loadedPage, setValue, t, tiersAreUntouched, walletAddress])
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)

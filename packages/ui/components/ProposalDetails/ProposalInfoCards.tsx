@@ -14,8 +14,8 @@ import {
   ProcessedTQType,
   convertMicroDenomToDenomWithDecimals,
   expirationAtTimeToSecondsFromNow,
-  processThresholdData,
   secondsToWdhms,
+  useProcessThresholdData,
 } from '@dao-dao/utils'
 
 import { CopyToClipboard } from '../CopyToClipboard'
@@ -212,7 +212,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expiration)
       : undefined
 
-  const { threshold, quorum } = processThresholdData(proposal.threshold)
+  const { threshold, quorum } = useProcessThresholdData()(proposal.threshold)
 
   const thresholdReached =
     !!threshold &&

@@ -304,12 +304,12 @@ export const getStaticProps: GetStaticProps<DAOPageWrapperProps> = async (
 
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    return await makeGetDAOStaticProps({
-      followingTitle: 'Proposal not found',
-      getAdditionalProps: () => ({
+    return await makeGetDAOStaticProps((_, t) => ({
+      followingTitle: t('error.proposalNotFound'),
+      additionalProps: {
         exists: false,
-      }),
-    })(...props)
+      },
+    }))(...props)
   }
 
   const proposalId = Number(proposalIdQuery)
@@ -342,9 +342,11 @@ export const getStaticProps: GetStaticProps<DAOPageWrapperProps> = async (
       console.error(err)
     }
 
-    const staticProps = await makeGetDAOStaticProps({
-      followingTitle: `Proposal ${exists ? '#' + proposalId : 'not found'}`,
-    })(...props)
+    const staticProps = await makeGetDAOStaticProps((_, t) => ({
+      followingTitle: exists
+        ? `${t('proposals', { count: 1 })} #${proposalId}`
+        : t('error.proposalNotFound'),
+    }))(...props)
 
     return 'props' in staticProps
       ? {

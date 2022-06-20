@@ -1,6 +1,8 @@
+// eslint-disable-next-line regex/invalid
+import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps } from 'next'
 
-import { t } from '@dao-dao/i18n'
+import { _serverOnlyI18n } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Cw20StakedBalanceVotingQueryClient,
@@ -21,36 +23,48 @@ import {
 
 import { DAOPageWrapperProps } from '@/components'
 
+// Swap order of arguments and use error fallback string if client null.
+// It shouldn't be null as long as we only call this on the server once the
+// translations have been loaded by awaiting `serverSideTranslations`.
+const serverT = (
+  key: TFunctionKeys | TFunctionKeys[],
+  options?: string | TOptions<StringMap> | undefined,
+  defaultValue?: string | undefined
+) =>
+  // eslint-disable-next-line regex/invalid
+  _serverOnlyI18n?.t(key, defaultValue, options) ??
+  'internal error: translations not loaded'
+
 interface GetStaticPropsMakerProps {
   leadingTitle?: string
   followingTitle?: string
   overrideTitle?: string
   overrideDescription?: string
   overrideImageUrl?: string
-  getAdditionalProps?: (
-    config: ConfigResponse
-  ) => Record<string, any> | Promise<Record<string, any>> | null | undefined
+  additionalProps?: Record<string, any> | null | undefined
 }
 type GetStaticPropsMaker = (
-  props?: GetStaticPropsMakerProps
+  getProps?: (
+    config: ConfigResponse,
+    t: typeof serverT
+  ) =>
+    | GetStaticPropsMakerProps
+    | undefined
+    | null
+    | Promise<GetStaticPropsMakerProps | undefined | null>
 ) => GetStaticProps<DAOPageWrapperProps>
 
 // Computes DAOPageWrapperProps for the DAO with optional alterations.
 export const makeGetDAOStaticProps: GetStaticPropsMaker =
-  ({
-    leadingTitle,
-    followingTitle,
-    overrideTitle,
-    overrideDescription,
-    overrideImageUrl,
-    getAdditionalProps,
-  } = {}) =>
+  (getProps) =>
   async ({ params: { address } = { address: undefined }, locale }) => {
     // Don't query chain if running in CI.
     if (CI) {
       return { notFound: true }
     }
 
+    // Run before any `t` call since i18n is not loaded globally on the
+    // server before this is awaited.
     const i18nProps = await serverSideTranslations(locale, ['translation'])
 
     // If invalid address, display not found.
@@ -63,7 +77,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       return {
         props: {
           ...i18nProps,
-          title: t('error.DAONotFound'),
+          title: serverT('error.DAONotFound'),
           description: '',
         },
       }
@@ -108,6 +122,18 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         stakingContractAddress = await votingModuleClient.stakingContract()
       }
 
+      // Must be called after server side translations has been awaited,
+      // because props may use the `t` function, and it won't be available
+      // until after.
+      const {
+        leadingTitle,
+        followingTitle,
+        overrideTitle,
+        overrideDescription,
+        overrideImageUrl,
+        additionalProps,
+      } = (await getProps?.(config, serverT)) ?? {}
+
       return {
         props: {
           ...i18nProps,
@@ -127,7 +153,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,
           },
-          ...(await getAdditionalProps?.(config)),
+          ...additionalProps,
         },
         // Regenerate the page at most once per second.
         // Should serve cached copy and update after a refresh.
