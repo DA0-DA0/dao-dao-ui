@@ -2,7 +2,8 @@
 import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps } from 'next'
 
-import { _serverOnlyI18n } from '@dao-dao/i18n'
+// eslint-disable-next-line regex/invalid
+import { _probablyDontUseThisI18n } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Cw20StakedBalanceVotingQueryClient,
@@ -31,8 +32,9 @@ const serverT = (
   options?: string | TOptions<StringMap> | undefined,
   defaultValue?: string | undefined
 ) =>
+  // Ok to use here as long as it's used after `serverSideTranslations`.
   // eslint-disable-next-line regex/invalid
-  _serverOnlyI18n?.t(key, defaultValue, options) ??
+  _probablyDontUseThisI18n?.t(key, defaultValue, options) ??
   'internal error: translations not loaded'
 
 interface GetStaticPropsMakerProps {

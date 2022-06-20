@@ -115,7 +115,12 @@ const eslintConfig = {
             'You probably should not be using this. Use the `useTranslation` hook within a component.',
         },
         {
-          regex: '_serverOnlyI18n\\??\\.t',
+          regex: '_probablyDontUseThisI18n',
+          files: {
+            // Don't replace in this file since the pattern appears above.
+            // Or the @dao-dao/i18n index.ts file where it is defined.
+            ignore: 'import\\.js|packages\\/i18n\\/index\\.ts',
+          },
           message:
             'You probably should not be using this. See the comment in the `index.ts` of the `@dao-dao/i18n` package.',
         },

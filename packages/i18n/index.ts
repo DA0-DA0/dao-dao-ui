@@ -7,5 +7,5 @@ export {
   // awaited. Can be used on the client after the app is mounted but IT
   // REALLY SHOULDN'T BE USED ON THE CLIENT. USE THE `useTranslation` HOOK
   // OR `withTranslation` HOC.
-  i18n as _serverOnlyI18n,
+  i18n as _probablyDontUseThisI18n,
 } from 'next-i18next'
