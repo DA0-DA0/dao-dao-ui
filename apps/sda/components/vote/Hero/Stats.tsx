@@ -68,7 +68,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
       {(!data || data.aprReward !== undefined) && (
         <HeroStat
           Icon={Apr}
-          title="APR:"
+          title={t('apr') + ':'}
           value={data ? data.aprReward!.toLocaleString() + '%' : ''}
         />
       )}

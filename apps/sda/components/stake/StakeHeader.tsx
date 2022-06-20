@@ -100,7 +100,7 @@ export const StakeHeader: FunctionComponent = () => {
       <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
         <div className="w-24 h-24 bg-light rounded-full border border-default">
           <img
-            alt="logo"
+            alt={t('logo')}
             className="w-full h-full"
             src={daoConfig.image_url ?? DEFAULT_IMAGE_URL}
           />

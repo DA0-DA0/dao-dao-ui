@@ -179,7 +179,7 @@ const InnerHome: FC = () => {
               <div className="flex gap-1 items-center">
                 <DocumentTextIcon className="inline w-4" />
                 {t('openProposals')}
-                <TooltipIcon label="These are open proposals you have not yet voted on for your favorited DAOs shown below." />
+                <TooltipIcon label={t('openProposalsTooltip')} />
               </div>
             </h2>
             <div className="flex flex-col gap-2 md:gap-1">

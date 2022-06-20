@@ -8,12 +8,14 @@ import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
 import { HomepageLayout, SidebarLayout } from '@/components'
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
+  const { t } = useTranslation()
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -47,7 +49,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
           name="viewport"
         />
       </Head>
-      <ErrorBoundary title="An unexpected error occurred.">
+      <ErrorBoundary title={t('unexpectedError')}>
         <ThemeProvider
           accentColor={accentColor}
           setAccentColor={setAccentColor}
