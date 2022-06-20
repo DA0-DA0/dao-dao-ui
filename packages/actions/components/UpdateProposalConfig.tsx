@@ -94,7 +94,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <InformationCircleIcon className="w-4 h-4 secondary-text" />
             </Tooltip>
 
-            <p className="w-max secondary-text"></p>
+            <p className="w-max secondary-text">{t('onlyMembersExecute')}</p>
           </div>
           <FormSwitch
             disabled={readOnly}
