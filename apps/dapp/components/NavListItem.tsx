@@ -21,7 +21,7 @@ export const NavListItem: FC<NavListItemProps> = ({
         currentUrl == href ? 'underline' : 'hover:underline transition-all'
       }
     >
-      <div className="flex flex-row gap-2 items-center cursor-pointer">
+      <div className="cursor-pointer flex flex-row gap-2 items-center mt-1">
         <div className="flex items-center">
           <Icon className="w-5 h-5" />
         </div>
