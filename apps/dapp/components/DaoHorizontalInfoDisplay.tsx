@@ -80,7 +80,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         )}
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {t('Proposals created', { proposalCount })}
+        {t('proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
   )
