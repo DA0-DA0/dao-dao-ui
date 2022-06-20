@@ -2,6 +2,7 @@ import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -31,6 +32,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
   readOnly,
   options: { existingTokens, ...options },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   const tokenAddress = watch(getFieldName('address'))
@@ -41,13 +43,13 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label="Token" symbol="⭕️" />}
+      emoji={<Emoji label={t('token')} symbol="⭕️" />}
       onRemove={onRemove}
-      title="Remove Treasury Token"
+      title={t('removeTreasuryToken')}
     >
       {existingTokens.length > 0 && (
         <>
-          <InputLabel name="Existing Tokens" />
+          <InputLabel name={t('existingTokens')} />
           <div className="grid grid-cols-5 gap-1 mb-2">
             {existingTokens.map(({ address, info }) => (
               <Button
@@ -69,7 +71,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
       )}
 
       <div className="flex flex-col gap-2 mb-3">
-        <InputLabel name="Token address" />
+        <InputLabel name={t('tokenAddress')} />
         <AddressInput
           disabled={readOnly}
           error={errors?.address}

@@ -3,6 +3,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import {
   AddressInput,
   InputErrorMessage,
@@ -54,6 +55,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   readOnly,
   options: { nativeBalances },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, clearErrors, setValue } = useFormContext()
 
   const stakeType = watch(getFieldName('stakeType'))
@@ -110,9 +112,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label="Box" symbol="📤" />}
+      emoji={<Emoji label={t('box')} symbol="📤" />}
       onRemove={onRemove}
-      title="Stake"
+      title={t('stake')}
     >
       <div className="flex flex-row gap-4 mt-2">
         <SelectInput
@@ -186,7 +188,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       {stakeType === StakeType.Redelegate && (
         <>
-          <h3 className="mt-2 mb-1">From Validator</h3>
+          <h3 className="mt-2 mb-1">{t('fromValidator')}</h3>
           <div className="form-control">
             <AddressInput
               disabled={readOnly}
@@ -204,7 +206,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       )}
 
       <h3 className="mt-2 mb-1">
-        {stakeType === StakeType.Redelegate ? 'To Validator' : 'Validator'}
+        {stakeType === StakeType.Redelegate ? t('toValidator') : t('validator')}
       </h3>
       <div className="form-control">
         <AddressInput
@@ -220,10 +222,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
         <InformationCircleIcon className="h-4" />
-        <p className="body-text">
-          This action is new and in beta. Double check the generated JSON before
-          executing.
-        </p>
+        <p className="body-text">{t('actionInBeta')}</p>
       </div>
     </ActionCard>
   )

@@ -1,6 +1,7 @@
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -21,14 +22,15 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   readOnly,
   options: { govTokenSymbol },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
   const amount = watch(getFieldName('amount'))
 
   return (
     <ActionCard
-      emoji={<Emoji label="Herb" symbol="🌿" />}
+      emoji={<Emoji label={t('herb')} symbol="🌿" />}
       onRemove={onRemove}
-      title="Mint"
+      title={t('mint')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
@@ -61,6 +63,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             </p>
           )}
         </div>
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <p className="font-mono text-2xl secondary-text">&#10142;</p>
         <div className="grow">
           <AddressInput
