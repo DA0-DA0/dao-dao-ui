@@ -55,12 +55,7 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
   newDAO,
 }) => {
   const { t } = useTranslation()
-  const { onlyOneTier, entries } = useVotingPowerDistributionData(
-    newDAO,
-    true,
-    true,
-    true
-  )
+  const { onlyOneTier, entries } = useVotingPowerDistributionData(newDAO, true)
 
   return (
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
@@ -81,62 +76,87 @@ export const useVotingPowerDistributionData = (
     tiers,
     governanceTokenOptions: {
       type,
-      newInfo: { initialTreasuryBalance: _initialTreasuryBalance },
+      newInfo: { initialSupply, initialTreasuryPercent },
     },
   }: NewDAO,
-  proportion: boolean,
-  sort: boolean,
-  includeTreasuryWhenApplicable: boolean
-) => {
+  // Does not include treasury, sorts, and uses proportions instead of
+  // absolute weights in a membership-based DAO.
+  summaryView: boolean
+): {
+  entries: Entry[]
+  onlyOneTier: boolean
+} => {
   const darkRgb = useNamedThemeColor('dark')
 
   return useMemo(() => {
-    const initialTreasuryBalance =
-      includeTreasuryWhenApplicable &&
+    const governanceTokenEnabled =
       structure === NewDAOStructure.GovernanceToken &&
       type === GovernanceTokenType.New
-        ? _initialTreasuryBalance
-        : undefined
 
     // Only display valid addresses.
-    const tiersWithValidMembers = tiers.map(({ members, ...tier }) => ({
-      ...tier,
-      members: members.filter(({ address }) =>
-        isValidAddress(address, CHAIN_BECH32_PREFIX)
-      ),
-    }))
+    const tiersWithValidMembers = tiers
+      .map(({ members, ...tier }) => ({
+        ...tier,
+        members: members.filter(({ address }) =>
+          isValidAddress(address, CHAIN_BECH32_PREFIX)
+        ),
+      }))
+      .filter(({ members }) => members.length)
 
+    // Won't be used if governanceTokenEnabled is true.
     const totalWeight =
-      (tiersWithValidMembers.reduce(
+      tiersWithValidMembers.reduce(
+        // Multiply by member count since the tier weight is per member
+        // when creating a membership-based DAO.
         (acc, { weight, members }) => acc + weight * members.length,
         0
-      ) || 0) + (initialTreasuryBalance ?? 0)
+      ) || 0
 
     // If one tier case, specially handle and display all members.
     const onlyOneTier = tiersWithValidMembers.length === 1
 
-    let entries: Entry[] = onlyOneTier
+    const entries: Entry[] = onlyOneTier
       ? tiersWithValidMembers[0].members.map(({ address }, memberIndex) => ({
           name: address,
-          value:
-            tiersWithValidMembers[0].weight *
-            (proportion ? 100 / totalWeight : 1),
+          value: governanceTokenEnabled
+            ? // Governance Token-based DAO tier weights are distributed
+              // amongst members.
+              tiersWithValidMembers[0].weight /
+              tiersWithValidMembers[0].members.length
+            : // Membership-based DAO tier weights are the same for each member.
+            summaryView
+            ? // Use proportions for summary view.
+              (tiersWithValidMembers[0].weight / totalWeight) * 100
+            : // Display absolute weights when not in summary view.
+              tiersWithValidMembers[0].weight,
           color: distributionColors[memberIndex % distributionColors.length],
         }))
       : tiersWithValidMembers.map(({ name, weight, members }, tierIndex) => ({
           name,
-          value: weight * members.length * (proportion ? 100 / totalWeight : 1),
+          value: governanceTokenEnabled
+            ? // Governance Token-based DAO tier weights are distributed
+              // amongst members.
+              weight
+            : // Membership-based DAO tier weights are the same for each
+            // member.
+            summaryView
+            ? // Use proportions for summary view.
+              ((weight * members.length) / totalWeight) * 100
+            : // Display absolute weights when not in summary view.
+              weight * members.length,
           color: distributionColors[tierIndex % distributionColors.length],
         }))
-    if (sort) {
+    // Sort descending by weight if in summary view.
+    if (summaryView) {
       entries.sort((a, b) => b.value - a.value)
     }
 
-    // If set, add treasury to beginning, even if 0, to always display it.
-    if (initialTreasuryBalance !== undefined) {
+    // Add treasury to beginning, even if 0, to always display it, when not
+    // in summary view.
+    if (governanceTokenEnabled && summaryView) {
       const treasuryEntry: Entry = {
         name: 'Treasury',
-        value: initialTreasuryBalance * (proportion ? 100 / totalWeight : 1),
+        value: initialTreasuryPercent,
         color: `rgba(${darkRgb}, 0.08)`,
       }
       entries.splice(0, 0, treasuryEntry)
@@ -146,12 +166,11 @@ export const useVotingPowerDistributionData = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     structure,
+    summaryView,
     type,
-    _initialTreasuryBalance,
-    sort,
+    initialSupply,
+    initialTreasuryPercent,
     darkRgb,
-    includeTreasuryWhenApplicable,
-    proportion,
     // Tiers reference does not change even if contents do, so we need a
     // primitive to use for memoization comparison.
     // eslint-disable-next-line react-hooks/exhaustive-deps

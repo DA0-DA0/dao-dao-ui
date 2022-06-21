@@ -8,7 +8,7 @@ export interface InputLabelProps
   mono?: boolean
   name: string
   tooltip?: ReactNode
-  labelProps?: Omit<ComponentProps<'label'>, 'children'>
+  containerProps?: Omit<ComponentProps<'label'>, 'children'>
 }
 
 export const InputLabel: FC<InputLabelProps> = ({
@@ -16,12 +16,12 @@ export const InputLabel: FC<InputLabelProps> = ({
   mono,
   name,
   tooltip,
-  labelProps: { className: labelClassName, ...labelProps } = {},
+  containerProps: { className: labelClassName, ...containerProps } = {},
   ...rest
 }) => (
   <label
     className={clsx('flex items-center space-x-1', labelClassName)}
-    {...labelProps}
+    {...containerProps}
   >
     <span
       className={clsx('caption-text', { 'font-mono': mono }, className)}

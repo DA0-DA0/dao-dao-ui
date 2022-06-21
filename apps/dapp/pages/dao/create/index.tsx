@@ -16,7 +16,6 @@ import { validateRequired } from '@dao-dao/utils'
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
-  DefaultNewDAO,
   NewDAOStructure,
 } from '@/atoms'
 import {
@@ -28,21 +27,23 @@ import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOPage: NextPage = () => {
   const { t } = useTranslation()
-  const { register, watch, errors, watchedNewDAO, setValue, formWrapperProps } =
-    useCreateDAOForm(0)
+  const {
+    register,
+    watch,
+    errors,
+    watchedNewDAO,
+    setValue,
+    formWrapperProps,
+    tiersAreUntouched,
+  } = useCreateDAOForm(0)
 
   const onStructureChange = useCallback(
     (structure: NewDAOStructure) => {
       setValue('structure', structure)
 
       // Swap initial tier voting power to the default for the structure
-      // if the tiers have not yet been changed.
-      if (
-        watchedNewDAO.tiers.length === 1 &&
-        watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name &&
-        watchedNewDAO.tiers[0].members.length === 1 &&
-        watchedNewDAO.tiers[0].members[0].address === ''
-      ) {
+      // if the tiers have not yet been edited.
+      if (tiersAreUntouched) {
         setValue(
           'tiers.0.weight',
           structure === NewDAOStructure.GovernanceToken
@@ -51,7 +52,7 @@ const CreateDAOPage: NextPage = () => {
         )
       }
     },
-    [setValue, watchedNewDAO]
+    [setValue, tiersAreUntouched]
   )
 
   return (

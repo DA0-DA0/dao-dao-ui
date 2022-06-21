@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
@@ -19,6 +20,7 @@ import {
 } from '@dao-dao/ui'
 import {
   validateContractAddress,
+  validatePercent,
   validatePositive,
   validateRequired,
   validateTokenSymbol,
@@ -32,6 +34,7 @@ import {
   NewDAOStructure,
 } from '@/atoms'
 import {
+  CreateDAOConfigCardSharedProps,
   CreateDAOConfigCardWrapper,
   CreateDAOFormWrapper,
   CreateDAOProposalDepositCard,
@@ -93,18 +96,12 @@ const CreateDAOVotingPage: NextPage = () => {
 
   const governanceTokenEnabled =
     watchedNewDAO.structure === NewDAOStructure.GovernanceToken
-  // Only count treasury balance when creating new governance token.
-  const initialTreasuryBalance =
-    governanceTokenEnabled &&
-    watchedNewDAO.governanceTokenOptions.type === GovernanceTokenType.New
-      ? watchedNewDAO.governanceTokenOptions.newInfo.initialTreasuryBalance || 0
-      : 0
-  const memberWeightAllocated = useMemo(
-    () =>
-      watchedNewDAO.tiers.reduce(
-        (acc, { weight, members }) => acc + weight * members.length,
-        0
-      ) || 0,
+  const govTokenInitialSupply =
+    watchedNewDAO.governanceTokenOptions.newInfo.initialSupply
+  const govTokenTreasuryPercent =
+    watchedNewDAO.governanceTokenOptions.newInfo.initialTreasuryPercent
+  const govTokenMemberPercent = useMemo(
+    () => watchedNewDAO.tiers.reduce((acc, { weight }) => acc + weight, 0) || 0,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       // Tiers reference does not change even if contents do, so we need a
@@ -120,16 +117,15 @@ const CreateDAOVotingPage: NextPage = () => {
         .join(),
     ]
   )
-  const totalWeightAllocated = memberWeightAllocated + initialTreasuryBalance
+  const govTokenPercentsSumTo100 =
+    govTokenTreasuryPercent + govTokenMemberPercent === 100
 
   const { onlyOneTier, entries } = useVotingPowerDistributionData(
     watchedNewDAO,
-    false,
-    false,
     false
   )
 
-  const configCardProps = {
+  const configCardProps: CreateDAOConfigCardSharedProps = {
     errors,
     newDAO: watchedNewDAO,
     register,
@@ -168,86 +164,137 @@ const CreateDAOVotingPage: NextPage = () => {
               GovernanceTokenType.New ? (
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
-                    <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">{t('Treasury balance')}</p>
+                    <div className="grid grid-cols-[2fr_3fr_auto] gap-x-4 gap-y-2 items-center">
+                      <p className="primary-text">{t('initialSupply')}</p>
 
-                      <div>
-                        <div className="flex flex-row grow gap-4 items-center">
-                          <NumberInput
-                            containerClassName="grow"
-                            error={
-                              errors.governanceTokenOptions?.newInfo
-                                ?.initialTreasuryBalance
-                            }
-                            fieldName="governanceTokenOptions.newInfo.initialTreasuryBalance"
-                            onPlusMinus={[
-                              () =>
-                                setValue(
-                                  'governanceTokenOptions.newInfo.initialTreasuryBalance',
-                                  Math.max(
-                                    initialTreasuryBalance + 1,
-                                    1 / 10 ** NEW_DAO_CW20_DECIMALS
-                                  )
-                                ),
-                              () =>
-                                setValue(
-                                  'governanceTokenOptions.newInfo.initialTreasuryBalance',
-                                  Math.max(
-                                    initialTreasuryBalance - 1,
-                                    1 / 10 ** NEW_DAO_CW20_DECIMALS
-                                  )
-                                ),
-                            ]}
-                            register={register}
-                            step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
-                            validation={[validatePositive, validateRequired]}
-                          />
-
-                          <div className="hidden flex-row gap-2 items-center text-tertiary sm:flex">
-                            {newTokenImageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                alt=""
-                                className="w-9 h-9 rounded-full"
-                                src={newTokenImageUrl}
-                              />
-                            ) : (
-                              <PlaceholderToken
-                                className="p-2 rounded-full border border-default"
-                                color="rgba(var(--dark), 0.3)"
-                                height="2.25rem"
-                                width="2.25rem"
-                              />
-                            )}
-                            $
-                            {watchedNewDAO.governanceTokenOptions.newInfo
-                              .symbol || t('token')}
-                          </div>
-                        </div>
+                      <div className="pl-8">
+                        <NumberInput
+                          containerClassName="grow"
+                          error={
+                            errors.governanceTokenOptions?.newInfo
+                              ?.initialSupply
+                          }
+                          fieldName="governanceTokenOptions.newInfo.initialSupply"
+                          onPlusMinus={[
+                            () =>
+                              setValue(
+                                'governanceTokenOptions.newInfo.initialSupply',
+                                Math.max(
+                                  govTokenInitialSupply + 1,
+                                  1 / 10 ** NEW_DAO_CW20_DECIMALS
+                                )
+                              ),
+                            () =>
+                              setValue(
+                                'governanceTokenOptions.newInfo.initialSupply',
+                                Math.max(
+                                  govTokenInitialSupply - 1,
+                                  1 / 10 ** NEW_DAO_CW20_DECIMALS
+                                )
+                              ),
+                          ]}
+                          register={register}
+                          step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+                          validation={[validatePositive, validateRequired]}
+                        />
 
                         <InputErrorMessage
                           error={
                             errors.governanceTokenOptions?.newInfo
-                              ?.initialTreasuryBalance
+                              ?.initialSupply
                           }
                         />
                       </div>
+
+                      <div className="flex flex-row gap-2 items-center text-tertiary">
+                        {newTokenImageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            alt=""
+                            className="w-9 h-9 rounded-full"
+                            src={newTokenImageUrl}
+                          />
+                        ) : (
+                          <PlaceholderToken
+                            className="p-2 rounded-full border border-default"
+                            color="rgba(var(--dark), 0.3)"
+                            height="2.25rem"
+                            width="2.25rem"
+                          />
+                        )}
+                        <p className="hidden sm:flex">
+                          $
+                          {watchedNewDAO.governanceTokenOptions.newInfo
+                            .symbol || t('token')}
+                        </p>
+                      </div>
+
+                      <p className="primary-text">{t('treasuryPercent')}</p>
+
+                      <div className="pl-8">
+                        <NumberInput
+                          containerClassName="grow"
+                          error={
+                            errors.governanceTokenOptions?.newInfo
+                              ?.initialTreasuryPercent
+                          }
+                          fieldName="governanceTokenOptions.newInfo.initialTreasuryPercent"
+                          onPlusMinus={[
+                            () =>
+                              setValue(
+                                'governanceTokenOptions.newInfo.initialTreasuryPercent',
+                                Math.min(
+                                  Math.max(govTokenTreasuryPercent + 1, 0),
+                                  100
+                                )
+                              ),
+                            () =>
+                              setValue(
+                                'governanceTokenOptions.newInfo.initialTreasuryPercent',
+                                Math.min(
+                                  Math.max(govTokenTreasuryPercent - 1, 0),
+                                  100
+                                )
+                              ),
+                          ]}
+                          register={register}
+                          step={0.001}
+                          validation={[
+                            validatePercent,
+                            validateRequired,
+                            // Error displayed in place of description.
+                            () => govTokenPercentsSumTo100,
+                          ]}
+                        />
+
+                        <InputErrorMessage
+                          error={
+                            errors.governanceTokenOptions?.newInfo
+                              ?.initialTreasuryPercent
+                          }
+                        />
+                      </div>
+
+                      <p className="flex justify-center items-center p-2 w-9 h-9 text-base text-disabled rounded-full">
+                        %
+                      </p>
                     </div>
 
-                    <p className="my-2 secondary-text">
-                      {t('Treasury balance description', {
-                        numberOfTokensMinted: totalWeightAllocated,
-                        memberPercent:
-                          totalWeightAllocated === 0
-                            ? 0
-                            : (memberWeightAllocated / totalWeightAllocated) *
-                              100,
-                        treasuryPercent:
-                          totalWeightAllocated === 0
-                            ? 0
-                            : (initialTreasuryBalance / totalWeightAllocated) *
-                              100,
+                    <p
+                      className={clsx('my-2 secondary-text', {
+                        'text-error': !govTokenPercentsSumTo100,
                       })}
+                    >
+                      {govTokenPercentsSumTo100
+                        ? t('Treasury balance description', {
+                            numberOfTokensMinted: govTokenInitialSupply,
+                            memberPercent: govTokenMemberPercent,
+                            treasuryPercent: govTokenTreasuryPercent,
+                          })
+                        : t('govTokenBalancesDoNotSumTo100', {
+                            totalPercent:
+                              govTokenTreasuryPercent + govTokenMemberPercent,
+                          })}
                     </p>
                   </div>
 
