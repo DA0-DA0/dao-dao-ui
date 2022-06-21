@@ -112,13 +112,9 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
         </div>
       </div>
       <div className="flex flex-col gap-3 p-5 border-t border-light md:p-7">
-        <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
-          <p className="col-span-3 font-mono text-sm text-tertiary">
-            {t('proposer')}
-          </p>
-          <div className="col-span-7">
-            <CopyToClipboard takeN={9} value={proposal.proposer} />
-          </div>
+        <div className="flex flex-col gap-2 items-start">
+          <p className="font-mono text-sm text-tertiary">{t('proposer')}</p>
+          <CopyToClipboard takeN={9} value={proposal.proposer} />
         </div>
 
         {proposal.status === Status.Executed && !proposalExecutionTXHash ? (

@@ -16,7 +16,7 @@ import {
   useProposalModule,
   useWallet,
 } from '@dao-dao/state'
-import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
+import { Breadcrumbs, CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
 
 import {
@@ -33,7 +33,7 @@ import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, votingModuleType } = useDAOInfoContext()
+  const { coreAddress, name, votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
@@ -155,9 +155,16 @@ const InnerProposalCreate = () => {
 
       <div className="flex flex-col gap-14 justify-center p-6 md:flex-row md:gap-8">
         <div className="md:w-2/3">
-          <h2 className="mb-4 font-medium text-medium">
-            {t('createAProposal')}
-          </h2>
+          <Breadcrumbs
+            className="mb-6"
+            crumbs={[
+              ['/home', t('home')],
+              [`/dao/${coreAddress}`, name],
+              [router.asPath, t('createAProposal')],
+            ]}
+          />
+
+          <h2 className="mb-6 font-medium lg:hidden">{t('createAProposal')}</h2>
 
           <SuspenseLoader fallback={<Loader />}>
             <CreateProposalForm

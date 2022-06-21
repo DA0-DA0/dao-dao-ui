@@ -165,18 +165,18 @@ const InnerProposal: FC = () => {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
-      <div className="col-span-4 w-full md:p-6">
+      <div className="col-span-4 w-full lg:p-6">
         <Breadcrumbs
           crumbs={[
-            ['/home', t('Home page')],
+            ['/home', t('home')],
             [`/dao/${coreAddress}`, name],
             [router.asPath, `Proposal ${proposalId}`],
           ]}
         />
 
-        <SmallScreenNav className="md:!px-0" />
+        <SmallScreenNav />
 
-        <div className="flex flex-col gap-6 p-6 max-w-3xl md:p-0 md:mt-6">
+        <div className="flex flex-col gap-6 p-6 max-w-3xl lg:p-0 lg:mt-6">
           <div className="lg:hidden">
             <ProposalInfoCard
               connected={connected}
@@ -233,7 +233,7 @@ const InnerProposal: FC = () => {
           </div>
         </div>
 
-        <div className="mx-6 mt-8 max-w-3xl md:mx-0">
+        <div className="mx-6 mt-8 max-w-3xl lg:mx-0">
           <ProposalVotes coreAddress={coreAddress} proposalId={proposalId} />
         </div>
       </div>
