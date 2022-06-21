@@ -1,10 +1,10 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { Trans, useTranslation } from '@dao-dao/i18n'
 import {
   CwCoreQueryClient,
   CwProposalSingleHooks,
@@ -17,6 +17,7 @@ import {
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   ErrorPage,
+  LinkText,
   ProposalDetails,
   ProposalInfoCard,
   ProposalInfoVoteStatus,
@@ -34,12 +35,13 @@ import {
   Loader,
   PageWrapper,
   PageWrapperProps,
-  makeGetStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
 
 const InnerProposal: FC = () => {
+  const { t } = useTranslation()
   const router = useRouter()
 
   const { votingModuleType } = useDAOInfoContext()
@@ -206,7 +208,7 @@ const InnerProposal: FC = () => {
         />
 
         <div className="pb-6 mt-6 lg:hidden">
-          <h3 className="mb-6 text-base font-medium">Referendum status</h3>
+          <h3 className="mb-6 text-base font-medium">{t('voteStatus')}</h3>
 
           <ProposalInfoVoteStatus
             denomConversionDecimals={denomConversionDecimals}
@@ -221,7 +223,7 @@ const InnerProposal: FC = () => {
       </div>
 
       <div className="hidden min-h-screen lg:block bg-base-200">
-        <h2 className="mb-6 text-base font-medium">Details</h2>
+        <h2 className="mb-6 text-base font-medium">{t('details')}</h2>
         <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
@@ -230,7 +232,7 @@ const InnerProposal: FC = () => {
           walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
-        <h3 className="mt-8 mb-6 text-base font-medium">Referendum status</h3>
+        <h3 className="mt-8 mb-6 text-base font-medium">{t('voteStatus')}</h3>
         <ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
@@ -245,17 +247,24 @@ const InnerProposal: FC = () => {
   )
 }
 
-const ProposalNotFound = () => (
-  <ErrorPage title="Proposal Not Found">
-    <p>
-      We couldn{"'"}t find a proposal with that ID. See all proposals on the{' '}
-      <Link href="/vote">
-        <a className="underline link-text">Vote</a>
-      </Link>{' '}
-      page.
-    </p>
-  </ErrorPage>
-)
+const ProposalNotFound = () => {
+  const { t } = useTranslation()
+
+  return (
+    <ErrorPage title={t('error.proposalNotFound')}>
+      <p>
+        <Trans i18nKey="couldntFindProposal">
+          We couldn&apos;t find a proposal with that ID. See all proposals on
+          the{' '}
+          <LinkText aProps={{ className: 'underline link-text' }} href="/vote">
+            Vote page
+          </LinkText>
+          .
+        </Trans>
+      </p>
+    </ErrorPage>
+  )
+}
 
 interface ProposalPageProps extends PageWrapperProps {
   exists: boolean
@@ -279,7 +288,9 @@ export default ProposalPage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
 export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
@@ -292,9 +303,9 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
 
   const proposalIdQuery = props[0].params?.proposalId
   if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    const staticProps = await makeGetStaticProps({
-      followingTitle: 'Proposal not found',
-    })(...props)
+    const staticProps = await makeGetStaticProps((t) => ({
+      followingTitle: t('error.proposalNotFound'),
+    }))(...props)
 
     return 'props' in staticProps
       ? {
@@ -337,9 +348,11 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
       console.error(err)
     }
 
-    const staticProps = await makeGetStaticProps({
-      followingTitle: `Proposal ${exists ? '#' + proposalId : 'not found'}`,
-    })(...props)
+    const staticProps = await makeGetStaticProps((t) => ({
+      followingTitle: exists
+        ? `${t('proposals', { count: 1 })} #${proposalId}`
+        : t('error.proposalNotFound'),
+    }))(...props)
 
     return 'props' in staticProps
       ? {

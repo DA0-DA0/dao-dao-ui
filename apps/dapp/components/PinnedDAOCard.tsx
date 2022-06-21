@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   CwCoreSelectors,
   nativeBalanceSelector,
@@ -17,13 +17,14 @@ import {
 
 import { ContractCard, LoadingContractCard } from './ContractCard'
 import { usePinnedDAOs } from '@/hooks'
-import { addToken } from '@/util'
+import { useAddToken } from '@/util'
 
 interface PinnedDAOCardProps {
   address: string
 }
 
 const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
+  const { t } = useTranslation()
   const config = useRecoilValue(
     CwCoreSelectors.configSelector({ contractAddress: address })
   )
@@ -34,12 +35,13 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })
+  const addToken = useAddToken()
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
 
   if (!config || nativeBalance === undefined || proposalCount === undefined) {
-    throw new Error(i18n.t('error.loadingData'))
+    throw new Error(t('error.loadingData'))
   }
 
   return (

@@ -1,7 +1,7 @@
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   AddressInput,
   InputErrorMessage,
@@ -17,26 +17,27 @@ import {
 import { ActionCard, ActionComponent } from '..'
 
 export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
   options,
 }) => {
+  const { t } = useTranslation()
   const { register } = useFormContext()
 
   return (
     <ActionCard
-      emoji={<Emoji label="Token" symbol="🔘" />}
+      emoji={<Emoji label={t('token')} symbol="🔘" />}
       onRemove={onRemove}
-      title="Add Treasury Token"
+      title={t('addTreasuryToken')}
     >
       <div className="flex flex-col gap-2">
-        <InputLabel name={i18n.t('Governance token address')} />
+        <InputLabel name={t('Governance token address')} />
         <AddressInput
           disabled={readOnly}
           error={errors?.address}
-          label={getLabel('address')}
+          fieldName={getFieldName('address')}
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />

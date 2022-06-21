@@ -1,7 +1,9 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { GetStaticProps, NextPage } from 'next'
+import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { PlaceholderToken } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
@@ -45,7 +47,8 @@ import {
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
-const CreateDAOVotingPage: FC = () => {
+const CreateDAOVotingPage: NextPage = () => {
+  const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const {
     watchedNewDAO,
@@ -69,15 +72,19 @@ const CreateDAOVotingPage: FC = () => {
     name: 'tiers',
   })
 
-  // If wallet connected and empty tiers, fill in as first default.
+  // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
   useEffect(() => {
     if (loadedPage) return
     setLoadedPage(true)
 
-    if (!tiersAreUntouched || !walletAddress) return
-    setValue('tiers.0.members.0.address', walletAddress)
-  }, [loadedPage, setValue, tiersAreUntouched, walletAddress])
+    if (!tiersAreUntouched) return
+
+    setValue('tiers.0.name', t('defaultTierName'))
+    if (walletAddress) {
+      setValue('tiers.0.members.0.address', walletAddress)
+    }
+  }, [loadedPage, setValue, t, tiersAreUntouched, walletAddress])
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
@@ -141,14 +148,14 @@ const CreateDAOVotingPage: FC = () => {
         {governanceTokenEnabled && (
           <div className="space-y-3">
             <RadioInput
-              label="governanceTokenOptions.type"
+              fieldName="governanceTokenOptions.type"
               options={[
                 {
-                  label: i18n.t('Create a token'),
+                  label: t('Create a token'),
                   value: GovernanceTokenType.New,
                 },
                 {
-                  label: i18n.t('Use existing token'),
+                  label: t('Use existing token'),
                   value: GovernanceTokenType.Existing,
                 },
               ]}
@@ -162,9 +169,7 @@ const CreateDAOVotingPage: FC = () => {
                 <>
                   <div className="flex flex-col gap-2 items-stretch">
                     <div className="grid grid-cols-[2fr_3fr] gap-12 items-center sm:grid-cols-[1fr_3fr]">
-                      <p className="primary-text">
-                        {i18n.t('Treasury balance')}
-                      </p>
+                      <p className="primary-text">{t('Treasury balance')}</p>
 
                       <div>
                         <div className="flex flex-row grow gap-4 items-center">
@@ -174,7 +179,7 @@ const CreateDAOVotingPage: FC = () => {
                               errors.governanceTokenOptions?.newInfo
                                 ?.initialTreasuryBalance
                             }
-                            label="governanceTokenOptions.newInfo.initialTreasuryBalance"
+                            fieldName="governanceTokenOptions.newInfo.initialTreasuryBalance"
                             onPlusMinus={[
                               () =>
                                 setValue(
@@ -216,7 +221,7 @@ const CreateDAOVotingPage: FC = () => {
                             )}
                             $
                             {watchedNewDAO.governanceTokenOptions.newInfo
-                              .symbol || 'Token'}
+                              .symbol || t('token')}
                           </div>
                         </div>
 
@@ -230,7 +235,7 @@ const CreateDAOVotingPage: FC = () => {
                     </div>
 
                     <p className="my-2 secondary-text">
-                      {i18n.t('Treasury balance description', {
+                      {t('Treasury balance description', {
                         numberOfTokensMinted: totalWeightAllocated,
                         memberPercent:
                           totalWeightAllocated === 0
@@ -248,31 +253,31 @@ const CreateDAOVotingPage: FC = () => {
 
                   <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">
                     <div className="flex flex-col gap-2 justify-between items-start">
-                      <InputLabel mono name={i18n.t('Token image')} />
+                      <InputLabel mono name={t('Token image')} />
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
                             errors.governanceTokenOptions?.newInfo?.imageUrl
                           }
-                          label="governanceTokenOptions.newInfo.imageUrl"
+                          fieldName="governanceTokenOptions.newInfo.imageUrl"
                           register={register}
                           size={36}
                           watch={watch}
                         />
                         <p className="hidden text-disabled sm:block">
-                          {i18n.t('Add an image')}
+                          {t('Add an image')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={i18n.t('Ticker symbol')} />
+                      <InputLabel mono name={t('Ticker symbol')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.symbol}
-                          label="governanceTokenOptions.newInfo.symbol"
-                          placeholder={i18n.t('Ticker symbol placeholder')}
+                          fieldName="governanceTokenOptions.newInfo.symbol"
+                          placeholder={t('Ticker symbol placeholder')}
                           register={register}
                           validation={[validateRequired, validateTokenSymbol]}
                         />
@@ -283,13 +288,13 @@ const CreateDAOVotingPage: FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={i18n.t('Governance token name')} />
+                      <InputLabel mono name={t('Governance token name')} />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.name}
-                          label="governanceTokenOptions.newInfo.name"
-                          placeholder={i18n.t('Governance token placeholder')}
+                          fieldName="governanceTokenOptions.newInfo.name"
+                          placeholder={t('Governance token placeholder')}
                           register={register}
                           validation={[validateRequired]}
                         />
@@ -302,16 +307,14 @@ const CreateDAOVotingPage: FC = () => {
                 </>
               ) : (
                 <div className="space-y-2">
-                  <p className="primary-text">
-                    {i18n.t('Token contract address')}
-                  </p>
+                  <p className="primary-text">{t('Token contract address')}</p>
 
                   <TextInput
                     error={
                       errors.governanceTokenOptions
                         ?.existingGovernanceTokenAddress
                     }
-                    label="governanceTokenOptions.existingGovernanceTokenAddress"
+                    fieldName="governanceTokenOptions.existingGovernanceTokenAddress"
                     register={register}
                     validation={[validateContractAddress, validateRequired]}
                   />
@@ -332,7 +335,7 @@ const CreateDAOVotingPage: FC = () => {
             GovernanceTokenType.New) && (
           <>
             <div className="flex flex-col gap-4 items-stretch">
-              {governanceTokenEnabled && <p>{i18n.t('Token distribution')}</p>}
+              {governanceTokenEnabled && <p>{t('Token distribution')}</p>}
 
               {tiers.map(({ id }, idx) => (
                 <CreateDAOTier
@@ -368,7 +371,7 @@ const CreateDAOVotingPage: FC = () => {
                   }
                   variant="secondary"
                 >
-                  {i18n.t('Add tier')}
+                  {t('Add tier')}
                 </Button>
 
                 <InputErrorMessage error={errors._tiersError} />
@@ -397,7 +400,7 @@ const CreateDAOVotingPage: FC = () => {
 
         <div className="flex flex-row gap-4 items-center">
           <FormSwitch
-            label="_changeThresholdQuorumEnabled"
+            fieldName="_changeThresholdQuorumEnabled"
             onToggle={(newValue) => {
               if (newValue) {
                 setShowThresholdQuorumWarning(true)
@@ -413,10 +416,10 @@ const CreateDAOVotingPage: FC = () => {
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name={i18n.t('Advanced voting configuration')}
+              name={t('Advanced voting configuration')}
             />
             <p className="caption-text">
-              {i18n.t('Advanced voting configuration description')}
+              {t('Advanced voting configuration description')}
             </p>
           </div>
         </div>
@@ -434,11 +437,9 @@ const CreateDAOVotingPage: FC = () => {
           containerClassName="flex flex-col gap-4"
           onClose={() => setShowThresholdQuorumWarning(false)}
         >
-          <p className="header-text">{i18n.t('Watch out!')}</p>
+          <p className="header-text">{t('Watch out!')}</p>
 
-          <p className="body-text">
-            {i18n.t('Advanced configuration warning')}
-          </p>
+          <p className="body-text">{t('Advanced configuration warning')}</p>
 
           <a
             className="block underline"
@@ -446,14 +447,14 @@ const CreateDAOVotingPage: FC = () => {
             rel="noreferrer"
             target="_blank"
           >
-            Learn more
+            {t('learnMore')}
           </a>
 
           <Button
             className="self-end"
             onClick={() => setShowThresholdQuorumWarning(false)}
           >
-            {i18n.t('I accept the danger')}
+            {t('I accept the danger')}
           </Button>
         </Modal>
       )}
@@ -462,3 +463,9 @@ const CreateDAOVotingPage: FC = () => {
 }
 
 export default CreateDAOVotingPage
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

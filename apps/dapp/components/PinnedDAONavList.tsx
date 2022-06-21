@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { FC } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { Logo } from '@dao-dao/ui'
@@ -13,6 +13,7 @@ import { pinnedAddressesAtom } from '@/atoms'
 import { NavListItem } from '@/components'
 
 export const PinnedDAONavList: FC = () => {
+  const { t } = useTranslation()
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const daoConfigs = useRecoilValue(
     waitForAll(
@@ -43,8 +44,8 @@ export const PinnedDAONavList: FC = () => {
           />
         ))}
       <Link href="/dao/create">
-        <a className="flex gap-2 items-center hover:underline link-text mt-2">
-          <PlusIcon className="w-5 h-5" /> {i18n.t('Create')}
+        <a className="flex gap-2 items-center mt-2 hover:underline link-text">
+          <PlusIcon className="w-5 h-5" /> {t('Create')}
         </a>
       </Link>
     </ul>
@@ -52,6 +53,7 @@ export const PinnedDAONavList: FC = () => {
 }
 
 export const MobilePinnedDAONavList: FC = () => {
+  const { t } = useTranslation()
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const daoConfigs = useRecoilValue(
     waitForAll(
@@ -83,7 +85,7 @@ export const MobilePinnedDAONavList: FC = () => {
           >
             {!!config.image_url && HEADER_IMAGES_ENABLED ? (
               <div
-                aria-label="DAO's Custom Logo"
+                aria-label={t('daosLogo')}
                 className="w-[50px] h-[50px] bg-center bg-cover rounded-full"
                 role="img"
                 style={{
@@ -91,7 +93,7 @@ export const MobilePinnedDAONavList: FC = () => {
                 }}
               ></div>
             ) : (
-              <Logo alt={`${config.name} logo`} height={50} width={50} />
+              <Logo alt={t('daodaoLogo')} height={50} width={50} />
             )}
             <h2 className="text-center text-dark break-words line-clamp-2 button-text">
               {config.name}

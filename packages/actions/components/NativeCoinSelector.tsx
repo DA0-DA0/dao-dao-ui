@@ -24,7 +24,7 @@ export interface NativeCoinSelectorProps
 
 export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   onRemove,
-  getLabel,
+  getFieldName,
   errors,
   readOnly,
   options: { nativeBalances },
@@ -32,8 +32,8 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
 }) => {
   const { register, setValue, watch } = useFormContext()
 
-  const watchAmount = watch(getLabel('amount'))
-  const watchDenom = watch(getLabel('denom'))
+  const watchAmount = watch(getFieldName('amount'))
+  const watchDenom = watch(getFieldName('denom'))
 
   const validatePossibleSpend = (
     id: string,
@@ -72,16 +72,16 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
         <NumberInput
           disabled={readOnly}
           error={errors?.amount}
-          label={getLabel('amount')}
+          fieldName={getFieldName('amount')}
           onPlusMinus={[
             () =>
               setValue(
-                getLabel('amount'),
+                getFieldName('amount'),
                 Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
               ),
             () =>
               setValue(
-                getLabel('amount'),
+                getFieldName('amount'),
                 Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
               ),
           ]}
@@ -99,7 +99,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           defaultValue={NATIVE_DENOM}
           disabled={readOnly}
           error={errors?.denom}
-          label={getLabel('denom')}
+          fieldName={getFieldName('denom')}
           register={register}
           validation={[
             (denom: string) => validatePossibleSpend(denom, watchAmount),

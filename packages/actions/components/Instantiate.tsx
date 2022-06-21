@@ -4,6 +4,7 @@ import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import {
   Button,
   CodeMirrorInput,
@@ -33,8 +34,9 @@ export interface InstantiateOptions {
 export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   props
 ) => {
+  const { t } = useTranslation()
   const {
-    getLabel,
+    getFieldName,
     onRemove,
     errors,
     readOnly,
@@ -47,18 +49,18 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: getLabel('funds'),
+    name: getFieldName('funds'),
   })
 
   return (
     <ActionCard
-      emoji={<Emoji label="Baby" symbol="👶" />}
+      emoji={<Emoji label={t('baby')} symbol="👶" />}
       onRemove={onRemove}
-      title="Instantiate Smart Contract"
+      title={t('instantiateSmartContract')}
     >
       {instantiatedAddress && (
         <div className="flex flex-row gap-3 items-center mb-2 text-primary">
-          <InputLabel name="Instantiated Address:" />
+          <InputLabel name={t('instantiatedAddress') + ':'} />
           <CopyToClipboard
             takeStartEnd={{ start: instantiatedAddress.length, end: 0 }}
             value={instantiatedAddress}
@@ -68,11 +70,11 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
       <div className="flex flex-row gap-2 items-center">
         <div className="flex flex-col gap-1 items-stretch">
-          <InputLabel name="Code ID" />
+          <InputLabel name={t('codeID')} />
           <NumberInput
             disabled={readOnly}
             error={errors?.codeId}
-            label={getLabel('codeId')}
+            fieldName={getFieldName('codeId')}
             register={register}
             sizing="sm"
             step={1}
@@ -82,11 +84,11 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         </div>
 
         <div className="flex flex-col grow gap-1 items-stretch">
-          <InputLabel name="Contract Label" />
+          <InputLabel name={t('contractLabel')} />
           <TextInput
             disabled={readOnly}
             error={errors?.label}
-            label={getLabel('label')}
+            fieldName={getFieldName('label')}
             register={register}
             validation={[validateRequired]}
           />
@@ -94,11 +96,11 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         </div>
       </div>
 
-      <InputLabel className="-mb-1" name="Message" />
+      <InputLabel className="-mb-1" name={t('message')} />
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        label={getLabel('message')}
+        fieldName={getFieldName('message')}
         readOnly={readOnly}
         validation={[
           (v: string) => {
@@ -130,23 +132,25 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         </p>
       ) : (
         <p className="flex gap-1 items-center text-sm text-success">
-          <CheckIcon className="inline w-5" /> json is valid
+          <CheckIcon className="inline w-5" /> {t('jsonIsValid')}
         </p>
       )}
 
-      <InputLabel className="mt-1 -mb-1" name="Funds" />
+      <InputLabel className="mt-1 -mb-1" name={t('funds')} />
       <div className="flex flex-col gap-2 items-stretch">
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}
             {...props}
             errors={errors?.funds?.[index]}
-            getLabel={(field: string) => getLabel(`funds.${index}.${field}`)}
+            getFieldName={(field: string) =>
+              getFieldName(`funds.${index}.${field}`)
+            }
             onRemove={() => removeCoin(index)}
           />
         ))}
         {readOnly && coins.length === 0 && (
-          <p className="mt-1 mb-2 text-xs italic text-tertiary">None</p>
+          <p className="mt-1 mb-2 text-xs italic text-tertiary">{t('none')}</p>
         )}
         {!readOnly && (
           <Button
@@ -154,18 +158,18 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
             variant="secondary"
           >
-            Add payment
+            {t('addPayment')}
           </Button>
         )}
       </div>
 
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name="Admin" />
+        <InputLabel name={t('admin')} />
         <TextInput
           disabled={readOnly}
           error={errors?.admin}
-          label={getLabel('admin')}
-          placeholder={readOnly ? 'None' : 'juno...'}
+          fieldName={getFieldName('admin')}
+          placeholder={readOnly ? t('none') : 'juno...'}
           register={register}
           validation={[(v: string) => validateContractAddress(v, false)]}
         />

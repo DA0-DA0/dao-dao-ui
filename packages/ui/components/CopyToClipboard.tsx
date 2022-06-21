@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Copy } from '@dao-dao/icons'
 import { Button, useThemeContext } from '@dao-dao/ui'
 
@@ -97,7 +98,9 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
   success = 'Copied to clipboard',
   takeN = 7,
 }) => {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
+
   return (
     <div className="flex justify-between p-1 rounded-md border border-inactive">
       <div className="flex gap-2 items-center px-2 text-tertiary secondary-text">
@@ -120,7 +123,7 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
         size="sm"
         variant="secondary"
       >
-        <p className="text-body caption-text">Copy</p>
+        <p className="text-body caption-text">{t('copy')}</p>
       </Button>
     </div>
   )

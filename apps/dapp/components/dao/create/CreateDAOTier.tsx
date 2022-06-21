@@ -8,7 +8,7 @@ import {
   useFieldArray,
 } from 'react-hook-form'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   AddressInput,
   Button,
@@ -47,6 +47,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   newDAO,
   ...props
 }) => {
+  const { t } = useTranslation()
   const {
     tierIndex,
     control,
@@ -89,12 +90,12 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               <TextInput
                 className="grow"
                 error={errors.tiers?.[tierIndex]?.name}
-                label={`tiers.${tierIndex}.name`}
-                placeholder={i18n.t('Tier name') + '...'}
+                fieldName={`tiers.${tierIndex}.name`}
+                placeholder={t('Tier name') + '...'}
                 register={register}
                 validation={[validateRequired]}
               />
-              <TooltipIcon label={i18n.t('Tier description')} />
+              <TooltipIcon label={t('Tier description')} />
             </div>
           </div>
           <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
@@ -104,15 +105,15 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
           <div className="flex flex-row gap-2 items-center">
             <p className="text-right caption-text">
               {governanceTokenEnabled
-                ? i18n.t('Governance token', { count: 1000 })
-                : i18n.t('Voting weight')}
+                ? t('Governance token', { count: 1000 })
+                : t('Voting weight')}
               <br />
-              {i18n.t('per member')}
+              {t('per member')}
             </p>
             <div>
               <NumberInput
                 error={errors.tiers?.[tierIndex]?.weight}
-                label={`tiers.${tierIndex}.weight`}
+                fieldName={`tiers.${tierIndex}.weight`}
                 onPlusMinus={[
                   () =>
                     setValue(
@@ -143,7 +144,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                 validation={[validatePositive, validateRequired]}
               />
             </div>
-            <TooltipIcon label={i18n.t('Add another tier prompt')} />
+            <TooltipIcon label={t('Add another tier prompt')} />
           </div>
 
           <InputErrorMessage error={errors.tiers?.[tierIndex]?.weight} />
@@ -165,7 +166,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
             onClick={() => appendMember({ address: '' })}
             variant="secondary"
           >
-            {i18n.t('Add member')}
+            {t('Add member')}
           </Button>
           {remove && (
             <Button
@@ -195,37 +196,41 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
   errors,
   remove,
   showColorDotOnMember,
-}) => (
-  <div className="grid grid-cols-[1fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
-    <div>
-      <div className="flex flex-row gap-4 items-center">
-        {showColorDotOnMember && (
-          <div
-            className="shrink-0 w-2 h-2 rounded-full"
-            style={{
-              backgroundColor:
-                distributionColors[memberIndex % distributionColors.length],
-            }}
-          ></div>
-        )}
+}) => {
+  const { t } = useTranslation()
 
-        <AddressInput
-          containerClassName="grow"
+  return (
+    <div className="grid grid-cols-[1fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
+      <div>
+        <div className="flex flex-row gap-4 items-center">
+          {showColorDotOnMember && (
+            <div
+              className="shrink-0 w-2 h-2 rounded-full"
+              style={{
+                backgroundColor:
+                  distributionColors[memberIndex % distributionColors.length],
+              }}
+            ></div>
+          )}
+
+          <AddressInput
+            containerClassName="grow"
+            error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
+            fieldName={`tiers.${tierIndex}.members.${memberIndex}.address`}
+            placeholder={t('Member address placeholder')}
+            register={register}
+            validation={[validateAddress, validateRequired]}
+          />
+        </div>
+
+        <InputErrorMessage
           error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
-          label={`tiers.${tierIndex}.members.${memberIndex}.address`}
-          placeholder={i18n.t('Member address placeholder')}
-          register={register}
-          validation={[validateAddress, validateRequired]}
         />
       </div>
 
-      <InputErrorMessage
-        error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
-      />
+      <button className="justify-self-end p-1" onClick={remove}>
+        <TrashIcon className="w-4 h-4 text-error" />
+      </button>
     </div>
-
-    <button className="justify-self-end p-1" onClick={remove}>
-      <TrashIcon className="w-4 h-4 text-error" />
-    </button>
-  </div>
-)
+  )
+}

@@ -18,7 +18,7 @@ import {
   UseTransformToCosmos,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 import {
   CwCoreSelectors,
@@ -68,6 +68,7 @@ export const CreateProposalForm = ({
   votingModuleType,
   connectWalletButton,
 }: CreateProposalFormProps) => {
+  const { t } = useTranslation()
   const { connected } = useWallet()
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
@@ -205,20 +206,20 @@ export const CreateProposalForm = ({
         )}
         <div className={showPreview ? 'hidden' : ''}>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name={i18n.t('Proposal title')} />
+            <InputLabel name={t('Proposal title')} />
             <TextInput
               error={errors.title}
-              label="title"
+              fieldName="title"
               register={register}
               validation={[validateRequired]}
             />
             <InputErrorMessage error={errors.title} />
           </div>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name={i18n.t('Proposal description')} />
+            <InputLabel name={t('Proposal description')} />
             <TextAreaInput
               error={errors.description}
-              label="description"
+              fieldName="description"
               register={register}
               validation={[validateRequired]}
             />
@@ -238,7 +239,7 @@ export const CreateProposalForm = ({
                     allActionsWithData={proposalActionData}
                     coreAddress={coreAddress}
                     errors={errors.actionData?.[index]?.data || {}}
-                    getLabel={(fieldName) =>
+                    getFieldName={(fieldName) =>
                       `actionData.${index}.data.${fieldName}`
                     }
                     index={index}
@@ -255,7 +256,7 @@ export const CreateProposalForm = ({
               type="button"
               variant="secondary"
             >
-              <PlusIcon className="inline h-4" /> {i18n.t('Add an action')}
+              <PlusIcon className="inline h-4" /> {t('Add an action')}
             </Button>
           </div>
         </div>
@@ -264,11 +265,11 @@ export const CreateProposalForm = ({
             <Tooltip
               label={
                 !isMember
-                  ? i18n.t('error.mustBeMemberToCreateProposal')
+                  ? t('error.mustBeMemberToCreateProposal')
                   : !canPayDeposit
-                  ? i18n.t('error.notEnoughForDeposit')
+                  ? t('error.notEnoughForDeposit')
                   : isPaused
-                  ? i18n.t('error.daoIsPaused')
+                  ? t('error.daoIsPaused')
                   : undefined
               }
             >
@@ -278,7 +279,7 @@ export const CreateProposalForm = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                {i18n.t('Publish proposal') + ' '}
+                {t('Publish proposal') + ' '}
                 <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
@@ -293,12 +294,12 @@ export const CreateProposalForm = ({
           >
             {showPreview ? (
               <>
-                {i18n.t('Hide preview')}
+                {t('Hide preview')}
                 <EyeOffIcon className="inline ml-2 h-5 stroke-current" />
               </>
             ) : (
               <>
-                {i18n.t('Preview')}
+                {t('Preview')}
                 <EyeIcon className="inline ml-2 h-5 stroke-current" />
               </>
             )}
@@ -306,7 +307,7 @@ export const CreateProposalForm = ({
         </div>
         {showSubmitErrorNote && (
           <p className="mt-2 text-right text-error secondary-text">
-            Correct the errors above before previewing or publishing.
+            {t('createProposalSubmitValidationError')}
           </p>
         )}
       </form>

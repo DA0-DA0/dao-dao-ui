@@ -9,10 +9,14 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/state',
   '@dao-dao/actions',
   '@dao-dao/common',
+  '@dao-dao/i18n',
 ])
+
+const { i18n } = require('./next-i18next.config')
 
 /** @type {import("next").NextConfig} */
 let config = {
+  i18n,
   /*
     The reactStrictMode flag is set to false
     to allow for the proposal JSON editor to show.
@@ -28,6 +32,7 @@ let config = {
       'services',
       'types',
       'util',
+      'server',
     ],
   },
   redirects: async () => [

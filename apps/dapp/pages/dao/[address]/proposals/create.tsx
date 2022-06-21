@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -26,11 +26,12 @@ import {
   PageLoader,
   ProposalsInfo,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
 const InnerProposalCreate = () => {
+  const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress, votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected, refreshBalances } = useWallet()
@@ -155,7 +156,7 @@ const InnerProposalCreate = () => {
       <div className="flex flex-col gap-14 justify-center p-6 md:flex-row md:gap-8">
         <div className="md:w-2/3">
           <h2 className="mb-4 font-medium text-medium">
-            {i18n.t('Create a proposal')}
+            {t('createAProposal')}
           </h2>
 
           <SuspenseLoader fallback={<Loader />}>
@@ -169,16 +170,18 @@ const InnerProposalCreate = () => {
         </div>
 
         <div className="flex-1">
-          <h2 className="mb-4 font-medium text-medium">Addresses</h2>
+          <h2 className="mb-4 font-medium text-medium">{t('addresses')}</h2>
 
           <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
-            <p className="font-mono text-sm text-tertiary">DAO Treasury</p>
+            <p className="font-mono text-sm text-tertiary">
+              {t('daoTreasury')}
+            </p>
             <div className="col-span-2">
               <CopyToClipboard value={coreAddress} />
             </div>
           </div>
 
-          <h2 className="mb-4 font-medium text-medium">Proposal Info</h2>
+          <h2 className="mb-4 font-medium text-medium">{t('proposalInfo')}</h2>
           <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
         </div>
       </div>
@@ -203,9 +206,11 @@ export default ProposalCreatePage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
-export const getStaticProps = makeGetDAOStaticProps({
-  followingTitle: i18n.t('Create a proposal'),
-})
+export const getStaticProps = makeGetDAOStaticProps((_, t) => ({
+  followingTitle: t('createAProposal'),
+}))

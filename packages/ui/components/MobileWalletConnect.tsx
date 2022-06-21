@@ -6,6 +6,7 @@ import {
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Wallet } from '@dao-dao/icons'
 import { Modal, WalletConnectProps } from '@dao-dao/ui'
 import { CHAIN_NAME } from '@dao-dao/utils'
@@ -22,8 +23,10 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
   walletBalance: _b,
   walletBalanceDenom: _d,
   ...buttonProps
-}) =>
-  connected ? (
+}) => {
+  const { t } = useTranslation()
+
+  return connected ? (
     <button
       className={clsx(
         'flex justify-between items-center py-2 px-3 my-1 bg-btn-secondary rounded-lg border border-transparent hover:border-brand transition',
@@ -52,11 +55,13 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
       {...buttonProps}
     >
       <Wallet fill="currentColor" height="18px" width="18px" />
-      <p className="link-text">Connect wallet</p>
+      <p className="link-text">{t('connectWallet')}</p>
     </button>
   )
+}
 
 export const NoMobileWallet: FC = () => {
+  const { t } = useTranslation()
   const [showInfo, setShowInfo] = useState(false)
 
   return (
@@ -65,15 +70,14 @@ export const NoMobileWallet: FC = () => {
         className="flex gap-2 items-center py-2 px-3 my-1 -ml-6 w-full rounded-lg"
         onClick={() => setShowInfo(true)}
       >
-        <p className="text-xs italic link-text">Testnet</p>
+        <p className="text-xs italic link-text">{t('testnet')}</p>
         <InformationCircleIcon className="w-3 h-3" />
       </button>
       {showInfo && (
         <Modal hideCloseButton onClose={() => setShowInfo(false)}>
           <div className="flex gap-2 items-start">
             <h1 className="primary-text">
-              This is a pre-release version of DAO DAO running on the{' '}
-              {CHAIN_NAME}.
+              {t('preReleaseExplanation', { chain: CHAIN_NAME })}
             </h1>
 
             <button
@@ -85,9 +89,7 @@ export const NoMobileWallet: FC = () => {
           </div>
 
           <p className="mt-6 body-text">
-            Please feel free to explore the UI. Due to current limitations in
-            WalletConnect, you will not be able to connect your mobile wallet to
-            the {CHAIN_NAME}.
+            {t('walletConnectMobileLimitations', { chain: CHAIN_NAME })}
           </p>
         </Modal>
       )}

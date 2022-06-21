@@ -11,7 +11,7 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'
@@ -33,7 +33,7 @@ export interface ImageSelectorModalProps<
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 > {
-  label: StringFieldName
+  fieldName: StringFieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
   watch: UseFormWatch<FieldValues>
@@ -45,14 +45,15 @@ export const ImageSelectorModal = <
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 >({
-  label,
+  fieldName,
   register,
   error,
   validation,
   watch,
   onClose,
 }: ImageSelectorModalProps<FieldValues, StringFieldName>) => {
-  const imageUrl = watch(label) ?? ''
+  const { t } = useTranslation()
+  const imageUrl = watch(fieldName) ?? ''
 
   return (
     <Modal
@@ -60,7 +61,7 @@ export const ImageSelectorModal = <
       onClose={onClose}
     >
       <div
-        aria-label="DAO's Custom Logo"
+        aria-label={t('daosLogo')}
         className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
         role="img"
         style={{ backgroundImage: `url(${imageUrl})` }}
@@ -68,13 +69,13 @@ export const ImageSelectorModal = <
       <div className="flex flex-col gap-1">
         <InputLabel
           mono
-          name={i18n.t('Image URL')}
-          tooltip={i18n.t('Image URL tooltip')}
+          name={t('Image URL')}
+          tooltip={t('Image URL tooltip')}
         />
         <TextInput
           autoFocus
           error={error}
-          label={label}
+          fieldName={fieldName}
           onKeyDown={(e) => {
             // Prevent submitting form on enter.
             if (e.key === 'Enter') {
@@ -89,7 +90,7 @@ export const ImageSelectorModal = <
       </div>
       <div className="w-full text-right">
         <Button onClick={onClose} size="sm" type="button">
-          Done <Airplane color="currentColor" />
+          {t('done')} <Airplane color="currentColor" />
         </Button>
       </div>
     </Modal>
@@ -100,7 +101,7 @@ export interface ImageSelectorProps<
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 > {
-  label: StringFieldName
+  fieldName: StringFieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
   watch: UseFormWatch<FieldValues>
@@ -115,7 +116,7 @@ export const ImageSelector = <
   FieldValues,
   StringFieldName extends StringFieldNames<FieldValues>
 >({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -126,7 +127,7 @@ export const ImageSelector = <
   center = true,
 }: ImageSelectorProps<FieldValues, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
-  const imageUrl = watch(label) ?? ''
+  const imageUrl = watch(fieldName) ?? ''
 
   return (
     <>
@@ -155,7 +156,7 @@ export const ImageSelector = <
       {showImageSelect && (
         <ImageSelectorModal
           error={error}
-          label={label}
+          fieldName={fieldName}
           onClose={() => setShowImageSelect(false)}
           register={register}
           validation={validation}

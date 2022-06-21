@@ -2,6 +2,7 @@ import { PauseIcon } from '@heroicons/react/outline'
 import { FC, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors, blockHeightSelector } from '@dao-dao/state'
 import { Duration, Expiration } from '@dao-dao/state/clients/cw-core'
 import { humanReadableDuration } from '@dao-dao/utils'
@@ -32,6 +33,7 @@ export const remainingTime = (
 }
 
 export const PausedBanner: FC<PausedBannerProps> = ({}) => {
+  const { t } = useTranslation()
   const pauseInfo = useRecoilValue(
     CwCoreSelectors.pauseInfoSelector({ contractAddress: DAO_ADDRESS })
   )
@@ -69,8 +71,7 @@ export const PausedBanner: FC<PausedBannerProps> = ({}) => {
     >
       <PauseIcon className="w-5" />
       <p className="link-text">
-        The DAO is paused. Governance will resume in{' '}
-        {humanReadableDuration(remaining)}.
+        {t('daoPaused', { duration: humanReadableDuration(remaining) })}
       </p>
     </div>
   )

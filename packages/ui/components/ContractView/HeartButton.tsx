@@ -2,7 +2,7 @@ import { HeartIcon as HeartOutline } from '@heroicons/react/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/solid'
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 
 import { useThemeContext } from '../../theme'
 
@@ -12,6 +12,7 @@ export interface HeartButtonProps {
 }
 
 export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
+  const { t } = useTranslation()
   const { accentColor } = useThemeContext()
 
   return (
@@ -29,7 +30,7 @@ export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
         <HeartOutline className="inline mr-1 w-[20px]" />
       )}
       <span className="hidden md:block">
-        {pinned ? i18n.t('Favorited') : i18n.t('Favorite')}
+        {pinned ? t('favorited') : t('favorite')}
       </span>
     </button>
   )

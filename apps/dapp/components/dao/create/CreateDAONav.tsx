@@ -2,22 +2,25 @@ import clsx from 'clsx'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 
-import { createDAOFormPages } from '@/hooks'
+import { useCreateDAOFormPages } from '@/hooks'
 
 interface CreateDAONavProps {
   currentPageIndex: number
 }
 
 export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
+  const { t } = useTranslation()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
+  const createDAOFormPages = useCreateDAOFormPages()
 
   return (
     <div>
       <p className="mb-3 font-mono text-sm font-bold text-disabled md:mb-7">
-        Steps
+        {t('steps')}
       </p>
 
       <div className="flex flex-col gap-2 items-start md:gap-5">

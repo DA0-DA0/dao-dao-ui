@@ -2,7 +2,7 @@ import { SearchIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 
 interface SearchBoxInternalProps {
   refine: (...args: any[]) => any
@@ -16,18 +16,22 @@ interface SearchBoxInternalProps {
 const SearchBoxInternal: FC<SearchBoxInternalProps> = ({
   currentRefinement,
   refine,
-}) => (
-  <div className="flex items-center px-3 text-tertiary border-b border-default">
-    <SearchIcon className="w-5" />
-    <input
-      autoFocus
-      className="p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
-      onChange={(event) => refine(event.currentTarget.value)}
-      placeholder={i18n.t('Search')}
-      type="text"
-      value={currentRefinement}
-    />
-  </div>
-)
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="flex items-center px-3 text-tertiary border-b border-default">
+      <SearchIcon className="w-5" />
+      <input
+        autoFocus
+        className="p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
+        onChange={(event) => refine(event.currentTarget.value)}
+        placeholder={t('search')}
+        type="text"
+        value={currentRefinement}
+      />
+    </div>
+  )
+}
 
 export const SearchBox = connectSearchBox(SearchBoxInternal)

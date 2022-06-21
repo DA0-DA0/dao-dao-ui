@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { FC } from 'react'
+import { GetStaticProps, NextPage } from 'next'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Logo } from '@dao-dao/ui'
 
 import { NewDAOStructure } from '@/atoms'
@@ -18,7 +19,8 @@ import {
 } from '@/components'
 import { useCreateDAOForm } from '@/hooks'
 
-const CreateDAOReviewPage: FC = () => {
+const CreateDAOReviewPage: NextPage = () => {
+  const { t } = useTranslation()
   const {
     watchedNewDAO,
     creating,
@@ -55,33 +57,31 @@ const CreateDAOReviewPage: FC = () => {
                 {watchedNewDAO.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    alt="DAO Logo"
+                    alt={t('daosLogo')}
                     className="w-full h-full"
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
-                  <Logo alt="DAO DAO logo" height="100%" width="100%" />
+                  <Logo alt={t('daodaoLogo')} height="100%" width="100%" />
                 )}
               </div>
             </div>
 
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">{i18n.t('Name')}</p>
+                <p className="font-mono caption-text">{t('Name')}</p>
                 <p className="text-xl">{watchedNewDAO.name}</p>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">
-                  {i18n.t('Description')}
-                </p>
+                <p className="font-mono caption-text">{t('Description')}</p>
                 <p
                   className={clsx('secondary-text', {
                     'text-base': watchedNewDAO.description,
                     'text-sm italic': !watchedNewDAO.description,
                   })}
                 >
-                  {watchedNewDAO.description || i18n.t('None')}
+                  {watchedNewDAO.description || t('None')}
                 </p>
               </div>
             </div>
@@ -120,3 +120,9 @@ const CreateDAOReviewPage: FC = () => {
 }
 
 export default CreateDAOReviewPage
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

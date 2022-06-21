@@ -7,7 +7,7 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   CwProposalSingleSelectors,
   refreshProposalsIdAtom,
@@ -75,6 +75,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
 }
 
 export const ProposalList: FC = () => {
+  const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
   const { proposalModuleAddress, proposalCount } = useProposalModule(
     coreAddress,
@@ -82,7 +83,7 @@ export const ProposalList: FC = () => {
   )
 
   if (!proposalModuleAddress) {
-    throw new Error(i18n.t('error.noProposalModule'))
+    throw new Error(t('error.noProposalModule'))
   }
 
   // Load from Recoil so that loaded propoals are shared by
@@ -104,10 +105,10 @@ export const ProposalList: FC = () => {
       <div className="flex">
         <EmptyContractCard
           backgroundUrl="/empty-state-proposal.jpeg"
-          description={i18n.t('Create first proposal prompt')}
+          description={t('Create first proposal prompt')}
           fullWidth
           href={`/dao/${coreAddress}/proposals/create`}
-          title={i18n.t('Create a proposal')}
+          title={t('createAProposal')}
         />
       </div>
     )
@@ -135,7 +136,7 @@ export const ProposalList: FC = () => {
           size="sm"
           variant="secondary"
         >
-          Load more <DownloadIcon className="inline ml-1 w-5 h-5" />
+          {t('loadMore')} <DownloadIcon className="inline ml-1 w-5 h-5" />
         </Button>
       )}
     </>

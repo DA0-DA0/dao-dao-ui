@@ -8,7 +8,7 @@ import {
 } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
-  processThresholdData,
+  useProcessThresholdData,
 } from '@dao-dao/utils'
 
 import { DAO_ADDRESS } from '@/util'
@@ -20,6 +20,7 @@ export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
       fetchProposalDepositTokenInfo: true,
     }
   )
+  const processThresholdData = useProcessThresholdData()
 
   const dontHaveData =
     !proposalModuleConfig ||

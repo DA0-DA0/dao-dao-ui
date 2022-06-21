@@ -2,7 +2,7 @@ import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useMemo, useState } from 'react'
 
 import { ActionsRenderer } from '@dao-dao/actions'
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   Proposal,
   Status,
@@ -54,6 +54,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   connected,
   connectWalletButton,
 }) => {
+  const { t } = useTranslation()
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
     [proposal.msgs]
@@ -71,7 +72,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       {!!decodedMessages?.length && (
         <>
           <div className="mt-9 mb-3 font-mono caption-text">
-            {i18n.t('Action', { count: decodedMessages.length })}
+            {t('Action', { count: decodedMessages.length })}
           </div>
           {showRaw ? (
             <CosmosMessageDisplay
@@ -96,12 +97,12 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           >
             {showRaw ? (
               <>
-                Hide raw data
+                {t('hideRawData')}
                 <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
               </>
             ) : (
               <>
-                Show raw data
+                {t('showRawData')}
                 <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
@@ -110,7 +111,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       )}
       {proposal.status === Status.Passed && (
         <>
-          <p className="mt-6 mb-4 link-text">Status</p>
+          <p className="mt-6 mb-4 link-text">{t('status')}</p>
           <Execute
             loading={loading}
             messages={proposal.msgs.length}
@@ -119,7 +120,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
         </>
       )}
 
-      <p className="mt-6 mb-4 link-text">Vote</p>
+      <p className="mt-6 mb-4 link-text">{t('vote')}</p>
 
       {connected ? (
         <>
@@ -134,16 +135,17 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             )}
           {walletVote && (
             <p className="flex flex-row gap-2 items-center body-text">
-              You voted <VoteDisplay vote={walletVote} /> on this proposal.
+              {t('votedOnProposal', {
+                vote: <VoteDisplay vote={walletVote} />,
+              })}
             </p>
           )}
           {proposal.status !== Status.Open && !walletVote && (
-            <p className="body-text">You did not vote on this proposal.</p>
+            <p className="body-text">{t('didNotVote')}</p>
           )}
           {walletWeightPercent === 0 && (
             <p className="max-w-prose body-text">
-              You must have voting power at the time of proposal creation to
-              vote.{' '}
+              {t('mustHaveVotingPowerAtCreation')}{' '}
               {/* Only show staking modal if using staked balance to vote. */}
               {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
                 stakingModal && (
@@ -152,7 +154,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
                       className="underline"
                       onClick={() => setShowStaking(true)}
                     >
-                      Stake some tokens so you can vote next time?
+                      {t('stakeTokensSuggestion')}
                     </button>
                     {showStaking && stakingModal}
                   </>

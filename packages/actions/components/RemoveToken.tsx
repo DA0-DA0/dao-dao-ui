@@ -2,6 +2,7 @@ import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -25,15 +26,16 @@ type RemoveTokenOptions = TokenInfoDisplayProps & {
 }
 
 export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
   options: { existingTokens, ...options },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
-  const tokenAddress = watch(getLabel('address'))
+  const tokenAddress = watch(getFieldName('address'))
 
   const validateIsTreasuryToken = (v: string) =>
     existingTokens.some(({ address }) => address === v) ||
@@ -41,13 +43,13 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label="Token" symbol="⭕️" />}
+      emoji={<Emoji label={t('token')} symbol="⭕️" />}
       onRemove={onRemove}
-      title="Remove Treasury Token"
+      title={t('removeTreasuryToken')}
     >
       {existingTokens.length > 0 && (
         <>
-          <InputLabel name="Existing Tokens" />
+          <InputLabel name={t('existingTokens')} />
           <div className="grid grid-cols-5 gap-1 mb-2">
             {existingTokens.map(({ address, info }) => (
               <Button
@@ -56,7 +58,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
                   'text-secondary bg-transparent': address !== tokenAddress,
                 })}
                 disabled={readOnly}
-                onClick={() => setValue(getLabel('address'), address)}
+                onClick={() => setValue(getFieldName('address'), address)}
                 size="sm"
                 type="button"
                 variant="secondary"
@@ -69,11 +71,11 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
       )}
 
       <div className="flex flex-col gap-2 mb-3">
-        <InputLabel name="Token address" />
+        <InputLabel name={t('tokenAddress')} />
         <AddressInput
           disabled={readOnly}
           error={errors?.address}
-          label={getLabel('address')}
+          fieldName={getFieldName('address')}
           register={register}
           validation={[
             validateRequired,

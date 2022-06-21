@@ -3,29 +3,33 @@ import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
+import { Trans, useTranslation } from '@dao-dao/i18n'
 import { CodeMirrorInput } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
 
+const INVALID_COSMOS_MSG = 'INVALID_COSMOS_MSG'
+
 export const CustomComponent: ActionComponent = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
 }) => {
+  const { t } = useTranslation()
   const { control } = useFormContext()
 
   return (
     <ActionCard
-      emoji={<Emoji label="Robot" symbol="🤖" />}
+      emoji={<Emoji label={t('robot')} symbol="🤖" />}
       onRemove={onRemove}
-      title="Custom"
+      title={t('custom')}
     >
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        label={getLabel('message')}
+        fieldName={getFieldName('message')}
         readOnly={readOnly}
         validation={[
           (v: string) => {
@@ -37,8 +41,9 @@ export const CustomComponent: ActionComponent = ({
             }
             if (msg.wasm) msg = makeWasmMessage(msg)
             const validCosmos = validateCosmosMsg(msg)
+
             if (!validCosmos.valid) {
-              return 'Invalid cosmos message'
+              return INVALID_COSMOS_MSG
             } else {
               return true
             }
@@ -50,8 +55,8 @@ export const CustomComponent: ActionComponent = ({
         {errors?.message ? (
           <p className="flex gap-1 items-center text-sm text-error">
             <XIcon className="inline w-5" />{' '}
-            {errors.message.message === 'Invalid cosmos message' ? (
-              <>
+            {errors.message.message === INVALID_COSMOS_MSG ? (
+              <Trans i18nKey="invalidCosmosMessage">
                 Invalid{' '}
                 <a
                   className="inline underline link"
@@ -59,16 +64,16 @@ export const CustomComponent: ActionComponent = ({
                   rel="noreferrer"
                   target="_blank"
                 >
-                  cosmos message
+                  Cosmos message
                 </a>
-              </>
+              </Trans>
             ) : (
               <span>{errors.message.message}</span>
             )}
           </p>
         ) : (
           <p className="flex gap-1 items-center text-sm text-success">
-            <CheckIcon className="inline w-5" /> json is valid
+            <CheckIcon className="inline w-5" /> {t('jsonIsValid')}
           </p>
         )}
       </div>

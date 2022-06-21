@@ -32,7 +32,7 @@ export interface FormProposalData {
 export type ActionComponentProps<T = undefined> = {
   coreAddress: string
   proposalId?: number
-  getLabel: (field: string) => string
+  getFieldName: (field: string) => string
   onRemove?: () => void
   errors?: FieldErrors
   readOnly?: boolean

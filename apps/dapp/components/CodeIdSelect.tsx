@@ -1,5 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/outline'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { Button } from '@dao-dao/ui'
 
 export interface ContractVersion {
@@ -16,9 +17,11 @@ export default function CodeIdSelect({
   versions: ContractVersion[]
   onSelect: (c: ContractVersion) => void
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex items-center">
-      <span className="px-2 font-medium">Contract Version</span>
+      <span className="px-2 font-medium">{t('contractVersion')}</span>
       <div className="dropdown dropdown-end">
         <Button size="sm">
           {currentVersion.name} <ChevronDownIcon className="inline w-4 h-4" />

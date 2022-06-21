@@ -11,7 +11,7 @@ export interface ToggleInputProps<
   FieldValues,
   FieldName extends Path<FieldValues>
 > extends Omit<React.ComponentProps<'input'>, 'required'> {
-  label: FieldName
+  fieldName: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
@@ -21,7 +21,7 @@ export interface ToggleInputProps<
 }
 
 /**
- * @param label      - the label for the value that this will contain.
+ * @param fieldName  - the label for the value that this will contain.
  * @param register   - the register function returned by `useForm`.
  * @param error      - any errors that have occured during validation of this
  *                     input.
@@ -30,7 +30,7 @@ export interface ToggleInputProps<
  *                     error message otherwise.
  */
 export const ToggleInput = <FieldValues, FieldName extends Path<FieldValues>>({
-  label,
+  fieldName,
   register,
   validation,
   onChange,
@@ -48,7 +48,7 @@ export const ToggleInput = <FieldValues, FieldName extends Path<FieldValues>>({
         disabled={disabled}
         role="switch"
         type="checkbox"
-        {...register(label, {
+        {...register(fieldName, {
           required: required && 'Required',
           validate,
           onChange,

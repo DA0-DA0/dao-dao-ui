@@ -1,6 +1,7 @@
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -15,20 +16,21 @@ export interface MintOptions {
 }
 
 export const MintComponent: ActionComponent<MintOptions> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
   options: { govTokenSymbol },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
-  const amount = watch(getLabel('amount'))
+  const amount = watch(getFieldName('amount'))
 
   return (
     <ActionCard
-      emoji={<Emoji label="Herb" symbol="🌿" />}
+      emoji={<Emoji label={t('herb')} symbol="🌿" />}
       onRemove={onRemove}
-      title="Mint"
+      title={t('mint')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
@@ -36,12 +38,18 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             <NumberInput
               disabled={readOnly}
               error={errors?.amount}
-              label={getLabel('amount')}
+              fieldName={getFieldName('amount')}
               onPlusMinus={[
                 () =>
-                  setValue(getLabel('amount'), (Number(amount) + 1).toString()),
+                  setValue(
+                    getFieldName('amount'),
+                    (Number(amount) + 1).toString()
+                  ),
                 () =>
-                  setValue(getLabel('amount'), (Number(amount) - 1).toString()),
+                  setValue(
+                    getFieldName('amount'),
+                    (Number(amount) - 1).toString()
+                  ),
               ]}
               register={register}
               sizing="auto"
@@ -55,13 +63,14 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             </p>
           )}
         </div>
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <p className="font-mono text-2xl secondary-text">&#10142;</p>
         <div className="grow">
           <AddressInput
             containerClassName="grow"
             disabled={readOnly}
             error={errors?.to}
-            label={getLabel('to')}
+            fieldName={getFieldName('to')}
             register={register}
             validation={[validateRequired, validateAddress]}
           />

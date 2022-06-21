@@ -4,6 +4,7 @@ import type { NextPage } from 'next'
 import React, { useState } from 'react'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { useTranslation } from '@dao-dao/i18n'
 import { Pie } from '@dao-dao/icons'
 import {
   useGovernanceTokenInfo,
@@ -29,8 +30,8 @@ import {
   StakeHeaderLoader,
   StakedBalanceCard,
   UnstakedBalanceCard,
-  makeGetStaticProps,
 } from '@/components'
+import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerMembers = () => {
@@ -63,6 +64,7 @@ const InnerMembers = () => {
 }
 
 const InnerStake = () => {
+  const { t } = useTranslation()
   const { connected } = useWallet()
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
 
@@ -84,7 +86,7 @@ const InnerStake = () => {
 
         <div className="flex flex-row gap-2 items-center text-lg title-text">
           <Pie color="rgb(var(--dark))" height={22} width={22} />
-          <p>Your Tokens</p>
+          <p>{t('yourTokens')}</p>
         </div>
 
         {connected ? (
@@ -92,7 +94,7 @@ const InnerStake = () => {
             <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
-                  Balance (unstaked {governanceTokenInfo.name})
+                  {t('balanceUnstaked', { name: governanceTokenInfo.name })}
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
@@ -107,9 +109,11 @@ const InnerStake = () => {
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
                   <span>
-                    Voting power (staked {governanceTokenInfo.name} + rewards)
+                    {t('votingPowerStakedAndRewards', {
+                      name: governanceTokenInfo.name,
+                    })}
                   </span>
-                  <TooltipIcon label="This will automatically compound as staking rewards are distributed." />
+                  <TooltipIcon label={t('autoCompoundStakingRewards')} />
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
@@ -126,7 +130,9 @@ const InnerStake = () => {
               fallback={
                 <>
                   <p className="text-lg title-text">
-                    Unstaking {governanceTokenInfo.name} tokens
+                    {t('unstakingNamedTokens', {
+                      name: governanceTokenInfo.name,
+                    })}
                   </p>
                   <Loader />
                 </>

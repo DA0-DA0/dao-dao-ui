@@ -9,12 +9,13 @@ import {
 
 import { useDAOInfoContext } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
-import { addToken } from '@/util'
+import { useAddToken } from '@/util'
 
 const DAOMobileHeaderInternal: FC = () => {
   const { coreAddress, governanceTokenAddress, name, imageUrl } =
     useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
+  const addToken = useAddToken()
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)

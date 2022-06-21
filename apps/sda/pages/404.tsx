@@ -1,32 +1,28 @@
-import type { NextPage } from 'next'
+import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
+import { useTranslation } from '@dao-dao/i18n'
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 
 import { Header } from '@/components'
 
 const Custom404: NextPage = () => {
-  const router = useRouter()
+  const { t } = useTranslation()
 
   return (
     <>
       <Header />
 
-      {/* Only render page once mounted in browser (via SuspenseLoader) to
-       * prevent hydration error. Server renders router.asPath as `/404`
-       * but client renders router.asPath as the redirected/invalid
-       * route.
-       */}
       <SuspenseLoader fallback={null}>
-        <ErrorPage title="404 - Page Not Found">
+        <ErrorPage title={t('404Title')}>
           <p>
-            We couldn{"'"}t find <code>{router.asPath}</code>. Consider
-            returning{' '}
+            {t('pageNotFound')}{' '}
             <Link href="/">
-              <a className="underline link-text">home</a>
+              <a className="underline link-text">
+                {t('considerReturningHome')}
+              </a>
             </Link>
-            .
           </p>
         </ErrorPage>
       </SuspenseLoader>
@@ -35,3 +31,9 @@ const Custom404: NextPage = () => {
 }
 
 export default Custom404
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

@@ -20,7 +20,7 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
 }
 
 interface CodeMirrorInputProps<T extends FieldValues, U extends Path<T>> {
-  label: U
+  fieldName: U
   control?: Control<T>
   validation?: Validate<FieldPathValue<T, U>>[]
   error?: FieldError
@@ -29,7 +29,7 @@ interface CodeMirrorInputProps<T extends FieldValues, U extends Path<T>> {
 }
 
 export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
-  label,
+  fieldName,
   control,
   validation,
   readOnly = false,
@@ -62,7 +62,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
   return (
     <Controller
       control={control}
-      name={label}
+      name={fieldName}
       render={({ field: { onChange, onBlur, ref, value } }) => (
         <CodeMirror
           className="rounded"

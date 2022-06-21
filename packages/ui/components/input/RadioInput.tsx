@@ -16,7 +16,7 @@ export interface RadioInputProps<
     label: string
     value: UnpackNestedValue<PathValue<FieldValues, FieldName>>
   }[]
-  label: FieldName
+  fieldName: FieldName
   watch: UseFormWatch<FieldValues>
   setValue: UseFormSetValue<FieldValues>
   className?: string
@@ -24,21 +24,21 @@ export interface RadioInputProps<
 
 export const RadioInput = <FieldValues, FieldName extends Path<FieldValues>>({
   options,
-  label,
+  fieldName,
   watch,
   setValue,
   className,
 }: RadioInputProps<FieldValues, FieldName>) => (
   <div className={clsx('flex flex-row gap-2 items-stretch', className)}>
     {options.map(({ label: optionLabel, value }, index) => {
-      const selected = value === watch(label)
+      const selected = value === watch(fieldName)
 
       return (
         <RadioButton
           key={index}
           background
           label={optionLabel}
-          onClick={() => setValue(label, value)}
+          onClick={() => setValue(fieldName, value)}
           selected={selected}
         />
       )

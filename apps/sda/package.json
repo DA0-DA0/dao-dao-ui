@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/sda",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "analyze": "cross-env ANALYZE=true next build",
     "build": "next build --debug",
@@ -21,6 +21,7 @@
     "@cosmjs/stargate": "^0.28.1",
     "@dao-dao/actions": "*",
     "@dao-dao/common": "*",
+    "@dao-dao/i18n": "*",
     "@dao-dao/icons": "*",
     "@dao-dao/state": "*",
     "@dao-dao/types": "^0.0.8",
@@ -42,6 +43,7 @@
     "codemirror": "^5.65.0",
     "dotenv": "^10.0.0",
     "fast-average-color-node": "^2.1.0",
+    "i18next": "^21.8.10",
     "json-schema-to-typescript": "^10.1.5",
     "json5": "^2.2.0",
     "jsoneditor": "^9.5.6",

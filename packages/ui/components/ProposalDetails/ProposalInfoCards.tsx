@@ -1,7 +1,7 @@
 import { CheckIcon, ExternalLinkIcon, XIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { TriangleUp } from '@dao-dao/icons'
 import {
   Proposal,
@@ -14,8 +14,8 @@ import {
   ProcessedTQType,
   convertMicroDenomToDenomWithDecimals,
   expirationAtTimeToSecondsFromNow,
-  processThresholdData,
   secondsToWdhms,
+  useProcessThresholdData,
 } from '@dao-dao/utils'
 
 import { CopyToClipboard } from '../CopyToClipboard'
@@ -57,97 +57,111 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
   walletVote,
   proposalExecutionTXHash,
   connected,
-}) => (
-  <div className="rounded-md border border-light">
-    <div className="flex flex-row justify-evenly items-stretch py-4 md:py-5">
-      <div className="flex flex-col gap-2 items-center">
-        <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-          Proposal
-        </p>
+}) => {
+  const { t } = useTranslation()
 
-        <p className="font-mono text-sm"># {id.toString().padStart(6, '0')}</p>
-      </div>
+  return (
+    <div className="rounded-md border border-light">
+      <div className="flex flex-row justify-evenly items-stretch py-4 md:py-5">
+        <div className="flex flex-col gap-2 items-center">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+            {t('proposals', { count: 1 })}
+          </p>
 
-      <div className="w-[1px] bg-light"></div>
-
-      <div className="flex flex-col gap-2 items-center">
-        <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-          Status
-        </p>
-
-        <div className="font-mono text-sm">
-          <ProposalStatus status={proposal.status} />
+          <p className="font-mono text-sm">
+            # {id.toString().padStart(6, '0')}
+          </p>
         </div>
-      </div>
 
-      <div className="w-[1px] bg-light"></div>
+        <div className="w-[1px] bg-light"></div>
 
-      <div className="flex flex-col gap-2 items-center">
-        <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-          You
-        </p>
+        <div className="flex flex-col gap-2 items-center">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+            {t('status')}
+          </p>
 
-        {connected ? (
-          !memberWhenProposalCreated ? (
-            <YouTooltip
-              label={`You ${
-                proposal.status === Status.Open ? 'are' : 'were'
-              } unable to vote on this proposal because you didn't have any voting power at the time of proposal creation.`}
-            />
-          ) : walletVote ? (
-            <VoteDisplay vote={walletVote} />
-          ) : proposal.status === Status.Open ? (
-            <YouTooltip label="You have not yet cast a vote." />
-          ) : (
-            <YouTooltip label="You didn't cast a vote when this proposal was open." />
-          )
-        ) : (
-          <YouTooltip label="Connect your wallet to view your vote." />
-        )}
-      </div>
-    </div>
-    <div className="flex flex-col gap-3 p-5 border-t border-light md:p-7">
-      <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
-        <p className="col-span-3 font-mono text-sm text-tertiary">Proposer</p>
-        <div className="col-span-7">
-          <CopyToClipboard takeN={9} value={proposal.proposer} />
-        </div>
-      </div>
-
-      {proposal.status === Status.Executed && !proposalExecutionTXHash ? (
-        <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
-          <p className="col-span-3 font-mono text-sm text-tertiary">TX</p>
-          <p className="col-span-7">Loading...</p>
-        </div>
-      ) : !!proposalExecutionTXHash ? (
-        <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
-          {CHAIN_TXN_URL_PREFIX ? (
-            <a
-              className="flex flex-row col-span-3 gap-1 items-center font-mono text-sm text-tertiary"
-              href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              TX
-              <ExternalLinkIcon width={16} />
-            </a>
-          ) : (
-            <p className="col-span-3 font-mono text-sm text-tertiary">TX</p>
-          )}
-          <div className="col-span-7">
-            <CopyToClipboard takeN={9} value={proposalExecutionTXHash} />
+          <div className="font-mono text-sm">
+            <ProposalStatus status={proposal.status} />
           </div>
         </div>
-      ) : null}
+
+        <div className="w-[1px] bg-light"></div>
+
+        <div className="flex flex-col gap-2 items-center">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+            {t('you')}
+          </p>
+
+          {connected ? (
+            !memberWhenProposalCreated ? (
+              <YouTooltip
+                label={t('mustHaveVotingPowerAtCreationTooltip', {
+                  context: proposal.status === Status.Open ? 'open' : 'closed',
+                })}
+              />
+            ) : walletVote ? (
+              <VoteDisplay vote={walletVote} />
+            ) : proposal.status === Status.Open ? (
+              <YouTooltip label={t('haveNotCastVote')} />
+            ) : (
+              <YouTooltip label={t('didNotCastVote')} />
+            )
+          ) : (
+            <YouTooltip label={t('connectWalletToViewVote')} />
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col gap-3 p-5 border-t border-light md:p-7">
+        <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
+          <p className="col-span-3 font-mono text-sm text-tertiary">
+            {t('proposer')}
+          </p>
+          <div className="col-span-7">
+            <CopyToClipboard takeN={9} value={proposal.proposer} />
+          </div>
+        </div>
+
+        {proposal.status === Status.Executed && !proposalExecutionTXHash ? (
+          <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
+            <p className="col-span-3 font-mono text-sm text-tertiary">
+              {t('txAbbr')}
+            </p>
+            <p className="col-span-7">{t('loading')}</p>
+          </div>
+        ) : !!proposalExecutionTXHash ? (
+          <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
+            {CHAIN_TXN_URL_PREFIX ? (
+              <a
+                className="flex flex-row col-span-3 gap-1 items-center font-mono text-sm text-tertiary"
+                href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t('txAbbr')}
+                <ExternalLinkIcon width={16} />
+              </a>
+            ) : (
+              <p className="col-span-3 font-mono text-sm text-tertiary">
+                {t('txAbbr')}
+              </p>
+            )}
+            <div className="col-span-7">
+              <CopyToClipboard takeN={9} value={proposalExecutionTXHash} />
+            </div>
+          </div>
+        ) : null}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
   proposal,
   denomConversionDecimals,
   maxVotingSeconds,
 }) => {
+  const { t } = useTranslation()
+
   const localeOptions = { maximumSignificantDigits: 3 }
 
   const yesVotes = Number(
@@ -198,7 +212,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expiration)
       : undefined
 
-  const { threshold, quorum } = processThresholdData(proposal.threshold)
+  const { threshold, quorum } = useProcessThresholdData()(proposal.threshold)
 
   const thresholdReached =
     !!threshold &&
@@ -258,16 +272,16 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
       {threshold &&
         (quorum && effectiveQuorumValue !== undefined ? (
           <>
-            <p className="mb-3 text-sm body-text">{i18n.t('Ratio of votes')}</p>
+            <p className="mb-3 text-sm body-text">{t('Ratio of votes')}</p>
 
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {i18n.t('Yes')}{' '}
+                  {t('Yes')}{' '}
                   {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
                 <p key="no" className="text-error">
-                  {i18n.t('No')}{' '}
+                  {t('No')}{' '}
                   {turnoutNoPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
               ]
@@ -287,7 +301,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {i18n.t('Abstain')}{' '}
+                {t('Abstain')}{' '}
                 {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}
                 %
               </p>
@@ -342,17 +356,17 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                 width="36px"
               />
 
-              <Tooltip label="A proposal must attain this proportion of 'Yes' votes to pass.">
+              <Tooltip label={t('proposalThresholdExplanation')}>
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
-                    Passing threshold:{' '}
+                    {t('passingThreshold')}:{' '}
                     <span className="font-mono">{threshold.display}</span>
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
-                        {i18n.t('Passing')}{' '}
+                        {t('Passing')}{' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -360,7 +374,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                       </>
                     ) : (
                       <>
-                        {i18n.t('Failing')}{' '}
+                        {t('Failing')}{' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
@@ -374,7 +388,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
 
             <div className="flex flex-row justify-between mt-4 mb-1">
               <p className="overflow-hidden text-sm text-ellipsis body-text">
-                {i18n.t('Turnout')}
+                {t('Turnout')}
               </p>
 
               <p className="font-mono text-xs text-tertiary">
@@ -420,17 +434,17 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                 width="36px"
               />
 
-              <Tooltip label="This proportion of voting power must vote on a proposal for it to pass.">
+              <Tooltip label={t('proposalQuorumExplanation')}>
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
-                    {i18n.t('Quorum')}:{' '}
+                    {t('Quorum')}:{' '}
                     <span className="font-mono">{quorum.display}</span>
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {quorumMet ? (
                       <>
-                        {i18n.t('Reached')}{' '}
+                        {t('Reached')}{' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -438,7 +452,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                       </>
                     ) : (
                       <>
-                        {i18n.t('Not met')}{' '}
+                        {t('Not met')}{' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
@@ -453,17 +467,17 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
         ) : (
           <>
             <p className="overflow-hidden mb-3 text-sm text-ellipsis body-text">
-              {i18n.t('Turnout')}
+              {t('Turnout')}
             </p>
 
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {i18n.t('Yes')}{' '}
+                  {t('Yes')}{' '}
                   {totalYesPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
                 <p key="no" className="text-error">
-                  {i18n.t('No')}{' '}
+                  {t('No')}{' '}
                   {totalNoPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
               ]
@@ -483,7 +497,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {i18n.t('Abstain')}{' '}
+                {t('Abstain')}{' '}
                 {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
               </p>
             </div>
@@ -538,17 +552,17 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                 width="36px"
               />
 
-              <Tooltip label="A proposal must attain this proportion of 'Yes' votes to pass.">
+              <Tooltip label={t('proposalThresholdExplanation')}>
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
-                    Passing threshold:{' '}
+                    {t('passingThreshold')}:{' '}
                     <span className="font-mono">{threshold.display}</span>
                   </p>
 
                   <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
-                        {i18n.t('Reached')}{' '}
+                        {t('Reached')}{' '}
                         <CheckIcon
                           className="inline w-4"
                           color="rgb(var(--valid))"
@@ -556,7 +570,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                       </>
                     ) : (
                       <>
-                        {i18n.t('Not met')}{' '}
+                        {t('Not met')}{' '}
                         <XIcon
                           className="inline w-4"
                           color="rgb(var(--error))"
@@ -575,7 +589,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
         expiresInSeconds > 0 && (
           <>
             <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
-              Time left
+              {t('timeLeft')}
             </p>
 
             <p className="font-mono text-xs text-right text-dark">
@@ -614,19 +628,17 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
         turnoutTotal > 0 &&
         yesVotes === noVotes && (
           <div className="mt-4 text-sm">
-            <p className="font-mono text-tertiary">Tie clarification</p>
+            <p className="font-mono text-tertiary">{t('tieClarification')}</p>
 
-            <p className="mt-2 body-text">{"'Yes' will win a tie vote."}</p>
+            <p className="mt-2 body-text">{t('yesWillWinTie')}</p>
           </div>
         )}
 
       {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
         <div className="mt-4 text-sm">
-          <p className="font-mono text-tertiary">{i18n.t('All abstain')}</p>
+          <p className="font-mono text-tertiary">{t('allAbstain')}</p>
 
-          <p className="mt-2 body-text">
-            {i18n.t('All abstain clarification')}
-          </p>
+          <p className="mt-2 body-text">{t('allAbstainClarification')}</p>
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 
-import i18n from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -30,11 +30,11 @@ import {
   DaoTreasury,
   PageLoader,
   SmallScreenNav,
-  makeGetDAOStaticProps,
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
-import { addToken } from '@/util'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
+import { useAddToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -45,6 +45,7 @@ enum MobileMenuTabSelection {
 }
 
 const InnerMobileDaoHome: FC = () => {
+  const { t } = useTranslation()
   const { votingModuleType } = useDAOInfoContext()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
@@ -60,34 +61,34 @@ const InnerMobileDaoHome: FC = () => {
           icon="🗳"
           onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
           selected={tab === MobileMenuTabSelection.Proposal}
-          text={i18n.t('Proposals')}
+          text={t('Proposals')}
         />
         {votingModuleType === VotingModuleType.Cw4Voting ? (
           <MobileMenuTab
             icon="👥"
             onClick={makeTabSetter(MobileMenuTabSelection.Members)}
             selected={tab === MobileMenuTabSelection.Members}
-            text={i18n.t('Members')}
+            text={t('Members')}
           />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
           <MobileMenuTab
             icon="💵"
             onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
             selected={tab === MobileMenuTabSelection.Staking}
-            text={i18n.t('Staking')}
+            text={t('Staking')}
           />
         ) : null}
         <MobileMenuTab
           icon="🏛"
           onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
           selected={tab === MobileMenuTabSelection.Treasury}
-          text={i18n.t('Treasury')}
+          text={t('Treasury')}
         />
         <MobileMenuTab
           icon="⚙️"
           onClick={makeTabSetter(MobileMenuTabSelection.Info)}
           selected={tab === MobileMenuTabSelection.Info}
-          text={i18n.t('Info')}
+          text={t('Info')}
         />
       </div>
       <div className="py-5 px-6">
@@ -110,7 +111,9 @@ const InnerMobileDaoHome: FC = () => {
 }
 
 const InnerDAOHome: FC = () => {
+  const { t } = useTranslation()
   const router = useRouter()
+  const addToken = useAddToken()
 
   const { votingModuleType, coreAddress, governanceTokenAddress, name } =
     useDAOInfoContext()
@@ -124,7 +127,7 @@ const InnerDAOHome: FC = () => {
     if (shouldAddToken && governanceTokenAddress) {
       addToken(governanceTokenAddress)
     }
-  }, [shouldAddToken, governanceTokenAddress])
+  }, [shouldAddToken, governanceTokenAddress, addToken])
 
   return (
     <div className="flex flex-col items-stretch lg:grid lg:grid-cols-6">
@@ -135,7 +138,7 @@ const InnerDAOHome: FC = () => {
             <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
-                  ['/home', i18n.t('Home page')],
+                  ['/home', t('home')],
                   [router.asPath, name],
                 ]}
               />
@@ -144,7 +147,7 @@ const InnerDAOHome: FC = () => {
                   <div className="flex flex-row gap-2 items-center">
                     <MemberCheck fill="currentColor" width="16px" />
                     <p className="text-sm text-primary">
-                      {i18n.t('You are a member')}
+                      {t('You are a member')}
                     </p>
                   </div>
                 )}
@@ -248,20 +251,24 @@ export default DaoHomePage
 // Fallback to loading screen if page has not yet been statically generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  fallback: true,
+  // Need to block until i18n translations are ready, since i18n depends
+  // on server side translations being loaded.
+  fallback: 'blocking',
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps({
-    getAdditionalProps: async ({ image_url }) => {
-      if (!image_url) return undefined
+  makeGetDAOStaticProps(async ({ image_url }) => {
+    if (!image_url) {
+      return
+    }
 
-      const response = await axios.get(image_url, {
-        responseType: 'arraybuffer',
-      })
-      const buffer = Buffer.from(response.data, 'binary')
+    const response = await axios.get(image_url, {
+      responseType: 'arraybuffer',
+    })
+    const buffer = Buffer.from(response.data, 'binary')
+    const result = await getAverageColor(buffer)
 
-      const result = await getAverageColor(buffer)
-      return { accentColor: result.rgb }
-    },
+    return {
+      additionalProps: { accentColor: result.rgb },
+    }
   })

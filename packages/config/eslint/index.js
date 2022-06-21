@@ -25,8 +25,16 @@ const eslintConfig = {
   },
   overrides: [
     {
+      files: ['**/*.json', '**/*.json5', '**/*.jsonc'],
+      extends: ['plugin:jsonc/recommended-with-json', 'plugin:jsonc/prettier'],
+    },
+    {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
-      extends: ['plugin:prettier/recommended'],
+      extends: [
+        'plugin:prettier/recommended',
+        'plugin:react-i18n/recommended',
+        'plugin:i18next/recommended',
+      ],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
@@ -34,6 +42,36 @@ const eslintConfig = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/no-unused-vars': ['off'],
+        'i18next/no-literal-string': [
+          'warn',
+          {
+            mode: 'jsx-only',
+            'jsx-attributes': {
+              include: [
+                'label',
+                'placeholder',
+                'alt',
+                'title',
+                'aria-label',
+                'aria-placeholder',
+                'name',
+                'description',
+                'subtitle',
+                'emoji',
+              ],
+            },
+            words: {
+              exclude: [
+                // Defaults wrapped in whitespace.
+                '\\s*[0-9!-/:-@[-`{-~]+\\s*',
+                '\\s*[A-Z_-]+\\s*',
+                // Additional.
+                '\\s*DAOs?\\s*',
+                '\\s*DAO\\s*DAO\\s*v?',
+              ],
+            },
+          },
+        ],
       },
     },
   ],

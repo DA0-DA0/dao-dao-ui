@@ -3,6 +3,7 @@ import Emoji from 'a11y-react-emoji'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -34,16 +35,17 @@ interface SpendOptions {
 }
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
-  getLabel,
+  getFieldName,
   onRemove,
   errors,
   readOnly,
   options: { nativeBalances, cw20Balances },
 }) => {
+  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
-  const spendAmount = watch(getLabel('amount'))
-  const spendDenom = watch(getLabel('denom'))
+  const spendAmount = watch(getFieldName('amount'))
+  const spendDenom = watch(getFieldName('denom'))
 
   const validatePossibleSpend = (
     id: string,
@@ -100,20 +102,20 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label="Money" symbol="💵" />}
+      emoji={<Emoji label={t('money')} symbol="💵" />}
       onRemove={onRemove}
-      title="Spend"
+      title={t('spend')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
           <NumberInput
             disabled={readOnly}
             error={errors?.amount}
-            label={getLabel('amount')}
+            fieldName={getFieldName('amount')}
             onPlusMinus={[
               () =>
                 setValue(
-                  getLabel('amount'),
+                  getFieldName('amount'),
                   Math.max(
                     Number(spendAmount) + 1,
                     1 / 10 ** amountDecimals
@@ -121,7 +123,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ),
               () =>
                 setValue(
-                  getLabel('amount'),
+                  getFieldName('amount'),
                   Math.max(
                     Number(spendAmount) - 1,
                     1 / 10 ** amountDecimals
@@ -142,7 +144,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             defaultValue={NATIVE_DENOM}
             disabled={readOnly}
             error={errors?.denom}
-            label={getLabel('denom')}
+            fieldName={getFieldName('denom')}
             register={register}
             validation={[
               (denom: string) => validatePossibleSpend(denom, spendAmount),
@@ -161,6 +163,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           </SelectInput>
         </div>
 
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <p className="font-mono text-2xl secondary-text">&#10142;</p>
 
         <div className="grow">
@@ -168,7 +171,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             containerClassName="grow"
             disabled={readOnly}
             error={errors?.to}
-            label={getLabel('to')}
+            fieldName={getFieldName('to')}
             register={register}
             validation={[validateRequired, validateAddress]}
           />

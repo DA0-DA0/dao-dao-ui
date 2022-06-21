@@ -11,7 +11,7 @@ import {
 
 interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
   extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
-  label: FieldName
+  fieldName: FieldName
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
@@ -25,7 +25,7 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
 }
 
 /**
- * @param label      - the label for the value that this will contain.
+ * @param fieldName  - the field name for the value that this will contain.
  * @param register   - the register function returned by `useForm`.
  * @param error      - any errors that have occured during validation of this
  *                     input.
@@ -34,7 +34,7 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
  *                     error message otherwise.
  */
 export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
-  label,
+  fieldName,
   register,
   error,
   validation,
@@ -60,7 +60,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
     step,
     type: 'number',
     ...props,
-    ...register(label, {
+    ...register(fieldName, {
       required: required && 'Required',
       validate,
       ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
