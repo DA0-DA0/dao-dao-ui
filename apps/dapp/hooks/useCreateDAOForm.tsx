@@ -172,7 +172,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
               setPinned(address)
 
               router.push(`/dao/${address}`)
-              toast.success('DAO created.')
+              toast.success(t('success.daoCreatedPleaseWait'))
               // Don't stop creating loading on success since we're
               // navigating, and it's weird when loading stops and
               // nothing happens for a sec.
@@ -186,7 +186,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
             setCreating(false)
           }
         } else {
-          toast.error('Connect a wallet to create a DAO.')
+          toast.error(t('error.connectWalletToCreate'))
         }
 
         return

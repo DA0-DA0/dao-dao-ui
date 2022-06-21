@@ -204,6 +204,7 @@
     "DAONotFound": "DAO not found.",
     "cannotStakeMoreThanYouHave": "You can't stake or unstake more tokens than you have.",
     "cannotTxZeroTokens": "You can't stake, unstake, or claim zero tokens.",
+    "connectWalletToCreate": "Connect a wallet to create a DAO.",
     "createProposalSubmitValidationError": "Correct the errors above before previewing or publishing.",
     "daoIsPaused": "You cannot create a proposal when the DAO is paused.",
     "fieldRequired": "This field is required.",
@@ -324,6 +325,7 @@
   "steps": "Steps",
   "success": {
     "addedToken": "Added token to Keplr.",
+    "daoCreatedPleaseWait": "DAO created. You will be redirected once the DAO page is ready...",
     "proposalExecuted": "Executed successfully.",
     "voteCast": "Vote successfully cast."
   },
