@@ -34,7 +34,7 @@ export const PinnedDAONavList: FC = () => {
 
   return (
     <ul className="ml-2 list-none">
-      {daosWithAddresses.length > 0 ? (
+      {daosWithAddresses.length > 0 &&
         daosWithAddresses.map(({ config, address }) => (
           <NavListItem
             key={address}
@@ -42,14 +42,12 @@ export const PinnedDAONavList: FC = () => {
             icon={LibraryIcon}
             text={config.name}
           />
-        ))
-      ) : (
-        <Link href="/dao/create">
-          <a className="flex gap-2 items-center hover:underline link-text">
-            <PlusIcon className="w-3 h-3" /> {t('Create')}
-          </a>
-        </Link>
-      )}
+        ))}
+      <Link href="/dao/create">
+        <a className="flex gap-2 items-center mt-2 hover:underline link-text">
+          <PlusIcon className="w-5 h-5" /> {t('Create')}
+        </a>
+      </Link>
     </ul>
   )
 }
