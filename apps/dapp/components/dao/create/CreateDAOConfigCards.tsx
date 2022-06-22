@@ -8,7 +8,7 @@ import {
 } from 'react-hook-form'
 
 import { useTranslation } from '@dao-dao/i18n'
-import { FormSwitch, NumberInput, SelectInput } from '@dao-dao/ui'
+import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   validateNonNegative,
   validatePositive,
@@ -96,64 +96,90 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
   )
 }
 
-export const CreateDAOQuorumCard: FC<CreateDAOConfigCardSharedProps> = ({
+interface CreateDAOQuorumCardProps extends CreateDAOConfigCardSharedProps {
+  showWarningModal?: () => void
+}
+
+export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   newDAO: {
-    thresholdQuorum: { quorum },
+    thresholdQuorum: { quorumEnabled, quorum },
   },
   register,
   setValue,
   errors,
   readOnly,
+  watch,
+  showWarningModal,
 }) => {
   const { t } = useTranslation()
 
   return (
     <CreateDAOConfigCard
       accentColor="#fefe891a"
+      childContainerClassName="self-stretch"
       description={t('Quorum description')}
       error={errors?.thresholdQuorum?.quorum}
       image={<Emoji label="megaphone" symbol="📣" />}
       title={t('Quorum')}
     >
-      {quorum !== 'majority' && (
-        <NumberInput
+      <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
+        <FormSwitchCard
           disabled={readOnly}
-          error={errors?.thresholdQuorum?.quorum}
-          fieldName="thresholdQuorum.quorum"
-          onPlusMinus={[
-            () => setValue('thresholdQuorum.quorum', Math.max(quorum + 1, 0)),
-            () => setValue('thresholdQuorum.quorum', Math.max(quorum - 1, 0)),
-          ]}
-          register={register}
-          // Override numeric value setter since the select below
-          // attempts to set 'majority', but registering the field
-          // with the numeric setter causes validation issues.
-          setValueAs={(value) =>
-            value === 'majority' ? 'majority' : Number(value)
+          fieldName="thresholdQuorum.quorumEnabled"
+          onToggle={
+            showWarningModal && ((enabled) => !enabled && showWarningModal())
           }
+          setValue={setValue}
           sizing="sm"
-          step={0.001}
-          validation={[validateNonNegative, validateRequired]}
+          watch={watch}
         />
-      )}
 
-      <SelectInput
-        disabled={readOnly}
-        onChange={({ target: { value } }) =>
-          setValue(
-            'thresholdQuorum.quorum',
-            value === 'majority'
-              ? 'majority'
-              : // value === '%'
-                DefaultNewDAO.thresholdQuorum.quorum
-          )
-        }
-        validation={[validateRequired]}
-        value={quorum === 'majority' ? 'majority' : '%'}
-      >
-        <option value="%">%</option>
-        <option value="majority">{t('Majority')}</option>
-      </SelectInput>
+        {quorumEnabled && (
+          <div className="flex flex-row gap-2 items-stretch">
+            {quorum !== 'majority' && (
+              <NumberInput
+                disabled={readOnly}
+                error={errors?.thresholdQuorum?.quorum}
+                fieldName="thresholdQuorum.quorum"
+                onPlusMinus={[
+                  () =>
+                    setValue('thresholdQuorum.quorum', Math.max(quorum + 1, 0)),
+                  () =>
+                    setValue('thresholdQuorum.quorum', Math.max(quorum - 1, 0)),
+                ]}
+                register={register}
+                // Override numeric value setter since the select below
+                // attempts to set 'majority', but registering the field
+                // with the numeric setter causes validation issues.
+                setValueAs={(value) =>
+                  value === 'majority' ? 'majority' : Number(value)
+                }
+                sizing="sm"
+                step={0.001}
+                validation={[validateNonNegative, validateRequired]}
+              />
+            )}
+
+            <SelectInput
+              disabled={readOnly}
+              onChange={({ target: { value } }) =>
+                setValue(
+                  'thresholdQuorum.quorum',
+                  value === 'majority'
+                    ? 'majority'
+                    : // value === '%'
+                      DefaultNewDAO.thresholdQuorum.quorum
+                )
+              }
+              validation={[validateRequired]}
+              value={quorum === 'majority' ? 'majority' : '%'}
+            >
+              <option value="%">%</option>
+              <option value="majority">{t('Majority')}</option>
+            </SelectInput>
+          </div>
+        )}
+      </div>
     </CreateDAOConfigCard>
   )
 }
@@ -261,17 +287,7 @@ export const CreateDAOProposalDepositCard: FC<
 
 export const CreateDAORefundFailedProposalDepositCard: FC<
   CreateDAOConfigCardSharedProps
-> = ({
-  newDAO: {
-    governanceTokenOptions: {
-      proposalDeposit: { refundFailed },
-    },
-  },
-  errors,
-  setValue,
-  watch,
-  readOnly,
-}) => {
+> = ({ errors, setValue, watch, readOnly }) => {
   const { t } = useTranslation()
 
   return (
@@ -282,19 +298,15 @@ export const CreateDAORefundFailedProposalDepositCard: FC<
       image={<Emoji label="finger pointing up" symbol="👆" />}
       title={t('Proposal deposit refund')}
     >
-      <div className="flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md">
-        <p className="w-[3ch] secondary-text">
-          {refundFailed ? t('Yes') : t('No')}
-        </p>
-
-        <FormSwitch
-          disabled={readOnly}
-          fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
-          setValue={setValue}
-          sizing="sm"
-          watch={watch}
-        />
-      </div>
+      <FormSwitchCard
+        disabled={readOnly}
+        fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
+        offLabel={t('no')}
+        onLabel={t('yes')}
+        setValue={setValue}
+        sizing="sm"
+        watch={watch}
+      />
     </CreateDAOConfigCard>
   )
 }

@@ -2,6 +2,8 @@ import clsx from 'clsx'
 import { FC } from 'react'
 import { Path, PathValue, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
+
 interface SwitchProps {
   on: boolean
   onClick?: () => void
@@ -19,8 +21,9 @@ export const Switch: FC<SwitchProps> = ({
 }) => (
   <div
     className={clsx(
-      'flex relative flex-none items-center rounded-full hover:opacity-90 cursor-pointer',
+      'flex relative flex-none items-center rounded-full',
       {
+        'hover:opacity-90 cursor-pointer': !disabled,
         'bg-valid': on,
         'bg-transparent border border-dark': !on,
         // Sizing.
@@ -59,7 +62,7 @@ export type BooleanFieldNames<FieldValues> = {
     : never
 }[Path<FieldValues>]
 
-interface FormSwitchProps<
+export interface FormSwitchProps<
   FieldValues,
   BooleanFieldName extends BooleanFieldNames<FieldValues>
 > extends Omit<SwitchProps, 'on' | 'onClick'> {
@@ -90,3 +93,47 @@ export const FormSwitch = <
     {...props}
   />
 )
+
+export interface FormSwitchCardProps<
+  FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FieldValues>
+> extends FormSwitchProps<FieldValues, BooleanFieldName> {
+  containerClassName?: string
+  onLabel?: string
+  offLabel?: string
+}
+
+export const FormSwitchCard = <
+  FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FieldValues>
+>({
+  containerClassName,
+  onLabel: _onLabel,
+  offLabel: _offLabel,
+  ...props
+}: FormSwitchCardProps<FieldValues, BooleanFieldName>) => {
+  const { t } = useTranslation()
+
+  const onLabel = _onLabel ?? t('enabled')
+  const offLabel = _offLabel ?? t('disabled')
+
+  return (
+    <div
+      className={clsx(
+        'flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md',
+        containerClassName
+      )}
+    >
+      <p
+        className="secondary-text"
+        style={{
+          width: Math.max(onLabel?.length ?? 0, offLabel?.length ?? 0) + 'ch',
+        }}
+      >
+        {props.watch(props.fieldName) ? onLabel : offLabel}
+      </p>
+
+      <FormSwitch {...props} />
+    </div>
+  )
+}

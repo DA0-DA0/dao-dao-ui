@@ -217,7 +217,7 @@ export const Cw20StakedBalanceVotingPowerDisplay: FC<
   return (
     <>
       <h2 className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}>
-        {t('Your voting power')}
+        {t('yourVotingPower')}
       </h2>
 
       <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>

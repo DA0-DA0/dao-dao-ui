@@ -273,6 +273,8 @@ export const useCreateDAOForm = (pageIndex: number) => {
     ]
   )
 
+  const makeCreateDAOMsg = useMakeCreateDAOMsg()
+
   return {
     watchedNewDAO,
     tiersAreUntouched,
@@ -286,6 +288,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
     setError,
     clearErrors,
     creating,
+    makeCreateDAOMsg,
     formWrapperProps: {
       onSubmit: formOnSubmit,
       currentPageIndex: pageIndex,
@@ -375,14 +378,11 @@ const useParseSubmitterValueDelta = () => {
   )
 }
 
-const useCreateDAO = () => {
+const useMakeCreateDAOMsg = () => {
   const { t } = useTranslation()
 
   return useCallback(
-    async (
-      instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
-      values: NewDAO
-    ) => {
+    (values: NewDAO) => {
       const {
         structure,
         name,
@@ -397,7 +397,7 @@ const useCreateDAO = () => {
           proposalDeposit,
           ...governanceTokenOptions
         },
-        thresholdQuorum: { threshold, quorum },
+        thresholdQuorum: { threshold, quorumEnabled, quorum },
       } = values
 
       const governanceTokenEnabled =
@@ -509,18 +509,24 @@ const useCreateDAO = () => {
               : null,
           max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
           only_members_execute: true,
-          threshold: {
-            threshold_quorum: {
-              quorum: convertThresholdValueToPercentageThreshold(quorum),
-              threshold: convertThresholdValueToPercentageThreshold(threshold),
-            },
-          },
+          threshold: quorumEnabled
+            ? {
+                threshold_quorum: {
+                  quorum: convertThresholdValueToPercentageThreshold(quorum),
+                  threshold:
+                    convertThresholdValueToPercentageThreshold(threshold),
+                },
+              }
+            : {
+                absolute_percentage: {
+                  percentage:
+                    convertThresholdValueToPercentageThreshold(threshold),
+                },
+              },
         }
       validateCwProposalSingleInstantiateMsg(
         cwProposalSingleModuleInstantiateMsg
       )
-
-      console.log(votingModuleInstantiateMsg)
 
       const cwCoreInstantiateMsg: CwCoreInstantiateMsg = {
         admin: null,
@@ -555,12 +561,28 @@ const useCreateDAO = () => {
         },
       }
 
+      return cwCoreInstantiateMsg
+    },
+    [t]
+  )
+}
+
+const useCreateDAO = () => {
+  const makeCreateDAOMsg = useMakeCreateDAOMsg()
+
+  return useCallback(
+    async (
+      instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
+      values: NewDAO
+    ) => {
+      const cwCoreInstantiateMsg = makeCreateDAOMsg(values)
+
       const { contractAddress } = await instantiate(
         cwCoreInstantiateMsg,
         cwCoreInstantiateMsg.name
       )
       return contractAddress
     },
-    [t]
+    [makeCreateDAOMsg]
   )
 }

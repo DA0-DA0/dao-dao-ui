@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
-import { SubmitButton } from '@dao-dao/ui'
+import { Button, SubmitButton } from '@dao-dao/ui'
 
 import { CreateDAONav } from './CreateDAONav'
 import {
@@ -38,6 +38,15 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
   const createDAOFormPages = useCreateDAOFormPages()
 
   const showBack = currentPageIndex > 0
+
+  const submitValue =
+    currentPageIndex < createDAOFormPages.length - 2
+      ? t(CreateDAOSubmitLabel.Continue)
+      : // Second to last links to the Review page.
+      currentPageIndex === createDAOFormPages.length - 2
+      ? t(CreateDAOSubmitLabel.Review)
+      : // Last page creates the DAO.
+        t(CreateDAOSubmitLabel.CreateDAO)
 
   return (
     <div>
@@ -93,18 +102,16 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
                   variant="secondary"
                 />
               )}
-              <SubmitButton
-                disabled={!mountedInBrowser || creating}
-                label={
-                  currentPageIndex < createDAOFormPages.length - 2
-                    ? t(CreateDAOSubmitLabel.Continue)
-                    : // Second to last links to the Review page.
-                    currentPageIndex === createDAOFormPages.length - 2
-                    ? t(CreateDAOSubmitLabel.Review)
-                    : // Last page creates the DAO.
-                      t(CreateDAOSubmitLabel.CreateDAO)
-                }
-              />
+              {/* SubmitButton (input tags) can't have children, so can't
+               * display the loading spinner. */}
+              <Button
+                disabled={!mountedInBrowser}
+                loading={creating}
+                type="submit"
+                value={submitValue}
+              >
+                {submitValue}
+              </Button>
             </div>
           </div>
         </div>

@@ -36,8 +36,8 @@ interface InstantiateData {
   funds: { denom: string; amount: number }[]
 }
 
-const useDefaults: UseDefaults<InstantiateData> = () => ({
-  admin: '',
+const useDefaults: UseDefaults<InstantiateData> = (coreAddress) => ({
+  admin: coreAddress,
   codeId: 0,
   label: '',
   message: '{}',

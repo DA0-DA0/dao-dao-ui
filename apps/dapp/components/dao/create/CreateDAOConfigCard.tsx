@@ -12,6 +12,7 @@ interface CreateDAOConfigCardProps extends ComponentProps<'div'> {
   description: string
   error?: FieldError
   accentColor?: string
+  childContainerClassName?: string
 }
 
 export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
@@ -20,22 +21,29 @@ export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
   description,
   children,
   error,
+  childContainerClassName,
   ...props
 }) => (
   <CreateDAOConfigCardWrapper {...props}>
     <div className="flex flex-row gap-6 items-start">
       <p className="mt-4 text-[42px]">{image}</p>
 
-      <div>
+      <div className="flex flex-col">
         <p className="primary-text">{title}</p>
         <p className="mt-1 secondary-text">{description}</p>
+
+        <div
+          className={clsx(
+            'flex flex-row gap-2 items-stretch self-end mt-4',
+            childContainerClassName
+          )}
+        >
+          {children}
+        </div>
+
+        <InputErrorMessage className="self-end" error={error} />
       </div>
     </div>
-
-    <div className="flex flex-row gap-2 items-stretch self-end mt-4">
-      {children}
-    </div>
-    <InputErrorMessage className="self-end" error={error} />
   </CreateDAOConfigCardWrapper>
 )
 
