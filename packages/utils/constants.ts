@@ -76,3 +76,17 @@ export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 export const MULTISIG_INDEX = process.env.NEXT_PUBLIC_MULTISIG_INDEX as string
 export const DAO_INDEX = process.env.NEXT_PUBLIC_DAO_INDEX as string
+
+export const V1_CORE_ID = parseInt(
+  process.env.NEXT_PUBLIC_V1_CORE_ID as string,
+  10
+)
+export const V1_CW4_VOTING_ID = parseInt(
+  process.env.NEXT_PUBLIC_V1_CW4_VOTING_ID as string,
+  10
+)
+export const V1_PROPOSAL_SINGLE_ID = parseInt(
+  process.env.NEXT_PUBLIC_PROPOSAL_SINGLE_ID as string,
+  10
+)
+export const V1_URL = process.env.NEXT_PUBLIC_V1_URL as string

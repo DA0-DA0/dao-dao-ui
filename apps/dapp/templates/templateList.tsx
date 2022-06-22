@@ -29,6 +29,12 @@ import {
   transformCustomToCosmos,
 } from './custom'
 import {
+  MigrateMultisigComponent,
+  multisigMigrateDefaults,
+  transformCosmosToMigrateMultisig,
+  transformMigrateMultisigToCosmos,
+} from './migrateMultisig'
+import {
   MintComponent,
   mintDefaults,
   transformCosmosToMint,
@@ -134,6 +140,15 @@ export const messageTemplates: MessageTemplate[] = [
     toCosmosMsg: transformChangeMembersToCosmos,
     fromCosmosMsg: transformCosmosToChangeMembers,
   },
+  {
+    label: '🦢 Upgrade to V1',
+    description: 'Update multisig to DAO DAO v1.',
+    component: MigrateMultisigComponent,
+    contractSupport: ContractSupport.Multisig,
+    getDefaults: multisigMigrateDefaults,
+    fromCosmosMsg: transformCosmosToMigrateMultisig,
+    toCosmosMsg: transformMigrateMultisigToCosmos,
+  },
 ]
 // Ensure custom is always sorted last for two reasons:
 // 1. It should display last since it is a catch-all.
@@ -150,7 +165,7 @@ messageTemplates.sort((a, b) => {
 export const messageTemplateToCosmosMsg = (
   m: MessageTemplate,
   props: ToCosmosMsgProps
-): CosmosMsgFor_Empty | undefined =>
+): CosmosMsgFor_Empty | CosmosMsgFor_Empty[] | undefined =>
   messageTemplates
     .find((template) => template.label === m.label)
     ?.toCosmosMsg?.(m as any, props)
@@ -198,7 +213,10 @@ export interface MessageTemplate {
     govTokenDecimals: number
   ) => any
   // Convert MessageTemplate to CosmosMsgFor_Empty.
-  toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
+  toCosmosMsg: (
+    self: any,
+    props: ToCosmosMsgProps
+  ) => CosmosMsgFor_Empty | undefined | CosmosMsgFor_Empty[]
   // Convert decoded msg data to fields in form display.
   fromCosmosMsg: (msg: Record<string, any>, props: FromCosmosMsgProps) => any
 }
