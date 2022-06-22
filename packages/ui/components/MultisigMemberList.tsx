@@ -32,7 +32,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
               primaryText ? 'primary-text' : 'title-text'
             )}
           >
-            {t('Your voting power')}
+            {t('yourVotingPower')}
           </h2>
           <ul className="mt-3 list-none">
             <li>
@@ -91,7 +91,7 @@ export const MultisigMemberListLoader: FC<MultisigMembersListLoaderProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          {t('Your voting power')}
+          {t('yourVotingPower')}
         </h2>
 
         {loader}

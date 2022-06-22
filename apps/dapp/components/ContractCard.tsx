@@ -89,10 +89,13 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
               </p>
             )}
             {weight !== undefined && (
-              <p className="text-sm text-valid text-success">
-                <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-                {t('Your voting power')}: {weight}
-              </p>
+              <div className="flex flex-row gap-2 text-sm text-valid text-success">
+                <Votes className="w-4 h-5" fill="currentColor" />
+                <div className="flex flex-row flex-wrap gap-x-1">
+                  <span>{t('yourVotingPower')}:</span>
+                  {weight}
+                </div>
+              </div>
             )}
           </div>
         </div>

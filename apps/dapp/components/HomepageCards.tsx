@@ -57,7 +57,7 @@ export const HomepageCards: FC = () => {
           <h3 className="header-text">{t('easyToUse')}</h3>
           <div className="flex flex-col gap-3 max-w-xs">
             <p className="max-w-sm body-text">{t('anyoneCanParticipate')}</p>
-            <p className="max-w-sm body-text">{t('easyToUseDescription')}</p>
+            <p className="max-w-sm body-text">{t('easyToUseExplanation')}</p>
           </div>
         </div>
       </div>

@@ -140,7 +140,6 @@
   "You must have voting power to create a proposal": "You must have voting power to create a proposal. Stake tokens to get voting power.",
   "Your balance": "Your balance",
   "Your equity": "Your equity",
-  "Your voting power": "Your voting power",
   "abstain": "Abstain",
   "acceptTerms": "I accept the terms",
   "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
@@ -358,7 +357,7 @@
   "validator": "Validator",
   "vote": "Vote",
   "voteStatus": "Vote status",
-  "votedOnProposal": "You voted {{vote}} on this proposal.",
+  "votedOnProposal": "You voted <0/> on this proposal.",
   "votingDuration": "Voting duration",
   "votingPowerStakedAndRewards": "Voting power (staked {{name}} + rewards)",
   "walletConnectMobileLimitations": "Please feel free to explore the UI. Due to current limitations in WalletConnect, you will not be able to connect your mobile wallet to the {{chain}} chain.",
@@ -369,5 +368,6 @@
   "you": "You",
   "yourDAOs": "Your DAOs",
   "yourTokens": "Your Tokens",
-  "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
+  "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked.",
+  "yourVotingPower": "Your voting power"
 }

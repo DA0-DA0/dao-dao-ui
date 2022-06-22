@@ -2,7 +2,7 @@ import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { FC, ReactNode, useMemo, useState } from 'react'
 
 import { ActionsRenderer } from '@dao-dao/actions'
-import { useTranslation } from '@dao-dao/i18n'
+import { Trans, useTranslation } from '@dao-dao/i18n'
 import {
   Proposal,
   Status,
@@ -135,9 +135,10 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             )}
           {walletVote && (
             <p className="flex flex-row gap-2 items-center body-text">
-              {t('votedOnProposal', {
-                vote: <VoteDisplay vote={walletVote} />,
-              })}
+              <Trans
+                components={[<VoteDisplay key="vote" vote={walletVote} />]}
+                i18nKey="votedOnProposal"
+              />
             </p>
           )}
           {proposal.status !== Status.Open && !walletVote && (
