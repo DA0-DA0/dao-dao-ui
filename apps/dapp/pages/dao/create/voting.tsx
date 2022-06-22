@@ -162,143 +162,8 @@ const CreateDAOVotingPage: NextPage = () => {
             <CreateDAOConfigCardWrapper className="gap-8 mb-9">
               {watchedNewDAO.governanceTokenOptions.type ===
               GovernanceTokenType.New ? (
-                <>
-                  <div className="flex flex-col gap-2 items-stretch">
-                    <div className="grid grid-cols-[2fr_3fr_auto] gap-x-4 gap-y-2 items-center">
-                      <p className="primary-text">{t('initialSupply')}</p>
-
-                      <div className="pl-8">
-                        <NumberInput
-                          containerClassName="grow"
-                          error={
-                            errors.governanceTokenOptions?.newInfo
-                              ?.initialSupply
-                          }
-                          fieldName="governanceTokenOptions.newInfo.initialSupply"
-                          onPlusMinus={[
-                            () =>
-                              setValue(
-                                'governanceTokenOptions.newInfo.initialSupply',
-                                Math.max(
-                                  govTokenInitialSupply + 1,
-                                  1 / 10 ** NEW_DAO_CW20_DECIMALS
-                                )
-                              ),
-                            () =>
-                              setValue(
-                                'governanceTokenOptions.newInfo.initialSupply',
-                                Math.max(
-                                  govTokenInitialSupply - 1,
-                                  1 / 10 ** NEW_DAO_CW20_DECIMALS
-                                )
-                              ),
-                          ]}
-                          register={register}
-                          step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
-                          validation={[validatePositive, validateRequired]}
-                        />
-
-                        <InputErrorMessage
-                          error={
-                            errors.governanceTokenOptions?.newInfo
-                              ?.initialSupply
-                          }
-                        />
-                      </div>
-
-                      <div className="flex flex-row gap-2 items-center text-tertiary">
-                        {newTokenImageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            alt=""
-                            className="w-9 h-9 rounded-full"
-                            src={newTokenImageUrl}
-                          />
-                        ) : (
-                          <PlaceholderToken
-                            className="p-2 rounded-full border border-default"
-                            color="rgba(var(--dark), 0.3)"
-                            height="2.25rem"
-                            width="2.25rem"
-                          />
-                        )}
-                        <p className="hidden sm:flex">
-                          $
-                          {watchedNewDAO.governanceTokenOptions.newInfo
-                            .symbol || t('token')}
-                        </p>
-                      </div>
-
-                      <p className="primary-text">{t('treasuryPercent')}</p>
-
-                      <div className="pl-8">
-                        <NumberInput
-                          containerClassName="grow"
-                          error={
-                            errors.governanceTokenOptions?.newInfo
-                              ?.initialTreasuryPercent
-                          }
-                          fieldName="governanceTokenOptions.newInfo.initialTreasuryPercent"
-                          onPlusMinus={[
-                            () =>
-                              setValue(
-                                'governanceTokenOptions.newInfo.initialTreasuryPercent',
-                                Math.min(
-                                  Math.max(govTokenTreasuryPercent + 1, 0),
-                                  100
-                                )
-                              ),
-                            () =>
-                              setValue(
-                                'governanceTokenOptions.newInfo.initialTreasuryPercent',
-                                Math.min(
-                                  Math.max(govTokenTreasuryPercent - 1, 0),
-                                  100
-                                )
-                              ),
-                          ]}
-                          register={register}
-                          step={0.001}
-                          validation={[
-                            validatePercent,
-                            validateRequired,
-                            // Error displayed in place of description.
-                            () => govTokenPercentsSumTo100,
-                          ]}
-                        />
-
-                        <InputErrorMessage
-                          error={
-                            errors.governanceTokenOptions?.newInfo
-                              ?.initialTreasuryPercent
-                          }
-                        />
-                      </div>
-
-                      <p className="flex justify-center items-center p-2 w-9 h-9 text-base text-disabled rounded-full">
-                        %
-                      </p>
-                    </div>
-
-                    <p
-                      className={clsx('my-2 secondary-text', {
-                        'text-error': !govTokenPercentsSumTo100,
-                      })}
-                    >
-                      {govTokenPercentsSumTo100
-                        ? t('Treasury balance description', {
-                            numberOfTokensMinted: govTokenInitialSupply,
-                            memberPercent: govTokenMemberPercent,
-                            treasuryPercent: govTokenTreasuryPercent,
-                          })
-                        : t('govTokenBalancesDoNotSumTo100', {
-                            totalPercent:
-                              govTokenTreasuryPercent + govTokenMemberPercent,
-                          })}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch sm:gap-4">
+                <div className="flex flex-col gap-2 items-stretch">
+                  <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch mb-4 sm:gap-4">
                     <div className="flex flex-col gap-2 justify-between items-start">
                       <InputLabel mono name={t('Token image')} />
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
@@ -312,22 +177,30 @@ const CreateDAOVotingPage: NextPage = () => {
                           watch={watch}
                         />
                         <p className="hidden text-disabled sm:block">
-                          {t('Add an image')}
+                          {t('setAnImage')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={t('Ticker symbol')} />
+                      <InputLabel mono name={t('tickerSymbol')} />
 
                       <div>
-                        <TextInput
-                          error={errors.governanceTokenOptions?.newInfo?.symbol}
-                          fieldName="governanceTokenOptions.newInfo.symbol"
-                          placeholder={t('Ticker symbol placeholder')}
-                          register={register}
-                          validation={[validateRequired, validateTokenSymbol]}
-                        />
+                        <div className="flex flex-row gap-2 items-center">
+                          <p className="flex justify-center items-center text-base text-disabled rounded-full">
+                            $
+                          </p>
+                          <TextInput
+                            error={
+                              errors.governanceTokenOptions?.newInfo?.symbol
+                            }
+                            fieldName="governanceTokenOptions.newInfo.symbol"
+                            placeholder={t('tickerSymbolPlaceholder')}
+                            register={register}
+                            validation={[validateRequired, validateTokenSymbol]}
+                          />
+                        </div>
+
                         <InputErrorMessage
                           error={errors.governanceTokenOptions?.newInfo?.symbol}
                         />
@@ -351,7 +224,138 @@ const CreateDAOVotingPage: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                </>
+
+                  <div className="grid grid-cols-[2fr_3fr_auto] gap-x-4 gap-y-2 items-center">
+                    <p className="primary-text">{t('initialSupply')}</p>
+
+                    <div className="pl-8">
+                      <NumberInput
+                        containerClassName="grow"
+                        error={
+                          errors.governanceTokenOptions?.newInfo?.initialSupply
+                        }
+                        fieldName="governanceTokenOptions.newInfo.initialSupply"
+                        onPlusMinus={[
+                          () =>
+                            setValue(
+                              'governanceTokenOptions.newInfo.initialSupply',
+                              Math.max(
+                                govTokenInitialSupply + 1,
+                                1 / 10 ** NEW_DAO_CW20_DECIMALS
+                              )
+                            ),
+                          () =>
+                            setValue(
+                              'governanceTokenOptions.newInfo.initialSupply',
+                              Math.max(
+                                govTokenInitialSupply - 1,
+                                1 / 10 ** NEW_DAO_CW20_DECIMALS
+                              )
+                            ),
+                        ]}
+                        register={register}
+                        step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+                        validation={[validatePositive, validateRequired]}
+                      />
+
+                      <InputErrorMessage
+                        error={
+                          errors.governanceTokenOptions?.newInfo?.initialSupply
+                        }
+                      />
+                    </div>
+
+                    <div className="flex flex-row gap-2 items-center text-tertiary">
+                      {newTokenImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          alt=""
+                          className="w-9 h-9 rounded-full"
+                          src={newTokenImageUrl}
+                        />
+                      ) : (
+                        <PlaceholderToken
+                          className="p-2 rounded-full border border-default"
+                          color="rgba(var(--dark), 0.3)"
+                          height="2.25rem"
+                          width="2.25rem"
+                        />
+                      )}
+                      <p className="hidden sm:flex">
+                        $
+                        {watchedNewDAO.governanceTokenOptions.newInfo.symbol ||
+                          t('token')}
+                      </p>
+                    </div>
+
+                    <p className="primary-text">{t('treasuryPercent')}</p>
+
+                    <div className="pl-8">
+                      <NumberInput
+                        containerClassName="grow"
+                        error={
+                          errors.governanceTokenOptions?.newInfo
+                            ?.initialTreasuryPercent
+                        }
+                        fieldName="governanceTokenOptions.newInfo.initialTreasuryPercent"
+                        onPlusMinus={[
+                          () =>
+                            setValue(
+                              'governanceTokenOptions.newInfo.initialTreasuryPercent',
+                              Math.min(
+                                Math.max(govTokenTreasuryPercent + 1, 0),
+                                100
+                              )
+                            ),
+                          () =>
+                            setValue(
+                              'governanceTokenOptions.newInfo.initialTreasuryPercent',
+                              Math.min(
+                                Math.max(govTokenTreasuryPercent - 1, 0),
+                                100
+                              )
+                            ),
+                        ]}
+                        register={register}
+                        step={0.001}
+                        validation={[
+                          validatePercent,
+                          validateRequired,
+                          // Error displayed in place of description.
+                          () => govTokenPercentsSumTo100,
+                        ]}
+                      />
+
+                      <InputErrorMessage
+                        error={
+                          errors.governanceTokenOptions?.newInfo
+                            ?.initialTreasuryPercent
+                        }
+                      />
+                    </div>
+
+                    <p className="flex justify-center items-center p-2 w-9 h-9 text-base text-disabled rounded-full">
+                      %
+                    </p>
+                  </div>
+
+                  <p
+                    className={clsx('mt-2 secondary-text', {
+                      'text-error': !govTokenPercentsSumTo100,
+                    })}
+                  >
+                    {govTokenPercentsSumTo100
+                      ? t('Treasury balance description', {
+                          numberOfTokensMinted: govTokenInitialSupply,
+                          memberPercent: govTokenMemberPercent,
+                          treasuryPercent: govTokenTreasuryPercent,
+                        })
+                      : t('govTokenBalancesDoNotSumTo100', {
+                          totalPercent:
+                            govTokenTreasuryPercent + govTokenMemberPercent,
+                        })}
+                  </p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   <p className="primary-text">{t('Token contract address')}</p>

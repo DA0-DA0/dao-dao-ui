@@ -70,7 +70,7 @@ const CreateDAOPage: NextPage = () => {
               watch={watch}
             />
 
-            <p className="text-disabled">{t('Add an image')}</p>
+            <p className="text-disabled">{t('setAnImage')}</p>
           </div>
 
           <div className="flex flex-col flex-1 gap-2">
