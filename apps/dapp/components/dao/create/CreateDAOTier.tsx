@@ -13,6 +13,7 @@ import {
   AddressInput,
   Button,
   InputErrorMessage,
+  InputLabel,
   NumberInput,
   TextInput,
   TooltipIcon,
@@ -44,11 +45,11 @@ interface CreateDAOTierProps {
 export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   // Don't pass along to member.
   remove,
-  newDAO,
   ...props
 }) => {
   const { t } = useTranslation()
   const {
+    newDAO,
     tierIndex,
     control,
     register,
@@ -74,9 +75,9 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   return (
     <div className="relative p-6 bg-disabled rounded-lg">
       {!showColorDotOnMember && <CornerGradient color={`${tierColor}1A`} />}
-      <div className="flex flex-row gap-8 justify-between items-center">
+      <div className="flex flex-col gap-4 items-stretch sm:flex-row sm:gap-8 sm:justify-between sm:items-center">
         <div className="grow">
-          <div className="flex flex-row grow gap-4 items-center">
+          <div className="flex flex-row gap-4 items-center">
             {!showColorDotOnMember && (
               <div
                 className="shrink-0 w-2 h-2 rounded-full"
@@ -86,32 +87,46 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               ></div>
             )}
 
-            <div className="flex flex-row grow gap-2 items-center">
-              <TextInput
-                className="grow"
-                error={errors.tiers?.[tierIndex]?.name}
-                fieldName={`tiers.${tierIndex}.name`}
-                placeholder={t('Tier name') + '...'}
-                register={register}
-                validation={[validateRequired]}
+            <div className="flex flex-col grow gap-1">
+              <InputLabel
+                containerProps={{ className: 'grow' }}
+                name={t('tierName')}
+                tooltip={t('tierNameTooltip')}
               />
-              <TooltipIcon label={t('Tier description')} />
+              <div className="grow">
+                <TextInput
+                  error={errors.tiers?.[tierIndex]?.name}
+                  fieldName={`tiers.${tierIndex}.name`}
+                  placeholder={t('Tier name') + '...'}
+                  register={register}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
+              </div>
             </div>
           </div>
           <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className="flex flex-row gap-2 items-center">
-            <p className="text-right caption-text">
-              {governanceTokenEnabled
-                ? t('Governance token', { count: 1000 })
-                : t('Voting weight')}
-              <br />
-              {t('per member')}
-            </p>
-            <div>
+        <div className="grow">
+          <div className="flex flex-col gap-1">
+            <InputLabel
+              name={t('tierVotingWeight', {
+                context: governanceTokenEnabled
+                  ? 'tokenBased'
+                  : 'membershipBased',
+              })}
+              tooltip={t('tierVotingWeightPrompt', {
+                context: governanceTokenEnabled
+                  ? 'tokenBased'
+                  : 'membershipBased',
+                weight: newDAO.tiers?.[tierIndex]?.weight ?? 0,
+              })}
+            />
+
+            <div className="flex flex-row gap-2 items-center">
               <NumberInput
+                containerClassName="grow"
                 error={errors.tiers?.[tierIndex]?.weight}
                 fieldName={`tiers.${tierIndex}.weight`}
                 onPlusMinus={[
@@ -137,21 +152,24 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                     ),
                 ]}
                 register={register}
-                sizing={governanceTokenEnabled ? 'md' : 'sm'}
                 step={
                   governanceTokenEnabled ? 1 / 10 ** NEW_DAO_CW20_DECIMALS : 1
                 }
                 validation={[validatePositive, validateRequired]}
               />
+              {governanceTokenEnabled && <InputLabel name="%" />}
             </div>
-            <TooltipIcon label={t('Add another tier prompt')} />
           </div>
 
           <InputErrorMessage error={errors.tiers?.[tierIndex]?.weight} />
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 items-stretch mt-4">
+      <InputLabel
+        containerProps={{ className: 'mt-4 mb-1' }}
+        name={t('members', { count: 100 })}
+      />
+      <div className="flex flex-col gap-2 items-stretch">
         {members.map(({ id }, idx) => (
           <CreateDAOTierMember
             key={id}
@@ -185,11 +203,12 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   )
 }
 
-interface CreateDAOTierMemberProps extends Omit<CreateDAOTierProps, 'newDAO'> {
+interface CreateDAOTierMemberProps extends CreateDAOTierProps {
   memberIndex: number
 }
 
 const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
+  newDAO,
   tierIndex,
   memberIndex,
   register,
@@ -199,9 +218,18 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
 }) => {
   const { t } = useTranslation()
 
+  const tier = newDAO.tiers?.[tierIndex]
+  // Governance Token-based DAOs distribute tier weights evenly amongst
+  // members.
+  const govTokens =
+    newDAO.governanceTokenOptions && tier
+      ? (tier.weight / tier.members.length / 100) *
+        newDAO.governanceTokenOptions.newInfo.initialSupply
+      : undefined
+
   return (
-    <div className="grid grid-cols-[1fr_2rem] grid-rows-1 gap-4 items-center p-3 bg-card rounded-md sm:gap-8">
-      <div>
+    <div className="flex flex-row gap-4 items-center p-3 bg-card rounded-md">
+      <div className="grow">
         <div className="flex flex-row gap-4 items-center">
           {showColorDotOnMember && (
             <div
@@ -228,7 +256,19 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
         />
       </div>
 
-      <button className="justify-self-end p-1" onClick={remove}>
+      {govTokens !== undefined && (
+        <TooltipIcon
+          label={t('tierMemberGovTokenAllocation', {
+            tokens: govTokens.toLocaleString(undefined, {
+              maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
+            }),
+            tokenSymbol:
+              newDAO.governanceTokenOptions.newInfo.symbol || t('token'),
+          })}
+        />
+      )}
+
+      <button className="pr-1" onClick={remove}>
         <TrashIcon className="w-4 h-4 text-error" />
       </button>
     </div>

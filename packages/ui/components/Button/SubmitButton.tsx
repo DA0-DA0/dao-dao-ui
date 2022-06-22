@@ -13,7 +13,6 @@ type SubmitProps = Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'type'> & {
 
 function Submit(
   {
-    children,
     disabled,
     className,
     label,
@@ -45,9 +44,7 @@ function Submit(
       type="submit"
       value={label}
       {...rest}
-    >
-      {children}
-    </input>
+    />
   )
 }
 

@@ -100,14 +100,16 @@ export const useCreateDAOForm = (pageIndex: number) => {
   } = useForm({ defaultValues: newDAO })
 
   const watchedNewDAO = watch()
-  // Determine if tiers have been touched yet.
+  // Determine if tiers have been edited yet.
   const tiersAreUntouched =
     watchedNewDAO.tiers.length === DefaultNewDAO.tiers.length &&
-    watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name &&
+    (watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name ||
+      watchedNewDAO.tiers[0].name === t('defaultTierName')) &&
     watchedNewDAO.tiers[0].members.length ===
       DefaultNewDAO.tiers[0].members.length &&
-    watchedNewDAO.tiers[0].members[0].address ===
-      DefaultNewDAO.tiers[0].members[0].address
+    (watchedNewDAO.tiers[0].members[0].address ===
+      DefaultNewDAO.tiers[0].members[0].address ||
+      watchedNewDAO.tiers[0].members[0].address === walletAddress)
 
   const invalidPages = createDAOFormPages.map(
     ({ validate }) =>
@@ -170,7 +172,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
               setPinned(address)
 
               router.push(`/dao/${address}`)
-              toast.success('DAO created.')
+              toast.success(t('success.daoCreatedPleaseWait'))
               // Don't stop creating loading on success since we're
               // navigating, and it's weird when loading stops and
               // nothing happens for a sec.
@@ -184,7 +186,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
             setCreating(false)
           }
         } else {
-          toast.error('Connect a wallet to create a DAO.')
+          toast.error(t('error.connectWalletToCreate'))
         }
 
         return
@@ -326,6 +328,7 @@ export const useCreateDAOFormPages: () => DAOFormPage[] = () => {
             clearErrors('_tiersError')
           }
 
+          // Ensure each tier has at least one member.
           tiers.forEach((tier, tierIndex) => {
             if (tier.members.length === 0) {
               setError?.(`tiers.${tierIndex}._error`, {
@@ -404,27 +407,34 @@ const useCreateDAO = () => {
       if (governanceTokenEnabled) {
         let tokenInfo: Cw20StakedBalanceVotingInstantiateMsg['token_info']
         if (governanceTokenOptions.type === GovernanceTokenType.New) {
-          if (!newInfo) {
-            throw new Error(t('errors.noGovTokenInfo'))
-          }
-
-          const { initialTreasuryBalance, imageUrl, symbol, name } = newInfo
+          const { initialSupply, imageUrl, symbol, name } = newInfo
 
           const microInitialBalances: Cw20Coin[] = tiers.flatMap(
             ({ weight, members }) =>
               members.map(({ address }) => ({
                 address,
                 amount: convertDenomToMicroDenomWithDecimals(
-                  weight,
+                  // Governance Token-based DAOs distribute tier weights
+                  // evenly amongst members.
+                  (weight / members.length / 100) * initialSupply,
                   NEW_DAO_CW20_DECIMALS
                 ),
               }))
           )
-          const microInitialTreasuryBalance =
-            convertDenomToMicroDenomWithDecimals(
-              initialTreasuryBalance,
-              NEW_DAO_CW20_DECIMALS
+          // To prevent rounding issues, treasury balance becomes the
+          // remaining tokens after the member weights are distributed.
+          const microInitialTreasuryBalance = (
+            Number(
+              convertDenomToMicroDenomWithDecimals(
+                initialSupply,
+                NEW_DAO_CW20_DECIMALS
+              )
+            ) -
+            microInitialBalances.reduce(
+              (acc, { amount }) => acc + Number(amount),
+              0
             )
+          ).toString()
 
           tokenInfo = {
             new: {
@@ -509,6 +519,8 @@ const useCreateDAO = () => {
       validateCwProposalSingleInstantiateMsg(
         cwProposalSingleModuleInstantiateMsg
       )
+
+      console.log(votingModuleInstantiateMsg)
 
       const cwCoreInstantiateMsg: CwCoreInstantiateMsg = {
         admin: null,

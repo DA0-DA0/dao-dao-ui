@@ -23,7 +23,7 @@ import {
   NewDAO,
 } from '@/atoms'
 
-interface CreateDAOConfigCardSharedProps {
+export interface CreateDAOConfigCardSharedProps {
   newDAO: NewDAO
   register: UseFormRegister<NewDAO>
   setValue: UseFormSetValue<NewDAO>

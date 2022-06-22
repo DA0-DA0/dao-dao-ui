@@ -80,7 +80,8 @@ export interface NewDAO {
   governanceTokenOptions: {
     type?: GovernanceTokenType
     newInfo: {
-      initialTreasuryBalance: number
+      initialSupply: number
+      initialTreasuryPercent: number
       imageUrl?: string
       symbol: string
       name: string
@@ -121,7 +122,7 @@ export const DEFAULT_NEW_DAO_THRESHOLD_PERCENT: ThresholdValue = 75
 // Default weight when adding a new tier for a simple DAO.
 export const DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT = 1
 // Default weight when adding a new tier for a governance token-based DAO.
-export const DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT = 1000
+export const DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT = 10
 
 export const DefaultNewDAO: NewDAO = {
   structure: NewDAOStructure.Membership,
@@ -145,7 +146,8 @@ export const DefaultNewDAO: NewDAO = {
   governanceTokenOptions: {
     type: GovernanceTokenType.New,
     newInfo: {
-      initialTreasuryBalance: 100000,
+      initialSupply: 10000000,
+      initialTreasuryPercent: 90,
       symbol: '',
       name: '',
     },
