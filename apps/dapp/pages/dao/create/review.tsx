@@ -1,9 +1,11 @@
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
+import { useCallback, useState } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { Logo } from '@dao-dao/ui'
+import { Button, CosmosMessageDisplay, Logo } from '@dao-dao/ui'
+import { parseEncodedMessage } from '@dao-dao/utils'
 
 import { NewDAOStructure } from '@/atoms'
 import {
@@ -28,6 +30,7 @@ const CreateDAOReviewPage: NextPage = () => {
     register,
     setValue,
     watch,
+    makeCreateDAOMsg,
   } = useCreateDAOForm(2)
 
   const governanceTokenEnabled =
@@ -41,12 +44,38 @@ const CreateDAOReviewPage: NextPage = () => {
     readOnly: true,
   }
 
+  const [previewJson, setPreviewJson] = useState<string>()
+  const [previewError, setPreviewError] = useState<string>()
+  const togglePreview = useCallback(() => {
+    setPreviewJson('')
+    setPreviewError('')
+
+    // If already displaying, do nothing since it was cleared above.
+    if (previewJson && !previewError) {
+      return
+    }
+
+    try {
+      const msg = makeCreateDAOMsg(watchedNewDAO)
+      msg.proposal_modules_instantiate_info.forEach((info) => {
+        info.msg = parseEncodedMessage(info.msg)
+      })
+      msg.voting_module_instantiate_info.msg = parseEncodedMessage(
+        msg.voting_module_instantiate_info.msg
+      )
+      setPreviewJson(JSON.stringify(msg, undefined, 2))
+    } catch (err) {
+      console.error(err)
+      setPreviewError(err instanceof Error ? err.message : `${err}`)
+    }
+  }, [makeCreateDAOMsg, previewError, previewJson, watchedNewDAO])
+
   return (
     <>
       <SmallScreenNav />
 
       <CreateDAOFormWrapper {...formWrapperProps}>
-        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
+        <div className="flex flex-col gap-6 items-stretch py-6 rounded-lg md:gap-10 md:py-10 bg-disabled">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
             <div className="flex flex-col items-center">
               <div
@@ -114,6 +143,23 @@ const CreateDAOReviewPage: NextPage = () => {
           <CreateDAOThresholdCard {...configCardProps} />
           <CreateDAOQuorumCard {...configCardProps} />
         </div>
+
+        <div className="flex flex-col items-end w-full">
+          <Button
+            className={clsx('justify-end mt-8', {
+              'mb-4': previewJson || previewError,
+            })}
+            onClick={togglePreview}
+            size="sm"
+            variant="secondary"
+          >
+            {previewJson
+              ? t('hideInstantiateMessage')
+              : t('showInstantiateMessage')}
+          </Button>
+        </div>
+        {previewJson && <CosmosMessageDisplay value={previewJson} />}
+        {previewError && <p className="text-error">{previewError}</p>}
       </CreateDAOFormWrapper>
     </>
   )

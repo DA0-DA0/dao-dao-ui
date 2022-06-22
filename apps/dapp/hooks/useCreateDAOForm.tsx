@@ -273,6 +273,8 @@ export const useCreateDAOForm = (pageIndex: number) => {
     ]
   )
 
+  const makeCreateDAOMsg = useMakeCreateDAOMsg()
+
   return {
     watchedNewDAO,
     tiersAreUntouched,
@@ -286,6 +288,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
     setError,
     clearErrors,
     creating,
+    makeCreateDAOMsg,
     formWrapperProps: {
       onSubmit: formOnSubmit,
       currentPageIndex: pageIndex,
@@ -375,14 +378,11 @@ const useParseSubmitterValueDelta = () => {
   )
 }
 
-const useCreateDAO = () => {
+const useMakeCreateDAOMsg = () => {
   const { t } = useTranslation()
 
   return useCallback(
-    async (
-      instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
-      values: NewDAO
-    ) => {
+    (values: NewDAO) => {
       const {
         structure,
         name,
@@ -561,12 +561,28 @@ const useCreateDAO = () => {
         },
       }
 
+      return cwCoreInstantiateMsg
+    },
+    [t]
+  )
+}
+
+const useCreateDAO = () => {
+  const makeCreateDAOMsg = useMakeCreateDAOMsg()
+
+  return useCallback(
+    async (
+      instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
+      values: NewDAO
+    ) => {
+      const cwCoreInstantiateMsg = makeCreateDAOMsg(values)
+
       const { contractAddress } = await instantiate(
         cwCoreInstantiateMsg,
         cwCoreInstantiateMsg.name
       )
       return contractAddress
     },
-    [t]
+    [makeCreateDAOMsg]
   )
 }
