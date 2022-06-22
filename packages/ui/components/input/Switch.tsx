@@ -21,8 +21,9 @@ export const Switch: FC<SwitchProps> = ({
 }) => (
   <div
     className={clsx(
-      'flex relative flex-none items-center rounded-full hover:opacity-90 cursor-pointer',
+      'flex relative flex-none items-center rounded-full',
       {
+        'hover:opacity-90 cursor-pointer': !disabled,
         'bg-valid': on,
         'bg-transparent border border-dark': !on,
         // Sizing.
