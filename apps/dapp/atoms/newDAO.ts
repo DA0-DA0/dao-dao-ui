@@ -102,6 +102,7 @@ export interface NewDAO {
   _changeThresholdQuorumEnabled: boolean
   thresholdQuorum: {
     threshold: ThresholdValue
+    quorumEnabled: boolean
     quorum: ThresholdValue
   }
 }
@@ -163,6 +164,7 @@ export const DefaultNewDAO: NewDAO = {
   _changeThresholdQuorumEnabled: false,
   thresholdQuorum: {
     threshold: 'majority',
+    quorumEnabled: true,
     quorum: 20,
   },
 }

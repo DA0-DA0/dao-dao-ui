@@ -91,6 +91,8 @@ const CreateDAOVotingPage: NextPage = () => {
 
   const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
     useState(false)
+  const [showQuorumDisabledWarning, setShowQuorumDisabledWarning] =
+    useState(false)
 
   const newTokenImageUrl = watchedNewDAO.governanceTokenOptions.newInfo.imageUrl
 
@@ -478,7 +480,10 @@ const CreateDAOVotingPage: NextPage = () => {
         {watchedNewDAO._changeThresholdQuorumEnabled && (
           <div className="space-y-3">
             <CreateDAOThresholdCard {...configCardProps} />
-            <CreateDAOQuorumCard {...configCardProps} />
+            <CreateDAOQuorumCard
+              {...configCardProps}
+              showWarningModal={() => setShowQuorumDisabledWarning(true)}
+            />
           </div>
         )}
       </CreateDAOFormWrapper>
@@ -488,9 +493,11 @@ const CreateDAOVotingPage: NextPage = () => {
           containerClassName="flex flex-col gap-4"
           onClose={() => setShowThresholdQuorumWarning(false)}
         >
-          <p className="header-text">{t('Watch out!')}</p>
+          <p className="header-text">{t('watchOut')}</p>
 
-          <p className="body-text">{t('Advanced configuration warning')}</p>
+          <p className="body-text">
+            {t('advancedThresholdQuorumConfigWarning')}
+          </p>
 
           <a
             className="block underline"
@@ -505,7 +512,36 @@ const CreateDAOVotingPage: NextPage = () => {
             className="self-end"
             onClick={() => setShowThresholdQuorumWarning(false)}
           >
-            {t('I accept the danger')}
+            {t('iAcceptDanger')}
+          </Button>
+        </Modal>
+      )}
+
+      {showQuorumDisabledWarning && (
+        <Modal
+          containerClassName="flex flex-col gap-4"
+          onClose={() => setShowQuorumDisabledWarning(false)}
+        >
+          <p className="header-text">{t('watchOut')}</p>
+
+          <p className="body-text">
+            {t('advancedQuorumDisabledConfigWarning')}
+          </p>
+
+          <a
+            className="block underline"
+            href="https://docs.daodao.zone/docs/voting-config"
+            rel="noreferrer"
+            target="_blank"
+          >
+            {t('learnMore')}
+          </a>
+
+          <Button
+            className="self-end"
+            onClick={() => setShowQuorumDisabledWarning(false)}
+          >
+            {t('iAcceptDanger')}
           </Button>
         </Modal>
       )}

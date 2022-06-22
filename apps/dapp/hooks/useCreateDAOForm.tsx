@@ -397,7 +397,7 @@ const useCreateDAO = () => {
           proposalDeposit,
           ...governanceTokenOptions
         },
-        thresholdQuorum: { threshold, quorum },
+        thresholdQuorum: { threshold, quorumEnabled, quorum },
       } = values
 
       const governanceTokenEnabled =
@@ -509,18 +509,24 @@ const useCreateDAO = () => {
               : null,
           max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
           only_members_execute: true,
-          threshold: {
-            threshold_quorum: {
-              quorum: convertThresholdValueToPercentageThreshold(quorum),
-              threshold: convertThresholdValueToPercentageThreshold(threshold),
-            },
-          },
+          threshold: quorumEnabled
+            ? {
+                threshold_quorum: {
+                  quorum: convertThresholdValueToPercentageThreshold(quorum),
+                  threshold:
+                    convertThresholdValueToPercentageThreshold(threshold),
+                },
+              }
+            : {
+                absolute_percentage: {
+                  percentage:
+                    convertThresholdValueToPercentageThreshold(threshold),
+                },
+              },
         }
       validateCwProposalSingleInstantiateMsg(
         cwProposalSingleModuleInstantiateMsg
       )
-
-      console.log(votingModuleInstantiateMsg)
 
       const cwCoreInstantiateMsg: CwCoreInstantiateMsg = {
         admin: null,

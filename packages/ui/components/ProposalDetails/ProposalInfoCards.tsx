@@ -273,11 +273,11 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {t('Yes')}{' '}
+                  {t('yes')}{' '}
                   {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
                 <p key="no" className="text-error">
-                  {t('No')}{' '}
+                  {t('no')}{' '}
                   {turnoutNoPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
               ]
@@ -469,11 +469,11 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {t('Yes')}{' '}
+                  {t('yes')}{' '}
                   {totalYesPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
                 <p key="no" className="text-error">
-                  {t('No')}{' '}
+                  {t('no')}{' '}
                   {totalNoPercent.toLocaleString(undefined, localeOptions)}%
                 </p>,
               ]
