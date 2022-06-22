@@ -75,7 +75,7 @@ const CreateDAOReviewPage: NextPage = () => {
       <SmallScreenNav />
 
       <CreateDAOFormWrapper {...formWrapperProps}>
-        <div className="flex flex-col gap-6 items-stretch py-6 rounded-lg md:gap-10 md:py-10 bg-disabled">
+        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
           <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
             <div className="flex flex-col items-center">
               <div
