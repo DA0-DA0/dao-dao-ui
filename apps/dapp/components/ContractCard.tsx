@@ -91,10 +91,14 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
             {votingPowerPercent && (
               <div className="flex flex-row gap-2 text-sm text-valid text-success">
                 <Votes className="w-4 h-5" fill="currentColor" />
-                <div className="flex flex-row flex-wrap gap-x-1">
-                  <span>{t('yourVotingPower')}:</span>
-                  {votingPowerPercent}
-                </div>
+                {votingPowerPercent === '0%' ? (
+                  t('noVotingPower')
+                ) : (
+                  <div className="flex flex-row flex-wrap gap-x-1">
+                    <span>{t('yourVotingPower')}:</span>
+                    {votingPowerPercent}
+                  </div>
+                )}
               </div>
             )}
           </div>
