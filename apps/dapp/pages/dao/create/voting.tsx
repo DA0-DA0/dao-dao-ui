@@ -29,6 +29,7 @@ import {
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
@@ -62,7 +63,6 @@ const CreateDAOVotingPage: NextPage = () => {
     watch,
     errors,
     setValue,
-    resetField,
     getValues,
     formWrapperProps,
   } = useCreateDAOForm(1)
@@ -461,9 +461,12 @@ const CreateDAOVotingPage: NextPage = () => {
                 setShowAdvancedVotingConfigWarning(true)
               } else {
                 setValue('showAdvancedVotingConfig', false)
-                // Reset advanced voting config options to defaults so any
+                // Set advanced voting config options to defaults so any
                 // values modified while the config was showing are undone.
-                resetField('advancedVotingConfig')
+                setValue(
+                  'advancedVotingConfig',
+                  DefaultNewDAO.advancedVotingConfig
+                )
               }
             }}
           />

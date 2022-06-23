@@ -94,7 +94,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
     watch,
     control,
     setValue,
-    resetField,
     setError,
     clearErrors,
   } = useForm({ defaultValues: newDAO })
@@ -284,7 +283,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
     watch,
     control,
     setValue,
-    resetField,
     setError,
     clearErrors,
     creating,
