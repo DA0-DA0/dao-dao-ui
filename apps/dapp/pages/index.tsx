@@ -130,7 +130,7 @@ const Home: NextPage = () => {
               {t('splash.createExploreJoin')}
             </h2>
             <Link href="/home">
-              <a> 
+              <a>
                 <Button size="lg">
                   {t('splash.cta')}
                   <ArrowUpRight

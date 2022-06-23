@@ -10,13 +10,13 @@ interface EnterAppButtonProps {
 }
 
 export const EnterAppButton: FC<EnterAppButtonProps> = ({ small }) => {
-  const { t } = useTranslation('splash')
+  const { t } = useTranslation()
 
   return (
     <Link href="/home">
       <a>
         <Button size={small ? 'sm' : 'lg'}>
-          {t('cta')}
+          {t('splash.cta')}
           <ArrowUpRight color="currentColor" height="10px" width="10px" />
         </Button>
       </a>
