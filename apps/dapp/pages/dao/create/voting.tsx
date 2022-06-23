@@ -273,7 +273,7 @@ const CreateDAOVotingPage: NextPage = () => {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           alt=""
-                          className="w-9 h-9 rounded-full"
+                          className="object-cover w-9 h-9 rounded-full"
                           src={newTokenImageUrl}
                         />
                       ) : (

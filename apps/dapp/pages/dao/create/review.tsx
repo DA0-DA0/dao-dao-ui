@@ -87,7 +87,7 @@ const CreateDAOReviewPage: NextPage = () => {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     alt={t('daosLogo')}
-                    className="w-full h-full"
+                    className="object-cover w-full h-full"
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
