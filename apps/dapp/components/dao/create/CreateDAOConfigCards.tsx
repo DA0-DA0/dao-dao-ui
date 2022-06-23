@@ -13,6 +13,7 @@ import {
   InputThemedText,
   NumberInput,
   SelectInput,
+  SwitchCard,
 } from '@dao-dao/ui'
 import {
   formatPercentOf100,
@@ -41,7 +42,9 @@ export interface CreateDAOConfigCardSharedProps {
 
 export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
   newDAO: {
-    thresholdQuorum: { threshold },
+    advancedVotingConfig: {
+      thresholdQuorum: { threshold },
+    },
   },
   register,
   setValue,
@@ -54,7 +57,7 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
     <CreateDAOConfigCard
       accentColor="rgba(95, 94, 254, 0.1)"
       description={t('Passing threshold description')}
-      error={errors?.thresholdQuorum?.threshold}
+      error={errors?.advancedVotingConfig?.thresholdQuorum?.threshold}
       image={<Emoji label="ballot box" symbol="🗳️" />}
       title={t('Passing threshold')}
     >
@@ -68,17 +71,17 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
         <>
           {threshold !== 'majority' && (
             <NumberInput
-              error={errors?.thresholdQuorum?.threshold}
-              fieldName="thresholdQuorum.threshold"
+              error={errors?.advancedVotingConfig?.thresholdQuorum?.threshold}
+              fieldName="advancedVotingConfig.thresholdQuorum.threshold"
               onPlusMinus={[
                 () =>
                   setValue(
-                    'thresholdQuorum.threshold',
+                    'advancedVotingConfig.thresholdQuorum.threshold',
                     Math.max(threshold + 1, 1)
                   ),
                 () =>
                   setValue(
-                    'thresholdQuorum.threshold',
+                    'advancedVotingConfig.thresholdQuorum.threshold',
                     Math.max(threshold - 1, 1)
                   ),
               ]}
@@ -98,7 +101,7 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
           <SelectInput
             onChange={({ target: { value } }) =>
               setValue(
-                'thresholdQuorum.threshold',
+                'advancedVotingConfig.thresholdQuorum.threshold',
                 value === 'majority'
                   ? 'majority'
                   : // value === '%'
@@ -123,13 +126,14 @@ interface CreateDAOQuorumCardProps extends CreateDAOConfigCardSharedProps {
 
 export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   newDAO: {
-    thresholdQuorum: { quorumEnabled, quorum },
+    advancedVotingConfig: {
+      thresholdQuorum: { quorumEnabled, quorum },
+    },
   },
   register,
   setValue,
   errors,
   readOnly,
-  watch,
   showWarningModal,
 }) => {
   const { t } = useTranslation()
@@ -139,7 +143,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
       accentColor="#fefe891a"
       childContainerClassName={readOnly ? undefined : 'self-stretch'}
       description={t('Quorum description')}
-      error={errors?.thresholdQuorum?.quorum}
+      error={errors?.advancedVotingConfig?.thresholdQuorum?.quorum}
       image={<Emoji label="megaphone" symbol="📣" />}
       title={t('Quorum')}
     >
@@ -153,15 +157,21 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
         </InputThemedText>
       ) : (
         <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
-          <FormSwitchCard
-            disabled={readOnly}
-            fieldName="thresholdQuorum.quorumEnabled"
-            onToggle={
-              showWarningModal && ((enabled) => !enabled && showWarningModal())
-            }
-            setValue={setValue}
+          <SwitchCard
+            enabled={quorumEnabled}
+            onClick={() => {
+              if (!quorumEnabled) {
+                setValue(
+                  'advancedVotingConfig.thresholdQuorum.quorumEnabled',
+                  true
+                )
+              } else {
+                // Set to false once accepting modal.
+                showWarningModal?.()
+              }
+            }}
+            readOnly={readOnly}
             sizing="sm"
-            watch={watch}
           />
 
           {quorumEnabled && (
@@ -169,17 +179,17 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
               {quorum !== 'majority' && (
                 <NumberInput
                   disabled={readOnly}
-                  error={errors?.thresholdQuorum?.quorum}
-                  fieldName="thresholdQuorum.quorum"
+                  error={errors?.advancedVotingConfig?.thresholdQuorum?.quorum}
+                  fieldName="advancedVotingConfig.thresholdQuorum.quorum"
                   onPlusMinus={[
                     () =>
                       setValue(
-                        'thresholdQuorum.quorum',
+                        'advancedVotingConfig.thresholdQuorum.quorum',
                         Math.max(quorum + 1, 0)
                       ),
                     () =>
                       setValue(
-                        'thresholdQuorum.quorum',
+                        'advancedVotingConfig.thresholdQuorum.quorum',
                         Math.max(quorum - 1, 0)
                       ),
                   ]}
@@ -200,11 +210,12 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
                 disabled={readOnly}
                 onChange={({ target: { value } }) =>
                   setValue(
-                    'thresholdQuorum.quorum',
+                    'advancedVotingConfig.thresholdQuorum.quorum',
                     value === 'majority'
                       ? 'majority'
                       : // value === '%'
-                        DefaultNewDAO.thresholdQuorum.quorum
+                        DefaultNewDAO.advancedVotingConfig.thresholdQuorum
+                          .quorum
                   )
                 }
                 validation={[validateRequired]}
@@ -366,10 +377,10 @@ export const CreateDAORefundFailedProposalDepositCard: FC<
         <InputThemedText>{refundFailed ? t('yes') : t('no')}</InputThemedText>
       ) : (
         <FormSwitchCard
-          disabled={readOnly}
           fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
           offLabel={t('no')}
           onLabel={t('yes')}
+          readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
           watch={watch}
@@ -451,7 +462,9 @@ export const CreateDAOUnstakingDurationCard: FC<
 }
 
 export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
-  newDAO: { allowRevoting },
+  newDAO: {
+    advancedVotingConfig: { allowRevoting },
+  },
   errors,
   setValue,
   watch,
@@ -463,7 +476,7 @@ export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
     <CreateDAOConfigCard
       accentColor="#1cae121a"
       description={t('allowRevotingDescription')}
-      error={errors?.allowRevoting}
+      error={errors?.advancedVotingConfig?.allowRevoting}
       image={<Emoji label="recycle" symbol="♻️" />}
       title={t('allowRevoting')}
     >
@@ -471,10 +484,10 @@ export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
         <InputThemedText>{allowRevoting ? t('yes') : t('no')}</InputThemedText>
       ) : (
         <FormSwitchCard
-          disabled={readOnly}
-          fieldName="allowRevoting"
+          fieldName="advancedVotingConfig.allowRevoting"
           offLabel={t('no')}
           onLabel={t('yes')}
+          readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
           watch={watch}

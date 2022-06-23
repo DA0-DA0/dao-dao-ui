@@ -9,13 +9,13 @@ import { PlaceholderToken } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
   Button,
-  FormSwitch,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
   Modal,
   NumberInput,
   RadioInput,
+  Switch,
   TextInput,
 } from '@dao-dao/ui'
 import {
@@ -29,6 +29,7 @@ import {
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
@@ -62,7 +63,6 @@ const CreateDAOVotingPage: NextPage = () => {
     watch,
     errors,
     setValue,
-    resetField,
     getValues,
     formWrapperProps,
   } = useCreateDAOForm(1)
@@ -453,18 +453,22 @@ const CreateDAOVotingPage: NextPage = () => {
         )}
 
         <div className="flex flex-row gap-4 items-center">
-          <FormSwitch
-            fieldName="_changeThresholdQuorumEnabled"
-            onToggle={(newValue) => {
-              if (newValue) {
+          <Switch
+            enabled={watchedNewDAO.showAdvancedVotingConfig}
+            onClick={() => {
+              if (!watchedNewDAO.showAdvancedVotingConfig) {
+                // Set to true once accepting modal.
                 setShowAdvancedVotingConfigWarning(true)
               } else {
-                // Reset threshold and quorum.
-                resetField('thresholdQuorum')
+                setValue('showAdvancedVotingConfig', false)
+                // Set advanced voting config options to defaults so any
+                // values modified while the config was showing are undone.
+                setValue(
+                  'advancedVotingConfig',
+                  DefaultNewDAO.advancedVotingConfig
+                )
               }
             }}
-            setValue={setValue}
-            watch={watch}
           />
 
           <div className="flex flex-col gap-1">
@@ -478,7 +482,7 @@ const CreateDAOVotingPage: NextPage = () => {
           </div>
         </div>
 
-        {watchedNewDAO._changeThresholdQuorumEnabled && (
+        {watchedNewDAO.showAdvancedVotingConfig && (
           <div className="space-y-3">
             <CreateDAOAllowRevotingCard {...configCardProps} />
             <CreateDAOThresholdCard {...configCardProps} />
@@ -510,7 +514,10 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowAdvancedVotingConfigWarning(false)}
+            onClick={() => {
+              setValue('showAdvancedVotingConfig', true)
+              setShowAdvancedVotingConfigWarning(false)
+            }}
           >
             {t('iAcceptDanger')}
           </Button>
@@ -539,7 +546,13 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowQuorumDisabledWarning(false)}
+            onClick={() => {
+              setValue(
+                'advancedVotingConfig.thresholdQuorum.quorumEnabled',
+                false
+              )
+              setShowQuorumDisabledWarning(false)
+            }}
           >
             {t('iAcceptDanger')}
           </Button>
