@@ -13,6 +13,7 @@ import {
   InputThemedText,
   NumberInput,
   SelectInput,
+  SwitchCard,
 } from '@dao-dao/ui'
 import {
   formatPercentOf100,
@@ -129,7 +130,6 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   setValue,
   errors,
   readOnly,
-  watch,
   showWarningModal,
 }) => {
   const { t } = useTranslation()
@@ -153,15 +153,19 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
         </InputThemedText>
       ) : (
         <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
-          <FormSwitchCard
+          <SwitchCard
             disabled={readOnly}
-            fieldName="thresholdQuorum.quorumEnabled"
-            onToggle={
-              showWarningModal && ((enabled) => !enabled && showWarningModal())
-            }
-            setValue={setValue}
+            on={quorumEnabled}
+            onClick={() => {
+              const newValue = !quorumEnabled
+              if (newValue) {
+                setValue('thresholdQuorum.quorumEnabled', true)
+              } else {
+                // Set to false once accepting modal.
+                showWarningModal?.()
+              }
+            }}
             sizing="sm"
-            watch={watch}
           />
 
           {quorumEnabled && (

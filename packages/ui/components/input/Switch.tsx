@@ -53,65 +53,18 @@ export const Switch: FC<SwitchProps> = ({
   </div>
 )
 
-// Return the field name paths that have type boolean.
-export type BooleanFieldNames<FieldValues> = {
-  [Property in Path<FieldValues>]: PathValue<FieldValues, Property> extends
-    | boolean
-    | undefined
-    ? Property
-    : never
-}[Path<FieldValues>]
-
-export interface FormSwitchProps<
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
-> extends Omit<SwitchProps, 'on' | 'onClick'> {
-  fieldName: BooleanFieldName
-  watch: UseFormWatch<FieldValues>
-  setValue: UseFormSetValue<FieldValues>
-  onToggle?: (newValue: boolean) => void
-  disabled?: boolean
-}
-
-export const FormSwitch = <
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
->({
-  fieldName,
-  watch,
-  setValue,
-  onToggle,
-  ...props
-}: FormSwitchProps<FieldValues, BooleanFieldName>) => (
-  <Switch
-    on={!!watch(fieldName)}
-    onClick={() => {
-      const newValue = !watch(fieldName) as any
-      setValue(fieldName, newValue)
-      onToggle?.(newValue)
-    }}
-    {...props}
-  />
-)
-
-export interface FormSwitchCardProps<
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
-> extends FormSwitchProps<FieldValues, BooleanFieldName> {
+export interface SwitchCardProps extends SwitchProps {
   containerClassName?: string
   onLabel?: string
   offLabel?: string
 }
 
-export const FormSwitchCard = <
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
->({
+export const SwitchCard: FC<SwitchCardProps> = ({
   containerClassName,
   onLabel: _onLabel,
   offLabel: _offLabel,
   ...props
-}: FormSwitchCardProps<FieldValues, BooleanFieldName>) => {
+}) => {
   const { t } = useTranslation()
 
   const onLabel = _onLabel ?? t('enabled')
@@ -130,10 +83,72 @@ export const FormSwitchCard = <
           width: Math.max(onLabel?.length ?? 0, offLabel?.length ?? 0) + 'ch',
         }}
       >
-        {props.watch(props.fieldName) ? onLabel : offLabel}
+        {props.on ? onLabel : offLabel}
       </p>
 
-      <FormSwitch {...props} />
+      <Switch {...props} />
     </div>
   )
 }
+
+// Return the field name paths that have type boolean.
+export type BooleanFieldNames<FieldValues> = {
+  [Property in Path<FieldValues>]: PathValue<FieldValues, Property> extends
+    | boolean
+    | undefined
+    ? Property
+    : never
+}[Path<FieldValues>]
+
+export type FormSwitchWrapperProps<
+  Props,
+  FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FieldValues>
+> = Omit<Props, 'on' | 'onClick'> & {
+  fieldName: BooleanFieldName
+  watch: UseFormWatch<FieldValues>
+  setValue: UseFormSetValue<FieldValues>
+  onToggle?: (newValue: boolean) => void
+}
+
+export const FormSwitch = <
+  FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FieldValues>
+>({
+  fieldName,
+  watch,
+  setValue,
+  onToggle,
+  ...props
+}: FormSwitchWrapperProps<SwitchProps, FieldValues, BooleanFieldName>) => (
+  <Switch
+    on={!!watch(fieldName)}
+    onClick={() => {
+      const newValue = !watch(fieldName) as any
+      setValue(fieldName, newValue)
+      onToggle?.(newValue)
+    }}
+    {...props}
+  />
+)
+
+export const FormSwitchCard = <
+  FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FieldValues>
+>({
+  fieldName,
+  watch,
+  setValue,
+  onToggle,
+  ...props
+}: FormSwitchWrapperProps<SwitchCardProps, FieldValues, BooleanFieldName>) => (
+  <SwitchCard
+    on={!!watch(fieldName)}
+    onClick={() => {
+      const newValue = !watch(fieldName) as any
+      setValue(fieldName, newValue)
+      onToggle?.(newValue)
+    }}
+    {...props}
+  />
+)

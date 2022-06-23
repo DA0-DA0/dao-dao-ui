@@ -9,13 +9,13 @@ import { PlaceholderToken } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
   Button,
-  FormSwitch,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
   Modal,
   NumberInput,
   RadioInput,
+  Switch,
   TextInput,
 } from '@dao-dao/ui'
 import {
@@ -453,18 +453,19 @@ const CreateDAOVotingPage: NextPage = () => {
         )}
 
         <div className="flex flex-row gap-4 items-center">
-          <FormSwitch
-            fieldName="_changeThresholdQuorumEnabled"
-            onToggle={(newValue) => {
+          <Switch
+            on={watchedNewDAO._changeThresholdQuorumEnabled}
+            onClick={() => {
+              const newValue = !watchedNewDAO._changeThresholdQuorumEnabled
               if (newValue) {
+                // Set to true once accepting modal.
                 setShowAdvancedVotingConfigWarning(true)
               } else {
+                setValue('_changeThresholdQuorumEnabled', false)
                 // Reset threshold and quorum.
                 resetField('thresholdQuorum')
               }
             }}
-            setValue={setValue}
-            watch={watch}
           />
 
           <div className="flex flex-col gap-1">
@@ -510,7 +511,10 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowAdvancedVotingConfigWarning(false)}
+            onClick={() => {
+              setValue('_changeThresholdQuorumEnabled', true)
+              setShowAdvancedVotingConfigWarning(false)
+            }}
           >
             {t('iAcceptDanger')}
           </Button>
@@ -539,7 +543,10 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowQuorumDisabledWarning(false)}
+            onClick={() => {
+              setValue('thresholdQuorum.quorumEnabled', false)
+              setShowQuorumDisabledWarning(false)
+            }}
           >
             {t('iAcceptDanger')}
           </Button>
