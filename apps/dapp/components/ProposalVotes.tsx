@@ -11,6 +11,7 @@ export interface ProposalVotesProps {
 
 const VOTE_LIMIT = 30
 
+// TODO: Fix not updating when proposal refreshes.
 export const ProposalVotes: FC<ProposalVotesProps> = ({
   coreAddress,
   proposalId,

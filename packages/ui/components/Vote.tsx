@@ -12,7 +12,7 @@ import { formatPercentOf100 } from '@dao-dao/utils'
 export { VoteChoice }
 
 export interface VoteProps {
-  onVote: (choice: VoteChoice) => void
+  onVote: (choice: VoteChoice) => Promise<void>
   voterWeightPercent: number
   loading: boolean
   blur?: boolean
@@ -102,7 +102,9 @@ export const Vote: FC<VoteProps> = ({
       <Button
         disabled={selected === undefined}
         loading={loading}
-        onClick={() => onVote(selected as VoteChoice)}
+        onClick={() =>
+          onVote(selected as VoteChoice).finally(() => setSelected(undefined))
+        }
       >
         <div className="flex gap-2 justify-center items-center w-full">
           <p>{t('castYourVote')}</p> <Airplane stroke="currentColor" />

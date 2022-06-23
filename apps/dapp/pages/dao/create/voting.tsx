@@ -34,6 +34,7 @@ import {
   NewDAOStructure,
 } from '@/atoms'
 import {
+  CreateDAOAllowRevotingCard,
   CreateDAOConfigCardSharedProps,
   CreateDAOConfigCardWrapper,
   CreateDAOFormWrapper,
@@ -89,7 +90,7 @@ const CreateDAOVotingPage: NextPage = () => {
     }
   }, [loadedPage, setValue, t, tiersAreUntouched, walletAddress])
 
-  const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
+  const [showAdvancedVotingConfigWarning, setShowAdvancedVotingConfigWarning] =
     useState(false)
   const [showQuorumDisabledWarning, setShowQuorumDisabledWarning] =
     useState(false)
@@ -456,7 +457,7 @@ const CreateDAOVotingPage: NextPage = () => {
             fieldName="_changeThresholdQuorumEnabled"
             onToggle={(newValue) => {
               if (newValue) {
-                setShowThresholdQuorumWarning(true)
+                setShowAdvancedVotingConfigWarning(true)
               } else {
                 // Reset threshold and quorum.
                 resetField('thresholdQuorum')
@@ -469,16 +470,17 @@ const CreateDAOVotingPage: NextPage = () => {
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name={t('Advanced voting configuration')}
+              name={t('advancedVotingConfig')}
             />
             <p className="caption-text">
-              {t('Advanced voting configuration description')}
+              {t('advancedVotingConfigDescription')}
             </p>
           </div>
         </div>
 
         {watchedNewDAO._changeThresholdQuorumEnabled && (
           <div className="space-y-3">
+            <CreateDAOAllowRevotingCard {...configCardProps} />
             <CreateDAOThresholdCard {...configCardProps} />
             <CreateDAOQuorumCard
               {...configCardProps}
@@ -488,16 +490,14 @@ const CreateDAOVotingPage: NextPage = () => {
         )}
       </CreateDAOFormWrapper>
 
-      {showThresholdQuorumWarning && (
+      {showAdvancedVotingConfigWarning && (
         <Modal
           containerClassName="flex flex-col gap-4"
-          onClose={() => setShowThresholdQuorumWarning(false)}
+          onClose={() => setShowAdvancedVotingConfigWarning(false)}
         >
           <p className="header-text">{t('watchOut')}</p>
 
-          <p className="body-text">
-            {t('advancedThresholdQuorumConfigWarning')}
-          </p>
+          <p className="body-text">{t('advancedVotingConfigWarning')}</p>
 
           <a
             className="block underline"
@@ -510,7 +510,7 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowThresholdQuorumWarning(false)}
+            onClick={() => setShowAdvancedVotingConfigWarning(false)}
           >
             {t('iAcceptDanger')}
           </Button>
