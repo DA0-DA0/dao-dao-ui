@@ -77,6 +77,7 @@ export interface NewDAO {
   tiers: NewDAOTier[]
   _tiersError?: undefined
   votingDuration: DurationWithUnits
+  allowRevoting: boolean
   governanceTokenOptions: {
     type: GovernanceTokenType
     newInfo: {
@@ -144,6 +145,7 @@ export const DefaultNewDAO: NewDAO = {
     value: 1,
     units: DurationUnits.Weeks,
   },
+  allowRevoting: false,
   governanceTokenOptions: {
     type: GovernanceTokenType.New,
     newInfo: {

@@ -390,6 +390,7 @@ const useMakeCreateDAOMsg = () => {
         imageUrl,
         tiers,
         votingDuration,
+        allowRevoting,
         governanceTokenOptions: {
           unregisterDuration,
           newInfo,
@@ -496,7 +497,7 @@ const useMakeCreateDAOMsg = () => {
 
       const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
         {
-          allow_revoting: false,
+          allow_revoting: allowRevoting,
           deposit_info:
             governanceTokenEnabled &&
             typeof proposalDeposit?.value === 'number' &&

@@ -28,7 +28,7 @@ export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
     <div className="flex flex-row gap-6 items-start">
       <p className="mt-4 text-[42px]">{image}</p>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col grow">
         <p className="primary-text">{title}</p>
         <p className="mt-1 secondary-text">{description}</p>
 

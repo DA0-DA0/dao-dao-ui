@@ -449,3 +449,37 @@ export const CreateDAOUnstakingDurationCard: FC<
     </CreateDAOConfigCard>
   )
 }
+
+export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
+  newDAO: { allowRevoting },
+  errors,
+  setValue,
+  watch,
+  readOnly,
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <CreateDAOConfigCard
+      accentColor="#1cae121a"
+      description={t('allowRevotingDescription')}
+      error={errors?.allowRevoting}
+      image={<Emoji label="recycle" symbol="♻️" />}
+      title={t('allowRevoting')}
+    >
+      {readOnly ? (
+        <InputThemedText>{allowRevoting ? t('yes') : t('no')}</InputThemedText>
+      ) : (
+        <FormSwitchCard
+          disabled={readOnly}
+          fieldName="allowRevoting"
+          offLabel={t('no')}
+          onLabel={t('yes')}
+          setValue={setValue}
+          sizing="sm"
+          watch={watch}
+        />
+      )}
+    </CreateDAOConfigCard>
+  )
+}
