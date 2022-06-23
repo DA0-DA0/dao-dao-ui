@@ -23,7 +23,6 @@ interface ContractCardBaseProps {
   proposals?: number
   balance?: string
   children: ReactNode
-  token?: boolean
   selected?: boolean
 }
 
@@ -36,7 +35,6 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
   balance,
   children,
   selected,
-  token = true,
 }) => {
   const { t } = useTranslation()
 
@@ -51,19 +49,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
         >
           <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
           <div className="flex flex-col items-center max-w-full">
-            <div className="relative">
-              {children}
-              {token && (
-                <div
-                  className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    backgroundImage: 'url(/daotoken.jpg)',
-                  }}
-                ></div>
-              )}
-            </div>
+            {children}
             <h3 className="mt-3 max-w-full font-semibold truncate text-md">
               {title}
             </h3>
