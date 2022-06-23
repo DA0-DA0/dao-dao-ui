@@ -92,19 +92,19 @@ const Home: NextPage = () => {
         <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
           <StatsCard>
             <h3 className="header-text">
-              {tvl ? '$' + tvl.toLocaleString() : 'loading..'}
+              {tvl ? '$' + tvl.toLocaleString() : t('loading')}
             </h3>
             <p className="caption-text">{t('splash.usdcTotalValue')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
-              {daos ? daos.toLocaleString() : 'loading..'}
+              {daos ? daos.toLocaleString() : t('loading')}
             </h3>
             <p className="caption-text">{t('splash.daosCreated')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
-              {proposals ? proposals.toLocaleString() : 'loading..'}
+              {proposals ? proposals.toLocaleString() : t('loading')}
             </h3>
             <p className="caption-text">{t('splash.proposalsCreated')}</p>
           </StatsCard>
@@ -130,8 +130,8 @@ const Home: NextPage = () => {
               {t('splash.createExploreJoin')}
             </h2>
             <Link href="/home">
-              <a>
-                <Button size={'lg'}>
+              <a> 
+                <Button size="lg">
                   {t('splash.cta')}
                   <ArrowUpRight
                     color="currentColor"

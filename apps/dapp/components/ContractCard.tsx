@@ -85,7 +85,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
             {proposals !== undefined && (
               <p className="text-sm">
                 <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-                {t('proposal', { count: proposals })}
+                {t('numProposals', { count: proposals })}
               </p>
             )}
             {votingPowerPercent && (

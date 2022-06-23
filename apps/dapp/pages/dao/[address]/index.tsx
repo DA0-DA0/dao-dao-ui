@@ -61,7 +61,7 @@ const InnerMobileDaoHome: FC = () => {
           icon="🗳"
           onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
           selected={tab === MobileMenuTabSelection.Proposal}
-          text={t('Proposals')}
+          text={t('proposals', { count: 100 })}
         />
         {votingModuleType === VotingModuleType.Cw4Voting ? (
           <MobileMenuTab

@@ -42,7 +42,7 @@ const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
       </VoteHero>
 
       <div className="flex flex-row justify-between items-center">
-        <h3 className="title-text">{t('proposals')}</h3>
+        <h3 className="title-text">{t('proposals', { count: 100 })}</h3>
 
         <Button
           className="shrink-0"
