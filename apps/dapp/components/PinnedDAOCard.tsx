@@ -10,10 +10,7 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
-import {
-  VotingModuleType,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { ContractCard, LoadingContractCard } from './ContractCard'
 import { usePinnedDAOs } from '@/hooks'
@@ -29,9 +26,8 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
     CwCoreSelectors.configSelector({ contractAddress: address })
   )
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
-  const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo(address)
-  const { walletVotingWeight, votingModuleType } = useVotingModule(address)
+  const { governanceTokenAddress } = useGovernanceTokenInfo(address)
+  const { walletVotingWeight, totalVotingWeight } = useVotingModule(address)
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })
@@ -40,7 +36,12 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
 
-  if (!config || nativeBalance === undefined || proposalCount === undefined) {
+  if (
+    !config ||
+    nativeBalance === undefined ||
+    proposalCount === undefined ||
+    totalVotingWeight === undefined
+  ) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -61,20 +62,14 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
       }}
       pinned={pinned}
       proposals={proposalCount}
-      weight={
+      votingPowerPercent={
         walletVotingWeight === undefined
           ? undefined
-          : votingModuleType === VotingModuleType.Cw4Voting
-          ? walletVotingWeight.toLocaleString()
-          : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-            governanceTokenInfo
-          ? convertMicroDenomToDenomWithDecimals(
-              walletVotingWeight,
-              governanceTokenInfo.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })
-          : undefined
+          : formatPercentOf100(
+              totalVotingWeight === 0
+                ? 0
+                : (walletVotingWeight / totalVotingWeight) * 100
+            )
       }
     />
   )

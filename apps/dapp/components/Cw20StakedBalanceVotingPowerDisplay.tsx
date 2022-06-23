@@ -17,7 +17,10 @@ import {
   StakingMode,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
+} from '@dao-dao/utils'
 
 import { ClaimsPendingList } from './ClaimsPendingList'
 import { useDAOInfoContext } from './DAOPageWrapper'
@@ -115,12 +118,11 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
               <div className="flex flex-row gap-2 items-center">
                 <BalanceIcon iconURI={tokenImageUrl} />
                 <p className="title-text">
-                  {(totalStakedValue
-                    ? (walletStakedValue / totalStakedValue) * 100
-                    : 0
-                  ).toLocaleString(undefined, {
-                    maximumSignificantDigits: 4,
-                  })}
+                  {formatPercentOf100(
+                    totalStakedValue
+                      ? (walletStakedValue / totalStakedValue) * 100
+                      : 0
+                  )}
                   %
                 </p>
               </div>

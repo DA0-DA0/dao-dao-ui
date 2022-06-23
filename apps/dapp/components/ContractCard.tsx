@@ -19,7 +19,7 @@ interface ContractCardBaseProps {
   title: string
   body: string
   href: string
-  weight?: string
+  votingPowerPercent?: string
   proposals?: number
   balance?: string
   children: ReactNode
@@ -30,7 +30,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
   title,
   body,
   href,
-  weight,
+  votingPowerPercent,
   proposals,
   balance,
   children,
@@ -71,16 +71,20 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
             {proposals !== undefined && (
               <p className="text-sm">
                 <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-                {t('proposal', { count: proposals })}
+                {t('numProposals', { count: proposals })}
               </p>
             )}
-            {weight !== undefined && (
+            {votingPowerPercent && (
               <div className="flex flex-row gap-2 text-sm text-valid text-success">
                 <Votes className="w-4 h-5" fill="currentColor" />
-                <div className="flex flex-row flex-wrap gap-x-1">
-                  <span>{t('yourVotingPower')}:</span>
-                  {weight}
-                </div>
+                {votingPowerPercent === '0%' ? (
+                  t('noVotingPower')
+                ) : (
+                  <div className="flex flex-row flex-wrap gap-x-1">
+                    <span>{t('yourVotingPower')}:</span>
+                    {votingPowerPercent}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -94,7 +98,7 @@ interface ContractCardProps {
   name: string
   description: string
   href: string
-  weight?: string
+  votingPowerPercent?: string
   proposals: number
   balance: string
   pinned?: boolean
@@ -107,7 +111,7 @@ export const ContractCard: FC<ContractCardProps> = ({
   name,
   description,
   href,
-  weight,
+  votingPowerPercent,
   proposals,
   balance,
   pinned,
@@ -126,7 +130,7 @@ export const ContractCard: FC<ContractCardProps> = ({
         proposals={proposals}
         selected={selected}
         title={name}
-        weight={weight}
+        votingPowerPercent={votingPowerPercent}
       >
         {imgUrl && CARD_IMAGES_ENABLED ? (
           <div

@@ -21,7 +21,7 @@ export const InnerContractProposalsDisplay: FC = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2 className="primary-text">{t('Proposals')}</h2>
+        <h2 className="primary-text">{t('proposals', { count: 100 })}</h2>
 
         <Link
           className={clsx({ 'pointer-events-none': isMember })}
@@ -52,7 +52,7 @@ export const ContractProposalsDisplay: FC = () => {
     <SuspenseLoader
       fallback={
         <div className="flex justify-between items-center">
-          <h2 className="primary-text">{t('Proposals')}</h2>
+          <h2 className="primary-text">{t('proposals', { count: 100 })}</h2>
           <Loader />
         </div>
       }

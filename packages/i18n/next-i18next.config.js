@@ -8,7 +8,7 @@ const config = {
   },
   localePath: path.resolve('../../packages/i18n/locales'),
   defaultNS: 'translation',
-  ns: ['translation', 'splash'],
+  ns: ['translation'],
   reloadOnPrerender: process.env.NODE_ENV === 'development',
 }
 

@@ -188,6 +188,7 @@ const InnerProposal: FC = () => {
           </div>
 
           <ProposalDetails
+            allowRevoting={proposalModuleConfig.allow_revoting}
             connectWalletButton={<ConnectWalletButton />}
             connected={connected}
             coreAddress={coreAddress}

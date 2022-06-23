@@ -177,6 +177,7 @@ const InnerProposal: FC = () => {
         </div>
 
         <ProposalDetails
+          allowRevoting={proposalModuleConfig.allow_revoting}
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           connected={connected}
           coreAddress={DAO_ADDRESS}

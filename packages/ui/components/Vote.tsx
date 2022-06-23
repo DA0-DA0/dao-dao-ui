@@ -7,17 +7,23 @@ import { useTranslation } from '@dao-dao/i18n'
 import { Abstain, Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 export { VoteChoice }
 
 export interface VoteProps {
-  onVote: (choice: VoteChoice) => void
-  voterWeight: number
+  onVote: (choice: VoteChoice) => unknown
+  voterWeightPercent: number
   loading: boolean
   blur?: boolean
 }
 
-export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
+export const Vote: FC<VoteProps> = ({
+  onVote,
+  voterWeightPercent,
+  loading,
+  blur,
+}) => {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
@@ -35,9 +41,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
         <p className="primary-text">{t('casting')}</p>
         <p className="secondary-text">
           {t('percentVotingPower', {
-            percent: voterWeight.toLocaleString(undefined, {
-              maximumSignificantDigits: 4,
-            }),
+            percent: formatPercentOf100(voterWeightPercent),
           })}
         </p>
       </div>
@@ -98,7 +102,13 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
       <Button
         disabled={selected === undefined}
         loading={loading}
-        onClick={() => onVote(selected as VoteChoice)}
+        onClick={async () => {
+          try {
+            await onVote(selected as VoteChoice)
+          } finally {
+            setSelected(undefined)
+          }
+        }}
       >
         <div className="flex gap-2 justify-center items-center w-full">
           <p>{t('castYourVote')}</p> <Airplane stroke="currentColor" />

@@ -78,7 +78,7 @@ export interface NewDAO {
   _tiersError?: undefined
   votingDuration: DurationWithUnits
   governanceTokenOptions: {
-    type?: GovernanceTokenType
+    type: GovernanceTokenType
     newInfo: {
       initialSupply: number
       initialTreasuryPercent: number
@@ -99,11 +99,14 @@ export interface NewDAO {
     }
     unregisterDuration: DurationWithUnits
   }
-  _changeThresholdQuorumEnabled: boolean
-  thresholdQuorum: {
-    threshold: ThresholdValue
-    quorumEnabled: boolean
-    quorum: ThresholdValue
+  showAdvancedVotingConfig: boolean
+  advancedVotingConfig: {
+    allowRevoting: boolean
+    thresholdQuorum: {
+      threshold: ThresholdValue
+      quorumEnabled: boolean
+      quorum: ThresholdValue
+    }
   }
 }
 
@@ -161,11 +164,14 @@ export const DefaultNewDAO: NewDAO = {
       units: DurationUnits.Weeks,
     },
   },
-  _changeThresholdQuorumEnabled: false,
-  thresholdQuorum: {
-    threshold: 'majority',
-    quorumEnabled: true,
-    quorum: 20,
+  showAdvancedVotingConfig: false,
+  advancedVotingConfig: {
+    allowRevoting: false,
+    thresholdQuorum: {
+      threshold: 'majority',
+      quorumEnabled: true,
+      quorum: 20,
+    },
   },
 }
 export const NEW_DAO_CW20_DECIMALS = 6

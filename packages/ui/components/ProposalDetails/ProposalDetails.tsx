@@ -1,4 +1,5 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC, ReactNode, useMemo, useState } from 'react'
 
 import { ActionsRenderer } from '@dao-dao/actions'
@@ -33,9 +34,10 @@ interface ProposalDetailsProps {
   setShowStaking: (value: boolean) => void
   stakingModal?: ReactNode
   onExecute: () => void
-  onVote: (choice: VoteChoice) => void
+  onVote: (choice: VoteChoice) => Promise<void>
   connected: boolean
   connectWalletButton?: ReactNode
+  allowRevoting: boolean
 }
 
 export const ProposalDetails: FC<ProposalDetailsProps> = ({
@@ -53,6 +55,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   onVote,
   connected,
   connectWalletButton,
+  allowRevoting,
 }) => {
   const { t } = useTranslation()
   const decodedMessages = useMemo(
@@ -60,6 +63,11 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
     [proposal.msgs]
   )
   const [showRaw, setShowRaw] = useState(false)
+
+  const canVote =
+    proposal.status === Status.Open &&
+    (allowRevoting || !walletVote) &&
+    walletWeightPercent !== 0
 
   return (
     <div>
@@ -124,22 +132,25 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
 
       {connected ? (
         <>
-          {proposal.status === Status.Open &&
-            !walletVote &&
-            walletWeightPercent !== 0 && (
-              <Vote
-                loading={loading}
-                onVote={onVote}
-                voterWeight={walletWeightPercent}
-              />
-            )}
           {walletVote && (
-            <p className="flex flex-row gap-2 items-center body-text">
+            <p
+              className={clsx('flex flex-row gap-2 items-center body-text', {
+                'mb-2': allowRevoting && canVote,
+              })}
+            >
               <Trans
                 components={[<VoteDisplay key="vote" vote={walletVote} />]}
                 i18nKey="votedOnProposal"
               />
+              {allowRevoting && canVote && ' ' + t('voteAgain')}
             </p>
+          )}
+          {canVote && (
+            <Vote
+              loading={loading}
+              onVote={onVote}
+              voterWeightPercent={walletWeightPercent}
+            />
           )}
           {proposal.status !== Status.Open && !walletVote && (
             <p className="body-text">{t('didNotVote')}</p>

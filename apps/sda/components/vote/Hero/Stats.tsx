@@ -3,7 +3,7 @@ import { FC } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { Apr, Dollar, Staked, Wallet } from '@dao-dao/icons'
-import { VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleType, formatPercentOf100 } from '@dao-dao/utils'
 
 import { HeroStat, HeroStatLink } from './Stat'
 
@@ -54,7 +54,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
           <HeroStat
             Icon={Staked}
             title={t('Staked') + ':'}
-            value={data ? `${data.stakedPercent!}%` : ''}
+            value={data ? formatPercentOf100(data.stakedPercent!) : ''}
           />
         )}
       {(!data || data.unstakingDuration !== undefined) &&

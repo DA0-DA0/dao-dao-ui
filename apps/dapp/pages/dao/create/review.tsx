@@ -9,6 +9,7 @@ import { parseEncodedMessage } from '@dao-dao/utils'
 
 import { NewDAOStructure } from '@/atoms'
 import {
+  CreateDAOAllowRevotingCard,
   CreateDAOFormWrapper,
   CreateDAOProposalDepositCard,
   CreateDAOQuorumCard,
@@ -87,7 +88,7 @@ const CreateDAOReviewPage: NextPage = () => {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     alt={t('daosLogo')}
-                    className="w-full h-full"
+                    className="object-cover w-full h-full"
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
@@ -140,6 +141,7 @@ const CreateDAOReviewPage: NextPage = () => {
               <CreateDAOUnstakingDurationCard {...configCardProps} />
             </>
           )}
+          <CreateDAOAllowRevotingCard {...configCardProps} />
           <CreateDAOThresholdCard {...configCardProps} />
           <CreateDAOQuorumCard {...configCardProps} />
         </div>

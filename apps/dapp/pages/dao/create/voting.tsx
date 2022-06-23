@@ -9,16 +9,17 @@ import { PlaceholderToken } from '@dao-dao/icons'
 import { useWallet } from '@dao-dao/state'
 import {
   Button,
-  FormSwitch,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
   Modal,
   NumberInput,
   RadioInput,
+  Switch,
   TextInput,
 } from '@dao-dao/ui'
 import {
+  formatPercentOf100,
   validateContractAddress,
   validatePercent,
   validatePositive,
@@ -29,11 +30,13 @@ import {
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
 } from '@/atoms'
 import {
+  CreateDAOAllowRevotingCard,
   CreateDAOConfigCardSharedProps,
   CreateDAOConfigCardWrapper,
   CreateDAOFormWrapper,
@@ -61,7 +64,6 @@ const CreateDAOVotingPage: NextPage = () => {
     watch,
     errors,
     setValue,
-    resetField,
     getValues,
     formWrapperProps,
   } = useCreateDAOForm(1)
@@ -89,7 +91,7 @@ const CreateDAOVotingPage: NextPage = () => {
     }
   }, [loadedPage, setValue, t, tiersAreUntouched, walletAddress])
 
-  const [showThresholdQuorumWarning, setShowThresholdQuorumWarning] =
+  const [showAdvancedVotingConfigWarning, setShowAdvancedVotingConfigWarning] =
     useState(false)
   const [showQuorumDisabledWarning, setShowQuorumDisabledWarning] =
     useState(false)
@@ -272,7 +274,7 @@ const CreateDAOVotingPage: NextPage = () => {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           alt=""
-                          className="w-9 h-9 rounded-full"
+                          className="object-cover w-9 h-9 rounded-full"
                           src={newTokenImageUrl}
                         />
                       ) : (
@@ -347,14 +349,19 @@ const CreateDAOVotingPage: NextPage = () => {
                     })}
                   >
                     {govTokenPercentsSumTo100
-                      ? t('Treasury balance description', {
+                      ? t('treasuryBalanceDescription', {
                           numberOfTokensMinted: govTokenInitialSupply,
-                          memberPercent: govTokenMemberPercent,
-                          treasuryPercent: govTokenTreasuryPercent,
+                          memberPercent: formatPercentOf100(
+                            govTokenMemberPercent
+                          ),
+                          treasuryPercent: formatPercentOf100(
+                            govTokenTreasuryPercent
+                          ),
                         })
                       : t('govTokenBalancesDoNotSumTo100', {
-                          totalPercent:
-                            govTokenTreasuryPercent + govTokenMemberPercent,
+                          totalPercent: formatPercentOf100(
+                            govTokenTreasuryPercent + govTokenMemberPercent
+                          ),
                         })}
                   </p>
                 </div>
@@ -452,33 +459,38 @@ const CreateDAOVotingPage: NextPage = () => {
         )}
 
         <div className="flex flex-row gap-4 items-center">
-          <FormSwitch
-            fieldName="_changeThresholdQuorumEnabled"
-            onToggle={(newValue) => {
-              if (newValue) {
-                setShowThresholdQuorumWarning(true)
+          <Switch
+            enabled={watchedNewDAO.showAdvancedVotingConfig}
+            onClick={() => {
+              if (!watchedNewDAO.showAdvancedVotingConfig) {
+                // Set to true once accepting modal.
+                setShowAdvancedVotingConfigWarning(true)
               } else {
-                // Reset threshold and quorum.
-                resetField('thresholdQuorum')
+                setValue('showAdvancedVotingConfig', false)
+                // Set advanced voting config options to defaults so any
+                // values modified while the config was showing are undone.
+                setValue(
+                  'advancedVotingConfig',
+                  DefaultNewDAO.advancedVotingConfig
+                )
               }
             }}
-            setValue={setValue}
-            watch={watch}
           />
 
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name={t('Advanced voting configuration')}
+              name={t('advancedVotingConfig')}
             />
             <p className="caption-text">
-              {t('Advanced voting configuration description')}
+              {t('advancedVotingConfigDescription')}
             </p>
           </div>
         </div>
 
-        {watchedNewDAO._changeThresholdQuorumEnabled && (
+        {watchedNewDAO.showAdvancedVotingConfig && (
           <div className="space-y-3">
+            <CreateDAOAllowRevotingCard {...configCardProps} />
             <CreateDAOThresholdCard {...configCardProps} />
             <CreateDAOQuorumCard
               {...configCardProps}
@@ -488,16 +500,14 @@ const CreateDAOVotingPage: NextPage = () => {
         )}
       </CreateDAOFormWrapper>
 
-      {showThresholdQuorumWarning && (
+      {showAdvancedVotingConfigWarning && (
         <Modal
           containerClassName="flex flex-col gap-4"
-          onClose={() => setShowThresholdQuorumWarning(false)}
+          onClose={() => setShowAdvancedVotingConfigWarning(false)}
         >
           <p className="header-text">{t('watchOut')}</p>
 
-          <p className="body-text">
-            {t('advancedThresholdQuorumConfigWarning')}
-          </p>
+          <p className="body-text">{t('advancedVotingConfigWarning')}</p>
 
           <a
             className="block underline"
@@ -510,7 +520,10 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowThresholdQuorumWarning(false)}
+            onClick={() => {
+              setValue('showAdvancedVotingConfig', true)
+              setShowAdvancedVotingConfigWarning(false)
+            }}
           >
             {t('iAcceptDanger')}
           </Button>
@@ -539,7 +552,13 @@ const CreateDAOVotingPage: NextPage = () => {
 
           <Button
             className="self-end"
-            onClick={() => setShowQuorumDisabledWarning(false)}
+            onClick={() => {
+              setValue(
+                'advancedVotingConfig.thresholdQuorum.quorumEnabled',
+                false
+              )
+              setShowQuorumDisabledWarning(false)
+            }}
           >
             {t('iAcceptDanger')}
           </Button>

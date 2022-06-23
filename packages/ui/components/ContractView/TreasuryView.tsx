@@ -40,7 +40,7 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
             amount,
             decimals
           ).toLocaleString(undefined, {
-            maximumFractionDigits: 20,
+            maximumFractionDigits: decimals,
           }) +
             ' $' +
             symbol}

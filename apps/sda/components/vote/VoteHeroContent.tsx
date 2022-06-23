@@ -82,13 +82,8 @@ export const VoteHeroContent = () => {
             : undefined,
           stakedPercent:
             totalStakedValue !== undefined && governanceTokenInfo
-              ? Number(
-                  (
-                    (totalStakedValue /
-                      Number(governanceTokenInfo.total_supply)) *
-                    100
-                  ).toLocaleString()
-                )
+              ? (totalStakedValue / Number(governanceTokenInfo.total_supply)) *
+                100
               : undefined,
           aprReward: apr !== undefined ? apr * 100 : undefined,
           unstakingDuration: stakingContractConfig

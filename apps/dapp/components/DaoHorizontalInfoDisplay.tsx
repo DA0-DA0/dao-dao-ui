@@ -16,6 +16,7 @@ import {
 import {
   VotingModuleType,
   convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
 } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from './DAOPageWrapper'
@@ -40,10 +41,9 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
     totalVotingWeight !== undefined &&
     governanceTokenInfo &&
     Number(governanceTokenInfo.total_supply) > 0
-      ? (
-          (100 * totalVotingWeight) /
-          Number(governanceTokenInfo.total_supply)
-        ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
+      ? formatPercentOf100(
+          (totalVotingWeight / Number(governanceTokenInfo.total_supply)) * 100
+        )
       : undefined
 
   return (
@@ -61,7 +61,9 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
               amount: convertMicroDenomToDenomWithDecimals(
                 governanceTokenInfo.total_supply,
                 governanceTokenInfo.decimals
-              ).toLocaleString(),
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: governanceTokenInfo.decimals,
+              }),
               tokenSymbol: governanceTokenInfo.symbol,
             })}
           </>

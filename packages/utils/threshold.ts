@@ -3,6 +3,8 @@ import { useCallback } from 'react'
 import { useTranslation } from '@dao-dao/i18n'
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 
+import { formatPercentOf100 } from './format'
+
 export enum ProcessedTQType {
   Majority,
   Absolute,
@@ -42,14 +44,14 @@ export const useProcessThresholdData = () => {
         if ('majority' in thresholdSource) {
           threshold = {
             type: ProcessedTQType.Majority,
-            display: t('Majority'),
+            display: t('majority'),
           }
         } else {
           const percent = Number(thresholdSource.percent) * 100
           threshold = {
             type: ProcessedTQType.Percent,
             value: percent,
-            display: `${percent}%`,
+            display: formatPercentOf100(percent),
           }
         }
       }
@@ -63,14 +65,14 @@ export const useProcessThresholdData = () => {
         if ('majority' in quorumSource) {
           quorum = {
             type: ProcessedTQType.Majority,
-            display: t('Majority'),
+            display: t('majority'),
           }
         } else {
           const percent = Number(quorumSource.percent) * 100
           quorum = {
             type: ProcessedTQType.Percent,
             value: percent,
-            display: `${percent}%`,
+            display: formatPercentOf100(percent),
           }
         }
       }
