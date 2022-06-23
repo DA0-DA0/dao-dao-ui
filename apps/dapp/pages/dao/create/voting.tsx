@@ -454,16 +454,16 @@ const CreateDAOVotingPage: NextPage = () => {
 
         <div className="flex flex-row gap-4 items-center">
           <Switch
-            enabled={watchedNewDAO._changeThresholdQuorumEnabled}
+            enabled={watchedNewDAO.showAdvancedVotingConfig}
             onClick={() => {
-              const newValue = !watchedNewDAO._changeThresholdQuorumEnabled
-              if (newValue) {
+              if (!watchedNewDAO.showAdvancedVotingConfig) {
                 // Set to true once accepting modal.
                 setShowAdvancedVotingConfigWarning(true)
               } else {
-                setValue('_changeThresholdQuorumEnabled', false)
-                // Reset threshold and quorum.
-                resetField('thresholdQuorum')
+                setValue('showAdvancedVotingConfig', false)
+                // Reset advanced voting config options to defaults so any
+                // values modified while the config was showing are undone.
+                resetField('advancedVotingConfig')
               }
             }}
           />
@@ -479,7 +479,7 @@ const CreateDAOVotingPage: NextPage = () => {
           </div>
         </div>
 
-        {watchedNewDAO._changeThresholdQuorumEnabled && (
+        {watchedNewDAO.showAdvancedVotingConfig && (
           <div className="space-y-3">
             <CreateDAOAllowRevotingCard {...configCardProps} />
             <CreateDAOThresholdCard {...configCardProps} />
@@ -512,7 +512,7 @@ const CreateDAOVotingPage: NextPage = () => {
           <Button
             className="self-end"
             onClick={() => {
-              setValue('_changeThresholdQuorumEnabled', true)
+              setValue('showAdvancedVotingConfig', true)
               setShowAdvancedVotingConfigWarning(false)
             }}
           >
@@ -544,7 +544,10 @@ const CreateDAOVotingPage: NextPage = () => {
           <Button
             className="self-end"
             onClick={() => {
-              setValue('thresholdQuorum.quorumEnabled', false)
+              setValue(
+                'advancedVotingConfig.thresholdQuorum.quorumEnabled',
+                false
+              )
               setShowQuorumDisabledWarning(false)
             }}
           >

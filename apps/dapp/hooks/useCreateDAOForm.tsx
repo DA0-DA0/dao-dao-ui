@@ -390,7 +390,6 @@ const useMakeCreateDAOMsg = () => {
         imageUrl,
         tiers,
         votingDuration,
-        allowRevoting,
         governanceTokenOptions: {
           unregisterDuration,
           newInfo,
@@ -398,7 +397,10 @@ const useMakeCreateDAOMsg = () => {
           proposalDeposit,
           ...governanceTokenOptions
         },
-        thresholdQuorum: { threshold, quorumEnabled, quorum },
+        advancedVotingConfig: {
+          allowRevoting,
+          thresholdQuorum: { threshold, quorumEnabled, quorum },
+        },
       } = values
 
       const governanceTokenEnabled =
