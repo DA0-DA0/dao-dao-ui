@@ -15,7 +15,7 @@ const searchClient = instantMeiliSearch(SEARCH_URL, SEARCH_API_KEY)
 
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => (
   <Modal
-    containerClassName="p-0 border-none w-full max-w-[850px] h-[650px] max-h-[90vh]"
+    containerClassName="p-0 border w-full max-w-[750px] h-[550px] max-h-[90vh]"
     hideCloseButton
     onClose={onClose}
   >

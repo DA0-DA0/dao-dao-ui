@@ -1,8 +1,9 @@
+import { Logo } from '@/../../packages/ui'
+import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { connectHits } from 'react-instantsearch-dom'
-
-import { ContractCard } from './ContractCard'
 
 interface Hit {
   id: string
@@ -13,17 +14,35 @@ interface Hit {
   treasury_balance: string
 }
 
-const Hit = ({ hit, selected }: { hit: Hit; selected: boolean }) => (
-  <ContractCard
-    balance={hit.treasury_balance}
-    description={hit.description}
-    href={`/dao/${hit.id}`}
-    imgUrl={hit.image_url}
-    name={hit.name}
-    proposals={hit.proposal_count}
-    selected={selected}
-  />
-)
+const HitView = ({ hit, selected }: { hit: Hit; selected: boolean }) => {
+  const { t } = useTranslation()
+  const router = useRouter()
+  return (
+    <div
+      className={clsx(
+        'flex font-medium align-middle px-1 py-2 gap-2 cursor-pointer rounded-md hover:bg-brand',
+        selected && 'bg-brand'
+      )}
+      onClick={
+        () => router.push(`/dao/${hit.id}`) 
+      }
+    >
+      {hit.image_url ? (
+        <div
+          aria-label={t('daosLogo')}
+          className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
+          role="img"
+          style={{
+            backgroundImage: `url(${hit.image_url})`,
+          }}
+        ></div>
+      ) : (
+        <Logo alt={hit.name} height={24} width={24} />
+      )}
+      {hit.name}
+    </div>
+  )
+}
 
 // Need to use `any` here as instantsearch does't export the required
 // types.
@@ -34,20 +53,12 @@ const HitsInternal: FC<any> = ({ hits }) => {
   const handleKeyPress = useCallback(
     (event) => {
       switch (event.key) {
-        case 'ArrowLeft':
-          setSelection((selection) => selection - 1)
-          router.prefetch(`/dao/${hits[selection].id}`)
-          break
-        case 'ArrowRight':
-          setSelection((selection) => selection + 1)
-          router.prefetch(`/dao/${hits[selection].id}`)
-          break
         case 'ArrowUp':
-          setSelection((selection) => selection - 3)
+          setSelection((selection) => Math.max(selection - 1, 0))
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowDown':
-          setSelection((selection) => selection + 3)
+          setSelection((selection) => Math.min(selection + 1, hits.length - 1))
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'Enter':
@@ -72,9 +83,11 @@ const HitsInternal: FC<any> = ({ hits }) => {
 
   return (
     <>
-      <div className="flex overflow-hidden overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start">
+
+      <div className="flex flex-col overflow-hidden overflow-y-auto grow px-4 py-2 justify-start">
+      <div className="font-medium py-1 text-gray-400">DAOs</div>
         {hits.map((hit: Hit, index: number) => (
-          <Hit key={hit.id} hit={hit} selected={index === selection} />
+          <HitView key={hit.id} hit={hit} selected={index === selection} />
         ))}
       </div>
     </>
