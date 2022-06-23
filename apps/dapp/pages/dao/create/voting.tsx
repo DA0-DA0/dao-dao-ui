@@ -19,6 +19,7 @@ import {
   TextInput,
 } from '@dao-dao/ui'
 import {
+  formatPercentOf100,
   validateContractAddress,
   validatePercent,
   validatePositive,
@@ -347,14 +348,19 @@ const CreateDAOVotingPage: NextPage = () => {
                     })}
                   >
                     {govTokenPercentsSumTo100
-                      ? t('Treasury balance description', {
+                      ? t('treasuryBalanceDescription', {
                           numberOfTokensMinted: govTokenInitialSupply,
-                          memberPercent: govTokenMemberPercent,
-                          treasuryPercent: govTokenTreasuryPercent,
+                          memberPercent: formatPercentOf100(
+                            govTokenMemberPercent
+                          ),
+                          treasuryPercent: formatPercentOf100(
+                            govTokenTreasuryPercent
+                          ),
                         })
                       : t('govTokenBalancesDoNotSumTo100', {
-                          totalPercent:
-                            govTokenTreasuryPercent + govTokenMemberPercent,
+                          totalPercent: formatPercentOf100(
+                            govTokenTreasuryPercent + govTokenMemberPercent
+                          ),
                         })}
                   </p>
                 </div>

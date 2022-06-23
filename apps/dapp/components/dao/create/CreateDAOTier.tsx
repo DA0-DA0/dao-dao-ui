@@ -19,6 +19,7 @@ import {
   TooltipIcon,
 } from '@dao-dao/ui'
 import {
+  formatPercentOf100,
   validateAddress,
   validatePositive,
   validateRequired,
@@ -71,6 +72,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
     newDAO.structure === NewDAOStructure.GovernanceToken
 
   const tierColor = distributionColors[tierIndex % distributionColors.length]
+  const tierVotingWeight = newDAO.tiers?.[tierIndex]?.weight ?? 0
 
   return (
     <div className="relative p-6 bg-disabled rounded-lg">
@@ -120,7 +122,9 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                 context: governanceTokenEnabled
                   ? 'tokenBased'
                   : 'membershipBased',
-                weight: newDAO.tiers?.[tierIndex]?.weight ?? 0,
+                weight: governanceTokenEnabled
+                  ? formatPercentOf100(tierVotingWeight)
+                  : tierVotingWeight.toLocaleString(),
               })}
             />
 
