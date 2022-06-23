@@ -9,6 +9,7 @@ import { parseEncodedMessage } from '@dao-dao/utils'
 
 import { NewDAOStructure } from '@/atoms'
 import {
+  CreateDAOAllowRevotingCard,
   CreateDAOFormWrapper,
   CreateDAOProposalDepositCard,
   CreateDAOQuorumCard,
@@ -140,6 +141,7 @@ const CreateDAOReviewPage: NextPage = () => {
               <CreateDAOUnstakingDurationCard {...configCardProps} />
             </>
           )}
+          <CreateDAOAllowRevotingCard {...configCardProps} />
           <CreateDAOThresholdCard {...configCardProps} />
           <CreateDAOQuorumCard {...configCardProps} />
         </div>

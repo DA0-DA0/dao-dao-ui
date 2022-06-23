@@ -94,7 +94,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
     watch,
     control,
     setValue,
-    resetField,
     setError,
     clearErrors,
   } = useForm({ defaultValues: newDAO })
@@ -284,7 +283,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
     watch,
     control,
     setValue,
-    resetField,
     setError,
     clearErrors,
     creating,
@@ -397,7 +395,10 @@ const useMakeCreateDAOMsg = () => {
           proposalDeposit,
           ...governanceTokenOptions
         },
-        thresholdQuorum: { threshold, quorumEnabled, quorum },
+        advancedVotingConfig: {
+          allowRevoting,
+          thresholdQuorum: { threshold, quorumEnabled, quorum },
+        },
       } = values
 
       const governanceTokenEnabled =
@@ -496,7 +497,7 @@ const useMakeCreateDAOMsg = () => {
 
       const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
         {
-          allow_revoting: false,
+          allow_revoting: allowRevoting,
           deposit_info:
             governanceTokenEnabled &&
             typeof proposalDeposit?.value === 'number' &&

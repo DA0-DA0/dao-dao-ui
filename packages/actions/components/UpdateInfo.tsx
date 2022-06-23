@@ -80,8 +80,8 @@ export const UpdateInfoComponent: ActionComponent = ({
                 </p>
               </div>
               <FormSwitch
-                disabled={readOnly}
                 fieldName={getFieldName('automatically_add_cw20s')}
+                readOnly={readOnly}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}
@@ -98,8 +98,8 @@ export const UpdateInfoComponent: ActionComponent = ({
                 </p>
               </div>
               <FormSwitch
-                disabled={readOnly}
                 fieldName={getFieldName('automatically_add_cw721s')}
+                readOnly={readOnly}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}
