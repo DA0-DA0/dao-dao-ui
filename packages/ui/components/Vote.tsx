@@ -7,17 +7,23 @@ import { useTranslation } from '@dao-dao/i18n'
 import { Abstain, Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 export { VoteChoice }
 
 export interface VoteProps {
   onVote: (choice: VoteChoice) => void
-  voterWeight: number
+  voterWeightPercent: number
   loading: boolean
   blur?: boolean
 }
 
-export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
+export const Vote: FC<VoteProps> = ({
+  onVote,
+  voterWeightPercent,
+  loading,
+  blur,
+}) => {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
@@ -35,9 +41,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
         <p className="primary-text">{t('casting')}</p>
         <p className="secondary-text">
           {t('percentVotingPower', {
-            percent: voterWeight.toLocaleString(undefined, {
-              maximumSignificantDigits: 4,
-            }),
+            percent: formatPercentOf100(voterWeightPercent),
           })}
         </p>
       </div>

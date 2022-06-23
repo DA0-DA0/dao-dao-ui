@@ -130,7 +130,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
               <Vote
                 loading={loading}
                 onVote={onVote}
-                voterWeight={walletWeightPercent}
+                voterWeightPercent={walletWeightPercent}
               />
             )}
           {walletVote && (

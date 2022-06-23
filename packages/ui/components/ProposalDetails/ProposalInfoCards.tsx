@@ -14,6 +14,7 @@ import {
   ProcessedTQType,
   convertMicroDenomToDenomWithDecimals,
   expirationAtTimeToSecondsFromNow,
+  formatPercentOf100,
   secondsToWdhms,
   useProcessThresholdData,
 } from '@dao-dao/utils'
@@ -158,8 +159,6 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const localeOptions = { maximumSignificantDigits: 3 }
-
   const yesVotes = Number(
     convertMicroDenomToDenomWithDecimals(
       proposal.votes.yes,
@@ -273,12 +272,10 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {t('yes')}{' '}
-                  {turnoutYesPercent.toLocaleString(undefined, localeOptions)}%
+                  {t('yes')} {formatPercentOf100(turnoutYesPercent)}
                 </p>,
                 <p key="no" className="text-error">
-                  {t('no')}{' '}
-                  {turnoutNoPercent.toLocaleString(undefined, localeOptions)}%
+                  {t('no')} {formatPercentOf100(turnoutNoPercent)}
                 </p>,
               ]
                 .sort(() => yesVotes - noVotes)
@@ -297,9 +294,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {t('Abstain')}{' '}
-                {turnoutAbstainPercent.toLocaleString(undefined, localeOptions)}
-                %
+                {t('Abstain')} {formatPercentOf100(turnoutAbstainPercent)}
               </p>
             </div>
 
@@ -388,7 +383,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               </p>
 
               <p className="font-mono text-xs text-tertiary">
-                {turnoutPercent.toLocaleString(undefined, localeOptions)}%
+                {formatPercentOf100(turnoutPercent)}
               </p>
             </div>
 
@@ -469,12 +464,10 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {t('yes')}{' '}
-                  {totalYesPercent.toLocaleString(undefined, localeOptions)}%
+                  {t('yes')} {formatPercentOf100(totalYesPercent)}
                 </p>,
                 <p key="no" className="text-error">
-                  {t('no')}{' '}
-                  {totalNoPercent.toLocaleString(undefined, localeOptions)}%
+                  {t('no')} {formatPercentOf100(totalNoPercent)}
                 </p>,
               ]
                 .sort(() => yesVotes - noVotes)
@@ -493,8 +486,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {t('Abstain')}{' '}
-                {totalAbstainPercent.toLocaleString(undefined, localeOptions)}%
+                {t('Abstain')} {formatPercentOf100(totalAbstainPercent)}
               </p>
             </div>
 

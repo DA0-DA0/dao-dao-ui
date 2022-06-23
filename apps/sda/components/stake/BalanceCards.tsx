@@ -7,7 +7,10 @@ import {
   useWallet,
 } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
+} from '@dao-dao/utils'
 
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
@@ -97,11 +100,6 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
     return <BalanceCardLoader />
   }
 
-  const votingPower =
-    totalStakedValue === 0
-      ? 0
-      : ((walletStakedValue ?? 0) / totalStakedValue) * 100
-
   const stakedValue = convertMicroDenomToDenomWithDecimals(
     walletStakedValue ?? 0,
     governanceTokenInfo.decimals
@@ -123,9 +121,11 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         <p className="text-base text-secondary">
           <Trans i18nKey="percentOfAllVotingPower">
             {{
-              percent: votingPower.toLocaleString(undefined, {
-                maximumSignificantDigits: 4,
-              }),
+              percent: formatPercentOf100(
+                totalStakedValue === 0
+                  ? 0
+                  : ((walletStakedValue ?? 0) / totalStakedValue) * 100
+              ),
             }}
             % <span className="text-xs text-tertiary">of all voting power</span>
           </Trans>

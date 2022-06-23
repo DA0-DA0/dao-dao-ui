@@ -27,7 +27,7 @@ export const HomepageCards: FC = () => {
                   'Think this is neat? You should try the real thing! :)'
                 )
               }
-              voterWeight={7}
+              voterWeightPercent={7}
             />
           </div>
         </div>
