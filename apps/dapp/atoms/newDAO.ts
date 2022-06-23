@@ -78,7 +78,7 @@ export interface NewDAO {
   _tiersError?: undefined
   votingDuration: DurationWithUnits
   governanceTokenOptions: {
-    type?: GovernanceTokenType
+    type: GovernanceTokenType
     newInfo: {
       initialSupply: number
       initialTreasuryPercent: number

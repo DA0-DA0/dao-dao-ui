@@ -44,7 +44,7 @@ export const useProcessThresholdData = () => {
         if ('majority' in thresholdSource) {
           threshold = {
             type: ProcessedTQType.Majority,
-            display: t('Majority'),
+            display: t('majority'),
           }
         } else {
           const percent = Number(thresholdSource.percent) * 100
@@ -65,7 +65,7 @@ export const useProcessThresholdData = () => {
         if ('majority' in quorumSource) {
           quorum = {
             type: ProcessedTQType.Majority,
-            display: t('Majority'),
+            display: t('majority'),
           }
         } else {
           const percent = Number(quorumSource.percent) * 100
