@@ -8,7 +8,7 @@ import { Discord, Github, Twitter } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/ui'
 
 export const HomepageCards: FC = () => {
-  const { t } = useTranslation('splash')
+  const { t } = useTranslation()
 
   return (
     <div className="flex flex-col gap-6 mx-2 max-w-[1044px]">
@@ -17,7 +17,7 @@ export const HomepageCards: FC = () => {
           <div className="flex justify-center items-center p-2 w-fit h-fit bg-primary rounded">
             <HandIcon className="w-3" />
           </div>
-          <h3 className="header-text">{t('proposeAndVote')}</h3>
+          <h3 className="header-text">{t('splash.proposeAndVote')}</h3>
           <div className="xl:-ml-24">
             <Vote
               blur={true}
@@ -54,10 +54,14 @@ export const HomepageCards: FC = () => {
             />
           </div>
 
-          <h3 className="header-text">{t('easyToUse')}</h3>
+          <h3 className="header-text">{t('splash.easyToUse')}</h3>
           <div className="flex flex-col gap-3 max-w-xs">
-            <p className="max-w-sm body-text">{t('anyoneCanParticipate')}</p>
-            <p className="max-w-sm body-text">{t('easyToUseExplanation')}</p>
+            <p className="max-w-sm body-text">
+              {t('splash.anyoneCanParticipate')}
+            </p>
+            <p className="max-w-sm body-text">
+              {t('splash.easyToUseExplanation')}
+            </p>
           </div>
         </div>
       </div>
@@ -94,7 +98,7 @@ export const HomepageCards: FC = () => {
             <Discord fill="currentColor" height="20px" width="20px" />
           </a>
         </div>
-        <h3 className="mt-8 header-text">{t('joinTheCommunity')}</h3>
+        <h3 className="mt-8 header-text">{t('splash.joinTheCommunity')}</h3>
         <div className="absolute top-0 right-0 bottom-0 w-full">
           <Image
             alt=""

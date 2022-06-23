@@ -4,7 +4,7 @@ import { FC } from 'react'
 import { useTranslation } from '@dao-dao/i18n'
 
 export const AnouncementCard: FC = () => {
-  const { t } = useTranslation('splash')
+  const { t } = useTranslation()
 
   return (
     <div
@@ -15,8 +15,8 @@ export const AnouncementCard: FC = () => {
       }}
     >
       <div className="flex flex-col gap-1">
-        <h3 className="primary-text">{t('whatIsADao')}</h3>
-        <p className="body-text">{t('whatIsADaoExplanation')}</p>
+        <h3 className="primary-text">{t('splash.whatIsADao')}</h3>
+        <p className="body-text">{t('splash.whatIsADaoExplanation')}</p>
       </div>
       <a
         className="flex flex-row gap-1 items-center secondary-text"
@@ -24,7 +24,7 @@ export const AnouncementCard: FC = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <p>{t('readMore')}</p>
+        <p>{t('splash.readMore')}</p>
         <ArrowRightIcon className="w-4 h-3" />
       </a>
     </div>
