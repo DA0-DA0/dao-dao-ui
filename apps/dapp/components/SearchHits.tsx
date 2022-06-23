@@ -20,12 +20,10 @@ const HitView = ({ hit, selected }: { hit: Hit; selected: boolean }) => {
   return (
     <div
       className={clsx(
-        'flex font-medium align-middle px-1 py-2 gap-2 cursor-pointer rounded-md hover:bg-brand',
-        selected && 'bg-brand'
+        'flex font-medium align-middle px-1 py-2 gap-2 cursor-pointer rounded-md hover:bg-primary text-tertiary hover:text-primary',
+        selected && 'bg-primary text-primary'
       )}
-      onClick={
-        () => router.push(`/dao/${hit.id}`) 
-      }
+      onClick={() => router.push(`/dao/${hit.id}`)}
     >
       {hit.image_url ? (
         <div
@@ -83,9 +81,8 @@ const HitsInternal: FC<any> = ({ hits }) => {
 
   return (
     <>
-
       <div className="flex flex-col overflow-hidden overflow-y-auto grow px-4 py-2 justify-start">
-      <div className="font-medium py-1 text-gray-400">DAOs</div>
+        <div className="font-medium py-1 text-gray-400">DAOs</div>
         {hits.map((hit: Hit, index: number) => (
           <HitView key={hit.id} hit={hit} selected={index === selection} />
         ))}

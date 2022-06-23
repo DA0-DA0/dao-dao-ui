@@ -209,20 +209,21 @@ interface Cw20StakedBalanceVotingPowerDisplayProps {
   primaryText?: boolean
 }
 
-export const Cw20StakedBalanceVotingPowerDisplay: FC<
-  Cw20StakedBalanceVotingPowerDisplayProps
-> = ({ primaryText }) => {
-  const { t } = useTranslation()
+export const Cw20StakedBalanceVotingPowerDisplay: FC<Cw20StakedBalanceVotingPowerDisplayProps> =
+  ({ primaryText }) => {
+    const { t } = useTranslation()
 
-  return (
-    <>
-      <h2 className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}>
-        {t('yourVotingPower')}
-      </h2>
+    return (
+      <>
+        <h2
+          className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}
+        >
+          {t('yourVotingPower')}
+        </h2>
 
-      <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-        <InnerCw20StakedBalanceVotingPowerDisplay />
-      </SuspenseLoader>
-    </>
-  )
-}
+        <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
+          <InnerCw20StakedBalanceVotingPowerDisplay />
+        </SuspenseLoader>
+      </>
+    )
+  }
