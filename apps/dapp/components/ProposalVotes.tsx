@@ -1,7 +1,11 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { CwProposalSingleSelectors, useProposalInfo } from '@dao-dao/state'
+import {
+  CwProposalSingleSelectors,
+  refreshProposalIdAtom,
+  useProposalInfo,
+} from '@dao-dao/state'
 import { ProposalVotes as StatelessProposalVotes } from '@dao-dao/ui'
 
 export interface ProposalVotesProps {
@@ -11,7 +15,6 @@ export interface ProposalVotesProps {
 
 const VOTE_LIMIT = 30
 
-// TODO: Fix not updating when proposal refreshes.
 export const ProposalVotes: FC<ProposalVotesProps> = ({
   coreAddress,
   proposalId,
@@ -46,6 +49,19 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
   // We ask for 30 votes when we query. If we get that many back it
   // suggests we can attempt anoher load.
   const [canLoadMore, setCanLoadMore] = useState(votes.length === 30)
+
+  // When proposal updates, reset loaded votes back to initial.
+  const refreshProposalId = useRecoilValue(
+    refreshProposalIdAtom({
+      address: proposalModuleAddress ?? '',
+      proposalId,
+    })
+  )
+  useEffect(() => {
+    setVotes(initalVotes ?? [])
+    // Don't update every time initialVotes changes. Only refresh ID.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshProposalId])
 
   const loadMoreVotes = useRecoilCallback(
     ({ snapshot }) =>
