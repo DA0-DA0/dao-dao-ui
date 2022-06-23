@@ -80,8 +80,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
               </p>
             </div>
             <FormSwitch
-              disabled={readOnly}
               fieldName={getFieldName('depositRequired')}
+              readOnly={readOnly}
               setValue={setValue}
               sizing="sm"
               watch={watch}
@@ -97,8 +97,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
             <p className="w-max secondary-text">{t('onlyMembersExecute')}</p>
           </div>
           <FormSwitch
-            disabled={readOnly}
             fieldName={getFieldName('onlyMembersExecute')}
+            readOnly={readOnly}
             setValue={setValue}
             sizing="sm"
             watch={watch}
@@ -140,8 +140,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 </p>
               </div>
               <FormSwitch
-                disabled={readOnly}
                 fieldName={getFieldName('depositInfo.refundFailedProposals')}
+                readOnly={readOnly}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}

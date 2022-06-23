@@ -5,34 +5,34 @@ import { Path, PathValue, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { useTranslation } from '@dao-dao/i18n'
 
 interface SwitchProps {
-  on: boolean
+  enabled: boolean
   onClick?: () => void
   className?: string
   sizing?: 'sm' | 'lg'
-  disabled?: boolean
+  readOnly?: boolean
 }
 
 export const Switch: FC<SwitchProps> = ({
-  on,
+  enabled,
   onClick,
   className,
   sizing = 'lg',
-  disabled,
+  readOnly,
 }) => (
   <div
     className={clsx(
       'flex relative flex-none items-center rounded-full',
       {
-        'hover:opacity-90 cursor-pointer': !disabled,
-        'bg-valid': on,
-        'bg-transparent border border-dark': !on,
+        'hover:opacity-90 cursor-pointer': !readOnly,
+        'bg-valid': enabled,
+        'bg-transparent border border-dark': !enabled,
         // Sizing.
         'w-[28px] h-[16px]': sizing === 'sm',
         'w-[67px] h-[38px]': sizing === 'lg',
       },
       className
     )}
-    onClick={disabled ? undefined : onClick}
+    onClick={readOnly ? undefined : onClick}
   >
     <div
       className={clsx(
@@ -41,12 +41,12 @@ export const Switch: FC<SwitchProps> = ({
         {
           // Small
           'w-[10px] h-[10px]': sizing === 'sm',
-          'left-[15px]': sizing === 'sm' && on,
-          'left-[2px]': sizing === 'sm' && !on,
+          'left-[15px]': sizing === 'sm' && enabled,
+          'left-[2px]': sizing === 'sm' && !enabled,
           // Large
           'w-[28px] h-[28px]': sizing === 'lg',
-          'left-[33px]': sizing === 'lg' && on,
-          'left-[4.5px]': sizing === 'lg' && !on,
+          'left-[33px]': sizing === 'lg' && enabled,
+          'left-[4.5px]': sizing === 'lg' && !enabled,
         }
       )}
     ></div>
@@ -83,7 +83,7 @@ export const SwitchCard: FC<SwitchCardProps> = ({
           width: Math.max(onLabel?.length ?? 0, offLabel?.length ?? 0) + 'ch',
         }}
       >
-        {props.on ? onLabel : offLabel}
+        {props.enabled ? onLabel : offLabel}
       </p>
 
       <Switch {...props} />
@@ -104,7 +104,7 @@ export type FormSwitchWrapperProps<
   Props,
   FieldValues,
   BooleanFieldName extends BooleanFieldNames<FieldValues>
-> = Omit<Props, 'on' | 'onClick'> & {
+> = Omit<Props, 'enabled' | 'onClick'> & {
   fieldName: BooleanFieldName
   watch: UseFormWatch<FieldValues>
   setValue: UseFormSetValue<FieldValues>
@@ -122,7 +122,7 @@ export const FormSwitch = <
   ...props
 }: FormSwitchWrapperProps<SwitchProps, FieldValues, BooleanFieldName>) => (
   <Switch
-    on={!!watch(fieldName)}
+    enabled={!!watch(fieldName)}
     onClick={() => {
       const newValue = !watch(fieldName) as any
       setValue(fieldName, newValue)
@@ -143,7 +143,7 @@ export const FormSwitchCard = <
   ...props
 }: FormSwitchWrapperProps<SwitchCardProps, FieldValues, BooleanFieldName>) => (
   <SwitchCard
-    on={!!watch(fieldName)}
+    enabled={!!watch(fieldName)}
     onClick={() => {
       const newValue = !watch(fieldName) as any
       setValue(fieldName, newValue)

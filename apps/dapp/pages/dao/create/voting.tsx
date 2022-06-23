@@ -454,7 +454,7 @@ const CreateDAOVotingPage: NextPage = () => {
 
         <div className="flex flex-row gap-4 items-center">
           <Switch
-            on={watchedNewDAO._changeThresholdQuorumEnabled}
+            enabled={watchedNewDAO._changeThresholdQuorumEnabled}
             onClick={() => {
               const newValue = !watchedNewDAO._changeThresholdQuorumEnabled
               if (newValue) {

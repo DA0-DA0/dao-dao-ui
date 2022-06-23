@@ -154,8 +154,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
       ) : (
         <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
           <SwitchCard
-            disabled={readOnly}
-            on={quorumEnabled}
+            enabled={quorumEnabled}
             onClick={() => {
               const newValue = !quorumEnabled
               if (newValue) {
@@ -165,6 +164,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
                 showWarningModal?.()
               }
             }}
+            readOnly={readOnly}
             sizing="sm"
           />
 
@@ -370,10 +370,10 @@ export const CreateDAORefundFailedProposalDepositCard: FC<
         <InputThemedText>{refundFailed ? t('yes') : t('no')}</InputThemedText>
       ) : (
         <FormSwitchCard
-          disabled={readOnly}
           fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
           offLabel={t('no')}
           onLabel={t('yes')}
+          readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
           watch={watch}
@@ -475,10 +475,10 @@ export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
         <InputThemedText>{allowRevoting ? t('yes') : t('no')}</InputThemedText>
       ) : (
         <FormSwitchCard
-          disabled={readOnly}
           fieldName="allowRevoting"
           offLabel={t('no')}
           onLabel={t('yes')}
+          readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
           watch={watch}
