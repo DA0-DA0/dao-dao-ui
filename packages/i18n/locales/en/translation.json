@@ -154,6 +154,7 @@
   "balanceUnstaked": "Balance (unstaked {{name}})",
   "ballotBox": "Ballot box",
   "box": "Box",
+  "cantSpendMoreThanTreasury": "Can't spend more tokens than are in the treasury ({{amount}} ${{tokenSymbol}}).",
   "castYourVote": "Cast your vote",
   "casting": "Casting",
   "chart": "Chart",

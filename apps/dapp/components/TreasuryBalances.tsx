@@ -1,11 +1,10 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
   CwCoreSelectors,
   nativeBalancesSelector,
-  useGovernanceTokenInfo,
 } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { TreasuryBalances as StatelessTreasuryBalances } from '@dao-dao/ui'
@@ -19,33 +18,14 @@ import { useDAOInfoContext } from './DAOPageWrapper'
 
 export const TreasuryBalances: FC = () => {
   const { coreAddress } = useDAOInfoContext()
-  const { governanceTokenAddress, treasuryBalance } = useGovernanceTokenInfo(
-    coreAddress,
-    { fetchTreasuryBalance: true }
-  )
 
   const nativeBalances =
     useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
 
-  const _cw20List = useRecoilValue(
-    CwCoreSelectors.allCw20BalancesSelector({ contractAddress: coreAddress })
-  )
-  const cw20List = useMemo(() => {
-    const list = _cw20List ? [..._cw20List] : []
-
-    // Add governance token to beginning if exists and not already in list.
-    if (
-      governanceTokenAddress &&
-      !list.some(({ addr }) => addr !== governanceTokenAddress)
-    ) {
-      list.splice(0, 0, {
-        addr: governanceTokenAddress,
-        balance: (treasuryBalance ?? 0).toString(),
-      })
-    }
-
-    return list
-  }, [_cw20List, governanceTokenAddress, treasuryBalance])
+  const cw20List =
+    useRecoilValue(
+      CwCoreSelectors.allCw20BalancesSelector({ contractAddress: coreAddress })
+    ) ?? []
 
   const cw20Info = useRecoilValue(
     waitForAll(

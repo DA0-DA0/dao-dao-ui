@@ -14,7 +14,6 @@ import {
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
@@ -53,42 +52,49 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   ): string | boolean => {
     const native = nativeBalances.find(({ denom }) => denom === id)
     if (native) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.amount,
-        NATIVE_DECIMALS
-      )
       const microAmount = convertDenomToMicroDenomWithDecimals(
         amount,
         NATIVE_DECIMALS
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the treasury (${humanReadableAmount} ${nativeTokenLabel(
-          id
-        )}).`
+        t('cantSpendMoreThanTreasury', {
+          amount: convertMicroDenomToDenomWithDecimals(
+            native.amount,
+            NATIVE_DECIMALS
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: NATIVE_DECIMALS,
+          }),
+          tokenSymbol: nativeTokenLabel(id),
+        })
       )
     }
     const cw20 = cw20Balances.find(({ address }) => address === id)
     if (cw20) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        cw20.balance,
-        cw20.info.decimals
-      )
       const microAmount = convertDenomToMicroDenomWithDecimals(
         amount,
         cw20.info.decimals
       )
       return (
         Number(microAmount) <= Number(cw20.balance) ||
-        `Can't spend more tokens than are in the treasury (${humanReadableAmount} $${cw20.info.symbol}).`
+        t('cantSpendMoreThanTreasury', {
+          amount: convertMicroDenomToDenomWithDecimals(
+            cw20.balance,
+            cw20.info.decimals
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: cw20.info.decimals,
+          }),
+          tokenSymbol: cw20.info.symbol,
+        })
       )
     }
     // If there are no native tokens in the treasury the native balances
     // query will return an empty list.
     if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the treasury (0 ${convertDenomToHumanReadableDenom(
-        NATIVE_DENOM
-      )}).`
+      return t('cantSpendMoreThanTreasury', {
+        amount: 0,
+        tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+      })
     }
     return 'Unrecognized denom.'
   }

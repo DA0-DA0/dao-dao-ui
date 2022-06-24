@@ -3,11 +3,11 @@ import { XIcon } from '@heroicons/react/solid'
 import { ComponentProps, FC } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
@@ -30,6 +30,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   options: { nativeBalances },
   className,
 }) => {
+  const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
   const watchAmount = watch(getFieldName('amount'))
@@ -41,27 +42,30 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   ): string | boolean => {
     const native = nativeBalances.find(({ denom }) => denom === id)
     if (native) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.amount,
-        NATIVE_DECIMALS
-      )
       const microAmount = convertDenomToMicroDenomWithDecimals(
         amount,
         NATIVE_DECIMALS
       )
       return (
         Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the treasury (${humanReadableAmount} ${nativeTokenLabel(
-          id
-        )}).`
+        t('cantSpendMoreThanTreasury', {
+          amount: convertMicroDenomToDenomWithDecimals(
+            native.amount,
+            NATIVE_DECIMALS
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: NATIVE_DECIMALS,
+          }),
+          tokenSymbol: nativeTokenLabel(id),
+        })
       )
     }
     // If there are no native tokens in the treasury the native balances
     // query will return an empty list.
     if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the treasury (0 ${convertDenomToHumanReadableDenom(
-        NATIVE_DENOM
-      )}).`
+      return t('cantSpendMoreThanTreasury', {
+        amount: 0,
+        tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+      })
     }
     return 'Unrecognized denom.'
   }
