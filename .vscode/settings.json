@@ -40,8 +40,6 @@
     "javascriptreact",
     "typescript",
     "typescriptreact",
-    "json",
-    "json5",
-    "jsonc"
+    "json"
   ]
 }
