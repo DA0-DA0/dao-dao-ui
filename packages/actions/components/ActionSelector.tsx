@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { Modal, SearchBar } from '@dao-dao/ui'
@@ -25,6 +25,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
     () => new Fuse(actions, { keys: ['label', 'description'] }),
     [actions]
   )
+  const actionsListRef = useRef<HTMLUListElement>(null)
 
   const [filter, setFilter] = useState('')
   const filteredActions = useMemo(
@@ -36,6 +37,24 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0)
   // When filtered actions update, reset selection to top.
   useEffect(() => setSelectedIndex(0), [filteredActions])
+  // Ensure selected action is scrolled into view.
+  useEffect(() => {
+    const item = actionsListRef.current?.children[selectedIndex]
+    if (!item) {
+      return
+    }
+
+    // Only scroll if not already visible.
+    const { bottom, top } = item.getBoundingClientRect()
+    const containerRect = actionsListRef.current.getBoundingClientRect()
+    if (top >= containerRect.top && bottom <= containerRect.bottom) {
+      return
+    }
+
+    item.scrollIntoView({
+      behavior: 'smooth',
+    })
+  }, [selectedIndex])
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -86,7 +105,10 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
         value={filter}
       />
 
-      <ul className="flex overflow-y-auto flex-col grow gap-3 list-none">
+      <ul
+        className="flex overflow-y-auto flex-col grow gap-3 list-none"
+        ref={actionsListRef}
+      >
         {filteredActions.map((action, index) => (
           <li key={action.key}>
             <ActionDisplayItem
