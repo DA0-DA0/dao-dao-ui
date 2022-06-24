@@ -13,7 +13,7 @@ import {
   TokenInfoResponse,
 } from '../../../clients/cw20-base'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
+import { cosmWasmClientSelector, signingCosmWasmClientAtom } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -43,7 +43,7 @@ export const executeClient = selectorFamily<
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientSelector)
+      const client = get(signingCosmWasmClientAtom)
       if (!client) return
       return new ExecuteClient(client, sender, contractAddress)
     },

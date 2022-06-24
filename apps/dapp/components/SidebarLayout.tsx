@@ -4,7 +4,7 @@ import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
-import { KeplrNotInstalledError, SITE_TITLE, usePlatform } from '@dao-dao/utils'
+import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
@@ -31,14 +31,16 @@ export const SidebarLayoutInner: FC = ({ children }) => {
   const [searchVisible, setSearchVisible] = useRecoilState(searchVisibleAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const { connectionError } = useWallet()
+  const { error } = useWallet()
   useEffect(() => {
-    setInstallWarningVisible(connectionError instanceof KeplrNotInstalledError)
-    setNoKeplrAccount(
-      connectionError instanceof Error &&
-        connectionError.message === "key doesn't exist"
+    setInstallWarningVisible(
+      error instanceof Error &&
+        error.message === 'Failed to retrieve wallet client.'
     )
-  }, [connectionError, setInstallWarningVisible, setNoKeplrAccount])
+    setNoKeplrAccount(
+      error instanceof Error && error.message === "key doesn't exist"
+    )
+  }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
   //! SEARCH MODAL
   // Hide modal when we nav away.

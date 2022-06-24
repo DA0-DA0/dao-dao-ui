@@ -21,11 +21,11 @@ import {
 import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 import {
+  Cw20BaseSelectors,
   CwCoreSelectors,
   useProposalModule,
   useVotingModule,
   useWallet,
-  walletCw20BalanceSelector,
 } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
@@ -70,7 +70,7 @@ export const CreateProposalForm = ({
   connectWalletButton,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
-  const { connected } = useWallet()
+  const { connected, address: walletAddress } = useWallet()
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { isMember } = useVotingModule(coreAddress)
@@ -78,10 +78,12 @@ export const CreateProposalForm = ({
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(
     proposalModuleConfig?.deposit_info?.deposit &&
-      proposalModuleConfig?.deposit_info?.deposit !== '0'
-      ? walletCw20BalanceSelector(
-          proposalModuleConfig?.deposit_info?.token as string
-        )
+      proposalModuleConfig?.deposit_info?.deposit !== '0' &&
+      walletAddress
+      ? Cw20BaseSelectors.balanceSelector({
+          contractAddress: proposalModuleConfig.deposit_info.token,
+          params: [{ address: walletAddress }],
+        })
       : constSelector(undefined)
   )
 

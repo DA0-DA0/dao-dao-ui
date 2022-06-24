@@ -1,5 +1,4 @@
-import { Keplr } from '@keplr-wallet/types'
-import { KeplrWalletConnectV1 } from '@noahsaso/cosmodal'
+import { WalletClient } from '@noahsaso/cosmodal'
 import { atom } from 'recoil'
 
 import { localStorageEffectJSON } from '../effects'
@@ -11,12 +10,7 @@ export const connectedWalletIdAtom = atom<string | null>({
   effects: [localStorageEffectJSON(connectedWalletIdKey)],
 })
 
-export const walletConnectionIdAtom = atom({
-  key: 'walletConnectionId',
-  default: 0,
-})
-
-export const walletClientAtom = atom<Keplr | KeplrWalletConnectV1 | undefined>({
+export const walletClientAtom = atom<WalletClient | undefined>({
   key: 'walletClient',
   default: undefined,
   dangerouslyAllowMutability: true,
