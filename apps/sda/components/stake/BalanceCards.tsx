@@ -126,8 +126,8 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
                   ? 0
                   : ((walletStakedValue ?? 0) / totalStakedValue) * 100
               ),
-            }}
-            % <span className="text-xs text-tertiary">of all voting power</span>
+            }}{' '}
+            <span className="text-xs text-tertiary">of all voting power</span>
           </Trans>
         </p>
       </div>

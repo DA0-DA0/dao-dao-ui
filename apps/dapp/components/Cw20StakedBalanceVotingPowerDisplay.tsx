@@ -123,7 +123,6 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
                       ? (walletStakedValue / totalStakedValue) * 100
                       : 0
                   )}
-                  %
                 </p>
               </div>
 
