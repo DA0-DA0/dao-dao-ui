@@ -1,4 +1,5 @@
 import {
+  ChainInfoID,
   ConnectedWallet,
   IWalletManagerContext,
   WalletConnectionStatus,
@@ -126,7 +127,13 @@ export const WalletProvider: FC = ({ children }) => (
       textContent: '!primary-text',
     }}
     defaultChainId={CHAIN_ID}
-    enabledWalletTypes={[WalletType.Keplr, WalletType.WalletConnectKeplr]}
+    enabledWalletTypes={[
+      WalletType.Keplr,
+      // Only allow WalletConnect on mainnet.
+      ...(CHAIN_ID === ChainInfoID.Juno1
+        ? [WalletType.WalletConnectKeplr]
+        : []),
+    ]}
     localStorageKey="connectedWalletId"
     preselectedWalletType={
       // If on a mobile device, default to WalletConnect.
