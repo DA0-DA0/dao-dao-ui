@@ -1,6 +1,7 @@
 import { Coin } from '@cosmjs/stargate'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { useTranslation } from '@dao-dao/i18n'
@@ -56,59 +57,77 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   options: { nativeBalances },
 }) => {
   const { t } = useTranslation()
-  const { register, watch, clearErrors, setValue } = useFormContext()
+  const { register, watch, setError, clearErrors, setValue } = useFormContext()
 
   const stakeType = watch(getFieldName('stakeType'))
   const amount = watch(getFieldName('amount'))
   const denom = watch(getFieldName('denom'))
 
-  const validatePossibleSpend = (
-    denom: string,
-    amount: string
-  ): string | boolean => {
-    const humanReadableDenom =
-      convertDenomToHumanReadableDenom(denom).toUpperCase()
+  const validatePossibleSpend = useCallback(
+    (denom: string, amount: string): string | boolean => {
+      const humanReadableDenom =
+        convertDenomToHumanReadableDenom(denom).toUpperCase()
 
-    const native = nativeBalances.find((coin) => coin.denom === denom)
-    if (native) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.amount,
-        NATIVE_DECIMALS
-      ).toLocaleString()
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        NATIVE_DECIMALS
-      )
-      return (
-        Number(microAmount) <= Number(native.amount) ||
-        `The treasury ${
-          Number(native.amount) === 0
-            ? 'has no'
-            : `only has ${humanReadableAmount}`
-        } ${humanReadableDenom}, which is insufficient.`
-      )
+      const native = nativeBalances.find((coin) => coin.denom === denom)
+      if (native) {
+        const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
+          native.amount,
+          NATIVE_DECIMALS
+        ).toLocaleString()
+        const microAmount = convertDenomToMicroDenomWithDecimals(
+          amount,
+          NATIVE_DECIMALS
+        )
+        return (
+          Number(microAmount) <= Number(native.amount) ||
+          `The treasury ${
+            Number(native.amount) === 0
+              ? 'has no'
+              : `only has ${humanReadableAmount}`
+          } ${humanReadableDenom}, which is insufficient.`
+        )
+      }
+
+      // If there are no native tokens in the treasury the native balances
+      // query will return an empty list, so check explicitly if the
+      // native currency is selected.
+      if (denom === NATIVE_DENOM) {
+        return `The treasury has no ${humanReadableDenom}, so you can't stake any tokens.`
+      }
+
+      return 'Unrecognized denom.'
+    },
+    [nativeBalances]
+  )
+
+  // Update amount+denom combo error each time either field is updated
+  // instead of setting errors individually on each field. Since we only
+  // show one or the other and can't detect which error is newer, this
+  // would lead to the error not updating if amount set an error and then
+  // denom was changed.
+  useEffect(() => {
+    if (!amount || !denom) {
+      clearErrors(getFieldName('_error'))
+      return
     }
 
-    // If there are no native tokens in the treasury the native balances
-    // query will return an empty list, so check explicitly if the
-    // native currency is selected.
-    if (denom === NATIVE_DENOM) {
-      return `The treasury has no ${humanReadableDenom}, so you can't stake any tokens.`
+    const validation = validatePossibleSpend(denom, amount)
+    if (validation === true) {
+      clearErrors(getFieldName('_error'))
+    } else if (typeof validation === 'string') {
+      setError(getFieldName('_error'), {
+        type: 'custom',
+        message: validation,
+      })
     }
-
-    return 'Unrecognized denom.'
-  }
-
-  // The amount and denom fields are dependent on each other for validation. If
-  // one has a valid validation result, the other one as well. This wrapper ensures
-  // that react-hook-form is informed as such.
-  const validatePossibleSpendWrapper = (denom: string, amount: string) => {
-    const valid = validatePossibleSpend(denom, amount)
-    if (typeof valid === 'boolean' && valid) {
-      clearErrors([getFieldName('denom'), getFieldName('amount')])
-    }
-    return valid
-  }
+  }, [
+    setError,
+    clearErrors,
+    validatePossibleSpend,
+    getFieldName,
+    amount,
+    denom,
+  ])
 
   return (
     <ActionCard
@@ -152,11 +171,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
               ]}
               register={register}
               step={1 / 10 ** NATIVE_DECIMALS}
-              validation={[
-                validateRequired,
-                validatePositive,
-                (amount: string) => validatePossibleSpendWrapper(denom, amount),
-              ]}
+              validation={[validateRequired, validatePositive]}
             />
 
             <SelectInput
@@ -164,9 +179,6 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
               error={errors?.denom}
               fieldName={getFieldName('denom')}
               register={register}
-              validation={[
-                (denom: string) => validatePossibleSpendWrapper(denom, amount),
-              ]}
             >
               {nativeBalances.length !== 0 ? (
                 nativeBalances.map(({ denom }) => (
@@ -184,7 +196,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
         )}
       </div>
 
-      <InputErrorMessage error={errors?.denom ?? errors?.amount} />
+      <InputErrorMessage error={errors?.denom} />
+      <InputErrorMessage error={errors?.amount} />
+      <InputErrorMessage error={errors?._error} />
 
       {stakeType === StakeType.Redelegate && (
         <>

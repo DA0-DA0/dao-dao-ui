@@ -307,7 +307,7 @@ export const CreateProposalForm = ({
         </div>
         {showSubmitErrorNote && (
           <p className="mt-2 text-right text-error secondary-text">
-            {t('createProposalSubmitValidationError')}
+            {t('error.createProposalSubmitValidationError')}
           </p>
         )}
       </form>

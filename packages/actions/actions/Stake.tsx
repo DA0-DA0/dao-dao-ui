@@ -41,7 +41,7 @@ const useDefaults: UseDefaults<StakeData> = () => ({
   stakeType: stakeActions[0].type,
   validator: '',
   amount: 1,
-  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
+  denom: NATIVE_DENOM,
 })
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
