@@ -28,7 +28,6 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../recoil'
-import { walletClientAtom } from '../recoil/atoms/wallet'
 
 const WalletContext = createContext<
   | (Pick<
@@ -38,11 +37,7 @@ const WalletContext = createContext<
       Partial<
         Pick<
           ConnectedWallet,
-          | 'walletClient'
-          | 'name'
-          | 'address'
-          | 'signingCosmWasmClient'
-          | 'signingStargateClient'
+          'name' | 'address' | 'signingCosmWasmClient' | 'signingStargateClient'
         >
       > & {
         connected: boolean
@@ -53,13 +48,11 @@ const WalletContext = createContext<
 >(null)
 
 const InnerWalletProvider: FC = ({ children }) => {
-  const setWalletClient = useSetRecoilState(walletClientAtom)
   const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
   const {
     connect,
     disconnect,
     connectedWallet: {
-      walletClient,
       name,
       address,
       signingCosmWasmClient,
@@ -70,16 +63,10 @@ const InnerWalletProvider: FC = ({ children }) => {
     isEmbeddedKeplrMobileWeb,
   } = useWalletManager()
 
-  // Save wallet info in recoil atoms so they can be used by selectors.
+  // Save client in recoil atom so it can be used by selectors.
   useEffect(() => {
-    setWalletClient(walletClient)
     setSigningCosmWasmClient(signingCosmWasmClient)
-  }, [
-    walletClient,
-    setWalletClient,
-    setSigningCosmWasmClient,
-    signingCosmWasmClient,
-  ])
+  }, [setSigningCosmWasmClient, signingCosmWasmClient])
 
   // Fetch native wallet balance.
   const {
@@ -108,7 +95,6 @@ const InnerWalletProvider: FC = ({ children }) => {
         disconnect,
         error,
         isEmbeddedKeplrMobileWeb,
-        walletClient,
         name,
         address,
         signingCosmWasmClient,
@@ -141,6 +127,7 @@ export const WalletProvider: FC = ({ children }) => (
     }}
     defaultChainId={CHAIN_ID}
     enabledWalletTypes={[WalletType.Keplr, WalletType.WalletConnectKeplr]}
+    localStorageKey="connectedWalletId"
     preselectedWalletType={
       // If on a mobile device, default to WalletConnect.
       isMobile() ? WalletType.WalletConnectKeplr : undefined

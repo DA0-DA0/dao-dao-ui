@@ -2846,7 +2846,7 @@
     long "^4.0.0"
     secretjs "^0.17.0"
 
-"@keplr-wallet/types@0.10.8":
+"@keplr-wallet/types@0.10.8", "@keplr-wallet/types@^0.10.8":
   version "0.10.8"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.10.8.tgz#dbc210b540203703a7ecb7d992f918b78c15d7a7"
   integrity sha512-dKf9mWM67a/8DDEEZgcHDXE0kIPWVHDSe1r+Z1bdNbzNXkEAAw8mthhCopn/77GbGWLVBqSIBQ5h1pqHljxjwQ==
