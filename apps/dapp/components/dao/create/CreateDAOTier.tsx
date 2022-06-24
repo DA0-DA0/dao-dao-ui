@@ -1,4 +1,5 @@
 import { TrashIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC } from 'react'
 import {
   Control,
@@ -79,35 +80,39 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
       {!showColorDotOnMember && <CornerGradient color={`${tierColor}1A`} />}
       <div className="flex flex-col gap-4 items-stretch sm:flex-row sm:gap-8 sm:justify-between sm:items-center">
         <div className="grow">
-          <div className="flex flex-row gap-4 items-center">
-            {!showColorDotOnMember && (
-              <div
-                className="shrink-0 w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: tierColor,
-                }}
-              ></div>
-            )}
+          <div className="flex flex-col grow gap-1">
+            <InputLabel
+              containerProps={{
+                className: clsx('grow', { 'ml-6': !showColorDotOnMember }),
+              }}
+              name={t('tierName')}
+              tooltip={t('tierNameTooltip')}
+            />
 
-            <div className="flex flex-col grow gap-1">
-              <InputLabel
-                containerProps={{ className: 'grow' }}
-                name={t('tierName')}
-                tooltip={t('tierNameTooltip')}
+            <div className="flex flex-row grow gap-4 items-center">
+              {!showColorDotOnMember && (
+                <div
+                  className="shrink-0 w-2 h-2 rounded-full"
+                  style={{
+                    backgroundColor: tierColor,
+                  }}
+                ></div>
+              )}
+
+              <TextInput
+                error={errors.tiers?.[tierIndex]?.name}
+                fieldName={`tiers.${tierIndex}.name`}
+                placeholder={t('Tier name') + '...'}
+                register={register}
+                validation={[validateRequired]}
               />
-              <div className="grow">
-                <TextInput
-                  error={errors.tiers?.[tierIndex]?.name}
-                  fieldName={`tiers.${tierIndex}.name`}
-                  placeholder={t('Tier name') + '...'}
-                  register={register}
-                  validation={[validateRequired]}
-                />
-                <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
-              </div>
             </div>
           </div>
-          <InputErrorMessage error={errors.tiers?.[tierIndex]?.name} />
+
+          <InputErrorMessage
+            className={clsx({ 'ml-6': !showColorDotOnMember })}
+            error={errors.tiers?.[tierIndex]?.name}
+          />
         </div>
 
         <div className="grow">

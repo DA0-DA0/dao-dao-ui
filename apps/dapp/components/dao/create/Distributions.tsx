@@ -12,7 +12,6 @@ import { Bar, Pie } from 'react-chartjs-2'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { useNamedThemeColor } from '@dao-dao/ui'
-import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
 import { GovernanceTokenType, NewDAO, NewDAOStructure } from '@/atoms'
 
@@ -93,19 +92,9 @@ export const useVotingPowerDistributionData = (
       structure === NewDAOStructure.GovernanceToken &&
       type === GovernanceTokenType.New
 
-    // Only display valid addresses.
-    const tiersWithValidMembers = tiers
-      .map(({ members, ...tier }) => ({
-        ...tier,
-        members: members.filter(({ address }) =>
-          isValidAddress(address, CHAIN_BECH32_PREFIX)
-        ),
-      }))
-      .filter(({ members }) => members.length)
-
     // Won't be used if governanceTokenEnabled is true.
     const totalWeight =
-      tiersWithValidMembers.reduce(
+      tiers.reduce(
         // Multiply by member count since the tier weight is per member
         // when creating a membership-based DAO.
         (acc, { weight, members }) => acc + weight * members.length,
@@ -113,25 +102,24 @@ export const useVotingPowerDistributionData = (
       ) || 0
 
     // If one tier case, specially handle and display all members.
-    const onlyOneTier = tiersWithValidMembers.length === 1
+    const onlyOneTier = tiers.length === 1
 
     const entries: Entry[] = onlyOneTier
-      ? tiersWithValidMembers[0].members.map(({ address }, memberIndex) => ({
+      ? tiers[0].members.map(({ address }, memberIndex) => ({
           name: address,
           value: governanceTokenEnabled
             ? // Governance Token-based DAO tier weights are distributed
               // amongst members.
-              tiersWithValidMembers[0].weight /
-              tiersWithValidMembers[0].members.length
+              tiers[0].weight / tiers[0].members.length
             : // Membership-based DAO tier weights are the same for each member.
             summaryView
             ? // Use proportions for summary view.
-              (tiersWithValidMembers[0].weight / totalWeight) * 100
+              (tiers[0].weight / totalWeight) * 100
             : // Display absolute weights when not in summary view.
-              tiersWithValidMembers[0].weight,
+              tiers[0].weight,
           color: distributionColors[memberIndex % distributionColors.length],
         }))
-      : tiersWithValidMembers.map(({ name, weight, members }, tierIndex) => ({
+      : tiers.map(({ name, weight, members }, tierIndex) => ({
           name,
           value: governanceTokenEnabled
             ? // Governance Token-based DAO tier weights are distributed
