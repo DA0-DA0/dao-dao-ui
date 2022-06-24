@@ -14,8 +14,9 @@ import {
 import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
-} from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientAtom } from '../chain'
+  signingCosmWasmClientAtom,
+} from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string

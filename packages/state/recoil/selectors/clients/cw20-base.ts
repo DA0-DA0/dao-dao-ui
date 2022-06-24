@@ -12,8 +12,11 @@ import {
   Cw20QueryClient as QueryClient,
   TokenInfoResponse,
 } from '../../../clients/cw20-base'
-import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientAtom } from '../chain'
+import {
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string

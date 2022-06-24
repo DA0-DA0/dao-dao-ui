@@ -21,8 +21,11 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw-core'
-import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientAtom } from '../chain'
+import {
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string

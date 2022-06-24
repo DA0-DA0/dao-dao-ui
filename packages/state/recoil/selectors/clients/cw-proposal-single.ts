@@ -14,11 +14,12 @@ import {
   VoteHooksResponse,
   VoteResponse,
 } from '../../../clients/cw-proposal-single'
+import { signingCosmWasmClientAtom } from '../../atoms'
 import {
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
 } from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientAtom } from '../chain'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string

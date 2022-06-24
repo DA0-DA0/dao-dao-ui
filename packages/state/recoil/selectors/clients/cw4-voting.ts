@@ -15,7 +15,8 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw4-voting'
-import { cosmWasmClientSelector, signingCosmWasmClientAtom } from '../chain'
+import { signingCosmWasmClientAtom } from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
