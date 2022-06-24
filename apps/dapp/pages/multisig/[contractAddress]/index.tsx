@@ -136,6 +136,20 @@ const InnerMultisigHome = () => {
     <div className="flex flex-row lg:grid lg:grid-cols-6">
       <div className="col-span-4 w-full min-h-screen">
         <GradientHero>
+          <div className="w-full border-b bg-accent-transparent border-inactive px-6 py-3 flex items-center justify-center">
+            <p className="text-center">
+              This is a beta Multisig.{' '}
+              <a
+                className="underline"
+                href="https://docs.daodao.zone/docs/upgrading/multisig"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Upgrade to V1
+              </a>{' '}
+              to continue receiving feature releases.
+            </p>
+          </div>
           <SmallScreenNav />
           <div className="p-6">
             <div className="flex justify-between items-center">
