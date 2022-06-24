@@ -10,13 +10,12 @@ import { useSetRecoilState } from 'recoil'
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Trans, useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
-import { SITE_TITLE } from '@dao-dao/utils'
+import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import ThemeToggle from 'components/ThemeToggle'
 
 import { searchVisibleAtom } from '@/atoms'
 import { Loader, PinnedDAONavList } from '@/components'
-import { usePlatform } from '@/hooks'
 
 type NavProps = {
   onMenuClick?: () => void

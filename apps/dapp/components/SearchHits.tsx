@@ -72,7 +72,7 @@ const HitsInternal: FC<any> = ({ hits }) => {
 
   return (
     <>
-      <div className="flex overflow-hidden overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start">
+      <div className="flex overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start">
         {hits.map((hit: Hit, index: number) => (
           <Hit key={hit.id} hit={hit} selected={index === selection} />
         ))}
