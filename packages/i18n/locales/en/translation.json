@@ -69,6 +69,7 @@
   "error": {
     "cannotStakeMoreThanYouHave": "You can't stake or unstake more tokens than you have.",
     "cannotTxZeroTokens": "You can't stake, unstake, or claim zero tokens.",
+    "cantSpendMoreThanTreasury": "Can't spend more tokens than are in the treasury ({{amount}} ${{tokenSymbol}}).",
     "checkInternetOrTryAgain": "Check your internet connection or try again later.",
     "connectWalletToContinue": "Connect a wallet to continue.",
     "connectWalletToCreate": "Connect a wallet to create a DAO.",
