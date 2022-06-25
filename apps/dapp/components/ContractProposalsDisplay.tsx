@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import { FC } from 'react'
+import { useRouter } from 'next/router'
+import { FC, useCallback, useEffect } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { useVotingModule } from '@dao-dao/state'
@@ -8,14 +9,36 @@ import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 
 import { useDAOInfoContext } from './DAOPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
+import { usePlatform } from '@/hooks'
 
 export const InnerContractProposalsDisplay: FC = () => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
+  const router = useRouter()
+
+  // Detect if Mac for checking keypress.
+  const { isMac } = usePlatform()
+
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (((!isMac && event.ctrlKey) || event.metaKey) && event.shiftKey) {
+        if (event.key === 'p') {
+          event.preventDefault()
+          router.push(`/dao/${coreAddress}/proposals/create`)
+        }
+      }
+    },
+    [isMac, coreAddress, router]
+  )
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [handleKeyPress])
 
   const tooltip = isMember
-    ? undefined
+    ? (isMac ? '⌘' : '⌃') + '⇧P'
     : t('You must have voting power to create a proposal')
 
   return (
