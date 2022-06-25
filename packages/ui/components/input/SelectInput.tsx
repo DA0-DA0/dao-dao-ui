@@ -30,7 +30,7 @@ export function SelectInput<FieldValues, FieldName extends Path<FieldValues>>({
   )
   return (
     <select
-      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none text-gray-700 ring-brand ring-offset-0 border border-default
+      className={`bg-transparent rounded-lg px-3 py-2 transition focus:ring-1 focus:outline-none text-dark ring-brand ring-offset-0 border border-default 
         ${error ? ' ring-error ring-1' : ''}`}
       defaultValue={defaultValue}
       disabled={disabled}

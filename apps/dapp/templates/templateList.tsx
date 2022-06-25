@@ -35,6 +35,12 @@ import {
   transformMintToCosmos,
 } from './mint'
 import {
+  PauseComponent,
+  pauseDefaults,
+  transformCosmosToPause,
+  transformPauseToCosmos,
+} from './pause'
+import {
   RemoveTokenComponent,
   removeTokenDefaults,
   transformCosmosToRemoveToken,
@@ -106,6 +112,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: daoConfigUpdateDefaults,
     toCosmosMsg: transformDAOConfigUpdateToCosmos,
     fromCosmosMsg: transformCosmosToDAOConfigUpdate,
+  },
+  {
+    label: '🏖 Pause DAO',
+    description: 'Pause your DAO and stop all DAO actions.',
+    component: PauseComponent,
+    contractSupport: ContractSupport.DAO,
+    getDefaults: pauseDefaults,
+    toCosmosMsg: transformPauseToCosmos,
+    fromCosmosMsg: transformCosmosToPause,
   },
   {
     label: '🔘 Add Treasury Token',
