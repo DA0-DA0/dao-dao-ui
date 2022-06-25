@@ -15,7 +15,7 @@ export const Footer = () => {
       <div className="cursor-pointer">
         <DAODAOLogo height={32} width={32} />
       </div>
-      <p className="mt-4 font-studiofeixen">{t('poweredByDAODAO')}</p>
+      <p className="mt-4 font-studiofeixen">{t('info.poweredByDAODAO')}</p>
     </a>
   )
 }

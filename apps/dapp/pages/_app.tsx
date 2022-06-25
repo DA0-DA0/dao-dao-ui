@@ -49,7 +49,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
           name="viewport"
         />
       </Head>
-      <ErrorBoundary title={t('unexpectedError')}>
+      <ErrorBoundary title={t('error.unexpectedError')}>
         <ThemeProvider
           accentColor={accentColor}
           setAccentColor={setAccentColor}

@@ -92,19 +92,19 @@ const Home: NextPage = () => {
         <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
           <StatsCard>
             <h3 className="header-text">
-              {tvl ? '$' + tvl.toLocaleString() : t('loading')}
+              {tvl ? '$' + tvl.toLocaleString() : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.usdcTotalValue')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
-              {daos ? daos.toLocaleString() : t('loading')}
+              {daos ? daos.toLocaleString() : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.daosCreated')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
-              {proposals ? proposals.toLocaleString() : t('loading')}
+              {proposals ? proposals.toLocaleString() : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.proposalsCreated')}</p>
           </StatsCard>
@@ -144,7 +144,11 @@ const Home: NextPage = () => {
           </div>
           <div className="grid grid-cols-1 gap-2 my-10 font-mono md:grid-cols-3 caption-text">
             <div className="flex flex-wrap gap-6 items-center mx-2 text-xs">
-              <p>DAO DAO v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}</p>
+              <p>
+                {t('info.productVersion', {
+                  versionNumber: process.env.NEXT_PUBLIC_DAO_DAO_VERSION,
+                })}
+              </p>
               <a
                 className="hover:text-primary transition"
                 href="https://www.junonetwork.io/"

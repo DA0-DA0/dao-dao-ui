@@ -71,7 +71,7 @@ export const PausedBanner: FC<PausedBannerProps> = ({}) => {
     >
       <PauseIcon className="w-5" />
       <p className="link-text">
-        {t('daoPaused', { duration: humanReadableDuration(remaining) })}
+        {t('info.daoPaused', { duration: humanReadableDuration(remaining) })}
       </p>
     </div>
   )

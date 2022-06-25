@@ -15,12 +15,12 @@ const Custom404: NextPage = () => {
       <Header />
 
       <SuspenseLoader fallback={null}>
-        <ErrorPage title={t('404Title')}>
+        <ErrorPage title={t('title.404')}>
           <p>
-            {t('pageNotFound')}{' '}
+            {t('error.pageNotFound')}{' '}
             <Link href="/">
               <a className="underline link-text">
-                {t('considerReturningHome')}
+                {t('info.considerReturningHome')}
               </a>
             </Link>
           </p>

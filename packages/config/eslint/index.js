@@ -39,7 +39,7 @@ const eslintConfig = {
       parserOptions: {
         project: tsConfig,
       },
-      plugins: ['@typescript-eslint'],
+      plugins: ['@typescript-eslint', 'regex'],
       rules: {
         '@typescript-eslint/no-unused-vars': ['off'],
         'i18next/no-literal-string': [
@@ -65,12 +65,19 @@ const eslintConfig = {
                 // Defaults wrapped in whitespace.
                 '\\s*[0-9!-/:-@[-`{-~]+\\s*',
                 '\\s*[A-Z_-]+\\s*',
-                // Additional.
-                '\\s*DAOs?\\s*',
-                '\\s*DAO\\s*DAO\\s*v?',
               ],
             },
           },
+        ],
+        'regex/invalid': [
+          'error',
+          [
+            {
+              regex: '(\\bt\\(\\s*\'[^\\.\']+\'|i18nKey="[^\\."]+")',
+              message:
+                'No top-level i18n keys allowed. Organize top-level keys into a nested object.',
+            },
+          ],
         ],
       },
     },

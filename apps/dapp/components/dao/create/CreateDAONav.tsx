@@ -20,7 +20,7 @@ export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
   return (
     <div>
       <p className="mb-3 font-mono text-sm font-bold text-disabled md:mb-7">
-        {t('steps')}
+        {t('title.steps')}
       </p>
 
       <div className="flex flex-col gap-2 items-start md:gap-5">

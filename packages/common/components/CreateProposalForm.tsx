@@ -236,7 +236,7 @@ export const CreateProposalForm = ({
         )}
         <div className={showPreview ? 'hidden' : ''}>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name={t('Proposal title')} />
+            <InputLabel name={t('form.proposalTitle')} />
             <TextInput
               error={errors.title}
               fieldName="title"
@@ -246,7 +246,7 @@ export const CreateProposalForm = ({
             <InputErrorMessage error={errors.title} />
           </div>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name={t('Proposal description')} />
+            <InputLabel name={t('form.proposalDescription')} />
             <TextAreaInput
               error={errors.description}
               fieldName="description"
@@ -286,7 +286,7 @@ export const CreateProposalForm = ({
               type="button"
               variant="secondary"
             >
-              <PlusIcon className="inline h-4" /> {t('Add an action')}{' '}
+              <PlusIcon className="inline h-4" /> {t('button.addAnAction')}{' '}
               <p className="ml-4 text-secondary">{isMac ? '⌘' : '⌃'}A</p>
             </Button>
           </div>
@@ -310,7 +310,7 @@ export const CreateProposalForm = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                {t('Publish proposal') + ' '}
+                {t('button.publishProposal') + ' '}
                 <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
@@ -325,12 +325,12 @@ export const CreateProposalForm = ({
           >
             {showPreview ? (
               <>
-                {t('Hide preview')}
+                {t('button.hidePreview')}
                 <EyeOffIcon className="inline ml-2 h-5 stroke-current" />
               </>
             ) : (
               <>
-                {t('Preview')}
+                {t('button.preview')}
                 <EyeIcon className="inline ml-2 h-5 stroke-current" />
               </>
             )}
@@ -338,7 +338,7 @@ export const CreateProposalForm = ({
         </div>
         {showSubmitErrorNote && (
           <p className="mt-2 text-right text-error secondary-text">
-            {t('error.createProposalSubmitValidationError')}
+            {t('error.createProposalSubmitInvalid')}
           </p>
         )}
       </form>

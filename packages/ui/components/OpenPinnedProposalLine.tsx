@@ -38,12 +38,12 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
         {daoConfig.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            alt={t('daosLogo')}
+            alt={t('info.daosLogo')}
             className="w-auto h-6 rounded-full"
             src={daoConfig.image_url}
           />
         ) : (
-          <Logo alt={t('daodaoLogo')} height="1.5rem" width="1.5rem" />
+          <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
         )}
         <p className="primary-text">{daoConfig.name}</p>
       </div>
@@ -74,12 +74,12 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
           {daoConfig.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              alt={t('daosLogo')}
+              alt={t('info.daosLogo')}
               className="w-auto h-6 rounded-full"
               src={daoConfig.image_url}
             />
           ) : (
-            <Logo alt={t('daodaoLogo')} height="1.5rem" width="1.5rem" />
+            <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
           )}
           <p className="primary-text">{daoConfig.name}</p>
         </div>
@@ -109,7 +109,7 @@ export const OpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = (
         </a>
       </Link>
 
-      <Tooltip label={t('hideFromPage')}>
+      <Tooltip label={t('info.hideFromPageTooltip')}>
         <Button className="!px-2" onClick={props.markDone} variant="secondary">
           <EyeOffIcon className="w-4 h-4" />
         </Button>

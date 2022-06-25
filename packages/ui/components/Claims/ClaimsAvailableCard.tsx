@@ -24,8 +24,8 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
   return (
     <div className="p-6 mt-2 w-full rounded-lg border shadow border-base-300">
       <h2 className="font-mono text-sm text-secondary">
-        {t('Unclaimed')} (
-        {t('unstakedTokens', { tokenSymbol: tokenInfo.symbol })})
+        {t('title.unclaimed')} (
+        {t('info.unstakedTokens', { tokenSymbol: tokenInfo.symbol })})
       </h2>
       {loading ? (
         <div className="inline-block mt-2 animate-spin-medium">
@@ -42,7 +42,7 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
           className="normal-case btn-outline btn btn-xs border-secondary"
           onClick={onClaim}
         >
-          {t('Claim')}
+          {t('button.claim')}
         </button>
       </div>
     </div>

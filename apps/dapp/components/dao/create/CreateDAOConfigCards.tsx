@@ -56,15 +56,15 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
   return (
     <CreateDAOConfigCard
       accentColor="rgba(95, 94, 254, 0.1)"
-      description={t('Passing threshold description')}
+      description={t('form.passingThresholdDescription')}
       error={errors?.advancedVotingConfig?.thresholdQuorum?.threshold}
       image={<Emoji label="ballot box" symbol="🗳️" />}
-      title={t('Passing threshold')}
+      title={t('form.passingThresholdTitle')}
     >
       {readOnly ? (
         <InputThemedText>
           {threshold === 'majority'
-            ? t('majority')
+            ? t('info.majority')
             : formatPercentOf100(threshold)}
         </InputThemedText>
       ) : (
@@ -112,7 +112,7 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
             value={threshold === 'majority' ? 'majority' : '%'}
           >
             <option value="%">%</option>
-            <option value="majority">{t('majority')}</option>
+            <option value="majority">{t('info.majority')}</option>
           </SelectInput>
         </>
       )}
@@ -142,18 +142,18 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
     <CreateDAOConfigCard
       accentColor="#fefe891a"
       childContainerClassName={readOnly ? undefined : 'self-stretch'}
-      description={t('Quorum description')}
+      description={t('form.quorumDescription')}
       error={errors?.advancedVotingConfig?.thresholdQuorum?.quorum}
       image={<Emoji label="megaphone" symbol="📣" />}
-      title={t('Quorum')}
+      title={t('form.quorumTitle')}
     >
       {readOnly ? (
         <InputThemedText>
           {quorumEnabled
             ? quorum === 'majority'
-              ? t('majority')
+              ? t('info.majority')
               : formatPercentOf100(quorum)
-            : t('disabled')}
+            : t('info.disabled')}
         </InputThemedText>
       ) : (
         <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
@@ -222,7 +222,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
                 value={quorum === 'majority' ? 'majority' : '%'}
               >
                 <option value="%">%</option>
-                <option value="majority">{t('majority')}</option>
+                <option value="majority">{t('info.majority')}</option>
               </SelectInput>
             </div>
           )}
@@ -240,10 +240,10 @@ export const CreateDAOVotingDurationCard: FC<
   return (
     <CreateDAOConfigCard
       accentColor="#c3935e1a"
-      description={t('Voting duration description')}
+      description={t('form.votingDurationDescription')}
       error={errors?.votingDuration?.value ?? errors?.votingDuration?.units}
       image={<Emoji label="hourglass" symbol="⏳" />}
-      title={t('Voting duration')}
+      title={t('form.votingDurationTitle')}
     >
       {readOnly ? (
         <InputThemedText>
@@ -313,15 +313,15 @@ export const CreateDAOProposalDepositCard: FC<
   return (
     <CreateDAOConfigCard
       accentColor="#fccd031a"
-      description={t('Proposal deposit description')}
+      description={t('form.proposalDepositDescription')}
       error={errors?.governanceTokenOptions?.proposalDeposit?.value}
       image={<Emoji label="banknote" symbol="💵" />}
-      title={t('Proposal deposit')}
+      title={t('form.proposalDepositTitle')}
     >
       {readOnly ? (
         <InputThemedText>
           {value}{' '}
-          {type === GovernanceTokenType.New ? '$' + symbol : t('tokens')}
+          {type === GovernanceTokenType.New ? '$' + symbol : t('info.tokens')}
         </InputThemedText>
       ) : (
         <NumberInput
@@ -368,18 +368,20 @@ export const CreateDAORefundFailedProposalDepositCard: FC<
   return (
     <CreateDAOConfigCard
       accentColor="#fed3581a"
-      description={t('Proposal deposit refund description')}
+      description={t('form.refundFailedProposalsDescription')}
       error={errors?.governanceTokenOptions?.proposalDeposit?.refundFailed}
       image={<Emoji label="finger pointing up" symbol="👆" />}
-      title={t('Proposal deposit refund')}
+      title={t('form.refundFailedProposalsTitle')}
     >
       {readOnly ? (
-        <InputThemedText>{refundFailed ? t('yes') : t('no')}</InputThemedText>
+        <InputThemedText>
+          {refundFailed ? t('info.yes') : t('info.no')}
+        </InputThemedText>
       ) : (
         <FormSwitchCard
           fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
-          offLabel={t('no')}
-          onLabel={t('yes')}
+          offLabel={t('info.no')}
+          onLabel={t('info.yes')}
           readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
@@ -406,13 +408,13 @@ export const CreateDAOUnstakingDurationCard: FC<
   return (
     <CreateDAOConfigCard
       accentColor="#cf434b1a"
-      description={t('Unstaking period description')}
+      description={t('form.unstakingPeriodDescription')}
       error={
         errors?.governanceTokenOptions?.unregisterDuration?.value ??
         errors?.governanceTokenOptions?.unregisterDuration?.units
       }
       image={<Emoji label="alarm clock" symbol="⏰" />}
-      title={t('Unstaking period')}
+      title={t('form.unstakingPeriodTitle')}
     >
       {readOnly ? (
         <InputThemedText>
@@ -475,18 +477,20 @@ export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
   return (
     <CreateDAOConfigCard
       accentColor="#1cae121a"
-      description={t('allowRevotingDescription')}
+      description={t('form.allowRevotingDescription')}
       error={errors?.advancedVotingConfig?.allowRevoting}
       image={<Emoji label="recycle" symbol="♻️" />}
-      title={t('allowRevoting')}
+      title={t('form.allowRevotingTitle')}
     >
       {readOnly ? (
-        <InputThemedText>{allowRevoting ? t('yes') : t('no')}</InputThemedText>
+        <InputThemedText>
+          {allowRevoting ? t('info.yes') : t('info.no')}
+        </InputThemedText>
       ) : (
         <FormSwitchCard
           fieldName="advancedVotingConfig.allowRevoting"
-          offLabel={t('no')}
-          onLabel={t('yes')}
+          offLabel={t('info.no')}
+          onLabel={t('info.yes')}
           readOnly={readOnly}
           setValue={setValue}
           sizing="sm"

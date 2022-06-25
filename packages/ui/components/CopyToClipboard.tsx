@@ -123,7 +123,7 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
         size="sm"
         variant="secondary"
       >
-        <p className="text-body caption-text">{t('copy')}</p>
+        <p className="text-body caption-text">{t('button.copy')}</p>
       </Button>
     </div>
   )

@@ -80,7 +80,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       {!!decodedMessages?.length && (
         <>
           <div className="mt-9 mb-3 font-mono caption-text">
-            {t('Action', { count: decodedMessages.length })}
+            {t('title.actions', { count: decodedMessages.length })}
           </div>
           {showRaw ? (
             <CosmosMessageDisplay
@@ -105,12 +105,12 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           >
             {showRaw ? (
               <>
-                {t('hideRawData')}
+                {t('button.hideRawData')}
                 <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
               </>
             ) : (
               <>
-                {t('showRawData')}
+                {t('button.showRawData')}
                 <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
@@ -119,7 +119,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       )}
       {proposal.status === Status.Passed && (
         <>
-          <p className="mt-6 mb-4 link-text">{t('status')}</p>
+          <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
           <Execute
             loading={loading}
             messages={proposal.msgs.length}
@@ -128,7 +128,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
         </>
       )}
 
-      <p className="mt-6 mb-4 link-text">{t('vote')}</p>
+      <p className="mt-6 mb-4 link-text">{t('title.vote')}</p>
 
       {connected ? (
         <>
@@ -140,9 +140,9 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             >
               <Trans
                 components={[<VoteDisplay key="vote" vote={walletVote} />]}
-                i18nKey="votedOnProposal"
+                i18nKey="info.votedOnProposal"
               />
-              {allowRevoting && canVote && ' ' + t('voteAgain')}
+              {allowRevoting && canVote && ' ' + t('info.voteAgain')}
             </p>
           )}
           {canVote && (
@@ -153,11 +153,11 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             />
           )}
           {proposal.status !== Status.Open && !walletVote && (
-            <p className="body-text">{t('didNotVote')}</p>
+            <p className="body-text">{t('info.didNotVote')}</p>
           )}
           {walletWeightPercent === 0 && (
             <p className="max-w-prose body-text">
-              {t('mustHaveVotingPowerAtCreation')}{' '}
+              {t('info.mustHaveVotingPowerAtCreation')}{' '}
               {/* Only show staking modal if using staked balance to vote. */}
               {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
                 stakingModal && (
@@ -166,7 +166,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
                       className="underline"
                       onClick={() => setShowStaking(true)}
                     >
-                      {t('stakeTokensSuggestion')}
+                      {t('button.stakeTokensSuggestion')}
                     </button>
                     {showStaking && stakingModal}
                   </>

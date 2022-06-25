@@ -35,7 +35,7 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
 
   return claimsPending?.length ? (
     <>
-      <h2 className="mt-4 mb-2">{t('currentlyUnstaking')}</h2>
+      <h2 className="mt-4 mb-2">{t('title.currentlyUnstaking')}</h2>
 
       <ul className="space-y-2">
         {claimsPending.map((claim, idx) => (
@@ -60,7 +60,7 @@ export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
     <SuspenseLoader
       fallback={
         <>
-          <h2 className="mt-4">{t('currentlyUnstaking')}</h2>
+          <h2 className="mt-4">{t('title.currentlyUnstaking')}</h2>
           <Loader />
         </>
       }

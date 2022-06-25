@@ -3,6 +3,7 @@ const path = require('path')
 /** @type {import("next-i18next").UserConfig} */
 const config = {
   i18n: {
+    // Add your language ISO 639-1 code here.
     locales: ['en'],
     defaultLocale: 'en',
   },

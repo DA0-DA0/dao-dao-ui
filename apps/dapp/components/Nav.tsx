@@ -45,7 +45,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
             onClick={() => setSearchVisible(true)}
           >
             <p className="flex gap-2 items-center">
-              <SearchIcon className="w-4 h-4" /> {t('search')}
+              <SearchIcon className="w-4 h-4" /> {t('title.search')}
             </p>
             <p className="text-secondary">{isMac ? '⌘' : '⌃'}K</p>
           </button>
@@ -55,7 +55,9 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </div>
           <div className="ml-1 text-sm">
             <div className="mt-6">
-              <h3 className="mb-4 font-mono caption-text">{t('yourDAOs')}</h3>
+              <h3 className="mb-4 font-mono caption-text">
+                {t('title.yourDAOs')}
+              </h3>
               <SuspenseLoader
                 fallback={<Loader className="!justify-start ml-2" size={20} />}
               >
@@ -66,7 +68,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
         </div>
         <div className="ml-1">
           <h3 className="mb-2 font-mono caption-text">
-            <Trans i18nKey="daodaoBetaV">
+            <Trans i18nKey="info.daodaoBetaV">
               dao dao <div className="inline text-error">beta</div> v
               {{ version: process.env.NEXT_PUBLIC_DAO_DAO_VERSION }}
             </Trans>
@@ -82,7 +84,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
                 rel="noreferrer"
                 target="_blank"
               >
-                {t('Documentation')}
+                {t('title.documentation')}
               </a>
             </li>
             <li>
@@ -92,7 +94,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
                 rel="noreferrer"
                 target="_blank"
               >
-                {t('Feedback')}
+                {t('title.feedback')}
               </a>
             </li>
           </ul>

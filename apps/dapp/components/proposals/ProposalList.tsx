@@ -105,10 +105,10 @@ export const ProposalList: FC = () => {
       <div className="flex">
         <EmptyContractCard
           backgroundUrl="/empty-state-proposal.jpeg"
-          description={t('Create first proposal prompt')}
+          description={t('info.firstProposalPrompt')}
           fullWidth
           href={`/dao/${coreAddress}/proposals/create`}
-          title={t('createAProposal')}
+          title={t('title.createAProposal')}
         />
       </div>
     )
@@ -136,7 +136,8 @@ export const ProposalList: FC = () => {
           size="sm"
           variant="secondary"
         >
-          {t('loadMore')} <DownloadIcon className="inline ml-1 w-5 h-5" />
+          {t('button.loadMore')}{' '}
+          <DownloadIcon className="inline ml-1 w-5 h-5" />
         </Button>
       )}
     </>

@@ -10,11 +10,11 @@ interface InstallKeplrProps {
 
 export const InstallKeplr: FC<InstallKeplrProps> = ({ onClose }) => {
   const { t } = useTranslation()
-  const grafs = t('Need wallet to continue (long)').split('\n')
+  const grafs = t('info.keplrModalWalletExplanation').split('\n')
 
   return (
     <Modal onClose={onClose}>
-      <h1 className="header-text">{t('Need wallet to continue')}</h1>
+      <h1 className="header-text">{t('title.needWalletToContinue')}</h1>
       {grafs.map((graf) => (
         <p key={graf} className="mt-6 mb-6 body-text">
           {graf}
@@ -22,7 +22,7 @@ export const InstallKeplr: FC<InstallKeplrProps> = ({ onClose }) => {
       ))}
       <a href="https://www.keplr.app/" rel="noreferrer" target="_blank">
         <Button>
-          {t('Install Keplr')} <ChevronRightIcon className="w-4" />
+          {t('button.installKeplr')} <ChevronRightIcon className="w-4" />
         </Button>
       </a>
     </Modal>

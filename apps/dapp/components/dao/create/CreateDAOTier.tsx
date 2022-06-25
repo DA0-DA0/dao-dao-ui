@@ -85,8 +85,8 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               containerProps={{
                 className: clsx('grow', { 'ml-6': !showColorDotOnMember }),
               }}
-              name={t('tierName')}
-              tooltip={t('tierNameTooltip')}
+              name={t('form.tierNameTitle')}
+              tooltip={t('form.tierNameTooltip')}
             />
 
             <div className="flex flex-row grow gap-4 items-center">
@@ -102,7 +102,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               <TextInput
                 error={errors.tiers?.[tierIndex]?.name}
                 fieldName={`tiers.${tierIndex}.name`}
-                placeholder={t('Tier name') + '...'}
+                placeholder={t('form.tierNameTitle') + '...'}
                 register={register}
                 validation={[validateRequired]}
               />
@@ -118,12 +118,12 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
         <div className="grow">
           <div className="flex flex-col gap-1">
             <InputLabel
-              name={t('tierVotingWeight', {
+              name={t('form.tierVotingWeight', {
                 context: governanceTokenEnabled
                   ? 'tokenBased'
                   : 'membershipBased',
               })}
-              tooltip={t('tierVotingWeightPrompt', {
+              tooltip={t('form.tierVotingWeightPrompt', {
                 context: governanceTokenEnabled
                   ? 'tokenBased'
                   : 'membershipBased',
@@ -176,7 +176,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
 
       <InputLabel
         containerProps={{ className: 'mt-4 mb-1' }}
-        name={t('members', { count: 100 })}
+        name={t('title.members')}
       />
       <div className="flex flex-col gap-2 items-stretch">
         {members.map(({ id }, idx) => (
@@ -193,7 +193,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
             onClick={() => appendMember({ address: '' })}
             variant="secondary"
           >
-            {t('Add member')}
+            {t('button.addMember')}
           </Button>
           {remove && (
             <Button
@@ -254,7 +254,7 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
             containerClassName="grow"
             error={errors.tiers?.[tierIndex]?.members?.[memberIndex]?.address}
             fieldName={`tiers.${tierIndex}.members.${memberIndex}.address`}
-            placeholder={t('Member address placeholder')}
+            placeholder={t('form.membersAddress')}
             register={register}
             validation={[validateAddress, validateRequired]}
           />
@@ -267,12 +267,12 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
 
       {govTokens !== undefined && (
         <TooltipIcon
-          label={t('tierMemberGovTokenAllocation', {
+          label={t('info.tierMemberGovTokenAllocationTooltip', {
             tokens: govTokens.toLocaleString(undefined, {
               maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
             }),
             tokenSymbol:
-              newDAO.governanceTokenOptions.newInfo.symbol || t('token'),
+              newDAO.governanceTokenOptions.newInfo.symbol || t('info.token'),
           })}
         />
       )}
