@@ -1,5 +1,4 @@
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 
@@ -12,7 +11,8 @@ export const useAddToken = () => {
   const addToken = useMemo(
     () =>
       // Can only add tokens on mainnet.
-      CHAIN_ID === ChainInfoID.Juno1
+      // TODO: Change back to ChainInfoID.Juno1 when using @noahsaso/cosmodal again
+      CHAIN_ID === 'juno-1'
         ? async (address: string) => {
             const keplr = await getKeplrFromWindow()
             if (keplr && (await suggestToken(keplr, address))) {
