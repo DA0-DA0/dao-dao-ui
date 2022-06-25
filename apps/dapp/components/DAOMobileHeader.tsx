@@ -31,7 +31,7 @@ const DAOMobileHeaderInternal: FC = () => {
           setUnpinned(coreAddress)
         } else {
           setPinned(coreAddress)
-          governanceTokenAddress && addToken(governanceTokenAddress)
+          governanceTokenAddress && addToken?.(governanceTokenAddress)
         }
       }}
       pinned={pinned}
