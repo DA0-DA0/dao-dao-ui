@@ -21,11 +21,8 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw-core'
-import {
-  refreshWalletBalancesIdAtom,
-  signingCosmWasmClientAtom,
-} from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
+import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -56,7 +53,7 @@ export const executeClient = selectorFamily<
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientSelector)
       if (!client) return
 
       return new ExecuteClient(client, sender, contractAddress)
