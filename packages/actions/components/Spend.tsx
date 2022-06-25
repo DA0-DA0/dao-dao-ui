@@ -1,6 +1,6 @@
 import { Coin } from '@cosmjs/stargate'
 import Emoji from 'a11y-react-emoji'
-import { useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { useTranslation } from '@dao-dao/i18n'
@@ -14,7 +14,6 @@ import {
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
@@ -42,56 +41,92 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   options: { nativeBalances, cw20Balances },
 }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } = useFormContext()
+  const { register, watch, setValue, setError, clearErrors } = useFormContext()
 
   const spendAmount = watch(getFieldName('amount'))
   const spendDenom = watch(getFieldName('denom'))
 
-  const validatePossibleSpend = (
-    id: string,
-    amount: string
-  ): string | boolean => {
-    const native = nativeBalances.find(({ denom }) => denom === id)
-    if (native) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.amount,
-        NATIVE_DECIMALS
-      )
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        NATIVE_DECIMALS
-      )
-      return (
-        Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the treasury (${humanReadableAmount} ${nativeTokenLabel(
-          id
-        )}).`
-      )
+  const validatePossibleSpend = useCallback(
+    (id: string, amount: string): string | boolean => {
+      const native = nativeBalances.find(({ denom }) => denom === id)
+      if (native) {
+        const microAmount = convertDenomToMicroDenomWithDecimals(
+          amount,
+          NATIVE_DECIMALS
+        )
+        return (
+          Number(microAmount) <= Number(native.amount) ||
+          t('cantSpendMoreThanTreasury', {
+            amount: convertMicroDenomToDenomWithDecimals(
+              native.amount,
+              NATIVE_DECIMALS
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: NATIVE_DECIMALS,
+            }),
+            tokenSymbol: nativeTokenLabel(id),
+          })
+        )
+      }
+      const cw20 = cw20Balances.find(({ address }) => address === id)
+      if (cw20) {
+        const microAmount = convertDenomToMicroDenomWithDecimals(
+          amount,
+          cw20.info.decimals
+        )
+        return (
+          Number(microAmount) <= Number(cw20.balance) ||
+          t('cantSpendMoreThanTreasury', {
+            amount: convertMicroDenomToDenomWithDecimals(
+              cw20.balance,
+              cw20.info.decimals
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: cw20.info.decimals,
+            }),
+            tokenSymbol: cw20.info.symbol,
+          })
+        )
+      }
+      // If there are no native tokens in the treasury the native balances
+      // query will return an empty list.
+      if (id === NATIVE_DENOM) {
+        return t('cantSpendMoreThanTreasury', {
+          amount: 0,
+          tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+        })
+      }
+      return 'Unrecognized denom.'
+    },
+    [cw20Balances, nativeBalances, t]
+  )
+
+  // Update amount+denom combo error each time either field is updated
+  // instead of setting errors individually on each field. Since we only
+  // show one or the other and can't detect which error is newer, this
+  // would lead to the error not updating if amount set an error and then
+  // denom was changed.
+  useEffect(() => {
+    if (!spendDenom || !spendAmount) {
+      clearErrors(getFieldName('_error'))
+      return
     }
-    const cw20 = cw20Balances.find(({ address }) => address === id)
-    if (cw20) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        cw20.balance,
-        cw20.info.decimals
-      )
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        cw20.info.decimals
-      )
-      return (
-        Number(microAmount) <= Number(cw20.balance) ||
-        `Can't spend more tokens than are in the treasury (${humanReadableAmount} $${cw20.info.symbol}).`
-      )
+
+    const validation = validatePossibleSpend(spendDenom, spendAmount)
+    if (validation === true) {
+      clearErrors(getFieldName('_error'))
+    } else if (typeof validation === 'string') {
+      setError(getFieldName('_error'), {
+        type: 'custom',
+        message: validation,
+      })
     }
-    // If there are no native tokens in the treasury the native balances
-    // query will return an empty list.
-    if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the treasury (0 ${convertDenomToHumanReadableDenom(
-        NATIVE_DENOM
-      )}).`
-    }
-    return 'Unrecognized denom.'
-  }
+  }, [
+    spendAmount,
+    spendDenom,
+    setError,
+    clearErrors,
+    validatePossibleSpend,
+    getFieldName,
+  ])
 
   const amountDecimals = useMemo(
     () =>
@@ -133,11 +168,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             register={register}
             sizing="auto"
             step={1 / 10 ** amountDecimals}
-            validation={[
-              validateRequired,
-              validatePositive,
-              (amount: string) => validatePossibleSpend(spendDenom, amount),
-            ]}
+            validation={[validateRequired, validatePositive]}
           />
 
           <SelectInput
@@ -146,9 +177,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             error={errors?.denom}
             fieldName={getFieldName('denom')}
             register={register}
-            validation={[
-              (denom: string) => validatePossibleSpend(denom, spendAmount),
-            ]}
           >
             {nativeBalances.map(({ denom }) => (
               <option key={denom} value={denom}>
@@ -179,8 +207,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       </div>
 
       <div className="flex flex-col gap-2">
-        <InputErrorMessage error={errors?.amount ?? errors?.denom} />
+        <InputErrorMessage error={errors?.amount} />
+        <InputErrorMessage error={errors?.denom} />
         <InputErrorMessage error={errors?.to} />
+        <InputErrorMessage error={errors?._error} />
       </div>
     </ActionCard>
   )

@@ -1,13 +1,13 @@
 import { Coin } from '@cosmjs/stargate'
 import { XIcon } from '@heroicons/react/solid'
-import { ComponentProps, FC } from 'react'
+import { ComponentProps, FC, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { useTranslation } from '@dao-dao/i18n'
 import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
@@ -30,41 +30,74 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   options: { nativeBalances },
   className,
 }) => {
-  const { register, setValue, watch } = useFormContext()
+  const { t } = useTranslation()
+  const { register, setValue, watch, setError, clearErrors } = useFormContext()
 
   const watchAmount = watch(getFieldName('amount'))
   const watchDenom = watch(getFieldName('denom'))
 
-  const validatePossibleSpend = (
-    id: string,
-    amount: string
-  ): string | boolean => {
-    const native = nativeBalances.find(({ denom }) => denom === id)
-    if (native) {
-      const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
-        native.amount,
-        NATIVE_DECIMALS
-      )
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        NATIVE_DECIMALS
-      )
-      return (
-        Number(microAmount) <= Number(native.amount) ||
-        `Can't spend more tokens than are in the treasury (${humanReadableAmount} ${nativeTokenLabel(
-          id
-        )}).`
-      )
+  const validatePossibleSpend = useCallback(
+    (id: string, amount: string): string | boolean => {
+      const native = nativeBalances.find(({ denom }) => denom === id)
+      if (native) {
+        const microAmount = convertDenomToMicroDenomWithDecimals(
+          amount,
+          NATIVE_DECIMALS
+        )
+        return (
+          Number(microAmount) <= Number(native.amount) ||
+          t('cantSpendMoreThanTreasury', {
+            amount: convertMicroDenomToDenomWithDecimals(
+              native.amount,
+              NATIVE_DECIMALS
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: NATIVE_DECIMALS,
+            }),
+            tokenSymbol: nativeTokenLabel(id),
+          })
+        )
+      }
+      // If there are no native tokens in the treasury the native balances
+      // query will return an empty list.
+      if (id === NATIVE_DENOM) {
+        return t('cantSpendMoreThanTreasury', {
+          amount: 0,
+          tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+        })
+      }
+      return 'Unrecognized denom.'
+    },
+    [nativeBalances, t]
+  )
+
+  // Update amount+denom combo error each time either field is updated
+  // instead of setting errors individually on each field. Since we only
+  // show one or the other and can't detect which error is newer, this
+  // would lead to the error not updating if amount set an error and then
+  // denom was changed.
+  useEffect(() => {
+    if (!watchAmount || !watchDenom) {
+      clearErrors(getFieldName('_error'))
+      return
     }
-    // If there are no native tokens in the treasury the native balances
-    // query will return an empty list.
-    if (id === NATIVE_DENOM) {
-      return `Can't spend more tokens than are in the treasury (0 ${convertDenomToHumanReadableDenom(
-        NATIVE_DENOM
-      )}).`
+
+    const validation = validatePossibleSpend(watchDenom, watchAmount)
+    if (validation === true) {
+      clearErrors(getFieldName('_error'))
+    } else if (typeof validation === 'string') {
+      setError(getFieldName('_error'), {
+        type: 'custom',
+        message: validation,
+      })
     }
-    return 'Unrecognized denom.'
-  }
+  }, [
+    setError,
+    clearErrors,
+    validatePossibleSpend,
+    getFieldName,
+    watchAmount,
+    watchDenom,
+  ])
 
   return (
     <div className={className}>
@@ -88,11 +121,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           register={register}
           sizing="auto"
           step={1 / 10 ** NATIVE_DECIMALS}
-          validation={[
-            validateRequired,
-            validatePositive,
-            (amount: string) => validatePossibleSpend(watchDenom, amount),
-          ]}
+          validation={[validateRequired, validatePositive]}
         />
 
         <SelectInput
@@ -101,9 +130,6 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           error={errors?.denom}
           fieldName={getFieldName('denom')}
           register={register}
-          validation={[
-            (denom: string) => validatePossibleSpend(denom, watchAmount),
-          ]}
         >
           {nativeBalances.map(({ denom }) => (
             <option key={denom} value={denom}>
@@ -119,7 +145,9 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
         )}
       </div>
 
-      <InputErrorMessage error={errors?.amount ?? errors?.denom} />
+      <InputErrorMessage error={errors?.amount} />
+      <InputErrorMessage error={errors?.denom} />
+      <InputErrorMessage error={errors?._error} />
     </div>
   )
 }
