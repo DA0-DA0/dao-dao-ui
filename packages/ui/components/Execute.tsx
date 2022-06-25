@@ -27,15 +27,15 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               className="mr-1 text-2xl"
               onClick={() => setPartyMode(true)}
             >
-              <Emoji label={t('party')} symbol="🎉" />
+              <Emoji label={t('emoji.party')} symbol="🎉" />
             </button>
-            <p className="primary-text">{t('passed')}</p>
+            <p className="primary-text">{t('info.passed')}</p>
             <p className="secondary-text">
-              {t('messages', { count: messages })}
+              {t('info.numMessages', { count: messages })}
             </p>
           </div>
           <Button loading={loading} onClick={onExecute}>
-            {t('execute')} <Airplane stroke="currentColor" />
+            {t('button.execute')} <Airplane stroke="currentColor" />
           </Button>
         </div>
       )}
@@ -59,11 +59,11 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               }}
               type="button"
             >
-              <Emoji label={t('rocketShip')} symbol="🚀" />
+              <Emoji label={t('emoji.rocketShip')} symbol="🚀" />
             </button>
-            <p className="primary-text">{t('executing')}</p>
+            <p className="primary-text">{t('info.executing')}</p>
             <p className="secondary-text">
-              {t('messages', { count: messages })}
+              {t('info.numMessages', { count: messages })}
             </p>
           </div>
           <div className="flex gap-2">
@@ -100,7 +100,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               loading={loading}
               onClick={onExecute}
             >
-              {t('execute')} <Airplane stroke="currentColor" />
+              {t('button.execute')} <Airplane stroke="currentColor" />
             </Button>
           </div>
         </div>

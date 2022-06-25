@@ -39,12 +39,12 @@ export const InnerContractProposalsDisplay: FC = () => {
 
   const tooltip = isMember
     ? (isMac ? '⌘' : '⌃') + '⇧P'
-    : t('You must have voting power to create a proposal')
+    : t('error.mustBeMemberToCreateProposal')
 
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2 className="primary-text">{t('proposals', { count: 100 })}</h2>
+        <h2 className="primary-text">{t('title.proposals')}</h2>
 
         <Link
           className={clsx({ 'pointer-events-none': isMember })}
@@ -53,7 +53,7 @@ export const InnerContractProposalsDisplay: FC = () => {
           <a>
             <Tooltip label={tooltip}>
               <Button disabled={!isMember} size="sm">
-                {t('createAProposal')}
+                {t('button.createAProposal')}
               </Button>
             </Tooltip>
           </a>
@@ -75,7 +75,7 @@ export const ContractProposalsDisplay: FC = () => {
     <SuspenseLoader
       fallback={
         <div className="flex justify-between items-center">
-          <h2 className="primary-text">{t('proposals', { count: 100 })}</h2>
+          <h2 className="primary-text">{t('title.proposals')}</h2>
           <Loader />
         </div>
       }

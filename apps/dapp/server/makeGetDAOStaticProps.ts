@@ -79,7 +79,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       return {
         props: {
           ...i18nProps,
-          title: serverT('error.DAONotFound'),
+          title: serverT('error.daoNotFound'),
           description: '',
         },
       }

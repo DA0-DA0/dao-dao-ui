@@ -137,9 +137,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('money')} symbol="💵" />}
+      emoji={<Emoji label={t('emoji.money')} symbol="💵" />}
       onRemove={onRemove}
-      title={t('spend')}
+      title={t('title.spend')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">

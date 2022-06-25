@@ -72,7 +72,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
           onClick={setShowStakingMode}
           variant="secondary"
         >
-          {t('manage')}
+          {t('button.manage')}
         </Button>
       </div>
     </>
@@ -119,7 +119,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         </div>
 
         <p className="text-base text-secondary">
-          <Trans i18nKey="percentOfAllVotingPower">
+          <Trans i18nKey="info.percentOfAllVotingPower">
             {{
               percent: formatPercentOf100(
                 totalStakedValue === 0
@@ -149,7 +149,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
           onClick={setShowStakingMode}
           variant="secondary"
         >
-          {t('manage')}
+          {t('button.manage')}
         </Button>
       </div>
     </>

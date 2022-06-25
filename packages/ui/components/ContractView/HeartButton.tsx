@@ -30,7 +30,7 @@ export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
         <HeartOutline className="inline mr-1 w-[20px]" />
       )}
       <span className="hidden md:block">
-        {pinned ? t('favorited') : t('favorite')}
+        {pinned ? t('info.favorited') : t('info.favorite')}
       </span>
     </button>
   )

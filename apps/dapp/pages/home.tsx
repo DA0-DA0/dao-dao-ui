@@ -179,8 +179,8 @@ const InnerHome: FC = () => {
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
               <div className="flex gap-1 items-center">
                 <DocumentTextIcon className="inline w-4" />
-                {t('openProposals')}
-                <TooltipIcon label={t('openProposalsTooltip')} />
+                {t('title.openProposals')}
+                <TooltipIcon label={t('info.openProposalsTooltip')} />
               </div>
             </h2>
             <div className="flex flex-col gap-2 md:gap-1">
@@ -206,11 +206,11 @@ const InnerHome: FC = () => {
             <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
               <div className="flex gap-1 items-center">
                 <HeartIcon className="inline w-4" />
-                {t('favorited')}
+                {t('info.favorited')}
               </div>
               <Link href="/dao/create" passHref>
                 <Button size="sm">
-                  <PlusIcon className="w-4 h-4" /> {t('create')}
+                  <PlusIcon className="w-4 h-4" /> {t('button.create')}
                 </Button>
               </Link>
             </h2>
@@ -225,13 +225,13 @@ const InnerHome: FC = () => {
         <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
           <div className="flex gap-1 items-center">
             <SparklesIcon className="inline w-4 " />
-            {t('featured')}
+            {t('info.featured')}
           </div>
           {/* Show create button here if no pinned DAOs. */}
           {pinnedAddresses.length === 0 && (
             <Link href="/dao/create" passHref>
               <Button size="sm">
-                <PlusIcon className="w-4 h-4" /> {t('create')}
+                <PlusIcon className="w-4 h-4" /> {t('button.create')}
               </Button>
             </Link>
           )}

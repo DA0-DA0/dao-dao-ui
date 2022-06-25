@@ -158,13 +158,15 @@ const InnerProposalCreate = () => {
           <Breadcrumbs
             className="mb-6"
             crumbs={[
-              ['/home', t('home')],
+              ['/home', t('title.home')],
               [`/dao/${coreAddress}`, name],
-              [router.asPath, t('createAProposal')],
+              [router.asPath, t('title.createAProposal')],
             ]}
           />
 
-          <h2 className="mb-6 font-medium lg:hidden">{t('createAProposal')}</h2>
+          <h2 className="mb-6 font-medium lg:hidden">
+            {t('title.createAProposal')}
+          </h2>
 
           <SuspenseLoader fallback={<Loader />}>
             <CreateProposalForm
@@ -177,18 +179,20 @@ const InnerProposalCreate = () => {
         </div>
 
         <div className="flex-1">
-          <h2 className="mb-4 font-medium text-medium">{t('addresses')}</h2>
+          <h2 className="mb-4 font-medium text-medium">
+            {t('title.addresses')}
+          </h2>
 
           <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
-            <p className="font-mono text-sm text-tertiary">
-              {t('daoTreasury')}
-            </p>
+            <p className="font-mono text-sm text-tertiary">{t('info.title')}</p>
             <div className="col-span-2">
               <CopyToClipboard value={coreAddress} />
             </div>
           </div>
 
-          <h2 className="mb-4 font-medium text-medium">{t('proposalInfo')}</h2>
+          <h2 className="mb-4 font-medium text-medium">
+            {t('title.proposalInfo')}
+          </h2>
           <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
         </div>
       </div>
@@ -219,5 +223,5 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps = makeGetDAOStaticProps((_, t) => ({
-  followingTitle: t('createAProposal'),
+  followingTitle: t('title.createAProposal'),
 }))

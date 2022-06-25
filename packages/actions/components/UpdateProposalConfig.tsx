@@ -47,12 +47,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('gear')} symbol="⚙️" />}
+      emoji={<Emoji label={t('emoji.gear')} symbol="⚙️" />}
       onRemove={onRemove}
-      title={t('updateVotingConfig')}
+      title={t('form.updateVotingConfigTitle')}
     >
       <p className="mb-3 max-w-prose secondary-text">
-        <Trans i18nKey="updateVotingConfigDescription">
+        <Trans i18nKey="form.updateVotingConfigDescription">
           This will update the voting configuration for this DAO. A bad
           configuration can lock the DAO or create unexpected voting outcomes.
           Take care. If you have questions, please feel free to ask in the{' '}
@@ -71,12 +71,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
         {governanceTokenSymbol !== undefined && (
           <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md md:w-min">
             <div className="flex flex-row gap-2">
-              <Tooltip label={t('requireProposalDepositExplanation')}>
+              <Tooltip label={t('form.requireProposalDepositTooltip')}>
                 <InformationCircleIcon className="w-4 h-4 secondary-text" />
               </Tooltip>
 
               <p className="w-max secondary-text">
-                {t('requireProposalDeposit')}
+                {t('form.requireProposalDepositTitle')}
               </p>
             </div>
             <FormSwitch
@@ -90,11 +90,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
         )}
         <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md md:w-min">
           <div className="flex flex-row gap-2">
-            <Tooltip label={t('onlyMembersExecuteExplanation')}>
+            <Tooltip label={t('form.onlyMembersExecuteTooltip')}>
               <InformationCircleIcon className="w-4 h-4 secondary-text" />
             </Tooltip>
 
-            <p className="w-max secondary-text">{t('onlyMembersExecute')}</p>
+            <p className="w-max secondary-text">
+              {t('form.onlyMembersExecuteTitle')}
+            </p>
           </div>
           <FormSwitch
             fieldName={getFieldName('onlyMembersExecute')}
@@ -110,14 +112,19 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex flex-row flex-wrap gap-4 justify-between p-3 rounded-lg border border-default md:gap-1">
           <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
             <h3 className="primary-text">
-              <Emoji label={t('money')} symbol="💵" /> {t('proposalDeposit')}
+              <Emoji label={t('emoji.money')} symbol="💵" />{' '}
+              {t('form.proposalDepositTitle')}
             </h3>
-            <p className="secondary-text">{t('proposalDepositExplanation')}</p>
+            <p className="secondary-text">
+              {t('form.proposalDepositDescription')}
+            </p>
           </div>
           <div className="flex flex-col grow gap-1">
             <div className="flex flex-col gap-1">
               <InputLabel
-                name={`${t('proposalDeposit')} ($${governanceTokenSymbol})`}
+                name={`${t(
+                  'form.proposalDepositTitle'
+                )} ($${governanceTokenSymbol})`}
               />
               <NumberInput
                 disabled={readOnly}
@@ -131,12 +138,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </div>
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-2">
-                <Tooltip label={t('refundFailedProposalsExplanation')}>
+                <Tooltip label={t('form.refundFailedProposalsTooltip')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 
                 <p className="w-max secondary-text">
-                  {t('refundFailedProposals')}
+                  {t('form.refundFailedProposalsTitle')}
                 </p>
               </div>
               <FormSwitch
@@ -153,9 +160,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('chart')} symbol="📊" /> {t('passingThreshold')}
+            <Emoji label={t('emoji.chart')} symbol="📊" />{' '}
+            {t('form.passingThresholdTitle')}
           </h3>
-          <p className="secondary-text">{t('passingThresholdExplanation')}</p>
+          <p className="secondary-text">
+            {t('form.passingThresholdDescription')}
+          </p>
         </div>
         <div className="flex flex-row flex-wrap grow gap-2 justify-center">
           {percentageThresholdSelected && (
@@ -188,7 +198,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={getFieldName('thresholdType')}
             register={register}
           >
-            <option value="majority">{t('majority')}</option>
+            <option value="majority">{t('info.majority')}</option>
             <option value="%">%</option>
           </SelectInput>
         </div>
@@ -196,9 +206,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('people')} symbol="👥" /> {t('quorum')}
+            <Emoji label={t('emoji.people')} symbol="👥" />{' '}
+            {t('form.quorumTitle')}
           </h3>
-          <p className="secondary-text">{t('quorumExplanation')}</p>
+          <p className="secondary-text">{t('form.quorumDescription')}</p>
         </div>
         <div className="flex flex-row flex-wrap grow gap-2 justify-center">
           {percentageQuorumSelected && (
@@ -231,7 +242,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={getFieldName('quorumType')}
             register={register}
           >
-            <option value="majority">{t('majority')}</option>
+            <option value="majority">{t('info.majority')}</option>
             <option value="%">%</option>
           </SelectInput>
         </div>
@@ -239,9 +250,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('clock')} symbol="⏰" /> {t('votingDuration')}
+            <Emoji label={t('emoji.clock')} symbol="⏰" />{' '}
+            {t('form.votingDurationTitle')}
           </h3>
-          <p className="secondary-text">{t('Voting duration description')}</p>
+          <p className="secondary-text">
+            {t('form.votingDurationDescription')}
+          </p>
         </div>
         <div className="flex flex-row flex-wrap grow gap-2 justify-center">
           <div className="flex flex-col gap-1">
@@ -272,11 +286,21 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={getFieldName('proposalDurationUnits')}
             register={register}
           >
-            <option value="weeks">{t('weeks')}</option>
-            <option value="days">{t('days')}</option>
-            <option value="hours">{t('hours')}</option>
-            <option value="minutes">{t('minutes')}</option>
-            <option value="seconds">{t('seconds')}</option>
+            <option value="weeks">
+              {t('unit.weeks', { count: proposalDuration })}
+            </option>
+            <option value="days">
+              {t('unit.days', { count: proposalDuration })}
+            </option>
+            <option value="hours">
+              {t('unit.hours', { count: proposalDuration })}
+            </option>
+            <option value="minutes">
+              {t('unit.minutes', { count: proposalDuration })}
+            </option>
+            <option value="seconds">
+              {t('unit.seconds', { count: proposalDuration })}
+            </option>
           </SelectInput>
         </div>
       </div>

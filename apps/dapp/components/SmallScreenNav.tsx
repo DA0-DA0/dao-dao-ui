@@ -51,12 +51,12 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
             className="flex gap-2 items-center p-2 w-full bg-primary rounded-lg link-text"
             onClick={() => setSearchVisible(true)}
           >
-            <SearchIcon className="w-4 h-4" /> {t('search')}
+            <SearchIcon className="w-4 h-4" /> {t('title.search')}
           </button>
 
           {pinnedAddresses.length > 0 && (
             <div className="mt-5 ml-1">
-              <h3 className="mb-2 font-mono caption-text">DAOs</h3>
+              <h3 className="mb-2 font-mono caption-text">{t('title.daos')}</h3>
               <SuspenseLoader
                 fallback={<Loader className="!justify-start ml-2" size={20} />}
               >

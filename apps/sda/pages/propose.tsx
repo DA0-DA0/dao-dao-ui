@@ -150,7 +150,9 @@ const InnerProposalCreate = () => {
   return (
     <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
       <div className="md:w-2/3">
-        <h2 className="mb-4 font-medium text-medium">{t('createAProposal')}</h2>
+        <h2 className="mb-4 font-medium text-medium">
+          {t('title.createAProposal')}
+        </h2>
 
         <SuspenseLoader fallback={<Loader />}>
           <CreateProposalForm
@@ -163,16 +165,20 @@ const InnerProposalCreate = () => {
       </div>
 
       <div className="flex-1">
-        <h2 className="mb-4 font-medium text-medium">{t('addresses')}</h2>
+        <h2 className="mb-4 font-medium text-medium">{t('title.addresses')}</h2>
 
         <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
-          <p className="font-mono text-sm text-tertiary">{t('daoTreasury')}</p>
+          <p className="font-mono text-sm text-tertiary">
+            {t('title.daoTreasury')}
+          </p>
           <div className="col-span-2">
             <CopyToClipboard value={DAO_ADDRESS} />
           </div>
         </div>
 
-        <h2 className="mb-4 font-medium text-medium">{t('proposalInfo')}</h2>
+        <h2 className="mb-4 font-medium text-medium">
+          {t('title.proposalInfo')}
+        </h2>
         <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
       </div>
     </div>
@@ -191,5 +197,5 @@ const ProposalCreatePage: NextPage<PageWrapperProps> = ({
 export default ProposalCreatePage
 
 export const getStaticProps = makeGetStaticProps((t) => ({
-  followingTitle: t('createAProposal'),
+  followingTitle: t('title.createAProposal'),
 }))

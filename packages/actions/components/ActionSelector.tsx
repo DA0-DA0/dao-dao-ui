@@ -101,7 +101,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
     >
       <SearchBar
         onChange={(event) => setFilter(event.target.value)}
-        placeholder={t('searchProposalActions')}
+        placeholder={t('title.proposalActions')}
         value={filter}
       />
 

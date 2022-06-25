@@ -85,7 +85,7 @@ const CreateDAOVotingPage: NextPage = () => {
 
     if (!tiersAreUntouched) return
 
-    setValue('tiers.0.name', t('defaultTierName'))
+    setValue('tiers.0.name', t('form.defaultTierName'))
     if (walletAddress) {
       setValue('tiers.0.members.0.address', walletAddress)
     }
@@ -151,11 +151,11 @@ const CreateDAOVotingPage: NextPage = () => {
               fieldName="governanceTokenOptions.type"
               options={[
                 {
-                  label: t('Create a token'),
+                  label: t('button.createAToken'),
                   value: GovernanceTokenType.New,
                 },
                 {
-                  label: t('Use existing token'),
+                  label: t('button.useExistingToken'),
                   value: GovernanceTokenType.Existing,
                 },
               ]}
@@ -169,7 +169,7 @@ const CreateDAOVotingPage: NextPage = () => {
                 <div className="flex flex-col gap-2 items-stretch">
                   <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch mb-4 sm:gap-4">
                     <div className="flex flex-col gap-2 justify-between items-start">
-                      <InputLabel mono name={t('Token image')} />
+                      <InputLabel mono name={t('form.tokenImage')} />
                       <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
@@ -181,13 +181,13 @@ const CreateDAOVotingPage: NextPage = () => {
                           watch={watch}
                         />
                         <p className="hidden text-disabled sm:block">
-                          {t('setAnImage')}
+                          {t('info.setAnImage')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={t('tickerSymbol')} />
+                      <InputLabel mono name={t('form.tokenSymbolTitle')} />
 
                       <div>
                         <div className="flex flex-row gap-2 items-center">
@@ -199,7 +199,7 @@ const CreateDAOVotingPage: NextPage = () => {
                               errors.governanceTokenOptions?.newInfo?.symbol
                             }
                             fieldName="governanceTokenOptions.newInfo.symbol"
-                            placeholder={t('tickerSymbolPlaceholder')}
+                            placeholder={t('form.tokenSymbolPlaceholder')}
                             register={register}
                             validation={[validateRequired, validateTokenSymbol]}
                           />
@@ -212,13 +212,16 @@ const CreateDAOVotingPage: NextPage = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={t('Governance token name')} />
+                      <InputLabel
+                        mono
+                        name={t('form.governanceTokenNameTitle')}
+                      />
 
                       <div>
                         <TextInput
                           error={errors.governanceTokenOptions?.newInfo?.name}
                           fieldName="governanceTokenOptions.newInfo.name"
-                          placeholder={t('Governance token placeholder')}
+                          placeholder={t('form.governanceTokenNamePlaceholder')}
                           register={register}
                           validation={[validateRequired]}
                         />
@@ -230,7 +233,7 @@ const CreateDAOVotingPage: NextPage = () => {
                   </div>
 
                   <div className="grid grid-cols-[2fr_3fr_auto] gap-x-4 gap-y-2 items-center">
-                    <p className="primary-text">{t('initialSupply')}</p>
+                    <p className="primary-text">{t('form.initialSupply')}</p>
 
                     <div className="pl-8">
                       <NumberInput
@@ -288,11 +291,11 @@ const CreateDAOVotingPage: NextPage = () => {
                       <p className="hidden sm:flex">
                         $
                         {watchedNewDAO.governanceTokenOptions.newInfo.symbol ||
-                          t('token')}
+                          t('info.token')}
                       </p>
                     </div>
 
-                    <p className="primary-text">{t('treasuryPercent')}</p>
+                    <p className="primary-text">{t('info.treasuryPercent')}</p>
 
                     <div className="pl-8">
                       <NumberInput
@@ -349,7 +352,7 @@ const CreateDAOVotingPage: NextPage = () => {
                     })}
                   >
                     {govTokenPercentsSumTo100
-                      ? t('treasuryBalanceDescription', {
+                      ? t('info.treasuryBalanceDescription', {
                           numberOfTokensMinted: govTokenInitialSupply,
                           memberPercent: formatPercentOf100(
                             govTokenMemberPercent
@@ -358,7 +361,7 @@ const CreateDAOVotingPage: NextPage = () => {
                             govTokenTreasuryPercent
                           ),
                         })
-                      : t('govTokenBalancesDoNotSumTo100', {
+                      : t('error.govTokenBalancesDoNotSumTo100', {
                           totalPercent: formatPercentOf100(
                             govTokenTreasuryPercent + govTokenMemberPercent
                           ),
@@ -367,7 +370,9 @@ const CreateDAOVotingPage: NextPage = () => {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="primary-text">{t('Token contract address')}</p>
+                  <p className="primary-text">
+                    {t('form.tokenContractAddressTitle')}
+                  </p>
 
                   <TextInput
                     error={
@@ -395,7 +400,9 @@ const CreateDAOVotingPage: NextPage = () => {
             GovernanceTokenType.New) && (
           <>
             <div className="flex flex-col gap-4 items-stretch">
-              {governanceTokenEnabled && <p>{t('Token distribution')}</p>}
+              {governanceTokenEnabled && (
+                <p>{t('form.tokenDistributionTitle')}</p>
+              )}
 
               {tiers.map(({ id }, idx) => (
                 <CreateDAOTier
@@ -431,7 +438,7 @@ const CreateDAOVotingPage: NextPage = () => {
                   }
                   variant="secondary"
                 >
-                  {t('Add tier')}
+                  {t('button.addTier')}
                 </Button>
 
                 <InputErrorMessage error={errors._tiersError} />
@@ -480,10 +487,10 @@ const CreateDAOVotingPage: NextPage = () => {
           <div className="flex flex-col gap-1">
             <InputLabel
               className="!body-text"
-              name={t('advancedVotingConfig')}
+              name={t('form.advancedVotingConfigTitle')}
             />
             <p className="caption-text">
-              {t('advancedVotingConfigDescription')}
+              {t('form.advancedVotingConfigDescription')}
             </p>
           </div>
         </div>
@@ -505,9 +512,9 @@ const CreateDAOVotingPage: NextPage = () => {
           containerClassName="flex flex-col gap-4"
           onClose={() => setShowAdvancedVotingConfigWarning(false)}
         >
-          <p className="header-text">{t('watchOut')}</p>
+          <p className="header-text">{t('title.watchOut')}</p>
 
-          <p className="body-text">{t('advancedVotingConfigWarning')}</p>
+          <p className="body-text">{t('info.advancedVotingConfigWarning')}</p>
 
           <a
             className="block underline"
@@ -515,7 +522,7 @@ const CreateDAOVotingPage: NextPage = () => {
             rel="noreferrer"
             target="_blank"
           >
-            {t('learnMore')}
+            {t('button.learnMore')}
           </a>
 
           <Button
@@ -525,7 +532,7 @@ const CreateDAOVotingPage: NextPage = () => {
               setShowAdvancedVotingConfigWarning(false)
             }}
           >
-            {t('iAcceptDanger')}
+            {t('button.iAcceptDanger')}
           </Button>
         </Modal>
       )}
@@ -535,10 +542,10 @@ const CreateDAOVotingPage: NextPage = () => {
           containerClassName="flex flex-col gap-4"
           onClose={() => setShowQuorumDisabledWarning(false)}
         >
-          <p className="header-text">{t('watchOut')}</p>
+          <p className="header-text">{t('title.watchOut')}</p>
 
           <p className="body-text">
-            {t('advancedQuorumDisabledConfigWarning')}
+            {t('info.advancedQuorumDisabledConfigWarning')}
           </p>
 
           <a
@@ -547,7 +554,7 @@ const CreateDAOVotingPage: NextPage = () => {
             rel="noreferrer"
             target="_blank"
           >
-            {t('learnMore')}
+            {t('button.learnMore')}
           </a>
 
           <Button
@@ -560,7 +567,7 @@ const CreateDAOVotingPage: NextPage = () => {
               setShowQuorumDisabledWarning(false)
             }}
           >
-            {t('iAcceptDanger')}
+            {t('button.iAcceptDanger')}
           </Button>
         </Modal>
       )}

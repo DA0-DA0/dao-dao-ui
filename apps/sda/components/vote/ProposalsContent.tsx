@@ -90,7 +90,7 @@ export const ProposalsContent = () => {
         <>
           <h2 className="flex gap-2 items-center mt-8 caption-text">
             <ChevronDownIcon className="w-4 h-4" />{' '}
-            {t('previousProposalModule')}
+            {t('title.previousProposalModule')}
           </h2>
           <div className="mt-4 space-y-1">
             {oldModuleResponses.map((response) => (

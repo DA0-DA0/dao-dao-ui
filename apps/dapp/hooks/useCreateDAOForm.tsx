@@ -65,11 +65,12 @@ export interface DAOFormPage {
   validate?: ValidateDAOFormPage
 }
 
+// i18n keys
 export enum CreateDAOSubmitLabel {
-  Back = 'Back',
-  Continue = 'Continue',
-  Review = 'Review',
-  CreateDAO = 'Create DAO',
+  Back = 'button.back',
+  Continue = 'button.continue',
+  Review = 'button.review',
+  CreateDAO = 'button.createDAO',
 }
 
 export const useCreateDAOForm = (pageIndex: number) => {
@@ -103,7 +104,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
   const tiersAreUntouched =
     watchedNewDAO.tiers.length === DefaultNewDAO.tiers.length &&
     (watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name ||
-      watchedNewDAO.tiers[0].name === t('defaultTierName')) &&
+      watchedNewDAO.tiers[0].name === t('form.defaultTierName')) &&
     watchedNewDAO.tiers[0].members.length ===
       DefaultNewDAO.tiers[0].members.length &&
     (watchedNewDAO.tiers[0].members[0].address ===
@@ -303,14 +304,14 @@ export const useCreateDAOFormPages: () => DAOFormPage[] = () => {
     () => [
       {
         href: '/dao/create',
-        title: t('Describe the DAO'),
+        title: t('title.describeTheDAO'),
         validate: ({ name, structure }) =>
           name.trim().length > 0 && structure !== undefined,
       },
       {
         href: '/dao/create/voting',
-        title: t('Configure voting'),
-        subtitle: t('Configure voting description'),
+        title: t('title.configureVoting'),
+        subtitle: t('info.configureVotingDescription'),
         validate: ({ tiers }, errors, clearErrors, setError) => {
           let valid = true
 
@@ -346,7 +347,7 @@ export const useCreateDAOFormPages: () => DAOFormPage[] = () => {
       },
       {
         href: '/dao/create/review',
-        title: t('Review and submit'),
+        title: t('title.reviewAndSubmit'),
       },
     ],
     [t]

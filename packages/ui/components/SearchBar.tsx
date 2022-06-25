@@ -30,7 +30,7 @@ export const SearchBar: FC<SearchBarProps> = ({
           'p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none',
           className
         )}
-        placeholder={t('search')}
+        placeholder={t('title.search')}
         type="text"
         {...props}
       />

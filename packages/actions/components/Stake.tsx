@@ -131,9 +131,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('box')} symbol="📤" />}
+      emoji={<Emoji label={t('emoji.box')} symbol="📤" />}
       onRemove={onRemove}
-      title={t('stake')}
+      title={t('title.stake')}
     >
       <div className="flex flex-row gap-4 mt-2">
         <SelectInput
@@ -202,7 +202,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       {stakeType === StakeType.Redelegate && (
         <>
-          <h3 className="mt-2 mb-1">{t('fromValidator')}</h3>
+          <h3 className="mt-2 mb-1">{t('form.fromValidator')}</h3>
           <div className="form-control">
             <AddressInput
               disabled={readOnly}
@@ -220,7 +220,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       )}
 
       <h3 className="mt-2 mb-1">
-        {stakeType === StakeType.Redelegate ? t('toValidator') : t('validator')}
+        {stakeType === StakeType.Redelegate
+          ? t('form.toValidator')
+          : t('form.validator')}
       </h3>
       <div className="form-control">
         <AddressInput
@@ -236,7 +238,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
         <InformationCircleIcon className="h-4" />
-        <p className="body-text">{t('actionInBeta')}</p>
+        <p className="body-text">{t('info.actionInBeta')}</p>
       </div>
     </ActionCard>
   )

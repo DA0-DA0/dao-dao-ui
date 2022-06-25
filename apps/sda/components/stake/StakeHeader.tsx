@@ -34,7 +34,7 @@ export const StakeHeaderLoader: FunctionComponent = () => {
       <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('daoTreasury')}
+            {t('title.daoTreasury')}
           </p>
 
           <div className="h-6 lg:h-7"></div>
@@ -44,7 +44,7 @@ export const StakeHeaderLoader: FunctionComponent = () => {
 
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('totalStaked')}
+            {t('title.totalStaked')}
           </p>
 
           <div className="h-6 lg:h-7"></div>
@@ -54,7 +54,7 @@ export const StakeHeaderLoader: FunctionComponent = () => {
 
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('aprReward')}
+            {t('title.aprReward')}
           </p>
 
           <div className="h-6 lg:h-7"></div>
@@ -100,7 +100,7 @@ export const StakeHeader: FunctionComponent = () => {
       <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
         <div className="w-24 h-24 bg-light rounded-full border border-default">
           <img
-            alt={t('logo')}
+            alt={t('info.logo')}
             className="w-full h-full"
             src={daoConfig.image_url ?? DEFAULT_IMAGE_URL}
           />
@@ -123,7 +123,7 @@ export const StakeHeader: FunctionComponent = () => {
       <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('daoTreasury')}
+            {t('title.daoTreasury')}
           </p>
 
           <p className="text-base lg:text-xl header-text">
@@ -141,7 +141,7 @@ export const StakeHeader: FunctionComponent = () => {
 
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('totalStaked')}
+            {t('title.totalStaked')}
           </p>
 
           <p className="text-base lg:text-xl header-text">
@@ -159,7 +159,7 @@ export const StakeHeader: FunctionComponent = () => {
 
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('aprReward')}
+            {t('title.aprReward')}
           </p>
 
           <p className="text-base lg:text-xl header-text">

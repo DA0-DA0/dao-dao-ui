@@ -86,7 +86,7 @@ const InnerStake = () => {
 
         <div className="flex flex-row gap-2 items-center text-lg title-text">
           <Pie color="rgb(var(--dark))" height={22} width={22} />
-          <p>{t('yourTokens')}</p>
+          <p>{t('title.yourTokens')}</p>
         </div>
 
         {connected ? (
@@ -94,7 +94,9 @@ const InnerStake = () => {
             <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
-                  {t('balanceUnstaked', { name: governanceTokenInfo.name })}
+                  {t('title.balanceUnstaked', {
+                    name: governanceTokenInfo.name,
+                  })}
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
@@ -109,11 +111,13 @@ const InnerStake = () => {
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
                   <span>
-                    {t('votingPowerStakedAndRewards', {
+                    {t('title.votingPowerStakedAndRewards', {
                       name: governanceTokenInfo.name,
                     })}
                   </span>
-                  <TooltipIcon label={t('autoCompoundStakingRewards')} />
+                  <TooltipIcon
+                    label={t('info.autoCompoundStakingRewardsTooltip')}
+                  />
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
@@ -130,7 +134,7 @@ const InnerStake = () => {
               fallback={
                 <>
                   <p className="text-lg title-text">
-                    {t('unstakingNamedTokens', {
+                    {t('title.unstakingNamedTokens', {
                       name: governanceTokenInfo.name,
                     })}
                   </p>

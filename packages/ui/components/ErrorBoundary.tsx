@@ -36,12 +36,14 @@ class ErrorBoundaryInner extends Component<
   }
 
   render() {
-    const { title = this.props.i18n?.t('unexpectedError') ?? '', children } =
-      this.props
+    const {
+      title = this.props.i18n?.t('error.unexpectedError') ?? '',
+      children,
+    } = this.props
 
     return this.state.hasError ? (
       <ErrorPage title={title}>
-        <p>{this.props.i18n?.t('checkInternetOrTryAgain')}</p>
+        <p>{this.props.i18n?.t('error.checkInternetOrTryAgain')}</p>
       </ErrorPage>
     ) : (
       children
