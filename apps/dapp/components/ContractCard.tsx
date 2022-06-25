@@ -11,8 +11,8 @@ import {
   CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
+  nativeTokenLabel,
 } from '@dao-dao/utils'
 
 interface ContractCardBaseProps {
@@ -65,7 +65,7 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
                   balance,
                   NATIVE_DECIMALS
                 )}{' '}
-                {convertDenomToHumanReadableDenom(NATIVE_DENOM)}
+                {nativeTokenLabel(NATIVE_DENOM)}
               </p>
             )}
             {proposals !== undefined && (
