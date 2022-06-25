@@ -14,11 +14,12 @@ import {
   VoteHooksResponse,
   VoteResponse,
 } from '../../../clients/cw-proposal-single'
+import { signingCosmWasmClientAtom } from '../../atoms'
 import {
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
 } from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -49,7 +50,7 @@ export const executeClient = selectorFamily<
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientSelector)
+      const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
       return new ExecuteClient(client, sender, contractAddress)
