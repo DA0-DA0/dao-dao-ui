@@ -96,7 +96,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
 
   return (
     <Modal
-      containerClassName="max-w-[96vw] w-[32rem] h-[38rem] max-h-[96vh] flex flex-col gap-2"
+      containerClassName="max-w-[96vw] w-[32rem] !h-[38rem] max-h-[96vh] flex flex-col gap-2"
       onClose={onClose}
     >
       <SearchBar
