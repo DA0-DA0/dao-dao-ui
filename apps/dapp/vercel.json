@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "src/pages/dao/[address]/index.tsx": {
+      "memory": 3008
+    }
+  }
+}
