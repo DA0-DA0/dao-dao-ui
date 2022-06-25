@@ -1,6 +1,6 @@
 {
   "functions": {
-    "dao/*": {
+    "dao/**": {
       "memory": 2048
     }
   }
