@@ -1,3 +1,4 @@
+import { GasPrice } from '@cosmjs/stargate'
 import {
   ChainInfoID,
   ConnectedWallet,
@@ -134,6 +135,16 @@ export const WalletProvider: FC = ({ children }) => (
         ? [WalletType.WalletConnectKeplr]
         : []),
     ]}
+    getSigningCosmWasmClientOptions={(chainInfo) => ({
+      gasPrice: GasPrice.fromString(
+        '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
+      ),
+    })}
+    getSigningStargateClientOptions={(chainInfo) => ({
+      gasPrice: GasPrice.fromString(
+        '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
+      ),
+    })}
     localStorageKey="connectedWalletId"
     preselectedWalletType={
       // If on a mobile device, default to WalletConnect.
