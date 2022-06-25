@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getAverageColor } from 'fast-average-color-node'
-import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 
@@ -33,7 +33,7 @@ import {
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
-import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
+import { makeGetDAOServerSideProps } from '@/server/makeGetDAOStaticProps'
 import { useAddToken } from '@/util'
 
 enum MobileMenuTabSelection {
@@ -248,16 +248,8 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
 
 export default DaoHomePage
 
-// Fallback to loading screen if page has not yet been statically generated.
-export const getStaticPaths: GetStaticPaths = () => ({
-  paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
-  fallback: 'blocking',
-})
-
-export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps(async ({ image_url }) => {
+export const getServerSideProps: GetServerSideProps<DaoHomePageProps> =
+  makeGetDAOServerSideProps(async ({ image_url }) => {
     if (!image_url) {
       return
     }
