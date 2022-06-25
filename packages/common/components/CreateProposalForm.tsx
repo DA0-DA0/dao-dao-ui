@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { ReactNode, useCallback, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -41,6 +41,7 @@ import {
 import {
   VotingModuleType,
   decodedMessagesString,
+  usePlatform,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -180,6 +181,33 @@ export const CreateProposalForm = ({
     [setShowSubmitErrorNote]
   )
 
+  // Detect if Mac for checking keypress.
+  const { isMac } = usePlatform()
+  // Keybinding to open add action selector.
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      // If already showing action selector, do nothing. This allows the
+      // keybinding to function normally when the selector is open. The
+      // escape keybinding can always be used to exit the modal.
+      if (showActionSelector) {
+        return
+      }
+
+      if ((!isMac && event.ctrlKey) || event.metaKey) {
+        if (event.key === 'a') {
+          event.preventDefault()
+          setShowActionSelector(true)
+        }
+      }
+    },
+    [isMac, showActionSelector]
+  )
+  // Setup search keypress.
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [handleKeyPress])
+
   return (
     <FormProvider {...formMethods}>
       <form
@@ -252,11 +280,12 @@ export const CreateProposalForm = ({
           <div className="mt-2">
             <Button
               disabled={loading}
-              onClick={() => setShowActionSelector((s) => !s)}
+              onClick={() => setShowActionSelector(true)}
               type="button"
               variant="secondary"
             >
-              <PlusIcon className="inline h-4" /> {t('Add an action')}
+              <PlusIcon className="inline h-4" /> {t('Add an action')}{' '}
+              <p className="ml-4 text-secondary">{isMac ? '⌘' : '⌃'}A</p>
             </Button>
           </div>
         </div>

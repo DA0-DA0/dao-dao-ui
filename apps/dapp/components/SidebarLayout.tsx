@@ -4,7 +4,7 @@ import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
-import { KeplrNotInstalledError, SITE_TITLE } from '@dao-dao/utils'
+import { KeplrNotInstalledError, SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
@@ -17,7 +17,6 @@ import {
   noKeplrAccountAtom,
   searchVisibleAtom,
 } from '@/atoms'
-import { usePlatform } from '@/hooks'
 
 export const SidebarLayoutInner: FC = ({ children }) => {
   const router = useRouter()
