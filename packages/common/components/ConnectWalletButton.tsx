@@ -32,7 +32,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
     address,
     name,
     nativeBalance,
-    isEmbeddedKeplrMobileWeb,
+    isMobileWeb,
     connected,
   } = useWallet()
 
@@ -52,7 +52,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
       className={clsx('w-full', className)}
       connected={connected}
       onConnect={connect}
-      onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
+      onDisconnect={isMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
@@ -64,7 +64,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
       className={clsx('w-full', className)}
       connected={connected}
       onConnect={connect}
-      onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
+      onDisconnect={isMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
       walletBalanceDenom={chainDenomHuman}
