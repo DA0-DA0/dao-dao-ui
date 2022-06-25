@@ -21,7 +21,7 @@ export const DaoTreasury: FC = () => {
         <TreasuryBalances />
       </SuspenseLoader>
 
-      {governanceTokenAddress && (
+      {governanceTokenAddress && !!addToken && (
         <Button
           className="mt-4"
           onClick={() => addToken(governanceTokenAddress)}

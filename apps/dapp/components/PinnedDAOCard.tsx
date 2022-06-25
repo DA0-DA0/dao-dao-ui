@@ -57,7 +57,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
           setUnpinned(address)
         } else {
           setPinned(address)
-          governanceTokenAddress && addToken(governanceTokenAddress)
+          governanceTokenAddress && addToken?.(governanceTokenAddress)
         }
       }}
       pinned={pinned}
