@@ -1,6 +1,6 @@
 {
   "functions": {
-    "src/isr/**/*": {
+    "dao/[address]": {
       "memory": 3008
     }
   }
