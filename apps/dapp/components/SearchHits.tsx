@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { connectHits } from 'react-instantsearch-dom'
 
 import { ContractCard } from './ContractCard'
@@ -38,24 +38,29 @@ const HitsInternal: FC<any> = ({ hits }) => {
   const router = useRouter()
   const [selection, setSelection] = useState(0)
   const [loadingId, setLoadingId] = useState<string>()
+  const listRef = useRef<HTMLDivElement>(null)
 
   const handleKeyPress = useCallback(
     (event) => {
       switch (event.key) {
         case 'ArrowLeft':
-          setSelection((selection) => selection - 1)
+          setSelection((selection) =>
+            selection - 1 < 0 ? hits.length - 1 : selection - 1
+          )
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowRight':
-          setSelection((selection) => selection + 1)
+          setSelection((selection) => (selection + 1) % hits.length)
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowUp':
-          setSelection((selection) => selection - 3)
+          setSelection((selection) =>
+            selection - 3 < 0 ? hits.length - 1 : selection - 3
+          )
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowDown':
-          setSelection((selection) => selection + 3)
+          setSelection((selection) => (selection + 3) % hits.length)
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'Enter':
@@ -79,9 +84,31 @@ const HitsInternal: FC<any> = ({ hits }) => {
     }
   }, [handleKeyPress])
 
+  // Ensure selected action is scrolled into view.
+  useEffect(() => {
+    const item = listRef.current?.children[selection]
+    if (!item) {
+      return
+    }
+
+    // Only scroll if not already visible.
+    const { bottom, top } = item.getBoundingClientRect()
+    const containerRect = listRef.current.getBoundingClientRect()
+    if (top >= containerRect.top && bottom <= containerRect.bottom) {
+      return
+    }
+
+    item.scrollIntoView({
+      behavior: 'smooth',
+    })
+  }, [selection])
+
   return (
     <>
-      <div className="flex overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start">
+      <div
+        className="flex overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start"
+        ref={listRef}
+      >
         {hits.map((hit: Hit, index: number) => (
           <HitCard
             key={hit.id}
