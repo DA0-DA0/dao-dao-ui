@@ -6,8 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "turbo run build --continue",
+    "dev": "yarn dapp dev",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue",
     "test": "turbo run test",

@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
@@ -5,7 +6,6 @@ import {
   Cw20BaseSelectors,
   CwCoreSelectors,
   nativeBalancesSelector,
-  useWallet,
 } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'

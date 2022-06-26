@@ -1,9 +1,10 @@
+import { useWalletManager } from '@noahsaso/cosmodal'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
+import { WalletProvider, mountedInBrowserAtom } from '@dao-dao/state'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { BetaWarningModal } from './BetaWarning'
@@ -31,7 +32,7 @@ export const SidebarLayoutInner: FC = ({ children }) => {
   const [searchVisible, setSearchVisible] = useRecoilState(searchVisibleAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const { error } = useWallet()
+  const { error } = useWalletManager()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&

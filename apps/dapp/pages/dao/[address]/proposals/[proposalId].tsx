@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
@@ -12,7 +13,6 @@ import {
   useGovernanceTokenInfo,
   useProposalInfo,
   useProposalModule,
-  useWallet,
 } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {

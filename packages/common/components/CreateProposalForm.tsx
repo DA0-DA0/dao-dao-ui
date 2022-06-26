@@ -1,4 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
+import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
@@ -25,7 +26,6 @@ import {
   CwCoreSelectors,
   useProposalModule,
   useVotingModule,
-  useWallet,
 } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {

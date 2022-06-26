@@ -1,6 +1,7 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 
-import { useGovernanceTokenInfo, useWallet } from '@dao-dao/state'
+import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   VotingModuleType,

@@ -3122,10 +3122,10 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.1.6.tgz#a350caf42975e7197b24b495b8d764eec7e6a36e"
   integrity sha512-4ZEwiRuZEicXhXqmhw3+de8Z4EpOLQj/gp+D9fFWo6ii6W1kBkNNvvEx4A90ugppu+74pT1lIJnOuz3A9oQeJA==
 
-"@noahsaso/cosmodal@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.5.0.tgz#e5b7ad0166f628afafb49387fa0bfadd8e48361a"
-  integrity sha512-r1A91zXgR+M4JVz5E7TkJN5eDb85Cd9kCUJKV50P/041EPIMbmpopt9PVX774uuRzl7EWxMfrcu2TeBXa+sQSQ==
+"@noahsaso/cosmodal@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.5.1.tgz#c353fc695d18e46c063394370ee05b1152fa6259"
+  integrity sha512-a+IpYMNzhqPcQf1T2Th28VDf1WoG6PeGHXRIwvDQJLVx+2pcsk4Bo4eZNriSWvFdOqom4KHezWZrAXcM7ckI8Q==
   dependencies:
     "@cosmjs/cosmwasm-stargate" "^0.28.9"
     "@cosmjs/stargate" "^0.28.9"

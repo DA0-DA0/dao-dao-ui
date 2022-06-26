@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -6,7 +7,6 @@ import {
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
-  useWallet,
 } from '@dao-dao/state'
 import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
 import { claimAvailable } from '@dao-dao/utils'

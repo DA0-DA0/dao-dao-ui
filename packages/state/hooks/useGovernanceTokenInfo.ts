@@ -1,10 +1,10 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
   Cw20StakedBalanceVotingSelectors,
   tokenUSDPriceSelector,
-  useWallet,
 } from '@dao-dao/state'
 import { VotingModuleType } from '@dao-dao/utils'
 

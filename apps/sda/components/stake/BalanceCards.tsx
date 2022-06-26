@@ -1,11 +1,8 @@
+import { useWalletManager } from '@noahsaso/cosmodal'
 import { FunctionComponent } from 'react'
 
 import { Trans, useTranslation } from '@dao-dao/i18n'
-import {
-  useGovernanceTokenInfo,
-  useStakingInfo,
-  useWallet,
-} from '@dao-dao/state'
+import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -24,7 +21,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
   const { t } = useTranslation()
-  const { connected } = useWallet()
+  const { connected } = useWalletManager()
   const {
     governanceTokenInfo,
     walletBalance: _unstakedBalance,
@@ -83,7 +80,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
   const { t } = useTranslation()
-  const { connected } = useWallet()
+  const { connected } = useWalletManager()
   const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
     fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
   })
