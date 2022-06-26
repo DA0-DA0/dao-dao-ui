@@ -6,10 +6,10 @@ import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from '@dao-dao/i18n'
 import { useVotingModule } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
-import { usePlatform } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from './DAOPageWrapper'
 import { ProposalList } from './proposals/ProposalList'
+import { usePlatform } from '@/hooks'
 
 export const InnerContractProposalsDisplay: FC = () => {
   const { t } = useTranslation()

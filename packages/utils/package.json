@@ -14,8 +14,9 @@
   "prettier": "@dao-dao/config/prettier",
   "license": "MIT",
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.28.9",
+    "@noahsaso/cosmodal": "^0.5.0",
     "ajv": "^8.11.0",
-    "cosmodal": "https://github.com/NoahSaso/cosmodal#7abc9d43f31693f56d3809dc7a87eeedce3c3ca2",
     "react": "^18.1.0"
   }
 }

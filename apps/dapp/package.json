@@ -15,10 +15,10 @@
     "ts:watch": "ts --watch"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.28.1",
-    "@cosmjs/encoding": "^0.28.1",
-    "@cosmjs/proto-signing": "^0.28.1",
-    "@cosmjs/stargate": "^0.28.1",
+    "@cosmjs/cosmwasm-stargate": "^0.28.9",
+    "@cosmjs/encoding": "^0.28.9",
+    "@cosmjs/proto-signing": "^0.28.9",
+    "@cosmjs/stargate": "^0.28.9",
     "@dao-dao/actions": "*",
     "@dao-dao/common": "*",
     "@dao-dao/i18n": "*",
