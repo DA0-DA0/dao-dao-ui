@@ -2,7 +2,7 @@ import { HeartIcon as HeartIconOutline } from '@heroicons/react/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useState } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
@@ -24,6 +24,7 @@ interface ContractCardBaseProps {
   balance?: string
   children: ReactNode
   selected?: boolean
+  setLoading: (loading: boolean) => void
 }
 
 const ContractCardBase: FC<ContractCardBaseProps> = ({
@@ -35,12 +36,13 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
   balance,
   children,
   selected,
+  setLoading,
 }) => {
   const { t } = useTranslation()
 
   return (
     <Link href={href}>
-      <a>
+      <a onClick={() => setLoading(true)}>
         <div
           className={clsx(
             'flex relative flex-col justify-between items-center p-6 w-[260px] h-[320px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline',
@@ -105,6 +107,7 @@ interface ContractCardProps {
   onPin?: Function
   imgUrl?: string | null
   selected?: boolean
+  loading?: boolean
 }
 
 export const ContractCard: FC<ContractCardProps> = ({
@@ -118,8 +121,13 @@ export const ContractCard: FC<ContractCardProps> = ({
   onPin,
   imgUrl,
   selected,
+  loading: _loading,
 }) => {
   const { t } = useTranslation()
+
+  // Next.js takes some time to render a DAO page on first load. Let's
+  // indicate to the user something is happening while this is loading.
+  const [loading, setLoading] = useState(false)
 
   return (
     <div className="relative w-min">
@@ -129,21 +137,24 @@ export const ContractCard: FC<ContractCardProps> = ({
         href={href}
         proposals={proposals}
         selected={selected}
+        setLoading={setLoading}
         title={name}
         votingPowerPercent={votingPowerPercent}
       >
-        {imgUrl && CARD_IMAGES_ENABLED ? (
-          <div
-            aria-label={t('info.daosLogo')}
-            className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
-            role="img"
-            style={{
-              backgroundImage: `url(${imgUrl})`,
-            }}
-          ></div>
-        ) : (
-          <Logo alt={name} height={80} width={80} />
-        )}
+        <div className={clsx({ 'animate-spin': _loading || loading })}>
+          {imgUrl && CARD_IMAGES_ENABLED ? (
+            <div
+              aria-label={t('info.daosLogo')}
+              className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
+              role="img"
+              style={{
+                backgroundImage: `url(${imgUrl})`,
+              }}
+            ></div>
+          ) : (
+            <Logo alt={name} height={80} width={80} />
+          )}
+        </div>
       </ContractCardBase>
       <button
         className="absolute top-[18px] right-[18px] text-brand"

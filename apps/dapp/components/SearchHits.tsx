@@ -13,12 +13,19 @@ interface Hit {
   treasury_balance: string
 }
 
-const Hit = ({ hit, selected }: { hit: Hit; selected: boolean }) => (
+interface HitCardProps {
+  hit: Hit
+  selected: boolean
+  loading: boolean
+}
+
+const HitCard = ({ hit, selected, loading }: HitCardProps) => (
   <ContractCard
     balance={hit.treasury_balance}
     description={hit.description}
     href={`/dao/${hit.id}`}
     imgUrl={hit.image_url}
+    loading={loading}
     name={hit.name}
     proposals={hit.proposal_count}
     selected={selected}
@@ -30,6 +37,7 @@ const Hit = ({ hit, selected }: { hit: Hit; selected: boolean }) => (
 const HitsInternal: FC<any> = ({ hits }) => {
   const router = useRouter()
   const [selection, setSelection] = useState(0)
+  const [loadingId, setLoadingId] = useState<string>()
 
   const handleKeyPress = useCallback(
     (event) => {
@@ -53,6 +61,7 @@ const HitsInternal: FC<any> = ({ hits }) => {
         case 'Enter':
           if (selection >= 0) {
             router.push(`/dao/${hits[selection].id}`)
+            setLoadingId(hits[selection].id)
           }
           break
       }
@@ -74,7 +83,12 @@ const HitsInternal: FC<any> = ({ hits }) => {
     <>
       <div className="flex overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start">
         {hits.map((hit: Hit, index: number) => (
-          <Hit key={hit.id} hit={hit} selected={index === selection} />
+          <HitCard
+            key={hit.id}
+            hit={hit}
+            loading={hit.id === loadingId}
+            selected={index === selection}
+          />
         ))}
       </div>
     </>
