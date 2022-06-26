@@ -44,26 +44,21 @@ const HitsInternal: FC<any> = ({ hits }) => {
     (event) => {
       switch (event.key) {
         case 'ArrowLeft':
+        case 'ArrowUp':
+          event.preventDefault()
           setSelection((selection) =>
             selection - 1 < 0 ? hits.length - 1 : selection - 1
           )
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowRight':
+        case 'ArrowDown':
+          event.preventDefault()
           setSelection((selection) => (selection + 1) % hits.length)
           router.prefetch(`/dao/${hits[selection].id}`)
           break
-        case 'ArrowUp':
-          setSelection((selection) =>
-            selection - 3 < 0 ? hits.length - 1 : selection - 3
-          )
-          router.prefetch(`/dao/${hits[selection].id}`)
-          break
-        case 'ArrowDown':
-          setSelection((selection) => (selection + 3) % hits.length)
-          router.prefetch(`/dao/${hits[selection].id}`)
-          break
         case 'Enter':
+          event.preventDefault()
           if (selection >= 0) {
             router.push(`/dao/${hits[selection].id}`)
             setLoadingId(hits[selection].id)
@@ -92,9 +87,14 @@ const HitsInternal: FC<any> = ({ hits }) => {
     }
 
     // Only scroll if not already visible.
-    const { bottom, top } = item.getBoundingClientRect()
+    const { left, right, top, bottom } = item.getBoundingClientRect()
     const containerRect = listRef.current.getBoundingClientRect()
-    if (top >= containerRect.top && bottom <= containerRect.bottom) {
+    if (
+      left >= containerRect.left &&
+      right <= containerRect.right &&
+      top >= containerRect.top &&
+      bottom <= containerRect.bottom
+    ) {
       return
     }
 
@@ -104,21 +104,19 @@ const HitsInternal: FC<any> = ({ hits }) => {
   }, [selection])
 
   return (
-    <>
-      <div
-        className="flex overflow-y-auto flex-wrap grow gap-4 justify-center p-4 md:justify-start"
-        ref={listRef}
-      >
-        {hits.map((hit: Hit, index: number) => (
-          <HitCard
-            key={hit.id}
-            hit={hit}
-            loading={hit.id === loadingId}
-            selected={index === selection}
-          />
-        ))}
-      </div>
-    </>
+    <div
+      className="flex overflow-y-auto flex-col grow gap-4 p-4 md:overflow-x-auto md:flex-row md:justify-start md:overflow-y-none"
+      ref={listRef}
+    >
+      {hits.map((hit: Hit, index: number) => (
+        <HitCard
+          key={hit.id}
+          hit={hit}
+          loading={hit.id === loadingId}
+          selected={index === selection}
+        />
+      ))}
+    </div>
   )
 }
 
