@@ -1,11 +1,13 @@
 ## DAO DAO UI
 
-This project creates a web UI around the [cw3-dao](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/cw3-dao) and [cw3-multisig](https://github.com/DA0-DA0/dao-contracts/tree/main/contracts/cw3-multisig) smart contracts. Enabling users to:
+This project creates a web UI around the [DAO DAO V1 smart contracts](https://github.com/DA0-DA0/dao-contracts). Enabling users to:
 
 - Create a governance token based DAO or multisig
 - View proposals and treasury info
 - Easily create proposals
 - Vote on proposals
+
+All without having to code!
 
 You can find more info in our [documentation](https://docs.daodao.zone). Join the [DAO DAO Discord](https://discord.gg/sAaGuyW3D2) if you're interested in becoming a contributor.
 
