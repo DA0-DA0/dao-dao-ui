@@ -54,6 +54,12 @@ interface UseInstantiateParams
   extends Omit<ExecuteClientParams, 'contractAddress'> {
   codeId: number
 }
+
+interface UseInstantiateParams
+  extends Omit<ExecuteClientParams, 'contractAddress'> {
+  codeId: number
+}
+
 export const useInstantiate = ({ codeId, ...params }: UseInstantiateParams) => {
   const clientLoadable = useRecoilValueLoadable(
     // contractAddress irrelevant when instantiating a new contract.
@@ -72,3 +78,4 @@ export const useInstantiate = ({ codeId, ...params }: UseInstantiateParams) => {
     [client, codeId]
   )
 }
+

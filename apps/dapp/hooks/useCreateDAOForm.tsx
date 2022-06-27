@@ -13,7 +13,7 @@ import toast from 'react-hot-toast'
 import { useRecoilState } from 'recoil'
 
 import { useTranslation } from '@dao-dao/i18n'
-import { CwCoreHooks, useWallet } from '@dao-dao/state'
+import { CwCoreHooks, CwAdminFactoryHooks, useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -37,6 +37,7 @@ import {
   validateCw20StakedBalanceVotingInstantiateMsg,
   validateCw4VotingInstantiateMsg,
   validateCwProposalSingleInstantiateMsg,
+  V1_FACTORY_CONTRACT_ADDRESS,
 } from '@dao-dao/utils'
 
 import { usePinnedDAOs } from './usePinnedDAOs'
@@ -50,6 +51,7 @@ import {
   convertThresholdValueToPercentageThreshold,
   newDAOAtom,
 } from '@/atoms'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 
 export type ValidateDAOFormPage = (
   newDAO: NewDAO,
@@ -146,7 +148,13 @@ export const useCreateDAOForm = (pageIndex: number) => {
     codeId: CWCORE_CODE_ID,
     sender: walletAddress ?? '',
   })
-  const createDAO = useCreateDAO()
+
+  const instantiateWithFactory = CwAdminFactoryHooks.useInstantiateWithAdminFactory({
+    contractAddress: V1_FACTORY_CONTRACT_ADDRESS ?? '',
+    sender: walletAddress ?? '',
+  })
+
+  const createDAOWithFactory = useCreateDAO()
   const parseSubmitterValueDelta = useParseSubmitterValueDelta()
 
   const onSubmit: SubmitHandler<NewDAO> = useCallback(
@@ -162,7 +170,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
         if (connected) {
           setCreating(true)
           try {
-            const address = await createDAO(instantiate, values)
+            const address = await createDAOWithFactory(instantiateWithFactory, values)
             if (address) {
               // TODO: Figure out better solution for detecting block.
               // New wallet balances will not appear until the next block.
@@ -218,7 +226,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
       createDAOFormPages,
       pageIndex,
       connected,
-      createDAO,
+      createDAOWithFactory,
       instantiate,
       refreshBalances,
       setPinned,
@@ -574,17 +582,28 @@ const useCreateDAO = () => {
 
   return useCallback(
     async (
-      instantiate: ReturnType<typeof CwCoreHooks['useInstantiate']>,
+      instantiateWithAdminFactory: ReturnType<typeof CwAdminFactoryHooks['useInstantiateWithAdminFactory']>,
       values: NewDAO
     ) => {
       const cwCoreInstantiateMsg = makeCreateDAOMsg(values)
 
-      const { contractAddress } = await instantiate(
-        cwCoreInstantiateMsg,
-        cwCoreInstantiateMsg.name
-      )
+      const { logs } = await instantiateWithAdminFactory({
+        codeId: CWCORE_CODE_ID,
+        instantiateMsg: Buffer.from(
+          JSON.stringify(cwCoreInstantiateMsg),
+          'utf8'
+        ).toString('base64'),
+        label: cwCoreInstantiateMsg.name
+      })
+      const contractAddress = findAttribute(
+        logs,
+        'wasm',
+        'set contract admin as itself'
+      ).value
       return contractAddress
     },
     [makeCreateDAOMsg]
   )
 }
+
+
