@@ -20,7 +20,7 @@ import {
   searchVisibleAtom,
 } from '@/atoms'
 
-export const SidebarLayoutInner: FC = ({ children }) => {
+const SidebarLayoutInner: FC = ({ children }) => {
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
