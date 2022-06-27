@@ -10,7 +10,7 @@
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@heroicons/react": "^1.0.6",
-    "@noahsaso/cosmodal": "^0.5.1",
+    "@noahsaso/cosmodal": "^0.5.2",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
     "fuse.js": "^6.6.2",
