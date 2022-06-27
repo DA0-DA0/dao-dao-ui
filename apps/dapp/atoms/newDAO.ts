@@ -87,11 +87,13 @@ export interface NewDAO {
       name: string
     }
     existingGovernanceTokenAddress?: string
-    // TODO: Fetch and display.
-    _existingGovernanceTokenInfo?: {
-      imageUrl?: string
-      symbol: string
+    // TokenInfoResponse
+    existingGovernanceTokenInfo?: {
+      decimals: number
       name: string
+      symbol: string
+      total_supply: string
+      _error?: undefined
     }
     proposalDeposit: {
       value: number

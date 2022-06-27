@@ -393,6 +393,7 @@ const useMakeCreateDAOMsg = () => {
           unregisterDuration,
           newInfo,
           existingGovernanceTokenAddress,
+          existingGovernanceTokenInfo,
           proposalDeposit,
           ...governanceTokenOptions
         },
@@ -496,6 +497,14 @@ const useMakeCreateDAOMsg = () => {
         votingModuleInstantiateMsg = cw4VotingInstantiateMsg
       }
 
+      if (
+        governanceTokenEnabled &&
+        governanceTokenOptions.type === GovernanceTokenType.Existing &&
+        !existingGovernanceTokenInfo
+      ) {
+        throw new Error(t('errors.noGovTokenAddr'))
+      }
+
       const cwProposalSingleModuleInstantiateMsg: CwProposalSingleInstantiateMsg =
         {
           allow_revoting: allowRevoting,
@@ -504,7 +513,13 @@ const useMakeCreateDAOMsg = () => {
             typeof proposalDeposit?.value === 'number' &&
             proposalDeposit.value > 0
               ? {
-                  deposit: proposalDeposit.value.toString(),
+                  deposit: convertDenomToMicroDenomWithDecimals(
+                    proposalDeposit.value,
+                    governanceTokenOptions.type === GovernanceTokenType.New
+                      ? NEW_DAO_CW20_DECIMALS
+                      : // Validated above that this is set.
+                        existingGovernanceTokenInfo!.decimals
+                  ),
                   refund_failed_proposals: proposalDeposit.refundFailed,
                   token: { voting_module_token: {} },
                 }
