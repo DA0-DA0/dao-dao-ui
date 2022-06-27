@@ -64,6 +64,12 @@ import {
   transformCosmosToStake,
   transformStakeToCosmos,
 } from './stake'
+import {
+  transformCosmosToUpdateMinter,
+  transformUpdateMinterToCosmos,
+  UpdateMinterComponent,
+  updateMinterDefaults,
+} from './updateMinter'
 
 export enum ContractSupport {
   Multisig,
@@ -136,6 +142,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: migrateContractDefaults,
     toCosmosMsg: transformMigrateContractToCosmos,
     fromCosmosMsg: transformCosmosToMigrateContract,
+  },
+  {
+    label: '🔑 Update Minter',
+    description: 'Update the minter for a cw20 token.',
+    component: UpdateMinterComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: updateMinterDefaults,
+    toCosmosMsg: transformUpdateMinterToCosmos,
+    fromCosmosMsg: transformCosmosToUpdateMinter,
   },
   {
     label: '🔘 Add Treasury Token',
