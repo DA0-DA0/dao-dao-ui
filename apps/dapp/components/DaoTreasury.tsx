@@ -16,18 +16,18 @@ export const DaoTreasury: FC = () => {
 
   return (
     <div>
-      <h2 className="primary-text">{t('Treasury')}</h2>
+      <h2 className="primary-text">{t('title.treasury')}</h2>
       <SuspenseLoader fallback={<Loader />}>
         <TreasuryBalances />
       </SuspenseLoader>
 
-      {governanceTokenAddress && (
+      {governanceTokenAddress && !!addToken && (
         <Button
           className="mt-4"
           onClick={() => addToken(governanceTokenAddress)}
           variant="secondary"
         >
-          {t('Add to Keplr')} <PlusSmIcon className="w-4 h-4" />
+          {t('button.addToKeplr')} <PlusSmIcon className="w-4 h-4" />
         </Button>
       )}
     </div>

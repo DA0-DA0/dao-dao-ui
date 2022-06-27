@@ -7,9 +7,9 @@ export const DAONotFound = () => {
   const { t } = useTranslation()
 
   return (
-    <ErrorPage title={t('error.DAONotFound')}>
+    <ErrorPage title={t('error.daoNotFound')}>
       <p>
-        <Trans i18nKey="couldntFindDAO">
+        <Trans i18nKey="error.couldntFindDAO">
           We couldn&apos;t find a DAO with that address. Search DAOs on the{' '}
           <LinkText aProps={{ className: 'underline link-text' }} href="/home">
             home page
@@ -28,7 +28,7 @@ export const ProposalNotFound = () => {
   return (
     <ErrorPage title={t('error.proposalNotFound')}>
       <p>
-        <Trans i18nKey="couldntFindProposal">
+        <Trans i18nKey="error.couldntFindProposal">
           We couldn&apos;t find a proposal with that ID. See all proposals on
           the{' '}
           <LinkText

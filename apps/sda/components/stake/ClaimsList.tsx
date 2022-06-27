@@ -47,12 +47,12 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
     <>
       <div className="flex flex-row justify-between items-center">
         <p className="text-lg title-text">
-          {t('unstakingNamedTokens', { name: governanceTokenInfo.name })}
+          {t('title.unstakingNamedTokens', { name: governanceTokenInfo.name })}
         </p>
 
         {!!sumClaimsAvailable && (
           <Button disabled={!connected} onClick={showClaim} variant="secondary">
-            {t('claim')}
+            {t('button.claim')}
           </Button>
         )}
       </div>
@@ -71,9 +71,9 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
           ))}
         </div>
       ) : connected ? (
-        <p>{t('noTokensUnstaking')}</p>
+        <p>{t('info.noTokensUnstaking')}</p>
       ) : (
-        <p>{t('connectWalletToViewUnstaking')}</p>
+        <p>{t('info.connectWalletToViewUnstaking')}</p>
       )}
     </>
   )

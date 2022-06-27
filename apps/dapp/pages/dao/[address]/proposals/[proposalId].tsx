@@ -168,7 +168,7 @@ const InnerProposal: FC = () => {
       <div className="col-span-4 w-full lg:p-6">
         <Breadcrumbs
           crumbs={[
-            ['/home', t('home')],
+            ['/home', t('title.home')],
             [`/dao/${coreAddress}`, name],
             [router.asPath, `Proposal ${proposalId}`],
           ]}
@@ -220,7 +220,9 @@ const InnerProposal: FC = () => {
           />
 
           <div className="lg:hidden">
-            <h3 className="mb-6 text-base font-medium">{t('Vote status')}</h3>
+            <h3 className="mb-6 text-base font-medium">
+              {t('title.voteStatus')}
+            </h3>
 
             <ProposalInfoVoteStatus
               denomConversionDecimals={denomConversionDecimals}
@@ -239,7 +241,7 @@ const InnerProposal: FC = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
-        <h2 className="mb-6 text-base font-medium">{t('details')}</h2>
+        <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
         <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
@@ -248,7 +250,9 @@ const InnerProposal: FC = () => {
           walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
-        <h3 className="mt-8 mb-6 text-base font-medium">{t('Vote status')}</h3>
+        <h3 className="mt-8 mb-6 text-base font-medium">
+          {t('title.voteStatus')}
+        </h3>
         <ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
@@ -345,7 +349,7 @@ export const getStaticProps: GetStaticProps<DAOPageWrapperProps> = async (
 
     const staticProps = await makeGetDAOStaticProps((_, t) => ({
       followingTitle: exists
-        ? `${t('proposals', { count: 1 })} #${proposalId}`
+        ? `${t('title.proposal')} #${proposalId}`
         : t('error.proposalNotFound'),
     }))(...props)
 

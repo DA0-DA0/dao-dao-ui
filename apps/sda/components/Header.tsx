@@ -297,7 +297,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
       >
         {visible ? (
           <>
-            <span>{t('close')}</span>
+            <span>{t('button.close')}</span>
             <XIcon height="1.1rem" width="1.1rem" />
           </>
         ) : (

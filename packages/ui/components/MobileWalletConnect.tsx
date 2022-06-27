@@ -55,7 +55,7 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
       {...buttonProps}
     >
       <Wallet fill="currentColor" height="18px" width="18px" />
-      <p className="link-text">{t('connectWallet')}</p>
+      <p className="link-text">{t('button.connectWallet')}</p>
     </button>
   )
 }
@@ -70,15 +70,15 @@ export const NoMobileWallet: FC = () => {
         className="flex gap-2 items-center py-2 px-3 my-1 -ml-6 w-full rounded-lg"
         onClick={() => setShowInfo(true)}
       >
-        <p className="text-xs italic link-text">{t('testnet')}</p>
+        <p className="text-xs italic link-text">{t('info.testnet')}</p>
         <InformationCircleIcon className="w-3 h-3" />
       </button>
       {showInfo && (
         <Modal hideCloseButton onClose={() => setShowInfo(false)}>
           <div className="flex gap-2 items-start">
-            <h1 className="primary-text">
-              {t('preReleaseExplanation', { chain: CHAIN_NAME })}
-            </h1>
+            <p className="primary-text">
+              {t('info.preReleaseExplanation', { chain: CHAIN_NAME })}
+            </p>
 
             <button
               className="hover:bg-secondary rounded-full transition"
@@ -89,7 +89,7 @@ export const NoMobileWallet: FC = () => {
           </div>
 
           <p className="mt-6 body-text">
-            {t('walletConnectMobileLimitations', { chain: CHAIN_NAME })}
+            {t('info.walletConnectMobileLimitations', { chain: CHAIN_NAME })}
           </p>
         </Modal>
       )}

@@ -20,7 +20,9 @@ const ThemeToggle: FC = () => {
   const nextTheme = themeContext.theme === 'dark' ? Theme.Light : Theme.Dark
 
   const text =
-    themeContext.theme === 'light' ? t('Dark theme') : t('Light theme')
+    themeContext.theme === 'light'
+      ? t('button.darkTheme')
+      : t('button.lightTheme')
 
   return (
     <button

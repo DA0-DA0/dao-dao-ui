@@ -209,7 +209,9 @@ const InnerProposal: FC = () => {
         />
 
         <div className="pb-6 mt-6 lg:hidden">
-          <h3 className="mb-6 text-base font-medium">{t('voteStatus')}</h3>
+          <h3 className="mb-6 text-base font-medium">
+            {t('title.voteStatus')}
+          </h3>
 
           <ProposalInfoVoteStatus
             denomConversionDecimals={denomConversionDecimals}
@@ -224,7 +226,7 @@ const InnerProposal: FC = () => {
       </div>
 
       <div className="hidden min-h-screen lg:block bg-base-200">
-        <h2 className="mb-6 text-base font-medium">{t('details')}</h2>
+        <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
         <ProposalInfoCard
           connected={connected}
           memberWhenProposalCreated={memberWhenProposalCreated}
@@ -233,7 +235,9 @@ const InnerProposal: FC = () => {
           walletVote={voteResponse?.vote?.vote ?? undefined}
         />
 
-        <h3 className="mt-8 mb-6 text-base font-medium">{t('voteStatus')}</h3>
+        <h3 className="mt-8 mb-6 text-base font-medium">
+          {t('title.voteStatus')}
+        </h3>
         <ProposalInfoVoteStatus
           denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
@@ -254,7 +258,7 @@ const ProposalNotFound = () => {
   return (
     <ErrorPage title={t('error.proposalNotFound')}>
       <p>
-        <Trans i18nKey="couldntFindProposal">
+        <Trans i18nKey="error.couldntFindProposal">
           We couldn&apos;t find a proposal with that ID. See all proposals on
           the{' '}
           <LinkText aProps={{ className: 'underline link-text' }} href="/vote">
@@ -351,7 +355,7 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
 
     const staticProps = await makeGetStaticProps((t) => ({
       followingTitle: exists
-        ? `${t('proposals', { count: 1 })} #${proposalId}`
+        ? `${t('title.proposal')} #${proposalId}`
         : t('error.proposalNotFound'),
     }))(...props)
 

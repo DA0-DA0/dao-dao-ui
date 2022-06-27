@@ -63,7 +63,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
       {...buttonProps}
     >
       <Wallet fill="currentColor" height="20px" width="20px" />
-      <p className="text-light link-text">{t('Connect wallet')}</p>
+      <p className="text-light link-text">{t('button.connectWallet')}</p>
     </Button>
   )
 }
@@ -77,7 +77,7 @@ const CopyButton: FC<CopyButtonProps> = ({ text }) => {
   const [copied, setCopied] = useState(false)
 
   return (
-    <Tooltip label={t('copyWalletAddress')}>
+    <Tooltip label={t('info.copyWalletAddressTooltip')}>
       <button
         onClick={() => {
           navigator.clipboard.writeText(text)
@@ -104,7 +104,7 @@ const DisconnectButton: FC<DisconnectButtonProps> = ({ onClick }) => {
   const { t } = useTranslation()
 
   return (
-    <Tooltip label={t('disconnectWallet')}>
+    <Tooltip label={t('info.disconnectWalletTooltip')}>
       <button onClick={onClick} type="button">
         <LogoutIcon className="w-[18px]" />
       </button>

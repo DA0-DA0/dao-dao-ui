@@ -98,12 +98,12 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
 
       {available ? (
         <p className="font-mono text-sm text-secondary">
-          {t('available')}
+          {t('info.available')}
           <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
         <p className="text-caption">
-          {t('remainingTime', { time: durationRemainingForHumans })}
+          {t('info.remainingTime', { time: durationRemainingForHumans })}
         </p>
       )}
     </div>

@@ -4,8 +4,8 @@ Translations for the DAO DAO UI.
 
 ## Contributing a translation
 
-See `./locales/en/translation.en`. Add your own translation using your langauge's (ISO 639-1)[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes] code.
+See `./locales/en/translation.json`. Add your own translation using your langauge's (ISO 639-1)[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes] code. Make sure to add your language's code to the `config.i18n.locales` array in the `./next-i18next.config.js` file.
 
 ### Translation notes
 
-Keep it precise and pithy, in that order; people's businesses depend on understanding what this software. Within those constraints, keep it as casual and informal as possible.
+Keep it precise and pithy, in that order; people's businesses depend on understanding what this software does. Within those constraints, keep it as casual and informal as possible.

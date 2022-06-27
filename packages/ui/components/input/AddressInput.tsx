@@ -58,7 +58,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
           className
         )}
         disabled={disabled}
-        placeholder={t('junoAddress')}
+        placeholder={t('form.junoAddress')}
         type="text"
         {...rest}
         {...register(fieldName, {

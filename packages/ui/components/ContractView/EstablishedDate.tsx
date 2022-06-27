@@ -17,7 +17,7 @@ export const EstablishedDate: FC<EstablishedDateProps> = ({ date }) => {
 
   return (
     <p className="mb-3 text-sm">
-      {t('establishedAbbr')} {formattedDate}
+      {t('info.establishedAbbr')} {formattedDate}
     </p>
   )
 }

@@ -71,17 +71,17 @@ const ContractCardBase: FC<ContractCardBaseProps> = ({
             {proposals !== undefined && (
               <p className="text-sm">
                 <Pencil className="inline mr-2 mb-1 w-4" fill="currentColor" />
-                {t('numProposals', { count: proposals })}
+                {t('info.numProposals', { count: proposals })}
               </p>
             )}
             {votingPowerPercent && (
               <div className="flex flex-row gap-2 text-sm text-valid text-success">
                 <Votes className="w-4 h-5" fill="currentColor" />
                 {votingPowerPercent === '0%' ? (
-                  t('noVotingPower')
+                  t('info.noVotingPower')
                 ) : (
                   <div className="flex flex-row flex-wrap gap-x-1">
-                    <span>{t('yourVotingPower')}:</span>
+                    <span>{t('title.yourVotingPower')}:</span>
                     {votingPowerPercent}
                   </div>
                 )}
@@ -134,7 +134,7 @@ export const ContractCard: FC<ContractCardProps> = ({
       >
         {imgUrl && CARD_IMAGES_ENABLED ? (
           <div
-            aria-label={t('daosLogo')}
+            aria-label={t('info.daosLogo')}
             className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
             role="img"
             style={{

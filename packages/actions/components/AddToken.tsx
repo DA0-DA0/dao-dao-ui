@@ -28,12 +28,12 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('token')} symbol="🔘" />}
+      emoji={<Emoji label={t('emoji.token')} symbol="🔘" />}
       onRemove={onRemove}
-      title={t('addTreasuryToken')}
+      title={t('title.addTreasuryToken')}
     >
       <div className="flex flex-col gap-2">
-        <InputLabel name={t('Governance token address')} />
+        <InputLabel name={t('form.governanceTokenAddress')} />
         <AddressInput
           disabled={readOnly}
           error={errors?.address}

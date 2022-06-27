@@ -58,9 +58,11 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
 
   return (
     <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <p className="font-mono text-center caption-text">{t('Voting power')}</p>
+      <p className="font-mono text-center caption-text">
+        {t('title.votingPower')}
+      </p>
       <p className="font-mono caption-text">
-        {onlyOneTier ? t('Members') : t('Tier', { count: 1000 })}
+        {onlyOneTier ? t('title.members') : t('title.tiers')}
       </p>
 
       <PieChart data={entries} />
@@ -214,8 +216,7 @@ export const VotingPowerChart: FC<DataProps> = ({ data }) => {
           plugins: {
             tooltip: {
               callbacks: {
-                title: (items) =>
-                  items[0].label || t('Member address placeholder'),
+                title: (items) => items[0].label || t('form.membersAddress'),
                 label: () => '',
               },
               titleMarginBottom: 0,

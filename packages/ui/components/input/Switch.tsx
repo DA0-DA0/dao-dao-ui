@@ -67,8 +67,8 @@ export const SwitchCard: FC<SwitchCardProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const onLabel = _onLabel ?? t('enabled')
-  const offLabel = _offLabel ?? t('disabled')
+  const onLabel = _onLabel ?? t('info.enabled')
+  const offLabel = _offLabel ?? t('info.disabled')
 
   return (
     <div

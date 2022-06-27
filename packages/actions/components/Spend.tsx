@@ -56,7 +56,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         )
         return (
           Number(microAmount) <= Number(native.amount) ||
-          t('cantSpendMoreThanTreasury', {
+          t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,
               NATIVE_DECIMALS
@@ -75,7 +75,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         )
         return (
           Number(microAmount) <= Number(cw20.balance) ||
-          t('cantSpendMoreThanTreasury', {
+          t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               cw20.balance,
               cw20.info.decimals
@@ -89,7 +89,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       // If there are no native tokens in the treasury the native balances
       // query will return an empty list.
       if (id === NATIVE_DENOM) {
-        return t('cantSpendMoreThanTreasury', {
+        return t('error.cantSpendMoreThanTreasury', {
           amount: 0,
           tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
         })
@@ -137,9 +137,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('money')} symbol="💵" />}
+      emoji={<Emoji label={t('emoji.money')} symbol="💵" />}
       onRemove={onRemove}
-      title={t('spend')}
+      title={t('title.spend')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">

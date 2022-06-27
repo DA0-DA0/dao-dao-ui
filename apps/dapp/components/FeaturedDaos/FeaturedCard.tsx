@@ -52,7 +52,7 @@ export const FeaturedCard: FC<FeaturedCardProps> = ({
         </p>
         <p className="text-sm text-valid text-success">
           <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-          {members} {t('members', { count: 100 })}
+          {members} {t('info.members')}
         </p>
       </div>
     </a>

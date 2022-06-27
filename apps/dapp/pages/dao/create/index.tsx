@@ -70,12 +70,12 @@ const CreateDAOPage: NextPage = () => {
               watch={watch}
             />
 
-            <p className="text-disabled">{t('setAnImage')}</p>
+            <p className="text-disabled">{t('info.setAnImage')}</p>
           </div>
 
           <div className="flex flex-col flex-1 gap-2">
             <div className="space-y-1">
-              <InputLabel name={t('Name')} />
+              <InputLabel name={t('form.name')} />
               <TextInput
                 error={errors.name}
                 fieldName="name"
@@ -86,7 +86,7 @@ const CreateDAOPage: NextPage = () => {
             </div>
 
             <div className="space-y-1">
-              <InputLabel name={t('Description')} />
+              <InputLabel name={t('form.description')} />
               <TextAreaInput
                 error={errors.description}
                 fieldName="description"
@@ -98,29 +98,37 @@ const CreateDAOPage: NextPage = () => {
           </div>
         </div>
 
-        <p className="mt-6 mb-4 primary-text">{t('Choose a structure')}</p>
+        <p className="mt-6 mb-4 primary-text">{t('title.chooseAStructure')}</p>
 
         <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure
-            description={t('Membership-based description')}
+            description={t('form.membershipBasedDescription')}
             emoji={
-              <Emoji className="text-5xl" label={t('handshake')} symbol="🤝" />
+              <Emoji
+                className="text-5xl"
+                label={t('emoji.handshake')}
+                symbol="🤝"
+              />
             }
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.Membership}
-            title={t('Membership-based')}
+            title={t('form.membershipBasedTitle')}
           />
 
           <CreateDAOStructure
-            description={t('Governance Token-based description')}
+            description={t('form.governanceTokenBasedDescription')}
             emoji={
-              <Emoji className="text-5xl" label={t('yinYang')} symbol="☯️" />
+              <Emoji
+                className="text-5xl"
+                label={t('emoji.yinYang')}
+                symbol="☯️"
+              />
             }
             newDAO={watchedNewDAO}
             onChange={onStructureChange}
             structure={NewDAOStructure.GovernanceToken}
-            title={t('Governance Token-based')}
+            title={t('form.governanceTokenBasedTitle')}
           />
         </div>
       </CreateDAOFormWrapper>

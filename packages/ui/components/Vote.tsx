@@ -36,11 +36,11 @@ export const Vote: FC<VoteProps> = ({
     >
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">
-          <Emoji label={t('ballotBox')} symbol="🗳" />
+          <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
         </p>
-        <p className="primary-text">{t('casting')}</p>
+        <p className="primary-text">{t('title.casting')}</p>
         <p className="secondary-text">
-          {t('percentVotingPower', {
+          {t('info.percentVotingPower', {
             percent: formatPercentOf100(voterWeightPercent),
           })}
         </p>
@@ -63,7 +63,7 @@ export const Vote: FC<VoteProps> = ({
               'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
             })}
           />
-          {t('yes')}
+          {t('info.yes')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -82,7 +82,7 @@ export const Vote: FC<VoteProps> = ({
               'group-hover:text-base text-error': selected !== VoteChoice.No,
             })}
           />
-          {t('no')}
+          {t('info.no')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -96,7 +96,7 @@ export const Vote: FC<VoteProps> = ({
           variant="secondary"
         >
           <Abstain fill="currentColor" />
-          {t('abstain')}
+          {t('info.abstain')}
         </Button>
       </div>
       <Button
@@ -111,7 +111,7 @@ export const Vote: FC<VoteProps> = ({
         }}
       >
         <div className="flex gap-2 justify-center items-center w-full">
-          <p>{t('castYourVote')}</p> <Airplane stroke="currentColor" />
+          <p>{t('button.castYourVote')}</p> <Airplane stroke="currentColor" />
         </div>
       </Button>
     </div>

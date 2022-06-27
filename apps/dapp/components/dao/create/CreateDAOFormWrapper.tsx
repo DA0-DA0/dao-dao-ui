@@ -52,11 +52,11 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
     <div>
       <NextSeo
         openGraph={{
-          title: t('Create a DAO'),
+          title: t('title.createADAO'),
           // TODO: different description?
-          description: t('Create a DAO'),
+          description: t('title.createADAO'),
         }}
-        title={t('Create a DAO')}
+        title={t('title.createADAO')}
       />
 
       <form
@@ -73,7 +73,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
 
         <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full">
           <div className="mb-8">
-            <h2 className="mb-4 header-text">{t('Create a DAO')}</h2>
+            <h2 className="mb-4 header-text">{t('title.createADAO')}</h2>
 
             <div className="mb-10 md:hidden">
               <CreateDAONav currentPageIndex={currentPageIndex} />

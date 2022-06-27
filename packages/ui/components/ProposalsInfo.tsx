@@ -27,22 +27,22 @@ export const ProposalsInfo: FC<ProposalsInfoProps> = ({ data, className }) => {
     >
       <ProposalInfoStat
         Icon={Dollar}
-        title={t('Proposal deposit')}
+        title={t('title.proposalDeposit')}
         value={data?.macroDeposit ?? ''}
       />
       <ProposalInfoStat
         Icon={Dollar}
-        title={t('Proposal deposit refund')}
+        title={t('title.refundFailedProposals')}
         value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
       />
       <ProposalInfoStat
         Icon={Pie}
-        title={t('Passing threshold')}
+        title={t('title.passingThreshold')}
         value={data?.passingThresholdString ?? ''}
       />
       <ProposalInfoStat
         Icon={Pie}
-        title={t('Quorum')}
+        title={t('title.quorum')}
         value={data?.quorumString ?? ''}
       />
     </div>

@@ -46,7 +46,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
         )
         return (
           Number(microAmount) <= Number(native.amount) ||
-          t('cantSpendMoreThanTreasury', {
+          t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,
               NATIVE_DECIMALS
@@ -60,7 +60,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
       // If there are no native tokens in the treasury the native balances
       // query will return an empty list.
       if (id === NATIVE_DENOM) {
-        return t('cantSpendMoreThanTreasury', {
+        return t('error.cantSpendMoreThanTreasury', {
           amount: 0,
           tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
         })

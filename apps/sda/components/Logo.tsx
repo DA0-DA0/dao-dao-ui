@@ -16,7 +16,7 @@ export const Logo = ({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      alt={t('logo')}
+      alt={t('info.logo')}
       className={className}
       height={size}
       src={imageUrl ?? DEFAULT_IMAGE_URL}

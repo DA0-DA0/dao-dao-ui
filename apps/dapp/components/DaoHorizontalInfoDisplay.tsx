@@ -57,7 +57,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
           governanceTokenInfo ? (
           <>
-            {t('Total supply amount', {
+            {t('info.amountTotalSupply', {
               amount: convertMicroDenomToDenomWithDecimals(
                 governanceTokenInfo.total_supply,
                 governanceTokenInfo.decimals
@@ -74,7 +74,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         stakedPercent !== undefined && (
           <HorizontalInfoSection>
             <LibraryIcon className="inline w-4" />
-            {t('Percent staked', {
+            {t('info.percentStaked', {
               percent: stakedPercent,
               tokenSymbol: governanceTokenInfo.symbol,
             })}
@@ -82,7 +82,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         )}
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {t('proposalsCreated', { count: proposalCount })}
+        {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
   )

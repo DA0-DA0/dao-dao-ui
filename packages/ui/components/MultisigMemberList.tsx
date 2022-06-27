@@ -32,7 +32,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
               primaryText ? 'primary-text' : 'title-text'
             )}
           >
-            {t('yourVotingPower')}
+            {t('title.yourVotingPower')}
           </h2>
           <ul className="mt-3 list-none">
             <li>
@@ -54,7 +54,7 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
               primaryText ? 'primary-text' : 'title-text'
             )}
           >
-            {t('Member voting powers')}
+            {t('title.memberVotingPowers')}
           </h2>
           <ul className="mt-2 list-none">
             {members.map((member) => (
@@ -91,7 +91,7 @@ export const MultisigMemberListLoader: FC<MultisigMembersListLoaderProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          {t('yourVotingPower')}
+          {t('title.yourVotingPower')}
         </h2>
 
         {loader}
@@ -101,7 +101,7 @@ export const MultisigMemberListLoader: FC<MultisigMembersListLoaderProps> = ({
         <h2
           className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
         >
-          {t('Member voting powers')}
+          {t('title.memberVotingPowers')}
         </h2>
 
         {loader}

@@ -35,7 +35,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
         votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
           <HeroStat
             Icon={Dollar}
-            title={t('Total supply') + ':'}
+            title={t('title.totalSupply') + ':'}
             value={
               data ? `${formatZeroes(data.totalSupply!)} ${data.denom!}` : ''
             }
@@ -45,7 +45,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
         votingModuleType === VotingModuleType.Cw4Voting && (
           <HeroStat
             Icon={Wallet}
-            title={t('Members') + ':'}
+            title={t('title.members') + ':'}
             value={data ? data.members!.toLocaleString() : ''}
           />
         )}
@@ -53,7 +53,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
         votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
           <HeroStat
             Icon={Staked}
-            title={t('Staked') + ':'}
+            title={t('title.staked') + ':'}
             value={data ? formatPercentOf100(data.stakedPercent!) : ''}
           />
         )}
@@ -61,14 +61,14 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
         votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
           <HeroStat
             Icon={ArrowUpIcon}
-            title={t('Unstaking period') + '+'}
+            title={t('title.unstakingPeriod') + '+'}
             value={data ? data.unstakingDuration! : ''}
           />
         )}
       {(!data || data.aprReward !== undefined) && (
         <HeroStat
           Icon={Apr}
-          title={t('apr') + ':'}
+          title={t('title.apr') + ':'}
           value={data ? data.aprReward!.toLocaleString() + '%' : ''}
         />
       )}
