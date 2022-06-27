@@ -50,10 +50,7 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
     theme: editorTheme,
     lineNumbers: false,
     lineWrapping: true,
-    autoCloseBrackets: false,
     tabSize: 2,
-    gutters: ['CodeMirror-lint-markers'],
-    lint: true,
     readOnly,
   }
 

@@ -29,6 +29,12 @@ import {
   transformCustomToCosmos,
 } from './custom'
 import {
+  MigrateContractComponent,
+  migrateContractDefaults,
+  transformCosmosToMigrateContract,
+  transformMigrateContractToCosmos,
+} from './migrateContract'
+import {
   MintComponent,
   mintDefaults,
   transformCosmosToMint,
@@ -121,6 +127,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: pauseDefaults,
     toCosmosMsg: transformPauseToCosmos,
     fromCosmosMsg: transformCosmosToPause,
+  },
+  {
+    label: '🐋 Migrate Contract',
+    description: 'Migrate a contract to a new code ID.',
+    component: MigrateContractComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: migrateContractDefaults,
+    toCosmosMsg: transformMigrateContractToCosmos,
+    fromCosmosMsg: transformCosmosToMigrateContract,
   },
   {
     label: '🔘 Add Treasury Token',
