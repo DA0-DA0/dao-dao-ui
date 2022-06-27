@@ -29,11 +29,23 @@ import {
   transformCustomToCosmos,
 } from './custom'
 import {
+  MigrateContractComponent,
+  migrateContractDefaults,
+  transformCosmosToMigrateContract,
+  transformMigrateContractToCosmos,
+} from './migrateContract'
+import {
   MintComponent,
   mintDefaults,
   transformCosmosToMint,
   transformMintToCosmos,
 } from './mint'
+import {
+  PauseComponent,
+  pauseDefaults,
+  transformCosmosToPause,
+  transformPauseToCosmos,
+} from './pause'
 import {
   RemoveTokenComponent,
   removeTokenDefaults,
@@ -52,6 +64,12 @@ import {
   transformCosmosToStake,
   transformStakeToCosmos,
 } from './stake'
+import {
+  transformCosmosToUpdateMinter,
+  transformUpdateMinterToCosmos,
+  UpdateMinterComponent,
+  updateMinterDefaults,
+} from './updateMinter'
 
 export enum ContractSupport {
   Multisig,
@@ -106,6 +124,33 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: daoConfigUpdateDefaults,
     toCosmosMsg: transformDAOConfigUpdateToCosmos,
     fromCosmosMsg: transformCosmosToDAOConfigUpdate,
+  },
+  {
+    label: '🏖 Pause DAO',
+    description: 'Pause your DAO and stop all DAO actions.',
+    component: PauseComponent,
+    contractSupport: ContractSupport.DAO,
+    getDefaults: pauseDefaults,
+    toCosmosMsg: transformPauseToCosmos,
+    fromCosmosMsg: transformCosmosToPause,
+  },
+  {
+    label: '🐋 Migrate Contract',
+    description: 'Migrate a contract to a new code ID.',
+    component: MigrateContractComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: migrateContractDefaults,
+    toCosmosMsg: transformMigrateContractToCosmos,
+    fromCosmosMsg: transformCosmosToMigrateContract,
+  },
+  {
+    label: '🔑 Update Minter',
+    description: 'Update the minter for a cw20 token.',
+    component: UpdateMinterComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: updateMinterDefaults,
+    toCosmosMsg: transformUpdateMinterToCosmos,
+    fromCosmosMsg: transformCosmosToUpdateMinter,
   },
   {
     label: '🔘 Add Treasury Token',
