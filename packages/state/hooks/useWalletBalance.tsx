@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
 import { useCallback } from 'react'
 import {
   constSelector,

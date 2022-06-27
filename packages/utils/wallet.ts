@@ -1,4 +1,4 @@
-import { WalletClient } from '@noahsaso/cosmodal'
+import { WalletClient } from '@noahsaso/cosmodal/dist/types'
 
 import { CHAIN_ID } from './constants'
 import { suggestChain } from './keplr'

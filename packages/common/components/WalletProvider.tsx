@@ -1,10 +1,7 @@
 import { GasPrice } from '@cosmjs/stargate'
-import {
-  ChainInfoID,
-  WalletManagerProvider,
-  WalletType,
-  useWallet,
-} from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
+import { WalletManagerProvider } from '@noahsaso/cosmodal/dist/components/WalletManagerProvider'
+import { ChainInfoID, WalletType } from '@noahsaso/cosmodal/dist/types'
 import { isMobile } from '@walletconnect/browser-utils'
 import { FC, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'

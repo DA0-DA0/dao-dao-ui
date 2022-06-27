@@ -1,5 +1,5 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
-import { useWalletManager } from '@noahsaso/cosmodal'
+import { useWalletManager } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'

@@ -1,4 +1,4 @@
-import { useWalletManager } from '@noahsaso/cosmodal'
+import { useWalletManager } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'

@@ -1,6 +1,7 @@
 import { XIcon } from '@heroicons/react/outline'
 import { MenuIcon, PlusIcon } from '@heroicons/react/solid'
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
+import { useWalletManager } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
+import { WalletConnectionStatus } from '@noahsaso/cosmodal/dist/types'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'

@@ -1,5 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'

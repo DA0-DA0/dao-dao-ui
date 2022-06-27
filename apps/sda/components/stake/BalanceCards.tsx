@@ -1,4 +1,4 @@
-import { useWalletManager } from '@noahsaso/cosmodal'
+import { useWalletManager } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
 import { FunctionComponent } from 'react'
 
 import { Trans, useTranslation } from '@dao-dao/i18n'
