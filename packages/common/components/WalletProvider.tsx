@@ -9,6 +9,7 @@ import { isMobile } from '@walletconnect/browser-utils'
 import { FC, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
+import { signingCosmWasmClientAtom } from '@dao-dao/state'
 import { Loader } from '@dao-dao/ui'
 import {
   CHAIN_ID,
@@ -17,8 +18,6 @@ import {
   SITE_URL,
   WC_ICON_PATH,
 } from '@dao-dao/utils'
-
-import { signingCosmWasmClientAtom } from '../recoil'
 
 const InnerWalletProvider: FC = ({ children }) => {
   const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
