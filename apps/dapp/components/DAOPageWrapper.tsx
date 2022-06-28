@@ -7,6 +7,7 @@ import {
   useContext,
 } from 'react'
 
+import { Loader, SuspenseLoader } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
 import { DAONotFound } from './dao/NotFound'
@@ -75,16 +76,18 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
         title={title}
       />
 
-      {/* We only know a DAO is not found if info is still empty when
-       * when the page is ready and not a fallback page.
-       */}
-      {!info && !isFallback && isReady ? (
-        <DAONotFound />
-      ) : (
-        <DAOInfoContext.Provider value={info || DefaultDAOInfo}>
-          {children}
-        </DAOInfoContext.Provider>
-      )}
+      <SuspenseLoader fallback={<Loader />}>
+        {/* We only know a DAO is not found if info is still empty when
+         * when the page is ready and not a fallback page.
+         */}
+        {!info && !isFallback && isReady ? (
+          <DAONotFound />
+        ) : (
+          <DAOInfoContext.Provider value={info || DefaultDAOInfo}>
+            {children}
+          </DAOInfoContext.Provider>
+        )}
+      </SuspenseLoader>
     </>
   )
 }

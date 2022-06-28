@@ -261,6 +261,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: 'blocking',
 })
 
-export const getStaticProps = makeGetDAOStaticProps((_, t) => ({
+export const getStaticProps = makeGetDAOStaticProps(({ t }) => ({
   followingTitle: t('title.createAProposal'),
 }))

@@ -11,7 +11,7 @@ const tsConfig = fs.existsSync('tsconfig.json')
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
-  extends: ['next/core-web-vitals', require.resolve('./import')],
+  extends: ['next/core-web-vitals', 'plugin:prettier/recommended'],
   plugins: ['tailwindcss'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
@@ -20,30 +20,14 @@ const eslintConfig = {
     'tailwindcss/classnames-order': ['warn'],
   },
   overrides: [
-    // Prettier parsing conflicts with i18n-json rules for some reason.
-    {
-      files: ['**/*'],
-      excludedFiles: ['locales/**/*.json'],
-      extends: ['plugin:prettier/recommended'],
-    },
-    {
-      files: ['**/*.json', '**/*.json5', '**/*.jsonc'],
-      // Use i18n-json in i18n package for linting.
-      excludedFiles: ['locales/**/*.json'],
-      extends: ['plugin:jsonc/recommended-with-json', 'plugin:jsonc/prettier'],
-    },
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
-      extends: [
-        'plugin:prettier/recommended',
-        'plugin:react-i18n/recommended',
-        'plugin:i18next/recommended',
-      ],
+      extends: ['plugin:react-i18n/recommended', 'plugin:i18next/recommended'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
       },
-      plugins: ['@typescript-eslint', 'regex'],
+      plugins: ['@typescript-eslint', 'import', 'unused-imports', 'regex'],
       rules: {
         '@typescript-eslint/no-unused-vars': ['off'],
         'i18next/no-literal-string': [
@@ -73,9 +57,126 @@ const eslintConfig = {
             },
           },
         ],
+        'import/order': [
+          'error',
+          {
+            groups: ['builtin', 'external', 'internal'],
+            pathGroups: [
+              {
+                pattern: '@dao-dao/**',
+                group: 'external',
+                position: 'after',
+              },
+            ],
+            pathGroupsExcludedImportTypes: ['@dao-dao/**'],
+            'newlines-between': 'always',
+            alphabetize: {
+              order: 'asc',
+              caseInsensitive: true,
+            },
+          },
+        ],
+        'import/no-duplicates': 'error',
+        'sort-imports': [
+          'error',
+          {
+            // Let eslint-plugin-import handle declaration groups above.
+            ignoreDeclarationSort: true,
+            // Sort within import statements.
+            ignoreMemberSort: false,
+          },
+        ],
+        'unused-imports/no-unused-imports': 'error',
+        'unused-imports/no-unused-vars': [
+          'warn',
+          {
+            vars: 'all',
+            varsIgnorePattern: '^_',
+            args: 'after-used',
+            argsIgnorePattern: '^_',
+          },
+        ],
         'regex/invalid': [
           'error',
           [
+            {
+              regex: '\\@\\/\\.\\.\\/\\.\\.\\/packages',
+              replacement: '@dao-dao',
+              files: {
+                // Don't replace in this file since the pattern appears above.
+                ignore: 'import\\.js',
+              },
+              message:
+                'Import from @dao-dao/* instead of a relative path (i.e. replace "@/../../packages" with "@dao-dao").',
+            },
+            {
+              regex: '\\@dao\\-dao\\/ui\\/(components|theme)[^\'"]*',
+              replacement: '@dao-dao/ui',
+              files: {
+                // Don't replace in this file since the pattern appears above.
+                ignore: 'import\\.js',
+              },
+              message:
+                'Import from root @dao-dao/ui instead of a direct path. Ensure the export has been added to its sibling index.',
+            },
+            {
+              regex: '\\@dao\\-dao\\/state\\/hooks\\/clients[^\'"]*',
+              files: {
+                // Don't replace in this file since the pattern appears above.
+                ignore: 'import\\.js',
+              },
+              message:
+                'Import from root @dao-dao/state using a grouped export, such as CwCoreHooks, instead of a direct path.',
+            },
+            {
+              regex: '\\@dao\\-dao\\/state\\/recoil\\/selectors[^\'"]*',
+              files: {
+                // Don't replace in this file since the pattern appears above.
+                ignore: 'import\\.js',
+              },
+              message:
+                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreSelectors.',
+            },
+            {
+              regex: '(?:\\.\\.\\/)+(atoms|components|hooks|util)',
+              replacement: {
+                function: '"@/" + $[1]',
+              },
+              files: {
+                // Only in apps.
+                inspect: 'apps\\/.+',
+              },
+              message:
+                'Import from root using prefix @/ instead of a relative path.',
+            },
+            {
+              regex:
+                '(?:(?:\\.\\.\\/)+|\\@\\/)(atoms|components|hooks|util)/[^\'"]+',
+              replacement: {
+                function: '"@/" + $[1]',
+              },
+              files: {
+                // Only in apps.
+                inspect: 'apps\\/.+',
+              },
+              message:
+                'Import from root @/ instead of a direct path. Ensure the export has been added to its sibling index.',
+            },
+            {
+              regex: "from '(react-)?i18next'",
+              message:
+                'You probably should not be using this. Use the `useTranslation` hook within a component.',
+            },
+            {
+              regex: '_probablyDontUseThisI18n',
+              files: {
+                // Don't replace in this file since the pattern appears above.
+                // Or the @dao-dao/i18n index.ts file where it is defined.
+                ignore: 'import\\.js|packages\\/i18n\\/index\\.ts',
+              },
+              message:
+                'You probably should not be using this. See the comment in the `index.ts` of the `@dao-dao/i18n` package.',
+            },
             {
               regex: '(\\bt\\(\\s*\'[^\\.\']+\'|i18nKey="[^\\."]+")',
               message:

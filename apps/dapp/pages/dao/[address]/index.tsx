@@ -258,7 +258,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps(async ({ image_url }) => {
+  makeGetDAOStaticProps(async ({ config: { image_url } }) => {
     if (!image_url) {
       return
     }

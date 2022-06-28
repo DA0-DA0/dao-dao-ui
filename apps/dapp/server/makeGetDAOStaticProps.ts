@@ -1,3 +1,4 @@
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 // eslint-disable-next-line regex/invalid
 import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps } from 'next'
@@ -46,10 +47,13 @@ interface GetStaticPropsMakerProps {
   additionalProps?: Record<string, any> | null | undefined
 }
 type GetStaticPropsMaker = (
-  getProps?: (
-    config: ConfigResponse,
+  getProps?: (options: {
+    context: Parameters<GetStaticProps>[0]
     t: typeof serverT
-  ) =>
+    cwClient: CosmWasmClient
+    coreClient: CwCoreQueryClient
+    config: ConfigResponse
+  }) =>
     | GetStaticPropsMakerProps
     | undefined
     | null
@@ -58,12 +62,13 @@ type GetStaticPropsMaker = (
 
 // Computes DAOPageWrapperProps for the DAO with optional alterations.
 export const makeGetDAOStaticProps: GetStaticPropsMaker =
-  (getProps) =>
-  async ({ params: { address } = { address: undefined }, locale }) => {
+  (getProps) => async (context) => {
     // Don't query chain if running in CI.
     if (CI) {
       return { notFound: true }
     }
+
+    const { params: { address } = { address: undefined }, locale } = context
 
     // Run before any `t` call since i18n is not loaded globally on the
     // server before this is awaited.
@@ -134,7 +139,14 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         overrideDescription,
         overrideImageUrl,
         additionalProps,
-      } = (await getProps?.(config, serverT)) ?? {}
+      } =
+        (await getProps?.({
+          context,
+          t: serverT,
+          cwClient,
+          coreClient,
+          config,
+        })) ?? {}
 
       return {
         props: {
@@ -168,7 +180,8 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         error instanceof Error &&
         (error.message.includes('not found') ||
           error.message.includes('Error parsing into type') ||
-          error.message.includes('unknown variant'))
+          error.message.includes('unknown variant') ||
+          error.message.includes('decoding bech32 failed'))
       ) {
         // Excluding `info` will render DAONotFound.
         return {
