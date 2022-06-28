@@ -33,7 +33,14 @@ import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, name, votingModuleType } = useDAOInfoContext()
+  const {
+    coreAddress,
+    name,
+    votingModuleType,
+    stakingContractAddress,
+    cw4GroupAddress,
+    governanceTokenAddress,
+  } = useDAOInfoContext()
   const { address: walletAddress, connected, refreshBalances } = useWallet()
   const [loading, setLoading] = useState(false)
 
@@ -184,10 +191,42 @@ const InnerProposalCreate = () => {
           </h2>
 
           <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
-            <p className="font-mono text-sm text-tertiary">{t('info.title')}</p>
+            <p className="font-mono text-sm text-tertiary">
+              {t('info.daoAddress')}
+            </p>
             <div className="col-span-2">
               <CopyToClipboard value={coreAddress} />
             </div>
+            {stakingContractAddress && (
+              <>
+                <p className="font-mono text-sm text-tertiary">
+                  {t('info.stakingAddress')}
+                </p>
+                <div className="col-span-2">
+                  <CopyToClipboard value={stakingContractAddress} />
+                </div>
+              </>
+            )}
+            {cw4GroupAddress && (
+              <>
+                <p className="font-mono text-sm text-tertiary">
+                  {t('info.groupAddress')}
+                </p>
+                <div className="col-span-2">
+                  <CopyToClipboard value={cw4GroupAddress} />
+                </div>
+              </>
+            )}
+            {governanceTokenAddress && (
+              <>
+                <p className="font-mono text-sm text-tertiary">
+                  {t('info.govTokenAddress')}
+                </p>
+                <div className="col-span-2">
+                  <CopyToClipboard value={governanceTokenAddress} />
+                </div>
+              </>
+            )}
           </div>
 
           <h2 className="mb-4 font-medium text-medium">
