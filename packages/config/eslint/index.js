@@ -11,11 +11,7 @@ const tsConfig = fs.existsSync('tsconfig.json')
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
-  extends: [
-    'next/core-web-vitals',
-    require.resolve('./import'),
-    'plugin:prettier/recommended',
-  ],
+  extends: ['next/core-web-vitals', require.resolve('./import')],
   plugins: ['tailwindcss'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
@@ -24,8 +20,16 @@ const eslintConfig = {
     'tailwindcss/classnames-order': ['warn'],
   },
   overrides: [
+    // Prettier parsing conflicts with i18n-json rules for some reason.
+    {
+      files: ['**/*'],
+      excludedFiles: ['locales/**/*.json'],
+      extends: ['plugin:prettier/recommended'],
+    },
     {
       files: ['**/*.json', '**/*.json5', '**/*.jsonc'],
+      // Use i18n-json in i18n package for linting.
+      excludedFiles: ['locales/**/*.json'],
       extends: ['plugin:jsonc/recommended-with-json', 'plugin:jsonc/prettier'],
     },
     {
