@@ -1,4 +1,4 @@
-import '@dao-dao/ui/styles/index.css'
+import '@dao-dao/ui/styles/index.scss'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
