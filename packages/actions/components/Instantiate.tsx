@@ -166,7 +166,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       </div>
 
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name={t('form.admin')} />
+        <InputLabel name={`${t('form.admin')} (${t('form.optional')})`} />
         <TextInput
           disabled={readOnly}
           error={errors?.admin}
