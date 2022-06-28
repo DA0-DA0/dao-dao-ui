@@ -4,7 +4,10 @@ import { useCallback as CwAdminFactoryHooks } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { CwAdminFactoryClient as ExecuteClient } from '../../clients/cw-admin-factory'
-import { executeClient, ExecuteClientParams } from '../../recoil/selectors/clients/cw-admin-factory'
+import {
+  ExecuteClientParams,
+  executeClient,
+} from '../../recoil/selectors/clients/cw-admin-factory'
 import { FunctionKeyOf } from '../../types'
 
 const wrapExecuteHook =
@@ -28,4 +31,6 @@ const wrapExecuteHook =
     )
   }
 
-export const useInstantiateWithAdminFactory = wrapExecuteHook('instantiateContractWithSelfAdmin')
+export const useInstantiateWithAdminFactory = wrapExecuteHook(
+  'instantiateContractWithSelfAdmin'
+)
