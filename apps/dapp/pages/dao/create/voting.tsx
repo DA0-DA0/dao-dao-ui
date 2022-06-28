@@ -2,11 +2,12 @@ import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { PlaceholderToken } from '@dao-dao/icons'
-import { useWallet } from '@dao-dao/state'
+import { Cw20BaseSelectors, useWallet } from '@dao-dao/state'
 import {
   Button,
   ImageSelector,
@@ -17,9 +18,12 @@ import {
   RadioInput,
   Switch,
   TextInput,
+  TokenInfoDisplay,
 } from '@dao-dao/ui'
 import {
+  CHAIN_BECH32_PREFIX,
   formatPercentOf100,
+  isValidContractAddress,
   validateContractAddress,
   validatePercent,
   validatePositive,
@@ -63,6 +67,8 @@ const CreateDAOVotingPage: NextPage = () => {
     register,
     watch,
     errors,
+    clearErrors,
+    setError,
     setValue,
     getValues,
     formWrapperProps,
@@ -129,6 +135,54 @@ const CreateDAOVotingPage: NextPage = () => {
     false
   )
 
+  // Validate existing governance token.
+  const existingGovernanceTokenAddress =
+    governanceTokenEnabled &&
+    watchedNewDAO.governanceTokenOptions.type === GovernanceTokenType.Existing
+      ? watchedNewDAO.governanceTokenOptions.existingGovernanceTokenAddress
+      : undefined
+  const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
+    existingGovernanceTokenAddress &&
+      isValidContractAddress(
+        existingGovernanceTokenAddress,
+        CHAIN_BECH32_PREFIX
+      )
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: existingGovernanceTokenAddress,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+  useEffect(() => {
+    setValue(
+      'governanceTokenOptions.existingGovernanceTokenInfo',
+      existingGovernanceTokenInfoLoadable.state === 'hasValue'
+        ? existingGovernanceTokenInfoLoadable.contents
+        : undefined
+    )
+
+    if (existingGovernanceTokenInfoLoadable.state !== 'hasError') {
+      if (errors?.governanceTokenOptions?.existingGovernanceTokenInfo) {
+        clearErrors('governanceTokenOptions.existingGovernanceTokenInfo._error')
+      }
+      return
+    }
+
+    if (!errors?.governanceTokenOptions?.existingGovernanceTokenInfo) {
+      setError('governanceTokenOptions.existingGovernanceTokenInfo._error', {
+        type: 'manual',
+        message: t('error.failedToGetTokenInfo'),
+      })
+    }
+  }, [
+    clearErrors,
+    errors?.governanceTokenOptions?.existingGovernanceTokenInfo,
+    existingGovernanceTokenInfoLoadable,
+    setError,
+    setValue,
+    t,
+  ])
+
   const configCardProps: CreateDAOConfigCardSharedProps = {
     errors,
     newDAO: watchedNewDAO,
@@ -187,7 +241,10 @@ const CreateDAOVotingPage: NextPage = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-between">
-                      <InputLabel mono name={t('form.tokenSymbolTitle')} />
+                      <InputLabel
+                        mono
+                        name={t('form.governanceTokenSymbolTitle')}
+                      />
 
                       <div>
                         <div className="flex flex-row gap-2 items-center">
@@ -199,7 +256,9 @@ const CreateDAOVotingPage: NextPage = () => {
                               errors.governanceTokenOptions?.newInfo?.symbol
                             }
                             fieldName="governanceTokenOptions.newInfo.symbol"
-                            placeholder={t('form.tokenSymbolPlaceholder')}
+                            placeholder={t(
+                              'form.governanceTokenSymbolPlaceholder'
+                            )}
                             register={register}
                             validation={[validateRequired, validateTokenSymbol]}
                           />
@@ -291,7 +350,7 @@ const CreateDAOVotingPage: NextPage = () => {
                       <p className="hidden sm:flex">
                         $
                         {watchedNewDAO.governanceTokenOptions.newInfo.symbol ||
-                          t('info.token')}
+                          t('info.tokens')}
                       </p>
                     </div>
 
@@ -381,12 +440,33 @@ const CreateDAOVotingPage: NextPage = () => {
                     }
                     fieldName="governanceTokenOptions.existingGovernanceTokenAddress"
                     register={register}
-                    validation={[validateContractAddress, validateRequired]}
+                    validation={[
+                      validateContractAddress,
+                      validateRequired,
+                      () =>
+                        existingGovernanceTokenInfoLoadable.state !==
+                          'loading' ||
+                        !!watchedNewDAO.governanceTokenOptions
+                          .existingGovernanceTokenInfo ||
+                        t('info.verifyingGovernanceToken'),
+                    ]}
                   />
                   <InputErrorMessage
                     error={
                       errors.governanceTokenOptions
-                        ?.existingGovernanceTokenAddress
+                        ?.existingGovernanceTokenAddress ||
+                      errors.governanceTokenOptions?.existingGovernanceTokenInfo
+                        ?._error
+                    }
+                  />
+
+                  <TokenInfoDisplay
+                    loadingTokenInfo={
+                      existingGovernanceTokenInfoLoadable.state === 'loading'
+                    }
+                    tokenInfo={
+                      watchedNewDAO.governanceTokenOptions
+                        .existingGovernanceTokenInfo
                     }
                   />
                 </div>

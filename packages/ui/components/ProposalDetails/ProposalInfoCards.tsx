@@ -108,7 +108,7 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
               <YouTooltip label={t('info.didNotCastVote')} />
             )
           ) : (
-            <YouTooltip label={t('button.connectWalletToViewVote')} />
+            <YouTooltip label={t('info.connectWalletToViewVote')} />
           )}
         </div>
       </div>

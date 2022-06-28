@@ -311,7 +311,12 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       onAction={onAction}
       onClose={onClose}
       proposalDeposit={
-        Number(proposalModuleConfig?.deposit_info?.deposit ?? '0') || undefined
+        proposalModuleConfig?.deposit_info?.deposit
+          ? convertMicroDenomToDenomWithDecimals(
+              proposalModuleConfig.deposit_info.deposit,
+              governanceTokenInfo.decimals
+            )
+          : undefined
       }
       setAmount={(newAmount) => setAmount(newAmount)}
       stakableTokens={convertMicroDenomToDenomWithDecimals(

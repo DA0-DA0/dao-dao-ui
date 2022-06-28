@@ -299,8 +299,9 @@ export const CreateDAOProposalDepositCard: FC<
   newDAO: {
     governanceTokenOptions: {
       type,
-      newInfo: { symbol },
+      newInfo: { symbol: newSymbol },
       proposalDeposit: { value },
+      existingGovernanceTokenInfo: { symbol: existingSymbol } = {},
     },
   },
   register,
@@ -320,31 +321,40 @@ export const CreateDAOProposalDepositCard: FC<
     >
       {readOnly ? (
         <InputThemedText>
-          {value}{' '}
-          {type === GovernanceTokenType.New ? '$' + symbol : t('info.tokens')}
+          {value} $
+          {(type === GovernanceTokenType.New ? newSymbol : existingSymbol) ||
+            t('info.tokens')}
         </InputThemedText>
       ) : (
-        <NumberInput
-          disabled={readOnly}
-          error={errors?.governanceTokenOptions?.proposalDeposit?.value}
-          fieldName="governanceTokenOptions.proposalDeposit.value"
-          onPlusMinus={[
-            () =>
-              setValue(
-                'governanceTokenOptions.proposalDeposit.value',
-                Math.max(value + 1, 0)
-              ),
-            () =>
-              setValue(
-                'governanceTokenOptions.proposalDeposit.value',
-                Math.max(value - 1, 0)
-              ),
-          ]}
-          register={register}
-          sizing="sm"
-          step={1}
-          validation={[validateNonNegative]}
-        />
+        <div className="flex flex-row gap-2 items-center">
+          <NumberInput
+            disabled={readOnly}
+            error={errors?.governanceTokenOptions?.proposalDeposit?.value}
+            fieldName="governanceTokenOptions.proposalDeposit.value"
+            onPlusMinus={[
+              () =>
+                setValue(
+                  'governanceTokenOptions.proposalDeposit.value',
+                  Math.max(value + 1, 0)
+                ),
+              () =>
+                setValue(
+                  'governanceTokenOptions.proposalDeposit.value',
+                  Math.max(value - 1, 0)
+                ),
+            ]}
+            register={register}
+            sizing="sm"
+            step={1}
+            validation={[validateNonNegative]}
+          />
+
+          <p className="text-tertiary">
+            $
+            {(type === GovernanceTokenType.New ? newSymbol : existingSymbol) ||
+              t('info.tokens')}
+          </p>
+        </div>
       )}
     </CreateDAOConfigCard>
   )

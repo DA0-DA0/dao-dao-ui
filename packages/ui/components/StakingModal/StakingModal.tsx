@@ -117,7 +117,7 @@ export const StakingModal: FC<StakingModalProps> = ({
           amount={amount}
           max={stakableTokens}
           mode={mode}
-          proposalDeposit={proposalDeposit || 5}
+          proposalDeposit={proposalDeposit}
           setAmount={(amount: number) => setAmount(amount)}
           tokenDecimals={tokenDecimals}
           tokenSymbol={tokenSymbol}
