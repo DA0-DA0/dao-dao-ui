@@ -196,34 +196,32 @@ input[type='number']::-webkit-outer-spin-button {
   .styled-scrollbar {
     scrollbar-color: rgba(var(--dark), 0.1);
     scrollbar-width: thin;
-
-    &::-webkit-scrollbar {
-      width: 0.3rem;
-      height: 0.3rem;
-    }
-    &::-webkit-scrollbar-track {
-      width: 0.3rem;
-      height: 0.3rem;
-      background-color: rgba(var(--dark), 0.05);
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(var(--dark), 0.1);
-      cursor: pointer;
-      border-radius: 999px;
-    }
+  }
+  .styled-scrollbar::-webkit-scrollbar {
+    width: 0.3rem;
+    height: 0.3rem;
+  }
+  .styled-scrollbar::-webkit-scrollbar-track {
+    width: 0.3rem;
+    height: 0.3rem;
+    background-color: rgba(var(--dark), 0.05);
+  }
+  .styled-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--dark), 0.1);
+    cursor: pointer;
+    border-radius: 999px;
   }
 
   .no-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
-
-    &::-webkit-scrollbar,
-    &::-webkit-scrollbar-track,
-    &::-webkit-scrollbar-thumb {
-      display: none;
-      width: 0;
-      height: 0;
-      background-color: transparent;
-    }
+  }
+  .no-scrollbar::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar-track,
+  .no-scrollbar::-webkit-scrollbar-thumb {
+    display: none;
+    width: 0;
+    height: 0;
+    background-color: transparent;
   }
 }
