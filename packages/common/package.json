@@ -6,10 +6,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/ui": "*",
-    "@dao-dao/state": "*",
-    "@dao-dao/utils": "*",
     "@dao-dao/actions": "*",
+    "@dao-dao/state": "*",
+    "@dao-dao/ui": "*",
+    "@dao-dao/utils": "*",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },
