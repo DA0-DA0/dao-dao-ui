@@ -13,8 +13,8 @@ import {
   CHAIN_ID,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
+  nativeTokenLabel,
 } from '@dao-dao/utils'
 
 export interface ConnectWalletButtonProps extends Partial<WalletConnectProps> {
@@ -40,8 +40,6 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
     nativeBalance ?? 0,
     NATIVE_DECIMALS
   )
-  const chainDenomHuman =
-    convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
 
   if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {
     return <NoMobileWallet />
@@ -55,7 +53,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
       onDisconnect={isMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
-      walletBalanceDenom={chainDenomHuman}
+      walletBalanceDenom={nativeTokenLabel(NATIVE_DENOM)}
       walletName={name}
       {...props}
     />
@@ -67,7 +65,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
       onDisconnect={isMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
       walletBalance={walletBalanceHuman}
-      walletBalanceDenom={chainDenomHuman}
+      walletBalanceDenom={nativeTokenLabel(NATIVE_DENOM)}
       walletName={name}
       {...props}
     />

@@ -20,8 +20,8 @@ import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   VotingModuleType,
-  convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
+  nativeTokenLabel,
 } from '@dao-dao/utils'
 
 import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
@@ -89,8 +89,7 @@ export const Header: FunctionComponent = () => {
     nativeBalance !== undefined
       ? convertMicroDenomToDenomWithDecimals(nativeBalance, NATIVE_DECIMALS)
       : 0
-  const humanDenom =
-    convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
+  const humanDenom = nativeTokenLabel(NATIVE_DENOM)
 
   const navItems = useMemo<NavItemData[]>(
     () => [
@@ -286,8 +285,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
     nativeBalance !== undefined
       ? convertMicroDenomToDenomWithDecimals(nativeBalance, NATIVE_DECIMALS)
       : 0
-  const humanDenom =
-    convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()
+  const humanDenom = nativeTokenLabel(NATIVE_DENOM)
 
   return (
     <>

@@ -26,13 +26,6 @@ export function convertDenomToMicroDenomWithDecimals(
   return isNaN(amount) ? '0' : String(amount)
 }
 
-export function convertDenomToHumanReadableDenom(denom: string): string {
-  if (denom.startsWith('u')) {
-    return denom.substring(1)
-  }
-  return denom
-}
-
 export function convertDenomToContractReadableDenom(denom: string): string {
   if (denom.startsWith('u')) {
     return denom

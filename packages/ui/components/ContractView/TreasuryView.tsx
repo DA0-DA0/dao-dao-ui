@@ -2,7 +2,6 @@ import { FC } from 'react'
 
 import {
   NATIVE_DENOM,
-  convertDenomToHumanReadableDenom,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -50,8 +49,7 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
     {!nativeTokens.length && (
       <BalanceListItem>
         {/* eslint-disable-next-line i18next/no-literal-string */}
-        <BalanceIcon /> 0 $
-        {convertDenomToHumanReadableDenom(NATIVE_DENOM).toUpperCase()}
+        <BalanceIcon /> 0 ${nativeTokenLabel(NATIVE_DENOM)}
       </BalanceListItem>
     )}
     {cw20Tokens.map(({ symbol, amount, decimals, imageUrl }) => (
