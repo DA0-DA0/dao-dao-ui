@@ -133,6 +133,7 @@
     "name": "Name",
     "onlyMembersExecuteTitle": "Only members execute",
     "onlyMembersExecuteTooltip": "If enabled, only members may execute passed proposals.",
+    "optional": "optional",
     "passingThresholdDescription": "The percentage of votes that must be 'yes' in order for a proposal to pass. For example, with a 50% passing threshold, half of the voting power must be in favor of a proposal to pass it. A majority passing threshold is recomended.",
     "passingThresholdTitle": "Passing threshold",
     "proposalDepositDescription": "The number of governance tokens that must be deposited to create a proposal. Setting this may deter spam, but setting it too high may limit broad participation.",

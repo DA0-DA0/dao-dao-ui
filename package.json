@@ -18,7 +18,8 @@
     "ui": "yarn workspace @dao-dao/ui",
     "utils": "yarn workspace @dao-dao/utils",
     "actions": "yarn workspace @dao-dao/actions",
-    "common": "yarn workspace @dao-dao/common"
+    "common": "yarn workspace @dao-dao/common",
+    "i18n": "yarn workspace @dao-dao/i18n"
   },
   "devDependencies": {
     "turbo": "latest"
