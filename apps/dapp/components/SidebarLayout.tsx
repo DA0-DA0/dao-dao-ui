@@ -12,6 +12,7 @@ import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import { SearchModal } from './SearchModal'
+import { WalletProvider } from './WalletProvider'
 import {
   betaWarningAcceptedAtom,
   installWarningVisibleAtom,
@@ -100,7 +101,7 @@ const SidebarLayoutInner: FC = ({ children }) => {
 }
 
 export const SidebarLayout: FC = ({ children }) => (
-  // <WalletProvider>
-  <SidebarLayoutInner>{children}</SidebarLayoutInner>
-  // </WalletProvider>
+  <WalletProvider>
+    <SidebarLayoutInner>{children}</SidebarLayoutInner>
+  </WalletProvider>
 )
