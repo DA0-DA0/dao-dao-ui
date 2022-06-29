@@ -1,5 +1,4 @@
 import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
-import { convertDenomToHumanReadableDenom } from './conversion'
 import ibcAssets from './ibc_assets.json'
 
 export function nativeTokenLabel(denom: string): string {
@@ -9,7 +8,10 @@ export function nativeTokenLabel(denom: string): string {
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
   // If no asset, assume it's already a microdenom.
-  return asset?.symbol || convertDenomToHumanReadableDenom(denom).toUpperCase()
+  return (
+    asset?.symbol ||
+    (denom.startsWith('u') ? denom.substring(1) : denom).toUpperCase()
+  )
 }
 
 export function nativeTokenLogoURI(denom: string): string | undefined {

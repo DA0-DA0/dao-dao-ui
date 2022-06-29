@@ -15,7 +15,6 @@ import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   StakeType,
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
@@ -65,9 +64,6 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
   const validatePossibleSpend = useCallback(
     (denom: string, amount: string): string | boolean => {
-      const humanReadableDenom =
-        convertDenomToHumanReadableDenom(denom).toUpperCase()
-
       const native = nativeBalances.find((coin) => coin.denom === denom)
       if (native) {
         const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
@@ -84,7 +80,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
             Number(native.amount) === 0
               ? 'has no'
               : `only has ${humanReadableAmount}`
-          } ${humanReadableDenom}, which is insufficient.`
+          } ${nativeTokenLabel(denom)}, which is insufficient.`
         )
       }
 
@@ -92,7 +88,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       // query will return an empty list, so check explicitly if the
       // native currency is selected.
       if (denom === NATIVE_DENOM) {
-        return `The treasury has no ${humanReadableDenom}, so you can't stake any tokens.`
+        return `The treasury has no ${nativeTokenLabel(
+          denom
+        )}, so you can't stake any tokens.`
       }
 
       return 'Unrecognized denom.'
