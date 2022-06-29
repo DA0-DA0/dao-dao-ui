@@ -102,8 +102,8 @@ const InnerMobileMultisigHome = () => {
         {tab === MobileMenuTabSelection.Proposal && (
           <ContractProposalsDisplay
             contractAddress={contractAddress}
-            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
             multisig
+            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
           />
         )}
         {tab === MobileMenuTabSelection.Members && (
@@ -137,7 +137,7 @@ const InnerMultisigHome = () => {
     <div className="flex flex-row lg:grid lg:grid-cols-6">
       <div className="col-span-4 w-full min-h-screen">
         <GradientHero>
-          <div className="w-full border-b bg-accent-transparent border-inactive px-6 py-3 flex items-center justify-center">
+          <div className="flex justify-center items-center py-3 px-6 w-full bg-accent-transparent border-b border-inactive">
             <p className="text-center">
               This is a beta Multisig.{' '}
               <a

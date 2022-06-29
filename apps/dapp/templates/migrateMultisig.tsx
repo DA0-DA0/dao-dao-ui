@@ -1,4 +1,5 @@
-import { ExecuteResult, InstantiateResult } from '@cosmjs/cosmwasm-stargate'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowRightIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -39,7 +40,6 @@ import {
 import { TemplateComponent } from './templateList'
 import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from '@/pages/dao/create'
 import { listMembers } from '@/selectors/multisigs'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 
 export interface MigrateData {
   name: string
@@ -187,32 +187,31 @@ export const MigrateMultisigComponent: TemplateComponent = ({
     }
 
     const factory_msg = {
-        instantiate_contract_with_self_admin: {
-          code_id: V1_CORE_ID,
-          label: formData.name,
-          instantiate_msg: btoa(
-            JSON.stringify(core_msg))
-        }
+      instantiate_contract_with_self_admin: {
+        code_id: V1_CORE_ID,
+        label: formData.name,
+        instantiate_msg: btoa(JSON.stringify(core_msg)),
+      },
     }
 
     signingClient
-    ?.execute(
-      walletAddress as string,
-      V1_FACTORY_CONTRACT_ADDRESS,
-      factory_msg,
-      'auto'
-    )
-    .then((response: void | ExecuteResult) => {
-      if (!response) {
-        return
-      }
-      const contractAddress = findAttribute(
-        response.logs,
-        'wasm',
-        'set contract admin as itself'
-      ).value
+      ?.execute(
+        walletAddress as string,
+        V1_FACTORY_CONTRACT_ADDRESS,
+        factory_msg,
+        'auto'
+      )
+      .then((response: void | ExecuteResult) => {
+        if (!response) {
+          return
+        }
+        const contractAddress = findAttribute(
+          response.logs,
+          'wasm',
+          'set contract admin as itself'
+        ).value
 
-      setNewAddress(contractAddress)
+        setNewAddress(contractAddress)
         setValue(
           'description',
           proposalDescription +

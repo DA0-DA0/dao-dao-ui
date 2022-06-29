@@ -81,7 +81,8 @@ export const V1_CORE_ID = parseInt(
   process.env.NEXT_PUBLIC_V1_CORE_ID as string,
   10
 )
-export const V1_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
+export const V1_FACTORY_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
 
 export const V1_CW4_VOTING_ID = parseInt(
   process.env.NEXT_PUBLIC_V1_CW4_VOTING_ID as string,

@@ -29,17 +29,17 @@ import {
   transformCustomToCosmos,
 } from './custom'
 import {
-  MigrateMultisigComponent,
-  multisigMigrateDefaults,
-  transformCosmosToMigrateMultisig,
-  transformMigrateMultisigToCosmos,
-} from './migrateMultisig'
-import {
   MigrateContractComponent,
   migrateContractDefaults,
   transformCosmosToMigrateContract,
   transformMigrateContractToCosmos,
 } from './migrateContract'
+import {
+  MigrateMultisigComponent,
+  multisigMigrateDefaults,
+  transformCosmosToMigrateMultisig,
+  transformMigrateMultisigToCosmos,
+} from './migrateMultisig'
 import {
   MintComponent,
   mintDefaults,
