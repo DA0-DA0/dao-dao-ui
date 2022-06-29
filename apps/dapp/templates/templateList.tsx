@@ -71,6 +71,12 @@ import {
   transformStakeToCosmos,
 } from './stake'
 import {
+  StakingUpdateComponent,
+  stakingUpdateDefaults,
+  transformCosmosToStakingUpdate,
+  transformStakingUpdateToCosmos,
+} from './stakingUpdate'
+import {
   transformCosmosToUpdateMinter,
   transformUpdateMinterToCosmos,
   UpdateMinterComponent,
@@ -148,6 +154,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: migrateContractDefaults,
     toCosmosMsg: transformMigrateContractToCosmos,
     fromCosmosMsg: transformCosmosToMigrateContract,
+  },
+  {
+    label: '🌳 Update Staking Config',
+    description: 'Update the config of a v1 staking contract.',
+    component: StakingUpdateComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: stakingUpdateDefaults,
+    toCosmosMsg: transformStakingUpdateToCosmos,
+    fromCosmosMsg: transformCosmosToStakingUpdate,
   },
   {
     label: '🔑 Update Minter',
