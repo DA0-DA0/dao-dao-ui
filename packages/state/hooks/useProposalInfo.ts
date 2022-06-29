@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -23,7 +23,8 @@ export const useProposalInfo = (
   proposalId?: number,
   { oldProposalsAddress }: UseProposalInfoOptions = {}
 ) => {
-  const { address: walletAddress } = useWallet()
+  // const { address: walletAddress } = useWallet()
+  const walletAddress = undefined
 
   const { proposalModuleAddress } = useProposalModule(coreAddress, {
     oldProposalsAddress,

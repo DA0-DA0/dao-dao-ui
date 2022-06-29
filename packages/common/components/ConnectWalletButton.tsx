@@ -1,4 +1,4 @@
-import { useWalletManager } from '@noahsaso/cosmodal'
+// import { useWalletManager } from '@noahsaso/cosmodal'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import { FC } from 'react'
@@ -21,13 +21,19 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
   className,
   ...props
 }) => {
-  const {
-    connect,
-    disconnect,
-    isEmbeddedKeplrMobileWeb,
-    connected,
-    connectedWallet: { name, address } = {},
-  } = useWalletManager()
+  // const {
+  //   connect,
+  //   disconnect,
+  //   isEmbeddedKeplrMobileWeb,
+  //   connected,
+  //   connectedWallet: { name, address } = {},
+  // } = useWalletManager()
+  const connect = () => {}
+  const disconnect = () => {}
+  const isEmbeddedKeplrMobileWeb = false
+  const connected = false
+  const name = undefined
+  const address = undefined
   const { walletBalance = 0 } = useWalletBalance()
 
   if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {

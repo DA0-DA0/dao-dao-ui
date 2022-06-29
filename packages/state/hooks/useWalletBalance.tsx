@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import {
   constSelector,
@@ -14,7 +14,8 @@ import {
 import { nativeBalanceSelector, refreshWalletBalancesIdAtom } from '../recoil'
 
 export const useWalletBalance = () => {
-  const { address } = useWallet()
+  // const { address } = useWallet()
+  const address = undefined
 
   // Fetch wallet balance.
   const {

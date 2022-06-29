@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
@@ -55,7 +55,8 @@ import { useCreateDAOForm } from '@/hooks'
 
 const CreateDAOVotingPage: NextPage = () => {
   const { t } = useTranslation()
-  const { address: walletAddress } = useWallet()
+  // const { address: walletAddress } = useWallet()
+  const walletAddress = undefined
   const {
     watchedNewDAO,
     tiersAreUntouched,

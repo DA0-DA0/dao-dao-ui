@@ -1,5 +1,5 @@
-import { useWallet } from '@noahsaso/cosmodal'
-import React, { FunctionComponent, ReactNode, useState } from 'react'
+// import { useWallet } from '@noahsaso/cosmodal'
+import { FunctionComponent, ReactNode, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
@@ -45,7 +45,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   connectWalletButton,
   coreAddress,
 }) => {
-  const { address: walletAddress, connected } = useWallet()
+  // const { address: walletAddress, connected } = useWallet()
+  const connected = false
+  const walletAddress = undefined
   const { refreshBalances } = useWalletBalance()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)

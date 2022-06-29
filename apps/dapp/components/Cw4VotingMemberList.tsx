@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import { FC } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'
@@ -20,7 +20,8 @@ const InnerCw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
 }) => {
   const { coreAddress } = useDAOInfoContext()
 
-  const { address: walletAddress } = useWallet()
+  // const { address: walletAddress } = useWallet()
+  const walletAddress = undefined
   const { walletVotingWeight, totalVotingWeight, cw4VotingMembers } =
     useVotingModule(coreAddress, { fetchCw4VotingMembers: true })
 

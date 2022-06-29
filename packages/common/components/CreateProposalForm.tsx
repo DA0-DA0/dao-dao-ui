@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
@@ -70,7 +70,9 @@ export const CreateProposalForm = ({
   connectWalletButton,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
-  const { connected, address: walletAddress } = useWallet()
+  // const { connected, address: walletAddress } = useWallet()
+  const connected = false
+  const walletAddress = undefined
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { isMember } = useVotingModule(coreAddress)

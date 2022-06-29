@@ -1,5 +1,5 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
-import { useWalletManager } from '@noahsaso/cosmodal'
+// import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 import { useRecoilValue } from 'recoil'
@@ -46,7 +46,8 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
     fetchClaims: true,
   })
 
-  const { connected } = useWalletManager()
+  // const { connected } = useWalletManager()
+  const connected = true
   const { refreshBalances } = useWalletBalance()
 
   // Set to a StakingMode to display modal.

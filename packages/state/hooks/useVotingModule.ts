@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
@@ -30,7 +30,8 @@ export const useVotingModule = (
   coreAddress: string,
   { fetchCw4VotingMembers }: UseVotingModuleOptions = {}
 ): UseVotingModuleResponse => {
-  const { address: walletAddress } = useWallet()
+  // const { address: walletAddress } = useWallet()
+  const walletAddress = undefined
   const votingModuleAddress = useRecoilValue(
     votingModuleSelector({ contractAddress: coreAddress })
   )

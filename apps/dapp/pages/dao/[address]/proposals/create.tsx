@@ -1,5 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
@@ -35,7 +35,9 @@ const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress, name, votingModuleType } = useDAOInfoContext()
-  const { address: walletAddress, connected } = useWallet()
+  // const { address: walletAddress, connected } = useWallet()
+  const connected = false
+  const walletAddress = undefined
   const { refreshBalances } = useWalletBalance()
   const [loading, setLoading] = useState(false)
 

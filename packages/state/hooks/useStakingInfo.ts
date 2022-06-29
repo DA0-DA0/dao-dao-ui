@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+// import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -46,7 +46,8 @@ export const useStakingInfo = (
     fetchWalletStakedValue = false,
   }: UseStakingOptions = {}
 ): UseStakingResponse => {
-  const { address: walletAddress } = useWallet()
+  // const { address: walletAddress } = useWallet()
+  const walletAddress = undefined
   const { stakingContractAddress } = useGovernanceTokenInfo(coreAddress)
 
   const stakingContractConfig = useRecoilValue(
