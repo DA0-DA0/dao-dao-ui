@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
+import { useWallet } from '@noahsaso/cosmodal'
 import { FC } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'

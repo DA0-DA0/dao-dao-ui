@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
+import { useWallet } from '@noahsaso/cosmodal'
 import React, { FunctionComponent, ReactNode, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'

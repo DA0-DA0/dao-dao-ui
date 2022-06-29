@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
+import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,

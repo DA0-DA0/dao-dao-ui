@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal/dist/components/WalletManagerContext'
+import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
