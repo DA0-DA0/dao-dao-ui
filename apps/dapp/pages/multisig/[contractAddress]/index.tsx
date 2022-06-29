@@ -103,6 +103,7 @@ const InnerMobileMultisigHome = () => {
           <ContractProposalsDisplay
             contractAddress={contractAddress}
             proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
+            multisig
           />
         )}
         {tab === MobileMenuTabSelection.Members && (
