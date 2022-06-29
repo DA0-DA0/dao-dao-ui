@@ -19,6 +19,6 @@
     "react": "^18.1.0"
   },
   "peerDependencies": {
-    "@noahsaso/cosmodal": "^0.5.3"
+    "@noahsaso/cosmodal": "^0.5.7"
   }
 }
