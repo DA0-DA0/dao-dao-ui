@@ -10,7 +10,6 @@
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@heroicons/react": "^1.0.6",
-    "@noahsaso/cosmodal": "^0.5.3",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
     "fuse.js": "^6.6.2",
@@ -24,6 +23,9 @@
     "@dao-dao/types": "^1.0.0",
     "eslint": "^8.18.0",
     "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "@noahsaso/cosmodal": "^0.5.3"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

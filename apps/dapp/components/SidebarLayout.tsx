@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
+import { WalletProvider } from '@dao-dao/common'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
@@ -12,7 +13,6 @@ import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import { SearchModal } from './SearchModal'
-import { WalletProvider } from './WalletProvider'
 import {
   betaWarningAcceptedAtom,
   installWarningVisibleAtom,

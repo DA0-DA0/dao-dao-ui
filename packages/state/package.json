@@ -24,6 +24,9 @@
     "@walletconnect/types": "^1.7.8",
     "typescript": "^4.5.3"
   },
+  "peerDependencies": {
+    "@noahsaso/cosmodal": "^0.5.3"
+  },
   "prettier": "@dao-dao/config/prettier",
   "private": true
 }

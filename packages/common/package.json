@@ -10,7 +10,6 @@
     "@dao-dao/state": "*",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
-    "@noahsaso/cosmodal": "^0.5.3",
     "react": "^18.1.0",
     "recoil": "^0.7.2"
   },
@@ -19,6 +18,9 @@
     "@dao-dao/tsconfig": "*",
     "@dao-dao/types": "^1.0.0",
     "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "@noahsaso/cosmodal": "^0.5.3"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true
