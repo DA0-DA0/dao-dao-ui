@@ -1,4 +1,3 @@
-import { SearchIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
@@ -21,12 +20,11 @@ const SearchBoxInternal: FC<SearchBoxInternalProps> = ({
 
   return (
     <div className="flex items-center px-3 text-tertiary border-b border-default">
-      <SearchIcon className="w-5" />
       <input
         autoFocus
-        className="p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
+        className="px-2 py-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
         onChange={(event) => refine(event.currentTarget.value)}
-        placeholder={t('search')}
+        placeholder={t('What are you looking for?')}
         type="text"
         value={currentRefinement}
       />

@@ -1,11 +1,12 @@
 import { instantMeiliSearch } from '@meilisearch/instant-meilisearch'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { InstantSearch } from 'react-instantsearch-dom'
 
 import { Modal } from '@dao-dao/ui'
 import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
 import { SearchBox, SearchHits } from '@/components'
+import { daoSelector } from '@/../../packages/state/recoil/selectors/clients/cw4-voting'
 
 export interface SearchModalProps {
   onClose: () => void
@@ -13,17 +14,40 @@ export interface SearchModalProps {
 
 const searchClient = instantMeiliSearch(SEARCH_URL, SEARCH_API_KEY)
 
-export const SearchModal: FC<SearchModalProps> = ({ onClose }) => (
-  <Modal
-    containerClassName="p-0 border w-full max-w-[750px] h-[550px] max-h-[90vh]"
-    hideCloseButton
-    onClose={onClose}
-  >
-    <InstantSearch indexName={SEARCH_INDEX} searchClient={searchClient}>
-      <div className="flex overflow-hidden flex-col w-full h-full bg-primary rounded-lg">
-        <SearchBox />
-        <SearchHits />
-      </div>
-    </InstantSearch>
-  </Modal>
+type SearchState =
+  | { type: 'home' }
+  | { type: 'find_dao' }
+  | { type: 'dao_chosen'; id: string; name: string }
+
+const SearchNavElem: FC<{ name: string }> = ({ name }) => (
+  <div className="p-2 font-medium rounded-md bg-secondary w-fit">{name}</div>
 )
+
+export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
+  const [searchState, setSearchState] = useState<SearchState>({ type: 'home' })
+
+  return (
+    <Modal
+      containerClassName="p-0 border w-full max-w-[750px] h-[450px] max-h-[90vh]"
+      hideCloseButton
+      onClose={onClose}
+    >
+      {/* Modify Meili-search options here based on `searchState` */}
+      <InstantSearch indexName={SEARCH_INDEX} searchClient={searchClient}>
+        <div className="flex overflow-hidden flex-col w-full h-full bg-primary rounded-lg">
+          <div className="flex px-4 pt-4 text-tertiary">
+            <SearchNavElem name="Home" />
+            {searchState.type == 'find_dao' ? (
+              <SearchNavElem name="Searching DAOs" />
+            ) : searchState.type == 'dao_chosen' ? (
+              <SearchNavElem name={daoSelector.name} />
+            ) : undefined}
+          </div>
+          {/* You need to modify the architecture of the box and hits here... */}
+          <SearchBox />
+          <SearchHits />
+        </div>
+      </InstantSearch>
+    </Modal>
+  )
+}

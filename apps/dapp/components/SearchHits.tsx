@@ -5,16 +5,41 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { connectHits } from 'react-instantsearch-dom'
 
-interface Hit {
+interface DaoHit {
   id: string
   name: string
   description: string
   image_url: string | undefined
   proposal_count: number
   treasury_balance: string
+  hit_type: 'dao'
 }
 
-const HitView = ({ hit, selected }: { hit: Hit; selected: boolean }) => {
+interface ActionHit {
+  id: string 
+  name: string 
+  hit_type: 'dapp_action' 
+}
+
+interface DaoActionHit {
+  id: string  
+  name: string 
+  hit_type: 'dao_action'  
+}
+
+const DAPP_ACTIONS: ActionHit[] = [
+  { id: 'create_dao',  name: 'Create a DAO', hit_type: 'dapp_action' },
+  { id: 'navigate_dao', name: 'Go to DAO', hit_type: 'dapp_action' }
+] 
+
+const DAO_ACTIONS: DaoActionHit[] = [
+  { id: 'new_proposal', name: 'Start a new proposal', hit_type: 'dao_action' },
+  { id: 'add_token', name: 'Add token', hit_type: 'dao_action' },
+  { id: 'copy_dao_address', name: 'Copy DAO address', hit_type: 'dao_action' },
+  { id: 'goto_dao', name: 'Go to DAO page', hit_type: 'dao_action' } 
+]
+
+const HitView = ({ hit, selected }: { hit: DaoHit; selected: boolean }) => {
   const { t } = useTranslation()
   const router = useRouter()
   return (
@@ -83,7 +108,7 @@ const HitsInternal: FC<any> = ({ hits }) => {
     <>
       <div className="flex flex-col overflow-hidden overflow-y-auto grow px-4 py-2 justify-start">
         <div className="font-medium py-1 text-gray-400">DAOs</div>
-        {hits.map((hit: Hit, index: number) => (
+        {hits.map((hit: DaoHit, index: number) => (
           <HitView key={hit.id} hit={hit} selected={index === selection} />
         ))}
       </div>
