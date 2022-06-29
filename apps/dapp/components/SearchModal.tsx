@@ -7,6 +7,7 @@ import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
 import { SearchBox, SearchHits } from '@/components'
 import { daoSelector } from '@/../../packages/state/recoil/selectors/clients/cw4-voting'
+import { useRouter } from 'next/router'
 
 export interface SearchModalProps {
   onClose: () => void
@@ -24,6 +25,7 @@ const SearchNavElem: FC<{ name: string }> = ({ name }) => (
 )
 
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
+  const router = useRouter()
   const [searchState, setSearchState] = useState<SearchState>({ type: 'home' })
 
   return (
@@ -45,7 +47,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
           </div>
           {/* You need to modify the architecture of the box and hits here... */}
           <SearchBox />
-          <SearchHits />
+          <SearchHits onEnter={(hit) => router.push(`/dao/${hit.id}`)} />
         </div>
       </InstantSearch>
     </Modal>

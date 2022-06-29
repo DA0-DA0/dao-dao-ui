@@ -5,6 +5,8 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { connectHits } from 'react-instantsearch-dom'
 
+type Hit = DaoHit | ActionHit | DaoActionHit
+
 interface DaoHit {
   id: string
   name: string
@@ -69,7 +71,7 @@ const HitView = ({ hit, selected }: { hit: DaoHit; selected: boolean }) => {
 
 // Need to use `any` here as instantsearch does't export the required
 // types.
-const HitsInternal: FC<any> = ({ hits }) => {
+const HitsInternal: FC<any> = ({ hits, onEnter }) => {
   const router = useRouter()
   const [selection, setSelection] = useState(0)
 
@@ -85,9 +87,7 @@ const HitsInternal: FC<any> = ({ hits }) => {
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'Enter':
-          if (selection >= 0) {
-            router.push(`/dao/${hits[selection].id}`)
-          }
+          onEnter(hits[selection])
           break
       }
     },
