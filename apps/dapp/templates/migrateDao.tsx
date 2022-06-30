@@ -315,7 +315,7 @@ export const MigrateDaoComponent: TemplateComponent = ({
                   // This is really only a form in the sense that it
                   // uses the react-hook-form API. There is no actual
                   // user input. Here, we add spend messages for all
-                  // of the multisigs treasury tokens.
+                  // of the DAOs treasury tokens.
                   const nativeSpends = nativeBalances?.map(
                     ({ amount, denom }) => ({
                       to: newAddress,
@@ -352,8 +352,8 @@ export const MigrateDaoComponent: TemplateComponent = ({
             3
           </div>
           <p>
-            Congrats! 🎉 Passing this proposal will migrate your multisig by
-            sending your treasury to the new v1 DAO.
+            Congrats! 🎉 Passing this proposal will migrate your DAO by sending
+            your treasury to the new v1 DAO.
           </p>
         </div>
       )}
