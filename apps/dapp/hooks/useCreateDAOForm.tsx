@@ -14,7 +14,7 @@ import toast from 'react-hot-toast'
 import { useRecoilState } from 'recoil'
 
 import { useTranslation } from '@dao-dao/i18n'
-import { CwAdminFactoryHooks, CwCoreHooks, useWallet } from '@dao-dao/state'
+import { CwAdminFactoryHooks, useWallet } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -144,11 +144,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
     invalidPages.map(String).join(),
   ])
 
-  const instantiate = CwCoreHooks.useInstantiate({
-    codeId: CWCORE_CODE_ID,
-    sender: walletAddress ?? '',
-  })
-
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
       contractAddress: V1_FACTORY_CONTRACT_ADDRESS ?? '',
@@ -231,7 +226,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
       pageIndex,
       connected,
       createDAOWithFactory,
-      instantiate,
       instantiateWithFactory,
       refreshBalances,
       setPinned,

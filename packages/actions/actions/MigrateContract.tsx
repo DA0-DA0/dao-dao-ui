@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { VotingModuleType } from '@dao-dao/utils'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components'
 import {
