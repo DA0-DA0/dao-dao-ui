@@ -1,5 +1,6 @@
 export * from './FeaturedDaos'
 export * from './dao'
+export * from './home'
 export * from './proposals'
 export * from './splash'
 
