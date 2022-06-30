@@ -9,12 +9,17 @@ import {
   ProposalResponse,
   Status,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import { OpenPinnedProposalLine, TooltipIcon } from '@dao-dao/ui'
+import {
+  Loader,
+  OpenPinnedProposalLine,
+  SuspenseLoader,
+  TooltipIcon,
+} from '@dao-dao/ui'
 import { expirationAtTimeToSecondsFromNow } from '@dao-dao/utils'
 
 import { usePinnedDAOs } from '@/hooks'
 
-export const PinnedProposalsList: FC = () => {
+const InnerPinnedProposalsList: FC = () => {
   const { t } = useTranslation()
   const {
     pinnedAddresses,
@@ -155,13 +160,13 @@ export const PinnedProposalsList: FC = () => {
 
   return openProposalResponses.length > 0 ? (
     <div>
-      <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
+      <div className="flex gap-4 justify-between items-center mb-4 primary-text">
         <div className="flex gap-1 items-center">
           <DocumentTextIcon className="inline w-4" />
-          {t('title.openProposals')}
+          <p>{t('title.openProposals')}</p>
           <TooltipIcon label={t('info.openProposalsTooltip')} />
         </div>
-      </h2>
+      </div>
       <div className="flex flex-col gap-2 md:gap-1">
         {openProposalResponses.map(({ coreAddress, daoConfig, response }) => (
           <OpenPinnedProposalLine
@@ -175,4 +180,25 @@ export const PinnedProposalsList: FC = () => {
       </div>
     </div>
   ) : null
+}
+
+export const PinnedProposalsList: FC = () => {
+  const { t } = useTranslation()
+
+  return (
+    <SuspenseLoader
+      fallback={
+        <div>
+          <div className="flex gap-1 items-center">
+            <DocumentTextIcon className="inline w-4" />
+            <p>{t('title.openProposals')}</p>
+            <TooltipIcon label={t('info.openProposalsTooltip')} />
+          </div>
+          <Loader />
+        </div>
+      }
+    >
+      <InnerPinnedProposalsList />
+    </SuspenseLoader>
+  )
 }
