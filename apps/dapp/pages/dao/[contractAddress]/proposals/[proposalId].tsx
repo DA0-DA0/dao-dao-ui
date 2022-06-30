@@ -4,7 +4,7 @@ import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
-import { CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
+import { CHAIN_RPC_ENDPOINT, V1_URL } from '@dao-dao/utils'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { ProposalDetails } from '@/components/ProposalDetails'
@@ -112,8 +112,7 @@ export const getStaticProps: GetStaticProps = async ({
       return {
         redirect: {
           destination:
-            process.env.NEXT_PUBLIC_V1_URL_PREFIX +
-            `/dao/${contractAddress}/proposals/${proposalId}`,
+            V1_URL + `/dao/${contractAddress}/proposals/${proposalId}`,
           permanent: false,
         },
       }

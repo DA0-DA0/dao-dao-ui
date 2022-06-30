@@ -11,7 +11,11 @@ import {
   Breadcrumbs,
   MobileMenuTab,
 } from '@dao-dao/ui'
-import { CHAIN_RPC_ENDPOINT, cosmWasmClientRouter } from '@dao-dao/utils'
+import {
+  CHAIN_RPC_ENDPOINT,
+  cosmWasmClientRouter,
+  V1_URL,
+} from '@dao-dao/utils'
 
 import { pinnedDaosAtom } from '@/atoms/pinned'
 import { ContractHeader } from '@/components/ContractHeader'
@@ -280,8 +284,7 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
     ) {
       return {
         redirect: {
-          destination:
-            process.env.NEXT_PUBLIC_V1_URL_PREFIX + `/dao/${contractAddress}`,
+          destination: V1_URL + `/dao/${contractAddress}`,
           permanent: false,
         },
       }

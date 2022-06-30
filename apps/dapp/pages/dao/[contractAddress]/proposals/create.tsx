@@ -8,7 +8,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
 import { CopyToClipboard, Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
-import { CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
+import { CHAIN_RPC_ENDPOINT, V1_URL } from '@dao-dao/utils'
 
 import { proposalsCreatedAtom } from '@/atoms/proposals'
 import { ProposalData, ProposalForm } from '@/components/ProposalForm'
@@ -198,9 +198,7 @@ export const getStaticProps: GetStaticProps = async ({
     ) {
       return {
         redirect: {
-          destination:
-            process.env.NEXT_PUBLIC_V1_URL_PREFIX +
-            `/dao/${contractAddress}/proposals/create`,
+          destination: V1_URL + `/dao/${contractAddress}/proposals/create`,
           permanent: false,
         },
       }
