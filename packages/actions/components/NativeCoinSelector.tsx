@@ -101,7 +101,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
 
   return (
     <div className={className}>
-      <div className="flex flex-row items-stretch gap-2">
+      <div className="flex flex-row gap-2 items-stretch">
         <NumberInput
           disabled={readOnly}
           error={errors?.amount}
@@ -140,7 +140,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
 
         {!readOnly && (
           <button onClick={onRemove} type="button">
-            <XIcon className="h-4 w-4 text-error" />
+            <XIcon className="w-4 h-4 text-error" />
           </button>
         )}
       </div>

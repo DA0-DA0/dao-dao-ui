@@ -9,7 +9,7 @@ export interface HeroProps {
 }
 
 export const VoteHero = ({ children }: HeroProps) => (
-  <div className="relative overflow-hidden rounded-lg bg-disabled">
+  <div className="overflow-hidden relative bg-disabled rounded-lg">
     <HeroOverlay />
     {children}
   </div>

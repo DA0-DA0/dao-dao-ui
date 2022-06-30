@@ -11,9 +11,9 @@ export interface DescriptionAndAidropAllocationProps {
 export const DescriptionAndAirdropAllocation: FC<
   DescriptionAndAidropAllocationProps
 > = ({ missionMarkdown }) => (
-  <div className="flex grid-cols-5 flex-wrap rounded-lg bg-disabled md:grid md:gap-3">
+  <div className="flex flex-wrap grid-cols-5 bg-disabled rounded-lg md:grid md:gap-3">
     <MarkdownPreview
-      className="body-text prose-h2:header-text prose-h3:title-text col-span-3 max-w-full border-b border-inactive p-10 prose-h2:mb-6 prose-h3:mb-4 md:border-r md:border-b-0"
+      className="col-span-3 p-10 prose-h2:mb-6 prose-h3:mb-4 max-w-full border-b border-inactive md:border-r md:border-b-0 body-text prose-h2:header-text prose-h3:title-text"
       markdown={missionMarkdown}
     />
 

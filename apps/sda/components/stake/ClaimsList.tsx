@@ -43,8 +43,8 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
 
   return (
     <>
-      <div className="flex flex-row items-center justify-between">
-        <p className="title-text text-lg">
+      <div className="flex flex-row justify-between items-center">
+        <p className="text-lg title-text">
           {t('title.unstakingNamedTokens', { name: governanceTokenInfo.name })}
         </p>
 
@@ -56,7 +56,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
       </div>
 
       {claims?.length ? (
-        <div className="!mt-4 flex flex-col items-stretch gap-1">
+        <div className="flex flex-col gap-1 items-stretch !mt-4">
           {claims.map((claim, idx) => (
             <ClaimsListItem
               key={idx}

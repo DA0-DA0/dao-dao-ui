@@ -40,9 +40,9 @@ export const TokenDistributionPie: FunctionComponent = () => {
   ]
 
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center gap-8 md:h-full md:flex-col">
+    <div className="flex flex-row flex-wrap gap-8 justify-center items-center md:flex-col md:h-full">
       <Pie
-        className="!h-48 !w-48 self-center"
+        className="self-center !w-48 !h-48"
         data={{
           datasets: [
             {
@@ -79,14 +79,14 @@ const LegendItem: FunctionComponent<LegendItemProps> = ({
   return (
     <div
       key={name}
-      className="grid grid-cols-[0.25rem_6ch_auto] items-center gap-3"
+      className="grid grid-cols-[0.25rem_6ch_auto] gap-3 items-center"
     >
       <div
-        className="shrink-02 h-2 w-2 rounded-full"
+        className="w-2 h-2 rounded-full shrink-02"
         style={{ backgroundColor: color }}
       ></div>
 
-      <p className="caption-text text-right font-mono text-tertiary">
+      <p className="font-mono text-right text-tertiary caption-text">
         {percent.toLocaleString(undefined, {
           maximumFractionDigits: 1,
         })}

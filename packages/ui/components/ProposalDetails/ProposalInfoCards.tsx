@@ -46,7 +46,7 @@ interface YouTooltipProps {
 
 const YouTooltip: FC<YouTooltipProps> = ({ label }) => (
   <Tooltip label={label}>
-    <p className="border-tertiary flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border p-1 font-mono text-xs text-tertiary">
+    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs text-tertiary rounded-full border cursor-pointer border-tertiary">
       ?
     </p>
   </Tooltip>
@@ -63,9 +63,9 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
 
   return (
     <div className="rounded-md border border-light">
-      <div className="flex flex-row items-stretch justify-evenly py-4 md:py-5">
-        <div className="flex flex-col items-center gap-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+      <div className="flex flex-row justify-evenly items-stretch py-4 md:py-5">
+        <div className="flex flex-col gap-2 items-center">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.proposal')}
           </p>
 
@@ -76,8 +76,8 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
 
         <div className="w-[1px] bg-light"></div>
 
-        <div className="flex flex-col items-center gap-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+        <div className="flex flex-col gap-2 items-center">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.status')}
           </p>
 
@@ -88,8 +88,8 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
 
         <div className="w-[1px] bg-light"></div>
 
-        <div className="flex flex-col items-center gap-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+        <div className="flex flex-col gap-2 items-center">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.you')}
           </p>
 
@@ -112,8 +112,8 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-3 border-t border-light p-5 md:p-7">
-        <div className="flex flex-col items-start gap-2">
+      <div className="flex flex-col gap-3 p-5 border-t border-light md:p-7">
+        <div className="flex flex-col gap-2 items-start">
           <p className="font-mono text-sm text-tertiary">
             {t('title.proposer')}
           </p>
@@ -121,17 +121,17 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
         </div>
 
         {proposal.status === Status.Executed && !proposalExecutionTXHash ? (
-          <div className="grid grid-cols-10 items-center gap-2 md:flex md:flex-col md:items-start">
+          <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
             <p className="col-span-3 font-mono text-sm text-tertiary">
               {t('info.txAbbr')}
             </p>
             <p className="col-span-7">{t('info.loading')}</p>
           </div>
         ) : !!proposalExecutionTXHash ? (
-          <div className="grid grid-cols-10 items-center gap-2 md:flex md:flex-col md:items-start">
+          <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
             {CHAIN_TXN_URL_PREFIX ? (
               <a
-                className="col-span-3 flex flex-row items-center gap-1 font-mono text-sm text-tertiary"
+                className="flex flex-row col-span-3 gap-1 items-center font-mono text-sm text-tertiary"
                 href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
                 rel="noopener noreferrer"
                 target="_blank"
@@ -259,7 +259,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
     quorum && (quorum.type === ProcessedTQType.Majority ? 50 : quorum.value)
 
   return (
-    <div className="flex flex-col items-stretch gap-2">
+    <div className="flex flex-col gap-2 items-stretch">
       {helpfulStatusText && (
         <p className="-mt-4 mb-4 text-sm italic text-tertiary">
           {helpfulStatusText}
@@ -269,9 +269,9 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
       {threshold &&
         (quorum && effectiveQuorumValue !== undefined ? (
           <>
-            <p className="body-text mb-3 text-sm">{t('title.ratioOfVotes')}</p>
+            <p className="mb-3 text-sm body-text">{t('title.ratioOfVotes')}</p>
 
-            <div className="flex flex-row items-center gap-4 font-mono text-xs">
+            <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
                   {t('info.yes')} {formatPercentOf100(turnoutYesPercent)}
@@ -350,13 +350,13 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label={t('info.proposalThresholdTooltip')}>
-                <div className="flex w-full flex-row items-center justify-between gap-2 rounded-md bg-light py-3 px-4">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     {t('title.passingThreshold')}:{' '}
                     <span className="font-mono">{threshold.display}</span>
                   </p>
 
-                  <p className="flex flex-row items-center gap-2 font-mono text-xs text-tertiary">
+                  <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
                         {t('info.passing')}{' '}
@@ -379,8 +379,8 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               </Tooltip>
             </div>
 
-            <div className="mt-4 mb-1 flex flex-row justify-between">
-              <p className="body-text overflow-hidden text-ellipsis text-sm">
+            <div className="flex flex-row justify-between mt-4 mb-1">
+              <p className="overflow-hidden text-sm text-ellipsis body-text">
                 {t('title.turnout')}
               </p>
 
@@ -428,13 +428,13 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label={t('info.proposalQuorumTooltip')}>
-                <div className="flex w-full flex-row items-center justify-between gap-2 rounded-md bg-light py-3 px-4">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     {t('title.quorum')}:{' '}
                     <span className="font-mono">{quorum.display}</span>
                   </p>
 
-                  <p className="flex flex-row items-center gap-2 font-mono text-xs text-tertiary">
+                  <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {quorumMet ? (
                       <>
                         {t('info.reached')}{' '}
@@ -459,11 +459,11 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
           </>
         ) : (
           <>
-            <p className="body-text mb-3 overflow-hidden text-ellipsis text-sm">
+            <p className="overflow-hidden mb-3 text-sm text-ellipsis body-text">
               {t('title.turnout')}
             </p>
 
-            <div className="flex flex-row items-center gap-4 font-mono text-xs">
+            <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
                   {t('info.yes')} {formatPercentOf100(totalYesPercent)}
@@ -543,13 +543,13 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label={t('info.proposalThresholdTooltip')}>
-                <div className="flex w-full flex-row items-center justify-between gap-2 rounded-md bg-light py-3 px-4">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
                   <p className="text-sm text-tertiary">
                     {t('title.passingThreshold')}:{' '}
                     <span className="font-mono">{threshold.display}</span>
                   </p>
 
-                  <p className="flex flex-row items-center gap-2 font-mono text-xs text-tertiary">
+                  <p className="flex flex-row gap-2 items-center font-mono text-xs text-tertiary">
                     {thresholdReached ? (
                       <>
                         {t('info.reached')}{' '}
@@ -578,11 +578,11 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
         expiresInSeconds !== undefined &&
         expiresInSeconds > 0 && (
           <>
-            <p className="mt-4 overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+            <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
               {t('title.timeLeft')}
             </p>
 
-            <p className="text-right font-mono text-xs text-dark">
+            <p className="font-mono text-xs text-right text-dark">
               {secondsToWdhms(expiresInSeconds, 2)}
             </p>
 
@@ -622,7 +622,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               {t('title.proposalTieClarification')}
             </p>
 
-            <p className="body-text mt-2">
+            <p className="mt-2 body-text">
               {t('info.yesWillWinTieClarification')}
             </p>
           </div>
@@ -634,7 +634,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
             {t('title.proposalAllAbstain')}
           </p>
 
-          <p className="body-text mt-2">
+          <p className="mt-2 body-text">
             {t('info.proposalAllAbstainClarification')}
           </p>
         </div>

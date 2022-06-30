@@ -150,9 +150,9 @@ const InnerProposalCreate = () => {
   )
 
   return (
-    <div className="flex flex-col justify-center gap-14 md:flex-row md:gap-8">
+    <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
       <div className="md:w-2/3">
-        <h2 className="text-medium mb-4 font-medium">
+        <h2 className="mb-4 font-medium text-medium">
           {t('title.createAProposal')}
         </h2>
 
@@ -167,9 +167,9 @@ const InnerProposalCreate = () => {
       </div>
 
       <div className="flex-1">
-        <h2 className="text-medium mb-4 font-medium">{t('title.addresses')}</h2>
+        <h2 className="mb-4 font-medium text-medium">{t('title.addresses')}</h2>
 
-        <div className="mb-8 grid grid-cols-3 items-center gap-x-1 gap-y-2">
+        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
           <p className="font-mono text-sm text-tertiary">
             {t('title.daoTreasury')}
           </p>
@@ -178,10 +178,10 @@ const InnerProposalCreate = () => {
           </div>
         </div>
 
-        <h2 className="text-medium mb-4 font-medium">
+        <h2 className="mb-4 font-medium text-medium">
           {t('title.proposalInfo')}
         </h2>
-        <ProposalsInfo className="md:flex-col md:items-stretch md:border-0 md:p-0" />
+        <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
       </div>
     </div>
   )

@@ -36,34 +36,34 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   return connected ? (
     <div
       className={clsx(
-        'group relative rounded-lg bg-primary py-2 px-4 hover:outline hover:outline-brand',
+        'group relative py-2 px-4 bg-primary rounded-lg hover:outline-brand hover:outline',
         className
       )}
     >
-      <div className="justify-left flex h-full w-full items-center gap-4">
+      <div className="flex gap-4 items-center w-full h-full justify-left">
         <Wallet fill="currentColor" height="20px" width="20px" />
         <div className="link-text">
           <span>{walletName}</span>
           <br />
-          <span className="caption-text capitalize">
+          <span className="capitalize caption-text">
             {walletBalance} {walletBalanceDenom.toUpperCase()}
           </span>
         </div>
       </div>
-      <div className="absolute top-1 right-2 flex gap-1 opacity-0 transition group-hover:opacity-100">
+      <div className="flex absolute top-1 right-2 gap-1 opacity-0 group-hover:opacity-100 transition">
         <CopyButton text={walletAddress} />
         {onDisconnect && <DisconnectButton onClick={onDisconnect} />}
       </div>
     </div>
   ) : (
     <Button
-      className={clsx('py-4 hover:outline hover:outline-brand', className)}
+      className={clsx('py-4 hover:outline-brand hover:outline', className)}
       onClick={onConnect}
       type="button"
       {...buttonProps}
     >
       <Wallet fill="currentColor" height="20px" width="20px" />
-      <p className="link-text text-light">{t('button.connectWallet')}</p>
+      <p className="text-light link-text">{t('button.connectWallet')}</p>
     </Button>
   )
 }

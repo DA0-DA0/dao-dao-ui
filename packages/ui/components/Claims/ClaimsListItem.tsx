@@ -81,8 +81,8 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
   }, [initialDurationRemainingTime, onClaimAvailable])
 
   return (
-    <div className="flex items-center justify-between gap-2 rounded-lg bg-primary p-4">
-      <div className="flex flex-row items-center gap-2">
+    <div className="flex gap-2 justify-between items-center p-4 bg-primary rounded-lg">
+      <div className="flex flex-row gap-2 items-center">
         <BalanceIcon iconURI={iconURI} />
 
         <p>
@@ -99,7 +99,7 @@ export const ClaimsListItem: FC<ClaimsListItemProps> = ({
       {available ? (
         <p className="font-mono text-sm text-secondary">
           {t('info.available')}
-          <CheckIcon className="ml-1 inline h-4" />
+          <CheckIcon className="inline ml-1 h-4" />
         </p>
       ) : (
         <p className="text-caption">

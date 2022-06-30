@@ -16,9 +16,9 @@ export const ActionCard: FC<ActionCardProps> = ({
   onRemove,
   children,
 }) => (
-  <div className="my-2 flex flex-col gap-2 rounded-lg bg-primary p-3">
-    <div className="flex flex-row items-start justify-between gap-2">
-      <div className="flex flex-row items-center gap-2">
+  <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
+    <div className="flex flex-row gap-2 justify-between items-start">
+      <div className="flex flex-row gap-2 items-center">
         <h2 className="text-3xl">{emoji}</h2>
         <h2>{title}</h2>
       </div>
@@ -35,7 +35,7 @@ export const ActionCard: FC<ActionCardProps> = ({
 )
 
 export const ActionCardLoader = () => (
-  <div className="my-2 rounded-lg bg-primary p-3">
+  <div className="p-3 my-2 bg-primary rounded-lg">
     <Loader />
   </div>
 )

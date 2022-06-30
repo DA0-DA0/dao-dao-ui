@@ -20,10 +20,10 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
       disabled={amount <= 0}
       onClick={() => setAmount(amount - 1)}
     >
-      <ChevronLeftIcon className="h-4 w-4" />
+      <ChevronLeftIcon className="w-4 h-4" />
     </button>
     <input
-      className="h-[56px] w-full rounded bg-btn-secondary pr-16 pl-16"
+      className="pr-16 pl-16 w-full h-[56px] bg-btn-secondary rounded"
       onChange={(e: ChangeEvent<HTMLInputElement>) =>
         setAmount(e.target.valueAsNumber)
       }
@@ -37,7 +37,7 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
       disabled={amount >= max}
       onClick={() => setAmount(amount + 1)}
     >
-      <ChevronRightIcon className="h-4 w-4" />
+      <ChevronRightIcon className="w-4 h-4" />
     </button>
   </div>
 )

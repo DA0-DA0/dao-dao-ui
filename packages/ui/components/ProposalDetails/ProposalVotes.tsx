@@ -31,8 +31,8 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
   return (
     <>
       <hr className="border-default" />
-      <h3 className="link-text mt-8 mb-5">{t('title.allVotes')}</h3>
-      <div className="mb-5 flex flex-col divide-y divide-inactive">
+      <h3 className="mt-8 mb-5 link-text">{t('title.allVotes')}</h3>
+      <div className="flex flex-col mb-5 divide-y divide-inactive">
         {votes.map((vote, index) => (
           <VoteRow {...vote} key={index} />
         ))}
@@ -56,9 +56,9 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
 export const VoteRow: FC<VoteInfo> = ({ vote, voter, weight }) => {
   const [copied, setCopied] = useState(false)
   return (
-    <div className="mb-1 flex flex-wrap items-center justify-between gap-4 rounded bg-card py-3 px-4 md:my-0 md:rounded-none md:bg-transparent md:px-0">
+    <div className="flex flex-wrap gap-4 justify-between items-center py-3 px-4 mb-1 bg-card rounded md:px-0 md:my-0 md:bg-transparent md:rounded-none">
       <button
-        className="caption-text no-scrollbar overflow-auto whitespace-nowrap font-mono"
+        className="overflow-auto font-mono whitespace-nowrap caption-text no-scrollbar"
         onClick={() => {
           navigator.clipboard.writeText(voter)
           setCopied(true)
@@ -70,7 +70,7 @@ export const VoteRow: FC<VoteInfo> = ({ vote, voter, weight }) => {
         {copied ? '*' : '#'} <span className="underline">{voter}</span>
       </button>
       <VoteDisplay vote={vote} />
-      <p className="caption-text font-mono text-primary">
+      <p className="font-mono text-primary caption-text">
         %{' '}
         {zeroPad(
           weight.toLocaleString(undefined, {
@@ -93,15 +93,15 @@ const VoteDisplay: FC<{ vote: Vote }> = ({ vote }) => {
   const { t } = useTranslation()
 
   return vote === Vote.Yes ? (
-    <p className="flex items-center gap-1 font-mono text-sm text-valid">
+    <p className="flex gap-1 items-center font-mono text-sm text-valid">
       <CheckIcon className="inline w-4" /> {t('info.yes')}
     </p>
   ) : vote === Vote.No ? (
-    <p className="flex items-center gap-1 font-mono text-sm text-error">
+    <p className="flex gap-1 items-center font-mono text-sm text-error">
       <XIcon className="inline w-4" /> {t('info.no')}
     </p>
   ) : (
-    <p className="flex items-center gap-1 font-mono text-sm text-secondary">
+    <p className="flex gap-1 items-center font-mono text-sm text-secondary">
       <Abstain fill="currentColor" /> {t('info.abstain')}
     </p>
   )

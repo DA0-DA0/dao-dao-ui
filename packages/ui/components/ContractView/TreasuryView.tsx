@@ -28,7 +28,7 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
   nativeTokens,
   cw20Tokens,
 }) => (
-  <ul className="mt-6 flex list-none flex-col gap-2">
+  <ul className="flex flex-col gap-2 mt-6 list-none">
     {nativeTokens.map(({ denom, amount, decimals }) => {
       const symbol = nativeTokenLabel(denom)
       const icon = nativeTokenLogoURI(denom)

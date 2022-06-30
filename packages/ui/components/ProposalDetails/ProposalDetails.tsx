@@ -79,7 +79,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       </div>
       {!!decodedMessages?.length && (
         <>
-          <div className="caption-text mt-9 mb-3 font-mono">
+          <div className="mt-9 mb-3 font-mono caption-text">
             {t('title.actions', { count: decodedMessages.length })}
           </div>
           {showRaw ? (
@@ -106,12 +106,12 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             {showRaw ? (
               <>
                 {t('button.hideRawData')}
-                <EyeOffIcon className="ml-1 inline h-4 stroke-current" />
+                <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
               </>
             ) : (
               <>
                 {t('button.showRawData')}
-                <EyeIcon className="ml-1 inline h-4 stroke-current" />
+                <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
           </Button>
@@ -119,7 +119,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       )}
       {proposal.status === Status.Passed && (
         <>
-          <p className="link-text mt-6 mb-4">{t('title.status')}</p>
+          <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
           <Execute
             loading={loading}
             messages={proposal.msgs.length}
@@ -128,13 +128,13 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
         </>
       )}
 
-      <p className="link-text mt-6 mb-4">{t('title.vote')}</p>
+      <p className="mt-6 mb-4 link-text">{t('title.vote')}</p>
 
       {connected ? (
         <>
           {walletVote && (
             <p
-              className={clsx('body-text flex flex-row items-center gap-2', {
+              className={clsx('flex flex-row gap-2 items-center body-text', {
                 'mb-2': allowRevoting && canVote,
               })}
             >
@@ -156,7 +156,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             <p className="body-text">{t('info.didNotVote')}</p>
           )}
           {walletWeightPercent === 0 && (
-            <p className="body-text max-w-prose">
+            <p className="max-w-prose body-text">
               {t('info.mustHaveVotingPowerAtCreation')}{' '}
               {/* Only show staking modal if using staked balance to vote. */}
               {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&

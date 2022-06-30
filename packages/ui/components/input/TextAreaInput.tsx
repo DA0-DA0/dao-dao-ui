@@ -37,7 +37,7 @@ export const TextAreaInput = <
   return (
     <textarea
       className={clsx(
-        'body-text w-full rounded-lg border border-default bg-transparent py-2 px-3 ring-brand ring-offset-0 transition focus:outline-none focus:ring-1',
+        'py-2 px-3 w-full bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
         {
           'ring-1 ring-error': error,
         },

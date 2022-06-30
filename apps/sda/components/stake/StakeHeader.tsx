@@ -21,40 +21,40 @@ export const StakeHeaderLoader: FunctionComponent = () => {
 
   return (
     <>
-      <div className="absolute top-[0.1rem] h-[1px] w-full bg-primary"></div>
-      <div className="absolute top-[0.4rem] h-[1px] w-full bg-primary"></div>
+      <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
+      <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
 
-      <div className="absolute -top-16 flex w-full items-center justify-center border-b border-inactive">
-        <div className="h-24 w-24 rounded-full border border-default bg-light">
+      <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
+        <div className="w-24 h-24 bg-light rounded-full border border-default">
           <Loader size="100%" />
         </div>
       </div>
 
-      <div className="mt-12 h-[4.5rem] w-full border-t border-inactive"></div>
+      <div className="mt-12 w-full h-[4.5rem] border-t border-inactive"></div>
 
-      <div className="flex w-full flex-row items-center justify-around border-t border-inactive p-5 text-center md:justify-center md:gap-12">
-        <div className="flex flex-col items-center gap-2 p-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+      <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
+        <div className="flex flex-col gap-2 items-center p-2">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.daoTreasury')}
           </p>
 
           <div className="h-6 lg:h-7"></div>
         </div>
 
-        <div className="h-6 w-[1px] bg-dark opacity-10"></div>
+        <div className="w-[1px] h-6 bg-dark opacity-10"></div>
 
-        <div className="flex flex-col items-center gap-2 p-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+        <div className="flex flex-col gap-2 items-center p-2">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.totalStaked')}
           </p>
 
           <div className="h-6 lg:h-7"></div>
         </div>
 
-        <div className="h-6 w-[1px] bg-dark opacity-10"></div>
+        <div className="w-[1px] h-6 bg-dark opacity-10"></div>
 
-        <div className="flex flex-col items-center gap-2 p-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+        <div className="flex flex-col gap-2 items-center p-2">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.aprReward')}
           </p>
 
@@ -95,20 +95,20 @@ export const StakeHeader: FunctionComponent = () => {
 
   return (
     <>
-      <div className="absolute top-[0.1rem] h-[1px] w-full bg-primary"></div>
-      <div className="absolute top-[0.4rem] h-[1px] w-full bg-primary"></div>
+      <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
+      <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
 
-      <div className="absolute -top-16 flex w-full items-center justify-center border-b border-inactive">
-        <div className="h-24 w-24 rounded-full border border-default bg-light">
+      <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
+        <div className="w-24 h-24 bg-light rounded-full border border-default">
           <img
             alt={t('info.logo')}
-            className="h-full w-full"
+            className="w-full h-full"
             src={daoConfig.image_url ?? DEFAULT_IMAGE_URL}
           />
         </div>
       </div>
 
-      <p className="mt-12 w-full border-t border-inactive p-5  text-center font-studiofeixen text-2xl">
+      <p className="p-5 mt-12 w-full font-studiofeixen text-2xl  text-center border-t border-inactive">
         1 {governanceTokenInfo.symbol} =
         {governanceTokenPrice
           ? ' $' +
@@ -121,13 +121,13 @@ export const StakeHeader: FunctionComponent = () => {
             ' $ ??'}
       </p>
 
-      <div className="flex w-full flex-row items-center justify-around border-t border-inactive p-5 text-center md:justify-center md:gap-12">
-        <div className="flex flex-col items-center gap-2 p-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+      <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
+        <div className="flex flex-col gap-2 items-center p-2">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.daoTreasury')}
           </p>
 
-          <p className="header-text text-base lg:text-xl">
+          <p className="text-base lg:text-xl header-text">
             {convertMicroDenomToDenomWithDecimals(
               treasuryBalance,
               governanceTokenInfo.decimals
@@ -138,14 +138,14 @@ export const StakeHeader: FunctionComponent = () => {
           </p>
         </div>
 
-        <div className="h-6 w-[1px] bg-dark opacity-10"></div>
+        <div className="w-[1px] h-6 bg-dark opacity-10"></div>
 
-        <div className="flex flex-col items-center gap-2 p-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+        <div className="flex flex-col gap-2 items-center p-2">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.totalStaked')}
           </p>
 
-          <p className="header-text text-base lg:text-xl">
+          <p className="text-base lg:text-xl header-text">
             {convertMicroDenomToDenomWithDecimals(
               totalStakedValue,
               governanceTokenInfo.decimals
@@ -156,14 +156,14 @@ export const StakeHeader: FunctionComponent = () => {
           </p>
         </div>
 
-        <div className="h-6 w-[1px] bg-dark opacity-10"></div>
+        <div className="w-[1px] h-6 bg-dark opacity-10"></div>
 
-        <div className="flex flex-col items-center gap-2 p-2">
-          <p className="overflow-hidden text-ellipsis font-mono text-sm text-tertiary">
+        <div className="flex flex-col gap-2 items-center p-2">
+          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.aprReward')}
           </p>
 
-          <p className="header-text text-base lg:text-xl">
+          <p className="text-base lg:text-xl header-text">
             +
             {(apr * 100).toLocaleString(undefined, {
               maximumFractionDigits: 2,

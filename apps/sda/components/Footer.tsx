@@ -7,7 +7,7 @@ export const Footer = () => {
 
   return (
     <a
-      className="my-10 flex flex-col items-center justify-start"
+      className="flex flex-col justify-start items-center my-10"
       href="https://daodao.zone"
       rel="noopener noreferrer"
       target="_blank"

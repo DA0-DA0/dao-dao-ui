@@ -6,9 +6,9 @@ import { StatusIcons } from '../StatusIcons'
 export const ProposalStatus = ({ status }: { status: `${Status}` }) => {
   const Icon = StatusIcons[status]
   return (
-    <div className="flex flex-row items-center gap-1">
+    <div className="flex flex-row gap-1 items-center">
       {Icon && <Icon style={{ display: 'inline' }} />}
-      <span className="align-middle capitalize">{titlecase(status)}</span>
+      <span className="capitalize align-middle">{titlecase(status)}</span>
     </div>
   )
 }

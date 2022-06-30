@@ -21,8 +21,8 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
   return (
     <>
       {!partyMode && (
-        <div className="flex max-w-3xl items-center justify-between rounded-lg border border-default bg-primary p-4">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+          <div className="flex gap-2 items-center">
             <button
               className="mr-1 text-2xl"
               onClick={() => setPartyMode(true)}
@@ -40,8 +40,8 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
         </div>
       )}
       {partyMode && (
-        <div className="flex max-w-3xl items-center justify-between rounded-lg border border-default bg-primary p-4">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+          <div className="flex gap-2 items-center">
             <button
               className={clsx(
                 'mr-1 text-2xl',
@@ -68,7 +68,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
           </div>
           <div className="flex gap-2">
             <Button
-              className={clsx('bg-error text-white hover:bg-error hover:ring', {
+              className={clsx('text-white bg-error hover:bg-error hover:ring', {
                 invisible: partyPhase !== 1,
               })}
               onClick={() => setPartyPhase(2)}
@@ -77,7 +77,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               3
             </Button>
             <Button
-              className={clsx('bg-error text-white hover:bg-error hover:ring', {
+              className={clsx('text-white bg-error hover:bg-error hover:ring', {
                 invisible: partyPhase !== 2,
               })}
               onClick={() => setPartyPhase(3)}
@@ -86,7 +86,7 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
               2
             </Button>
             <Button
-              className={clsx('bg-error text-white hover:bg-error hover:ring', {
+              className={clsx('text-white bg-error hover:bg-error hover:ring', {
                 invisible: partyPhase !== 3,
               })}
               onClick={() => setPartyPhase(4)}

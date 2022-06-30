@@ -7,9 +7,9 @@ export interface HeroHeaderProps extends ComponentProps<'div'> {
 }
 
 export const HeroHeader = ({ title, description, image }: HeroHeaderProps) => (
-  <div className="flex flex-col items-center justify-center border-b border-inactive py-16 px-4">
-    <div className="mb-8 h-24 w-24 overflow-hidden rounded-full">{image}</div>
-    <h1 className="hero-text mb-1 h-9 text-[26px]">{title}</h1>
-    <p className="primary-text h-5">{description}</p>
+  <div className="flex flex-col justify-center items-center py-16 px-4 border-b border-inactive">
+    <div className="overflow-hidden mb-8 w-24 h-24 rounded-full">{image}</div>
+    <h1 className="mb-1 h-9 text-[26px] hero-text">{title}</h1>
+    <p className="h-5 primary-text">{description}</p>
   </div>
 )

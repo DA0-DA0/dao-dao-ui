@@ -7,9 +7,9 @@ export interface IconStatsProps {
 }
 
 export const HeroStat = ({ Icon, value, title }: IconStatsProps) => (
-  <div className="flex items-center gap-3">
-    <Icon className="secondary-text h-3 fill-current" />
-    <div className="flex items-center gap-2">
+  <div className="flex gap-3 items-center">
+    <Icon className="h-3 fill-current secondary-text" />
+    <div className="flex gap-2 items-center">
       <span className="secondary-text">{title}</span>
       <span className="link-text">{value ? value : '..'}</span>
     </div>
@@ -17,8 +17,8 @@ export const HeroStat = ({ Icon, value, title }: IconStatsProps) => (
 )
 
 export const HeroStatLink = ({ value, Icon, title }: IconStatsProps) => (
-  <div className="flex items-center gap-3">
-    <Icon className="secondary-text h-3" />
+  <div className="flex gap-3 items-center">
+    <Icon className="h-3 secondary-text" />
     <a
       className="link-text"
       href={value}

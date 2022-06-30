@@ -65,7 +65,7 @@ export const VoteHeroContent = () => {
         image={
           <img
             alt="logo"
-            className="h-full w-full"
+            className="w-full h-full"
             src={config.image_url ?? DEFAULT_IMAGE_URL}
           />
         }

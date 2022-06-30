@@ -25,12 +25,12 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-row flex-wrap justify-around gap-6 p-6">
+    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
         {imageUrl && HEADER_IMAGES_ENABLED ? (
           <div
             aria-label={t('info.daosLogo')}
-            className="h-[72px] w-[72px] rounded-full bg-cover bg-center"
+            className="w-[72px] h-[72px] bg-center bg-cover rounded-full"
             role="img"
             style={{
               backgroundImage: `url(${imageUrl})`,
@@ -40,7 +40,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
           <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
         )}
         <div
-          className="absolute -right-[10px] -bottom-1 rounded-full border border-light bg-center"
+          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
           style={{
             width: '32px',
             height: '32px',
@@ -48,12 +48,12 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
           }}
         ></div>
       </div>
-      <div className="flex flex-1 flex-col gap-3">
+      <div className="flex flex-col flex-1 gap-3">
         <div className="flex flex-row justify-between">
           <h1 className="header-text">{name}</h1>
           <div className="flex gap-5">
             {member && (
-              <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-row gap-2 items-center">
                 <MemberCheck fill="currentColor" width="16px" />
               </div>
             )}
@@ -72,13 +72,13 @@ export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-row flex-wrap justify-around gap-6 p-6">
+    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
         <div className="animate-spin-medium">
           <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
         </div>
         <div
-          className="absolute -right-[10px] -bottom-1 rounded-full border border-light bg-center"
+          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
           style={{
             width: '32px',
             height: '32px',
@@ -86,9 +86,9 @@ export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
           }}
         ></div>
       </div>
-      <div className="flex flex-1 flex-col gap-3">
+      <div className="flex flex-col flex-1 gap-3">
         <div className="flex flex-row justify-between">
-          <h1 className="header-text mr-3 w-full animate-pulse rounded-sm bg-dark"></h1>
+          <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
           <div className="flex gap-5">
             <HeartButton onPin={() => null} pinned={false} />
           </div>

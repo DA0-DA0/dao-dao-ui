@@ -24,14 +24,14 @@ function Submit(
   return (
     <input
       className={clsx(
-        'cursor-pointer rounded-md py-2 px-4 transition',
+        'py-2 px-4 rounded-md transition cursor-pointer',
         {
           // Primary
-          'link-text bg-btn text-light': variant === SubmitVariant.Primary,
+          'text-light bg-btn link-text': variant === SubmitVariant.Primary,
           'hover:bg-dark active:bg-toast':
             variant === SubmitVariant.Primary && !disabled,
           // Secondary
-          'link-text bg-primary': variant === SubmitVariant.Secondary,
+          'bg-primary link-text': variant === SubmitVariant.Secondary,
           'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
             variant === SubmitVariant.Secondary && !disabled,
           // Shared

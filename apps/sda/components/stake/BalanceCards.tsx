@@ -43,7 +43,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
 
   return (
     <>
-      <div className="mb-4 flex flex-row items-center gap-2">
+      <div className="flex flex-row gap-2 items-center mb-4">
         <Logo size={20} />
         <p className="text-base">
           {unstakedBalance.toLocaleString(undefined, {
@@ -53,7 +53,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between">
+      <div className="flex flex-row flex-wrap justify-between items-center">
         {price && (
           <p className="text-lg font-medium">
             ${' '}
@@ -105,8 +105,8 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
 
   return (
     <>
-      <div className="mb-4 flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row justify-between items-center mb-4">
+        <div className="flex flex-row gap-2 items-center">
           <Logo size={20} />
           <p className="text-base">
             {stakedValue.toLocaleString(undefined, {
@@ -130,7 +130,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between">
+      <div className="flex flex-row flex-wrap justify-between items-center">
         {price && (
           <p className="text-lg font-medium">
             ${' '}

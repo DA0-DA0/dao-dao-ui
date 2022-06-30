@@ -51,9 +51,9 @@ export const ProposalsContent = () => {
        */}
       {!!allProposalResponses?.length && (
         <>
-          <h2 className="caption-text mb-4 flex items-center gap-2">
+          <h2 className="flex gap-2 items-center mb-4 caption-text">
             <ChevronDownIcon
-              className={clsx('h-4 w-4', {
+              className={clsx('w-4 h-4', {
                 '-rotate-90': openProposalResponses.length === 0,
               })}
             />{' '}
@@ -70,9 +70,9 @@ export const ProposalsContent = () => {
         </>
       )}
 
-      <h2 className="caption-text flex items-center gap-2">
+      <h2 className="flex gap-2 items-center caption-text">
         <ChevronDownIcon
-          className={clsx('h-4 w-4', {
+          className={clsx('w-4 h-4', {
             '-rotate-90': historyProposalResponses.length === 0,
           })}
         />{' '}
@@ -89,8 +89,8 @@ export const ProposalsContent = () => {
 
       {oldModuleResponses && (
         <>
-          <h2 className="caption-text mt-8 flex items-center gap-2">
-            <ChevronDownIcon className="h-4 w-4" />{' '}
+          <h2 className="flex gap-2 items-center mt-8 caption-text">
+            <ChevronDownIcon className="w-4 h-4" />{' '}
             {t('title.previousProposalModule')}
           </h2>
           <div className="mt-4 space-y-1">

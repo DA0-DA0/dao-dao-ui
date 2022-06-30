@@ -9,7 +9,7 @@ export const InputThemedText: FC<InputThemedTextProps> = ({
   ...props
 }) => (
   <p
-    className={clsx('rounded-lg border border-default py-2 px-3', className)}
+    className={clsx('py-2 px-3 rounded-lg border border-default', className)}
     {...props}
   >
     {children}

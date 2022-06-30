@@ -22,13 +22,13 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="border-base-300 mt-2 w-full rounded-lg border p-6 shadow">
+    <div className="p-6 mt-2 w-full rounded-lg border shadow border-base-300">
       <h2 className="font-mono text-sm text-secondary">
         {t('title.unclaimed')} (
         {t('info.unstakedTokens', { tokenSymbol: tokenInfo.symbol })})
       </h2>
       {loading ? (
-        <div className="mt-2 inline-block animate-spin-medium">
+        <div className="inline-block mt-2 animate-spin-medium">
           <LogoNoBorder />
         </div>
       ) : (
@@ -39,7 +39,7 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
       )}
       <div className="flex justify-end">
         <button
-          className="btn-outline btn-xs border-secondary btn normal-case"
+          className="normal-case btn-outline btn-xs border-secondary btn"
           onClick={onClaim}
         >
           {t('button.claim')}

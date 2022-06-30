@@ -14,7 +14,7 @@ export const InputErrorMessage: FC<InputErrorMessageProps> = ({
   error?.message ? (
     <span
       className={clsx(
-        'mt-1 ml-1 inline-block max-w-prose text-xs text-error',
+        'inline-block mt-1 ml-1 max-w-prose text-xs text-error',
         className
       )}
     >

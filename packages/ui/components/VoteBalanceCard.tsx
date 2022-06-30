@@ -16,16 +16,16 @@ export const VoteBalanceCard: FC<VoteBalanceCardProps> = ({
   weightTotal,
   addrTitle,
 }) => (
-  <div className="mt-2 w-full rounded-lg border border-default py-4 px-6">
+  <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
     {addrTitle ? (
       <CopyToClipboard value={title} />
     ) : (
-      <h2 className="caption-text font-mono">{title}</h2>
+      <h2 className="font-mono caption-text">{title}</h2>
     )}
-    <div className="title-text mt-5 mb-[22px] flex flex-row flex-wrap items-center gap-2">
+    <div className="flex flex-row flex-wrap gap-2 items-center mt-5 mb-[22px] title-text">
       <BalanceIcon />
       {weight}
-      <span className="secondary-text inline">
+      <span className="inline secondary-text">
         {formatPercentOf100(
           weightTotal === 0 ? 0 : (weight / weightTotal) * 100
         )}

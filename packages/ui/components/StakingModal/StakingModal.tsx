@@ -108,7 +108,7 @@ export const StakingModal: FC<StakingModalProps> = ({
 
   return (
     <Modal onClose={onClose}>
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <h1 className="header-text">{stakingModeTitle(mode)}</h1>
       </div>
 
@@ -184,15 +184,15 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
 
   return (
     <>
-      <div className="mt-5 flex flex-col">
-        <h2 className="primary-text mb-3">{t('title.chooseTokenAmount')}</h2>
+      <div className="flex flex-col mt-5">
+        <h2 className="mb-3 primary-text">{t('title.chooseTokenAmount')}</h2>
         <AmountSelector amount={amount} max={max} setAmount={setAmount} />
         {amount > max && (
-          <span className="caption-text mt-1 ml-1 text-error">
+          <span className="mt-1 ml-1 text-error caption-text">
             {t('error.cannotStakeMoreThanYouHave')}
           </span>
         )}
-        <span className="caption-text mt-4 font-mono">
+        <span className="mt-4 font-mono caption-text">
           {t('info.yourBalance') + ': '}
           {max.toLocaleString(undefined, {
             maximumFractionDigits: tokenDecimals,
@@ -254,7 +254,7 @@ const ClaimModeBody: FC<ClaimModeBodyProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="mt-3 flex flex-col py-3">
+    <div className="flex flex-col py-3 mt-3">
       <h2 className="font-medium">
         {convertMicroDenomToDenomWithDecimals(
           amount,
@@ -281,7 +281,7 @@ const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="secondary-text mt-3">
+    <div className="mt-3 secondary-text">
       <h2 className="link-text">
         {mode === StakingMode.Unstake
           ? t('info.aboutToUnstake')

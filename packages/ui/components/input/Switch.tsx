@@ -21,14 +21,14 @@ export const Switch: FC<SwitchProps> = ({
 }) => (
   <div
     className={clsx(
-      'relative flex flex-none items-center rounded-full',
+      'flex relative flex-none items-center rounded-full',
       {
-        'cursor-pointer hover:opacity-90': !readOnly,
+        'hover:opacity-90 cursor-pointer': !readOnly,
         'bg-valid': enabled,
-        'border border-dark bg-transparent': !enabled,
+        'bg-transparent border border-dark': !enabled,
         // Sizing.
-        'h-[16px] w-[28px]': sizing === 'sm',
-        'h-[38px] w-[67px]': sizing === 'lg',
+        'w-[28px] h-[16px]': sizing === 'sm',
+        'w-[67px] h-[38px]': sizing === 'lg',
       },
       className
     )}
@@ -36,15 +36,15 @@ export const Switch: FC<SwitchProps> = ({
   >
     <div
       className={clsx(
-        'absolute rounded-full bg-toast transition-all',
+        'absolute bg-toast rounded-full transition-all',
         // Sizing.
         {
           // Small
-          'h-[10px] w-[10px]': sizing === 'sm',
+          'w-[10px] h-[10px]': sizing === 'sm',
           'left-[15px]': sizing === 'sm' && enabled,
           'left-[2px]': sizing === 'sm' && !enabled,
           // Large
-          'h-[28px] w-[28px]': sizing === 'lg',
+          'w-[28px] h-[28px]': sizing === 'lg',
           'left-[33px]': sizing === 'lg' && enabled,
           'left-[4.5px]': sizing === 'lg' && !enabled,
         }
@@ -73,7 +73,7 @@ export const SwitchCard: FC<SwitchCardProps> = ({
   return (
     <div
       className={clsx(
-        'flex flex-row items-center gap-4 rounded-md bg-card py-2 px-3',
+        'flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md',
         containerClassName
       )}
     >

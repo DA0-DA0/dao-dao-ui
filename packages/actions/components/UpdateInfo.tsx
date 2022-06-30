@@ -31,7 +31,7 @@ export const UpdateInfoComponent: ActionComponent = ({
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
-      <div className="flex flex-row flex-wrap items-center justify-center gap-6">
+      <div className="flex flex-row flex-wrap gap-6 justify-center items-center">
         <div className="flex flex-col gap-4 pl-2">
           <ImageSelector
             center={false}
@@ -45,7 +45,7 @@ export const UpdateInfoComponent: ActionComponent = ({
           <InputLabel name={t('form.selectAnImage')} />
         </div>
 
-        <div className="flex grow flex-col gap-3">
+        <div className="flex flex-col grow gap-3">
           <div>
             <TextInput
               disabled={readOnly}
@@ -69,13 +69,13 @@ export const UpdateInfoComponent: ActionComponent = ({
             <InputErrorMessage error={errors?.description} />
           </div>
           <div className="flex flex-row flex-wrap gap-2">
-            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
+            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-1">
                 <Tooltip label={t('form.automaticallyAddTokensTooltip')}>
-                  <InformationCircleIcon className="secondary-text h-4 w-4" />
+                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 
-                <p className="secondary-text w-max">
+                <p className="w-max secondary-text">
                   {t('form.automaticallyAddTokensTitle')}
                 </p>
               </div>
@@ -87,13 +87,13 @@ export const UpdateInfoComponent: ActionComponent = ({
                 watch={watch}
               />
             </div>
-            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
+            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-1">
                 <Tooltip label={t('form.automaticallyAddNFTsTooltip')}>
-                  <InformationCircleIcon className="secondary-text h-4 w-4" />
+                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 
-                <p className="secondary-text w-max">
+                <p className="w-max secondary-text">
                   {t('form.automaticallyAddNFTsTitle')}
                 </p>
               </div>

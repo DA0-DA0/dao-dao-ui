@@ -73,21 +73,21 @@ const InnerStake = () => {
   return (
     <>
       <div className="space-y-8">
-        <div className="relative mt-16 flex flex-col items-center rounded-b-lg border-t border-inactive bg-primary lg:mt-32">
+        <div className="flex relative flex-col items-center mt-16 bg-primary rounded-b-lg border-t border-inactive lg:mt-32">
           <SuspenseLoader fallback={<StakeHeaderLoader />}>
             <StakeHeader />
           </SuspenseLoader>
         </div>
 
-        <div className="title-text flex flex-row items-center gap-2 text-lg">
+        <div className="flex flex-row gap-2 items-center text-lg title-text">
           <Pie color="rgb(var(--dark))" height={22} width={22} />
           <p>{t('title.yourTokens')}</p>
         </div>
 
         {connected ? (
           <>
-            <div className="!mt-4 flex flex-col items-stretch justify-start gap-4 lg:flex-row">
-              <div className="flex-1 rounded-lg border border-default p-6">
+            <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
+              <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
                   {t('title.balanceUnstaked', {
                     name: governanceTokenInfo.name,
@@ -103,8 +103,8 @@ const InnerStake = () => {
                 </SuspenseLoader>
               </div>
 
-              <div className="flex-1 rounded-lg border border-default p-6">
-                <p className="mb-2 flex gap-2 font-mono text-sm text-tertiary">
+              <div className="flex-1 p-6 rounded-lg border border-default">
+                <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
                   <span>
                     {t('title.votingPowerStakedAndRewards', {
                       name: governanceTokenInfo.name,
@@ -128,7 +128,7 @@ const InnerStake = () => {
             <SuspenseLoader
               fallback={
                 <>
-                  <p className="title-text text-lg">
+                  <p className="text-lg title-text">
                     {t('title.unstakingNamedTokens', {
                       name: governanceTokenInfo.name,
                     })}

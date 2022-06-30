@@ -8,7 +8,7 @@ export const TooltipIcon = forwardRef<HTMLDivElement, TooltipIconProps>(
   function TooltipIcon(props, ref) {
     return (
       <Tooltip {...props} ref={ref}>
-        <InformationCircleIcon className="h-4 w-4 shrink-0 cursor-help text-gray-500 hover:text-gray-400" />
+        <InformationCircleIcon className="shrink-0 w-4 h-4 text-gray-500 hover:text-gray-400 cursor-help" />
       </Tooltip>
     )
   }

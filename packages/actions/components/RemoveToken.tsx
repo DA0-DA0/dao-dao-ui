@@ -50,12 +50,12 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
       {existingTokens.length > 0 && (
         <>
           <InputLabel name={t('form.existingTokens')} />
-          <div className="mb-2 grid grid-cols-5 gap-1">
+          <div className="grid grid-cols-5 gap-1 mb-2">
             {existingTokens.map(({ address, info }) => (
               <Button
                 key={address}
                 className={clsx('text-center', {
-                  'bg-transparent text-secondary': address !== tokenAddress,
+                  'text-secondary bg-transparent': address !== tokenAddress,
                 })}
                 disabled={readOnly}
                 onClick={() => setValue(getFieldName('address'), address)}
@@ -70,7 +70,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
         </>
       )}
 
-      <div className="mb-3 flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mb-3">
         <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
           disabled={readOnly}

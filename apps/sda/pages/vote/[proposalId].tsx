@@ -164,7 +164,7 @@ const InnerProposal: FC = () => {
     !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
 
   return (
-    <div className="mx-auto grid max-w-screen-md grid-cols-2 gap-4 lg:max-w-page lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">
       <div className="col-span-2">
         <div className="mb-6 lg:hidden">
           <ProposalInfoCard
@@ -208,7 +208,7 @@ const InnerProposal: FC = () => {
           }
         />
 
-        <div className="mt-6 pb-6 lg:hidden">
+        <div className="pb-6 mt-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">
             {t('title.voteStatus')}
           </h3>
@@ -225,7 +225,7 @@ const InnerProposal: FC = () => {
         </div>
       </div>
 
-      <div className="bg-base-200 hidden min-h-screen lg:block">
+      <div className="hidden min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
         <ProposalInfoCard
           connected={connected}

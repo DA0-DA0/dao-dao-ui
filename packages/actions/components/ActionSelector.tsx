@@ -106,7 +106,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
       />
 
       <ul
-        className="styled-scrollbar flex grow list-none flex-col gap-3 overflow-y-auto pr-2"
+        className="flex overflow-y-auto flex-col grow gap-3 pr-2 list-none styled-scrollbar"
         ref={actionsListRef}
       >
         {filteredActions.map((action, index) => (
@@ -144,7 +144,7 @@ const ActionDisplayItem: FC<ActionDisplayItemProps> = ({
   return (
     <button
       className={clsx(
-        'flex w-full flex-row items-center gap-3 rounded p-2 text-left transition hover:bg-primary',
+        'flex flex-row gap-3 items-center p-2 w-full text-left hover:bg-primary rounded transition',
         { 'bg-primary': selected }
       )}
       onClick={onClick}

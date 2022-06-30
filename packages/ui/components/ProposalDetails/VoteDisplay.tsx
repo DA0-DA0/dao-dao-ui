@@ -12,7 +12,7 @@ export const VoteDisplay: FunctionComponent<{
 }> = ({ vote, className }) => {
   const { t } = useTranslation()
   const commonClassNames = clsx(
-    'inline-flex items-center gap-1 font-mono text-sm',
+    'inline-flex gap-1 items-center font-mono text-sm',
     className
   )
 
@@ -30,7 +30,7 @@ export const VoteDisplay: FunctionComponent<{
     </p>
   ) : (
     // Should never happen.
-    <p className={clsx(commonClassNames, 'inline break-words text-secondary')}>
+    <p className={clsx(commonClassNames, 'inline text-secondary break-words')}>
       {vote}
     </p>
   )

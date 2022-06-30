@@ -17,17 +17,17 @@ export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
 
   return (
     <button
-      className="link-text flex flex-row items-center text-left text-brand"
+      className="flex flex-row items-center text-left text-brand link-text"
       onClick={(_e) => onPin()}
       style={accentColor ? { color: accentColor } : {}}
     >
       {pinned ? (
         <HeartSolid
-          className="mr-1 inline w-[20px] text-brand"
+          className="inline mr-1 w-[20px] text-brand"
           style={accentColor ? { color: accentColor } : {}}
         />
       ) : (
-        <HeartOutline className="mr-1 inline w-[20px]" />
+        <HeartOutline className="inline mr-1 w-[20px]" />
       )}
       <span className="hidden md:block">
         {pinned ? t('info.favorited') : t('info.favorite')}

@@ -29,7 +29,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-wrap items-center justify-center gap-x-8 gap-y-4 py-8 px-6">
+    <div className="flex flex-wrap gap-x-8 gap-y-4 justify-center items-center py-8 px-6 w-full">
       {(!data ||
         (data.totalSupply !== undefined && data.denom !== undefined)) &&
         votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
