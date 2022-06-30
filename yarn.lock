@@ -1303,7 +1303,7 @@
     "@cosmjs/math" "0.28.10"
     "@cosmjs/utils" "0.28.10"
 
-"@cosmjs/cosmwasm-stargate@^0.28.1", "@cosmjs/cosmwasm-stargate@^0.28.9":
+"@cosmjs/cosmwasm-stargate@0.28.10":
   version "0.28.10"
   resolved "https://registry.yarnpkg.com/@cosmjs/cosmwasm-stargate/-/cosmwasm-stargate-0.28.10.tgz#36b3d43c62dea6ed6d11ed9cf1b7b4bb66d92af4"
   integrity sha512-1f25MO2YLXzbEnFlm/f7gXJYgT6oE/gkmQ+eNaYcQH7Hs1qwXPd5C9Bso40wbZz67iR3wa8q85e/03+TFJsvGg==
@@ -1351,7 +1351,7 @@
     sha.js "^2.4.11"
     unorm "^1.5.0"
 
-"@cosmjs/encoding@0.28.10", "@cosmjs/encoding@^0.28.1", "@cosmjs/encoding@^0.28.9":
+"@cosmjs/encoding@0.28.10":
   version "0.28.10"
   resolved "https://registry.yarnpkg.com/@cosmjs/encoding/-/encoding-0.28.10.tgz#ddc9e7b637eaf0ec0f9140a6b306cb5d227dc7a9"
   integrity sha512-jxb5V40jS1F+sGjtGbNybyruEjZ+/ILkhx63g3ZRHzeo0SQilpepg6hRzmGT3+OFNBBjr92wIEZMVRV+qbm5wQ==
@@ -1427,7 +1427,7 @@
   dependencies:
     bn.js "^4.11.8"
 
-"@cosmjs/proto-signing@0.28.10", "@cosmjs/proto-signing@^0.28.1", "@cosmjs/proto-signing@^0.28.4", "@cosmjs/proto-signing@^0.28.9":
+"@cosmjs/proto-signing@0.28.10":
   version "0.28.10"
   resolved "https://registry.yarnpkg.com/@cosmjs/proto-signing/-/proto-signing-0.28.10.tgz#23cac8a05fcd02b5d44fb194ece841dd82933cb0"
   integrity sha512-IsE1zQPiEbGpYqPHulFWEOyDySLcicDNTZ+RUoxjyhwyONwpX0vYq4rLNGNuXDjul0rTd0N8kB0Uy+IIHBHy2g==
@@ -1469,7 +1469,7 @@
     ws "^6.2.0"
     xstream "^11.14.0"
 
-"@cosmjs/stargate@0.28.10", "@cosmjs/stargate@^0.28.1", "@cosmjs/stargate@^0.28.9":
+"@cosmjs/stargate@0.28.10":
   version "0.28.10"
   resolved "https://registry.yarnpkg.com/@cosmjs/stargate/-/stargate-0.28.10.tgz#b0a1fbf08fb18eb36970e097d85f5d6de8e8166a"
   integrity sha512-KFDcc/LeTBnipGUKbtre9d0mBy2gNvqf82AZ+j9q7QXOKuPmvraVfZGfombGWq4AImtZZdytEFO196epKq9CtQ==
@@ -2753,13 +2753,13 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.2.0.tgz#9f66664f9122ca555b96a5f2fc6e2af677bf801b"
   integrity sha512-OI14ozFLThEV3ey6jE47zrzSTV/6eIMsvbwozo+XfdWqOPwQ7X00YkRx4GVMKMC0rM44oGS2gmwMKYpe4EblnA==
 
-"@noahsaso/cosmodal@^0.5.7":
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.5.7.tgz#86e4c5bc28b64df496e557094188e62d2f692150"
-  integrity sha512-4renqAlFeZg/0fvj+TuIFbDjapNtTsjCl14Oq1/Vgve4gv5Cm4d4qMRyjM6IOqGedo7pilTX5fa+r3cgMi0jxA==
+"@noahsaso/cosmodal@0.5.9":
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.5.9.tgz#aa8e3e1b5b224ba6bebc2a3a9c1db275d8492c56"
+  integrity sha512-Ns2hB7dIV3Kcbs9p0ARafdLAptk7pSyFgwJRT+HsrfhwJE2U9gm5x4esEk4U0LlTla1AP9EMpc083om8rJ1aXw==
   dependencies:
-    "@cosmjs/cosmwasm-stargate" "^0.28.9"
-    "@cosmjs/stargate" "^0.28.9"
+    "@cosmjs/cosmwasm-stargate" "0.28.10"
+    "@cosmjs/stargate" "0.28.10"
     "@keplr-wallet/common" "^0.9.10"
     "@keplr-wallet/cosmos" "^0.9.16"
     "@keplr-wallet/provider" "^0.9.12"

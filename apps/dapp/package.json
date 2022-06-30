@@ -15,10 +15,10 @@
     "ts:watch": "ts --watch"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.28.9",
-    "@cosmjs/encoding": "^0.28.9",
-    "@cosmjs/proto-signing": "^0.28.9",
-    "@cosmjs/stargate": "^0.28.9",
+    "@cosmjs/cosmwasm-stargate": "0.28.10",
+    "@cosmjs/encoding": "0.28.10",
+    "@cosmjs/proto-signing": "0.28.10",
+    "@cosmjs/stargate": "0.28.10",
     "@dao-dao/actions": "*",
     "@dao-dao/common": "*",
     "@dao-dao/i18n": "*",
@@ -33,7 +33,7 @@
     "@keplr-wallet/stores": "^0.10.3",
     "@keplr-wallet/types": "^0.9.10",
     "@meilisearch/instant-meilisearch": "^0.7.0",
-    "@noahsaso/cosmodal": "^0.5.7",
+    "@noahsaso/cosmodal": "0.5.9",
     "@reach/tooltip": "^0.16.2",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.1",

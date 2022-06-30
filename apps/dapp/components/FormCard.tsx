@@ -5,7 +5,5 @@ export interface FormCardProps {
 }
 
 export const FormCard: FC<FormCardProps> = ({ children }) => (
-  <div className="my-2 rounded rounded-lg bg-disabled py-4 px-6">
-    {children}
-  </div>
+  <div className="my-2 rounded-lg bg-disabled py-4 px-6">{children}</div>
 )
