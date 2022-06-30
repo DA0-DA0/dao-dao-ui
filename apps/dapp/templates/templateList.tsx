@@ -35,6 +35,18 @@ import {
   transformMigrateContractToCosmos,
 } from './migrateContract'
 import {
+  MigrateDaoComponent,
+  migrateDaoDefaults,
+  transformCosmosToMigrateDao,
+  transformMigrateDaoToCosmos,
+} from './migrateDao'
+import {
+  MigrateMultisigComponent,
+  multisigMigrateDefaults,
+  transformCosmosToMigrateMultisig,
+  transformMigrateMultisigToCosmos,
+} from './migrateMultisig'
+import {
   MintComponent,
   mintDefaults,
   transformCosmosToMint,
@@ -65,6 +77,18 @@ import {
   transformStakeToCosmos,
 } from './stake'
 import {
+  StakingUpdateComponent,
+  stakingUpdateDefaults,
+  transformCosmosToStakingUpdate,
+  transformStakingUpdateToCosmos,
+} from './stakingUpdate'
+import {
+  transformCosmosToUpdateAdmin,
+  transformUpdateAdminToCosmos,
+  UpdateAdminComponent,
+  updateAdminDefaults,
+} from './updateAdmin'
+import {
   transformCosmosToUpdateMinter,
   transformUpdateMinterToCosmos,
   UpdateMinterComponent,
@@ -80,6 +104,24 @@ export enum ContractSupport {
 // Adding a template to this list will cause it to be available
 // across the UI.
 export const messageTemplates: MessageTemplate[] = [
+  {
+    label: '🦢 Upgrade to V1',
+    description: 'Update multisig to DAO DAO v1.',
+    component: MigrateMultisigComponent,
+    contractSupport: ContractSupport.Multisig,
+    getDefaults: multisigMigrateDefaults,
+    fromCosmosMsg: transformCosmosToMigrateMultisig,
+    toCosmosMsg: transformMigrateMultisigToCosmos,
+  },
+  {
+    label: '☯️ Upgrade to V1',
+    description: 'Update DAO to DAO DAO v1.',
+    component: MigrateDaoComponent,
+    contractSupport: ContractSupport.DAO,
+    getDefaults: migrateDaoDefaults,
+    fromCosmosMsg: transformCosmosToMigrateDao,
+    toCosmosMsg: transformMigrateDaoToCosmos,
+  },
   {
     label: '💵 Spend',
     description: 'Spend native or cw20 tokens from the treasury.',
@@ -144,6 +186,24 @@ export const messageTemplates: MessageTemplate[] = [
     fromCosmosMsg: transformCosmosToMigrateContract,
   },
   {
+    label: '🍄 Update Contract Admin',
+    description: 'Update the admin of a CosmWasm contract.',
+    component: UpdateAdminComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: updateAdminDefaults,
+    toCosmosMsg: transformUpdateAdminToCosmos,
+    fromCosmosMsg: transformCosmosToUpdateAdmin,
+  },
+  {
+    label: '🌳 Update Staking Config',
+    description: 'Update the config of a v1 staking contract.',
+    component: StakingUpdateComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: stakingUpdateDefaults,
+    toCosmosMsg: transformStakingUpdateToCosmos,
+    fromCosmosMsg: transformCosmosToStakingUpdate,
+  },
+  {
     label: '🔑 Update Minter',
     description: 'Update the minter for a cw20 token.',
     component: UpdateMinterComponent,
@@ -195,7 +255,7 @@ messageTemplates.sort((a, b) => {
 export const messageTemplateToCosmosMsg = (
   m: MessageTemplate,
   props: ToCosmosMsgProps
-): CosmosMsgFor_Empty | undefined =>
+): CosmosMsgFor_Empty | CosmosMsgFor_Empty[] | undefined =>
   messageTemplates
     .find((template) => template.label === m.label)
     ?.toCosmosMsg?.(m as any, props)
@@ -243,7 +303,10 @@ export interface MessageTemplate {
     govTokenDecimals: number
   ) => any
   // Convert MessageTemplate to CosmosMsgFor_Empty.
-  toCosmosMsg: (self: any, props: ToCosmosMsgProps) => CosmosMsgFor_Empty
+  toCosmosMsg: (
+    self: any,
+    props: ToCosmosMsgProps
+  ) => CosmosMsgFor_Empty | undefined | CosmosMsgFor_Empty[]
   // Convert decoded msg data to fields in form display.
   fromCosmosMsg: (msg: Record<string, any>, props: FromCosmosMsgProps) => any
 }

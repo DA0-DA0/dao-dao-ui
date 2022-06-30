@@ -105,7 +105,8 @@ export function ProposalForm({
             messages: (d.messages as MessageTemplate[])
               .map((m) => messageTemplateToCosmosMsg(m, toCosmosMsgProps))
               // Filter out undefined messages.
-              .filter(Boolean) as CosmosMsgFor_Empty[],
+              .filter(Boolean)
+              .flat() as CosmosMsgFor_Empty[],
           })
         )}
       >
@@ -122,7 +123,8 @@ export function ProposalForm({
                 proposalMessages
                   .map((m) => messageTemplateToCosmosMsg(m, toCosmosMsgProps))
                   // Filter out undefined messages.
-                  .filter(Boolean) as CosmosMsgFor_Empty[]
+                  .filter(Boolean)
+                  .flat() as CosmosMsgFor_Empty[]
               )}
             />
           </>

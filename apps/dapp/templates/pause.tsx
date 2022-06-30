@@ -169,7 +169,7 @@ export const pauseDataToExpiration = (p: PauseData) => {
       })
     case 'weeks':
       return pauseDataToExpiration({
-        duration: p.duration * 24,
+        duration: p.duration * 7,
         units: 'days',
       })
     case 'never':

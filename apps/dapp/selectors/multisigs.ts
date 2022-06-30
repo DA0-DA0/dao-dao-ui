@@ -93,9 +93,26 @@ export const listMembers = selectorFamily<MultisigMemberInfo[], string>({
     async ({ get }) => {
       const sigInfo = get(sigSelector(address))
       const client = get(cosmWasmClientSelector)
-      const members = await client.queryContractSmart(sigInfo.group_address, {
-        list_members: {},
-      })
-      return members.members
+
+      const members: MultisigMemberInfo[] = []
+      let more = true
+      while (more) {
+        const start_after =
+          members.length > 0 ? members[members.length - 1] : undefined
+        const newMembers = await client.queryContractSmart(
+          sigInfo.group_address,
+          {
+            list_members: {
+              limit: 30,
+              ...(start_after && { start_after }),
+            },
+          }
+        )
+        members.push(...newMembers.members)
+        if (newMembers.members.length < 30) {
+          more = false
+        }
+      }
+      return members
     },
 })

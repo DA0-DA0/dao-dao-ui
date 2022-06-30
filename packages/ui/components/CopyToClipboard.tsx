@@ -46,6 +46,7 @@ export function CopyToClipboard({
         setCopied(true)
         toast.success(success)
       }}
+      type="button"
     >
       {copied ? (
         <CheckCircleIcon className="w-[18px]" />
@@ -81,6 +82,7 @@ export function CopyToClipboardAccent({
           ? { backgroundColor: accentColor, color: accentColor }
           : { color: accentColor }
       }
+      type="button"
     >
       {concatAddressImpl(value, 12, 7)}
     </button>
@@ -113,6 +115,7 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
           toast.success(success)
         }}
         size="sm"
+        type="button"
         variant="secondary"
       >
         <p className="text-body caption-text">Copy</p>

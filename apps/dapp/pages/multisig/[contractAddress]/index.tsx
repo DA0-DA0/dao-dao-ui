@@ -102,8 +102,8 @@ const InnerMobileMultisigHome = () => {
         {tab === MobileMenuTabSelection.Proposal && (
           <ContractProposalsDisplay
             contractAddress={contractAddress}
-            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
             multisig
+            proposalCreateLink={`/multisig/${contractAddress}/proposals/create`}
           />
         )}
         {tab === MobileMenuTabSelection.Members && (
@@ -138,6 +138,20 @@ const InnerMultisigHome = () => {
       <div className="col-span-4 w-full min-h-screen">
         <GradientHero>
           <SmallScreenNav />
+          <div className="flex justify-center items-center py-3 px-6 w-full bg-accent-transparent border-b border-inactive">
+            <p className="text-center">
+              This is a beta Multisig.{' '}
+              <a
+                className="underline"
+                href="https://docs.daodao.zone/docs/upgrading/multisig"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Upgrade to V1
+              </a>{' '}
+              to continue receiving feature releases.
+            </p>
+          </div>
           <div className="p-6">
             <div className="flex justify-between items-center">
               <Breadcrumbs
