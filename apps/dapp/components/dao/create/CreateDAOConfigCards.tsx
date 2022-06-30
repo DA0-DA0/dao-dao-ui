@@ -327,7 +327,7 @@ export const CreateDAOProposalDepositCard: FC<
             t('info.tokens')}
         </InputThemedText>
       ) : (
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row items-center gap-2">
           <NumberInput
             disabled={readOnly}
             error={errors?.governanceTokenOptions?.proposalDeposit?.value}
