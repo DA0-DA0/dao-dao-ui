@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-// import { WalletProvider } from '@dao-dao/common'
+import { WalletProvider } from '@dao-dao/common'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
@@ -103,7 +103,7 @@ const SidebarLayoutInner: FC = ({ children }) => {
 }
 
 export const SidebarLayout: FC = ({ children }) => (
-  // <WalletProvider>
-  <SidebarLayoutInner>{children}</SidebarLayoutInner>
-  // </WalletProvider>
+  <WalletProvider>
+    <SidebarLayoutInner>{children}</SidebarLayoutInner>
+  </WalletProvider>
 )

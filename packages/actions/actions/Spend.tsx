@@ -1,4 +1,4 @@
-// import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
@@ -39,8 +39,7 @@ interface SpendData {
 }
 
 const useDefaults: UseDefaults<SpendData> = () => {
-  // const { address } = useWallet()
-  const address = undefined
+  const { address } = useWallet()
 
   return {
     to: address ?? '',
