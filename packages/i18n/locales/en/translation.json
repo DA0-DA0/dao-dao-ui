@@ -63,6 +63,7 @@
     "rocketShip": "Rocket ship",
     "swords": "Swords",
     "token": "Token",
+    "whale": "Whale",
     "yinYang": "Yin Yang"
   },
   "error": {
@@ -130,6 +131,7 @@
     "membershipBasedDescription": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
     "membershipBasedTitle": "Membership-based",
     "message": "Message",
+    "migrateDescription": "This will <1>migrate</1> the selected contract to a new code ID.",
     "name": "Name",
     "onlyMembersExecuteTitle": "Only members execute",
     "onlyMembersExecuteTooltip": "If enabled, only members may execute passed proposals.",
@@ -149,6 +151,7 @@
     "requireProposalDepositTooltip": "If enabled, requires that tokens are deposited to create a proposal.",
     "selectAnImage": "Select an image",
     "smartContractAddress": "Smart Contract Address",
+    "migrateMessage": "Migrate message",
     "tierNameTitle": "Tier name",
     "tierNameTooltip": "The \"class\" of member. For example: \"Core developers\" or \"friends and family.\" These names are only for your reference.",
     "tierVotingWeightPrompt_membershipBased": "Each member of this tier will receive {{weight}} voting power. Want to add members with different voting power? Add another tier.",
@@ -337,6 +340,7 @@
     "instantiateSmartContract": "Instantiate Smart Contract",
     "memberVotingPowers": "Member voting powers",
     "members": "Members",
+    "migrateSmartContract": "Migrate Smart Contract",
     "mint": "Mint",
     "needWalletToContinue": "You'll need a wallet to continue",
     "openProposals": "Open proposals",
