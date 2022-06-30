@@ -41,6 +41,14 @@ let config = {
       destination: '/home',
       permanent: false,
     },
+    // Redirect legacy multisigs (legacy DAOs redirected in
+    // makeGetDAOStaticProps function).
+    {
+      source: '/multisig/:slug*',
+      destination:
+        process.env.NEXT_PUBLIC_LEGACY_URL_PREFIX + '/multisig/:slug*',
+      permanent: false,
+    },
   ],
 }
 
