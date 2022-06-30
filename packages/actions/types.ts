@@ -15,6 +15,7 @@ export enum ActionKey {
   Instantiate = 'instantiate',
   Execute = 'execute',
   Migrate = 'migrate',
+  UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
 }
 
