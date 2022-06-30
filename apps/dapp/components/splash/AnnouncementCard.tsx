@@ -8,7 +8,7 @@ export const AnouncementCard: FC = () => {
 
   return (
     <div
-      className="mx-2 flex max-w-[780px] flex-row flex-wrap justify-between gap-2 rounded py-7 px-8"
+      className="flex flex-row flex-wrap gap-2 justify-between py-7 px-8 mx-2 max-w-[780px] rounded"
       style={{
         backgroundImage:
           'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--light), 0.7), rgba(var(--light), 0.7))',
@@ -19,13 +19,13 @@ export const AnouncementCard: FC = () => {
         <p className="body-text">{t('splash.whatIsADaoExplanation')}</p>
       </div>
       <a
-        className="secondary-text flex flex-row items-center gap-1"
+        className="flex flex-row gap-1 items-center secondary-text"
         href="https://nickmerrill.substack.com/p/what-are-daos"
         rel="noopener noreferrer"
         target="_blank"
       >
         <p>{t('splash.readMore')}</p>
-        <ArrowRightIcon className="h-3 w-4" />
+        <ArrowRightIcon className="w-4 h-3" />
       </a>
     </div>
   )

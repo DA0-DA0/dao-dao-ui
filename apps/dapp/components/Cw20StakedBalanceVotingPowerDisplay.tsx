@@ -75,7 +75,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
 
   return (
     <>
-      <div className="flex flex-col items-stretch gap-2">
+      <div className="flex flex-col gap-2 items-stretch">
         {!unstakedGovTokenBalance &&
           !walletStakedValue &&
           !sumClaimsAvailable && (
@@ -84,13 +84,13 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
         {unstakedGovTokenBalance > 0 && walletStakedValue === 0 && (
           <BalanceCard
             buttonLabel={t('button.stakeTokens')}
-            icon={<PlusSmIcon className="h-4 w-4" />}
+            icon={<PlusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Stake)}
             opaque
             title={t('info.notAMemberYet')}
           >
-            <div className="mb-2 flex flex-row items-center gap-2">
+            <div className="flex flex-row gap-2 items-center mb-2">
               <BalanceIcon iconURI={tokenImageUrl} />
 
               <p className="font-bold">
@@ -101,7 +101,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
                   maximumFractionDigits: governanceTokenInfo.decimals,
                 })}{' '}
                 ${governanceTokenInfo.symbol}
-                <span className="secondary-text ml-1">
+                <span className="ml-1 secondary-text">
                   {t('info.unstaked')}
                 </span>
               </p>
@@ -113,13 +113,13 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
         {walletStakedValue > 0 && (
           <BalanceCard
             buttonLabel={t('button.unstakeTokens')}
-            icon={<MinusSmIcon className="h-4 w-4" />}
+            icon={<MinusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Unstake)}
             title={t('title.votingPower')}
           >
             <div className="flex flex-col gap-2">
-              <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-row gap-2 items-center">
                 <BalanceIcon iconURI={tokenImageUrl} />
                 <p className="title-text">
                   {formatPercentOf100(
@@ -130,7 +130,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
                 </p>
               </div>
 
-              <p className="secondary-text ml-6">
+              <p className="ml-6 secondary-text">
                 {t('info.tokensStaked', {
                   amount: convertMicroDenomToDenomWithDecimals(
                     walletStakedValue,
@@ -147,14 +147,14 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
         {!!sumClaimsAvailable && (
           <BalanceCard
             buttonLabel={t('button.claimTokens')}
-            icon={<HandIcon className="h-4 w-4" />}
+            icon={<HandIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Claim)}
             title={t('info.yourTokensUnstaked', {
               tokenSymbol: governanceTokenInfo.symbol,
             })}
           >
-            <div className="primary-text flex flex-row flex-wrap items-center gap-2">
+            <div className="flex flex-row flex-wrap gap-2 items-center primary-text">
               <BalanceIcon iconURI={tokenImageUrl} />
               {convertMicroDenomToDenomWithDecimals(
                 sumClaimsAvailable,
@@ -169,13 +169,13 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
         {walletStakedValue > 0 && unstakedGovTokenBalance > 0 && (
           <BalanceCard
             buttonLabel={t('button.stakeTokens')}
-            icon={<PlusSmIcon className="h-4 w-4" />}
+            icon={<PlusSmIcon className="w-4 h-4" />}
             loading={stakingLoading}
             onClick={() => setShowStakingMode(StakingMode.Stake)}
             opaque
             title={t('info.couldHaveMoreVotingPower')}
           >
-            <div className="mb-2 flex flex-row items-center gap-2">
+            <div className="flex flex-row gap-2 items-center mb-2">
               <BalanceIcon iconURI={tokenImageUrl} />
 
               <p className="font-bold">
@@ -186,7 +186,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
                   maximumFractionDigits: governanceTokenInfo.decimals,
                 })}{' '}
                 ${governanceTokenInfo.symbol}
-                <span className="secondary-text ml-1">
+                <span className="ml-1 secondary-text">
                   {t('info.unstaked')}
                 </span>
               </p>

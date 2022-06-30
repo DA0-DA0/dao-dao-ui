@@ -18,7 +18,7 @@ export const NoKeplrAccountModal: FC<NoKeplrAccountModalProps> = ({
     <Modal onClose={onClose}>
       <h1 className="header-text">{t('title.configureWalletToContinue')}</h1>
       {grafs.map((graf) => (
-        <p key={graf} className="body-text mt-6 mb-6">
+        <p key={graf} className="mt-6 mb-6 body-text">
           {graf}
         </p>
       ))}

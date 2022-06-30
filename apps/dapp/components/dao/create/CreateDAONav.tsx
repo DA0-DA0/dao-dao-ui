@@ -23,7 +23,7 @@ export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
         {t('title.steps')}
       </p>
 
-      <div className="flex flex-col items-start gap-2 md:gap-5">
+      <div className="flex flex-col gap-2 items-start md:gap-5">
         {createDAOFormPages.map(({ href, title }, index) => (
           <Button
             key={href}
@@ -44,7 +44,7 @@ export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
             }
             variant="ghost"
           >
-            <div className="flex flex-row items-center gap-1 md:gap-3">
+            <div className="flex flex-row gap-1 items-center md:gap-3">
               <p className="font-mono">{index + 1}.</p>
               {title}
             </div>

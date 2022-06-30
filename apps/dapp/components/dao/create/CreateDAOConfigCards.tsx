@@ -157,7 +157,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
             : t('info.disabled')}
         </InputThemedText>
       ) : (
-        <div className="flex grow flex-row flex-wrap items-stretch justify-between gap-x-8 gap-y-4">
+        <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
           <SwitchCard
             enabled={quorumEnabled}
             onClick={() => {
@@ -176,7 +176,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
           />
 
           {quorumEnabled && (
-            <div className="flex flex-row items-stretch gap-2">
+            <div className="flex flex-row gap-2 items-stretch">
               {quorum !== 'majority' && (
                 <NumberInput
                   disabled={readOnly}
@@ -327,7 +327,7 @@ export const CreateDAOProposalDepositCard: FC<
             t('info.tokens')}
         </InputThemedText>
       ) : (
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row gap-2 items-center">
           <NumberInput
             disabled={readOnly}
             error={errors?.governanceTokenOptions?.proposalDeposit?.value}

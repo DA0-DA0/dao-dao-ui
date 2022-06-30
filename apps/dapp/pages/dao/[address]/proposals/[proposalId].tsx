@@ -169,7 +169,7 @@ const InnerProposal: FC = () => {
 
         <SmallScreenNav />
 
-        <div className="flex max-w-3xl flex-col gap-6 p-6 lg:mt-6 lg:p-0">
+        <div className="flex flex-col gap-6 p-6 max-w-3xl lg:p-0 lg:mt-6">
           <div className="lg:hidden">
             <ProposalInfoCard
               connected={connected}
@@ -233,7 +233,7 @@ const InnerProposal: FC = () => {
           <ProposalVotes coreAddress={coreAddress} proposalId={proposalId} />
         </div>
       </div>
-      <div className="bg-base-200 col-span-2 hidden min-h-screen p-6 lg:block">
+      <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
         <ProposalInfoCard
           connected={connected}

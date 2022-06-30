@@ -85,13 +85,13 @@ export const FeaturedDaos: FC = () => {
   return (
     <>
       <div
-        className="no-scrollbar w-screen overflow-auto"
+        className="overflow-auto w-screen no-scrollbar"
         onMouseEnter={() => setAutoscroll(false)}
         onMouseLeave={() => setAutoscroll(true)}
         onScroll={handleScroll}
         ref={scrollRef}
       >
-        <div className="flex w-max flex-row gap-[16px] py-1">
+        <div className="flex flex-row gap-[16px] py-1 w-max">
           {featuredDaos.map((props) => (
             <FeaturedCard {...props} key={props.name} />
           ))}

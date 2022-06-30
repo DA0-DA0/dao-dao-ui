@@ -88,12 +88,12 @@ const SidebarLayoutInner: FC = ({ children }) => {
       )}
       {searchVisible && <SearchModal onClose={() => setSearchVisible(false)} />}
 
-      <div className="h-full w-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
+      <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
         <div className="hidden lg:block lg:w-[264px]">
           <Nav />
         </div>
 
-        <main className="min-h-screen overflow-hidden lg:col-span-4 lg:col-start-2">
+        <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
           {children}
         </main>
       </div>

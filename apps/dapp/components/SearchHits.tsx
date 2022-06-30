@@ -105,7 +105,7 @@ const HitsInternal: FC<any> = ({ hits }) => {
 
   return (
     <div
-      className="styled-scrollbar md:overflow-y-none flex grow flex-col gap-4 overflow-y-auto p-4 md:flex-row md:justify-start md:overflow-x-auto"
+      className="flex overflow-y-auto flex-col grow gap-4 p-4 md:overflow-x-auto md:flex-row md:justify-start styled-scrollbar md:overflow-y-none"
       ref={listRef}
     >
       {hits.map((hit: Hit, index: number) => (

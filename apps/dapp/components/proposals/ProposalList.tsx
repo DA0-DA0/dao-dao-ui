@@ -132,13 +132,13 @@ export const ProposalList: FC = () => {
 
       {showLoadMore && (
         <Button
-          className="mt-3 border border-inactive font-mono"
+          className="mt-3 font-mono border border-inactive"
           onClick={() => setListCount((c) => c + 1)}
           size="sm"
           variant="secondary"
         >
           {t('button.loadMore')}{' '}
-          <DownloadIcon className="ml-1 inline h-5 w-5" />
+          <DownloadIcon className="inline ml-1 w-5 h-5" />
         </Button>
       )}
     </>

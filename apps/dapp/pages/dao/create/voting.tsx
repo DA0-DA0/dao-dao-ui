@@ -218,14 +218,14 @@ const CreateDAOVotingPage: NextPage = () => {
               watch={watch}
             />
 
-            <CreateDAOConfigCardWrapper className="mb-9 gap-8">
+            <CreateDAOConfigCardWrapper className="gap-8 mb-9">
               {watchedNewDAO.governanceTokenOptions.type ===
               GovernanceTokenType.New ? (
-                <div className="flex flex-col items-stretch gap-2">
-                  <div className="mb-4 grid grid-cols-[2fr_3fr_4fr] items-stretch gap-2 sm:gap-4">
-                    <div className="flex flex-col items-start justify-between gap-2">
+                <div className="flex flex-col gap-2 items-stretch">
+                  <div className="grid grid-cols-[2fr_3fr_4fr] gap-2 items-stretch mb-4 sm:gap-4">
+                    <div className="flex flex-col gap-2 justify-between items-start">
                       <InputLabel mono name={t('form.tokenImage')} />
-                      <div className="flex flex-row items-center justify-start gap-2 justify-self-start">
+                      <div className="flex flex-row gap-2 justify-start justify-self-start items-center">
                         <ImageSelector
                           error={
                             errors.governanceTokenOptions?.newInfo?.imageUrl
@@ -241,15 +241,15 @@ const CreateDAOVotingPage: NextPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col justify-between gap-2">
+                    <div className="flex flex-col gap-2 justify-between">
                       <InputLabel
                         mono
                         name={t('form.governanceTokenSymbolTitle')}
                       />
 
                       <div>
-                        <div className="flex flex-row items-center gap-2">
-                          <p className="flex items-center justify-center rounded-full text-base text-disabled">
+                        <div className="flex flex-row gap-2 items-center">
+                          <p className="flex justify-center items-center text-base text-disabled rounded-full">
                             $
                           </p>
                           <TextInput
@@ -271,7 +271,7 @@ const CreateDAOVotingPage: NextPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col justify-between gap-2">
+                    <div className="flex flex-col gap-2 justify-between">
                       <InputLabel
                         mono
                         name={t('form.governanceTokenNameTitle')}
@@ -292,7 +292,7 @@ const CreateDAOVotingPage: NextPage = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-[2fr_3fr_auto] items-center gap-x-4 gap-y-2">
+                  <div className="grid grid-cols-[2fr_3fr_auto] gap-x-4 gap-y-2 items-center">
                     <p className="primary-text">{t('form.initialSupply')}</p>
 
                     <div className="pl-8">
@@ -332,17 +332,17 @@ const CreateDAOVotingPage: NextPage = () => {
                       />
                     </div>
 
-                    <div className="flex flex-row items-center gap-2 text-tertiary">
+                    <div className="flex flex-row gap-2 items-center text-tertiary">
                       {newTokenImageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           alt=""
-                          className="h-9 w-9 rounded-full object-cover"
+                          className="object-cover w-9 h-9 rounded-full"
                           src={newTokenImageUrl}
                         />
                       ) : (
                         <PlaceholderToken
-                          className="rounded-full border border-default p-2"
+                          className="p-2 rounded-full border border-default"
                           color="rgba(var(--dark), 0.3)"
                           height="2.25rem"
                           width="2.25rem"
@@ -401,13 +401,13 @@ const CreateDAOVotingPage: NextPage = () => {
                       />
                     </div>
 
-                    <p className="flex h-9 w-9 items-center justify-center rounded-full p-2 text-base text-disabled">
+                    <p className="flex justify-center items-center p-2 w-9 h-9 text-base text-disabled rounded-full">
                       %
                     </p>
                   </div>
 
                   <p
-                    className={clsx('secondary-text mt-2', {
+                    className={clsx('mt-2 secondary-text', {
                       'text-error': !govTokenPercentsSumTo100,
                     })}
                   >
@@ -480,7 +480,7 @@ const CreateDAOVotingPage: NextPage = () => {
           watchedNewDAO.governanceTokenOptions.type ===
             GovernanceTokenType.New) && (
           <>
-            <div className="flex flex-col items-stretch gap-4">
+            <div className="flex flex-col gap-4 items-stretch">
               {governanceTokenEnabled && (
                 <p>{t('form.tokenDistributionTitle')}</p>
               )}
@@ -546,7 +546,7 @@ const CreateDAOVotingPage: NextPage = () => {
           </div>
         )}
 
-        <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row gap-4 items-center">
           <Switch
             enabled={watchedNewDAO.showAdvancedVotingConfig}
             onClick={() => {

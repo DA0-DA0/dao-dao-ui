@@ -56,7 +56,7 @@ const InnerMobileDaoHome: FC = () => {
         <SmallScreenNav />
         <DAOMobileHeader />
       </GradientHero>
-      <div className="no-scrollbar flex gap-1 overflow-auto border-b border-inactive px-6 pb-4">
+      <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
           icon="🗳"
           onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
@@ -135,16 +135,16 @@ const InnerDAOHome: FC = () => {
         <GradientHero>
           <SmallScreenNav />
           <div className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
                   ['/home', t('title.home')],
                   [router.asPath, name],
                 ]}
               />
-              <div className="flex flex-row items-center gap-4">
+              <div className="flex flex-row gap-4 items-center">
                 {isMember && (
-                  <div className="flex flex-row items-center gap-2">
+                  <div className="flex flex-row gap-2 items-center">
                     <MemberCheck fill="currentColor" width="16px" />
                     <p className="text-sm text-primary">
                       {t('info.youAreMember')}
@@ -171,7 +171,7 @@ const InnerDAOHome: FC = () => {
             <div className="mt-2">
               <DaoHorizontalInfoDisplay />
             </div>
-            <div className="mt-4 block lg:hidden">
+            <div className="block mt-4 lg:hidden">
               {votingModuleType === VotingModuleType.Cw4Voting ? (
                 <Cw4VotingMemberList />
               ) : votingModuleType ===
@@ -179,7 +179,7 @@ const InnerDAOHome: FC = () => {
                 <Cw20StakedBalanceVotingPowerDisplay />
               ) : null}
             </div>
-            <div className="border-b border-inactive pt-[22px] pb-[28px]">
+            <div className="pt-[22px] pb-[28px] border-b border-inactive">
               <DaoContractInfo />
             </div>
           </div>
@@ -188,7 +188,7 @@ const InnerDAOHome: FC = () => {
           <ContractProposalsDisplay />
         </div>
       </div>
-      <div className="col-span-2 hidden h-full min-h-screen w-full p-6 lg:block">
+      <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
         {votingModuleType === VotingModuleType.Cw4Voting ? (
           <Cw4VotingMemberList />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (

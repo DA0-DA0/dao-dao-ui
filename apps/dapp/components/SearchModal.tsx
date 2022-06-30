@@ -20,7 +20,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => (
     onClose={onClose}
   >
     <InstantSearch indexName={SEARCH_INDEX} searchClient={searchClient}>
-      <div className="flex grow flex-col overflow-hidden rounded-lg bg-primary">
+      <div className="flex overflow-hidden flex-col grow bg-primary rounded-lg">
         <SearchBox />
         <SearchHits />
       </div>

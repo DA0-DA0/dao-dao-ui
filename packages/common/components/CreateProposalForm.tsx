@@ -224,7 +224,7 @@ export const CreateProposalForm = ({
         {showPreview && (
           <>
             <div className="max-w-prose">
-              <h1 className="header-text my-6 text-xl">{proposalTitle}</h1>
+              <h1 className="my-6 text-xl header-text">{proposalTitle}</h1>
             </div>
             <div className="mt-[22px] mb-[36px]">
               <MarkdownPreview markdown={proposalDescription} />
@@ -240,7 +240,7 @@ export const CreateProposalForm = ({
           </>
         )}
         <div className={showPreview ? 'hidden' : ''}>
-          <div className="my-3 flex flex-col gap-1">
+          <div className="flex flex-col gap-1 my-3">
             <InputLabel name={t('form.proposalTitle')} />
             <TextInput
               error={errors.title}
@@ -250,7 +250,7 @@ export const CreateProposalForm = ({
             />
             <InputErrorMessage error={errors.title} />
           </div>
-          <div className="my-3 flex flex-col gap-1">
+          <div className="flex flex-col gap-1 my-3">
             <InputLabel name={t('form.proposalDescription')} />
             <TextAreaInput
               error={errors.description}
@@ -296,7 +296,7 @@ export const CreateProposalForm = ({
             </Button>
           </div>
         </div>
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="flex gap-2 justify-end mt-4">
           {connected ? (
             <Tooltip
               label={
@@ -331,18 +331,18 @@ export const CreateProposalForm = ({
             {showPreview ? (
               <>
                 {t('button.hidePreview')}
-                <EyeOffIcon className="ml-2 inline h-5 stroke-current" />
+                <EyeOffIcon className="inline ml-2 h-5 stroke-current" />
               </>
             ) : (
               <>
                 {t('button.preview')}
-                <EyeIcon className="ml-2 inline h-5 stroke-current" />
+                <EyeIcon className="inline ml-2 h-5 stroke-current" />
               </>
             )}
           </Button>
         </div>
         {showSubmitErrorNote && (
-          <p className="secondary-text mt-2 text-right text-error">
+          <p className="mt-2 text-right text-error secondary-text">
             {t('error.createProposalSubmitInvalid')}
           </p>
         )}
