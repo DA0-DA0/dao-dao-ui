@@ -41,7 +41,7 @@ const IsAdminWarningInner = ({
 }) => {
   const admin = useRecoilValue(contractAdminSelector(contract))
 
-  if (admin !== maybeAdmin && contract !== '') {
+  if (admin !== undefined && admin !== maybeAdmin && contract !== '') {
     return (
       <div className="flex gap-3 items-center py-2 px-4 rounded-lg border border-error">
         <ExclamationIcon className="w-6 h-6 text-error" />
@@ -56,7 +56,7 @@ const IsAdminWarningInner = ({
   return null
 }
 
-const IsAdminWarning = ({
+export const IsAdminWarning = ({
   contract,
   maybeAdmin,
 }: {

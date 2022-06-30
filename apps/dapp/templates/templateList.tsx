@@ -35,6 +35,12 @@ import {
   transformMigrateContractToCosmos,
 } from './migrateContract'
 import {
+  MigrateDaoComponent,
+  migrateDaoDefaults,
+  transformCosmosToMigrateDao,
+  transformMigrateDaoToCosmos,
+} from './migrateDao'
+import {
   MigrateMultisigComponent,
   multisigMigrateDefaults,
   transformCosmosToMigrateMultisig,
@@ -70,6 +76,18 @@ import {
   transformCosmosToStake,
   transformStakeToCosmos,
 } from './stake'
+import {
+  StakingUpdateComponent,
+  stakingUpdateDefaults,
+  transformCosmosToStakingUpdate,
+  transformStakingUpdateToCosmos,
+} from './stakingUpdate'
+import {
+  transformCosmosToUpdateAdmin,
+  transformUpdateAdminToCosmos,
+  UpdateAdminComponent,
+  updateAdminDefaults,
+} from './updateAdmin'
 import {
   transformCosmosToUpdateMinter,
   transformUpdateMinterToCosmos,
@@ -150,6 +168,24 @@ export const messageTemplates: MessageTemplate[] = [
     fromCosmosMsg: transformCosmosToMigrateContract,
   },
   {
+    label: '🍄 Update Contract Admin',
+    description: 'Update the admin of a CosmWasm contract.',
+    component: UpdateAdminComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: updateAdminDefaults,
+    toCosmosMsg: transformUpdateAdminToCosmos,
+    fromCosmosMsg: transformCosmosToUpdateAdmin,
+  },
+  {
+    label: '🌳 Update Staking Config',
+    description: 'Update the config of a v1 staking contract.',
+    component: StakingUpdateComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: stakingUpdateDefaults,
+    toCosmosMsg: transformStakingUpdateToCosmos,
+    fromCosmosMsg: transformCosmosToStakingUpdate,
+  },
+  {
     label: '🔑 Update Minter',
     description: 'Update the minter for a cw20 token.',
     component: UpdateMinterComponent,
@@ -193,6 +229,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: multisigMigrateDefaults,
     fromCosmosMsg: transformCosmosToMigrateMultisig,
     toCosmosMsg: transformMigrateMultisigToCosmos,
+  },
+  {
+    label: '☯️ Upgrade to V1',
+    description: 'Update DAO to DAO DAO v1.',
+    component: MigrateDaoComponent,
+    contractSupport: ContractSupport.DAO,
+    getDefaults: migrateDaoDefaults,
+    fromCosmosMsg: transformCosmosToMigrateDao,
+    toCosmosMsg: transformMigrateDaoToCosmos,
   },
 ]
 // Ensure custom is always sorted last for two reasons:

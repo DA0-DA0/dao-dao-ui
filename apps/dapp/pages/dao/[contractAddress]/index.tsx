@@ -121,6 +121,20 @@ const InnerDaoHome: FC = () => {
       <div className="col-span-4 min-h-screen">
         <GradientHero>
           <SmallScreenNav />
+          <div className="flex justify-center items-center py-3 px-6 w-full bg-accent-transparent border-b border-inactive">
+            <p className="text-center">
+              This is a beta DAO.
+              <a
+                className="underline"
+                href="https://docs.daodao.zone/docs/upgrading/dao"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Upgrade to V1
+              </a>{' '}
+              to continue receiving feature releases.
+            </p>
+          </div>
           <div className="p-6">
             <div className="flex justify-between items-center">
               <Breadcrumbs

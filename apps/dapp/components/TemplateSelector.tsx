@@ -54,7 +54,7 @@ export function ProposalTemplateSelector({
 }) {
   return (
     <Modal onClose={onClose}>
-      <div className="relative p-3 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto md:p-6">
+      <div className="overflow-auto relative p-3 w-[32rem] max-w-[96vw] max-w-md !h-[38rem] h-min max-h-[96vh] bg-white rounded-lg border border-focus cursor-auto md:p-6">
         <button
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
           onClick={onClose}
