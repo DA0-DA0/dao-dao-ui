@@ -1,13 +1,13 @@
 import { instantMeiliSearch } from '@meilisearch/instant-meilisearch'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { InstantSearch } from 'react-instantsearch-dom'
 
+import { daoSelector } from '@dao-dao/state/recoil/selectors/clients/cw4-voting'
 import { Modal } from '@dao-dao/ui'
 import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
 import { SearchBox, SearchHits } from '@/components'
-import { daoSelector } from '@/../../packages/state/recoil/selectors/clients/cw4-voting'
-import { useRouter } from 'next/router'
 
 export interface SearchModalProps {
   onClose: () => void
@@ -21,7 +21,7 @@ type SearchState =
   | { type: 'dao_chosen'; id: string; name: string }
 
 const SearchNavElem: FC<{ name: string }> = ({ name }) => (
-  <div className="p-2 font-medium rounded-md bg-secondary w-fit">{name}</div>
+  <div className="p-2 w-fit font-medium bg-secondary rounded-md">{name}</div>
 )
 
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {

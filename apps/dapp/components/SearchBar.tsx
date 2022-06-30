@@ -22,7 +22,7 @@ const SearchBoxInternal: FC<SearchBoxInternalProps> = ({
     <div className="flex items-center px-3 text-tertiary border-b border-default">
       <input
         autoFocus
-        className="px-2 py-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
+        className="py-4 px-2 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
         onChange={(event) => refine(event.currentTarget.value)}
         placeholder={t('What are you looking for?')}
         type="text"

@@ -184,188 +184,192 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   )
 }
 
-export const CreateDAOVotingDurationCard: FC<CreateDAOConfigCardSharedProps> =
-  ({ newDAO: { votingDuration }, register, setValue, errors, readOnly }) => {
-    const { t } = useTranslation()
+export const CreateDAOVotingDurationCard: FC<
+  CreateDAOConfigCardSharedProps
+> = ({ newDAO: { votingDuration }, register, setValue, errors, readOnly }) => {
+  const { t } = useTranslation()
 
-    return (
-      <CreateDAOConfigCard
-        accentColor="#c3935e1a"
-        description={t('Voting duration description')}
-        error={errors?.votingDuration?.value ?? errors?.votingDuration?.units}
-        image={<Emoji label="hourglass" symbol="⏳" />}
-        title={t('Voting duration')}
+  return (
+    <CreateDAOConfigCard
+      accentColor="#c3935e1a"
+      description={t('Voting duration description')}
+      error={errors?.votingDuration?.value ?? errors?.votingDuration?.units}
+      image={<Emoji label="hourglass" symbol="⏳" />}
+      title={t('Voting duration')}
+    >
+      <NumberInput
+        disabled={readOnly}
+        error={errors?.votingDuration?.value}
+        fieldName="votingDuration.value"
+        onPlusMinus={[
+          () =>
+            setValue(
+              'votingDuration.value',
+              Math.max(votingDuration.value + 1, 1)
+            ),
+          () =>
+            setValue(
+              'votingDuration.value',
+              Math.max(votingDuration.value - 1, 1)
+            ),
+        ]}
+        register={register}
+        sizing="sm"
+        step={1}
+        validation={[validatePositive, validateRequired]}
+      />
+
+      <SelectInput
+        disabled={readOnly}
+        error={errors?.votingDuration?.units}
+        fieldName="votingDuration.units"
+        register={register}
+        validation={[validateRequired]}
       >
-        <NumberInput
-          disabled={readOnly}
-          error={errors?.votingDuration?.value}
-          fieldName="votingDuration.value"
-          onPlusMinus={[
-            () =>
-              setValue(
-                'votingDuration.value',
-                Math.max(votingDuration.value + 1, 1)
-              ),
-            () =>
-              setValue(
-                'votingDuration.value',
-                Math.max(votingDuration.value - 1, 1)
-              ),
-          ]}
-          register={register}
-          sizing="sm"
-          step={1}
-          validation={[validatePositive, validateRequired]}
-        />
+        {DurationUnitsValues.map((type, idx) => (
+          <option key={idx} value={type}>
+            {/* TODO: i18n */}
+            {type}
+          </option>
+        ))}
+      </SelectInput>
+    </CreateDAOConfigCard>
+  )
+}
 
-        <SelectInput
-          disabled={readOnly}
-          error={errors?.votingDuration?.units}
-          fieldName="votingDuration.units"
-          register={register}
-          validation={[validateRequired]}
-        >
-          {DurationUnitsValues.map((type, idx) => (
-            <option key={idx} value={type}>
-              {/* TODO: i18n */}
-              {type}
-            </option>
-          ))}
-        </SelectInput>
-      </CreateDAOConfigCard>
-    )
-  }
-
-export const CreateDAOProposalDepositCard: FC<CreateDAOConfigCardSharedProps> =
-  ({
-    newDAO: {
-      governanceTokenOptions: {
-        proposalDeposit: { value },
-      },
+export const CreateDAOProposalDepositCard: FC<
+  CreateDAOConfigCardSharedProps
+> = ({
+  newDAO: {
+    governanceTokenOptions: {
+      proposalDeposit: { value },
     },
-    register,
-    setValue,
-    errors,
-    readOnly,
-  }) => {
-    const { t } = useTranslation()
+  },
+  register,
+  setValue,
+  errors,
+  readOnly,
+}) => {
+  const { t } = useTranslation()
 
-    return (
-      <CreateDAOConfigCard
-        accentColor="#fccd031a"
-        description={t('Proposal deposit description')}
+  return (
+    <CreateDAOConfigCard
+      accentColor="#fccd031a"
+      description={t('Proposal deposit description')}
+      error={errors?.governanceTokenOptions?.proposalDeposit?.value}
+      image={<Emoji label="banknote" symbol="💵" />}
+      title={t('Proposal deposit')}
+    >
+      <NumberInput
+        disabled={readOnly}
         error={errors?.governanceTokenOptions?.proposalDeposit?.value}
-        image={<Emoji label="banknote" symbol="💵" />}
-        title={t('Proposal deposit')}
+        fieldName="governanceTokenOptions.proposalDeposit.value"
+        onPlusMinus={[
+          () =>
+            setValue(
+              'governanceTokenOptions.proposalDeposit.value',
+              Math.max(value + 1, 0)
+            ),
+          () =>
+            setValue(
+              'governanceTokenOptions.proposalDeposit.value',
+              Math.max(value - 1, 0)
+            ),
+        ]}
+        register={register}
+        sizing="sm"
+        step={1}
+        validation={[validateNonNegative]}
+      />
+    </CreateDAOConfigCard>
+  )
+}
+
+export const CreateDAORefundFailedProposalDepositCard: FC<
+  CreateDAOConfigCardSharedProps
+> = ({ errors, setValue, watch, readOnly }) => {
+  const { t } = useTranslation()
+
+  return (
+    <CreateDAOConfigCard
+      accentColor="#fed3581a"
+      description={t('Proposal deposit refund description')}
+      error={errors?.governanceTokenOptions?.proposalDeposit?.refundFailed}
+      image={<Emoji label="finger pointing up" symbol="👆" />}
+      title={t('Proposal deposit refund')}
+    >
+      <FormSwitchCard
+        disabled={readOnly}
+        fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
+        offLabel={t('no')}
+        onLabel={t('yes')}
+        setValue={setValue}
+        sizing="sm"
+        watch={watch}
+      />
+    </CreateDAOConfigCard>
+  )
+}
+
+export const CreateDAOUnstakingDurationCard: FC<
+  CreateDAOConfigCardSharedProps
+> = ({
+  newDAO: {
+    governanceTokenOptions: { unregisterDuration },
+  },
+  errors,
+  setValue,
+  register,
+  readOnly,
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <CreateDAOConfigCard
+      accentColor="#cf434b1a"
+      description={t('Unstaking period description')}
+      error={
+        errors?.governanceTokenOptions?.unregisterDuration?.value ??
+        errors?.governanceTokenOptions?.unregisterDuration?.units
+      }
+      image={<Emoji label="alarm clock" symbol="⏰" />}
+      title={t('Unstaking period')}
+    >
+      <NumberInput
+        disabled={readOnly}
+        error={errors?.governanceTokenOptions?.unregisterDuration?.value}
+        fieldName="governanceTokenOptions.unregisterDuration.value"
+        onPlusMinus={[
+          () =>
+            setValue(
+              'governanceTokenOptions.unregisterDuration.value',
+              Math.max(unregisterDuration.value + 1, 0)
+            ),
+          () =>
+            setValue(
+              'governanceTokenOptions.unregisterDuration.value',
+              Math.max(unregisterDuration.value - 1, 0)
+            ),
+        ]}
+        register={register}
+        sizing="sm"
+        step={1}
+        validation={[validateNonNegative, validateRequired]}
+      />
+
+      <SelectInput
+        disabled={readOnly}
+        error={errors?.governanceTokenOptions?.unregisterDuration?.units}
+        fieldName="governanceTokenOptions.unregisterDuration.units"
+        register={register}
+        validation={[validateRequired]}
       >
-        <NumberInput
-          disabled={readOnly}
-          error={errors?.governanceTokenOptions?.proposalDeposit?.value}
-          fieldName="governanceTokenOptions.proposalDeposit.value"
-          onPlusMinus={[
-            () =>
-              setValue(
-                'governanceTokenOptions.proposalDeposit.value',
-                Math.max(value + 1, 0)
-              ),
-            () =>
-              setValue(
-                'governanceTokenOptions.proposalDeposit.value',
-                Math.max(value - 1, 0)
-              ),
-          ]}
-          register={register}
-          sizing="sm"
-          step={1}
-          validation={[validateNonNegative]}
-        />
-      </CreateDAOConfigCard>
-    )
-  }
-
-export const CreateDAORefundFailedProposalDepositCard: FC<CreateDAOConfigCardSharedProps> =
-  ({ errors, setValue, watch, readOnly }) => {
-    const { t } = useTranslation()
-
-    return (
-      <CreateDAOConfigCard
-        accentColor="#fed3581a"
-        description={t('Proposal deposit refund description')}
-        error={errors?.governanceTokenOptions?.proposalDeposit?.refundFailed}
-        image={<Emoji label="finger pointing up" symbol="👆" />}
-        title={t('Proposal deposit refund')}
-      >
-        <FormSwitchCard
-          disabled={readOnly}
-          fieldName="governanceTokenOptions.proposalDeposit.refundFailed"
-          offLabel={t('no')}
-          onLabel={t('yes')}
-          setValue={setValue}
-          sizing="sm"
-          watch={watch}
-        />
-      </CreateDAOConfigCard>
-    )
-  }
-
-export const CreateDAOUnstakingDurationCard: FC<CreateDAOConfigCardSharedProps> =
-  ({
-    newDAO: {
-      governanceTokenOptions: { unregisterDuration },
-    },
-    errors,
-    setValue,
-    register,
-    readOnly,
-  }) => {
-    const { t } = useTranslation()
-
-    return (
-      <CreateDAOConfigCard
-        accentColor="#cf434b1a"
-        description={t('Unstaking period description')}
-        error={
-          errors?.governanceTokenOptions?.unregisterDuration?.value ??
-          errors?.governanceTokenOptions?.unregisterDuration?.units
-        }
-        image={<Emoji label="alarm clock" symbol="⏰" />}
-        title={t('Unstaking period')}
-      >
-        <NumberInput
-          disabled={readOnly}
-          error={errors?.governanceTokenOptions?.unregisterDuration?.value}
-          fieldName="governanceTokenOptions.unregisterDuration.value"
-          onPlusMinus={[
-            () =>
-              setValue(
-                'governanceTokenOptions.unregisterDuration.value',
-                Math.max(unregisterDuration.value + 1, 0)
-              ),
-            () =>
-              setValue(
-                'governanceTokenOptions.unregisterDuration.value',
-                Math.max(unregisterDuration.value - 1, 0)
-              ),
-          ]}
-          register={register}
-          sizing="sm"
-          step={1}
-          validation={[validateNonNegative, validateRequired]}
-        />
-
-        <SelectInput
-          disabled={readOnly}
-          error={errors?.governanceTokenOptions?.unregisterDuration?.units}
-          fieldName="governanceTokenOptions.unregisterDuration.units"
-          register={register}
-          validation={[validateRequired]}
-        >
-          {DurationUnitsValues.map((type, idx) => (
-            <option key={idx} value={type}>
-              {type}
-            </option>
-          ))}
-        </SelectInput>
-      </CreateDAOConfigCard>
-    )
-  }
+        {DurationUnitsValues.map((type, idx) => (
+          <option key={idx} value={type}>
+            {type}
+          </option>
+        ))}
+      </SelectInput>
+    </CreateDAOConfigCard>
+  )
+}
