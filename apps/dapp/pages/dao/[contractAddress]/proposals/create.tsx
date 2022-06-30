@@ -1,6 +1,6 @@
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import type { NextPage } from 'next'
+import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -8,6 +8,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { useWallet } from '@dao-dao/state'
 import { CopyToClipboard, Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
+import { CHAIN_RPC_ENDPOINT } from '@dao-dao/utils'
 
 import { proposalsCreatedAtom } from '@/atoms/proposals'
 import { ProposalData, ProposalForm } from '@/components/ProposalForm'
@@ -15,6 +16,7 @@ import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { daoSelector } from '@/selectors/daos'
 import { cw20TokenInfo } from '@/selectors/treasury'
+import { cosmWasmClientRouter } from '@/util/chainClientRouter'
 import { cleanChainError } from '@/util/cleanChainError'
 import { expirationExpired } from '@/util/expiration'
 
@@ -166,3 +168,46 @@ const ProposalCreatePage: NextPage = () => (
 )
 
 export default ProposalCreatePage
+
+// REDIRECT V1 DAOs
+
+export const getStaticPaths: GetStaticPaths = () => ({
+  paths: [],
+  fallback: true,
+})
+
+export const getStaticProps: GetStaticProps = async ({
+  params: { contractAddress } = {},
+}) => {
+  if (typeof contractAddress !== 'string' || !contractAddress) {
+    return { props: {} }
+  }
+
+  try {
+    const client = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
+    await client.queryContractSmart(contractAddress, {
+      get_config: {},
+    })
+  } catch (err) {
+    // Redirect v1 DAOs.
+    if (
+      err instanceof Error &&
+      err.message.includes(
+        'Error parsing into type cw_core::msg::QueryMsg: unknown variant `get_config`'
+      )
+    ) {
+      return {
+        redirect: {
+          destination:
+            process.env.NEXT_PUBLIC_V1_URL_PREFIX +
+            `/dao/${contractAddress}/proposals/create`,
+          permanent: false,
+        },
+      }
+    }
+
+    console.error(err)
+  }
+
+  return { props: {} }
+}

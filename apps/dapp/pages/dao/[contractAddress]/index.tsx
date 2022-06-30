@@ -271,6 +271,22 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
     const accentColor = await getFastAverageColor(daoInfo.config.image_url)
     return { props: { accentColor } }
   } catch (err) {
+    // Redirect V1 DAOs.
+    if (
+      err instanceof Error &&
+      err.message.includes(
+        'Error parsing into type cw_core::msg::QueryMsg: unknown variant `get_config`'
+      )
+    ) {
+      return {
+        redirect: {
+          destination:
+            process.env.NEXT_PUBLIC_V1_URL_PREFIX + `/dao/${contractAddress}`,
+          permanent: false,
+        },
+      }
+    }
+
     console.error(err)
   }
 
