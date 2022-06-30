@@ -160,23 +160,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('emoji.recycle')} symbol="♻️" />{' '}
-            {t('form.allowRevotingTitle')}
-          </h3>
-          <p className="secondary-text">{t('form.allowRevotingDescription')}</p>
-        </div>
-        <div className="flex grow justify-center items-center">
-          <FormSwitch
-            fieldName={getFieldName('allowRevoting')}
-            readOnly={readOnly}
-            setValue={setValue}
-            watch={watch}
-          />
-        </div>
-      </div>
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
-        <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
-          <h3 className="primary-text">
             <Emoji label={t('emoji.chart')} symbol="📊" />{' '}
             {t('form.passingThresholdTitle')}
           </h3>
@@ -319,6 +302,23 @@ export const UpdateProposalConfigComponent: ActionComponent<
               {t('unit.seconds', { count: proposalDuration })}
             </option>
           </SelectInput>
+        </div>
+      </div>
+      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
+        <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
+          <h3 className="primary-text">
+            <Emoji label={t('emoji.recycle')} symbol="♻️" />{' '}
+            {t('form.allowRevotingTitle')}
+          </h3>
+          <p className="secondary-text">{t('form.allowRevotingDescription')}</p>
+        </div>
+        <div className="flex grow justify-center items-center">
+          <FormSwitch
+            fieldName={getFieldName('allowRevoting')}
+            readOnly={readOnly}
+            setValue={setValue}
+            watch={watch}
+          />
         </div>
       </div>
     </ActionCard>
