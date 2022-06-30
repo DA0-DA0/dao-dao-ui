@@ -7,7 +7,7 @@ import type { AppProps } from 'next/app'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-// import { WalletProvider } from '@dao-dao/common'
+import { WalletProvider } from '@dao-dao/common'
 import { appWithTranslation, useTranslation } from '@dao-dao/i18n'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
@@ -111,9 +111,9 @@ const SDA: FC<AppProps> = (props) => (
     />
 
     <RecoilRoot>
-      {/* <WalletProvider> */}
-      <InnerApp {...props} />
-      {/* </WalletProvider> */}
+      <WalletProvider>
+        <InnerApp {...props} />
+      </WalletProvider>
     </RecoilRoot>
   </>
 )
