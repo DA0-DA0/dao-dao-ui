@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { connectHits } from 'react-instantsearch-dom'
 
 import { ContractCard } from './ContractCard'
@@ -13,12 +13,19 @@ interface Hit {
   treasury_balance: string
 }
 
-const Hit = ({ hit, selected }: { hit: Hit; selected: boolean }) => (
+interface HitCardProps {
+  hit: Hit
+  selected: boolean
+  loading: boolean
+}
+
+const HitCard = ({ hit, selected, loading }: HitCardProps) => (
   <ContractCard
     balance={hit.treasury_balance}
     description={hit.description}
     href={`/dao/${hit.id}`}
     imgUrl={hit.image_url}
+    loading={loading}
     name={hit.name}
     proposals={hit.proposal_count}
     selected={selected}
@@ -30,29 +37,31 @@ const Hit = ({ hit, selected }: { hit: Hit; selected: boolean }) => (
 const HitsInternal: FC<any> = ({ hits }) => {
   const router = useRouter()
   const [selection, setSelection] = useState(0)
+  const [loadingId, setLoadingId] = useState<string>()
+  const listRef = useRef<HTMLDivElement>(null)
 
   const handleKeyPress = useCallback(
     (event) => {
       switch (event.key) {
         case 'ArrowLeft':
-          setSelection((selection) => selection - 1)
+        case 'ArrowUp':
+          event.preventDefault()
+          setSelection((selection) =>
+            selection - 1 < 0 ? hits.length - 1 : selection - 1
+          )
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowRight':
-          setSelection((selection) => selection + 1)
-          router.prefetch(`/dao/${hits[selection].id}`)
-          break
-        case 'ArrowUp':
-          setSelection((selection) => selection - 3)
-          router.prefetch(`/dao/${hits[selection].id}`)
-          break
         case 'ArrowDown':
-          setSelection((selection) => selection + 3)
+          event.preventDefault()
+          setSelection((selection) => (selection + 1) % hits.length)
           router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'Enter':
+          event.preventDefault()
           if (selection >= 0) {
             router.push(`/dao/${hits[selection].id}`)
+            setLoadingId(hits[selection].id)
           }
           break
       }
@@ -70,14 +79,44 @@ const HitsInternal: FC<any> = ({ hits }) => {
     }
   }, [handleKeyPress])
 
+  // Ensure selected action is scrolled into view.
+  useEffect(() => {
+    const item = listRef.current?.children[selection]
+    if (!item) {
+      return
+    }
+
+    // Only scroll if not already visible.
+    const { left, right, top, bottom } = item.getBoundingClientRect()
+    const containerRect = listRef.current.getBoundingClientRect()
+    if (
+      left >= containerRect.left &&
+      right <= containerRect.right &&
+      top >= containerRect.top &&
+      bottom <= containerRect.bottom
+    ) {
+      return
+    }
+
+    item.scrollIntoView({
+      behavior: 'smooth',
+    })
+  }, [selection])
+
   return (
-    <>
-      <div className="flex grow flex-wrap justify-center gap-4 overflow-y-auto p-4 md:justify-start">
-        {hits.map((hit: Hit, index: number) => (
-          <Hit key={hit.id} hit={hit} selected={index === selection} />
-        ))}
-      </div>
-    </>
+    <div
+      className="styled-scrollbar md:overflow-y-none flex grow flex-col gap-4 overflow-y-auto p-4 md:flex-row md:justify-start md:overflow-x-auto"
+      ref={listRef}
+    >
+      {hits.map((hit: Hit, index: number) => (
+        <HitCard
+          key={hit.id}
+          hit={hit}
+          loading={hit.id === loadingId}
+          selected={index === selection}
+        />
+      ))}
+    </div>
   )
 }
 

@@ -60,6 +60,10 @@ export const CWCORE_CODE_ID = parseInt(
   process.env.NEXT_PUBLIC_CWCORE_CODE_ID as string,
   10
 )
+
+export const V1_FACTORY_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
+
 export const CWPROPOSALSINGLE_CODE_ID = parseInt(
   process.env.NEXT_PUBLIC_CWPROPOSALSINGLE_CODE_ID as string,
   10

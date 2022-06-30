@@ -7,7 +7,6 @@ import toast from 'react-hot-toast'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { useTranslation } from '@dao-dao/i18n'
 import {
-  CwCoreQueryClient,
   CwProposalSingleHooks,
   CwProposalSingleQueryClient,
   useGovernanceTokenInfo,
@@ -23,13 +22,7 @@ import {
   StakingMode,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import {
-  CHAIN_RPC_ENDPOINT,
-  CI,
-  VotingModuleType,
-  cleanChainError,
-  cosmWasmClientRouter,
-} from '@dao-dao/utils'
+import { VotingModuleType, cleanChainError } from '@dao-dao/utils'
 
 import {
   DAOPageWrapper,
@@ -293,78 +286,66 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: 'blocking',
 })
 
-export const getStaticProps: GetStaticProps<DAOPageWrapperProps> = async (
-  ...props
-) => {
-  // Don't query chain if running in CI.
-  if (CI) {
-    return { notFound: true }
-  }
-
-  // If invalid address, fallback to default handler.
-  const coreAddress = props[0].params?.address
-  if (typeof coreAddress !== 'string' || !coreAddress) {
-    return await makeGetDAOStaticProps()(...props)
-  }
-
-  const proposalIdQuery = props[0].params?.proposalId
-  if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    return await makeGetDAOStaticProps((_, t) => ({
-      followingTitle: t('error.proposalNotFound'),
-      additionalProps: {
-        exists: false,
-      },
-    }))(...props)
-  }
-
-  const proposalId = Number(proposalIdQuery)
-
-  try {
-    // Verify proposal exists.
-    const rpcClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-    // Get proposal module address.
-    const coreClient = new CwCoreQueryClient(rpcClient, coreAddress)
-    const proposalAddress = (await coreClient.proposalModules({}))[0]
-    // Get proposal.
-    const proposalClient = new CwProposalSingleQueryClient(
-      rpcClient,
-      proposalAddress
-    )
-
-    let exists = false
-    try {
-      exists = !!(await proposalClient.proposal({ proposalId })).proposal
-    } catch (err) {
-      // If proposal doesn't exist, handle 404 manually on frontend.
-      // Rethrow all other errors.
+export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
+  makeGetDAOStaticProps(
+    async ({
+      context: { params: { proposalId: proposalIdQuery } = {} },
+      t,
+      cwClient,
+      coreClient,
+    }) => {
+      // If invalid proposal ID, not found.
       if (
-        !(err instanceof Error) ||
-        !err.message.includes('Proposal not found')
+        typeof proposalIdQuery !== 'string' ||
+        isNaN(Number(proposalIdQuery))
       ) {
-        throw err
+        return {
+          followingTitle: t('error.proposalNotFound'),
+          additionalProps: {
+            exists: false,
+          },
+        }
       }
 
-      console.error(err)
-    }
+      const proposalId = Number(proposalIdQuery)
 
-    const staticProps = await makeGetDAOStaticProps((_, t) => ({
-      followingTitle: exists
-        ? `${t('title.proposal')} #${proposalId}`
-        : t('error.proposalNotFound'),
-    }))(...props)
+      try {
+        // Get proposal module address.
+        const proposalAddress = (await coreClient.proposalModules({}))[0]
+        // Get proposal.
+        const proposalClient = new CwProposalSingleQueryClient(
+          cwClient,
+          proposalAddress
+        )
 
-    return 'props' in staticProps
-      ? {
-          ...staticProps,
-          props: {
-            ...staticProps.props,
+        let exists = false
+        try {
+          exists = !!(await proposalClient.proposal({ proposalId })).proposal
+        } catch (err) {
+          // If proposal doesn't exist, handle 404 manually on frontend.
+          // Rethrow all other errors.
+          if (
+            !(err instanceof Error) ||
+            !err.message.includes('Proposal not found')
+          ) {
+            throw err
+          }
+
+          console.error(err)
+        }
+
+        return {
+          followingTitle: exists
+            ? `${t('title.proposal')} #${proposalId}`
+            : t('error.proposalNotFound'),
+          additionalProps: {
             exists,
           },
         }
-      : staticProps
-  } catch (error) {
-    console.error(error)
-    // Throw error to trigger 500.
-    throw new Error('An unexpected error occurred. Please try again later.')
-  }
-}
+      } catch (error) {
+        console.error(error)
+        // Throw error to trigger 500.
+        throw new Error('An unexpected error occurred. Please try again later.')
+      }
+    }
+  )

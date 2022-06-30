@@ -107,7 +107,7 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
               </p>
             </div>
 
-            <p className="secondary-text">{t('info.stakeToJoinAndVote')}</p>
+            <p className="secondary-text">{t('button.stakeToJoinAndVote')}</p>
           </BalanceCard>
         )}
         {walletStakedValue > 0 && (

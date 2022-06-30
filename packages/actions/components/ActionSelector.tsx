@@ -106,7 +106,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
       />
 
       <ul
-        className="flex grow list-none flex-col gap-3 overflow-y-auto"
+        className="styled-scrollbar flex grow list-none flex-col gap-3 overflow-y-auto pr-2"
         ref={actionsListRef}
       >
         {filteredActions.map((action, index) => (

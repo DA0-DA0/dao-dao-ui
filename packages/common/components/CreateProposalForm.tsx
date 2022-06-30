@@ -188,10 +188,15 @@ export const CreateProposalForm = ({
   // Keybinding to open add action selector.
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      // If already showing action selector, do nothing. This allows the
-      // keybinding to function normally when the selector is open. The
-      // escape keybinding can always be used to exit the modal.
-      if (showActionSelector) {
+      if (
+        // If already showing action selector, do nothing. This allows the
+        // keybinding to function normally when the selector is open. The
+        // escape keybinding can always be used to exit the modal.
+        showActionSelector ||
+        // Or if focused on an input.
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      ) {
         return
       }
 

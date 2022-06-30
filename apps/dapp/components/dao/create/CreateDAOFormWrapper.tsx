@@ -72,7 +72,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
           label=""
         />
 
-        <div className="h-full w-full max-w-screen-lg flex-1 overflow-y-auto p-6">
+        <div className="styled-scrollbar h-full w-full max-w-screen-lg flex-1 overflow-y-auto p-6">
           <div className="mb-8">
             <h2 className="header-text mb-4">{t('title.createADAO')}</h2>
 

@@ -15,7 +15,7 @@ export const Loader: FC<LoaderProps> = ({ size = 42, className }) => (
       className
     )}
   >
-    <div className="animate-spin">
+    <div className="animate-spin-medium">
       <Logo height={size} width={size} />
     </div>
   </div>

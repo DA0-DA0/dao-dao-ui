@@ -306,7 +306,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
 
       <div
         className={clsx(
-          'fixed inset-0 top-20 z-10 overflow-y-auto bg-white p-4',
+          'styled-scrollbar fixed inset-0 top-20 z-10 overflow-y-auto bg-white p-4',
           {
             hidden: !visible,
             'flex flex-col sm:hidden': visible,

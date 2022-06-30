@@ -15,7 +15,7 @@ export const Loader = ({ size = 42, fillScreen }: LoaderProps) => (
       'min-h-[80vh] min-w-[80vw]': fillScreen,
     })}
   >
-    <div className="animate-spin">
+    <div className="animate-spin-medium">
       <Logo size={size} />
     </div>
   </div>

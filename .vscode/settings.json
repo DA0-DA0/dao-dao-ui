@@ -39,7 +39,6 @@
     "javascript",
     "javascriptreact",
     "typescript",
-    "typescriptreact",
-    "json"
+    "typescriptreact"
   ]
 }
