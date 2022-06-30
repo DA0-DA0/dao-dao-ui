@@ -6,6 +6,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@cosmjs/stargate": "0.28.10",
     "@dao-dao/actions": "*",
     "@dao-dao/state": "*",
     "@dao-dao/ui": "*",
@@ -14,7 +15,6 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@cosmjs/stargate": "0.28.10",
     "@dao-dao/config": "*",
     "@dao-dao/tsconfig": "*",
     "@dao-dao/types": "^1.0.0",
