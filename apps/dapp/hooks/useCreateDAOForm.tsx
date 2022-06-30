@@ -232,6 +232,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
       connected,
       createDAOWithFactory,
       instantiate,
+      instantiateWithFactory,
       refreshBalances,
       setPinned,
     ]

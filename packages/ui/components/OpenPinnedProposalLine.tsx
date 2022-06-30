@@ -29,7 +29,7 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   return (
     <div
       className={clsx(
-        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 text-sm bg-primary rounded-lg',
+        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 bg-primary rounded-lg',
         className
       )}
     >
@@ -39,13 +39,13 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={t('info.daosLogo')}
-            className="w-auto h-6 rounded-full"
+            className="w-5 h-5 rounded-full"
             src={daoConfig.image_url}
           />
         ) : (
           <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
         )}
-        <p className="primary-text">{daoConfig.name}</p>
+        <p className="link-text">{daoConfig.name}</p>
       </div>
       <p className="truncate link-text">{proposal.title}</p>
       <p className="text-right truncate body-text">
@@ -65,7 +65,7 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-4 p-4 text-sm bg-primary rounded-lg',
+        'flex flex-col gap-4 p-4 bg-primary rounded-lg',
         className
       )}
     >
@@ -75,13 +75,13 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={t('info.daosLogo')}
-              className="w-auto h-6 rounded-full"
+              className="w-5 h-5 rounded-full"
               src={daoConfig.image_url}
             />
           ) : (
             <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
           )}
-          <p className="primary-text">{daoConfig.name}</p>
+          <p className="link-text">{daoConfig.name}</p>
         </div>
         <p className="font-mono caption-text"># {zeroPad(id, 6)}</p>
       </div>
