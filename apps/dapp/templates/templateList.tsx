@@ -35,6 +35,12 @@ import {
   transformMigrateContractToCosmos,
 } from './migrateContract'
 import {
+  MigrateDaoComponent,
+  migrateDaoDefaults,
+  transformCosmosToMigrateDao,
+  transformMigrateDaoToCosmos,
+} from './migrateDao'
+import {
   MigrateMultisigComponent,
   multisigMigrateDefaults,
   transformCosmosToMigrateMultisig,
@@ -208,6 +214,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: multisigMigrateDefaults,
     fromCosmosMsg: transformCosmosToMigrateMultisig,
     toCosmosMsg: transformMigrateMultisigToCosmos,
+  },
+  {
+    label: '☯️ Upgrade to V1',
+    description: 'Update DAO to DAO DAO v1.',
+    component: MigrateDaoComponent,
+    contractSupport: ContractSupport.DAO,
+    getDefaults: migrateDaoDefaults,
+    fromCosmosMsg: transformCosmosToMigrateDao,
+    toCosmosMsg: transformMigrateDaoToCosmos,
   },
 ]
 // Ensure custom is always sorted last for two reasons:

@@ -88,6 +88,22 @@ export const V1_CW4_VOTING_ID = parseInt(
   process.env.NEXT_PUBLIC_V1_CW4_VOTING_ID as string,
   10
 )
+
+export const V1_STAKED_VOTING_ID = parseInt(
+  process.env.NEXT_PUBLIC_V1_STAKED_VOTING_ID as string,
+  10
+)
+
+export const V1_CW20_STAKE_ID = parseInt(
+  process.env.NEXT_PUBLIC_V1_CW20_STAKE_ID as string,
+  10
+)
+
+export const V1_CW20_ID = parseInt(
+  process.env.NEXT_PUBLIC_V1_CW20_ID as string,
+  10
+)
+
 export const V1_PROPOSAL_SINGLE_ID = parseInt(
   process.env.NEXT_PUBLIC_PROPOSAL_SINGLE_ID as string,
   10

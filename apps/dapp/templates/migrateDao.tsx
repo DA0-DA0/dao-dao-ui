@@ -1,7 +1,7 @@
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { ArrowRightIcon, CheckIcon, XIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useRecoilValue, waitForAll } from 'recoil'
@@ -11,24 +11,28 @@ import {
   signingCosmWasmClientSelector,
   walletAddressSelector,
 } from '@dao-dao/state'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { Config, ConfigResponse } from '@dao-dao/types/contracts/cw3-multisig'
-import { BalanceIcon, Button, CopyToClipboard } from '@dao-dao/ui'
 import {
-  V1_CORE_ID,
-  V1_CW4_VOTING_ID,
-  V1_PROPOSAL_SINGLE_ID,
-  C4_GROUP_CODE_ID,
-  V1_URL,
-  NATIVE_DENOM,
-  nativeTokenLabel,
-  nativeTokenDecimals,
-  nativeTokenLogoURI,
-  convertMicroDenomToDenomWithDecimals,
-  NATIVE_DECIMALS,
+  Config,
+  ConfigResponse,
+  Duration,
+  CosmosMsgFor_Empty,
+} from '@dao-dao/types/contracts/cw3-dao'
+import { Button } from '@dao-dao/ui'
+import {
   convertDenomToHumanReadableDenom,
-  makeWasmMessage,
+  getDaoThresholdAndQuorum,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  V1_CORE_ID,
+  V1_CW20_ID,
+  V1_CW20_STAKE_ID,
   V1_FACTORY_CONTRACT_ADDRESS,
+  V1_PROPOSAL_SINGLE_ID,
+  V1_STAKED_VOTING_ID,
+  V1_URL,
 } from '@dao-dao/utils'
 
 import {
@@ -37,92 +41,86 @@ import {
   cw20Balances as cw20BalancesSelector,
 } from 'selectors/treasury'
 
-import { TemplateComponent } from './templateList'
+import { SpendLine } from './migrateMultisig'
+import { TemplateComponent, ToCosmosMsgProps } from './templateList'
 import { DEFAULT_MAX_VOTING_PERIOD_SECONDS } from '@/pages/dao/create'
-import { listMembers } from '@/selectors/multisigs'
+import { unstakingDuration as unstakingDurationSelector } from '@/selectors/daos'
+import { makeWasmMessage } from '@/util/messagehelpers'
 
-export interface MigrateData {
+interface MigrateData {
   name: string
   description: string
-  imageUrl: string
+  imageUrl: string | undefined
 
   maxVotingPeriod: number
-  passingThreshold: number
-  groupAddress: string
+
+  proposalDeposit: string
+  refundFailedProposals: boolean
+
+  threshold: string
+  quorum: string | undefined
+
+  stakingAddress: string
+  govToken: string
 
   spends: { to: string; amount: number; denom: string }[]
+
+  newDao: string
+
+  // Used during cosmos message construction to add an update config message.
+  oldConfig: Config
+
+  unstakingDuration: Duration | undefined
 }
 
-export const multisigMigrateDefaults = (
-  _walletAddress: string,
+export const migrateDaoDefaults = (
+  _wallet: string,
   configResponse: ConfigResponse
 ): MigrateData => {
-  const config: Config = configResponse.config
+  const config = configResponse.config
+
   const maxVotingPeriod =
     'time' in config.max_voting_period
       ? config.max_voting_period.time
       : Number(DEFAULT_MAX_VOTING_PERIOD_SECONDS)
 
-  // We only allow creation of absolute_count style multisigs in the
-  // UI. Custom instantiated multisigs (I do not think there are any)
-  // get this value. If you're high skill enough to make your own,
-  // probably best to migrate your own.
-  const passingThreshold =
-    'absolute_count' in config.threshold
-      ? config.threshold.absolute_count.weight
-      : 1
+  const { threshold, quorum } = getDaoThresholdAndQuorum(config.threshold)
 
   return {
     name: config.name,
     description: config.description,
-    imageUrl: config.image_url || '',
+    imageUrl: config.image_url || undefined,
     maxVotingPeriod,
-    passingThreshold,
-    groupAddress: configResponse.group_address,
+    proposalDeposit: config.proposal_deposit,
+    threshold: threshold ?? '51',
+    quorum: quorum ?? '10',
+    refundFailedProposals: !!config.refund_failed_proposals,
+    stakingAddress: configResponse.staking_contract,
+    govToken: configResponse.gov_token,
     spends: [],
+    newDao: '',
+    oldConfig: config,
+    unstakingDuration: undefined,
   }
 }
 
-export const SpendLine = ({
-  label,
-  logo,
-  amount,
-  decimals,
-  to,
-}: {
-  label: string
-  logo?: string
-  amount: string
-  decimals: number
-  to: string
-}) => (
-  <div className="flex flex-row gap-3 justify-center items-center p-4 bg-card rounded">
-    <div className="flex gap-1 items-center font-mono">
-      {convertMicroDenomToDenomWithDecimals(amount, decimals)}
-      <BalanceIcon iconURI={logo} />
-      {label}
-    </div>
-    <ArrowRightIcon className="w-4 h-4" />
-    <CopyToClipboard value={to} />
-  </div>
-)
-
-export const MigrateMultisigComponent: TemplateComponent = ({
+export const MigrateDaoComponent: TemplateComponent = ({
   getLabel,
   onRemove,
   contractAddress,
 }) => {
   const [loading, setLoading] = useState(false)
-  const [newAddress, setNewAddress] = useState('')
   const [looksGood, setLooksGood] = useState(false)
+  const [newAddress, setNewAddress] = useState('')
 
   const { watch, setValue } = useFormContext()
 
+  const formData: MigrateData = watch(getLabel(''))
   const proposalDescription = watch('description')
-  const formData = watch(getLabel('')) as MigrateData
   const spends = watch(getLabel('spends'))
 
-  const members = useRecoilValue(listMembers(contractAddress))
+  const signingClient = useRecoilValue(signingCosmWasmClientSelector)
+  const walletAddress = useRecoilValue(walletAddressSelector)
 
   const tokenList = useRecoilValue(cw20TokensList(contractAddress))
   const cw20Info = useRecoilValue(
@@ -136,15 +134,39 @@ export const MigrateMultisigComponent: TemplateComponent = ({
     info: cw20Info[index],
   }))
 
-  const signingClient = useRecoilValue(signingCosmWasmClientSelector)
-  const walletAddress = useRecoilValue(walletAddressSelector)
+  const unstakingDuration = useRecoilValue(
+    unstakingDurationSelector(formData.stakingAddress)
+  )
 
-  const instantiateV1Multisig = () => {
+  useEffect(
+    () => setValue(getLabel('unstakingDuration'), unstakingDuration),
+    [setValue, unstakingDuration]
+  )
+
+  const instantiateV1Dao = () => {
     if (!(signingClient && walletAddress)) {
       toast.error('Please connect your wallet.')
     }
 
     setLoading(true)
+
+    const thresholdPercent =
+      formData.threshold === '50' || formData.threshold === '51'
+        ? { majority: {} }
+        : { percent: (Number(formData.threshold) / 100).toString() }
+
+    const threshold = formData.quorum
+      ? {
+          threshold_quorum: {
+            threshold: thresholdPercent,
+            quorum: { percent: (Number(formData.quorum) / 100).toString() },
+          },
+        }
+      : {
+          absolute_percentage: {
+            percentage: thresholdPercent,
+          },
+        }
 
     const core_msg = {
       name: formData.name,
@@ -154,13 +176,21 @@ export const MigrateMultisigComponent: TemplateComponent = ({
       automatically_add_cw721s: false,
 
       voting_module_instantiate_info: {
-        code_id: V1_CW4_VOTING_ID,
+        code_id: V1_STAKED_VOTING_ID,
         admin: { core_contract: {} },
         label: `${formData.name} voting module`,
         msg: btoa(
           JSON.stringify({
-            cw4_group_code_id: C4_GROUP_CODE_ID,
-            initial_members: members,
+            token_info: {
+              existing: {
+                address: formData.govToken,
+                staking_contract: {
+                  existing: {
+                    staking_contract_address: formData.stakingAddress,
+                  },
+                },
+              },
+            },
           })
         ),
       },
@@ -172,11 +202,7 @@ export const MigrateMultisigComponent: TemplateComponent = ({
           label: `${formData.name} proposal module`,
           msg: btoa(
             JSON.stringify({
-              threshold: {
-                absolute_count: {
-                  threshold: formData.passingThreshold.toString(),
-                },
-              },
+              threshold,
               max_voting_period: { time: formData.maxVotingPeriod },
               only_members_execute: true,
               allow_revoting: false,
@@ -215,8 +241,9 @@ export const MigrateMultisigComponent: TemplateComponent = ({
         setValue(
           'description',
           proposalDescription +
-            `\n\nThe new V1 DAO has been instantiated and can be viewed [here](https://${V1_URL}/dao/${contractAddress}). This proposal will transfer the multisig's treasury to the new v1 DAO. Before voting yes:\n\n1. Confirm that the new v1 DAO's member list is correct.\n2. Confirm that the new v1 DAO's voting configuration is accurate. Remember to check the passing threshold and proposal duration.\n3. Confirm that the address receiving the multisig's treasury is the v1 DAO that you validated.`
+            `\n\nThis proposal will migrate this DAO to a new v1 DAO. The new V1 DAO has been instantiated and can be viewed [here](https://${V1_URL}/dao/${contractAddress}). This proposal will transfer the DAO's treasury to the new v1 DAO. Before voting yes:\n\n1. Confirm that your voting power in the new DAO is the same.\n2. Confirm that the new v1 DAO's voting configuration is accurate. Remember to check the passing threshold and proposal duration.\n3. Confirm that the address receiving the DAO's treasury is the v1 DAO that you validated.`
         )
+        setValue(getLabel('newDao'), contractAddress)
         toast.success('Instantiated new contract')
       })
       .catch((err: any) => {
@@ -234,8 +261,8 @@ export const MigrateMultisigComponent: TemplateComponent = ({
     <div className="p-3 my-2 bg-primary rounded-lg">
       <div className="flex gap-2 justify-between items-center">
         <div className="flex gap-2 items-center">
-          <h2 className="text-3xl">🦢</h2>
-          <h2>Upgrade to v1 multisig.</h2>
+          <h2 className="text-3xl">☯️</h2>
+          <h2>Upgrade to v1 DAO.</h2>
         </div>
         {onRemove && (
           <button onClick={onRemove} type="button">
@@ -251,7 +278,7 @@ export const MigrateMultisigComponent: TemplateComponent = ({
         <Button
           disabled={!!newAddress}
           loading={loading}
-          onClick={instantiateV1Multisig}
+          onClick={instantiateV1Dao}
           type="button"
         >
           {newAddress ? (
@@ -259,7 +286,7 @@ export const MigrateMultisigComponent: TemplateComponent = ({
               <CheckIcon className="w-4 h-4" /> Done!
             </>
           ) : (
-            'Create v1 Multisig'
+            'Create v1 DAO'
           )}
         </Button>
       </div>
@@ -275,9 +302,9 @@ export const MigrateMultisigComponent: TemplateComponent = ({
               rel="noreferrer"
               target="_blank"
             >
-              Visit your v1 Multisig
+              Visit your v1 DAO
             </a>{' '}
-            and check the box if the member list looks good.
+            and check the box if the configuration looks good.
           </p>
           <div className="flex flex-row gap-1 items-center py-1 px-2 bg-card rounded">
             <input
@@ -369,60 +396,167 @@ export const MigrateMultisigComponent: TemplateComponent = ({
   )
 }
 
-// We can't tell the difference between a migrate multisig message
-// and a sequence of spend actions.
-export const transformCosmosToMigrateMultisig = (): MigrateData | null => null
+export const transformCosmosToMigrateDao = () => null
 
-export const transformMigrateMultisigToCosmos = (
-  self: MigrateData
-): CosmosMsgFor_Empty[] | undefined => {
-  // Nothing to do.
-  if (self.spends.length == 0) {
-    return undefined
-  }
-  const to = self.spends[0].to
+export const transformMigrateDaoToCosmos = (
+  self: MigrateData,
+  props: ToCosmosMsgProps
+): CosmosMsgFor_Empty[] => {
+  const messages: CosmosMsgFor_Empty[] = []
 
-  let natives: { amount: string; denom: string }[] = []
-  let cw20s: { address: string; amount: string }[] = []
+  // Send the DAO treasury to the new DAO.
+  if (self.spends.length !== 0) {
+    const to = self.spends[0].to
 
-  for (let { amount, denom } of self.spends) {
-    if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
-      natives.push({
-        amount: amount.toString(),
-        denom,
-      })
-    } else {
-      cw20s.push({
-        address: denom,
-        amount: amount.toString(),
-      })
+    let natives: { amount: string; denom: string }[] = []
+    let cw20s: { address: string; amount: string }[] = []
+
+    for (let { amount, denom } of self.spends) {
+      if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
+        natives.push({
+          amount: amount.toString(),
+          denom,
+        })
+      } else {
+        cw20s.push({
+          address: denom,
+          amount: amount.toString(),
+        })
+      }
     }
+
+    messages.push(
+      ...[
+        ...(natives.length
+          ? [
+              {
+                bank: {
+                  send: {
+                    amount: [...natives],
+                    to_address: to,
+                  },
+                },
+              },
+            ]
+          : []),
+        ...cw20s.map(({ address, amount }) =>
+          makeWasmMessage({
+            wasm: {
+              execute: {
+                contract_addr: address,
+                funds: [],
+                msg: {
+                  transfer: {
+                    recipient: to,
+                    amount,
+                  },
+                },
+              },
+            },
+          })
+        ),
+      ]
+    )
   }
 
-  return [
-    {
-      bank: {
-        send: {
-          amount: [...natives],
-          to_address: to,
+  // Upgrade the staking contract.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        migrate: {
+          contract_addr: self.stakingAddress,
+          new_code_id: V1_CW20_STAKE_ID,
+          msg: {
+            from_beta: {},
+          },
         },
       },
-    },
-    ...cw20s.map(({ address, amount }) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: address,
-            funds: [],
-            msg: {
-              transfer: {
-                recipient: to,
-                amount,
+    })
+  )
+
+  // Upgrade the token contract.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        migrate: {
+          contract_addr: self.govToken,
+          new_code_id: V1_CW20_ID,
+          msg: {},
+        },
+      },
+    })
+  )
+
+  // Update the minter of the cw20 contract.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        execute: {
+          contract_addr: self.govToken,
+          funds: [],
+          msg: {
+            update_minter: {
+              new_minter: self.newDao,
+            },
+          },
+        },
+      },
+    })
+  )
+
+  self.oldConfig.description += `\nThis DAO has migrated to DAO DAO v1. The new DAO can be found [here](https://v1.daodao.zone/dao/${self.newDao})`
+
+  // Update the config to link to the new DAO in the description.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        execute: {
+          contract_addr: props.sigAddress,
+          funds: [],
+          msg: {
+            update_config: self.oldConfig,
+          },
+        },
+      },
+    })
+  )
+
+  // Update the staking contract's config.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        execute: {
+          contract_addr: self.stakingAddress,
+          funds: [],
+          msg: {
+            update_config: {
+              owner: props.sigAddress,
+              duration: self.unstakingDuration,
+            },
+          },
+        },
+      },
+    })
+  )
+
+  // Pause the DAO for the rest of time.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        execute: {
+          contract_addr: props.sigAddress,
+          funds: [],
+          msg: {
+            pause_d_a_o: {
+              expiration: {
+                never: {},
               },
             },
           },
         },
-      })
-    ),
-  ]
+      },
+    })
+  )
+
+  return messages
 }
