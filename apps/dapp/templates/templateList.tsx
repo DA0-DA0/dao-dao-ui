@@ -105,6 +105,24 @@ export enum ContractSupport {
 // across the UI.
 export const messageTemplates: MessageTemplate[] = [
   {
+    label: '🦢 Upgrade to V1',
+    description: 'Update multisig to DAO DAO v1.',
+    component: MigrateMultisigComponent,
+    contractSupport: ContractSupport.Multisig,
+    getDefaults: multisigMigrateDefaults,
+    fromCosmosMsg: transformCosmosToMigrateMultisig,
+    toCosmosMsg: transformMigrateMultisigToCosmos,
+  },
+  {
+    label: '☯️ Upgrade to V1',
+    description: 'Update DAO to DAO DAO v1.',
+    component: MigrateDaoComponent,
+    contractSupport: ContractSupport.DAO,
+    getDefaults: migrateDaoDefaults,
+    fromCosmosMsg: transformCosmosToMigrateDao,
+    toCosmosMsg: transformMigrateDaoToCosmos,
+  },
+  {
     label: '💵 Spend',
     description: 'Spend native or cw20 tokens from the treasury.',
     component: SpendComponent,
@@ -220,24 +238,6 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: changeMembersDefaults,
     toCosmosMsg: transformChangeMembersToCosmos,
     fromCosmosMsg: transformCosmosToChangeMembers,
-  },
-  {
-    label: '🦢 Upgrade to V1',
-    description: 'Update multisig to DAO DAO v1.',
-    component: MigrateMultisigComponent,
-    contractSupport: ContractSupport.Multisig,
-    getDefaults: multisigMigrateDefaults,
-    fromCosmosMsg: transformCosmosToMigrateMultisig,
-    toCosmosMsg: transformMigrateMultisigToCosmos,
-  },
-  {
-    label: '☯️ Upgrade to V1',
-    description: 'Update DAO to DAO DAO v1.',
-    component: MigrateDaoComponent,
-    contractSupport: ContractSupport.DAO,
-    getDefaults: migrateDaoDefaults,
-    fromCosmosMsg: transformCosmosToMigrateDao,
-    toCosmosMsg: transformMigrateDaoToCosmos,
   },
 ]
 // Ensure custom is always sorted last for two reasons:
