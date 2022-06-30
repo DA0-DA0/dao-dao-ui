@@ -140,7 +140,7 @@ export const MigrateDaoComponent: TemplateComponent = ({
 
   useEffect(
     () => setValue(getLabel('unstakingDuration'), unstakingDuration),
-    [setValue, unstakingDuration]
+    [setValue, getLabel, unstakingDuration]
   )
 
   const instantiateV1Dao = () => {
@@ -474,6 +474,18 @@ export const transformMigrateDaoToCosmos = (
     })
   )
 
+  // Update contract level admin of staking contract.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        update_admin: {
+          contract_addr: self.stakingAddress,
+          admin: self.newDao,
+        },
+      },
+    })
+  )
+
   // Upgrade the token contract.
   messages.push(
     makeWasmMessage({
@@ -482,6 +494,18 @@ export const transformMigrateDaoToCosmos = (
           contract_addr: self.govToken,
           new_code_id: V1_CW20_ID,
           msg: {},
+        },
+      },
+    })
+  )
+
+  // Update the contract level admin of the token contract.
+  messages.push(
+    makeWasmMessage({
+      wasm: {
+        update_admin: {
+          contract_addr: self.govToken,
+          admin: self.newDao,
         },
       },
     })
@@ -558,5 +582,6 @@ export const transformMigrateDaoToCosmos = (
     })
   )
 
+  console.log(messages)
   return messages
 }
