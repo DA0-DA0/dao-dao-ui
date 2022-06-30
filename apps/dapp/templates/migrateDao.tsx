@@ -241,7 +241,7 @@ export const MigrateDaoComponent: TemplateComponent = ({
         setValue(
           'description',
           proposalDescription +
-            `\n\nThis proposal will migrate this DAO to a new v1 DAO. The new V1 DAO has been instantiated and can be viewed [here](https://${V1_URL}/dao/${contractAddress}). This proposal will transfer the DAO's treasury to the new v1 DAO. Before voting yes:\n\n1. Confirm that your voting power in the new DAO is the same.\n2. Confirm that the new v1 DAO's voting configuration is accurate. Remember to check the passing threshold and proposal duration.\n3. Confirm that the address receiving the DAO's treasury is the v1 DAO that you validated.`
+            `\n\nThis proposal will migrate this DAO to a new v1 DAO. The new V1 DAO has been instantiated and can be viewed [here](${V1_URL}/dao/${contractAddress}). This proposal will transfer the DAO's treasury to the new v1 DAO. Before voting yes:\n\n1. Confirm that your voting power in the new DAO is the same.\n2. Confirm that the new v1 DAO's voting configuration is accurate. Remember to check the passing threshold and proposal duration.\n3. Confirm that the address receiving the DAO's treasury is the v1 DAO that you validated.`
         )
         setValue(getLabel('newDao'), contractAddress)
         toast.success('Instantiated new contract')
@@ -298,7 +298,7 @@ export const MigrateDaoComponent: TemplateComponent = ({
           <p>
             <a
               className="underline"
-              href={`https://${V1_URL}/dao/${newAddress}`}
+              href={`${V1_URL}/dao/${newAddress}`}
               rel="noreferrer"
               target="_blank"
             >

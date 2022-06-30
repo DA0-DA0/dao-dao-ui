@@ -215,7 +215,7 @@ export const MigrateMultisigComponent: TemplateComponent = ({
         setValue(
           'description',
           proposalDescription +
-            `\n\nThe new V1 DAO has been instantiated and can be viewed [here](https://${V1_URL}/dao/${contractAddress}). This proposal will transfer the multisig's treasury to the new v1 DAO. Before voting yes:\n\n1. Confirm that the new v1 DAO's member list is correct.\n2. Confirm that the new v1 DAO's voting configuration is accurate. Remember to check the passing threshold and proposal duration.\n3. Confirm that the address receiving the multisig's treasury is the v1 DAO that you validated.`
+            `\n\nThe new V1 DAO has been instantiated and can be viewed [here](${V1_URL}/dao/${contractAddress}). This proposal will transfer the multisig's treasury to the new v1 DAO. Before voting yes:\n\n1. Confirm that the new v1 DAO's member list is correct.\n2. Confirm that the new v1 DAO's voting configuration is accurate. Remember to check the passing threshold and proposal duration.\n3. Confirm that the address receiving the multisig's treasury is the v1 DAO that you validated.`
         )
         toast.success('Instantiated new contract')
       })
@@ -271,7 +271,7 @@ export const MigrateMultisigComponent: TemplateComponent = ({
           <p>
             <a
               className="underline"
-              href={`https://${V1_URL}/dao/${newAddress}`}
+              href={`${V1_URL}/dao/${newAddress}`}
               rel="noreferrer"
               target="_blank"
             >
