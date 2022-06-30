@@ -8,17 +8,18 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
-import { BetaWarningModal } from './BetaWarning'
-import { InstallKeplr } from './InstallKeplr'
-import { Nav } from './Nav'
-import { NoKeplrAccountModal } from './NoKeplrAccountModal'
-import { SearchModal } from './SearchModal'
 import {
   betaWarningAcceptedAtom,
   installWarningVisibleAtom,
   noKeplrAccountAtom,
   searchVisibleAtom,
 } from '@/atoms'
+
+import { BetaWarningModal } from './BetaWarning'
+import { InstallKeplr } from './InstallKeplr'
+import { Nav } from './Nav'
+import { NoKeplrAccountModal } from './NoKeplrAccountModal'
+import { SearchModal } from './SearchModal'
 
 const SidebarLayoutInner: FC = ({ children }) => {
   const router = useRouter()
@@ -88,12 +89,12 @@ const SidebarLayoutInner: FC = ({ children }) => {
       )}
       {searchVisible && <SearchModal onClose={() => setSearchVisible(false)} />}
 
-      <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
+      <div className="h-full w-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
         <div className="hidden lg:block lg:w-[264px]">
           <Nav />
         </div>
 
-        <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
+        <main className="min-h-screen overflow-hidden lg:col-span-4 lg:col-start-2">
           {children}
         </main>
       </div>

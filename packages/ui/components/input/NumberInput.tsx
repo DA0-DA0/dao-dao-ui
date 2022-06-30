@@ -68,7 +68,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   }
 
   const _containerClassName = clsx(
-    'py-2 px-3 bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+    'rounded-lg border border-default bg-transparent py-2 px-3 ring-brand ring-offset-0 transition focus-within:outline-none focus-within:ring-1',
     {
       'ring-1 ring-error': error,
       'w-28': sizing === 'sm',
@@ -82,12 +82,12 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
     return (
       <div
         className={clsx(
-          'flex flex-row gap-1 items-center text-sm',
+          'flex flex-row items-center gap-1 text-sm',
           _containerClassName
         )}
       >
         <button
-          className={clsx('transition secondary-text', {
+          className={clsx('secondary-text transition', {
             'hover:body-text': !disabled,
           })}
           disabled={disabled}
@@ -97,7 +97,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
           <PlusIcon className="w-4" />
         </button>
         <button
-          className={clsx('transition secondary-text', {
+          className={clsx('secondary-text transition', {
             'hover:body-text': !disabled,
           })}
           disabled={disabled}
@@ -108,7 +108,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
         </button>
         <input
           className={clsx(
-            'w-full text-right bg-transparent border-none outline-none ring-none body-text',
+            'ring-none body-text w-full border-none bg-transparent text-right outline-none',
             className
           )}
           {...sharedProps}

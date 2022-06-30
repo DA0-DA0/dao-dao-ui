@@ -26,9 +26,10 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { NEW_DAO_CW20_DECIMALS, NewDAO, NewDAOStructure } from '@/atoms'
+
 import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
-import { NEW_DAO_CW20_DECIMALS, NewDAO, NewDAOStructure } from '@/atoms'
 
 interface CreateDAOTierProps {
   newDAO: NewDAO
@@ -76,11 +77,11 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
   const tierVotingWeight = newDAO.tiers?.[tierIndex]?.weight ?? 0
 
   return (
-    <div className="relative p-6 bg-disabled rounded-lg">
+    <div className="relative rounded-lg bg-disabled p-6">
       {!showColorDotOnMember && <CornerGradient color={`${tierColor}1A`} />}
-      <div className="flex flex-col gap-4 items-stretch sm:flex-row sm:gap-8 sm:justify-between sm:items-center">
+      <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
         <div className="grow">
-          <div className="flex flex-col grow gap-1">
+          <div className="flex grow flex-col gap-1">
             <InputLabel
               containerProps={{
                 className: clsx('grow', { 'ml-6': !showColorDotOnMember }),
@@ -89,10 +90,10 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               tooltip={t('form.tierNameTooltip')}
             />
 
-            <div className="flex flex-row grow gap-4 items-center">
+            <div className="flex grow flex-row items-center gap-4">
               {!showColorDotOnMember && (
                 <div
-                  className="shrink-0 w-2 h-2 rounded-full"
+                  className="h-2 w-2 shrink-0 rounded-full"
                   style={{
                     backgroundColor: tierColor,
                   }}
@@ -133,7 +134,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               })}
             />
 
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row items-center gap-2">
               <NumberInput
                 containerClassName="grow"
                 error={errors.tiers?.[tierIndex]?.weight}
@@ -178,7 +179,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
         containerProps={{ className: 'mt-4 mb-1' }}
         name={t('title.members')}
       />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {members.map(({ id }, idx) => (
           <CreateDAOTierMember
             key={id}
@@ -188,7 +189,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
           />
         ))}
 
-        <div className="flex flex-row gap-2 justify-between items-center">
+        <div className="flex flex-row items-center justify-between gap-2">
           <Button
             onClick={() => appendMember({ address: '' })}
             variant="secondary"
@@ -201,7 +202,7 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
               onClick={remove}
               variant="secondary"
             >
-              <TrashIcon className="w-4 h-4" />
+              <TrashIcon className="h-4 w-4" />
             </Button>
           )}
         </div>
@@ -237,12 +238,12 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
       : undefined
 
   return (
-    <div className="flex flex-row gap-4 items-center p-3 bg-card rounded-md">
+    <div className="flex flex-row items-center gap-4 rounded-md bg-card p-3">
       <div className="grow">
-        <div className="flex flex-row gap-4 items-center">
+        <div className="flex flex-row items-center gap-4">
           {showColorDotOnMember && (
             <div
-              className="shrink-0 w-2 h-2 rounded-full"
+              className="h-2 w-2 shrink-0 rounded-full"
               style={{
                 backgroundColor:
                   distributionColors[memberIndex % distributionColors.length],
@@ -278,7 +279,7 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
       )}
 
       <button className="pr-1" onClick={remove}>
-        <TrashIcon className="w-4 h-4 text-error" />
+        <TrashIcon className="h-4 w-4 text-error" />
       </button>
     </div>
   )

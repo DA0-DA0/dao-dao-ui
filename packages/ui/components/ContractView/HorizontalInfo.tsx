@@ -7,7 +7,7 @@ export interface HorizontalInfoProps {
 export const HorizontalInfoSection: FC<HorizontalInfoProps> = ({
   children,
 }) => (
-  <div className="flex flex-row gap-1 items-center caption-text">
+  <div className="caption-text flex flex-row items-center gap-1">
     {children}
   </div>
 )
@@ -15,8 +15,8 @@ export const HorizontalInfoSection: FC<HorizontalInfoProps> = ({
 export const HorizontalInfo: FC<HorizontalInfoProps> = ({ children }) => {
   const childList = Children.toArray(children)
   return (
-    <div className="py-[20px] w-full border-y border-inactive">
-      <ul className="flex flex-wrap gap-2 justify-around text-sm list-none">
+    <div className="w-full border-y border-inactive py-[20px]">
+      <ul className="flex list-none flex-wrap justify-around gap-2 text-sm">
         {Children.map(childList, (child) => (
           <li>{child}</li>
         ))}

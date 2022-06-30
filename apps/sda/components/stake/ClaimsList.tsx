@@ -5,8 +5,9 @@ import { useTranslation } from '@dao-dao/i18n'
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
-import { useDAOInfoContext } from '../DAOInfoContext'
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+
+import { useDAOInfoContext } from '../DAOInfoContext'
 
 interface ClaimsListProps {
   showClaim: () => void
@@ -42,8 +43,8 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-lg title-text">
+      <div className="flex flex-row items-center justify-between">
+        <p className="title-text text-lg">
           {t('title.unstakingNamedTokens', { name: governanceTokenInfo.name })}
         </p>
 
@@ -55,7 +56,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
       </div>
 
       {claims?.length ? (
-        <div className="flex flex-col gap-1 items-stretch !mt-4">
+        <div className="!mt-4 flex flex-col items-stretch gap-1">
           {claims.map((claim, idx) => (
             <ClaimsListItem
               key={idx}

@@ -46,7 +46,7 @@ export const PercentButton: FC<PercentButtonProps> = ({
       (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
       amount.toFixed(tokenDecimals)
     }
-    className={clsx('flex flex-row justify-center w-full', className)}
+    className={clsx('flex w-full flex-row justify-center', className)}
     onClick={() =>
       setAmount(
         Math.min(

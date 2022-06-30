@@ -21,7 +21,7 @@ export const ProposalsInfo: FC<ProposalsInfoProps> = ({ data, className }) => {
   return (
     <div
       className={clsx(
-        'flex flex-wrap gap-x-8 gap-y-4 justify-around items-center p-5 rounded border border-inactive',
+        'flex flex-wrap items-center justify-around gap-x-8 gap-y-4 rounded border border-inactive p-5',
         className
       )}
     >
@@ -62,9 +62,9 @@ const ProposalInfoStat: FC<ProposalInfoStatProps> = ({
   value,
   title,
 }) => (
-  <div className="flex gap-3 items-center">
-    <Icon className="h-3 fill-current secondary-text" />
-    <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-3">
+    <Icon className="secondary-text h-3 fill-current" />
+    <div className="flex items-center gap-2">
       <span className="secondary-text">{title}</span>
       <span className="link-text">{value ? value : '..'}</span>
     </div>

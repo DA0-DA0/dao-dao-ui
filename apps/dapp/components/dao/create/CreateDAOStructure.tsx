@@ -27,19 +27,19 @@ export const CreateDAOStructure: FC<CreateDAOStructureProps> = ({
   return (
     <div
       className={clsx(
-        'flex basis-0 flex-col grow justify-between items-center p-9 text-center rounded-lg border-2 transition cursor-pointer',
+        'flex grow basis-0 cursor-pointer flex-col items-center justify-between rounded-lg border-2 p-9 text-center transition',
         {
-          'bg-disabled border-transparent hover:border-focus': !selected,
-          'bg-brand-active border-focus': selected,
+          'border-transparent bg-disabled hover:border-focus': !selected,
+          'border-focus bg-brand-active': selected,
         }
       )}
       onClick={() => onChange(structure)}
     >
       <div>
         {emoji}
-        <p className="mt-6 primary-text">{title}</p>
+        <p className="primary-text mt-6">{title}</p>
 
-        <p className="mt-4 secondary-text">{description}</p>
+        <p className="secondary-text mt-4">{description}</p>
       </div>
 
       <div className="mt-10">

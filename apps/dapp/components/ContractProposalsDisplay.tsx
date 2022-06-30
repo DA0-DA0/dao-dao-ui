@@ -43,7 +43,7 @@ export const InnerContractProposalsDisplay: FC = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="primary-text">{t('title.proposals')}</h2>
 
         <Link
@@ -74,7 +74,7 @@ export const ContractProposalsDisplay: FC = () => {
   return (
     <SuspenseLoader
       fallback={
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h2 className="primary-text">{t('title.proposals')}</h2>
           <Loader />
         </div>

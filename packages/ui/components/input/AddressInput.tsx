@@ -46,7 +46,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <div
       className={clsx(
-        'flex gap-1 items-center py-2 px-3 font-mono text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+        'flex items-center gap-1 rounded-lg border border-default bg-transparent py-2 px-3 font-mono text-sm ring-brand ring-offset-0 transition focus-within:outline-none focus-within:ring-1',
         { 'ring-1 ring-error': error },
         containerClassName
       )}
@@ -54,7 +54,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
       <Wallet color="currentColor" width="24px" />
       <input
         className={clsx(
-          'w-full bg-transparent border-none outline-none ring-none body-text',
+          'ring-none body-text w-full border-none bg-transparent outline-none',
           className
         )}
         disabled={disabled}

@@ -8,8 +8,9 @@ import {
   useState,
 } from 'react'
 
-import { FeaturedCard } from './FeaturedCard'
 import { featuredDaos } from '@/util'
+
+import { FeaturedCard } from './FeaturedCard'
 
 export { FeaturedCard }
 
@@ -84,13 +85,13 @@ export const FeaturedDaos: FC = () => {
   return (
     <>
       <div
-        className="overflow-auto w-screen no-scrollbar"
+        className="no-scrollbar w-screen overflow-auto"
         onMouseEnter={() => setAutoscroll(false)}
         onMouseLeave={() => setAutoscroll(true)}
         onScroll={handleScroll}
         ref={scrollRef}
       >
-        <div className="flex flex-row gap-[16px] py-1 w-max">
+        <div className="flex w-max flex-row gap-[16px] py-1">
           {featuredDaos.map((props) => (
             <FeaturedCard {...props} key={props.name} />
           ))}

@@ -29,7 +29,7 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
   return connected ? (
     <button
       className={clsx(
-        'flex justify-between items-center py-2 px-3 my-1 bg-btn-secondary rounded-lg border border-transparent hover:border-brand transition',
+        'my-1 flex items-center justify-between rounded-lg border border-transparent bg-btn-secondary py-2 px-3 transition hover:border-brand',
         className
       )}
       disabled={connected && !onDisconnect}
@@ -37,7 +37,7 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
       type="button"
       {...buttonProps}
     >
-      <div className="flex gap-1 items-center w-full h-full justify-left">
+      <div className="justify-left flex h-full w-full items-center gap-1">
         <Wallet fill="currentColor" height="18px" width="18px" />
         <p className="link-text">{walletName}</p>
       </div>
@@ -46,7 +46,7 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
   ) : (
     <button
       className={clsx(
-        'flex gap-1 items-center py-2 px-3 my-1 bg-btn-secondary rounded-lg border border-transparent hover:border-brand transition',
+        'my-1 flex items-center gap-1 rounded-lg border border-transparent bg-btn-secondary py-2 px-3 transition hover:border-brand',
         className
       )}
       onClick={onConnect}
@@ -67,28 +67,28 @@ export const NoMobileWallet: FC = () => {
   return (
     <>
       <button
-        className="flex gap-2 items-center py-2 px-3 my-1 -ml-6 w-full rounded-lg"
+        className="my-1 -ml-6 flex w-full items-center gap-2 rounded-lg py-2 px-3"
         onClick={() => setShowInfo(true)}
       >
-        <p className="text-xs italic link-text">{t('info.testnet')}</p>
-        <InformationCircleIcon className="w-3 h-3" />
+        <p className="link-text text-xs italic">{t('info.testnet')}</p>
+        <InformationCircleIcon className="h-3 w-3" />
       </button>
       {showInfo && (
         <Modal hideCloseButton onClose={() => setShowInfo(false)}>
-          <div className="flex gap-2 items-start">
+          <div className="flex items-start gap-2">
             <p className="primary-text">
               {t('info.preReleaseExplanation', { chain: CHAIN_NAME })}
             </p>
 
             <button
-              className="hover:bg-secondary rounded-full transition"
+              className="rounded-full transition hover:bg-secondary"
               onClick={() => setShowInfo(false)}
             >
-              <XIcon className="w-4 h-4" />
+              <XIcon className="h-4 w-4" />
             </button>
           </div>
 
-          <p className="mt-6 body-text">
+          <p className="body-text mt-6">
             {t('info.walletConnectMobileLimitations', { chain: CHAIN_NAME })}
           </p>
         </Modal>

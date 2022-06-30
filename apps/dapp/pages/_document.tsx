@@ -70,7 +70,7 @@ export default class MyDocument extends Document {
           <meta key="og:type" content="website" property="og:type" />
           <meta key="og:url" content={SITE_URL} property="og:url" />
         </Head>
-        <body className="antialiased bg-white body-text">
+        <body className="body-text bg-white antialiased">
           <Main />
           <NextScript />
         </body>

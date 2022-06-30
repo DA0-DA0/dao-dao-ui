@@ -22,7 +22,7 @@ export const Progress = ({
 }) => (
   <div className="relative w-full">
     <div
-      className={`w-full flex flex-col items-stretch rounded-full overflow-hidden`}
+      className={`flex w-full flex-col items-stretch overflow-hidden rounded-full`}
     >
       {rows.map(({ backgroundColor, data, thickness }, rowIndex) => (
         <div

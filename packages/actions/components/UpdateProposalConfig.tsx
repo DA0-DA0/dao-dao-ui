@@ -51,7 +51,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       onRemove={onRemove}
       title={t('form.updateVotingConfigTitle')}
     >
-      <p className="mb-3 max-w-prose secondary-text">
+      <p className="secondary-text mb-3 max-w-prose">
         <Trans i18nKey="form.updateVotingConfigDescription">
           This will update the voting configuration for this DAO. A bad
           configuration can lock the DAO or create unexpected voting outcomes.
@@ -69,13 +69,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </p>
       <div className="flex flex-row flex-wrap gap-2">
         {governanceTokenSymbol !== undefined && (
-          <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md md:w-min">
+          <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3 md:w-min">
             <div className="flex flex-row gap-2">
               <Tooltip label={t('form.requireProposalDepositTooltip')}>
-                <InformationCircleIcon className="w-4 h-4 secondary-text" />
+                <InformationCircleIcon className="secondary-text h-4 w-4" />
               </Tooltip>
 
-              <p className="w-max secondary-text">
+              <p className="secondary-text w-max">
                 {t('form.requireProposalDepositTitle')}
               </p>
             </div>
@@ -88,13 +88,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
             />
           </div>
         )}
-        <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md md:w-min">
+        <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3 md:w-min">
           <div className="flex flex-row gap-2">
             <Tooltip label={t('form.onlyMembersExecuteTooltip')}>
-              <InformationCircleIcon className="w-4 h-4 secondary-text" />
+              <InformationCircleIcon className="secondary-text h-4 w-4" />
             </Tooltip>
 
-            <p className="w-max secondary-text">
+            <p className="secondary-text w-max">
               {t('form.onlyMembersExecuteTitle')}
             </p>
           </div>
@@ -109,8 +109,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </div>
 
       {depositRequired && (
-        <div className="flex flex-row flex-wrap gap-4 justify-between p-3 rounded-lg border border-default md:gap-1">
-          <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
+        <div className="flex flex-row flex-wrap justify-between gap-4 rounded-lg border border-default p-3 md:gap-1">
+          <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
             <h3 className="primary-text">
               <Emoji label={t('emoji.money')} symbol="💵" />{' '}
               {t('form.proposalDepositTitle')}
@@ -119,7 +119,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               {t('form.proposalDepositDescription')}
             </p>
           </div>
-          <div className="flex flex-col grow gap-1">
+          <div className="flex grow flex-col gap-1">
             <div className="flex flex-col gap-1">
               <InputLabel
                 name={`${t(
@@ -136,13 +136,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
               />
               <InputErrorMessage error={errors?.depositInfo?.deposit} />
             </div>
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
               <div className="flex flex-row gap-2">
                 <Tooltip label={t('form.refundFailedProposalsTooltip')}>
-                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
+                  <InformationCircleIcon className="secondary-text h-4 w-4" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">
+                <p className="secondary-text w-max">
                   {t('form.refundFailedProposalsTitle')}
                 </p>
               </div>
@@ -157,8 +157,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
         </div>
       )}
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
-        <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-default p-3 md:gap-1">
+        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.chart')} symbol="📊" />{' '}
             {t('form.passingThresholdTitle')}
@@ -167,7 +167,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             {t('form.passingThresholdDescription')}
           </p>
         </div>
-        <div className="flex flex-row flex-wrap grow gap-2 justify-center">
+        <div className="flex grow flex-row flex-wrap justify-center gap-2">
           {percentageThresholdSelected && (
             <div className="flex flex-col gap-1">
               <NumberInput
@@ -203,15 +203,15 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
-        <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-default p-3 md:gap-1">
+        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.people')} symbol="👥" />{' '}
             {t('form.quorumTitle')}
           </h3>
           <p className="secondary-text">{t('form.quorumDescription')}</p>
         </div>
-        <div className="flex flex-row flex-wrap grow gap-2 justify-center">
+        <div className="flex grow flex-row flex-wrap justify-center gap-2">
           {percentageQuorumSelected && (
             <div className="flex flex-col gap-1">
               <NumberInput
@@ -247,8 +247,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
-        <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-default p-3 md:gap-1">
+        <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.clock')} symbol="⏰" />{' '}
             {t('form.votingDurationTitle')}
@@ -257,7 +257,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             {t('form.votingDurationDescription')}
           </p>
         </div>
-        <div className="flex flex-row flex-wrap grow gap-2 justify-center">
+        <div className="flex grow flex-row flex-wrap justify-center gap-2">
           <div className="flex flex-col gap-1">
             <NumberInput
               disabled={readOnly}

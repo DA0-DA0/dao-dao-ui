@@ -27,7 +27,7 @@ export const EstablishedDate: FC<EstablishedDateProps> = ({ date }) => {
 export const EstablishedDateLoader: FC = () => (
   <p className="invisible mb-3 text-sm">
     {/* eslint-disable-next-line i18next/no-literal-string */}
-    <span className="inline bg-dark rounded-sm animate-pulse">
+    <span className="inline animate-pulse rounded-sm bg-dark">
       Est. XX Xxx XXXX
     </span>
   </p>

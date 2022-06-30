@@ -6,12 +6,13 @@ import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button, SubmitButton } from '@dao-dao/ui'
 
-import { CreateDAONav } from './CreateDAONav'
 import {
   CreateDAOSubmitLabel,
   DAOFormPage,
   useCreateDAOFormPages,
 } from '@/hooks'
+
+import { CreateDAONav } from './CreateDAONav'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
   Omit<T, K>
@@ -61,7 +62,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
 
       <form
         // SmallScreenNav is 4rem tall, so account for it on <lg screens.
-        className="flex flex-row items-stretch h-[calc(100vh-4rem)] lg:h-screen"
+        className="flex h-[calc(100vh-4rem)] flex-row items-stretch lg:h-screen"
         {...props}
       >
         {/* Ghost submit button for enter key press. */}
@@ -71,9 +72,9 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
           label=""
         />
 
-        <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full">
+        <div className="h-full w-full max-w-screen-lg flex-1 overflow-y-auto p-6">
           <div className="mb-8">
-            <h2 className="mb-4 header-text">{t('title.createADAO')}</h2>
+            <h2 className="header-text mb-4">{t('title.createADAO')}</h2>
 
             <div className="mb-10 md:hidden">
               <CreateDAONav currentPageIndex={currentPageIndex} />
@@ -81,7 +82,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
 
             <p className="primary-text">{currentPage.title}</p>
             {currentPage.subtitle && (
-              <p className="mt-1 secondary-text">{currentPage.subtitle}</p>
+              <p className="secondary-text mt-1">{currentPage.subtitle}</p>
             )}
           </div>
 
@@ -89,7 +90,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
             {children}
 
             <div
-              className="flex flex-row items-center mt-8"
+              className="mt-8 flex flex-row items-center"
               // justify-end doesn't work in tailwind for some reason
               style={{
                 justifyContent: showBack ? 'space-between' : 'flex-end',
@@ -116,7 +117,7 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
           </div>
         </div>
 
-        <div className="hidden shrink-0 p-6 pr-20 border-l border-inactive md:block">
+        <div className="hidden shrink-0 border-l border-inactive p-6 pr-20 md:block">
           <CreateDAONav currentPageIndex={currentPageIndex} />
         </div>
       </form>

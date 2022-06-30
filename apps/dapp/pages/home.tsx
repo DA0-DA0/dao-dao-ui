@@ -176,8 +176,8 @@ const InnerHome: FC = () => {
       <div className="px-4 md:py-6 md:px-6">
         {openProposalResponses.length > 0 && (
           <div className="mb-6">
-            <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
-              <div className="flex gap-1 items-center">
+            <h2 className="primary-text mb-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1">
                 <DocumentTextIcon className="inline w-4" />
                 {t('title.openProposals')}
                 <TooltipIcon label={t('info.openProposalsTooltip')} />
@@ -203,18 +203,18 @@ const InnerHome: FC = () => {
 
         {pinnedAddresses.length > 0 && (
           <div className="mb-6">
-            <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
-              <div className="flex gap-1 items-center">
+            <h2 className="primary-text mb-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1">
                 <HeartIcon className="inline w-4" />
                 {t('info.favorited')}
               </div>
               <Link href="/dao/create" passHref>
                 <Button size="sm">
-                  <PlusIcon className="w-4 h-4" /> {t('button.create')}
+                  <PlusIcon className="h-4 w-4" /> {t('button.create')}
                 </Button>
               </Link>
             </h2>
-            <div className="flex flex-wrap gap-4 justify-center max-w-6xl md:justify-start">
+            <div className="flex max-w-6xl flex-wrap justify-center gap-4 md:justify-start">
               {pinnedAddresses.map((address) => (
                 <PinnedDAOCard key={address} address={address} />
               ))}
@@ -222,8 +222,8 @@ const InnerHome: FC = () => {
           </div>
         )}
 
-        <h2 className="flex gap-4 justify-between items-center mb-4 primary-text">
-          <div className="flex gap-1 items-center">
+        <h2 className="primary-text mb-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-1">
             <SparklesIcon className="inline w-4 " />
             {t('info.featured')}
           </div>
@@ -231,12 +231,12 @@ const InnerHome: FC = () => {
           {pinnedAddresses.length === 0 && (
             <Link href="/dao/create" passHref>
               <Button size="sm">
-                <PlusIcon className="w-4 h-4" /> {t('button.create')}
+                <PlusIcon className="h-4 w-4" /> {t('button.create')}
               </Button>
             </Link>
           )}
         </h2>
-        <div className="flex flex-wrap gap-4 justify-center max-w-6xl md:justify-start">
+        <div className="flex max-w-6xl flex-wrap justify-center gap-4 md:justify-start">
           {featuredDaos.map((props) => (
             <FeaturedCard {...props} key={props.name} />
           ))}

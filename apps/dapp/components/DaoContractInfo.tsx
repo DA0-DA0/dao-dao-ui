@@ -47,10 +47,10 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
   return (
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
       <div className="mb-4 md:mb-0">
-        <h2 className="mb-4 md:mb-6 primary-text">
+        <h2 className="primary-text mb-4 md:mb-6">
           {t('title.votingConfiguration')}
         </h2>
-        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
+        <ul className="mt-3 flex list-none flex-col gap-2 md:ml-2">
           {stakingContractConfig && (
             <GovInfoListItem
               icon={<ChartPieIcon className="inline w-4" />}
@@ -87,8 +87,8 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
                     : t('info.off')
                 }
               />
-              <li className="flex flex-row items-center caption-text">
-                <span className="flex gap-1 items-center">
+              <li className="caption-text flex flex-row items-center">
+                <span className="flex items-center gap-1">
                   <Votes fill="currentColor" width="16px" />
                   {t('info.amountProposalDeposit', {
                     amount: convertMicroDenomToDenomWithDecimals(
@@ -104,8 +104,8 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
         </ul>
       </div>
       <div>
-        <h2 className="mb-4 md:mb-6 primary-text">{t('title.addresses')}</h2>
-        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
+        <h2 className="primary-text mb-4 md:mb-6">{t('title.addresses')}</h2>
+        <ul className="caption-text mt-3 flex list-none flex-col gap-2 md:ml-2">
           <li>
             {t('title.treasury')} <CopyToClipboardAccent value={coreAddress} />
           </li>
@@ -138,10 +138,10 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
   return (
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
       <div className="mb-4 md:mb-0">
-        <h2 className="mb-4 md:mb-6 primary-text">
+        <h2 className="primary-text mb-4 md:mb-6">
           {t('title.votingConfiguration')}
         </h2>
-        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
+        <ul className="mt-3 flex list-none flex-col gap-2 md:ml-2">
           <GovInfoListItem
             icon={<ChartPieIcon className="inline w-4" />}
             loading
@@ -157,8 +157,8 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
             loading
             text={t('title.refundFailedProposals')}
           />
-          <li className="flex flex-row items-center caption-text">
-            <span className="flex gap-1 items-center">
+          <li className="caption-text flex flex-row items-center">
+            <span className="flex items-center gap-1">
               <Votes fill="currentColor" width="16px" />
               {t('info.amountProposalDeposit', {
                 amount: '0000',
@@ -169,8 +169,8 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
         </ul>
       </div>
       <div>
-        <h2 className="mb-4 md:mb-6 primary-text">{t('title.addresses')}</h2>
-        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
+        <h2 className="primary-text mb-4 md:mb-6">{t('title.addresses')}</h2>
+        <ul className="caption-text mt-3 flex list-none flex-col gap-2 md:ml-2">
           <li>
             {t('title.treasury')}{' '}
             <CopyToClipboardAccent loading value="juno..." />
@@ -187,7 +187,7 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
       </div>
       {!hideTreasury && (
         <div>
-          <div className="flex gap-1 justify-between">
+          <div className="flex justify-between gap-1">
             <h2 className="primary-text">{t('title.treasury')}</h2>
           </div>
         </div>

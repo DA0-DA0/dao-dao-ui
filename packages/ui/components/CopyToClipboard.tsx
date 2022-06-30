@@ -41,7 +41,7 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
 
   return (
     <button
-      className="flex overflow-hidden flex-row gap-1 items-center font-mono text-xs"
+      className="flex flex-row items-center gap-1 overflow-hidden font-mono text-xs"
       onClick={() => {
         navigator.clipboard.writeText(value)
         setTimeout(() => setCopied(false), 2000)
@@ -56,7 +56,7 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
         <Copy color="currentColor" height="18px" width="18px" />
       )}
 
-      <span className="inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition">
+      <span className="inline flex-1 truncate rounded-md p-1 transition hover:bg-btn-secondary-hover">
         {takeStartEnd
           ? concatAddressImpl(value, takeStartEnd.start, takeStartEnd.end)
           : concatAddress(value, takeN)}
@@ -75,8 +75,8 @@ export const CopyToClipboardAccent: FC<CopyToClipboardProps> = ({
   return (
     <button
       className={clsx(
-        'text-sm text-brand underline hover:no-underline transition',
-        loading && 'rounded-sm animate-pulse'
+        'text-sm text-brand underline transition hover:no-underline',
+        loading && 'animate-pulse rounded-sm'
       )}
       onClick={() => {
         navigator.clipboard.writeText(value)
@@ -102,14 +102,14 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
   const [copied, setCopied] = useState(false)
 
   return (
-    <div className="flex justify-between p-1 rounded-md border border-inactive">
-      <div className="flex gap-2 items-center px-2 text-tertiary secondary-text">
+    <div className="flex justify-between rounded-md border border-inactive p-1">
+      <div className="secondary-text flex items-center gap-2 px-2 text-tertiary">
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
           <Copy color="currentColor" height="18px" width="18px" />
         )}
-        <span className="inline py-1 hover:bg-btn-secondary-hover transition">
+        <span className="inline py-1 transition hover:bg-btn-secondary-hover">
           {concatAddress(value, takeN)}
         </span>
       </div>
@@ -123,7 +123,7 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
         size="sm"
         variant="secondary"
       >
-        <p className="text-body caption-text">{t('button.copy')}</p>
+        <p className="caption-text text-body">{t('button.copy')}</p>
       </Button>
     </div>
   )

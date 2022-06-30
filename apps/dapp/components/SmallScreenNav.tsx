@@ -8,9 +8,10 @@ import { ConnectWalletButton } from '@dao-dao/common'
 import { useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
+import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
+
 import { Loader } from './Loader'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
-import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
 
 interface SmallScreenNavProps {
   className?: string
@@ -28,12 +29,12 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
         'flex flex-col gap-4 py-2 px-6 lg:hidden',
         {
           'h-16': !expanded,
-          'pb-6 mb-4 border-b border-inactive': expanded,
+          'mb-4 border-b border-inactive pb-6': expanded,
         },
         className
       )}
     >
-      <div className="flex gap-6 justify-between items-center">
+      <div className="flex items-center justify-between gap-6">
         <Link href="/home" passHref>
           <a>
             <Logo height={28} width={28} />
@@ -48,17 +49,17 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       {expanded && (
         <div>
           <button
-            className="flex gap-2 items-center p-2 w-full bg-primary rounded-lg link-text"
+            className="link-text flex w-full items-center gap-2 rounded-lg bg-primary p-2"
             onClick={() => setSearchVisible(true)}
           >
-            <SearchIcon className="w-4 h-4" /> {t('title.search')}
+            <SearchIcon className="h-4 w-4" /> {t('title.search')}
           </button>
 
           {pinnedAddresses.length > 0 && (
             <div className="mt-5 ml-1">
-              <h3 className="mb-2 font-mono caption-text">{t('title.daos')}</h3>
+              <h3 className="caption-text mb-2 font-mono">{t('title.daos')}</h3>
               <SuspenseLoader
-                fallback={<Loader className="!justify-start ml-2" size={20} />}
+                fallback={<Loader className="ml-2 !justify-start" size={20} />}
               >
                 <MobilePinnedDAONavList />
               </SuspenseLoader>

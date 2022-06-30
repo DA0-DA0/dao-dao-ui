@@ -49,7 +49,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
           fallback={<Loader fillScreen size={64} />}
           forceFallback={isFallback || !isReady}
         >
-          <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
+          <div className="mx-auto max-w-page p-4 sm:p-8">{children}</div>
         </SuspenseLoader>
       </DAOInfoContext.Provider>
     </>

@@ -18,7 +18,7 @@ export const SearchBar: FC<SearchBarProps> = ({
   return (
     <div
       className={clsx(
-        'flex items-center px-3 text-tertiary border-b border-default',
+        'flex items-center border-b border-default px-3 text-tertiary',
         containerClassName
       )}
     >
@@ -27,7 +27,7 @@ export const SearchBar: FC<SearchBarProps> = ({
       <input
         autoFocus
         className={clsx(
-          'p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none',
+          'primary-text focus:ring-none w-full bg-transparent p-4 focus:outline-none',
           className
         )}
         placeholder={t('title.search')}

@@ -12,7 +12,7 @@ export interface CornerGradientProps {
  */
 export const CornerGradient: FC<CornerGradientProps> = ({ color }) => (
   <div
-    className="absolute top-0 left-0 -z-10 w-full h-full rounded-lg"
+    className="absolute top-0 left-0 -z-10 h-full w-full rounded-lg"
     style={{
       backgroundImage: `radial-gradient(22.07% 77.03% at 3.52% 7.35%, ${color} 0%, rgba(var(--light), 0) 100%)`,
     }}

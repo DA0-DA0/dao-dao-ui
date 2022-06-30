@@ -22,7 +22,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { CreateDAOConfigCard } from './CreateDAOConfigCard'
 import {
   DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
   DefaultNewDAO,
@@ -30,6 +29,8 @@ import {
   GovernanceTokenType,
   NewDAO,
 } from '@/atoms'
+
+import { CreateDAOConfigCard } from './CreateDAOConfigCard'
 
 export interface CreateDAOConfigCardSharedProps {
   newDAO: NewDAO
@@ -156,7 +157,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
             : t('info.disabled')}
         </InputThemedText>
       ) : (
-        <div className="flex flex-row flex-wrap grow gap-x-8 gap-y-4 justify-between items-stretch">
+        <div className="flex grow flex-row flex-wrap items-stretch justify-between gap-x-8 gap-y-4">
           <SwitchCard
             enabled={quorumEnabled}
             onClick={() => {
@@ -175,7 +176,7 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
           />
 
           {quorumEnabled && (
-            <div className="flex flex-row gap-2 items-stretch">
+            <div className="flex flex-row items-stretch gap-2">
               {quorum !== 'majority' && (
                 <NumberInput
                   disabled={readOnly}

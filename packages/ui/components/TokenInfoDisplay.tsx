@@ -20,7 +20,7 @@ export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
   ) : tokenInfo ? (
     <div className="space-y-2">
       <InputLabel name={t('form.tokenInfo')} />
-      <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
+      <pre className="border-secondary overflow-auto rounded-lg border p-2 text-secondary">
         {JSON.stringify(tokenInfo, null, 2)}
       </pre>
     </div>

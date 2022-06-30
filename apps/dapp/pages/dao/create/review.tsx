@@ -76,11 +76,11 @@ const CreateDAOReviewPage: NextPage = () => {
       <SmallScreenNav />
 
       <CreateDAOFormWrapper {...formWrapperProps}>
-        <div className="flex flex-col gap-6 items-stretch py-6 bg-disabled rounded-lg md:gap-10 md:py-10">
-          <div className="grid grid-cols-[1fr_2fr] gap-16 justify-center items-center mx-auto w-5/6">
+        <div className="flex flex-col items-stretch gap-6 rounded-lg bg-disabled py-6 md:gap-10 md:py-10">
+          <div className="mx-auto grid w-5/6 grid-cols-[1fr_2fr] items-center justify-center gap-16">
             <div className="flex flex-col items-center">
               <div
-                className={clsx('overflow-hidden w-24 h-24 rounded-full', {
+                className={clsx('h-24 w-24 overflow-hidden rounded-full', {
                   'animate-spin-medium': creating,
                 })}
               >
@@ -88,7 +88,7 @@ const CreateDAOReviewPage: NextPage = () => {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     alt={t('info.daosLogo')}
-                    className="object-cover w-full h-full"
+                    className="h-full w-full object-cover"
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
@@ -99,12 +99,12 @@ const CreateDAOReviewPage: NextPage = () => {
 
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">{t('form.name')}</p>
+                <p className="caption-text font-mono">{t('form.name')}</p>
                 <p className="text-xl">{watchedNewDAO.name}</p>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">
+                <p className="caption-text font-mono">
                   {t('form.description')}
                 </p>
                 <p
@@ -119,7 +119,7 @@ const CreateDAOReviewPage: NextPage = () => {
             </div>
           </div>
 
-          <div className="w-full h-[1px] bg-card"></div>
+          <div className="h-[1px] w-full bg-card"></div>
 
           <div className="mx-auto w-5/6">
             <VotingPowerPieDistribution newDAO={watchedNewDAO} />
@@ -148,9 +148,9 @@ const CreateDAOReviewPage: NextPage = () => {
           <CreateDAOQuorumCard {...configCardProps} />
         </div>
 
-        <div className="flex flex-col items-end w-full">
+        <div className="flex w-full flex-col items-end">
           <Button
-            className={clsx('justify-end mt-8', {
+            className={clsx('mt-8 justify-end', {
               'mb-4': previewJson || previewError,
             })}
             onClick={togglePreview}

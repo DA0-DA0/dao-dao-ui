@@ -12,7 +12,7 @@ export const MarkdownPreview: FC<MarkdownPreviewProps> = ({
   className,
 }) => (
   <ReactMarkdown
-    className={clsx('break-words prose prose-sm dark:prose-invert', className)}
+    className={clsx('prose prose-sm break-words dark:prose-invert', className)}
     linkTarget="_blank"
   >
     {markdown}

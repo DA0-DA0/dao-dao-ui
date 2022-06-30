@@ -43,7 +43,7 @@ export const TextInput = <FieldValues, FieldName extends Path<FieldValues>>({
   return (
     <input
       className={clsx(
-        'py-2 px-3 w-full bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
+        'body-text w-full rounded-lg border border-default bg-transparent py-2 px-3 ring-brand ring-offset-0 transition focus:outline-none focus:ring-1',
         { 'ring-1 ring-error': error },
         className
       )}

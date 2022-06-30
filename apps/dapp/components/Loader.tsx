@@ -11,7 +11,7 @@ interface LoaderProps {
 export const Loader: FC<LoaderProps> = ({ size = 42, className }) => (
   <div
     className={clsx(
-      'flex flex-row justify-center items-center w-full h-full',
+      'flex h-full w-full flex-row items-center justify-center',
       className
     )}
   >

@@ -57,11 +57,11 @@ export const VotingPowerPieDistribution: FC<DistributionProps> = ({
   const { onlyOneTier, entries } = useVotingPowerDistributionData(newDAO, true)
 
   return (
-    <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] gap-x-8 gap-y-4 items-center md:gap-x-16 md:gap-y-8">
-      <p className="font-mono text-center caption-text">
+    <div className="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr] items-center gap-x-8 gap-y-4 md:gap-x-16 md:gap-y-8">
+      <p className="caption-text text-center font-mono">
         {t('title.votingPower')}
       </p>
-      <p className="font-mono caption-text">
+      <p className="caption-text font-mono">
         {onlyOneTier ? t('title.members') : t('title.tiers')}
       </p>
 
@@ -177,7 +177,7 @@ export const useVotingPowerDistributionData = (
 
 const PieChart: FC<DataProps> = ({ data }) => (
   <Pie
-    className="justify-self-center !w-32 !h-32 md:!w-48 md:!h-48"
+    className="!h-32 !w-32 justify-self-center md:!h-48 md:!w-48"
     data={{
       datasets: [
         {
@@ -264,19 +264,19 @@ const LegendItem: FC<LegendItemProps> = ({
 }) => (
   <div
     key={name}
-    className={clsx('grid gap-5 items-center', {
+    className={clsx('grid items-center gap-5', {
       'grid-cols-[0.25rem_7ch_auto]': !name,
       'grid-cols-[0.25rem_auto_7ch]': name,
     })}
   >
     <div
-      className="shrink-0 w-2 h-2 rounded-full"
+      className="h-2 w-2 shrink-0 rounded-full"
       style={{ backgroundColor: color }}
     ></div>
 
-    {!!name && <p className="truncate primary-text">{name}</p>}
+    {!!name && <p className="primary-text truncate">{name}</p>}
 
-    <p className="font-mono text-sm text-right text-tertiary">
+    <p className="text-right font-mono text-sm text-tertiary">
       {percent.toLocaleString(undefined, {
         maximumFractionDigits: 1,
       })}

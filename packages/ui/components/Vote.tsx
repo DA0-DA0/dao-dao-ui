@@ -30,11 +30,11 @@ export const Vote: FC<VoteProps> = ({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-3 p-4 max-w-3xl bg-primary rounded-lg border border-default',
+        'flex max-w-3xl flex-col gap-3 rounded-lg border border-default bg-primary p-4',
         { 'backdrop-blur-lg': blur }
       )}
     >
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <p className="mr-1 text-2xl">
           <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
         </p>
@@ -45,7 +45,7 @@ export const Vote: FC<VoteProps> = ({
           })}
         </p>
       </div>
-      <div className="flex flex-wrap grid-cols-3 gap-2 md:grid">
+      <div className="flex grid-cols-3 flex-wrap gap-2 md:grid">
         <Button
           className={clsx('group transition', {
             'bg-valid hover:bg-valid': selected === VoteChoice.Yes,
@@ -60,7 +60,7 @@ export const Vote: FC<VoteProps> = ({
           <CheckIcon
             className={clsx('w-4', {
               'text-base': selected === VoteChoice.Yes,
-              'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
+              'text-valid group-hover:text-base': selected !== VoteChoice.Yes,
             })}
           />
           {t('info.yes')}
@@ -79,7 +79,7 @@ export const Vote: FC<VoteProps> = ({
           <XIcon
             className={clsx('w-4', {
               'text-base': selected === VoteChoice.No,
-              'group-hover:text-base text-error': selected !== VoteChoice.No,
+              'text-error group-hover:text-base': selected !== VoteChoice.No,
             })}
           />
           {t('info.no')}
@@ -110,7 +110,7 @@ export const Vote: FC<VoteProps> = ({
           }
         }}
       >
-        <div className="flex gap-2 justify-center items-center w-full">
+        <div className="flex w-full items-center justify-center gap-2">
           <p>{t('button.castYourVote')}</p> <Airplane stroke="currentColor" />
         </div>
       </Button>

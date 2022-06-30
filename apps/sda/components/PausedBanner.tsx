@@ -63,7 +63,7 @@ export const PausedBanner: FC<PausedBannerProps> = ({}) => {
 
   return (
     <div
-      className="flex gap-1 justify-center items-center py-4 px-3 w-full rounded-lg"
+      className="flex w-full items-center justify-center gap-1 rounded-lg py-4 px-3"
       style={{
         background:
           'radial-gradient(72.67% 293.01% at 0.42% 98.15%, rgba(221, 60, 101, 0.2) 0%, rgba(28, 29, 30, 0.2) 94.25%)',

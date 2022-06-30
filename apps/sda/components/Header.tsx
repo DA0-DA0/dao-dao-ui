@@ -45,9 +45,9 @@ const NavItem: FunctionComponent<NavItemProps> = ({
   mobile = false,
 }) => {
   const aClassName = clsx(
-    'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
+    'link-text flex flex-row items-center gap-2 rounded-lg p-3',
     {
-      'text-accent bg-accent-transparent': active,
+      'bg-accent-transparent text-accent': active,
       'text-body hover:bg-card': !active,
       'gap-4 text-base': mobile,
     }
@@ -208,12 +208,12 @@ export const Header: FunctionComponent = () => {
   return (
     <header
       className={clsx(
-        'grid grid-cols-2 items-center py-4 px-6 h-20 sm:grid-cols-3 md:grid-cols-[2fr_3fr_2fr]',
+        'grid h-20 grid-cols-2 items-center py-4 px-6 sm:grid-cols-3 md:grid-cols-[2fr_3fr_2fr]',
         { 'border-b border-inactive': !mobileNavVisible }
       )}
     >
       <Link href="/">
-        <a className="flex flex-row gap-4 items-center w-full">
+        <a className="flex w-full flex-row items-center gap-4">
           <Logo className="rounded-full border border-default" size={36} />
 
           <p className="font-studiofeixen text-[18px]">{daoName}</p>
@@ -228,7 +228,7 @@ export const Header: FunctionComponent = () => {
       />
 
       {/* Desktop */}
-      <div className="hidden flex-row gap-2 justify-self-center items-center sm:flex">
+      <div className="hidden flex-row items-center gap-2 justify-self-center sm:flex">
         {navItems.map((item) => (
           <NavItem key={item.href} item={item} />
         ))}
@@ -241,10 +241,10 @@ export const Header: FunctionComponent = () => {
         })}
       >
         {status === WalletConnectionStatus.Connected ? (
-          <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
-            <div className="flex flex-col items-end text-right link-text">
+          <div className="flex h-full flex-1 flex-row items-center justify-end gap-3">
+            <div className="link-text flex flex-col items-end text-right">
               <span>{walletName}</span>
-              <span className="font-mono text-secondary capitalize gradient-text">
+              <span className="gradient-text font-mono capitalize text-secondary">
                 {walletBalance.toLocaleString(undefined, {
                   maximumFractionDigits: NATIVE_DECIMALS,
                 })}{' '}
@@ -288,7 +288,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
   return (
     <>
       <div
-        className="flex flex-row gap-2 justify-self-end items-center py-2 px-4 text-sm text-body bg-primary rounded-md cursor-pointer sm:hidden"
+        className="flex cursor-pointer flex-row items-center gap-2 justify-self-end rounded-md bg-primary py-2 px-4 text-sm text-body sm:hidden"
         onClick={() => setVisible((v) => !v)}
       >
         {visible ? (
@@ -306,7 +306,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
 
       <div
         className={clsx(
-          'overflow-y-auto fixed inset-0 top-20 z-10 p-4 bg-white',
+          'fixed inset-0 top-20 z-10 overflow-y-auto bg-white p-4',
           {
             hidden: !visible,
             'flex flex-col sm:hidden': visible,
@@ -314,10 +314,10 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
         )}
       >
         {status === WalletConnectionStatus.Connected ? (
-          <div className="flex flex-row gap-3 justify-between items-center py-2 px-4 w-full rounded-md border border-default">
-            <div className="flex flex-col link-text">
+          <div className="flex w-full flex-row items-center justify-between gap-3 rounded-md border border-default py-2 px-4">
+            <div className="link-text flex flex-col">
               <span>{walletName}</span>
-              <span className="font-mono text-secondary capitalize gradient-text">
+              <span className="gradient-text font-mono capitalize text-secondary">
                 {walletBalance.toLocaleString(undefined, {
                   maximumFractionDigits: NATIVE_DECIMALS,
                 })}{' '}
@@ -333,7 +333,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
           <ConnectWalletButton contentContainerClassName="justify-center" />
         )}
 
-        <div className="flex flex-col gap-1 items-stretch px-1 mt-4 mb-10">
+        <div className="mt-4 mb-10 flex flex-col items-stretch gap-1 px-1">
           {items.map((item) => (
             <NavItem key={item.href} item={item} mobile />
           ))}

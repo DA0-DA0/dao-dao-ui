@@ -25,16 +25,16 @@ export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
   ...props
 }) => (
   <CreateDAOConfigCardWrapper {...props}>
-    <div className="flex flex-row gap-6 items-start">
+    <div className="flex flex-row items-start gap-6">
       <p className="mt-4 text-[42px]">{image}</p>
 
-      <div className="flex flex-col grow">
+      <div className="flex grow flex-col">
         <p className="primary-text">{title}</p>
-        <p className="mt-1 secondary-text">{description}</p>
+        <p className="secondary-text mt-1">{description}</p>
 
         <div
           className={clsx(
-            'flex flex-row gap-2 items-stretch self-end mt-4',
+            'mt-4 flex flex-row items-stretch gap-2 self-end',
             childContainerClassName
           )}
         >
@@ -52,7 +52,7 @@ export const CreateDAOConfigCardWrapper: FC<
 > = ({ children, className, accentColor, ...rest }) => (
   <div
     className={clsx(
-      'flex relative flex-col items-stretch p-6 bg-disabled rounded-lg',
+      'relative flex flex-col items-stretch rounded-lg bg-disabled p-6',
       className
     )}
     {...rest}

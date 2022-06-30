@@ -60,10 +60,10 @@ const CreateDAOPage: NextPage = () => {
       <SmallScreenNav />
 
       <CreateDAOFormWrapper {...formWrapperProps}>
-        <div className="flex relative flex-row gap-8 items-stretch p-8 bg-disabled rounded-lg">
-          <div className="flex flex-col gap-4 justify-center">
+        <div className="relative flex flex-row items-stretch gap-8 rounded-lg bg-disabled p-8">
+          <div className="flex flex-col justify-center gap-4">
             <ImageSelector
-              className="!bg-card !border-0"
+              className="!border-0 !bg-card"
               error={errors.imageUrl}
               fieldName="imageUrl"
               register={register}
@@ -73,7 +73,7 @@ const CreateDAOPage: NextPage = () => {
             <p className="text-disabled">{t('info.setAnImage')}</p>
           </div>
 
-          <div className="flex flex-col flex-1 gap-2">
+          <div className="flex flex-1 flex-col gap-2">
             <div className="space-y-1">
               <InputLabel name={t('form.name')} />
               <TextInput
@@ -98,9 +98,9 @@ const CreateDAOPage: NextPage = () => {
           </div>
         </div>
 
-        <p className="mt-6 mb-4 primary-text">{t('title.chooseAStructure')}</p>
+        <p className="primary-text mt-6 mb-4">{t('title.chooseAStructure')}</p>
 
-        <div className="flex flex-col gap-4 items-stretch sm:flex-row md:flex-col xl:flex-row">
+        <div className="flex flex-col items-stretch gap-4 sm:flex-row md:flex-col xl:flex-row">
           <CreateDAOStructure
             description={t('form.membershipBasedDescription')}
             emoji={

@@ -29,17 +29,17 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   return (
     <div
       className={clsx(
-        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 text-sm bg-primary rounded-lg',
+        'grid grid-cols-[10ch_3fr_5fr_2fr] items-center gap-4 rounded-lg bg-primary p-4 text-sm',
         className
       )}
     >
-      <p className="font-mono caption-text"># {zeroPad(id, 6)}</p>
-      <div className="flex flex-row gap-2 items-center">
+      <p className="caption-text font-mono"># {zeroPad(id, 6)}</p>
+      <div className="flex flex-row items-center gap-2">
         {daoConfig.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={t('info.daosLogo')}
-            className="w-auto h-6 rounded-full"
+            className="h-6 w-auto rounded-full"
             src={daoConfig.image_url}
           />
         ) : (
@@ -47,8 +47,8 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
         )}
         <p className="primary-text">{daoConfig.name}</p>
       </div>
-      <p className="truncate link-text">{proposal.title}</p>
-      <p className="text-right truncate body-text">
+      <p className="link-text truncate">{proposal.title}</p>
+      <p className="body-text truncate text-right">
         {getProposalEnd(proposal.expiration, proposal.status)}
       </p>
     </div>
@@ -65,17 +65,17 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-4 p-4 text-sm bg-primary rounded-lg',
+        'flex flex-col gap-4 rounded-lg bg-primary p-4 text-sm',
         className
       )}
     >
-      <div className="flex flex-row gap-4 justify-between items-center">
-        <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-row items-center gap-2">
           {daoConfig.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={t('info.daosLogo')}
-              className="w-auto h-6 rounded-full"
+              className="h-6 w-auto rounded-full"
               src={daoConfig.image_url}
             />
           ) : (
@@ -83,11 +83,11 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
           )}
           <p className="primary-text">{daoConfig.name}</p>
         </div>
-        <p className="font-mono caption-text"># {zeroPad(id, 6)}</p>
+        <p className="caption-text font-mono"># {zeroPad(id, 6)}</p>
       </div>
-      <div className="flex flex-row gap-4 justify-between items-center">
-        <p className="break-words body-text">{proposal.title}</p>
-        <p className="truncate caption-text">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <p className="body-text break-words">{proposal.title}</p>
+        <p className="caption-text truncate">
           {getProposalEnd(proposal.expiration, proposal.status)}
         </p>
       </div>
@@ -101,7 +101,7 @@ export const OpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = (
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-row gap-1 items-cener">
+    <div className="items-cener flex flex-row gap-1">
       <Link href={props.proposalViewUrl}>
         <a className="grow">
           <LargeOpenPinnedProposalLine {...props} className="hidden md:grid" />
@@ -111,7 +111,7 @@ export const OpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = (
 
       <Tooltip label={t('info.hideFromPageTooltip')}>
         <Button className="!px-2" onClick={props.markDone} variant="secondary">
-          <EyeOffIcon className="w-4 h-4" />
+          <EyeOffIcon className="h-4 w-4" />
         </Button>
       </Tooltip>
     </div>

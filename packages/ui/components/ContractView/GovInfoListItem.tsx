@@ -13,8 +13,8 @@ export const GovInfoListItem: FC<GovInfoListItemProps> = ({
   value,
   loading,
 }) => (
-  <li className="flex flex-row items-center caption-text">
-    <span className="inline flex gap-1 items-center mr-1">
+  <li className="caption-text flex flex-row items-center">
+    <span className="mr-1 inline flex items-center gap-1">
       {icon} {text}:
     </span>
     <div className={loading ? 'animate-pulse bg-dark' : ''}>

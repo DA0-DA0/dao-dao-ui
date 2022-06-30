@@ -39,14 +39,14 @@ function ButtonComponent(
   return variant === 'primary' || variant === 'secondary' ? (
     <button
       className={clsx(
-        'relative py-[6px] px-[16px] rounded-md transition',
+        'relative rounded-md py-[6px] px-[16px] transition',
         {
           // Primary
-          'text-light bg-btn link-text': variant === 'primary',
+          'link-text bg-btn text-light': variant === 'primary',
           'hover:bg-dark active:bg-toast': variant === 'primary' && !isDisabled,
           'bg-dark': variant === 'primary' && active,
           // Secondary
-          'bg-primary link-text': variant === 'secondary',
+          'link-text bg-primary': variant === 'secondary',
           'hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
             variant === 'secondary' && !isDisabled,
           'bg-btn-secondary-hover': variant === 'secondary' && active,
@@ -62,9 +62,9 @@ function ButtonComponent(
       type={type}
       {...rest}
     >
-      <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
+      <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center">
         <div
-          className={clsx('inline-block mx-auto animate-spin', {
+          className={clsx('mx-auto inline-block animate-spin', {
             invisible: !loading,
           })}
         >
@@ -73,7 +73,7 @@ function ButtonComponent(
       </div>
       <div
         className={clsx(
-          'flex flex-row gap-2 items-center',
+          'flex flex-row items-center gap-2',
           {
             invisible: loading,
           },
@@ -86,7 +86,7 @@ function ButtonComponent(
   ) : variant === 'ghost' ? (
     <button
       className={clsx(
-        'flex flex-row gap-2 items-center text-secondary transition link-text',
+        'link-text flex flex-row items-center gap-2 text-secondary transition',
         { 'hover:text-primary': !isDisabled, 'text-primary': active },
         className,
         contentContainerClassName

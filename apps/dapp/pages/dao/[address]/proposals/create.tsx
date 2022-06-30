@@ -157,7 +157,7 @@ const InnerProposalCreate = () => {
     <>
       <SmallScreenNav />
 
-      <div className="flex flex-col gap-14 justify-center p-6 md:flex-row md:gap-8">
+      <div className="flex flex-col justify-center gap-14 p-6 md:flex-row md:gap-8">
         <div className="md:w-2/3">
           <Breadcrumbs
             className="mb-6"
@@ -183,21 +183,21 @@ const InnerProposalCreate = () => {
         </div>
 
         <div className="flex-1">
-          <h2 className="mb-4 font-medium text-medium">
+          <h2 className="text-medium mb-4 font-medium">
             {t('title.addresses')}
           </h2>
 
-          <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
+          <div className="mb-8 grid grid-cols-3 items-center gap-x-1 gap-y-2">
             <p className="font-mono text-sm text-tertiary">{t('info.title')}</p>
             <div className="col-span-2">
               <CopyToClipboard value={coreAddress} />
             </div>
           </div>
 
-          <h2 className="mb-4 font-medium text-medium">
+          <h2 className="text-medium mb-4 font-medium">
             {t('title.proposalInfo')}
           </h2>
-          <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+          <ProposalsInfo className="md:flex-col md:items-stretch md:border-0 md:p-0" />
         </div>
       </div>
     </>

@@ -31,7 +31,7 @@ export const ProposalItem = ({
       <a
         className={clsx(
           'block overflow-hidden rounded',
-          'grid grid-cols-2 grid-rows-2 gap-2 items-center',
+          'grid grid-cols-2 grid-rows-2 items-center gap-2',
           'sm:grid-cols-[10ch_12ch_1fr_12ch_12ch] sm:grid-rows-1 sm:justify-start',
           'p-4 text-sm',
           {
@@ -41,17 +41,17 @@ export const ProposalItem = ({
           'hover:bg-secondary'
         )}
       >
-        <div className="font-mono text-left text-secondary"># {pad(id, 6)}</div>
+        <div className="text-left font-mono text-secondary"># {pad(id, 6)}</div>
         <div
           className={clsx(
-            'flex flex-row gap-x-2 justify-center justify-self-end items-center sm:justify-start sm:justify-self-auto',
+            'flex flex-row items-center justify-center gap-x-2 justify-self-end sm:justify-start sm:justify-self-auto',
             {
               'text-valid': proposal.status == Status.Passed,
               'text-error': proposal.status == Status.Rejected,
             }
           )}
         >
-          {StatusIcon && <StatusIcon className="w-4 h-4" />}{' '}
+          {StatusIcon && <StatusIcon className="h-4 w-4" />}{' '}
           <span>{titlecase(proposal.status)}</span>
         </div>
         <div className="truncate overflow-ellipsis">{proposal.title}</div>

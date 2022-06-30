@@ -44,8 +44,8 @@ const Home: NextPage = () => {
   return (
     <SuspenseLoader fallback={<LoadingScreen />}>
       <GradientWrapper>
-        <nav className="py-4 px-6 w-full bg-clip-padding bg-opacity-40 border-b border-inactive backdrop-blur-xl backdrop-filter">
-          <div className="flex justify-between items-center mx-auto max-w-screen-lg">
+        <nav className="w-full border-b border-inactive bg-opacity-40 bg-clip-padding py-4 px-6 backdrop-blur-xl backdrop-filter">
+          <div className="mx-auto flex max-w-screen-lg items-center justify-between">
             <Link href="/" passHref>
               <a className="flex items-center">
                 <div className="mr-3">
@@ -60,9 +60,9 @@ const Home: NextPage = () => {
                 </p>
               </a>
             </Link>
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <a
-                className="flex gap-2 items-center"
+                className="flex items-center gap-2"
                 href="https://docs.daodao.zone"
               >
                 {t('splash.documentation')}
@@ -74,10 +74,10 @@ const Home: NextPage = () => {
             </div>
           </div>
         </nav>
-        <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
+        <h1 className="hero-text mt-16 text-center md:mt-[33vh]">
           {t('splash.shortTagline')}
         </h1>
-        <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
+        <p className="my-10 mx-auto max-w-lg px-4 text-center text-lg text-secondary">
           {t('splash.longTagline')}
         </p>
         <div className="mx-auto">
@@ -89,7 +89,7 @@ const Home: NextPage = () => {
 
         <FeaturedDaos />
 
-        <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
+        <div className="flex grid-cols-3 flex-col justify-around gap-6 divide-focus py-6 md:grid md:gap-3 md:divide-x md:py-8">
           <StatsCard>
             <h3 className="header-text">
               {tvl ? '$' + tvl.toLocaleString() : t('info.loading')}
@@ -110,23 +110,23 @@ const Home: NextPage = () => {
           </StatsCard>
         </div>
 
-        <div className="px-3 -mt-8">
-          <div className="flex gap-4 justify-center mt-12 w-full md:px-3 md:mt-28">
+        <div className="-mt-8 px-3">
+          <div className="mt-12 flex w-full justify-center gap-4 md:mt-28 md:px-3">
             <RotatableLogo initialRotation={135} />
             <RotatableLogo initialRotation={90} />
             <RotatableLogo initialRotation={45} />
           </div>
-          <h2 className="px-4 mt-12 w-full text-center header-text">
+          <h2 className="header-text mt-12 w-full px-4 text-center">
             {t('splash.transparentGovernanceOnChain')}
           </h2>
-          <p className="px-4 mx-auto mt-4 max-w-xl text-center text-tertiary primary-text">
+          <p className="primary-text mx-auto mt-4 max-w-xl px-4 text-center text-tertiary">
             {t('splash.transparencyExplanation')}
           </p>
           <div className="mt-12">
             <HomepageCards />
           </div>
-          <div className="flex flex-col gap-4 items-center my-12">
-            <h2 className="mx-4 max-w-xl text-center header-text">
+          <div className="my-12 flex flex-col items-center gap-4">
+            <h2 className="header-text mx-4 max-w-xl text-center">
               {t('splash.createExploreJoin')}
             </h2>
             <Link href="/home">
@@ -142,22 +142,22 @@ const Home: NextPage = () => {
               </a>
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-2 my-10 font-mono md:grid-cols-3 caption-text">
-            <div className="flex flex-wrap gap-6 items-center mx-2 text-xs">
+          <div className="caption-text my-10 grid grid-cols-1 gap-2 font-mono md:grid-cols-3">
+            <div className="mx-2 flex flex-wrap items-center gap-6 text-xs">
               <p>
                 {t('info.productVersion', {
                   versionNumber: process.env.NEXT_PUBLIC_DAO_DAO_VERSION,
                 })}
               </p>
               <a
-                className="hover:text-primary transition"
+                className="transition hover:text-primary"
                 href="https://www.junonetwork.io/"
                 rel="noreferrer"
                 target="_blank"
               >
                 {t('splash.poweredByJuno')}
                 <ArrowNarrowRightIcon
-                  className="inline mb-0.5 w-6 h-4 font-light"
+                  className="mb-0.5 inline h-4 w-6 font-light"
                   style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
                 />
               </a>

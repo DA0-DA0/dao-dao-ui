@@ -44,8 +44,8 @@ export const PinnedDAONavList: FC = () => {
           />
         ))}
       <Link href="/dao/create">
-        <a className="flex gap-2 items-center mt-2 hover:underline link-text">
-          <PlusIcon className="w-5 h-5" /> {t('button.create')}
+        <a className="link-text mt-2 flex items-center gap-2 hover:underline">
+          <PlusIcon className="h-5 w-5" /> {t('button.create')}
         </a>
       </Link>
     </ul>
@@ -73,11 +73,11 @@ export const MobilePinnedDAONavList: FC = () => {
   }[]
 
   return (
-    <ul className="flex overflow-auto gap-1 list-none no-scrollbar">
+    <ul className="no-scrollbar flex list-none gap-1 overflow-auto">
       {daosWithAddresses.map(({ config, address }) => (
         <Link key={address} href={`/dao/${address}`} passHref>
           <a
-            className="flex flex-col gap-3 items-center p-5 min-w-[100px] max-w-[100px] bg-tab-hover rounded transition"
+            className="flex min-w-[100px] max-w-[100px] flex-col items-center gap-3 rounded bg-tab-hover p-5 transition"
             style={{
               backgroundImage:
                 'radial-gradient(#FF990033, #FFCC001A, transparent 80%)',
@@ -86,7 +86,7 @@ export const MobilePinnedDAONavList: FC = () => {
             {!!config.image_url && HEADER_IMAGES_ENABLED ? (
               <div
                 aria-label={t('info.daosLogo')}
-                className="w-[50px] h-[50px] bg-center bg-cover rounded-full"
+                className="h-[50px] w-[50px] rounded-full bg-cover bg-center"
                 role="img"
                 style={{
                   backgroundImage: `url(${config.image_url})`,
@@ -95,7 +95,7 @@ export const MobilePinnedDAONavList: FC = () => {
             ) : (
               <Logo alt={t('info.daodaoLogo')} height={50} width={50} />
             )}
-            <h2 className="text-center text-dark break-words line-clamp-2 button-text">
+            <h2 className="button-text break-words text-center text-dark line-clamp-2">
               {config.name}
             </h2>
           </a>

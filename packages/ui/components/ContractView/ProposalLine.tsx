@@ -20,16 +20,16 @@ const LargeProposalLine: FC<ProposalLineProps> = ({
 }) => (
   <div
     className={clsx(
-      'grid grid-cols-6 items-center p-4 text-sm bg-primary rounded-lg',
+      'grid grid-cols-6 items-center rounded-lg bg-primary p-4 text-sm',
       className
     )}
   >
-    <div className="flex flex-row flex-wrap col-span-2 gap-4 items-center">
-      <p className="font-mono caption-text"># {zeroPad(id, 6)}</p>
+    <div className="col-span-2 flex flex-row flex-wrap items-center gap-4">
+      <p className="caption-text font-mono"># {zeroPad(id, 6)}</p>
       <ProposalStatus status={proposal.status} />
     </div>
-    <p className="col-span-3 truncate link-text">{proposal.title}</p>
-    <p className="truncate body-text">
+    <p className="link-text col-span-3 truncate">{proposal.title}</p>
+    <p className="body-text truncate">
       {getProposalEnd(proposal.expiration, proposal.status)}
     </p>
   </div>
@@ -42,17 +42,17 @@ const SmallProposalLine: FC<ProposalLineProps> = ({
 }) => (
   <div
     className={clsx(
-      'flex flex-col gap-2 justify-between p-4 min-h-[150px] text-sm bg-primary rounded-lg',
+      'flex min-h-[150px] flex-col justify-between gap-2 rounded-lg bg-primary p-4 text-sm',
       className
     )}
   >
     <div className="flex flex-col gap-2">
       <ProposalStatus status={proposal.status} />
-      <p className="col-span-3 break-words body-text">{proposal.title}</p>
+      <p className="body-text col-span-3 break-words">{proposal.title}</p>
     </div>
     <div className="flex flex-row gap-6">
-      <p className="font-mono caption-text"># {zeroPad(id, 6)}</p>
-      <p className="truncate caption-text">
+      <p className="caption-text font-mono"># {zeroPad(id, 6)}</p>
+      <p className="caption-text truncate">
         {getProposalEnd(proposal.expiration, proposal.status)}
       </p>
     </div>

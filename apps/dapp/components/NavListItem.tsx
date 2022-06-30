@@ -18,15 +18,15 @@ export const NavListItem: FC<NavListItemProps> = ({
   return (
     <li
       className={
-        currentUrl == href ? 'underline' : 'hover:underline transition-all'
+        currentUrl == href ? 'underline' : 'transition-all hover:underline'
       }
     >
-      <div className="flex flex-row gap-2 items-center mt-1 cursor-pointer">
+      <div className="mt-1 flex cursor-pointer flex-row items-center gap-2">
         <div className="flex items-center">
-          <Icon className="w-5 h-5" />
+          <Icon className="h-5 w-5" />
         </div>
         <Link href={href}>
-          <a className="w-full link-text">{text}</a>
+          <a className="link-text w-full">{text}</a>
         </Link>
       </div>
     </li>

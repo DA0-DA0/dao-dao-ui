@@ -12,9 +12,10 @@ import {
 import { SuspenseLoader } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { ContractCard, LoadingContractCard } from './ContractCard'
 import { usePinnedDAOs } from '@/hooks'
 import { useAddToken } from '@/util'
+
+import { ContractCard, LoadingContractCard } from './ContractCard'
 
 interface PinnedDAOCardProps {
   address: string

@@ -53,13 +53,13 @@ export const CustomComponent: ActionComponent = ({
 
       <div className="mt-2">
         {errors?.message ? (
-          <p className="flex gap-1 items-center text-sm text-error">
+          <p className="flex items-center gap-1 text-sm text-error">
             <XIcon className="inline w-5" />{' '}
             {errors.message.message === INVALID_COSMOS_MSG ? (
               <Trans i18nKey="error.invalidCosmosMessage">
                 Invalid{' '}
                 <a
-                  className="inline underline link"
+                  className="link inline underline"
                   href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
                   rel="noreferrer"
                   target="_blank"
@@ -72,7 +72,7 @@ export const CustomComponent: ActionComponent = ({
             )}
           </p>
         ) : (
-          <p className="flex gap-1 items-center text-sm text-success">
+          <p className="text-success flex items-center gap-1 text-sm">
             <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
           </p>
         )}

@@ -135,7 +135,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       onRemove={onRemove}
       title={t('title.stake')}
     >
-      <div className="flex flex-row gap-4 mt-2">
+      <div className="mt-2 flex flex-row gap-4">
         <SelectInput
           defaultValue={stakeActions[0].type}
           disabled={readOnly}
@@ -236,7 +236,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       <InputErrorMessage error={errors?.validator} />
 
-      <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
+      <div className="mt-3 flex items-center gap-2 rounded-lg bg-disabled p-2">
         <InformationCircleIcon className="h-4" />
         <p className="body-text">{t('info.actionInBeta')}</p>
       </div>

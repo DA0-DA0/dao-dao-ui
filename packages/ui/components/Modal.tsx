@@ -37,7 +37,7 @@ export const Modal: FC<ModalProps> = ({
   return (
     <div
       className={clsx(
-        'flex fixed top-0 left-0 z-10 justify-center items-center px-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
+        'fixed top-0 left-0 z-10 flex h-full w-screen cursor-pointer items-center justify-center px-4 backdrop-brightness-50 backdrop-filter transition',
         backdropClassName
       )}
       onClick={
@@ -47,16 +47,16 @@ export const Modal: FC<ModalProps> = ({
     >
       <div
         className={clsx(
-          'relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto',
+          'relative h-min max-w-md cursor-auto rounded-lg border border-focus bg-white p-6',
           containerClassName
         )}
       >
         {!hideCloseButton && (
           <button
-            className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+            className="absolute top-2 right-2 rounded-full p-1 transition hover:bg-secondary"
             onClick={onClose}
           >
-            <XIcon className="w-4 h-4" />
+            <XIcon className="h-4 w-4" />
           </button>
         )}
 

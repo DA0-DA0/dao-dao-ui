@@ -16,7 +16,7 @@ export const ToastCard: FC<ToastCardProps> = ({
     {({ message }) => (
       <div
         className={clsx(
-          'flex flex-row gap-3 items-start p-4 font-mono text-sm rounded',
+          'flex flex-row items-start gap-3 rounded p-4 font-mono text-sm',
           containerClassName
         )}
       >
@@ -28,11 +28,11 @@ export const ToastCard: FC<ToastCardProps> = ({
         </p>
 
         <button
-          className="rounded-full opacity-50 hover:opacity-20 transition"
+          className="rounded-full opacity-50 transition hover:opacity-20"
           onClick={() => hotToast.dismiss(toast.id)}
         >
           {/* Height equal to line height of message above (text-sm). */}
-          <XIcon className="w-4 h-5" />
+          <XIcon className="h-5 w-4" />
         </button>
       </div>
     )}

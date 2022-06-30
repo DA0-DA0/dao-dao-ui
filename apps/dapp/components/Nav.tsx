@@ -12,10 +12,9 @@ import { Trans, useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
-import ThemeToggle from 'components/ThemeToggle'
-
 import { searchVisibleAtom } from '@/atoms'
 import { Loader, PinnedDAONavList } from '@/components'
+import ThemeToggle from 'components/ThemeToggle'
 
 type NavProps = {
   onMenuClick?: () => void
@@ -28,9 +27,9 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
 
   return (
     <>
-      <nav className="flex sticky top-0 flex-col justify-between p-6 w-full h-screen text-lg border-r border-inactive">
+      <nav className="sticky top-0 flex h-screen w-full flex-col justify-between border-r border-inactive p-6 text-lg">
         <div>
-          <div className="flex justify-between items-center lg:justify-start">
+          <div className="flex items-center justify-between lg:justify-start">
             <Link href="/home">
               <a>
                 <Logo alt={`${SITE_TITLE} Logo`} height={28} width={28} />
@@ -41,11 +40,11 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
             </div>
           </div>
           <button
-            className="flex justify-between items-center p-2 mt-5 w-full bg-primary rounded-lg hover:outline-brand hover:outline link-text"
+            className="link-text mt-5 flex w-full items-center justify-between rounded-lg bg-primary p-2 hover:outline hover:outline-brand"
             onClick={() => setSearchVisible(true)}
           >
-            <p className="flex gap-2 items-center">
-              <SearchIcon className="w-4 h-4" /> {t('title.search')}
+            <p className="flex items-center gap-2">
+              <SearchIcon className="h-4 w-4" /> {t('title.search')}
             </p>
             <p className="text-secondary">{isMac ? '⌘' : '⌃'}K</p>
           </button>
@@ -55,11 +54,11 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </div>
           <div className="ml-1 text-sm">
             <div className="mt-6">
-              <h3 className="mb-4 font-mono caption-text">
+              <h3 className="caption-text mb-4 font-mono">
                 {t('title.yourDAOs')}
               </h3>
               <SuspenseLoader
-                fallback={<Loader className="!justify-start ml-2" size={20} />}
+                fallback={<Loader className="ml-2 !justify-start" size={20} />}
               >
                 <PinnedDAONavList />
               </SuspenseLoader>
@@ -67,18 +66,18 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </div>
         </div>
         <div className="ml-1">
-          <h3 className="mb-2 font-mono caption-text">
+          <h3 className="caption-text mb-2 font-mono">
             <Trans i18nKey="info.daodaoBetaV">
               dao dao <div className="inline text-error">beta</div> v
               {{ version: process.env.NEXT_PUBLIC_DAO_DAO_VERSION }}
             </Trans>
           </h3>
-          <ul className="text-sm list-none link-text">
+          <ul className="link-text list-none text-sm">
             <li className="mb-2">
               <ThemeToggle />
             </li>
             <li className="mb-2">
-              <ExternalLinkIcon className="inline mr-2 w-5 h-5" />
+              <ExternalLinkIcon className="mr-2 inline h-5 w-5" />
               <a
                 href="https://docs.daodao.zone"
                 rel="noreferrer"
@@ -88,7 +87,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
               </a>
             </li>
             <li>
-              <ExternalLinkIcon className="inline mr-2 w-5 h-5" />
+              <ExternalLinkIcon className="mr-2 inline h-5 w-5" />
               <a
                 href="https://njc09z4coq8.typeform.com/to/EBkp9QJU"
                 rel="noreferrer"
