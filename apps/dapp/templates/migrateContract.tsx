@@ -56,7 +56,7 @@ const IsAdminWarningInner = ({
   return null
 }
 
-const IsAdminWarning = ({
+export const IsAdminWarning = ({
   contract,
   maybeAdmin,
 }: {

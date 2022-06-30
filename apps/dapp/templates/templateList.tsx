@@ -83,6 +83,12 @@ import {
   transformStakingUpdateToCosmos,
 } from './stakingUpdate'
 import {
+  transformCosmosToUpdateAdmin,
+  transformUpdateAdminToCosmos,
+  UpdateAdminComponent,
+  updateAdminDefaults,
+} from './updateAdmin'
+import {
   transformCosmosToUpdateMinter,
   transformUpdateMinterToCosmos,
   UpdateMinterComponent,
@@ -160,6 +166,15 @@ export const messageTemplates: MessageTemplate[] = [
     getDefaults: migrateContractDefaults,
     toCosmosMsg: transformMigrateContractToCosmos,
     fromCosmosMsg: transformCosmosToMigrateContract,
+  },
+  {
+    label: '🍄 Update Contract Admin',
+    description: 'Update the admin of a CosmWasm contract.',
+    component: UpdateAdminComponent,
+    contractSupport: ContractSupport.Both,
+    getDefaults: updateAdminDefaults,
+    toCosmosMsg: transformUpdateAdminToCosmos,
+    fromCosmosMsg: transformCosmosToUpdateAdmin,
   },
   {
     label: '🌳 Update Staking Config',
