@@ -1,6 +1,7 @@
 import { GasPrice } from '@cosmjs/stargate'
 import {
   ChainInfoID,
+  ChainInfoMap,
   WalletManagerProvider,
   WalletType,
   useWallet,
@@ -13,6 +14,8 @@ import { signingCosmWasmClientAtom } from '@dao-dao/state'
 import { Loader } from '@dao-dao/ui'
 import {
   CHAIN_ID,
+  CHAIN_REST_ENDPOINT,
+  CHAIN_RPC_ENDPOINT,
   SITE_DESCRIPTION,
   SITE_TITLE,
   SITE_URL,
@@ -31,8 +34,22 @@ const InnerWalletProvider: FC = ({ children }) => {
   return <>{children}</>
 }
 
+// Assert environment variable CHAIN_ID is a valid chain.
+if (!(CHAIN_ID in ChainInfoID)) {
+  throw new Error('CHAIN_ID constant is an invalid chain ID.')
+}
+
 export const WalletProvider: FC = ({ children }) => (
   <WalletManagerProvider
+    // Use environment variables to determine RPC/REST nodes.
+    chainInfoOverrides={[
+      {
+        // Typechecked above.
+        ...ChainInfoMap[CHAIN_ID as ChainInfoID],
+        rpc: CHAIN_RPC_ENDPOINT,
+        rest: CHAIN_REST_ENDPOINT,
+      },
+    ]}
     classNames={{
       modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
       modalContent:
