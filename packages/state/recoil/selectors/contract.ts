@@ -26,3 +26,24 @@ export const contractInstantiateTimeSelector = selectorFamily<
       return new Date(Date.parse(block.header.time))
     },
 })
+
+export const contractAdminSelector = selectorFamily<string | undefined, string>(
+  {
+    key: 'contractInstantiateTimeSelector',
+    get:
+      (address: string) =>
+      async ({ get }) => {
+        const client = get(cosmWasmClientSelector)
+        if (!client) {
+          return undefined
+        }
+
+        try {
+          const contract = await client.getContract(address)
+          return contract.admin || ''
+        } catch (_) {
+          return undefined
+        }
+      },
+  }
+)

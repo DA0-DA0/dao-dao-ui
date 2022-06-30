@@ -65,6 +65,7 @@
     "rocketShip": "Rocket ship",
     "swords": "Swords",
     "token": "Token",
+    "whale": "Whale",
     "yinYang": "Yin Yang"
   },
   "error": {
@@ -132,6 +133,8 @@
     "membershipBasedDescription": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
     "membershipBasedTitle": "Membership-based",
     "message": "Message",
+    "migrateDescription": "This will <1>migrate</1> the selected contract to a new code ID.",
+    "migrateMessage": "Migrate message",
     "name": "Name",
     "onlyMembersExecuteTitle": "Only members execute",
     "onlyMembersExecuteTooltip": "If enabled, only members may execute passed proposals.",
@@ -227,6 +230,7 @@
     "none": "None",
     "notAMember": "You are not a member.",
     "notAMemberYet": "You are not a member yet.",
+    "notAdmin": "Your DAO is not the admin of this contract. The proposal will not be executable while this is the case.",
     "notMet": "Not met",
     "numMessages_one": "{{count}} message",
     "numMessages_other": "{{count}} messages",
@@ -339,6 +343,7 @@
     "instantiateSmartContract": "Instantiate Smart Contract",
     "memberVotingPowers": "Member voting powers",
     "members": "Members",
+    "migrateSmartContract": "Migrate Smart Contract",
     "mint": "Mint",
     "needWalletToContinue": "You'll need a wallet to continue",
     "openProposals": "Open proposals",
