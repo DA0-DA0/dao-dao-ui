@@ -16,7 +16,7 @@ export const VoteBalanceCard: FC<VoteBalanceCardProps> = ({
   weightTotal,
   addrTitle,
 }) => (
-  <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
+  <div className="py-4 px-6 w-full rounded-lg border border-default">
     {addrTitle ? (
       <CopyToClipboard value={title} />
     ) : (

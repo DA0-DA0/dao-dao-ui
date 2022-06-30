@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { FC, ReactNode } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
@@ -23,51 +22,37 @@ export const MultisigMemberList: FC<MultisigMembersListProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-col gap-4">
       {!!walletWeight && (
-        <div className="flex-1">
-          <h2
-            className={clsx(
-              'mb-3',
-              primaryText ? 'primary-text' : 'title-text'
-            )}
-          >
+        <div className="space-y-3">
+          <h2 className={primaryText ? 'primary-text' : 'title-text'}>
             {t('title.yourVotingPower')}
           </h2>
-          <ul className="mt-3 list-none">
-            <li>
-              <VoteBalanceCard
-                addrTitle
-                title={walletAddress as string}
-                weight={walletWeight}
-                weightTotal={totalWeight}
-              />
-            </li>
-          </ul>
+
+          <VoteBalanceCard
+            addrTitle
+            title={walletAddress as string}
+            weight={walletWeight}
+            weightTotal={totalWeight}
+          />
         </div>
       )}
+
       {!!members.length && (
-        <div className="flex-1">
-          <h2
-            className={clsx(
-              'mb-3',
-              primaryText ? 'primary-text' : 'title-text'
-            )}
-          >
+        <div className="space-y-3">
+          <h2 className={primaryText ? 'primary-text' : 'title-text'}>
             {t('title.memberVotingPowers')}
           </h2>
-          <ul className="mt-2 list-none">
-            {members.map((member) => (
-              <li key={member.addr}>
-                <VoteBalanceCard
-                  addrTitle
-                  title={member.addr}
-                  weight={member.weight}
-                  weightTotal={totalWeight}
-                />
-              </li>
-            ))}
-          </ul>
+
+          {members.map((member) => (
+            <VoteBalanceCard
+              key={member.addr}
+              addrTitle
+              title={member.addr}
+              weight={member.weight}
+              weightTotal={totalWeight}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -86,21 +71,17 @@ export const MultisigMemberListLoader: FC<MultisigMembersListLoaderProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-wrap gap-4">
-      <div className="flex-1">
-        <h2
-          className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
-        >
+    <div className="flex flex-col gap-4">
+      <div className="space-y-3">
+        <h2 className={primaryText ? 'primary-text' : 'title-text'}>
           {t('title.yourVotingPower')}
         </h2>
 
         {loader}
       </div>
 
-      <div className="flex-1">
-        <h2
-          className={clsx('mb-3', primaryText ? 'primary-text' : 'title-text')}
-        >
+      <div className="space-y-3">
+        <h2 className={primaryText ? 'primary-text' : 'title-text'}>
           {t('title.memberVotingPowers')}
         </h2>
 
