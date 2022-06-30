@@ -137,6 +137,7 @@ const InnerMultisigHome = () => {
     <div className="flex flex-row lg:grid lg:grid-cols-6">
       <div className="col-span-4 w-full min-h-screen">
         <GradientHero>
+          <SmallScreenNav />
           <div className="flex justify-center items-center py-3 px-6 w-full bg-accent-transparent border-b border-inactive">
             <p className="text-center">
               This is a beta Multisig.{' '}
@@ -151,7 +152,6 @@ const InnerMultisigHome = () => {
               to continue receiving feature releases.
             </p>
           </div>
-          <SmallScreenNav />
           <div className="p-6">
             <div className="flex justify-between items-center">
               <Breadcrumbs
