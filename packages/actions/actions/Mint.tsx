@@ -1,4 +1,4 @@
-// import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 
 import { useGovernanceTokenInfo } from '@dao-dao/state'
@@ -30,8 +30,7 @@ interface MintData {
 }
 
 const useDefaults: UseDefaults<MintData> = (): MintData => {
-  // const { address } = useWallet()
-  const address = undefined
+  const { address } = useWallet()
 
   return {
     to: address ?? '',

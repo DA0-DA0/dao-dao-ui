@@ -1,4 +1,4 @@
-// import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -78,9 +78,7 @@ export enum CreateDAOSubmitLabel {
 export const useCreateDAOForm = (pageIndex: number) => {
   const { t } = useTranslation()
   const router = useRouter()
-  // const { connected, address: walletAddress } = useWallet()
-  const connected = false
-  const walletAddress = undefined
+  const { connected, address: walletAddress } = useWallet()
   const { refreshBalances } = useWalletBalance()
   const createDAOFormPages = useCreateDAOFormPages()
 

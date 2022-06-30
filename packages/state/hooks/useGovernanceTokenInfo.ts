@@ -1,4 +1,4 @@
-// import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -41,8 +41,7 @@ export const useGovernanceTokenInfo = (
     fetchPriceWithSwapAddress,
   }: UseGovernanceTokenInfoOptions = {}
 ): UseGovernanceTokenInfoResponse => {
-  // const { address: walletAddress } = useWallet()
-  const walletAddress = undefined
+  const { address: walletAddress } = useWallet()
   const { votingModuleAddress, votingModuleType } = useVotingModule(coreAddress)
   const governanceTokenShouldExist =
     votingModuleType === VotingModuleType.Cw20StakedBalanceVoting

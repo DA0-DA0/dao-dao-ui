@@ -1,4 +1,4 @@
-// import { useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
@@ -48,9 +48,7 @@ const InnerProposal: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress, votingModuleType, name } = useDAOInfoContext()
-  // const { address: walletAddress, connected } = useWallet()
-  const connected = false
-  const walletAddress = undefined
+  const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
   const [loading, setLoading] = useState(false)

@@ -1,4 +1,4 @@
-// import { useWalletManager } from '@noahsaso/cosmodal'
+import { useWalletManager } from '@noahsaso/cosmodal'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
@@ -34,8 +34,7 @@ const SidebarLayoutInner: FC = ({ children }) => {
   const [searchVisible, setSearchVisible] = useRecoilState(searchVisibleAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  // const { error } = useWalletManager()
-  const error: unknown = undefined
+  const { error } = useWalletManager()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&
