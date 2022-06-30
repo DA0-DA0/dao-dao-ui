@@ -16,6 +16,6 @@
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.28.9",
     "ajv": "^8.11.0",
-    "react": "^18.1.0"
+    "react": "18.1.0"
   }
 }

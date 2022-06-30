@@ -151,7 +151,7 @@ const InnerStake = () => {
         <StakingModal
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           coreAddress={DAO_ADDRESS}
-          loader={Loader}
+          loader={<Loader />}
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
