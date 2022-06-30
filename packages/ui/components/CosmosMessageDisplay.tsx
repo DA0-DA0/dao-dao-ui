@@ -20,7 +20,6 @@ export interface CosmosMessageDisplayProps {
 export const CosmosMessageDisplay: FC<CosmosMessageDisplayProps> = ({
   value,
 }) => {
-  console.log(value)
   const themeCtx = useThemeContext()
   const editorTheme = themeCtx.theme !== 'dark' ? 'default' : 'material-ocean'
   return (
