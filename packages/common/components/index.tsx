@@ -1,4 +1,4 @@
 export * from './ConnectWalletButton'
 export * from './CreateProposalForm'
 export * from './StakingModal'
-export * from './WalletProvider'
+// export * from './WalletProvider'
