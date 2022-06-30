@@ -1,9 +1,10 @@
-import type { NextPage } from 'next'
+import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { Breadcrumbs, LoadingScreen } from '@dao-dao/ui'
+import { CHAIN_RPC_ENDPOINT, V1_URL } from '@dao-dao/utils'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { ProposalDetails } from '@/components/ProposalDetails'
@@ -17,6 +18,7 @@ import { SmallScreenNav } from '@/components/SmallScreenNav'
 import { SuspenseLoader } from '@/components/SuspenseLoader'
 import { daoSelector } from '@/selectors/daos'
 import { cw20TokenInfo } from '@/selectors/treasury'
+import { cosmWasmClientRouter } from '@/util/chainClientRouter'
 
 const InnerProposal: FC = () => {
   const router = useRouter()
@@ -79,3 +81,45 @@ const ProposalPage: NextPage = () => (
 )
 
 export default ProposalPage
+
+// REDIRECT V1 DAOs
+
+export const getStaticPaths: GetStaticPaths = () => ({
+  paths: [],
+  fallback: true,
+})
+
+export const getStaticProps: GetStaticProps = async ({
+  params: { contractAddress, proposalId } = {},
+}) => {
+  if (typeof contractAddress !== 'string' || !contractAddress) {
+    return { props: {} }
+  }
+
+  try {
+    const client = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
+    await client.queryContractSmart(contractAddress, {
+      get_config: {},
+    })
+  } catch (err) {
+    // Redirect v1 DAOs.
+    if (
+      err instanceof Error &&
+      err.message.includes(
+        'Error parsing into type cw_core::msg::QueryMsg: unknown variant `get_config`'
+      )
+    ) {
+      return {
+        redirect: {
+          destination:
+            V1_URL + `/dao/${contractAddress}/proposals/${proposalId}`,
+          permanent: false,
+        },
+      }
+    }
+
+    console.error(err)
+  }
+
+  return { props: {} }
+}

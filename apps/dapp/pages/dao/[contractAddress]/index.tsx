@@ -11,7 +11,11 @@ import {
   Breadcrumbs,
   MobileMenuTab,
 } from '@dao-dao/ui'
-import { CHAIN_RPC_ENDPOINT, cosmWasmClientRouter } from '@dao-dao/utils'
+import {
+  CHAIN_RPC_ENDPOINT,
+  cosmWasmClientRouter,
+  V1_URL,
+} from '@dao-dao/utils'
 
 import { pinnedDaosAtom } from '@/atoms/pinned'
 import { ContractHeader } from '@/components/ContractHeader'
@@ -271,6 +275,21 @@ export const getStaticProps: GetStaticProps<StaticProps> = async ({
     const accentColor = await getFastAverageColor(daoInfo.config.image_url)
     return { props: { accentColor } }
   } catch (err) {
+    // Redirect V1 DAOs.
+    if (
+      err instanceof Error &&
+      err.message.includes(
+        'Error parsing into type cw_core::msg::QueryMsg: unknown variant `get_config`'
+      )
+    ) {
+      return {
+        redirect: {
+          destination: V1_URL + `/dao/${contractAddress}`,
+          permanent: false,
+        },
+      }
+    }
+
     console.error(err)
   }
 
