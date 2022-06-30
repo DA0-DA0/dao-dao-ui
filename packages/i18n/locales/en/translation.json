@@ -43,6 +43,7 @@
     "stakeToJoinAndVote": "Stake your tokens to join the DAO and vote.",
     "stakeTokens": "Stake tokens",
     "stakeTokensSuggestion": "Stake some tokens so you can vote next time?",
+    "unstake": "Unstake",
     "unstakeTokens": "Unstake tokens",
     "useExistingToken": "Use an existing token"
   },
