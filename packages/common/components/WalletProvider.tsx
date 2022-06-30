@@ -35,8 +35,8 @@ const InnerWalletProvider: FC = ({ children }) => {
 }
 
 // Assert environment variable CHAIN_ID is a valid chain.
-if (!(CHAIN_ID in ChainInfoID)) {
-  throw new Error('CHAIN_ID constant is an invalid chain ID.')
+if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
+  throw new Error(`CHAIN_ID constant (${CHAIN_ID}) is an invalid chain ID.`)
 }
 
 export const WalletProvider: FC = ({ children }) => (
