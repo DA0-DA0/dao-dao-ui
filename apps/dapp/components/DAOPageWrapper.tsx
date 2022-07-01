@@ -23,6 +23,7 @@ interface DAOInfo {
   description: string
   imageUrl: string | null
 }
+
 const DefaultDAOInfo: DAOInfo = {
   coreAddress: '',
   votingModuleType: VotingModuleType.Cw4Voting,
