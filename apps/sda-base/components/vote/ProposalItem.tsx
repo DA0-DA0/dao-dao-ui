@@ -9,7 +9,7 @@ import {
 import { StatusIcons, VoteDisplay } from '@dao-dao/ui'
 import { getProposalEnd, pad, titlecase } from '@dao-dao/utils'
 
-import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 interface ProposalItemProps {
   proposalResponse: ProposalResponse
@@ -20,9 +20,7 @@ export const ProposalItem = ({
   proposalResponse: { id, proposal },
   old,
 }: ProposalItemProps) => {
-  const { voteResponse } = useProposalInfo(DAO_ADDRESS, id, {
-    oldProposalsAddress: OLD_PROPOSALS_ADDRESS,
-  })
+  const { voteResponse } = useProposalInfo(DAO_ADDRESS, id)
 
   const StatusIcon = StatusIcons[proposal.status]
 

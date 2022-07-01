@@ -1,33 +1,21 @@
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { useMemo } from 'react'
-import { constSelector, useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
-import { CwProposalSingleSelectors, useProposalModule } from '@dao-dao/state'
+import { useProposalModule } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 
-import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 import { ProposalItem } from './ProposalItem'
 
 export const ProposalsContent = () => {
-  const { t } = useTranslation()
   const { proposalResponses: allProposalResponses } = useProposalModule(
     DAO_ADDRESS,
     {
       fetchProposalResponses: true,
     }
   )
-
-  const oldModuleResponses = useRecoilValue(
-    OLD_PROPOSALS_ADDRESS
-      ? CwProposalSingleSelectors.listProposalsSelector({
-          contractAddress: OLD_PROPOSALS_ADDRESS,
-          params: [{}],
-        })
-      : constSelector(undefined)
-  )?.proposals
 
   const openProposalResponses = useMemo(() => {
     if (!allProposalResponses) return []
@@ -85,20 +73,6 @@ export const ProposalsContent = () => {
             <ProposalItem key={response.id} proposalResponse={response} />
           ))}
         </div>
-      )}
-
-      {oldModuleResponses && (
-        <>
-          <h2 className="flex gap-2 items-center mt-8 caption-text">
-            <ChevronDownIcon className="w-4 h-4" />{' '}
-            {t('title.previousProposalModule')}
-          </h2>
-          <div className="mt-4 space-y-1">
-            {oldModuleResponses.map((response) => (
-              <ProposalItem key={response.id} old proposalResponse={response} />
-            ))}
-          </div>
-        </>
       )}
     </div>
   )

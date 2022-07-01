@@ -9,7 +9,7 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
@@ -23,14 +23,10 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
 }) => {
   const { t } = useTranslation()
   const { connected } = useWalletManager()
-  const {
-    governanceTokenInfo,
-    walletBalance: _unstakedBalance,
-    price,
-  } = useGovernanceTokenInfo(DAO_ADDRESS, {
-    fetchWalletBalance: true,
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
-  })
+  const { governanceTokenInfo, walletBalance: _unstakedBalance } =
+    useGovernanceTokenInfo(DAO_ADDRESS, {
+      fetchWalletBalance: true,
+    })
 
   if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
     return <BalanceCardLoader />
@@ -53,17 +49,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-row flex-wrap justify-between items-center">
-        {price && (
-          <p className="text-lg font-medium">
-            ${' '}
-            {(unstakedBalance * price).toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-            })}{' '}
-            USD
-          </p>
-        )}
-
+      <div className="flex flex-row justify-end items-center">
         <Button
           className="text-base"
           disabled={!connected}
@@ -82,9 +68,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
 }) => {
   const { t } = useTranslation()
   const { connected } = useWalletManager()
-  const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
-  })
+  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const { totalStakedValue, walletStakedValue } = useStakingInfo(DAO_ADDRESS, {
     fetchTotalStakedValue: true,
     fetchWalletStakedValue: true,
@@ -130,17 +114,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-row flex-wrap justify-between items-center">
-        {price && (
-          <p className="text-lg font-medium">
-            ${' '}
-            {(stakedValue * price).toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-            })}{' '}
-            USD
-          </p>
-        )}
-
+      <div className="flex flex-row justify-end items-center">
         <Button
           className="text-base"
           disabled={!connected}
