@@ -39,7 +39,7 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
       )}
       <div className="flex justify-end">
         <button
-          className="normal-case btn-outline btn btn-xs border-secondary"
+          className="normal-case btn-outline btn-xs border-secondary btn"
           onClick={onClaim}
         >
           {t('button.claim')}

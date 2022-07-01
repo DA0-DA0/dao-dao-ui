@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
@@ -11,7 +12,6 @@ import {
 } from '../recoil/selectors/clients/cw-core'
 import { listAllMembersSelector } from '../recoil/selectors/clients/cw4-group'
 import { groupContractSelector } from '../recoil/selectors/clients/cw4-voting'
-import { useWallet } from './useWallet'
 
 interface UseVotingModuleOptions {
   fetchCw4VotingMembers?: boolean

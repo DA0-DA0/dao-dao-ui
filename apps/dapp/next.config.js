@@ -1,3 +1,5 @@
+const path = require('path')
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -50,6 +52,22 @@ let config = {
       permanent: false,
     },
   ],
+  webpack: (config, options) => {
+    if (options.isServer) {
+      config.externals = ['@noahsaso/cosmodal', ...config.externals]
+    }
+
+    config.resolve.alias['@noahsaso/cosmodal'] = path.resolve(
+      __dirname,
+      '..',
+      '..',
+      'node_modules',
+      '@noahsaso',
+      'cosmodal'
+    )
+
+    return config
+  },
 }
 
 // Only need rewrites for local development

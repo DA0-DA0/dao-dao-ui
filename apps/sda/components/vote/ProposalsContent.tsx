@@ -7,8 +7,9 @@ import { useTranslation } from '@dao-dao/i18n'
 import { CwProposalSingleSelectors, useProposalModule } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 
-import { ProposalItem } from './ProposalItem'
 import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+
+import { ProposalItem } from './ProposalItem'
 
 export const ProposalsContent = () => {
   const { t } = useTranslation()

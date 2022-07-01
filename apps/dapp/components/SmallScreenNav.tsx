@@ -8,9 +8,10 @@ import { ConnectWalletButton } from '@dao-dao/common'
 import { useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
+import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
+
 import { Loader } from './Loader'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
-import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
 
 interface SmallScreenNavProps {
   className?: string

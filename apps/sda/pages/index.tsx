@@ -1,16 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
-
+import { useWallet } from '@noahsaso/cosmodal'
 import type { NextPage } from 'next'
 import React, { useState } from 'react'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { useTranslation } from '@dao-dao/i18n'
 import { Pie } from '@dao-dao/icons'
-import {
-  useGovernanceTokenInfo,
-  useVotingModule,
-  useWallet,
-} from '@dao-dao/state'
+import { useGovernanceTokenInfo, useVotingModule } from '@dao-dao/state'
 import {
   MultisigMemberList,
   MultisigMemberListLoader,
@@ -156,7 +151,7 @@ const InnerStake = () => {
         <StakingModal
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           coreAddress={DAO_ADDRESS}
-          loader={Loader}
+          loader={<Loader />}
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />

@@ -1,4 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
@@ -14,7 +15,7 @@ import {
   blockHeightSelector,
   refreshProposalsIdAtom,
   useProposalModule,
-  useWallet,
+  useWalletBalance,
 } from '@dao-dao/state'
 import { Breadcrumbs, CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
@@ -41,7 +42,8 @@ const InnerProposalCreate = () => {
     cw4GroupAddress,
     governanceTokenAddress,
   } = useDAOInfoContext()
-  const { address: walletAddress, connected, refreshBalances } = useWallet()
+  const { address: walletAddress, connected } = useWallet()
+  const { refreshBalances } = useWalletBalance()
   const [loading, setLoading] = useState(false)
 
   const { proposalModuleAddress, proposalModuleConfig } =

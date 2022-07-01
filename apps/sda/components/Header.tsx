@@ -1,5 +1,6 @@
 import { XIcon } from '@heroicons/react/outline'
 import { MenuIcon, PlusIcon } from '@heroicons/react/solid'
+import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -15,12 +16,11 @@ import {
 import { ConnectWalletButton } from '@dao-dao/common'
 import { useTranslation } from '@dao-dao/i18n'
 import { Airdrop, Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
-import { useWallet } from '@dao-dao/state'
+import { useWalletBalance } from '@dao-dao/state'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   VotingModuleType,
-  convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
@@ -80,16 +80,15 @@ const NavItem: FunctionComponent<NavItemProps> = ({
 
 export const Header: FunctionComponent = () => {
   const router = useRouter()
-  const { connected, name: walletName, nativeBalance, disconnect } = useWallet()
+  const {
+    status,
+    connectedWallet: { name: walletName } = {},
+    disconnect,
+  } = useWalletManager()
+  const { walletBalance = 0 } = useWalletBalance()
   const { name: daoName, votingModuleType } = useDAOInfoContext()
 
   const [mobileNavVisible, setMobileNavVisible] = useState(false)
-
-  const walletBalance =
-    nativeBalance !== undefined
-      ? convertMicroDenomToDenomWithDecimals(nativeBalance, NATIVE_DECIMALS)
-      : 0
-  const humanDenom = nativeTokenLabel(NATIVE_DENOM)
 
   const navItems = useMemo<NavItemData[]>(
     () => [
@@ -237,11 +236,11 @@ export const Header: FunctionComponent = () => {
 
       <div
         className={clsx('hidden h-10 sm:block', {
-          'w-full': connected,
-          'justify-self-end': !connected,
+          'w-full': status === WalletConnectionStatus.Connected,
+          'justify-self-end': status !== WalletConnectionStatus.Connected,
         })}
       >
-        {connected ? (
+        {status === WalletConnectionStatus.Connected ? (
           <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
             <div className="flex flex-col items-end text-right link-text">
               <span>{walletName}</span>
@@ -249,7 +248,7 @@ export const Header: FunctionComponent = () => {
                 {walletBalance.toLocaleString(undefined, {
                   maximumFractionDigits: NATIVE_DECIMALS,
                 })}{' '}
-                {humanDenom}
+                {nativeTokenLabel(NATIVE_DENOM)}
               </span>
             </div>
 
@@ -279,13 +278,12 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
   visible,
 }) => {
   const { t } = useTranslation()
-  const { connected, name: walletName, nativeBalance, disconnect } = useWallet()
-
-  const walletBalance =
-    nativeBalance !== undefined
-      ? convertMicroDenomToDenomWithDecimals(nativeBalance, NATIVE_DECIMALS)
-      : 0
-  const humanDenom = nativeTokenLabel(NATIVE_DENOM)
+  const {
+    status,
+    connectedWallet: { name: walletName } = {},
+    disconnect,
+  } = useWalletManager()
+  const { walletBalance = 0 } = useWalletBalance()
 
   return (
     <>
@@ -315,7 +313,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
           }
         )}
       >
-        {connected ? (
+        {status === WalletConnectionStatus.Connected ? (
           <div className="flex flex-row gap-3 justify-between items-center py-2 px-4 w-full rounded-md border border-default">
             <div className="flex flex-col link-text">
               <span>{walletName}</span>
@@ -323,7 +321,7 @@ const MobileNav: FunctionComponent<MobileNavProps> = ({
                 {walletBalance.toLocaleString(undefined, {
                   maximumFractionDigits: NATIVE_DECIMALS,
                 })}{' '}
-                {humanDenom}
+                {nativeTokenLabel(NATIVE_DENOM)}
               </span>
             </div>
 

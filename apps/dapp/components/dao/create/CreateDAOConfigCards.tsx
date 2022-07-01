@@ -22,7 +22,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { CreateDAOConfigCard } from './CreateDAOConfigCard'
 import {
   DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
   DefaultNewDAO,
@@ -30,6 +29,8 @@ import {
   GovernanceTokenType,
   NewDAO,
 } from '@/atoms'
+
+import { CreateDAOConfigCard } from './CreateDAOConfigCard'
 
 export interface CreateDAOConfigCardSharedProps {
   newDAO: NewDAO

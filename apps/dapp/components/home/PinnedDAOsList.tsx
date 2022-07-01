@@ -5,8 +5,9 @@ import { FC } from 'react'
 import { useTranslation } from '@dao-dao/i18n'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
 
-import { PinnedDAOCard } from '../PinnedDAOCard'
 import { usePinnedDAOs } from '@/hooks'
+
+import { PinnedDAOCard } from '../PinnedDAOCard'
 
 export const PinnedDAOsList: FC = () => {
   const { t } = useTranslation()

@@ -42,36 +42,37 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   }, [theme])
 
   return (
-    <>
-      <Head>
-        <meta
-          content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-          name="viewport"
-        />
-      </Head>
+    <ThemeProvider
+      accentColor={accentColor}
+      setAccentColor={setAccentColor}
+      theme={theme}
+      themeChangeCount={themeChangeCount}
+      updateTheme={setTheme}
+    >
       <ErrorBoundary title={t('error.unexpectedError')}>
-        <ThemeProvider
-          accentColor={accentColor}
-          setAccentColor={setAccentColor}
-          theme={theme}
-          themeChangeCount={themeChangeCount}
-          updateTheme={setTheme}
-        >
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
 
-          <Notifications />
-        </ThemeProvider>
+        <Notifications />
       </ErrorBoundary>
-    </>
+    </ThemeProvider>
   )
 }
 
 const dApp: FC<AppProps> = (props) => (
-  <RecoilRoot>
-    <InnerApp {...props} />
-  </RecoilRoot>
+  <>
+    <Head>
+      <meta
+        content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport"
+      />
+    </Head>
+
+    <RecoilRoot>
+      <InnerApp {...props} />
+    </RecoilRoot>
+  </>
 )
 
 export default appWithTranslation(dApp)

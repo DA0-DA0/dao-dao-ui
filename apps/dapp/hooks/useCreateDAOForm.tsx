@@ -1,4 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -14,7 +15,7 @@ import toast from 'react-hot-toast'
 import { useRecoilState } from 'recoil'
 
 import { useTranslation } from '@dao-dao/i18n'
-import { CwAdminFactoryHooks, useWallet } from '@dao-dao/state'
+import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -41,7 +42,6 @@ import {
   validateCwProposalSingleInstantiateMsg,
 } from '@dao-dao/utils'
 
-import { usePinnedDAOs } from './usePinnedDAOs'
 import {
   DefaultNewDAO,
   GovernanceTokenType,
@@ -52,6 +52,8 @@ import {
   convertThresholdValueToPercentageThreshold,
   newDAOAtom,
 } from '@/atoms'
+
+import { usePinnedDAOs } from './usePinnedDAOs'
 
 export type ValidateDAOFormPage = (
   newDAO: NewDAO,
@@ -78,7 +80,8 @@ export enum CreateDAOSubmitLabel {
 export const useCreateDAOForm = (pageIndex: number) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { connected, address: walletAddress, refreshBalances } = useWallet()
+  const { connected, address: walletAddress } = useWallet()
+  const { refreshBalances } = useWalletBalance()
   const createDAOFormPages = useCreateDAOFormPages()
 
   const currentPage = useMemo(

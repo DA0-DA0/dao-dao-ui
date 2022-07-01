@@ -1,16 +1,13 @@
+import { useWalletManager } from '@noahsaso/cosmodal'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
-import { KeplrNotInstalledError, SITE_TITLE, usePlatform } from '@dao-dao/utils'
+import { WalletProvider } from '@dao-dao/common'
+import { mountedInBrowserAtom } from '@dao-dao/state'
+import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
-import { BetaWarningModal } from './BetaWarning'
-import { InstallKeplr } from './InstallKeplr'
-import { Nav } from './Nav'
-import { NoKeplrAccountModal } from './NoKeplrAccountModal'
-import { SearchModal } from './SearchModal'
 import {
   betaWarningAcceptedAtom,
   installWarningVisibleAtom,
@@ -18,7 +15,13 @@ import {
   searchVisibleAtom,
 } from '@/atoms'
 
-export const SidebarLayoutInner: FC = ({ children }) => {
+import { BetaWarningModal } from './BetaWarning'
+import { InstallKeplr } from './InstallKeplr'
+import { Nav } from './Nav'
+import { NoKeplrAccountModal } from './NoKeplrAccountModal'
+import { SearchModal } from './SearchModal'
+
+const SidebarLayoutInner: FC = ({ children }) => {
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
@@ -31,14 +34,16 @@ export const SidebarLayoutInner: FC = ({ children }) => {
   const [searchVisible, setSearchVisible] = useRecoilState(searchVisibleAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const { connectionError } = useWallet()
+  const { error } = useWalletManager()
   useEffect(() => {
-    setInstallWarningVisible(connectionError instanceof KeplrNotInstalledError)
-    setNoKeplrAccount(
-      connectionError instanceof Error &&
-        connectionError.message === "key doesn't exist"
+    setInstallWarningVisible(
+      error instanceof Error &&
+        error.message === 'Failed to retrieve wallet client.'
     )
-  }, [connectionError, setInstallWarningVisible, setNoKeplrAccount])
+    setNoKeplrAccount(
+      error instanceof Error && error.message === "key doesn't exist"
+    )
+  }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
   //! SEARCH MODAL
   // Hide modal when we nav away.

@@ -6,12 +6,13 @@ import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button, SubmitButton } from '@dao-dao/ui'
 
-import { CreateDAONav } from './CreateDAONav'
 import {
   CreateDAOSubmitLabel,
   DAOFormPage,
   useCreateDAOFormPages,
 } from '@/hooks'
+
+import { CreateDAONav } from './CreateDAONav'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
   Omit<T, K>

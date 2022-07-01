@@ -1,7 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import { CwAdminFactoryClient as ExecuteClient } from '../../../clients/cw-admin-factory'
-import { signingCosmWasmClientSelector } from '../chain'
+import { signingCosmWasmClientAtom } from '../../atoms'
 
 export type ExecuteClientParams = {
   contractAddress: string
@@ -16,7 +16,7 @@ export const executeClient = selectorFamily<
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientSelector)
+      const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
       return new ExecuteClient(client, sender, contractAddress)

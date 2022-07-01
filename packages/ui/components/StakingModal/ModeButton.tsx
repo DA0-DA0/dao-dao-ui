@@ -12,9 +12,9 @@ export const ModeButton: FC<ModeButtonProps> = ({
   children,
 }) => (
   <button
-    className={`py-2 px-4 rounded  transition ${
+    className={`rounded py-2 px-4  transition ${
       active
-        ? 'bg-btn-secondary border border-inactive'
+        ? 'border border-inactive bg-btn-secondary'
         : 'hover:bg-btn-secondary'
     } body-text`}
     onClick={onClick}

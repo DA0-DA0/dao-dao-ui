@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -7,7 +8,6 @@ import {
   proposalExecutionTXHashSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
-  useWallet,
 } from '@dao-dao/state'
 
 import { useProposalModule } from '.'

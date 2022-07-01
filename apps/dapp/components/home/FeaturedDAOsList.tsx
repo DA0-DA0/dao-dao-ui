@@ -5,9 +5,10 @@ import { FC } from 'react'
 import { useTranslation } from '@dao-dao/i18n'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
 
-import { FeaturedCard } from '../FeaturedDaos'
 import { usePinnedDAOs } from '@/hooks'
 import { featuredDaos } from '@/util'
+
+import { FeaturedCard } from '../FeaturedDaos'
 
 export const FeaturedDAOsList: FC = () => {
   const { t } = useTranslation()
