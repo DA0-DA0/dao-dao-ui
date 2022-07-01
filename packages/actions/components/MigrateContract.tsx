@@ -1,4 +1,3 @@
-import { ExclamationIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
@@ -18,6 +17,7 @@ import {
 } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
+import { IsAdminWarning } from './IsAdminWarning'
 
 export interface MigrateOptions {
   onContractChange: (s: string) => void
@@ -96,25 +96,4 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-const IsAdminWarning = ({
-  admin,
-  maybeAdmin,
-}: {
-  admin: string | undefined
-  maybeAdmin: string
-}) => {
-  const { t } = useTranslation()
-
-  if (admin !== undefined && admin !== maybeAdmin) {
-    return (
-      <div className="flex gap-3 items-center py-2 px-4 rounded-lg border border-error">
-        <ExclamationIcon className="w-6 h-6 text-error" />
-        <p>{t('info.notAdmin')}</p>
-      </div>
-    )
-  }
-
-  return null
 }

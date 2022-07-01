@@ -56,7 +56,7 @@
     "react-chartjs-2": "^4.1.0",
     "react-codemirror2": "^7.2.1",
     "react-dom": "18.1.0",
-    "react-hook-form": "^7.20.4",
+    "react-hook-form": "7.20.4",
     "react-hot-toast": "^2.1.1",
     "react-json-editor-ajrm": "^2.5.13",
     "recoil": "^0.7.2",
