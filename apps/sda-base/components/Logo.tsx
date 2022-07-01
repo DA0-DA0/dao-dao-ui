@@ -1,7 +1,8 @@
 import { useTranslation } from '@dao-dao/i18n'
 
-import { useDAOInfoContext } from '.'
 import { DEFAULT_IMAGE_URL } from '@/util'
+
+import { useDAOInfoContext } from '.'
 
 export const Logo = ({
   size = 28,

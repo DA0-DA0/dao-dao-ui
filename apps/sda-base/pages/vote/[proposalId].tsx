@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
@@ -12,7 +13,6 @@ import {
   useGovernanceTokenInfo,
   useProposalInfo,
   useProposalModule,
-  useWallet,
 } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -38,7 +38,7 @@ import {
   useDAOInfoContext,
 } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
-import { DAO_ADDRESS, OLD_PROPOSALS_ADDRESS } from '@/util'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerProposal: FC = () => {
   const { t } = useTranslation()
@@ -50,7 +50,6 @@ const InnerProposal: FC = () => {
   const [showStaking, setShowStaking] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const oldQuery = router.query.old
   const proposalIdQuery = router.query.proposalId
   const proposalId =
     typeof proposalIdQuery === 'string' && !isNaN(Number(proposalIdQuery))
@@ -58,12 +57,8 @@ const InnerProposal: FC = () => {
       : undefined
 
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
-  const { proposalModuleAddress, proposalModuleConfig } = useProposalModule(
-    DAO_ADDRESS,
-    {
-      oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
-    }
-  )
+  const { proposalModuleAddress, proposalModuleConfig } =
+    useProposalModule(DAO_ADDRESS)
 
   const {
     proposalResponse,
@@ -71,9 +66,7 @@ const InnerProposal: FC = () => {
     votingPowerAtHeight,
     txHash,
     refreshProposalAndAll,
-  } = useProposalInfo(DAO_ADDRESS, proposalId, {
-    oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
-  })
+  } = useProposalInfo(DAO_ADDRESS, proposalId)
 
   const castVote = CwProposalSingleHooks.useCastVote({
     contractAddress: proposalModuleAddress ?? '',

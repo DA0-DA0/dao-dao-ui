@@ -19,8 +19,7 @@ import {
 import { useDAOInfoContext } from '../DAOInfoContext'
 import { Loader } from '../Loader'
 import { VoteHero } from './Hero'
-import { useApr } from '@/hooks'
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL, VOTE_EXTERNAL_URL } from '@/util'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 export const VoteHeroContentLoader = () => (
   <>
@@ -35,7 +34,6 @@ export const VoteHeroContent = () => {
     CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
-  const apr = useApr()
   const { stakingContractConfig, totalStakedValue } = useStakingInfo(
     DAO_ADDRESS,
     {
@@ -85,17 +83,10 @@ export const VoteHeroContent = () => {
               ? (totalStakedValue / Number(governanceTokenInfo.total_supply)) *
                 100
               : undefined,
-          aprReward: apr !== undefined ? apr * 100 : undefined,
           unstakingDuration: stakingContractConfig
             ? stakingContractConfig.unstaking_duration
               ? humanReadableDuration(stakingContractConfig.unstaking_duration)
               : 'None'
-            : undefined,
-          link: VOTE_EXTERNAL_URL
-            ? {
-                title: 'junoswap.com',
-                url: VOTE_EXTERNAL_URL,
-              }
             : undefined,
         }}
         votingModuleType={votingModuleType}

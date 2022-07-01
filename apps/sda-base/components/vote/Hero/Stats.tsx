@@ -1,11 +1,11 @@
-import { ArrowUpIcon, LinkIcon } from '@heroicons/react/outline'
+import { ArrowUpIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
-import { Apr, Dollar, Staked, Wallet } from '@dao-dao/icons'
+import { Dollar, Staked, Wallet } from '@dao-dao/icons'
 import { VotingModuleType, formatPercentOf100 } from '@dao-dao/utils'
 
-import { HeroStat, HeroStatLink } from './Stat'
+import { HeroStat } from './Stat'
 
 const formatZeroes = (num: number) => new Intl.NumberFormat().format(num)
 
@@ -16,12 +16,7 @@ export interface HeroStatsProps {
     denom?: string
     totalSupply?: number
     stakedPercent?: number
-    aprReward?: number
     unstakingDuration?: string
-    link?: {
-      url: string
-      title: string
-    }
   }
 }
 
@@ -65,20 +60,6 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
             value={data ? data.unstakingDuration! : ''}
           />
         )}
-      {(!data || data.aprReward !== undefined) && (
-        <HeroStat
-          Icon={Apr}
-          title={t('title.apr') + ':'}
-          value={data ? data.aprReward!.toLocaleString() + '%' : ''}
-        />
-      )}
-      {(!data || data.link !== undefined) && (
-        <HeroStatLink
-          Icon={LinkIcon}
-          title={data ? data.link!.title : ''}
-          value={data ? data.link!.url : '#'}
-        />
-      )}
     </div>
   )
 }

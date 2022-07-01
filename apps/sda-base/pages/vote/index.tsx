@@ -1,6 +1,3 @@
-import fs from 'fs'
-import path from 'path'
-
 import { PlusIcon } from '@heroicons/react/outline'
 import { GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -8,10 +5,8 @@ import { FunctionComponent } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
-import { CI } from '@dao-dao/utils'
 
 import {
-  DescriptionAndAirdropAllocation,
   Loader,
   PageWrapper,
   PageWrapperProps,
@@ -25,11 +20,7 @@ import {
 } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 
-interface InnerVoteProps {
-  missionMarkdown: string
-}
-
-const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
+const InnerVote: FunctionComponent = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -64,54 +55,16 @@ const InnerVote: FunctionComponent<InnerVoteProps> = ({ missionMarkdown }) => {
       <SuspenseLoader fallback={<Loader />}>
         <ProposalsContent />
       </SuspenseLoader>
-
-      <DescriptionAndAirdropAllocation missionMarkdown={missionMarkdown} />
     </div>
   )
 }
 
-type VotePageProps = PageWrapperProps & {
-  innerProps: InnerVoteProps
-}
-
-const VotePage: NextPage<VotePageProps> = ({
-  children: _,
-  innerProps,
-  ...props
-}) => (
+const VotePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
   <PageWrapper {...props}>
-    <InnerVote {...innerProps} />
+    <InnerVote />
   </PageWrapper>
 )
 
 export default VotePage
 
-export const getStaticProps: GetStaticProps<VotePageProps> = async (
-  ...props
-) => {
-  // Don't query chain if running in CI.
-  if (CI) {
-    return { notFound: true }
-  }
-
-  const [staticProps, missionMarkdown] = await Promise.all([
-    // Get normal props for DAO info.
-    makeGetStaticProps()(...props),
-    // Read contents of markdown file.
-    fs.promises.readFile(path.join(process.cwd(), 'mission.md'), {
-      encoding: 'utf8',
-    }),
-  ])
-
-  return 'props' in staticProps
-    ? {
-        ...staticProps,
-        props: {
-          ...staticProps.props,
-          innerProps: {
-            missionMarkdown,
-          },
-        },
-      }
-    : staticProps
-}
+export const getStaticProps: GetStaticProps = makeGetStaticProps()

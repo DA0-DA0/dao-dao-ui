@@ -1,15 +1,13 @@
+import { useWalletManager } from '@noahsaso/cosmodal'
 import { FunctionComponent } from 'react'
 
 import { useTranslation } from '@dao-dao/i18n'
-import {
-  useGovernanceTokenInfo,
-  useStakingInfo,
-  useWallet,
-} from '@dao-dao/state'
+import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
-import { useDAOInfoContext } from '../DAOInfoContext'
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+
+import { useDAOInfoContext } from '../DAOInfoContext'
 
 interface ClaimsListProps {
   showClaim: () => void
@@ -19,7 +17,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   showClaim,
 }) => {
   const { t } = useTranslation()
-  const { connected } = useWallet()
+  const { connected } = useWalletManager()
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const {
     stakingContractConfig,

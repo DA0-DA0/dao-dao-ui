@@ -11,9 +11,10 @@ import {
 } from '@dao-dao/state'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { Loader } from '../Loader'
 import { useApr } from '@/hooks'
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL, TOKEN_SWAP_ADDRESS } from '@/util'
+
+import { Loader } from '../Loader'
 
 export const StakeHeaderLoader: FunctionComponent = () => {
   const { t } = useTranslation()
