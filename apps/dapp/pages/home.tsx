@@ -13,7 +13,7 @@ const HomePage: NextPage = () => (
   <>
     <SmallScreenNav />
 
-    <div className="gap-y-6 px-4 md:p-6">
+    <div className="px-4 space-y-6 md:p-6">
       <PinnedProposalsList />
       <PinnedDAOsList />
       <FeaturedDAOsList />
