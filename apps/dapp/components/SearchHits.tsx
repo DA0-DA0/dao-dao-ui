@@ -48,10 +48,25 @@ const HitView = ({
   )
 }
 
+type HitSectionData = {
+  // end index of each section, exclusive
+  sections: number[]
+  sectionNames: string[]
+}
+
 // Need to use `any` here as instantsearch does't export the required
 // types.
-export const SearchHits: FC<any> = ({ hits, onChoice }) => {
+export const SearchHits = ({
+  sectionData,
+  hits,
+  onChoice,
+}: {
+  sectionData: HitSectionData
+  hits: Hit[]
+  onChoice: (hit: Hit) => void
+}) => {
   const router = useRouter()
+  const { sections, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
 
   const handleKeyPress = useCallback(
@@ -86,14 +101,23 @@ export const SearchHits: FC<any> = ({ hits, onChoice }) => {
   return (
     <>
       <div className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4">
-        <div className="py-1 font-medium text-gray-400">DAOs</div>
-        {hits.map((hit: DaoHit, index: number) => (
-          <HitView
-            key={hit.id}
-            hit={hit}
-            onClick={() => onChoice(hit)}
-            selected={index === selection}
-          />
+        {sections.map((sectionIndex, i) => (
+          <>
+            <div className="py-1 font-medium text-gray-400">
+              {sectionNames[i]}
+            </div>
+            {(i == 0
+              ? hits.slice(0, sectionIndex)
+              : hits.slice(sections[i - 1], sectionIndex)
+            ).map((hit: DaoHit, index: number) => (
+              <HitView
+                key={hit.id}
+                hit={hit}
+                onClick={() => onChoice(hit)}
+                selected={(i == 0 ? index : sections[i - 1] + index) == selection}
+              />
+            ))}
+          </>
         ))}
       </div>
     </>

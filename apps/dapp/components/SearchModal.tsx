@@ -101,6 +101,7 @@ const searchClient = new MeiliSearch({
 })
 const index = searchClient.index(SEARCH_INDEX)
 
+// See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const router = useRouter()
   const { t } = useTranslation()
@@ -114,15 +115,36 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     ;(async () => {
       const res = await index.search(currentRefinement)
       const daoHits = res.hits
-        .slice(0, 5)
+        .slice(0, 7)
         .map((hit) => ({ ...hit, hit_type: 'dao' }))
+
+      // Display default options
+      if (currentRefinement == '') {
+        if (searchState.type == 'home') {
+          setHits([...daoHits, ...DAPP_ACTIONS])  
+        } else if (searchState.type == 'dao_chosen') {
+          setHits([...DAO_ACTIONS])
+        } else if (searchState.type == 'navigate_dao') {
+          setHits([...daoHits])
+        }
+        return
+      }
+      // Else search
       const fuse = new Fuse(
         [...DAPP_ACTIONS, ...DAO_ACTIONS, ...daoHits],
         fuseOptions
       )
       setHits(fuse.search(currentRefinement))
     })()
-  }, [currentRefinement])
+  }, [currentRefinement, searchState])
+
+  // Sort sections by order of first appearance
+
+  // Section index array based on contiguous element
+  
+  // Map section names
+
+  // Sorted hits
 
   return (
     <Modal
@@ -156,6 +178,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
         {/* Because the search items take different actions in different contexts, they
             have to be handled here */}
         <SearchHits
+          sectionData={{ sections: [2, hits.length], sectionNames: ['DAO', 'Lmao'] }}
           hits={hits}
           onChoice={(hit: Hit) => {
             // Global app actions do not depend on command context
