@@ -2,9 +2,9 @@ import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { connectHits } from 'react-instantsearch-dom'
 
 import { Logo } from '@dao-dao/ui'
+import { ActionHit, DaoActionHit } from './SearchModal'
 
 type Hit = DaoHit | ActionHit | DaoActionHit
 
@@ -18,42 +18,18 @@ interface DaoHit {
   hit_type: 'dao'
 }
 
-interface ActionHit {
-  id: string
-  name: string
-  hit_type: 'dapp_action'
-}
-
-interface DaoActionHit {
-  id: string
-  name: string
-  hit_type: 'dao_action'
-}
-
-const DAPP_ACTIONS: ActionHit[] = [
-  { id: 'create_dao', name: 'Create a DAO', hit_type: 'dapp_action' },
-  { id: 'navigate_dao', name: 'Go to DAO', hit_type: 'dapp_action' },
-]
-
-const DAO_ACTIONS: DaoActionHit[] = [
-  { id: 'new_proposal', name: 'Start a new proposal', hit_type: 'dao_action' },
-  { id: 'add_token', name: 'Add token', hit_type: 'dao_action' },
-  { id: 'copy_dao_address', name: 'Copy DAO address', hit_type: 'dao_action' },
-  { id: 'goto_dao', name: 'Go to DAO page', hit_type: 'dao_action' },
-]
-
-const HitView = ({ hit, selected }: { hit: DaoHit; selected: boolean }) => {
+const HitView = ({ hit, selected }: { hit: Hit; selected: boolean }) => {
   const { t } = useTranslation()
   const router = useRouter()
   return (
     <div
       className={clsx(
-        'flex gap-2 py-2 px-1 font-medium text-tertiary hover:text-primary align-middle hover:bg-primary rounded-md cursor-pointer',
+        'flex gap-2 py-2 px-1 font-medium text-tertiary hover:text-primary items-center align-middle hover:bg-primary rounded-md cursor-pointer',
         selected && 'text-primary bg-primary'
       )}
       onClick={() => router.push(`/dao/${hit.id}`)}
     >
-      {hit.image_url ? (
+      {hit.hit_type == 'dao' ? hit.image_url ? (
         <div
           aria-label={t('daosLogo')}
           className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
@@ -64,8 +40,12 @@ const HitView = ({ hit, selected }: { hit: DaoHit; selected: boolean }) => {
         ></div>
       ) : (
         <Logo alt={hit.name} height={24} width={24} />
-      )}
+      ): <div className="w-[24px] h-[24px] flex justify-center items-center text-lg">
+          {hit.icon}
+        </div>}
+        <div>
       {hit.name}
+      </div>
     </div>
   )
 }
@@ -117,4 +97,4 @@ const HitsInternal: FC<any> = ({ hits, onEnter }) => {
   )
 }
 
-export const SearchHits = connectHits(HitsInternal)
+export const SearchHits = HitsInternal
