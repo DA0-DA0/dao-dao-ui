@@ -1,5 +1,5 @@
 {
-  "name": "@dao-dao/sda",
+  "name": "@dao-dao/raw-sda",
   "version": "1.0.0",
   "scripts": {
     "analyze": "cross-env ANALYZE=true next build",
