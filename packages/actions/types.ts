@@ -14,6 +14,7 @@ export enum ActionKey {
   UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',
   Execute = 'execute',
+  Migrate = 'migrate',
   Custom = 'custom',
 }
 

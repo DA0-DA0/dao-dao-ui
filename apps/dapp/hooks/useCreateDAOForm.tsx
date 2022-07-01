@@ -42,6 +42,7 @@ import {
   validateCwProposalSingleInstantiateMsg,
 } from '@dao-dao/utils'
 
+import { usePinnedDAOs } from './usePinnedDAOs'
 import {
   DefaultNewDAO,
   GovernanceTokenType,
@@ -52,8 +53,6 @@ import {
   convertThresholdValueToPercentageThreshold,
   newDAOAtom,
 } from '@/atoms'
-
-import { usePinnedDAOs } from './usePinnedDAOs'
 
 export type ValidateDAOFormPage = (
   newDAO: NewDAO,

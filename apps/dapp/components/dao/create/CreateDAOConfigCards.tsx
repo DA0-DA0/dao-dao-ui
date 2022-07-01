@@ -490,7 +490,7 @@ export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
       accentColor="#1cae121a"
       description={t('form.allowRevotingDescription')}
       error={errors?.advancedVotingConfig?.allowRevoting}
-      image={<Emoji label="recycle" symbol="♻️" />}
+      image={<Emoji label={t('emoji.recycle')} symbol="♻️" />}
       title={t('form.allowRevotingTitle')}
     >
       {readOnly ? (

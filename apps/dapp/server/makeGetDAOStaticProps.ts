@@ -17,6 +17,7 @@ import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  LEGACY_URL_PREFIX,
   VotingModuleType,
   cosmWasmClientRouter,
   parseVotingModuleContractName,
@@ -174,6 +175,22 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         revalidate: 1,
       }
     } catch (error) {
+      // Redirect legacy DAOs (legacy multisigs redirected in
+      // next.config.js redirects list).
+      if (
+        error instanceof Error &&
+        error.message.includes(
+          'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `config`'
+        )
+      ) {
+        return {
+          redirect: {
+            destination: LEGACY_URL_PREFIX + `/dao/${address}`,
+            permanent: false,
+          },
+        }
+      }
+
       console.error(error)
 
       if (
