@@ -8,10 +8,12 @@ import { PageWrapper, PageWrapperProps } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 
 const InnerHome = () => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { t } = useTranslation()
 
   return (
     <div className="space-y-8">
+      {/* eslint-disable-next-line i18next/no-literal-string */}
       <p className="text-xl">Welcome to the DAO!</p>
 
       <ConnectWalletButton className="!w-auto" />
