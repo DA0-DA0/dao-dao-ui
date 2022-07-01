@@ -4,7 +4,7 @@ import { useRecoilValueLoadable } from 'recoil'
 import { contractAdminSelector } from '@dao-dao/state'
 import { VotingModuleType } from '@dao-dao/utils'
 
-import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components'
+import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components'
 import {
   Action,
   ActionComponent,
@@ -14,44 +14,40 @@ import {
   UseTransformToCosmos,
 } from '../types'
 
-interface MigrateData {
+interface UpdateAdminData {
   contract: string
-  codeId: number
-  msg: string
+  newAdmin: string
 }
 
-const useDefaults: UseDefaults<MigrateData> = () => ({
+const useDefaults: UseDefaults<UpdateAdminData> = () => ({
   contract: '',
-  codeId: 0,
-  msg: '{}',
+  newAdmin: '',
 })
 
-const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () =>
+const useTransformToCosmos: UseTransformToCosmos<UpdateAdminData> = () =>
   useCallback(
-    ({ contract: contract_addr, codeId: new_code_id, msg }: MigrateData) => ({
+    ({ contract, newAdmin }: UpdateAdminData) => ({
       wasm: {
-        migrate: {
-          contract_addr,
-          new_code_id,
-          msg: btoa(msg),
+        update_admin: {
+          contract_addr: contract,
+          admin: newAdmin,
         },
       },
     }),
     []
   )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
     () =>
-      'wasm' in msg && 'migrate' in msg.wasm
+      'wasm' in msg && 'update_admin' in msg.wasm
         ? {
             match: true,
             data: {
-              contract: msg.wasm.migrate.contract_addr,
-              codeId: msg.wasm.migrate.new_code_id,
-              msg: JSON.stringify(msg.wasm.migrate.msg),
+              contract: msg.wasm.update_admin.contract_addr,
+              newAdmin: msg.wasm.update_admin.admin,
             },
           }
         : { match: false },
@@ -64,7 +60,7 @@ const Component: ActionComponent = (props) => {
   const admin = useRecoilValueLoadable(contractAdminSelector(contract))
 
   return (
-    <StatelessMigrateContractComponent
+    <StatelessUpdateAdminComponent
       {...props}
       options={{
         contractAdmin:
@@ -75,10 +71,10 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const migrateAction: Action<MigrateData> = {
-  key: ActionKey.Migrate,
-  label: '🐋 Migrate Smart Contract',
-  description: 'Migrate a CosmWasm contract to a new code ID.',
+export const updateAdminAction: Action<UpdateAdminData> = {
+  key: ActionKey.UpdateAdmin,
+  label: '🍄 Update Contract Admin',
+  description: 'Update the CosmWasm level admin of a smart contract.',
   Component,
   useDefaults,
   useTransformToCosmos,
