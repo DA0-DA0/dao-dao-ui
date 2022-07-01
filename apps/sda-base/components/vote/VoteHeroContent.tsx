@@ -16,10 +16,11 @@ import {
   useProcessThresholdData,
 } from '@dao-dao/utils'
 
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+
 import { useDAOInfoContext } from '../DAOInfoContext'
 import { Loader } from '../Loader'
 import { VoteHero } from './Hero'
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 export const VoteHeroContentLoader = () => (
   <>
