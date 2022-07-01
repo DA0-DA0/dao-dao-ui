@@ -43,3 +43,105 @@ export const tokenUSDPriceSelector = selectorFamily<
       return price
     },
 })
+
+export type TokenInfo = {
+  id: string
+  chain_id: string
+  token_address: string
+  symbol: string
+  name: string
+  decimals: number
+  logoURI: string
+  tags: string[]
+  denom: string
+  native: boolean
+}
+
+export type TokenInfoWithReward = TokenInfo & {
+  rewards_address: string
+}
+
+export type PoolEntityType = {
+  pool_id: string
+  pool_assets: [TokenInfo, TokenInfo]
+  swap_address: string
+  staking_address: string
+  rewards_tokens: Array<TokenInfoWithReward>
+}
+
+type PoolsListQueryResponse = {
+  base_token: TokenInfo
+  pools: Array<PoolEntityType>
+  poolsById: Record<string, PoolEntityType>
+  name: string
+  logoURI: string
+  keywords: Array<string>
+  tags: Record<string, { name: string; description: string }>
+}
+
+export const tokenUSDCPriceSelector = selectorFamily<
+  number | undefined,
+  { denom: string; }
+>({
+  key: 'tokenUSDCPriceSelector',
+  get:
+  ({ denom }) =>
+    async ({ get }) => {
+      return async () => {
+
+      const tokens = await ((await fetch('/pools_list.json')).json() as Promise<PoolsListQueryResponse>)
+      // const tokens = JSON.parse(tokenList)
+        const USDCSwap = tokens.pools.find(({
+            pool_id
+        }) => pool_id === "JUNO-USDC")
+
+        const denomSwap = tokens.pools.find(
+            ({
+                pool_assets
+            }) => pool_assets.find(
+                ({
+                    denom: pool_denom,
+                    token_address
+                }) => pool_denom === denom || token_address === denom) !== undefined)
+
+        // No price information avaliable.
+        if (!denomSwap) {
+            return 0
+        }
+
+        const client = get(cosmWasmClientSelector)
+
+        const junoUSDC = (
+            USDCSwap ? await client.queryContractSmart(
+                USDCSwap.swap_address, {
+                    token1_for_token2_price: {
+                        token1_amount: '1000000'
+                    }
+                }
+            ) : {token2_amount: 0}
+        ).token2_amount
+
+        if (denom === "ujuno") {
+            return Number(junoUSDC) * Math.pow(10, -12)
+        }
+
+        const junoToken = (
+            await client.queryContractSmart(denomSwap.swap_address, {
+                token2_for_token1_price: {
+                    token2_amount: '1000000'
+                },
+            })
+        ).token1_amount
+
+        const denomSwapAssetInfo = denomSwap.pool_assets.find(({
+            denom: pool_denom,
+            token_address
+        }) => denom === pool_denom || token_address === denom)
+        const denomDecimals = denomSwapAssetInfo?.decimals || 6
+
+        const price = Number(junoToken) * Number(junoUSDC) * Math.pow(10, -(6 + denomDecimals * 2))
+
+        return price
+      }
+    }
+})

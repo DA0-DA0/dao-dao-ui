@@ -78,6 +78,8 @@ if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
         source: '/api/:path*',
         destination: 'http://localhost:26657/:path*', // Proxy to Backend
       },
+      {source: '/pools_list.json',
+       destination: 'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/pools_list.json'}
     ]
   }
 }
