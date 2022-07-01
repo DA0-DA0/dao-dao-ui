@@ -74,6 +74,7 @@ export const TreasuryBalances: FC = () => {
     <StatelessTreasuryBalances
       cw20Tokens={cw20Tokens}
       nativeTokens={nativeTokens}
+      fiatTotal={{value: 435239492.78, denom: 'USD'}}
     />
   )
 }

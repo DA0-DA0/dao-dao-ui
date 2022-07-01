@@ -22,13 +22,19 @@ export interface TreasuryBalancesProps {
     decimals: number
     imageUrl?: string
   }[]
+  fiatTotal: {
+    value: number
+    denom: string
+  }
 }
 
 export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
   nativeTokens,
   cw20Tokens,
+  fiatTotal,
 }) => (
   <ul className="flex flex-col gap-2 mt-6 list-none">
+    <BalanceListItem><span className='text-lg font-bold text-slate-50'>{`${new Intl.NumberFormat('en-US', { style: 'currency', currency: fiatTotal.denom }).format(fiatTotal.value)} ${fiatTotal.denom}`}</span></BalanceListItem>
     {nativeTokens.map(({ denom, amount, decimals }) => {
       const symbol = nativeTokenLabel(denom)
       const icon = nativeTokenLogoURI(denom)
