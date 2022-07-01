@@ -109,19 +109,19 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     type: 'home',
   })
   const [currentRefinement, refine] = useState<string>('')
+  const [hits, setHits] = useState<Hit[]>([])
 
-  const [hits, setHits] = useState<any[]>([])
   useEffect(() => {
     ;(async () => {
       const res = await index.search(currentRefinement)
       const daoHits = res.hits
         .slice(0, 7)
-        .map((hit) => ({ ...hit, hit_type: 'dao' }))
+        .map((hit) => ({ ...hit, hit_type: 'dao' })) as DaoHit[]
 
       // Display default options
       if (currentRefinement == '') {
         if (searchState.type == 'home') {
-          setHits([...daoHits, ...DAPP_ACTIONS])  
+          setHits([...daoHits, ...DAPP_ACTIONS])
         } else if (searchState.type == 'dao_chosen') {
           setHits([...DAO_ACTIONS])
         } else if (searchState.type == 'navigate_dao') {
@@ -138,13 +138,38 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     })()
   }, [currentRefinement, searchState])
 
-  // Sort sections by order of first appearance
-
-  // Section index array based on contiguous element
-  
+  // Sort sections by order of first appearance of hits
+  // ordered list of hit types
+  const hitTypes = hits.reduce(
+    (arr, hit) => (arr.includes(hit.hit_type) ? arr : [...arr, hit.hit_type]),
+    [] as string[]
+  )
+  // Sorted hits based on hitTypes
+  // Note that `sort` has a STABLE SORT invariant, so the order of elements are preserved
+  const sortedHits = hits.sort(
+    (a, b) => hitTypes.indexOf(a.hit_type) - hitTypes.indexOf(b.hit_type)
+  )
+  // Section index array based on contiguous elements, end exclusive
+  const sections = [
+    ...sortedHits.reduce((arr, hit, i) => {
+      return i != 0 && hit.hit_type != sortedHits[i - 1].hit_type
+        ? [...arr, i]
+        : arr
+    }, [] as number[]),
+    sortedHits.length,
+  ]
   // Map section names
+  const sectionNames = hitTypes.map((t) =>
+    t == 'dao'
+      ? 'DAOs'
+      : t == 'dapp_action'
+      ? 'App Actions'
+      : t == 'dao_action'
+      ? 'DAO Actions'
+      : ''
+  )
 
-  // Sorted hits
+  console.log(sortedHits, hitTypes, sections, sectionNames)
 
   return (
     <Modal
@@ -178,7 +203,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
         {/* Because the search items take different actions in different contexts, they
             have to be handled here */}
         <SearchHits
-          sectionData={{ sections: [2, hits.length], sectionNames: ['DAO', 'Lmao'] }}
+          sectionData={{ sections, sectionNames }}
           hits={hits}
           onChoice={(hit: Hit) => {
             // Global app actions do not depend on command context
