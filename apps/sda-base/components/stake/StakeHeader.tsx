@@ -11,10 +11,8 @@ import {
 } from '@dao-dao/state'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { useApr } from '@/hooks'
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL, TOKEN_SWAP_ADDRESS } from '@/util'
-
 import { Loader } from '../Loader'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 export const StakeHeaderLoader: FunctionComponent = () => {
   const { t } = useTranslation()
@@ -29,8 +27,6 @@ export const StakeHeaderLoader: FunctionComponent = () => {
           <Loader size="100%" />
         </div>
       </div>
-
-      <div className="mt-12 w-full h-[4.5rem] border-t border-inactive"></div>
 
       <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
@@ -50,16 +46,6 @@ export const StakeHeaderLoader: FunctionComponent = () => {
 
           <div className="h-6 lg:h-7"></div>
         </div>
-
-        <div className="w-[1px] h-6 bg-dark opacity-10"></div>
-
-        <div className="flex flex-col gap-2 items-center p-2">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('title.aprReward')}
-          </p>
-
-          <div className="h-6 lg:h-7"></div>
-        </div>
       </div>
     </>
   )
@@ -70,15 +56,10 @@ export const StakeHeader: FunctionComponent = () => {
   const daoConfig = useRecoilValue(
     CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
-  const {
-    governanceTokenInfo,
-    treasuryBalance: treasuryBalance,
-    price: governanceTokenPrice,
-  } = useGovernanceTokenInfo(DAO_ADDRESS, {
-    fetchTreasuryBalance: true,
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
-  })
-  const apr = useApr()
+  const { governanceTokenInfo, treasuryBalance: treasuryBalance } =
+    useGovernanceTokenInfo(DAO_ADDRESS, {
+      fetchTreasuryBalance: true,
+    })
   const { totalStakedValue } = useStakingInfo(DAO_ADDRESS, {
     fetchTotalStakedValue: true,
   })
@@ -87,8 +68,7 @@ export const StakeHeader: FunctionComponent = () => {
     !daoConfig ||
     !governanceTokenInfo ||
     totalStakedValue === undefined ||
-    treasuryBalance === undefined ||
-    apr === undefined
+    treasuryBalance === undefined
   ) {
     return <StakeHeaderLoader />
   }
@@ -107,19 +87,6 @@ export const StakeHeader: FunctionComponent = () => {
           />
         </div>
       </div>
-
-      <p className="p-5 mt-12 w-full font-studiofeixen text-2xl  text-center border-t border-inactive">
-        1 {governanceTokenInfo.symbol} =
-        {governanceTokenPrice
-          ? ' $' +
-            governanceTokenPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }) +
-            ' USDC'
-          : // eslint-disable-next-line i18next/no-literal-string
-            ' $ ??'}
-      </p>
 
       <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
@@ -153,23 +120,6 @@ export const StakeHeader: FunctionComponent = () => {
               maximumFractionDigits: 0,
             })}{' '}
             {governanceTokenInfo.name}
-          </p>
-        </div>
-
-        <div className="w-[1px] h-6 bg-dark opacity-10"></div>
-
-        <div className="flex flex-col gap-2 items-center p-2">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
-            {t('title.aprReward')}
-          </p>
-
-          <p className="text-base lg:text-xl header-text">
-            +
-            {(apr * 100).toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-              // eslint-disable-next-line i18next/no-literal-string
-            })}
-            % APR
           </p>
         </div>
       </div>
