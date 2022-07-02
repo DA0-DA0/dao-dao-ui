@@ -25,11 +25,15 @@ const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
     automatically_add_cw20s: true,
     automatically_add_cw721s: true,
   }
+
   // We should really never hit the ?? case. The configSelector only
   // returns undefined if the client can not be loaded. If the client
   // can not be loaded, everything else will go terribly wrong before
   // this breaks.
-  return config
+  //
+  // Need to deep copy as, for reasons beyond me, the object returned
+  // from the selector is immutable which causes all sorts of trouble.
+  return JSON.parse(JSON.stringify(config))
 }
 
 const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = (
