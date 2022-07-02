@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Logo } from '@dao-dao/ui'
@@ -114,7 +114,9 @@ export const SearchHits = ({
                 key={hit.id}
                 hit={hit}
                 onClick={() => onChoice(hit)}
-                selected={(i == 0 ? index : sections[i - 1] + index) == selection}
+                selected={
+                  (i == 0 ? index : sections[i - 1] + index) == selection
+                }
               />
             ))}
           </>

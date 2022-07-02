@@ -131,7 +131,9 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
       }
       // Else search
       const fuse = new Fuse(
-        [...DAPP_ACTIONS, ...DAO_ACTIONS, ...daoHits],
+        searchState.type == 'dao_chosen'
+          ? [...DAPP_ACTIONS, ...daoHits, ...DAO_ACTIONS]
+          : [...DAPP_ACTIONS, ...daoHits],
         fuseOptions
       )
       setHits(fuse.search(currentRefinement))
@@ -169,8 +171,6 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
       : ''
   )
 
-  console.log(sortedHits, hitTypes, sections, sectionNames)
-
   return (
     <Modal
       containerClassName="p-0 border w-full max-w-[550px] h-[450px] max-h-[90vh]"
@@ -192,8 +192,14 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
         <div className="flex items-center px-3 text-tertiary border-b border-default">
           <input
             autoFocus
-            className="py-4 px-2 w-full bg-transparent focus:outline-none primary-text focus:ring-none"
+            className="py-4 px-2 w-full bg-transparent focus:outline-none primary-text focus:ring-none" // Keep focus when clicking on hit
+            onBlur={(ev) => ev.target.focus()}
             onChange={(event) => refine(event.currentTarget.value)}
+            onKeyDown={(ev) =>
+              currentRefinement == '' && ev.key == 'Backspace'
+                ? setSearchState({ type: 'home' })
+                : undefined
+            }
             placeholder={t('What are you looking for?')}
             type="text"
             value={currentRefinement}
@@ -203,7 +209,6 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
         {/* Because the search items take different actions in different contexts, they
             have to be handled here */}
         <SearchHits
-          sectionData={{ sections, sectionNames }}
           hits={hits}
           onChoice={(hit: Hit) => {
             // Global app actions do not depend on command context
@@ -232,7 +237,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
               return router.push(`/dao/${hit.id}`)
             }
 
-            // Take specific actions here
+            // MARK: Take DAO specific actions here
             if (
               hit.hit_type == 'dao_action' &&
               searchState.type == 'dao_chosen'
@@ -247,6 +252,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
               }
             }
           }}
+          sectionData={{ sections, sectionNames }}
         />
       </div>
     </Modal>
