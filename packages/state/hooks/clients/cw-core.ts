@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { useCallback as CwCoreHooks } from 'react'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { validateCwCoreInstantiateMsg } from '@dao-dao/utils'
@@ -19,13 +20,13 @@ const wrapExecuteHook =
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-    return CwCoreHooks(
+    return useCallback(
       (...args: Parameters<ExecuteClient[T]>) => {
         if (client)
           return (
             client[fn] as (
               ...args: Parameters<ExecuteClient[T]>
-            ) => ReturnType<ExecuteClient[T]>
+            ) => Promise<ExecuteResult>
           )(...args)
         throw new Error('Client undefined.')
       },
@@ -62,7 +63,7 @@ export const useInstantiate = ({ codeId, ...params }: UseInstantiateParams) => {
   const client =
     clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-  return CwCoreHooks(
+  return useCallback(
     (...args: ParametersExceptFirst<ExecuteClient['instantiate']>) => {
       validateCwCoreInstantiateMsg(args[0])
 
