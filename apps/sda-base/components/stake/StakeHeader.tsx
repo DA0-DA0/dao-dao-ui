@@ -29,7 +29,7 @@ export const StakeHeaderLoader: FunctionComponent = () => {
         </div>
       </div>
 
-      <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
+      <div className="flex flex-row justify-around items-center p-5 mt-8 w-full text-center md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.daoTreasury')}
@@ -89,7 +89,7 @@ export const StakeHeader: FunctionComponent = () => {
         </div>
       </div>
 
-      <div className="flex flex-row justify-around items-center p-5 w-full text-center border-t border-inactive md:gap-12 md:justify-center">
+      <div className="flex flex-row justify-around items-center p-5 mt-8 w-full text-center md:gap-12 md:justify-center">
         <div className="flex flex-col gap-2 items-center p-2">
           <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
             {t('title.daoTreasury')}
@@ -102,7 +102,7 @@ export const StakeHeader: FunctionComponent = () => {
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}{' '}
-            {governanceTokenInfo.name}
+            ${governanceTokenInfo.symbol}
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export const StakeHeader: FunctionComponent = () => {
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}{' '}
-            {governanceTokenInfo.name}
+            ${governanceTokenInfo.symbol}
           </p>
         </div>
       </div>

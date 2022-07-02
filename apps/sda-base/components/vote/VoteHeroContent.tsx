@@ -72,7 +72,7 @@ export const VoteHeroContent = () => {
       <VoteHero.Stats
         data={{
           members: cw4VotingMembers?.length,
-          denom: governanceTokenInfo?.name,
+          denom: governanceTokenInfo?.symbol,
           totalSupply: governanceTokenInfo
             ? convertMicroDenomToDenomWithDecimals(
                 governanceTokenInfo.total_supply,

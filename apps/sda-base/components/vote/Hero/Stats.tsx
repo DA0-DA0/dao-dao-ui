@@ -7,8 +7,6 @@ import { VotingModuleType, formatPercentOf100 } from '@dao-dao/utils'
 
 import { HeroStat } from './Stat'
 
-const formatZeroes = (num: number) => new Intl.NumberFormat().format(num)
-
 export interface HeroStatsProps {
   votingModuleType: VotingModuleType
   data?: {
@@ -32,7 +30,9 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
             Icon={Dollar}
             title={t('title.totalSupply') + ':'}
             value={
-              data ? `${formatZeroes(data.totalSupply!)} ${data.denom!}` : ''
+              data
+                ? `${data.totalSupply!.toLocaleString()} $${data.denom!}`
+                : ''
             }
           />
         )}
@@ -56,7 +56,7 @@ export const HeroStats: FC<HeroStatsProps> = ({ data, votingModuleType }) => {
         votingModuleType === VotingModuleType.Cw20StakedBalanceVoting && (
           <HeroStat
             Icon={ArrowUpIcon}
-            title={t('title.unstakingPeriod') + '+'}
+            title={t('title.unstakingPeriod') + ':'}
             value={data ? data.unstakingDuration! : ''}
           />
         )}

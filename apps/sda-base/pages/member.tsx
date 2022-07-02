@@ -11,7 +11,6 @@ import {
   MultisigMemberListLoader,
   StakingMode,
   SuspenseLoader,
-  TooltipIcon,
 } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -90,7 +89,7 @@ const InnerStake = () => {
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
                   {t('title.balanceUnstaked', {
-                    name: governanceTokenInfo.name,
+                    name: '$' + governanceTokenInfo.symbol,
                   })}
                 </p>
 
@@ -104,15 +103,10 @@ const InnerStake = () => {
               </div>
 
               <div className="flex-1 p-6 rounded-lg border border-default">
-                <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
-                  <span>
-                    {t('title.votingPowerStakedAndRewards', {
-                      name: governanceTokenInfo.name,
-                    })}
-                  </span>
-                  <TooltipIcon
-                    label={t('info.autoCompoundStakingRewardsTooltip')}
-                  />
+                <p className="mb-2 font-mono text-sm text-tertiary">
+                  {t('title.votingPowerStaked', {
+                    name: '$' + governanceTokenInfo.symbol,
+                  })}
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
@@ -130,7 +124,7 @@ const InnerStake = () => {
                 <>
                   <p className="text-lg title-text">
                     {t('title.unstakingNamedTokens', {
-                      name: governanceTokenInfo.name,
+                      name: '$' + governanceTokenInfo.symbol,
                     })}
                   </p>
                   <Loader />
