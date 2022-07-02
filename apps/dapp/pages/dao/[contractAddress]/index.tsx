@@ -127,7 +127,7 @@ const InnerDaoHome: FC = () => {
           <SmallScreenNav />
           <div className="flex justify-center items-center py-3 px-6 w-full bg-accent-transparent border-b border-inactive">
             <p className="text-center">
-              This is a beta DAO.
+              This is a beta DAO.{' '}
               <a
                 className="underline"
                 href="https://docs.daodao.zone/docs/upgrading/dao"
