@@ -115,7 +115,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     ;(async () => {
       const res = await index.search(currentRefinement)
       const daoHits = res.hits
-        .slice(0, 7)
+        .slice(0, 5)
         .map((hit) => ({ ...hit, hit_type: 'dao' })) as DaoHit[]
 
       // Display default options
@@ -245,7 +245,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
               if (hit.id == 'new_proposal')
                 return router.push(`/dao/${searchState.id}/proposals/create`)
               else if (hit.id == 'copy_dao_address') {
-                navigator.clipboard.writeText(hit.id)
+                navigator.clipboard.writeText(searchState.id)
                 return toast.success('Copied DAO address to clipboard!')
               } else if (hit.id == 'goto_dao') {
                 return router.push(`/dao/${searchState.id}`)
