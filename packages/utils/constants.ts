@@ -89,3 +89,6 @@ export const CW20STAKEDBALANCEVOTING_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CONTRACT_NAME as string
 
 export const JUNO_BLOCKS_PER_YEAR = 5086451
+
+export const POOLS_LIST_URL =
+  'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/pools_list.json'
