@@ -5,69 +5,74 @@ import { NATIVE_DECIMALS } from '@dao-dao/utils'
 import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
 import { cw20BalancesInfoSelector, poolsListSelector } from './tokens'
 
-export const tokenUSDCPriceSelector = selectorFamily<number, { denom: string }>(
-  {
-    key: 'tokenUSDCPriceSelector',
-    get:
-      ({ denom }) =>
-      async ({ get }) => {
-        const tokens = get(poolsListSelector)
-        const usdcSwap = tokens.pools.find(
-          ({ pool_id }) => pool_id === 'JUNO-USDC'
-        )
+export const tokenUSDCPriceSelector = selectorFamily<
+  number,
+  { denom: string; tokenDecimals?: number }
+>({
+  key: 'tokenUSDCPriceSelector',
+  get:
+    ({ denom, tokenDecimals }) =>
+    async ({ get }) => {
+      const tokens = get(poolsListSelector)
+      const usdcSwap = tokens.pools.find(
+        ({ pool_id }) => pool_id === 'JUNO-USDC'
+      )
 
-        const denomSwap = tokens.pools.find(
-          ({ pool_assets }) =>
-            pool_assets.find(
-              ({ denom: pool_denom, token_address }) =>
-                pool_denom === denom || token_address === denom
-            ) !== undefined
-        )
+      const denomSwap = tokens.pools.find(
+        ({ pool_assets }) =>
+          pool_assets.find(
+            ({ denom: pool_denom, token_address }) =>
+              pool_denom === denom || token_address === denom
+          ) !== undefined
+      )
 
-        // No price information avaliable.
-        if (!denomSwap) {
-          return 0
-        }
+      // No price information avaliable.
+      if (!denomSwap) {
+        return 0
+      }
 
-        const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientSelector)
 
-        const junoUSDC = (
-          usdcSwap
-            ? await client.queryContractSmart(usdcSwap.swap_address, {
-                token1_for_token2_price: {
-                  token1_amount: '1000000',
-                },
-              })
-            : { token2_amount: 0 }
-        ).token2_amount
+      const junoUSDC = (
+        usdcSwap
+          ? await client.queryContractSmart(usdcSwap.swap_address, {
+              token1_for_token2_price: {
+                token1_amount: '1000000',
+              },
+            })
+          : { token2_amount: 0 }
+      ).token2_amount
 
-        if (denom === 'ujuno') {
-          return Number(junoUSDC) * Math.pow(10, -12)
-        }
+      if (denom === 'ujuno') {
+        return Number(junoUSDC) * Math.pow(10, -12)
+      }
 
-        const junoToken = (
-          await client.queryContractSmart(denomSwap.swap_address, {
-            token2_for_token1_price: {
-              token2_amount: '1000000',
-            },
-          })
-        ).token1_amount
+      const junoToken = (
+        await client.queryContractSmart(denomSwap.swap_address, {
+          token2_for_token1_price: {
+            token2_amount: '1000000',
+          },
+        })
+      ).token1_amount
 
-        const denomSwapAssetInfo = denomSwap.pool_assets.find(
-          ({ denom: pool_denom, token_address }) =>
-            denom === pool_denom || token_address === denom
-        )
-        const denomDecimals = denomSwapAssetInfo?.decimals || NATIVE_DECIMALS
+      const denomSwapAssetInfo = denomSwap.pool_assets.find(
+        ({ denom: pool_denom, token_address }) =>
+          denom === pool_denom || token_address === denom
+      )
+      const denomDecimals = tokenDecimals
+        ? tokenDecimals
+        : denomSwapAssetInfo
+        ? denomSwapAssetInfo.decimals
+        : NATIVE_DECIMALS
 
-        const price =
-          Number(junoToken) *
-          Number(junoUSDC) *
-          Math.pow(10, -(6 + denomDecimals * 2))
+      const price =
+        Number(junoToken) *
+        Number(junoUSDC) *
+        Math.pow(10, -(6 + denomDecimals * 2))
 
-        return price
-      },
-  }
-)
+      return price
+    },
+})
 
 export const addressTVLSelector = selectorFamily<number, { address: string }>({
   key: 'tokenUSDCPriceSelector',
