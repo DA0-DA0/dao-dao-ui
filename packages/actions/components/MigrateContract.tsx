@@ -1,13 +1,14 @@
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 
-import { Trans, useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   AddressInput,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
   NumberInput,
+  Trans,
 } from '@dao-dao/ui'
 import {
   validateContractAddress,

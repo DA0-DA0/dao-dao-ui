@@ -8,8 +8,8 @@ import { FC } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Trans, useTranslation } from '@dao-dao/i18n'
-import { Logo, SuspenseLoader } from '@dao-dao/ui'
+import { useTranslation } from '@dao-dao/i18n'
+import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { searchVisibleAtom } from '@/atoms'

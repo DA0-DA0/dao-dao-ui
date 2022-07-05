@@ -7,7 +7,7 @@ import {
   ActionsRenderer,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import { Trans, useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   Proposal,
   Status,
@@ -23,6 +23,7 @@ import { Button } from '../Button'
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 import { Execute } from '../Execute'
 import { MarkdownPreview } from '../MarkdownPreview'
+import { Trans } from '../Trans'
 import { Vote } from '../Vote'
 import { VoteDisplay } from './VoteDisplay'
 

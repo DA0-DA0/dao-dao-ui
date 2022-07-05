@@ -254,7 +254,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
   // Need to block until i18n translations are ready, since i18n depends
   // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =

@@ -1,9 +1,9 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
 import { FunctionComponent } from 'react'
 
-import { Trans, useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { Button } from '@dao-dao/ui'
+import { Button, Trans } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,

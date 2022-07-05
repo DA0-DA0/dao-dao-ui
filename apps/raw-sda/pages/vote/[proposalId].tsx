@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 import { FormProposalData } from '@dao-dao/actions'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import { Trans, useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from '@dao-dao/i18n'
 import {
   CwCoreQueryClient,
   CwProposalSingleHooks,
@@ -23,6 +23,7 @@ import {
   ProposalInfoCard,
   ProposalInfoVoteStatus,
   StakingMode,
+  Trans,
 } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,

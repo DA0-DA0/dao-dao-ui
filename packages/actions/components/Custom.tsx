@@ -3,8 +3,8 @@ import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
-import { Trans, useTranslation } from '@dao-dao/i18n'
-import { CodeMirrorInput } from '@dao-dao/ui'
+import { useTranslation } from '@dao-dao/i18n'
+import { CodeMirrorInput, Trans } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'

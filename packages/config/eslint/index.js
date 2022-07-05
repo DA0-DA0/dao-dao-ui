@@ -168,7 +168,7 @@ const eslintConfig = {
                 'You probably should not be using this. Use the `useTranslation` hook within a component.',
             },
             {
-              regex: '_probablyDontUseThisI18n',
+              regex: '_probablyDontUseThisI18n|_probablyDontUseThisTrans',
               files: {
                 // Don't replace in this file since the pattern appears above.
                 // Or the @dao-dao/i18n index.ts file where it is defined.
