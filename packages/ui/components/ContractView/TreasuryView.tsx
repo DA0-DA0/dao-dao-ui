@@ -23,24 +23,21 @@ export interface TreasuryBalancesProps {
     decimals: number
     imageUrl?: string
   }[]
-  tvl: {
-    amount: number
-    denom: string
-  }
+  usdcValue: number
 }
 
 export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
   nativeTokens,
   cw20Tokens,
-  tvl,
+  usdcValue,
 }) => {
   const { t } = useTranslation()
   return (
     <ul className="flex flex-col gap-2 mt-6 list-none">
-      {tvl.amount > 0 && (
+      {usdcValue > 0 && (
         <BalanceListItem>
-          <span className="text-lg font-bold text-slate-50 pb-2">
-            {t('format.currency', { val: tvl.amount })}
+          <span className="header-text pb-4">
+            {t('format.currency', { val: usdcValue })}
           </span>
         </BalanceListItem>
       )}

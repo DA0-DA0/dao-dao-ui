@@ -57,13 +57,13 @@ export const TreasuryBalances: FC = () => {
       }))
     : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }]
 
-  const amount = useRecoilValue(addressTVLSelector({ address: coreAddress }))
+  const usdcValue = useRecoilValue(addressTVLSelector({ address: coreAddress }))
 
   return (
     <StatelessTreasuryBalances
       cw20Tokens={cw20Tokens}
       nativeTokens={nativeTokens}
-      tvl={{ amount, denom: 'USD' }}
+      usdcValue={usdcValue}
     />
   )
 }
