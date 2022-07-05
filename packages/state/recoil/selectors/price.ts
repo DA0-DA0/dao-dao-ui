@@ -80,7 +80,6 @@ export const addressTVLSelector = selectorFamily<number, { address: string }>({
     ({ address }) =>
     async ({ get }) => {
       const nativeBalances = get(nativeBalanceSelector(address))
-      // const nativeBalances = {symbol: 'juno', denom: 'ujuno', amount: '1000000000000', decimals: 6}
       const cw20Balances = get(cw20BalancesInfoSelector({ address }))
 
       let balances = cw20Balances
