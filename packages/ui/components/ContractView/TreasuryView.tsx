@@ -37,7 +37,7 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
       {usdcValue > 0 && (
         <BalanceListItem>
           <span className="pb-4 header-text">
-            {t('format.currency', { val: usdcValue })}
+            {t('format.usdc', { val: usdcValue })}
           </span>
         </BalanceListItem>
       )}

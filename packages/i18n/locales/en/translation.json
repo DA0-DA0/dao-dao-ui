@@ -176,7 +176,7 @@
     "votingDurationTitle": "Voting duration"
   },
   "format": {
-    "currency": "{{val, currency(currency: USD)}} USD"
+    "usdc": "{{val, currency(currency: USD)}} USDC"
   },
   "info": {
     "aboutToUnstake": "You are about to unstake governance tokens",
