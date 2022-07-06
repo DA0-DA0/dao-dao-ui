@@ -99,10 +99,18 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   // renders.
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash) {
-      document
-        // Ignore the '#' character at the beginning.
-        .getElementById(window.location.hash.slice(1))
-        ?.scrollIntoView({ behavior: 'smooth' })
+      // Ignore the '#' character at the beginning.
+      const element = document.getElementById(window.location.hash.slice(1))
+      if (!element) {
+        return
+      }
+
+      // 24px offset so the element isn't touching the edge of the browser.
+      const top = element.getBoundingClientRect().top + window.scrollY - 24
+      window.scrollTo({
+        top,
+        behavior: 'smooth',
+      })
     }
   }, [])
 

@@ -44,7 +44,7 @@ const HeadingRenderer: HeadingComponent = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
-  const id = `l${sourcePosition!.start.line}`
+  const id = `L${sourcePosition!.start.line}`
 
   return createElement(
     'h' + level,
