@@ -22,7 +22,7 @@
   },
   "peerDependencies": {
     "@noahsaso/cosmodal": "0.6.0",
-    "next": "12.2.0"
+    "next": "^12.2.0"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true
