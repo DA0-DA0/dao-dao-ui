@@ -283,12 +283,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
               validation={[
                 validatePositive,
                 validateRequired,
-                // Prevent < 30 second voting duration since DAOs will
+                // Prevent < 60 second voting duration since DAOs will
                 // brick if the voting duration is shorter tahn 1 block.
                 (value) =>
                   proposalDurationUnits !== 'seconds' ||
-                  value >= 30 ||
-                  'Cannot be shorter than 30 seconds.',
+                  value >= 60 ||
+                  'Cannot be shorter than 60 seconds.',
               ]}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
