@@ -1,5 +1,6 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
 import { useWallet } from '@noahsaso/cosmodal'
+import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
@@ -70,6 +71,7 @@ export const CreateProposalForm = ({
   connectWalletButton,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
+  const router = useRouter()
   const { connected, address: walletAddress } = useWallet()
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
@@ -116,7 +118,24 @@ export const CreateProposalForm = ({
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = formMethods
+
+  // Prefill form with data from parameter once ready.
+  useEffect(() => {
+    const potentialDefaultValue = router.query.prefill
+    if (!router.isReady || typeof potentialDefaultValue !== 'string') {
+      return
+    }
+
+    try {
+      const data = JSON.parse(potentialDefaultValue)
+      if (data.constructor.name === 'Object') {
+        reset(data)
+      }
+      // If failed to parse, do nothing.
+    } catch {}
+  }, [router.query.prefill, router.isReady, reset])
 
   const [showPreview, setShowPreview] = useState(false)
   const [showActionSelector, setShowActionSelector] = useState(false)

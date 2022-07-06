@@ -1,8 +1,12 @@
-import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, ReactNode, useMemo, useState } from 'react'
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
 
-import { ActionsRenderer } from '@dao-dao/actions'
+import {
+  ActionAndData,
+  ActionsRenderer,
+  useActionsForVotingModuleType,
+} from '@dao-dao/actions'
 import { Trans, useTranslation } from '@dao-dao/i18n'
 import {
   Proposal,
@@ -38,6 +42,7 @@ interface ProposalDetailsProps {
   connected: boolean
   connectWalletButton?: ReactNode
   allowRevoting: boolean
+  onDuplicate: (actionData: ActionAndData[]) => void
 }
 
 export const ProposalDetails: FC<ProposalDetailsProps> = ({
@@ -56,6 +61,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   connected,
   connectWalletButton,
   allowRevoting,
+  onDuplicate,
 }) => {
   const { t } = useTranslation()
   const decodedMessages = useMemo(
@@ -68,6 +74,45 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
     proposal.status === Status.Open &&
     (allowRevoting || !walletVote) &&
     walletWeightPercent !== 0
+
+  // Call relevant action hooks in the same order every time.
+  const actions = useActionsForVotingModuleType(votingModuleType)
+  const actionData: ActionAndData[] = decodedMessages.map((message) => {
+    // Note: Ensure custom is the last message action since it will match
+    // all messages and we return the first successful message match.
+    const { data, action } = actions
+      .map((action) => ({
+        action,
+        ...action.useDecodedCosmosMsg(message, coreAddress),
+      }))
+      // There will always be a match since custom matches all.
+      .find(({ match }) => match)!
+
+    return {
+      action,
+      data,
+    }
+  })
+
+  // Scroll to hash manually if available since this component and thus
+  // the desired target anchor text won't be ready right when the page
+  // renders.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      // Ignore the '#' character at the beginning.
+      const element = document.getElementById(window.location.hash.slice(1))
+      if (!element) {
+        return
+      }
+
+      // 24px offset so the element isn't touching the edge of the browser.
+      const top = element.getBoundingClientRect().top + window.scrollY - 24
+      window.scrollTo({
+        top,
+        behavior: 'smooth',
+      })
+    }
+  }, [])
 
   return (
     <div>
@@ -88,16 +133,15 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             />
           ) : (
             <ActionsRenderer
+              actionData={actionData}
               coreAddress={coreAddress}
-              messages={decodedMessages}
               proposalId={proposalId}
-              votingModuleType={votingModuleType}
             />
           )}
         </>
       )}
       {!!decodedMessages.length && (
-        <div className="mt-4">
+        <div className="flex flex-row gap-2 items-center mt-4">
           <Button
             onClick={() => setShowRaw((s) => !s)}
             size="sm"
@@ -114,6 +158,14 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
                 <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
+          </Button>
+          <Button
+            onClick={() => onDuplicate(actionData)}
+            size="sm"
+            variant="secondary"
+          >
+            {t('button.duplicate')}
+            <DuplicateIcon className="inline ml-1 h-4 stroke-current" />
           </Button>
         </div>
       )}

@@ -19,6 +19,11 @@ export enum ActionKey {
   Custom = 'custom',
 }
 
+export interface ActionAndData {
+  action: Action
+  data: any
+}
+
 export interface ActionKeyAndData {
   key: ActionKey
   data: any
