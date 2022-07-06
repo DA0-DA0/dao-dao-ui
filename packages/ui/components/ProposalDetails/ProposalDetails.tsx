@@ -1,6 +1,6 @@
 import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, ReactNode, useMemo, useState } from 'react'
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
 
 import {
   ActionAndData,
@@ -93,6 +93,18 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       data,
     }
   })
+
+  // Scroll to hash manually if available since this component and thus
+  // the desired target anchor text won't be ready right when the page
+  // renders.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      document
+        // Ignore the '#' character at the beginning.
+        .getElementById(window.location.hash.slice(1))
+        ?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [])
 
   return (
     <div>
