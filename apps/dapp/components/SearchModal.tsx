@@ -66,6 +66,12 @@ const DAPP_ACTIONS: ActionHit[] = [
 
 const DAO_ACTIONS: DaoActionHit[] = [
   {
+    icon: '☘️',
+    id: 'goto_dao',
+    name: 'Go to DAO page',
+    hit_type: 'dao_action',
+  },
+  {
     icon: '🗳',
     id: 'new_proposal',
     name: 'Start a new proposal',
@@ -77,12 +83,6 @@ const DAO_ACTIONS: DaoActionHit[] = [
     name: 'Copy DAO address',
     hit_type: 'dao_action',
   },
-  {
-    icon: '☘️',
-    id: 'goto_dao',
-    name: 'Go to DAO page',
-    hit_type: 'dao_action',
-  },
   // {
   //   icon: '👥',
   //   id: 'add_token',
@@ -92,7 +92,7 @@ const DAO_ACTIONS: DaoActionHit[] = [
   // { icon: '💵', id: 'stake', name: 'Manage staking', hit_type: 'dao_action' },
 ]
 
-const fuseOptions = {
+const FUSE_OPTIONS = {
   keys: ['id', 'name'],
 }
 const searchClient = new MeiliSearch({
@@ -101,10 +101,39 @@ const searchClient = new MeiliSearch({
 })
 const index = searchClient.index(SEARCH_INDEX)
 
+type SearchBarProps = {
+  currentRefinement: string
+  refine: (s: string) => void
+  onEmptyBack: () => void
+}
+
+const SearchBar: FC<SearchBarProps> = ({
+  currentRefinement,
+  refine,
+  onEmptyBack,
+}) => (
+  <div className="flex items-center px-3 text-tertiary border-b border-default">
+    <input
+      autoFocus
+      className="py-4 px-2 w-full bg-transparent focus:outline-none primary-text focus:ring-none" // Keep focus when clicking on hit
+      onBlur={(ev) => ev.target.focus()}
+      onChange={(event) => refine(event.currentTarget.value)}
+      onKeyDown={(ev) => {
+        if (ev.key == 'ArrowUp' || ev.key == 'ArrowDown')
+          return ev.preventDefault()
+        else if (currentRefinement == '' && ev.key == 'Backspace')
+          return onEmptyBack()
+      }}
+      placeholder={useTranslation().t('What are you looking for?')}
+      type="text"
+      value={currentRefinement}
+    />
+  </div>
+)
+
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const router = useRouter()
-  const { t } = useTranslation()
   const [searchState, setSearchState] = useState<SearchState>({
     type: 'home',
   })
@@ -115,7 +144,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     ;(async () => {
       const res = await index.search(currentRefinement)
       const daoHits = res.hits
-        .slice(0, 5)
+        .slice(0, 7)
         .map((hit) => ({ ...hit, hit_type: 'dao' })) as DaoHit[]
 
       // Display default options
@@ -134,7 +163,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
         searchState.type == 'dao_chosen'
           ? [...DAPP_ACTIONS, ...daoHits, ...DAO_ACTIONS]
           : [...DAPP_ACTIONS, ...daoHits],
-        fuseOptions
+        FUSE_OPTIONS
       )
       setHits(fuse.search(currentRefinement))
     })()
@@ -188,23 +217,11 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
           ) : undefined}
         </div>
 
-        {/* You need to modify the architecture of the box and hits here... */}
-        <div className="flex items-center px-3 text-tertiary border-b border-default">
-          <input
-            autoFocus
-            className="py-4 px-2 w-full bg-transparent focus:outline-none primary-text focus:ring-none" // Keep focus when clicking on hit
-            onBlur={(ev) => ev.target.focus()}
-            onChange={(event) => refine(event.currentTarget.value)}
-            onKeyDown={(ev) =>
-              currentRefinement == '' && ev.key == 'Backspace'
-                ? setSearchState({ type: 'home' })
-                : undefined
-            }
-            placeholder={t('What are you looking for?')}
-            type="text"
-            value={currentRefinement}
-          />
-        </div>
+        <SearchBar
+          currentRefinement={currentRefinement}
+          refine={refine}
+          onEmptyBack={() => setSearchState({ type: 'home' })}
+        />
 
         {/* Because the search items take different actions in different contexts, they
             have to be handled here */}

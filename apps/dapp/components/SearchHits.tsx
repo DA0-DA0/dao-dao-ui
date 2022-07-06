@@ -99,29 +99,25 @@ export const SearchHits = ({
   }, [handleKeyPress])
 
   return (
-    <>
-      <div className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4">
-        {sections.map((sectionIndex, i) => (
-          <>
-            <div className="py-1 font-medium text-gray-400">
-              {sectionNames[i]}
-            </div>
-            {(i == 0
-              ? hits.slice(0, sectionIndex)
-              : hits.slice(sections[i - 1], sectionIndex)
-            ).map((hit: DaoHit, index: number) => (
-              <HitView
-                key={hit.id}
-                hit={hit}
-                onClick={() => onChoice(hit)}
-                selected={
-                  (i == 0 ? index : sections[i - 1] + index) == selection
-                }
-              />
-            ))}
-          </>
-        ))}
-      </div>
-    </>
+    <div className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4">
+      {sections.map((sectionIndex, i) => (
+        <>
+          <div className="py-1 font-medium text-gray-400">
+            {sectionNames[i]}
+          </div>
+          {(i == 0
+            ? hits.slice(0, sectionIndex)
+            : hits.slice(sections[i - 1], sectionIndex)
+          ).map((hit: DaoHit, index: number) => (
+            <HitView
+              key={hit.id}
+              hit={hit}
+              onClick={() => onChoice(hit)}
+              selected={(i == 0 ? index : sections[i - 1] + index) == selection}
+            />
+          ))}
+        </>
+      ))}
+    </div>
   )
 }
