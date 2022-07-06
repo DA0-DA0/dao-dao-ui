@@ -40,6 +40,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const thresholdType = watch(getFieldName('thresholdType'))
   const quorumType = watch(getFieldName('quorumType'))
   const proposalDuration = watch(getFieldName('proposalDuration'))
+  const proposalDurationUnits = watch(getFieldName('proposalDurationUnits'))
   const thresholdPercentage = watch(getFieldName('thresholdPercentage'))
   const quorumPercentage = watch(getFieldName('quorumPercentage'))
 
@@ -278,7 +279,17 @@ export const UpdateProposalConfigComponent: ActionComponent<
               ]}
               register={register}
               sizing="sm"
-              validation={[validatePositive, validateRequired]}
+              step={1}
+              validation={[
+                validatePositive,
+                validateRequired,
+                // Prevent < 30 second voting duration since DAOs will
+                // brick if the voting duration is shorter tahn 1 block.
+                (value) =>
+                  proposalDurationUnits !== 'seconds' ||
+                  value >= 30 ||
+                  'Cannot be shorter than 30 seconds.',
+              ]}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>

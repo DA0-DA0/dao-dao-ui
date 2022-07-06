@@ -25,6 +25,7 @@ import {
 import {
   DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
   DefaultNewDAO,
+  DurationUnits,
   DurationUnitsValues,
   GovernanceTokenType,
   NewDAO,
@@ -271,7 +272,16 @@ export const CreateDAOVotingDurationCard: FC<
             register={register}
             sizing="sm"
             step={1}
-            validation={[validatePositive, validateRequired]}
+            validation={[
+              validatePositive,
+              validateRequired,
+              // Prevent < 30 second voting duration since DAOs will brick
+              // if the voting duration is shorter tahn 1 block.
+              (value) =>
+                votingDuration.units !== DurationUnits.Seconds ||
+                value >= 30 ||
+                'Cannot be shorter than 30 seconds.',
+            ]}
           />
 
           <SelectInput
