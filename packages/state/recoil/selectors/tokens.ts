@@ -40,12 +40,15 @@ type PoolsListQueryResponse = {
   tags: Record<string, { name: string; description: string }>
 }
 
-export const poolsListSelector = selector<PoolsListQueryResponse>({
+export const poolsListSelector = selector<PoolsListQueryResponse | undefined>({
   key: 'poolsList',
   get: async () => {
-    const poolsList = await fetch(POOLS_LIST_URL)
-    const tokens = (await poolsList.json()) as PoolsListQueryResponse
-    return tokens
+    try {
+      const poolsList = await fetch(POOLS_LIST_URL)
+      return (await poolsList.json()) as PoolsListQueryResponse
+    } catch {
+      return undefined
+    }
   },
 })
 
