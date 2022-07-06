@@ -14,12 +14,12 @@ import {
   noKeplrAccountAtom,
   searchVisibleAtom,
 } from '@/atoms'
+import { SearchModal } from 'components/CommandBar'
 
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
-import { SearchModal } from './SearchModal'
 
 const SidebarLayoutInner: FC = ({ children }) => {
   const router = useRouter()

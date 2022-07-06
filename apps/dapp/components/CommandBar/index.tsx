@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { MeiliSearch } from 'meilisearch'
 import { useRouter } from 'next/router'
@@ -8,7 +9,8 @@ import { useTranslation } from 'react-i18next'
 import { Modal } from '@dao-dao/ui'
 import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
-import { SearchHits } from '@/components'
+import { SearchHits } from './SearchHits'
+import styles from './SearchModal.module.css'
 
 export interface SearchModalProps {
   onClose: () => void
@@ -20,7 +22,14 @@ type SearchState =
   | { type: 'dao_chosen'; id: string; name: string }
 
 const SearchNavElem: FC<{ name: string }> = ({ name }) => (
-  <div className="p-2 w-fit font-medium bg-secondary rounded-md">{name}</div>
+  <div
+    className={clsx(
+      'p-2 w-fit font-medium bg-secondary rounded-md',
+      styles.fadeIn
+    )}
+  >
+    {name}
+  </div>
 )
 
 export type Hit = DaoHit | ActionHit | DaoActionHit
@@ -203,7 +212,10 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
 
   return (
     <Modal
-      containerClassName="p-0 border w-full max-w-[550px] h-[450px] max-h-[90vh]"
+      containerClassName={clsx(
+        'p-0 w-full max-w-[550px] h-[450px] max-h-[90vh] border',
+        styles.fadeIn
+      )}
       hideCloseButton
       onClose={onClose}
     >
