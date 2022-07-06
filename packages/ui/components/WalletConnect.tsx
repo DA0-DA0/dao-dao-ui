@@ -1,8 +1,8 @@
 import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Copy, Wallet } from '@dao-dao/icons'
 
 import { Button } from './Button'

@@ -12,9 +12,9 @@ import {
   useForm,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'

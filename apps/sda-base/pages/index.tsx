@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 
 import { PageWrapper, PageWrapperProps } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'

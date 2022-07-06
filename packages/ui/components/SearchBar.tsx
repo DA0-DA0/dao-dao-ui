@@ -1,8 +1,7 @@
 import { SearchIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { ComponentProps, FC } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 export interface SearchBarProps extends Omit<ComponentProps<'input'>, 'type'> {
   containerClassName?: string

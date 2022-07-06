@@ -1,8 +1,8 @@
 import { PlusIcon, SparklesIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'

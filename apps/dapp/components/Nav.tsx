@@ -5,11 +5,11 @@ import {
 } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Trans, useTranslation } from '@dao-dao/i18n'
-import { Logo, SuspenseLoader } from '@dao-dao/ui'
+import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { searchVisibleAtom } from '@/atoms'

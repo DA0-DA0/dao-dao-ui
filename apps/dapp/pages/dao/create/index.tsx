@@ -1,8 +1,8 @@
 import Emoji from 'a11y-react-emoji'
 import { GetStaticProps, NextPage } from 'next'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ImageSelector,

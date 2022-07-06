@@ -3,8 +3,8 @@ import { HeartIcon as HeartIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'
 import {

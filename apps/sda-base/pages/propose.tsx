@@ -4,10 +4,10 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,

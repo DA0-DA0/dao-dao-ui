@@ -2,8 +2,8 @@ import { Coin } from '@cosmjs/stargate'
 import { XIcon } from '@heroicons/react/solid'
 import { ComponentProps, FC, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,

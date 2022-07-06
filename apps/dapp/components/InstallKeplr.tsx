@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Button, Modal } from '@dao-dao/ui'
 
 interface InstallKeplrProps {

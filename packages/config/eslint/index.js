@@ -163,21 +163,6 @@ const eslintConfig = {
                 'Import from root @/ instead of a direct path. Ensure the export has been added to its sibling index.',
             },
             {
-              regex: "from '(react-)?i18next'",
-              message:
-                'You probably should not be using this. Use the `useTranslation` hook within a component.',
-            },
-            {
-              regex: '_probablyDontUseThisI18n',
-              files: {
-                // Don't replace in this file since the pattern appears above.
-                // Or the @dao-dao/i18n index.ts file where it is defined.
-                ignore: 'import\\.js|packages\\/i18n\\/index\\.ts',
-              },
-              message:
-                'You probably should not be using this. See the comment in the `index.ts` of the `@dao-dao/i18n` package.',
-            },
-            {
               regex: '(\\bt\\(\\s*\'[^\\.\']+\'|i18nKey="[^\\."]+")',
               message:
                 'No top-level i18n keys allowed. Organize top-level keys into a nested object.',

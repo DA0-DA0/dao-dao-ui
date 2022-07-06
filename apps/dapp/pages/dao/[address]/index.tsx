@@ -3,8 +3,8 @@ import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -254,7 +254,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
   // Need to block until i18n translations are ready, since i18n depends
   // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =

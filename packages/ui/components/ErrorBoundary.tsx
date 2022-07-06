@@ -1,15 +1,11 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
+import { WithTranslationProps, withTranslation } from 'react-i18next'
 
-// eslint-disable-next-line regex/invalid
-import { _probablyDontUseThisI18n, withTranslation } from '@dao-dao/i18n'
 import { ErrorPage } from '@dao-dao/ui'
 
-interface ErrorBoundaryProps {
+interface ErrorBoundaryProps extends WithTranslationProps {
   children: ReactNode
   title?: string
-  // Ok to use here for type checking.
-  // eslint-disable-next-line regex/invalid
-  i18n?: typeof _probablyDontUseThisI18n
 }
 
 interface ErrorBoundaryState {

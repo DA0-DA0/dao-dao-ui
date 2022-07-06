@@ -12,9 +12,9 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import { Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
 import {

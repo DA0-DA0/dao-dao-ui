@@ -2,13 +2,13 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
+import { appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { WalletProvider } from '@dao-dao/common'
-import { appWithTranslation, useTranslation } from '@dao-dao/i18n'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import {

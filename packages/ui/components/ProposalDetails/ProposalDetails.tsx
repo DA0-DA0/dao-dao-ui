@@ -1,13 +1,13 @@
 import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   ActionAndData,
   ActionsRenderer,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import { Trans, useTranslation } from '@dao-dao/i18n'
 import {
   Proposal,
   Status,
@@ -23,6 +23,7 @@ import { Button } from '../Button'
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 import { Execute } from '../Execute'
 import { MarkdownPreview } from '../MarkdownPreview'
+import { Trans } from '../Trans'
 import { Vote } from '../Vote'
 import { VoteDisplay } from './VoteDisplay'
 

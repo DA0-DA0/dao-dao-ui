@@ -1,4 +1,4 @@
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 import { DAODAOLogo } from '@/components'
 

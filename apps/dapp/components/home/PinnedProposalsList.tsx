@@ -1,8 +1,8 @@
 import { DocumentTextIcon } from '@heroicons/react/outline'
 import { FC, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import {

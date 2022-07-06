@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Button } from '@dao-dao/ui'
 
 export interface ContractVersion {

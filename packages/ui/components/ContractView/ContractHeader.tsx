@@ -1,6 +1,6 @@
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { MarkdownPreview } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 

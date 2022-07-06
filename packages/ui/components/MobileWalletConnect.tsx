@@ -5,8 +5,8 @@ import {
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Wallet } from '@dao-dao/icons'
 import { Modal, WalletConnectProps } from '@dao-dao/ui'
 import { CHAIN_NAME } from '@dao-dao/utils'

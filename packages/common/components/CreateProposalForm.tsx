@@ -9,6 +9,7 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -20,7 +21,6 @@ import {
   UseTransformToCosmos,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 import {
   Cw20BaseSelectors,

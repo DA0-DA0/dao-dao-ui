@@ -1,7 +1,6 @@
 import { ArrowRightIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 export const AnouncementCard: FC = () => {
   const { t } = useTranslation()
