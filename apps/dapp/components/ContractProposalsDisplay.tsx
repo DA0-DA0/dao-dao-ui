@@ -42,7 +42,7 @@ export const InnerContractProposalsDisplay: FC = () => {
     : t('error.mustBeMemberToCreateProposal')
 
   return (
-    <>
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="primary-text">{t('title.proposals')}</h2>
 
@@ -59,12 +59,13 @@ export const InnerContractProposalsDisplay: FC = () => {
           </a>
         </Link>
       </div>
-      <div className="mt-4 mb-8 md:px-4">
+
+      <div className="md:px-4">
         <SuspenseLoader fallback={<Loader />}>
           <ProposalList />
         </SuspenseLoader>
       </div>
-    </>
+    </div>
   )
 }
 

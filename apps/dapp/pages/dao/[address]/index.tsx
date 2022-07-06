@@ -25,6 +25,7 @@ import {
   DAOMobileHeader,
   DAOPageWrapper,
   DAOPageWrapperProps,
+  DAOTreasuryHistory,
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
   DaoTreasury,
@@ -184,8 +185,9 @@ const InnerDAOHome: FC = () => {
             </div>
           </div>
         </GradientHero>
-        <div className="px-6">
+        <div className="px-6 mb-8 space-y-6">
           <ContractProposalsDisplay />
+          <DAOTreasuryHistory />
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
@@ -252,8 +254,6 @@ export default DaoHomePage
 // Fallback to loading screen if page has not yet been statically generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
   fallback: true,
 })
 

@@ -1,3 +1,4 @@
+import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily } from 'recoil'
 
 import { cosmWasmClientSelector } from './chain'
@@ -29,7 +30,7 @@ export const contractInstantiateTimeSelector = selectorFamily<
 
 export const contractAdminSelector = selectorFamily<string | undefined, string>(
   {
-    key: 'contractInstantiateTimeSelector',
+    key: 'contractAdmin',
     get:
       (address: string) =>
       async ({ get }) => {
@@ -47,3 +48,46 @@ export const contractAdminSelector = selectorFamily<string | undefined, string>(
       },
   }
 )
+
+export interface TreasuryTransaction {
+  tx: IndexedTx
+  events: {
+    type: string
+    attributes: {
+      key: string
+      value: string
+    }[]
+  }[]
+}
+
+export const treasuryTransactionsSelector = selectorFamily({
+  key: 'treasuryTransactions',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      if (!client) {
+        return undefined
+      }
+
+      const txs = await client.searchTx({
+        sentFromOrTo: address,
+      })
+
+      return txs
+        .map((tx) => {
+          let events
+          try {
+            events = JSON.parse(tx.rawLog)[0].events
+          } catch {
+            return
+          }
+
+          return {
+            tx,
+            events,
+          }
+        })
+        .filter(Boolean) as TreasuryTransaction[]
+    },
+})
