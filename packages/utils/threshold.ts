@@ -1,5 +1,5 @@
-import { useTranslation } from 'next-i18next'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 

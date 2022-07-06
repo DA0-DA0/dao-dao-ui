@@ -1,6 +1,6 @@
 import Emoji from 'a11y-react-emoji'
-import { useTranslation } from 'next-i18next'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {

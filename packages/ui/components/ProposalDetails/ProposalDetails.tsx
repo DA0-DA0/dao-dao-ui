@@ -1,7 +1,7 @@
 import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   ActionAndData,

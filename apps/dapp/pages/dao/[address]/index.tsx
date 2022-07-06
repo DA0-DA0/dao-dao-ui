@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'

@@ -1,5 +1,5 @@
-import { useTranslation } from 'next-i18next'
 import { FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Member } from '@dao-dao/state/clients/cw4-voting'
 import { VoteBalanceCard } from '@dao-dao/ui'

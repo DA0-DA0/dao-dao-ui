@@ -1,8 +1,8 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'

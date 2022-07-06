@@ -1,5 +1,5 @@
-import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { ClaimsListItem, SuspenseLoader } from '@dao-dao/ui'

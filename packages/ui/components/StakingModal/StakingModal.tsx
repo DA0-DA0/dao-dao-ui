@@ -1,5 +1,5 @@
-import { useTranslation } from 'next-i18next'
 import { FC, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {

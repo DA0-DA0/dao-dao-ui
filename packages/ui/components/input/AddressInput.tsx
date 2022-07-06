@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import { ChangeEventHandler, ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
@@ -8,6 +7,7 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { Wallet } from '@dao-dao/icons'
 

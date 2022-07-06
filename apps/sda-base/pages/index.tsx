@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 

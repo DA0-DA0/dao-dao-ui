@@ -1,5 +1,5 @@
 import { ExclamationIcon } from '@heroicons/react/outline'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'react-i18next'
 
 export const IsAdminWarning = ({
   admin,

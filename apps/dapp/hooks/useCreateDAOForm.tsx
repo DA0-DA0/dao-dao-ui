@@ -1,6 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -13,6 +12,7 @@ import {
   useForm,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'

@@ -1,6 +1,6 @@
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
-import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Theme, useThemeContext } from '@dao-dao/ui'
 

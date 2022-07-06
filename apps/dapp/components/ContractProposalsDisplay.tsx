@@ -1,8 +1,8 @@
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'

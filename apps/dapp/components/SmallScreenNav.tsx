@@ -1,8 +1,8 @@
 import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'

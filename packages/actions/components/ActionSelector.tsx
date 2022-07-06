@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { useTranslation } from 'next-i18next'
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Modal, SearchBar } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'

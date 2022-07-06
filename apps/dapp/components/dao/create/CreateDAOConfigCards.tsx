@@ -1,5 +1,4 @@
 import Emoji from 'a11y-react-emoji'
-import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import {
   FormState,
@@ -7,6 +6,7 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import {
   FormSwitchCard,

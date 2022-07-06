@@ -1,7 +1,7 @@
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {

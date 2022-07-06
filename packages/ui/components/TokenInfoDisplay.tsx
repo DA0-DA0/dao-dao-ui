@@ -1,5 +1,5 @@
-import { useTranslation } from 'next-i18next'
 import { FunctionComponent } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { InputLabel, Loader } from '@dao-dao/ui'

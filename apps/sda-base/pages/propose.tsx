@@ -1,10 +1,10 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
 import type { NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'

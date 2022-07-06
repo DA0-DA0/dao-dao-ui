@@ -1,7 +1,7 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import { FunctionComponent } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Abstain } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'

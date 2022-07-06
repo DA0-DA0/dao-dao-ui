@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { CwProposalSingleSelectors, useProposalModule } from '@dao-dao/state'

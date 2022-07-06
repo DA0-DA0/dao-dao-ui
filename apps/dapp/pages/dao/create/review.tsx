@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Button, CosmosMessageDisplay, Logo } from '@dao-dao/ui'

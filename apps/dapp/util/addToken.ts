@@ -1,7 +1,7 @@
 import { getKeplrFromWindow } from '@keplr-wallet/stores'
-import { useTranslation } from 'next-i18next'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 import { CHAIN_ID, suggestToken } from '@dao-dao/utils'
 

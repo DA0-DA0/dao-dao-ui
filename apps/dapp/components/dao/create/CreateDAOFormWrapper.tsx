@@ -1,6 +1,6 @@
-import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ComponentPropsWithoutRef, FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'

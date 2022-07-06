@@ -1,8 +1,8 @@
 import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
 import type { GetStaticProps, NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'

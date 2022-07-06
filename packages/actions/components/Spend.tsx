@@ -1,8 +1,8 @@
 import { Coin } from '@cosmjs/stargate'
 import Emoji from 'a11y-react-emoji'
-import { useTranslation } from 'next-i18next'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {

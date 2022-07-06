@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { Pie } from '@dao-dao/icons'

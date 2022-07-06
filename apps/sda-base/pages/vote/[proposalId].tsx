@@ -1,9 +1,9 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 import { FormProposalData } from '@dao-dao/actions'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'

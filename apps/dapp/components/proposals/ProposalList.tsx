@@ -1,6 +1,6 @@
 import { DownloadIcon } from '@heroicons/react/outline'
-import { useTranslation } from 'next-i18next'
 import { FC, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   constSelector,
   useRecoilState,

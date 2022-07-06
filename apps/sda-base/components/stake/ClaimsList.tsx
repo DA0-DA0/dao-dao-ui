@@ -1,6 +1,6 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
-import { useTranslation } from 'next-i18next'
 import { FunctionComponent } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'

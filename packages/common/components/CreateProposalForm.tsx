@@ -1,6 +1,5 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
@@ -10,6 +9,7 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {

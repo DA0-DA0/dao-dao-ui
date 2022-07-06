@@ -1,9 +1,9 @@
 import { HeartIcon as HeartIconOutline } from '@heroicons/react/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { FC, ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'

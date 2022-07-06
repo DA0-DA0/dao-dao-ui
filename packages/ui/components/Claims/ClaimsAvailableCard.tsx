@@ -1,5 +1,5 @@
-import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'

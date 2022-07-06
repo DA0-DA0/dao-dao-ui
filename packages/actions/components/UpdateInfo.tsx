@@ -1,7 +1,7 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
-import { useTranslation } from 'next-i18next'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import {
   FormSwitch,

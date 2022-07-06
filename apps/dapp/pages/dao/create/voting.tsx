@@ -1,9 +1,9 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
-import { useTranslation } from 'next-i18next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
