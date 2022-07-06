@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { FormProposalData } from '@dao-dao/actions'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { useTranslation } from '@dao-dao/i18n'
 import {
@@ -74,6 +75,27 @@ const InnerProposal: FC = () => {
   })
 
   const { markPinnedProposalIdDone } = usePinnedDAOs()
+
+  const denomConversionDecimals = useMemo(
+    () =>
+      votingModuleType === VotingModuleType.Cw4Voting
+        ? 0
+        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+          governanceTokenInfo
+        ? governanceTokenInfo.decimals
+        : undefined,
+    [votingModuleType, governanceTokenInfo]
+  )
+
+  if (
+    !proposalResponse ||
+    !proposalModuleConfig ||
+    denomConversionDecimals === undefined ||
+    proposalId === undefined
+  ) {
+    throw new Error(t('error.loadingData'))
+  }
+
   const onVote = useCallback(
     async (vote: Vote) => {
       if (!connected || proposalId === undefined) return
@@ -133,25 +155,30 @@ const InnerProposal: FC = () => {
     setLoading(false)
   }, [connected, proposalId, executeProposal, refreshProposalAndAll, t])
 
-  const denomConversionDecimals = useMemo(
-    () =>
-      votingModuleType === VotingModuleType.Cw4Voting
-        ? 0
-        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-          governanceTokenInfo
-        ? governanceTokenInfo.decimals
-        : undefined,
-    [votingModuleType, governanceTokenInfo]
-  )
+  const onDuplicate = useCallback(
+    (actionData) => {
+      const duplicateFormData: FormProposalData = {
+        title: proposalResponse.proposal.title,
+        description: proposalResponse.proposal.description,
+        actionData: actionData.map(({ action: { key }, data }) => ({
+          key,
+          data,
+        })),
+      }
 
-  if (
-    !proposalResponse ||
-    !proposalModuleConfig ||
-    denomConversionDecimals === undefined ||
-    proposalId === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
+      router.push(
+        `/dao/${coreAddress}/proposals/create?prefill=${JSON.stringify(
+          duplicateFormData
+        )}`
+      )
+    },
+    [
+      coreAddress,
+      proposalResponse.proposal.description,
+      proposalResponse.proposal.title,
+      router,
+    ]
+  )
 
   const memberWhenProposalCreated =
     !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
@@ -186,6 +213,7 @@ const InnerProposal: FC = () => {
             connected={connected}
             coreAddress={coreAddress}
             loading={loading}
+            onDuplicate={onDuplicate}
             onExecute={onExecute}
             onVote={onVote}
             proposal={proposalResponse.proposal}
