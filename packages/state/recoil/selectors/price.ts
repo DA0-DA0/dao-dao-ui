@@ -1,45 +1,122 @@
 import { selectorFamily } from 'recoil'
 
-import { NATIVE_DECIMALS, USDC_SWAP_ADDRESS } from '@dao-dao/utils'
+import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  USDC_SWAP_ADDRESS,
+} from '@dao-dao/utils'
 
-import { cosmWasmClientSelector } from './chain'
+import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
+import { cw20BalancesInfoSelector } from './clients/cw-core'
+import { poolsListSelector } from './pools'
 
-export const tokenUSDPriceSelector = selectorFamily<
+export const tokenUSDCPriceSelector = selectorFamily<
   number | undefined,
-  { tokenSwapAddress: string; tokenDecimals: number }
+  { denom: string; tokenDecimals?: number }
 >({
-  key: 'tokenUSDPriceSelector',
+  key: 'tokenUSDCPriceSelector',
   get:
-    ({ tokenSwapAddress, tokenDecimals }) =>
+    ({ denom, tokenDecimals }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
-      if (!client) return 0
-
-      // Likely means we're on the testnet. Just make up a number.
-      if (!tokenSwapAddress.length) return undefined
-
-      if (!USDC_SWAP_ADDRESS) {
-        return undefined
+      const tokens = get(poolsListSelector)
+      if (!tokens) {
+        return
       }
 
-      const junoUSD = (
-        await client.queryContractSmart(
-          // Juno UST pool on Junoswap.
-          USDC_SWAP_ADDRESS,
-          { token1_for_token2_price: { token1_amount: '1000000' } }
-        )
-      ).token2_amount
+      // Find swap for denom
+      const denomSwap = tokens.pools.find(
+        ({ pool_assets }) =>
+          pool_assets.find(
+            ({ denom: pool_denom, token_address }) =>
+              pool_denom === denom || token_address === denom
+          ) !== undefined
+      )
 
-      const junoToken = (
-        await client.queryContractSmart(tokenSwapAddress, {
-          token2_for_token1_price: { token2_amount: '1000000' },
-        })
-      ).token1_amount
+      // No price information avaliable.
+      if (!denomSwap) {
+        return
+      }
+
+      // Find USDC swap by USDC_SWAP_ADDRESS
+      const usdcSwap = tokens.pools.find(
+        ({ swap_address }) => swap_address === USDC_SWAP_ADDRESS
+      )
+
+      const client = get(cosmWasmClientSelector)
+
+      // Query for price of 1000000 tokens since decimals are not returned
+      // by API. This will give us up to 10^-6 precision for calculations
+      const tokenAmount = 1000000
+
+      // Query and calculate price for 1 native token
+      const nativeUSDC =
+        Number(
+          (usdcSwap
+            ? await client.queryContractSmart(usdcSwap.swap_address, {
+                token1_for_token2_price: {
+                  token1_amount: tokenAmount.toString(),
+                },
+              })
+            : { token2_amount: '0' }
+          ).token2_amount
+        ) / tokenAmount
+
+      // Don't need to query again for price of native token
+      if (denom === NATIVE_DENOM) {
+        return Number(nativeUSDC) * Math.pow(10, -NATIVE_DECIMALS)
+      }
+
+      // Get token price in terms of native token
+      const tokenPairPrice =
+        Number(
+          (
+            await client.queryContractSmart(denomSwap.swap_address, {
+              token2_for_token1_price: {
+                token2_amount: tokenAmount.toString(),
+              },
+            })
+          ).token1_amount
+        ) / tokenAmount
+
+      const denomSwapAssetInfo = denomSwap.pool_assets.find(
+        ({ denom: pool_denom, token_address }) =>
+          denom === pool_denom || token_address === denom
+      )
+      const denomDecimals = tokenDecimals
+        ? tokenDecimals
+        : denomSwapAssetInfo
+        ? denomSwapAssetInfo.decimals
+        : NATIVE_DECIMALS
 
       const price =
-        Number(junoToken) *
-        Number(junoUSD) *
-        Math.pow(10, -(NATIVE_DECIMALS + tokenDecimals))
+        Number(tokenPairPrice) *
+        Number(nativeUSDC) *
+        Math.pow(10, -denomDecimals)
+
       return price
+    },
+})
+
+export const addressTVLSelector = selectorFamily<number, { address: string }>({
+  key: 'tokenUSDCPriceSelector',
+  get:
+    ({ address }) =>
+    async ({ get }) => {
+      const nativeBalances = get(nativeBalanceSelector(address))
+      const cw20Balances = get(cw20BalancesInfoSelector({ address }))
+
+      let balances = cw20Balances
+        ? cw20Balances.map(({ amount, denom }) => ({ amount, denom }))
+        : []
+      if (nativeBalances) {
+        balances = [nativeBalances].concat(balances)
+      }
+
+      const prices = balances.map(({ amount, denom }) => {
+        const price = get(tokenUSDCPriceSelector({ denom }))
+        return price ? Number(amount) * price : 0
+      })
+
+      return prices.reduce((price, total) => price + total, 0)
     },
 })
