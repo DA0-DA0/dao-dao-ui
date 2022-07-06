@@ -1,14 +1,15 @@
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Button, CosmosMessageDisplay, Logo } from '@dao-dao/ui'
 import { parseEncodedMessage } from '@dao-dao/utils'
 
 import { NewDAOStructure } from '@/atoms'
 import {
+  CreateDAOAllowRevotingCard,
   CreateDAOFormWrapper,
   CreateDAOProposalDepositCard,
   CreateDAOQuorumCard,
@@ -86,31 +87,33 @@ const CreateDAOReviewPage: NextPage = () => {
                 {watchedNewDAO.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    alt={t('daosLogo')}
-                    className="w-full h-full"
+                    alt={t('info.daosLogo')}
+                    className="object-cover w-full h-full"
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
-                  <Logo alt={t('daodaoLogo')} height="100%" width="100%" />
+                  <Logo alt={t('info.daodaoLogo')} height="100%" width="100%" />
                 )}
               </div>
             </div>
 
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">{t('Name')}</p>
+                <p className="font-mono caption-text">{t('form.name')}</p>
                 <p className="text-xl">{watchedNewDAO.name}</p>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="font-mono caption-text">{t('Description')}</p>
+                <p className="font-mono caption-text">
+                  {t('form.description')}
+                </p>
                 <p
                   className={clsx('secondary-text', {
                     'text-base': watchedNewDAO.description,
                     'text-sm italic': !watchedNewDAO.description,
                   })}
                 >
-                  {watchedNewDAO.description || t('None')}
+                  {watchedNewDAO.description || t('info.none')}
                 </p>
               </div>
             </div>
@@ -140,6 +143,7 @@ const CreateDAOReviewPage: NextPage = () => {
               <CreateDAOUnstakingDurationCard {...configCardProps} />
             </>
           )}
+          <CreateDAOAllowRevotingCard {...configCardProps} />
           <CreateDAOThresholdCard {...configCardProps} />
           <CreateDAOQuorumCard {...configCardProps} />
         </div>
@@ -154,8 +158,8 @@ const CreateDAOReviewPage: NextPage = () => {
             variant="secondary"
           >
             {previewJson
-              ? t('hideInstantiateMessage')
-              : t('showInstantiateMessage')}
+              ? t('button.hideInstantiateMessage')
+              : t('button.showInstantiateMessage')}
           </Button>
         </div>
         {previewJson && <CosmosMessageDisplay value={previewJson} />}

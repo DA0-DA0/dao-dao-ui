@@ -2,22 +2,28 @@ import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Abstain, Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 export { VoteChoice }
 
 export interface VoteProps {
-  onVote: (choice: VoteChoice) => void
-  voterWeight: number
+  onVote: (choice: VoteChoice) => unknown
+  voterWeightPercent: number
   loading: boolean
   blur?: boolean
 }
 
-export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
+export const Vote: FC<VoteProps> = ({
+  onVote,
+  voterWeightPercent,
+  loading,
+  blur,
+}) => {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
@@ -30,14 +36,12 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
     >
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">
-          <Emoji label={t('ballotBox')} symbol="🗳" />
+          <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
         </p>
-        <p className="primary-text">{t('casting')}</p>
+        <p className="primary-text">{t('title.casting')}</p>
         <p className="secondary-text">
-          {t('percentVotingPower', {
-            percent: voterWeight.toLocaleString(undefined, {
-              maximumSignificantDigits: 4,
-            }),
+          {t('info.percentVotingPower', {
+            percent: formatPercentOf100(voterWeightPercent),
           })}
         </p>
       </div>
@@ -59,7 +63,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
               'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
             })}
           />
-          {t('yes')}
+          {t('info.yes')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -78,7 +82,7 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
               'group-hover:text-base text-error': selected !== VoteChoice.No,
             })}
           />
-          {t('no')}
+          {t('info.no')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -92,16 +96,22 @@ export const Vote: FC<VoteProps> = ({ onVote, voterWeight, loading, blur }) => {
           variant="secondary"
         >
           <Abstain fill="currentColor" />
-          {t('abstain')}
+          {t('info.abstain')}
         </Button>
       </div>
       <Button
         disabled={selected === undefined}
         loading={loading}
-        onClick={() => onVote(selected as VoteChoice)}
+        onClick={async () => {
+          try {
+            await onVote(selected as VoteChoice)
+          } finally {
+            setSelected(undefined)
+          }
+        }}
       >
         <div className="flex gap-2 justify-center items-center w-full">
-          <p>{t('castYourVote')}</p> <Airplane stroke="currentColor" />
+          <p>{t('button.castYourVote')}</p> <Airplane stroke="currentColor" />
         </div>
       </Button>
     </div>

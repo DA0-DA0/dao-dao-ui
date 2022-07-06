@@ -2,8 +2,8 @@ import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
 import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
@@ -25,7 +25,7 @@ import {
 } from '@/components'
 
 const Home: NextPage = () => {
-  const { t } = useTranslation('splash')
+  const { t } = useTranslation()
 
   const [tvl, setTVL] = useState<string | undefined>(undefined)
   const [daos, setDaos] = useState<string | undefined>(undefined)
@@ -65,7 +65,7 @@ const Home: NextPage = () => {
                 className="flex gap-2 items-center"
                 href="https://docs.daodao.zone"
               >
-                {t('documentation')}
+                {t('splash.documentation')}
                 <ArrowUpRight color="currentColor" height="10px" width="10px" />
               </a>
               <div className="hidden md:block">
@@ -75,10 +75,10 @@ const Home: NextPage = () => {
           </div>
         </nav>
         <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
-          {t('shortTagline')}
+          {t('splash.shortTagline')}
         </h1>
         <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
-          {t('longTagline')}
+          {t('splash.longTagline')}
         </p>
         <div className="mx-auto">
           <EnterAppButton />
@@ -92,21 +92,21 @@ const Home: NextPage = () => {
         <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
           <StatsCard>
             <h3 className="header-text">
-              {tvl ? '$' + tvl.toLocaleString() : 'loading..'}
+              {tvl ? '$' + tvl.toLocaleString() : t('info.loading')}
             </h3>
-            <p className="caption-text">{t('usdcTotalValue')}</p>
+            <p className="caption-text">{t('splash.usdcTotalValue')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
-              {daos ? daos.toLocaleString() : 'loading..'}
+              {daos ? daos.toLocaleString() : t('info.loading')}
             </h3>
-            <p className="caption-text">{t('daosCreated')}</p>
+            <p className="caption-text">{t('splash.daosCreated')}</p>
           </StatsCard>
           <StatsCard>
             <h3 className="header-text">
-              {proposals ? proposals.toLocaleString() : 'loading..'}
+              {proposals ? proposals.toLocaleString() : t('info.loading')}
             </h3>
-            <p className="caption-text">{t('proposalsCreated')}</p>
+            <p className="caption-text">{t('splash.proposalsCreated')}</p>
           </StatsCard>
         </div>
 
@@ -117,22 +117,22 @@ const Home: NextPage = () => {
             <RotatableLogo initialRotation={45} />
           </div>
           <h2 className="px-4 mt-12 w-full text-center header-text">
-            {t('transparentGovernanceOnChain')}
+            {t('splash.transparentGovernanceOnChain')}
           </h2>
           <p className="px-4 mx-auto mt-4 max-w-xl text-center text-tertiary primary-text">
-            {t('transparencyExplanation')}
+            {t('splash.transparencyExplanation')}
           </p>
           <div className="mt-12">
             <HomepageCards />
           </div>
           <div className="flex flex-col gap-4 items-center my-12">
             <h2 className="mx-4 max-w-xl text-center header-text">
-              {t('createExploreJoin')}
+              {t('splash.createExploreJoin')}
             </h2>
             <Link href="/home">
               <a>
-                <Button size={'lg'}>
-                  {t('cta')}
+                <Button size="lg">
+                  {t('splash.cta')}
                   <ArrowUpRight
                     color="currentColor"
                     height="10px"
@@ -144,14 +144,18 @@ const Home: NextPage = () => {
           </div>
           <div className="grid grid-cols-1 gap-2 my-10 font-mono md:grid-cols-3 caption-text">
             <div className="flex flex-wrap gap-6 items-center mx-2 text-xs">
-              <p>DAO DAO v{process.env.NEXT_PUBLIC_DAO_DAO_VERSION}</p>
+              <p>
+                {t('info.productVersion', {
+                  versionNumber: process.env.NEXT_PUBLIC_DAO_DAO_VERSION,
+                })}
+              </p>
               <a
                 className="hover:text-primary transition"
                 href="https://www.junonetwork.io/"
                 rel="noreferrer"
                 target="_blank"
               >
-                {t('poweredByJuno')}
+                {t('splash.poweredByJuno')}
                 <ArrowNarrowRightIcon
                   className="inline mb-0.5 w-6 h-4 font-light"
                   style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
@@ -169,6 +173,6 @@ export default Home
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['splash'])),
+    ...(await serverSideTranslations(locale, ['translation'])),
   },
 })

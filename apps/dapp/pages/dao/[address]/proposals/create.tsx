@@ -1,12 +1,13 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -14,7 +15,7 @@ import {
   blockHeightSelector,
   refreshProposalsIdAtom,
   useProposalModule,
-  useWallet,
+  useWalletBalance,
 } from '@dao-dao/state'
 import { Breadcrumbs, CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
@@ -33,8 +34,16 @@ import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, name, votingModuleType } = useDAOInfoContext()
-  const { address: walletAddress, connected, refreshBalances } = useWallet()
+  const {
+    coreAddress,
+    name,
+    votingModuleType,
+    stakingContractAddress,
+    cw4GroupAddress,
+    governanceTokenAddress,
+  } = useDAOInfoContext()
+  const { address: walletAddress, connected } = useWallet()
+  const { refreshBalances } = useWalletBalance()
   const [loading, setLoading] = useState(false)
 
   const { proposalModuleAddress, proposalModuleConfig } =
@@ -158,13 +167,15 @@ const InnerProposalCreate = () => {
           <Breadcrumbs
             className="mb-6"
             crumbs={[
-              ['/home', t('home')],
+              ['/home', t('title.home')],
               [`/dao/${coreAddress}`, name],
-              [router.asPath, t('createAProposal')],
+              [router.asPath, t('title.createAProposal')],
             ]}
           />
 
-          <h2 className="mb-6 font-medium lg:hidden">{t('createAProposal')}</h2>
+          <h2 className="mb-6 font-medium lg:hidden">
+            {t('title.createAProposal')}
+          </h2>
 
           <SuspenseLoader fallback={<Loader />}>
             <CreateProposalForm
@@ -177,18 +188,52 @@ const InnerProposalCreate = () => {
         </div>
 
         <div className="flex-1">
-          <h2 className="mb-4 font-medium text-medium">{t('addresses')}</h2>
+          <h2 className="mb-4 font-medium text-medium">
+            {t('title.addresses')}
+          </h2>
 
           <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
             <p className="font-mono text-sm text-tertiary">
-              {t('daoTreasury')}
+              {t('info.daoAddress')}
             </p>
             <div className="col-span-2">
               <CopyToClipboard value={coreAddress} />
             </div>
+            {stakingContractAddress && (
+              <>
+                <p className="font-mono text-sm text-tertiary">
+                  {t('info.stakingAddress')}
+                </p>
+                <div className="col-span-2">
+                  <CopyToClipboard value={stakingContractAddress} />
+                </div>
+              </>
+            )}
+            {cw4GroupAddress && (
+              <>
+                <p className="font-mono text-sm text-tertiary">
+                  {t('info.groupAddress')}
+                </p>
+                <div className="col-span-2">
+                  <CopyToClipboard value={cw4GroupAddress} />
+                </div>
+              </>
+            )}
+            {governanceTokenAddress && (
+              <>
+                <p className="font-mono text-sm text-tertiary">
+                  {t('info.govTokenAddress')}
+                </p>
+                <div className="col-span-2">
+                  <CopyToClipboard value={governanceTokenAddress} />
+                </div>
+              </>
+            )}
           </div>
 
-          <h2 className="mb-4 font-medium text-medium">{t('proposalInfo')}</h2>
+          <h2 className="mb-4 font-medium text-medium">
+            {t('title.proposalInfo')}
+          </h2>
           <ProposalsInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
         </div>
       </div>
@@ -215,9 +260,9 @@ export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
   // Need to block until i18n translations are ready, since i18n depends
   // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
-export const getStaticProps = makeGetDAOStaticProps((_, t) => ({
-  followingTitle: t('createAProposal'),
+export const getStaticProps = makeGetDAOStaticProps(({ t }) => ({
+  followingTitle: t('title.createAProposal'),
 }))

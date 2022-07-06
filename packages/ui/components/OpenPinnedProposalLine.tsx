@@ -2,8 +2,8 @@ import { EyeOffIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { ProposalResponse } from '@dao-dao/state/clients/cw-proposal-single'
 import { getProposalEnd, zeroPad } from '@dao-dao/utils'
@@ -29,7 +29,7 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   return (
     <div
       className={clsx(
-        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 text-sm bg-primary rounded-lg',
+        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 bg-primary rounded-lg',
         className
       )}
     >
@@ -38,14 +38,14 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
         {daoConfig.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            alt={t('daosLogo')}
-            className="w-auto h-6 rounded-full"
+            alt={t('info.daosLogo')}
+            className="w-5 h-5 rounded-full"
             src={daoConfig.image_url}
           />
         ) : (
-          <Logo alt={t('daodaoLogo')} height="1.5rem" width="1.5rem" />
+          <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
         )}
-        <p className="primary-text">{daoConfig.name}</p>
+        <p className="link-text">{daoConfig.name}</p>
       </div>
       <p className="truncate link-text">{proposal.title}</p>
       <p className="text-right truncate body-text">
@@ -65,7 +65,7 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-4 p-4 text-sm bg-primary rounded-lg',
+        'flex flex-col gap-4 p-4 bg-primary rounded-lg',
         className
       )}
     >
@@ -74,14 +74,14 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
           {daoConfig.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              alt={t('daosLogo')}
-              className="w-auto h-6 rounded-full"
+              alt={t('info.daosLogo')}
+              className="w-5 h-5 rounded-full"
               src={daoConfig.image_url}
             />
           ) : (
-            <Logo alt={t('daodaoLogo')} height="1.5rem" width="1.5rem" />
+            <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
           )}
-          <p className="primary-text">{daoConfig.name}</p>
+          <p className="link-text">{daoConfig.name}</p>
         </div>
         <p className="font-mono caption-text"># {zeroPad(id, 6)}</p>
       </div>
@@ -109,7 +109,7 @@ export const OpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = (
         </a>
       </Link>
 
-      <Tooltip label={t('hideFromPage')}>
+      <Tooltip label={t('info.hideFromPageTooltip')}>
         <Button className="!px-2" onClick={props.markDone} variant="secondary">
           <EyeOffIcon className="w-4 h-4" />
         </Button>

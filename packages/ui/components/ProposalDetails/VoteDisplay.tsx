@@ -1,8 +1,8 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FunctionComponent } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Abstain } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 
@@ -18,15 +18,15 @@ export const VoteDisplay: FunctionComponent<{
 
   return vote === Vote.Yes ? (
     <p className={clsx(commonClassNames, 'text-valid')}>
-      <CheckIcon className="inline w-4" /> {t('yes')}
+      <CheckIcon className="inline w-4" /> {t('info.yes')}
     </p>
   ) : vote === Vote.No ? (
     <p className={clsx(commonClassNames, 'text-error')}>
-      <XIcon className="inline w-4" /> {t('no')}
+      <XIcon className="inline w-4" /> {t('info.no')}
     </p>
   ) : vote === Vote.Abstain ? (
     <p className={clsx(commonClassNames, 'text-secondary')}>
-      <Abstain fill="currentColor" /> {t('abstain')}
+      <Abstain fill="currentColor" /> {t('info.abstain')}
     </p>
   ) : (
     // Should never happen.

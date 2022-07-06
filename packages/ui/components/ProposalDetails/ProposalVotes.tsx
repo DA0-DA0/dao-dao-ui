@@ -1,8 +1,8 @@
 import { CheckIcon, DownloadIcon, XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Abstain } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
@@ -31,7 +31,7 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
   return (
     <>
       <hr className="border-default" />
-      <h3 className="mt-8 mb-5 link-text">{t('allVotes')}</h3>
+      <h3 className="mt-8 mb-5 link-text">{t('title.allVotes')}</h3>
       <div className="flex flex-col mb-5 divide-y divide-inactive">
         {votes.map((vote, index) => (
           <VoteRow {...vote} key={index} />
@@ -45,7 +45,7 @@ export const ProposalVotes: FC<ProposalVotesProps> = ({
             size="sm"
             variant="secondary"
           >
-            {t('loadMore')} <DownloadIcon className="w-4" />
+            {t('button.loadMore')} <DownloadIcon className="w-4" />
           </Button>
         </div>
       )}
@@ -94,15 +94,15 @@ const VoteDisplay: FC<{ vote: Vote }> = ({ vote }) => {
 
   return vote === Vote.Yes ? (
     <p className="flex gap-1 items-center font-mono text-sm text-valid">
-      <CheckIcon className="inline w-4" /> {t('yes')}
+      <CheckIcon className="inline w-4" /> {t('info.yes')}
     </p>
   ) : vote === Vote.No ? (
     <p className="flex gap-1 items-center font-mono text-sm text-error">
-      <XIcon className="inline w-4" /> {t('no')}
+      <XIcon className="inline w-4" /> {t('info.no')}
     </p>
   ) : (
     <p className="flex gap-1 items-center font-mono text-sm text-secondary">
-      <Abstain fill="currentColor" /> {t('abstain')}
+      <Abstain fill="currentColor" /> {t('info.abstain')}
     </p>
   )
 }

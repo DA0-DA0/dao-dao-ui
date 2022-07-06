@@ -1,3 +1,4 @@
+export * as CwAdminFactoryHooks from './cw-admin-factory'
 export * as CwCoreHooks from './cw-core'
 export * as CwProposalSingleHooks from './cw-proposal-single'
 export * as Cw4VotingHooks from './cw4-voting'

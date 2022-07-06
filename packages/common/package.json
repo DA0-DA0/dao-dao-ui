@@ -6,11 +6,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/ui": "*",
-    "@dao-dao/state": "*",
-    "@dao-dao/utils": "*",
+    "@cosmjs/stargate": "0.28.10",
     "@dao-dao/actions": "*",
-    "react": "^18.1.0",
+    "@dao-dao/state": "*",
+    "@dao-dao/ui": "*",
+    "@dao-dao/utils": "*",
+    "react": "18.1.0",
     "recoil": "^0.7.2"
   },
   "devDependencies": {
@@ -18,6 +19,10 @@
     "@dao-dao/tsconfig": "*",
     "@dao-dao/types": "^1.0.0",
     "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "@noahsaso/cosmodal": "0.6.0",
+    "next": "^12.2.0"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

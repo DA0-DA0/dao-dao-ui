@@ -1,3 +1,5 @@
+const path = require('path')
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -41,7 +43,31 @@ let config = {
       destination: '/home',
       permanent: false,
     },
+    // Redirect legacy multisigs (legacy DAOs redirected in
+    // makeGetDAOStaticProps function).
+    {
+      source: '/multisig/:slug*',
+      destination:
+        process.env.NEXT_PUBLIC_LEGACY_URL_PREFIX + '/multisig/:slug*',
+      permanent: false,
+    },
   ],
+  webpack: (config, options) => {
+    if (options.isServer) {
+      config.externals = ['@noahsaso/cosmodal', ...config.externals]
+    }
+
+    config.resolve.alias['@noahsaso/cosmodal'] = path.resolve(
+      __dirname,
+      '..',
+      '..',
+      'node_modules',
+      '@noahsaso',
+      'cosmodal'
+    )
+
+    return config
+  },
 }
 
 // Only need rewrites for local development

@@ -7,7 +7,6 @@ import {
   NATIVE_DENOM,
   StakeType,
   VotingModuleType,
-  convertDenomToHumanReadableDenom,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeDistributeMessage,
@@ -41,7 +40,7 @@ const useDefaults: UseDefaults<StakeData> = () => ({
   stakeType: stakeActions[0].type,
   validator: '',
   amount: 1,
-  denom: convertDenomToHumanReadableDenom(NATIVE_DENOM),
+  denom: NATIVE_DENOM,
 })
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
@@ -64,12 +63,8 @@ const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
   msg: Record<string, any>
-) => {
-  const denom = convertDenomToHumanReadableDenom(
-    process.env.NEXT_PUBLIC_FEE_DENOM as string
-  )
-
-  return useMemo(() => {
+) =>
+  useMemo(() => {
     if (
       'distribution' in msg &&
       StakeType.WithdrawDelegatorReward in msg.distribution &&
@@ -82,7 +77,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
           validator: msg.distribution.withdraw_delegator_reward.validator,
           // Default values, not needed for displaying this type of message.
           amount: 1,
-          denom,
+          denom: NATIVE_DENOM,
         },
       }
     } else if ('staking' in msg) {
@@ -101,7 +96,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
         'amount' in data.amount &&
         'denom' in data.amount
       ) {
-        const { denom } = data.amount
+        const { amount, denom } = data.amount
 
         return {
           match: true,
@@ -116,7 +111,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
                 ? data.src_validator
                 : undefined,
             amount: convertMicroDenomToDenomWithDecimals(
-              data.amount.amount,
+              amount,
               nativeTokenDecimals(denom)!
             ),
             denom,
@@ -126,8 +121,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
     }
 
     return { match: false }
-  }, [msg, denom])
-}
+  }, [msg])
 
 const InnerStakeComponent: ActionComponent = (props) => {
   const nativeBalances =

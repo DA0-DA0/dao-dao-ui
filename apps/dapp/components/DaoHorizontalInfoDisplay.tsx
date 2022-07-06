@@ -1,7 +1,7 @@
 import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Pencil } from '@dao-dao/icons'
 import {
   useGovernanceTokenInfo,
@@ -16,6 +16,7 @@ import {
 import {
   VotingModuleType,
   convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
 } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from './DAOPageWrapper'
@@ -40,10 +41,9 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
     totalVotingWeight !== undefined &&
     governanceTokenInfo &&
     Number(governanceTokenInfo.total_supply) > 0
-      ? (
-          (100 * totalVotingWeight) /
-          Number(governanceTokenInfo.total_supply)
-        ).toLocaleString(undefined, { maximumSignificantDigits: 3 })
+      ? formatPercentOf100(
+          (totalVotingWeight / Number(governanceTokenInfo.total_supply)) * 100
+        )
       : undefined
 
   return (
@@ -57,11 +57,13 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
           governanceTokenInfo ? (
           <>
-            {t('Total supply amount', {
+            {t('info.amountTotalSupply', {
               amount: convertMicroDenomToDenomWithDecimals(
                 governanceTokenInfo.total_supply,
                 governanceTokenInfo.decimals
-              ).toLocaleString(),
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: governanceTokenInfo.decimals,
+              }),
               tokenSymbol: governanceTokenInfo.symbol,
             })}
           </>
@@ -72,7 +74,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         stakedPercent !== undefined && (
           <HorizontalInfoSection>
             <LibraryIcon className="inline w-4" />
-            {t('Percent staked', {
+            {t('info.percentStaked', {
               percent: stakedPercent,
               tokenSymbol: governanceTokenInfo.symbol,
             })}
@@ -80,7 +82,7 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
         )}
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />
-        {t('proposalsCreated', { count: proposalCount })}
+        {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
   )

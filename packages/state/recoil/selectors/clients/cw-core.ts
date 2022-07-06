@@ -1,5 +1,9 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
+import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
+
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
 import {
   AdminResponse,
   ConfigResponse,
@@ -18,8 +22,11 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '../../../clients/cw-core'
-import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
-import { cosmWasmClientSelector, signingCosmWasmClientSelector } from '../chain'
+import {
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -50,7 +57,7 @@ export const executeClient = selectorFamily<
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientSelector)
+      const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
       return new ExecuteClient(client, sender, contractAddress)
@@ -202,6 +209,26 @@ export const allCw20TokenListSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      //! Check if has governance token, and add to list if necessary.
+      const votingModuleAddress = get(votingModuleSelector(queryClientParams))
+      // All `info` queries are the same, so just use cw-core's info query.
+      const votingModuleInfo = votingModuleAddress
+        ? get(infoSelector({ contractAddress: votingModuleAddress }))
+        : undefined
+      const votingModuleType =
+        votingModuleInfo &&
+        parseVotingModuleContractName(votingModuleInfo.info.contract)
+      const governanceTokenAddress =
+        votingModuleAddress &&
+        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+          ? get(
+              Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+                contractAddress: votingModuleAddress,
+              })
+            )
+          : undefined
+
+      //! Get all tokens.
       let startAt: string | undefined
 
       const tokenList: Cw20TokenListResponse = []
@@ -225,6 +252,15 @@ export const allCw20TokenListSelector = selectorFamily<
           tokenList.push(response[response.length - 1])
           break
         }
+      }
+
+      //! Add governance token if exists but missing from list.
+      if (
+        governanceTokenAddress &&
+        !tokenList.includes(governanceTokenAddress)
+      ) {
+        // Add to beginning of list.
+        tokenList.splice(0, 0, governanceTokenAddress)
       }
 
       return tokenList
@@ -272,6 +308,34 @@ export const allCw20BalancesSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      //! Check if has governance token, and add to list if necessary.
+      const votingModuleAddress = get(votingModuleSelector(queryClientParams))
+      // All `info` queries are the same, so just use cw-core's info query.
+      const votingModuleInfo = votingModuleAddress
+        ? get(infoSelector({ contractAddress: votingModuleAddress }))
+        : undefined
+      const votingModuleType =
+        votingModuleInfo &&
+        parseVotingModuleContractName(votingModuleInfo.info.contract)
+      const governanceTokenAddress =
+        votingModuleAddress &&
+        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+          ? get(
+              Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+                contractAddress: votingModuleAddress,
+              })
+            )
+          : undefined
+      const governanceTokenBalance = governanceTokenAddress
+        ? get(
+            Cw20BaseSelectors.balanceSelector({
+              contractAddress: governanceTokenAddress,
+              params: [{ address: queryClientParams.contractAddress }],
+            })
+          )?.balance
+        : undefined
+
+      //! Get all balances.
       let startAt: string | undefined
 
       const balances: Cw20BalancesResponse = []
@@ -297,7 +361,54 @@ export const allCw20BalancesSelector = selectorFamily<
         }
       }
 
+      //! Add governance token balance if exists but missing from list.
+      if (
+        governanceTokenAddress &&
+        governanceTokenBalance &&
+        !balances.some(({ addr }) => addr === governanceTokenAddress)
+      ) {
+        // Add to beginning of list.
+        balances.splice(0, 0, {
+          addr: governanceTokenAddress,
+          balance: governanceTokenBalance,
+        })
+      }
+
       return balances
+    },
+})
+
+export const cw20BalancesInfoSelector = selectorFamily<
+  { symbol: string; denom: string; amount: string; decimals: number }[],
+  { address: string }
+>({
+  key: 'cw20BalancesInfo',
+  get:
+    ({ address }) =>
+    async ({ get }) => {
+      const cw20List =
+        get(allCw20BalancesSelector({ contractAddress: address })) ?? []
+
+      const cw20Info = get(
+        waitForAll(
+          cw20List.map(({ addr }) =>
+            Cw20BaseSelectors.tokenInfoSelector({
+              contractAddress: addr,
+              params: [],
+            })
+          )
+        )
+      ).filter(Boolean) as TokenInfoResponse[]
+
+      const cw20Tokens = cw20Info.map((info, idx) => {
+        return {
+          symbol: info.symbol,
+          denom: cw20List[idx].addr,
+          amount: cw20List[idx].balance,
+          decimals: info.decimals,
+        }
+      })
+      return cw20Tokens
     },
 })
 

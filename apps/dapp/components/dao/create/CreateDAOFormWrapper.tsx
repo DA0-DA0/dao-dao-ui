@@ -1,17 +1,18 @@
 import { NextSeo } from 'next-seo'
 import { ComponentPropsWithoutRef, FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button, SubmitButton } from '@dao-dao/ui'
 
-import { CreateDAONav } from './CreateDAONav'
 import {
   CreateDAOSubmitLabel,
   DAOFormPage,
   useCreateDAOFormPages,
 } from '@/hooks'
+
+import { CreateDAONav } from './CreateDAONav'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
   Omit<T, K>
@@ -52,11 +53,11 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
     <div>
       <NextSeo
         openGraph={{
-          title: t('Create a DAO'),
+          title: t('title.createADAO'),
           // TODO: different description?
-          description: t('Create a DAO'),
+          description: t('title.createADAO'),
         }}
-        title={t('Create a DAO')}
+        title={t('title.createADAO')}
       />
 
       <form
@@ -71,9 +72,9 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
           label=""
         />
 
-        <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full">
+        <div className="overflow-y-auto flex-1 p-6 w-full max-w-screen-lg h-full styled-scrollbar">
           <div className="mb-8">
-            <h2 className="mb-4 header-text">{t('Create a DAO')}</h2>
+            <h2 className="mb-4 header-text">{t('title.createADAO')}</h2>
 
             <div className="mb-10 md:hidden">
               <CreateDAONav currentPageIndex={currentPageIndex} />

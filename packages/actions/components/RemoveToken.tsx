@@ -1,8 +1,8 @@
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
@@ -43,13 +43,13 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('token')} symbol="⭕️" />}
+      emoji={<Emoji label={t('emoji.token')} symbol="⭕️" />}
       onRemove={onRemove}
-      title={t('removeTreasuryToken')}
+      title={t('title.removeTreasuryToken')}
     >
       {existingTokens.length > 0 && (
         <>
-          <InputLabel name={t('existingTokens')} />
+          <InputLabel name={t('form.existingTokens')} />
           <div className="grid grid-cols-5 gap-1 mb-2">
             {existingTokens.map(({ address, info }) => (
               <Button
@@ -71,7 +71,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
       )}
 
       <div className="flex flex-col gap-2 mb-3">
-        <InputLabel name={t('tokenAddress')} />
+        <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
           disabled={readOnly}
           error={errors?.address}

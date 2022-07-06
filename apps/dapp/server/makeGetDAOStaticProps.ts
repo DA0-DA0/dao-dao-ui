@@ -1,9 +1,9 @@
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 // eslint-disable-next-line regex/invalid
 import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps } from 'next'
+import { i18n } from 'next-i18next'
 
-// eslint-disable-next-line regex/invalid
-import { _probablyDontUseThisI18n } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Cw20StakedBalanceVotingQueryClient,
@@ -16,6 +16,7 @@ import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  LEGACY_URL_PREFIX,
   VotingModuleType,
   cosmWasmClientRouter,
   parseVotingModuleContractName,
@@ -34,7 +35,7 @@ const serverT = (
 ) =>
   // Ok to use here as long as it's used after `serverSideTranslations`.
   // eslint-disable-next-line regex/invalid
-  _probablyDontUseThisI18n?.t(key, defaultValue, options) ??
+  i18n?.t(key, defaultValue, options) ??
   'internal error: translations not loaded'
 
 interface GetStaticPropsMakerProps {
@@ -46,10 +47,13 @@ interface GetStaticPropsMakerProps {
   additionalProps?: Record<string, any> | null | undefined
 }
 type GetStaticPropsMaker = (
-  getProps?: (
-    config: ConfigResponse,
+  getProps?: (options: {
+    context: Parameters<GetStaticProps>[0]
     t: typeof serverT
-  ) =>
+    cwClient: CosmWasmClient
+    coreClient: CwCoreQueryClient
+    config: ConfigResponse
+  }) =>
     | GetStaticPropsMakerProps
     | undefined
     | null
@@ -58,12 +62,13 @@ type GetStaticPropsMaker = (
 
 // Computes DAOPageWrapperProps for the DAO with optional alterations.
 export const makeGetDAOStaticProps: GetStaticPropsMaker =
-  (getProps) =>
-  async ({ params: { address } = { address: undefined }, locale }) => {
+  (getProps) => async (context) => {
     // Don't query chain if running in CI.
     if (CI) {
       return { notFound: true }
     }
+
+    const { params: { address } = { address: undefined }, locale } = context
 
     // Run before any `t` call since i18n is not loaded globally on the
     // server before this is awaited.
@@ -79,7 +84,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       return {
         props: {
           ...i18nProps,
-          title: serverT('error.DAONotFound'),
+          title: serverT('error.daoNotFound'),
           description: '',
         },
       }
@@ -134,7 +139,14 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         overrideDescription,
         overrideImageUrl,
         additionalProps,
-      } = (await getProps?.(config, serverT)) ?? {}
+      } =
+        (await getProps?.({
+          context,
+          t: serverT,
+          cwClient,
+          coreClient,
+          config,
+        })) ?? {}
 
       return {
         props: {
@@ -162,13 +174,30 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         revalidate: 1,
       }
     } catch (error) {
+      // Redirect legacy DAOs (legacy multisigs redirected in
+      // next.config.js redirects list).
+      if (
+        error instanceof Error &&
+        error.message.includes(
+          'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `config`'
+        )
+      ) {
+        return {
+          redirect: {
+            destination: LEGACY_URL_PREFIX + `/dao/${address}`,
+            permanent: false,
+          },
+        }
+      }
+
       console.error(error)
 
       if (
         error instanceof Error &&
         (error.message.includes('not found') ||
           error.message.includes('Error parsing into type') ||
-          error.message.includes('unknown variant'))
+          error.message.includes('unknown variant') ||
+          error.message.includes('decoding bech32 failed'))
       ) {
         // Excluding `info` will render DAONotFound.
         return {

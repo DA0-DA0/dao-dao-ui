@@ -1,12 +1,11 @@
 import { Keplr } from '@keplr-wallet/types'
-import { KeplrWalletConnectV1 } from 'cosmodal'
 
 import { CHAIN_ID } from './constants'
 import { suggestChain } from './keplr'
 
 // Tries to enable chain for wallet and retrieve the signer.
 export const getOfflineSignerAuto = async (
-  walletClient: Keplr | KeplrWalletConnectV1,
+  walletClient: Keplr,
   attemptSuggestChain?: boolean
 ): Promise<Awaited<ReturnType<Keplr['getOfflineSignerAuto']>>> => {
   // Suggest chain if we can.
@@ -20,7 +19,7 @@ export const getOfflineSignerAuto = async (
 
 // Tries to enable chain for wallet and retrieve the amino signer.
 export const getOfflineSignerOnlyAmino = async (
-  walletClient: Keplr | KeplrWalletConnectV1,
+  walletClient: Keplr,
   attemptSuggestChain?: boolean
 ): Promise<Awaited<ReturnType<Keplr['getOfflineSignerOnlyAmino']>>> => {
   // Suggest chain if we can.

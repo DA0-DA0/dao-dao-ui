@@ -1,7 +1,7 @@
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Theme, useThemeContext } from '@dao-dao/ui'
 
 export const defaultTheme = 'dark'
@@ -20,7 +20,9 @@ const ThemeToggle: FC = () => {
   const nextTheme = themeContext.theme === 'dark' ? Theme.Light : Theme.Dark
 
   const text =
-    themeContext.theme === 'light' ? t('Dark theme') : t('Light theme')
+    themeContext.theme === 'light'
+      ? t('button.darkTheme')
+      : t('button.lightTheme')
 
   return (
     <button

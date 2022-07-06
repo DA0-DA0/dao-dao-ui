@@ -1,7 +1,7 @@
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -28,9 +28,9 @@ export const MintComponent: ActionComponent<MintOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('herb')} symbol="🌿" />}
+      emoji={<Emoji label={t('emoji.herb')} symbol="🌿" />}
       onRemove={onRemove}
-      title={t('mint')}
+      title={t('title.mint')}
     >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">

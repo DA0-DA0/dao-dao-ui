@@ -42,6 +42,8 @@ interface UpdateProposalConfigData {
 
   proposalDuration: number
   proposalDurationUnits: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds'
+
+  allowRevoting: boolean
 }
 
 const useDefaults: UseDefaults<UpdateProposalConfigData> = (
@@ -68,6 +70,8 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
 
       proposalDuration: 1,
       proposalDurationUnits: 'weeks',
+
+      allowRevoting: false,
     }
   }
 
@@ -89,6 +93,8 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
       ? proposalModuleConfig.max_voting_period.time
       : 604800
   const proposalDurationUnits = 'seconds'
+
+  const allowRevoting = proposalModuleConfig.allow_revoting
 
   if ('threshold_quorum' in proposalModuleConfig.threshold) {
     const threshold = proposalModuleConfig.threshold.threshold_quorum
@@ -115,6 +121,7 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
       quorumPercentage,
       proposalDuration,
       proposalDurationUnits,
+      allowRevoting,
     }
   } else {
     return {
@@ -126,6 +133,7 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
       quorumPercentage: 20,
       proposalDuration,
       proposalDurationUnits,
+      allowRevoting,
     }
   }
 }
@@ -208,7 +216,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
                   data.proposalDuration
                 ),
                 only_members_execute: data.onlyMembersExecute,
-                allow_revoting: proposalModuleConfig.allow_revoting,
+                allow_revoting: data.allowRevoting,
                 dao: proposalModuleConfig.dao,
                 ...(data.depositInfo &&
                   data.depositRequired && {
@@ -233,7 +241,6 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
     [
       proposalModuleAddress,
       governanceTokenInfo?.decimals,
-      proposalModuleConfig.allow_revoting,
       proposalModuleConfig.dao,
     ]
   )
@@ -325,6 +332,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
           ? undefined
           : Number(threshold.quorum.percent) * 100
 
+      const allowRevoting = !!config.allow_revoting
+
       return {
         data: {
           onlyMembersExecute,
@@ -336,6 +345,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
           quorumPercentage,
           proposalDuration,
           proposalDurationUnits,
+          allowRevoting,
         },
         match: true,
       }

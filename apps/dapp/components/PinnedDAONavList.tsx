@@ -1,9 +1,9 @@
 import { LibraryIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { Logo } from '@dao-dao/ui'
@@ -45,7 +45,7 @@ export const PinnedDAONavList: FC = () => {
         ))}
       <Link href="/dao/create">
         <a className="flex gap-2 items-center mt-2 hover:underline link-text">
-          <PlusIcon className="w-5 h-5" /> {t('Create')}
+          <PlusIcon className="w-5 h-5" /> {t('button.create')}
         </a>
       </Link>
     </ul>
@@ -85,7 +85,7 @@ export const MobilePinnedDAONavList: FC = () => {
           >
             {!!config.image_url && HEADER_IMAGES_ENABLED ? (
               <div
-                aria-label={t('daosLogo')}
+                aria-label={t('info.daosLogo')}
                 className="w-[50px] h-[50px] bg-center bg-cover rounded-full"
                 role="img"
                 style={{
@@ -93,7 +93,7 @@ export const MobilePinnedDAONavList: FC = () => {
                 }}
               ></div>
             ) : (
-              <Logo alt={t('daodaoLogo')} height={50} width={50} />
+              <Logo alt={t('info.daodaoLogo')} height={50} width={50} />
             )}
             <h2 className="text-center text-dark break-words line-clamp-2 button-text">
               {config.name}

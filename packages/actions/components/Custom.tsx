@@ -2,9 +2,9 @@ import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { Trans, useTranslation } from '@dao-dao/i18n'
-import { CodeMirrorInput } from '@dao-dao/ui'
+import { CodeMirrorInput, Trans } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
@@ -22,9 +22,9 @@ export const CustomComponent: ActionComponent = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('robot')} symbol="🤖" />}
+      emoji={<Emoji label={t('emoji.robot')} symbol="🤖" />}
       onRemove={onRemove}
-      title={t('custom')}
+      title={t('title.custom')}
     >
       <CodeMirrorInput
         control={control}
@@ -56,7 +56,7 @@ export const CustomComponent: ActionComponent = ({
           <p className="flex gap-1 items-center text-sm text-error">
             <XIcon className="inline w-5" />{' '}
             {errors.message.message === INVALID_COSMOS_MSG ? (
-              <Trans i18nKey="invalidCosmosMessage">
+              <Trans i18nKey="error.invalidCosmosMessage">
                 Invalid{' '}
                 <a
                   className="inline underline link"
@@ -73,7 +73,7 @@ export const CustomComponent: ActionComponent = ({
           </p>
         ) : (
           <p className="flex gap-1 items-center text-sm text-success">
-            <CheckIcon className="inline w-5" /> {t('jsonIsValid')}
+            <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
           </p>
         )}
       </div>

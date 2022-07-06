@@ -64,7 +64,7 @@ function ButtonComponent(
     >
       <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
         <div
-          className={clsx('inline-block mx-auto animate-spin', {
+          className={clsx('inline-block mx-auto animate-spin-medium', {
             invisible: !loading,
           })}
         >

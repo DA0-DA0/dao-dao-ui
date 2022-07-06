@@ -165,7 +165,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
           : [...DAPP_ACTIONS, ...daoHits],
         FUSE_OPTIONS
       )
-      setHits(fuse.search(currentRefinement))
+      setHits(fuse.search(currentRefinement).map(o => o.item))
     })()
   }, [currentRefinement, searchState])
 

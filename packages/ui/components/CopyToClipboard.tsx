@@ -2,8 +2,8 @@ import { CheckCircleIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Copy } from '@dao-dao/icons'
 import { Button, useThemeContext } from '@dao-dao/ui'
 
@@ -123,7 +123,7 @@ export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
         size="sm"
         variant="secondary"
       >
-        <p className="text-body caption-text">{t('copy')}</p>
+        <p className="text-body caption-text">{t('button.copy')}</p>
       </Button>
     </div>
   )

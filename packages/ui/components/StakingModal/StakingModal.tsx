@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -19,19 +19,6 @@ export enum StakingMode {
   Claim,
 }
 
-export const stakingModeString = (mode: StakingMode) => {
-  switch (mode) {
-    case StakingMode.Stake:
-      return 'stake'
-    case StakingMode.Unstake:
-      return 'unstake'
-    case StakingMode.Claim:
-      return 'claim'
-    default:
-      return 'internal error'
-  }
-}
-
 export const useStakingModeTitle = () => {
   const { t } = useTranslation()
 
@@ -39,11 +26,11 @@ export const useStakingModeTitle = () => {
     (mode: StakingMode) => {
       switch (mode) {
         case StakingMode.Stake:
-          return t('Stake Tokens')
+          return t('title.stakeTokens')
         case StakingMode.Unstake:
-          return t('Unstake Tokens')
+          return t('title.unstakeTokens')
         case StakingMode.Claim:
-          return t('Claim Tokens')
+          return t('title.claimTokens')
         default:
           return 'internal error'
       }
@@ -130,7 +117,7 @@ export const StakingModal: FC<StakingModalProps> = ({
           amount={amount}
           max={stakableTokens}
           mode={mode}
-          proposalDeposit={proposalDeposit || 5}
+          proposalDeposit={proposalDeposit}
           setAmount={(amount: number) => setAmount(amount)}
           tokenDecimals={tokenDecimals}
           tokenSymbol={tokenSymbol}
@@ -198,7 +185,7 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   return (
     <>
       <div className="flex flex-col mt-5">
-        <h2 className="mb-3 primary-text">{t('Choose token amount')}</h2>
+        <h2 className="mb-3 primary-text">{t('title.chooseTokenAmount')}</h2>
         <AmountSelector amount={amount} max={max} setAmount={setAmount} />
         {amount > max && (
           <span className="mt-1 ml-1 text-error caption-text">
@@ -206,7 +193,7 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
           </span>
         )}
         <span className="mt-4 font-mono caption-text">
-          {t('Your balance') + ': '}
+          {t('info.yourBalance') + ': '}
           {max.toLocaleString(undefined, {
             maximumFractionDigits: tokenDecimals,
           })}
@@ -223,7 +210,7 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
               absoluteOffset={-proposalDeposit}
               amount={amount}
               className="mt-1"
-              label={t('Stake all but proposal deposit', {
+              label={t('button.stakeAllButProposalDeposit', {
                 proposalDeposit: proposalDeposit.toLocaleString(undefined, {
                   maximumFractionDigits: tokenDecimals,
                 }),
@@ -275,9 +262,9 @@ const ClaimModeBody: FC<ClaimModeBodyProps> = ({
         ).toLocaleString(undefined, {
           maximumFractionDigits: tokenDecimals,
         })}{' '}
-        ${tokenSymbol} {t('available')}
+        ${tokenSymbol} {t('info.available')}
       </h2>
-      <p className="mt-3 mb-3 text-sm">{t('claimToReceiveUnstaked')}</p>
+      <p className="mt-3 mb-3 text-sm">{t('info.claimToReceiveUnstaked')}</p>
     </div>
   )
 }
@@ -296,13 +283,13 @@ const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
   return (
     <div className="mt-3 secondary-text">
       <h2 className="link-text">
-        {mode == StakingMode.Unstake
-          ? t('You are about to unstake')
-          : t('Unstaking period') +
+        {mode === StakingMode.Unstake
+          ? t('info.aboutToUnstake')
+          : t('title.unstakingPeriod') +
             `: ${humanReadableDuration(unstakingDuration)}`}
       </h2>
       <p className="mt-3">
-        {t('Unstaking mechanics', {
+        {t('info.unstakingMechanics', {
           humanReadableTime: humanReadableDuration(unstakingDuration),
         })}
       </p>

@@ -1,3 +1,4 @@
+export * from './hooks'
 export * from './validation'
 
 export * from './claims'
@@ -8,6 +9,7 @@ export * from './contracts'
 export * from './conversion'
 export * from './duration'
 export * from './expiration'
+export * from './format'
 export * from './ibc'
 export * from './isValidAddress'
 export * from './isValidUrl'

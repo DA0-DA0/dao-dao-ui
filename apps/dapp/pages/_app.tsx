@@ -2,13 +2,13 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
+import { appWithTranslation, useTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { appWithTranslation, useTranslation } from '@dao-dao/i18n'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
@@ -42,36 +42,37 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   }, [theme])
 
   return (
-    <>
-      <Head>
-        <meta
-          content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-          name="viewport"
-        />
-      </Head>
-      <ErrorBoundary title={t('unexpectedError')}>
-        <ThemeProvider
-          accentColor={accentColor}
-          setAccentColor={setAccentColor}
-          theme={theme}
-          themeChangeCount={themeChangeCount}
-          updateTheme={setTheme}
-        >
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+    <ThemeProvider
+      accentColor={accentColor}
+      setAccentColor={setAccentColor}
+      theme={theme}
+      themeChangeCount={themeChangeCount}
+      updateTheme={setTheme}
+    >
+      <ErrorBoundary title={t('error.unexpectedError')}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
 
-          <Notifications />
-        </ThemeProvider>
+        <Notifications />
       </ErrorBoundary>
-    </>
+    </ThemeProvider>
   )
 }
 
 const dApp: FC<AppProps> = (props) => (
-  <RecoilRoot>
-    <InnerApp {...props} />
-  </RecoilRoot>
+  <>
+    <Head>
+      <meta
+        content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport"
+      />
+    </Head>
+
+    <RecoilRoot>
+      <InnerApp {...props} />
+    </RecoilRoot>
+  </>
 )
 
 export default appWithTranslation(dApp)

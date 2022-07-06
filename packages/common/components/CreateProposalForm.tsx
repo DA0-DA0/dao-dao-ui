@@ -1,5 +1,7 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { ReactNode, useCallback, useState } from 'react'
+import { useWallet } from '@noahsaso/cosmodal'
+import { useRouter } from 'next/router'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -7,6 +9,7 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -18,14 +21,12 @@ import {
   UseTransformToCosmos,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 import {
+  Cw20BaseSelectors,
   CwCoreSelectors,
   useProposalModule,
   useVotingModule,
-  useWallet,
-  walletCw20BalanceSelector,
 } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
@@ -41,6 +42,7 @@ import {
 import {
   VotingModuleType,
   decodedMessagesString,
+  usePlatform,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -69,7 +71,8 @@ export const CreateProposalForm = ({
   connectWalletButton,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
-  const { connected } = useWallet()
+  const router = useRouter()
+  const { connected, address: walletAddress } = useWallet()
 
   const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { isMember } = useVotingModule(coreAddress)
@@ -77,10 +80,12 @@ export const CreateProposalForm = ({
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(
     proposalModuleConfig?.deposit_info?.deposit &&
-      proposalModuleConfig?.deposit_info?.deposit !== '0'
-      ? walletCw20BalanceSelector(
-          proposalModuleConfig?.deposit_info?.token as string
-        )
+      proposalModuleConfig?.deposit_info?.deposit !== '0' &&
+      walletAddress
+      ? Cw20BaseSelectors.balanceSelector({
+          contractAddress: proposalModuleConfig.deposit_info.token,
+          params: [{ address: walletAddress }],
+        })
       : constSelector(undefined)
   )
 
@@ -113,7 +118,24 @@ export const CreateProposalForm = ({
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = formMethods
+
+  // Prefill form with data from parameter once ready.
+  useEffect(() => {
+    const potentialDefaultValue = router.query.prefill
+    if (!router.isReady || typeof potentialDefaultValue !== 'string') {
+      return
+    }
+
+    try {
+      const data = JSON.parse(potentialDefaultValue)
+      if (data.constructor.name === 'Object') {
+        reset(data)
+      }
+      // If failed to parse, do nothing.
+    } catch {}
+  }, [router.query.prefill, router.isReady, reset])
 
   const [showPreview, setShowPreview] = useState(false)
   const [showActionSelector, setShowActionSelector] = useState(false)
@@ -180,6 +202,38 @@ export const CreateProposalForm = ({
     [setShowSubmitErrorNote]
   )
 
+  // Detect if Mac for checking keypress.
+  const { isMac } = usePlatform()
+  // Keybinding to open add action selector.
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (
+        // If already showing action selector, do nothing. This allows the
+        // keybinding to function normally when the selector is open. The
+        // escape keybinding can always be used to exit the modal.
+        showActionSelector ||
+        // Or if focused on an input.
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      ) {
+        return
+      }
+
+      if ((!isMac && event.ctrlKey) || event.metaKey) {
+        if (event.key === 'a') {
+          event.preventDefault()
+          setShowActionSelector(true)
+        }
+      }
+    },
+    [isMac, showActionSelector]
+  )
+  // Setup search keypress.
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [handleKeyPress])
+
   return (
     <FormProvider {...formMethods}>
       <form
@@ -206,7 +260,7 @@ export const CreateProposalForm = ({
         )}
         <div className={showPreview ? 'hidden' : ''}>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name={t('Proposal title')} />
+            <InputLabel name={t('form.proposalTitle')} />
             <TextInput
               error={errors.title}
               fieldName="title"
@@ -216,7 +270,7 @@ export const CreateProposalForm = ({
             <InputErrorMessage error={errors.title} />
           </div>
           <div className="flex flex-col gap-1 my-3">
-            <InputLabel name={t('Proposal description')} />
+            <InputLabel name={t('form.proposalDescription')} />
             <TextAreaInput
               error={errors.description}
               fieldName="description"
@@ -252,11 +306,12 @@ export const CreateProposalForm = ({
           <div className="mt-2">
             <Button
               disabled={loading}
-              onClick={() => setShowActionSelector((s) => !s)}
+              onClick={() => setShowActionSelector(true)}
               type="button"
               variant="secondary"
             >
-              <PlusIcon className="inline h-4" /> {t('Add an action')}
+              <PlusIcon className="inline h-4" /> {t('button.addAnAction')}{' '}
+              <p className="ml-4 text-secondary">{isMac ? '⌘' : '⌃'}A</p>
             </Button>
           </div>
         </div>
@@ -279,7 +334,7 @@ export const CreateProposalForm = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                {t('Publish proposal') + ' '}
+                {t('button.publishProposal') + ' '}
                 <Airplane color="currentColor" height="14px" width="14px" />
               </Button>
             </Tooltip>
@@ -294,12 +349,12 @@ export const CreateProposalForm = ({
           >
             {showPreview ? (
               <>
-                {t('Hide preview')}
+                {t('button.hidePreview')}
                 <EyeOffIcon className="inline ml-2 h-5 stroke-current" />
               </>
             ) : (
               <>
-                {t('Preview')}
+                {t('button.preview')}
                 <EyeIcon className="inline ml-2 h-5 stroke-current" />
               </>
             )}
@@ -307,7 +362,7 @@ export const CreateProposalForm = ({
         </div>
         {showSubmitErrorNote && (
           <p className="mt-2 text-right text-error secondary-text">
-            {t('createProposalSubmitValidationError')}
+            {t('error.createProposalSubmitInvalid')}
           </p>
         )}
       </form>

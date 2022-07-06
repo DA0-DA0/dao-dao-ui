@@ -1,6 +1,5 @@
 import { FC } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 export interface EstablishedDateProps {
   date: Date
@@ -17,7 +16,7 @@ export const EstablishedDate: FC<EstablishedDateProps> = ({ date }) => {
 
   return (
     <p className="mb-3 text-sm">
-      {t('establishedAbbr')} {formattedDate}
+      {t('info.establishedAbbr')} {formattedDate}
     </p>
   )
 }

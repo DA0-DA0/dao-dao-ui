@@ -1,6 +1,6 @@
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
@@ -24,8 +24,8 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
   return (
     <div className="p-6 mt-2 w-full rounded-lg border shadow border-base-300">
       <h2 className="font-mono text-sm text-secondary">
-        {t('Unclaimed')} (
-        {t('unstakedTokens', { tokenSymbol: tokenInfo.symbol })})
+        {t('title.unclaimed')} (
+        {t('info.unstakedTokens', { tokenSymbol: tokenInfo.symbol })})
       </h2>
       {loading ? (
         <div className="inline-block mt-2 animate-spin-medium">
@@ -39,10 +39,10 @@ export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
       )}
       <div className="flex justify-end">
         <button
-          className="normal-case btn-outline btn btn-xs border-secondary"
+          className="normal-case btn-outline btn-xs border-secondary btn"
           onClick={onClaim}
         >
-          {t('Claim')}
+          {t('button.claim')}
         </button>
       </div>
     </div>

@@ -1,15 +1,11 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
+import { WithTranslationProps, withTranslation } from 'react-i18next'
 
-// eslint-disable-next-line regex/invalid
-import { _probablyDontUseThisI18n, withTranslation } from '@dao-dao/i18n'
 import { ErrorPage } from '@dao-dao/ui'
 
-interface ErrorBoundaryProps {
+interface ErrorBoundaryProps extends WithTranslationProps {
   children: ReactNode
   title?: string
-  // Ok to use here for type checking.
-  // eslint-disable-next-line regex/invalid
-  i18n?: typeof _probablyDontUseThisI18n
 }
 
 interface ErrorBoundaryState {
@@ -36,12 +32,14 @@ class ErrorBoundaryInner extends Component<
   }
 
   render() {
-    const { title = this.props.i18n?.t('unexpectedError') ?? '', children } =
-      this.props
+    const {
+      title = this.props.i18n?.t('error.unexpectedError') ?? '',
+      children,
+    } = this.props
 
     return this.state.hasError ? (
       <ErrorPage title={title}>
-        <p>{this.props.i18n?.t('checkInternetOrTryAgain')}</p>
+        <p>{this.props.i18n?.t('error.checkInternetOrTryAgain')}</p>
       </ErrorPage>
     ) : (
       children

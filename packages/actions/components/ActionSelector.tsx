@@ -1,7 +1,9 @@
-import { FC } from 'react'
+import clsx from 'clsx'
+import Fuse from 'fuse.js'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
-import { Modal } from '@dao-dao/ui'
+import { Modal, SearchBar } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
 import { Action, useActionsForVotingModuleType } from '..'
@@ -19,20 +21,100 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
 }) => {
   const { t } = useTranslation()
   const actions = useActionsForVotingModuleType(votingModuleType)
+  const actionsFuse = useMemo(
+    () => new Fuse(actions, { keys: ['label', 'description'] }),
+    [actions]
+  )
+  const actionsListRef = useRef<HTMLUListElement>(null)
+
+  const [filter, setFilter] = useState('')
+  const filteredActions = useMemo(
+    () =>
+      filter ? actionsFuse.search(filter).map(({ item }) => item) : actions,
+    [actions, actionsFuse, filter]
+  )
+
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  // When filtered actions update, reset selection to top.
+  useEffect(() => setSelectedIndex(0), [filteredActions])
+  // Ensure selected action is scrolled into view.
+  useEffect(() => {
+    const item = actionsListRef.current?.children[selectedIndex]
+    if (!item) {
+      return
+    }
+
+    // Only scroll if not already visible.
+    const { bottom, top } = item.getBoundingClientRect()
+    const containerRect = actionsListRef.current.getBoundingClientRect()
+    if (top >= containerRect.top && bottom <= containerRect.bottom) {
+      return
+    }
+
+    item.scrollIntoView({
+      behavior: 'smooth',
+    })
+  }, [selectedIndex])
+
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          event.preventDefault()
+          setSelectedIndex((index) =>
+            index - 1 < 0
+              ? filteredActions.length - 1
+              : // Just in case for some reason the index is overflowing.
+                Math.min(index - 1, filteredActions.length - 1)
+          )
+          break
+        case 'ArrowRight':
+        case 'ArrowDown':
+          event.preventDefault()
+          setSelectedIndex(
+            // Just in case for some reason the index is underflowing.
+            (index) => Math.max(index + 1, 0) % filteredActions.length
+          )
+          break
+        case 'Enter':
+          event.preventDefault()
+          if (selectedIndex >= 0 && selectedIndex < filteredActions.length) {
+            onSelectAction(filteredActions[selectedIndex])
+          }
+          break
+      }
+    },
+    [selectedIndex, filteredActions, onSelectAction]
+  )
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    // Clean up event listener on unmount.
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [handleKeyPress])
 
   return (
-    <Modal onClose={onClose}>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="header-text">
-          {t('Proposal action', { count: actions.length })}
-        </h1>
-      </div>
-      <ul className="flex flex-col gap-3 list-none">
-        {actions.map((action, index) => (
-          <li key={index}>
+    <Modal
+      containerClassName="max-w-[96vw] w-[32rem] !h-[38rem] max-h-[96vh] flex flex-col gap-2"
+      onClose={onClose}
+    >
+      <SearchBar
+        onChange={(event) => setFilter(event.target.value)}
+        placeholder={t('title.proposalActions')}
+        value={filter}
+      />
+
+      <ul
+        className="flex overflow-y-auto flex-col grow gap-3 pr-2 list-none styled-scrollbar"
+        ref={actionsListRef}
+      >
+        {filteredActions.map((action, index) => (
+          <li key={action.key}>
             <ActionDisplayItem
               action={action}
               onClick={() => onSelectAction(action)}
+              selected={selectedIndex === index}
             />
           </li>
         ))}
@@ -44,9 +126,14 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
 interface ActionDisplayItemProps {
   action: Action
   onClick: () => void
+  selected: boolean
 }
 
-const ActionDisplayItem: FC<ActionDisplayItemProps> = ({ action, onClick }) => {
+const ActionDisplayItem: FC<ActionDisplayItemProps> = ({
+  action,
+  onClick,
+  selected,
+}) => {
   const words = action.label.split(' ')
 
   const icon = words[0]
@@ -56,7 +143,10 @@ const ActionDisplayItem: FC<ActionDisplayItemProps> = ({ action, onClick }) => {
 
   return (
     <button
-      className="flex flex-row gap-3 items-center p-2 w-full hover:bg-primary rounded transition"
+      className={clsx(
+        'flex flex-row gap-3 items-center p-2 w-full text-left hover:bg-primary rounded transition',
+        { 'bg-primary': selected }
+      )}
       onClick={onClick}
       type="button"
     >

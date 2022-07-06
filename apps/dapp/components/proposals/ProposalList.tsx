@@ -1,5 +1,6 @@
 import { DownloadIcon } from '@heroicons/react/outline'
 import { FC, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   constSelector,
   useRecoilState,
@@ -7,7 +8,6 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   CwProposalSingleSelectors,
   refreshProposalsIdAtom,
@@ -15,10 +15,11 @@ import {
 } from '@dao-dao/state'
 import { Button, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
+import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
+
 import { useDAOInfoContext } from '../DAOPageWrapper'
 import { EmptyContractCard } from '../EmptyContractCard'
 import { Loader } from '../Loader'
-import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
 
 const PROP_LOAD_LIMIT = 10
 
@@ -105,10 +106,10 @@ export const ProposalList: FC = () => {
       <div className="flex">
         <EmptyContractCard
           backgroundUrl="/empty-state-proposal.jpeg"
-          description={t('Create first proposal prompt')}
+          description={t('info.firstProposalPrompt')}
           fullWidth
           href={`/dao/${coreAddress}/proposals/create`}
-          title={t('createAProposal')}
+          title={t('title.createAProposal')}
         />
       </div>
     )
@@ -136,7 +137,8 @@ export const ProposalList: FC = () => {
           size="sm"
           variant="secondary"
         >
-          {t('loadMore')} <DownloadIcon className="inline ml-1 w-5 h-5" />
+          {t('button.loadMore')}{' '}
+          <DownloadIcon className="inline ml-1 w-5 h-5" />
         </Button>
       )}
     </>

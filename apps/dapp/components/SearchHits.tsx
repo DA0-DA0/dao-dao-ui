@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
+import { useRef, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Logo } from '@dao-dao/ui'
@@ -68,6 +68,7 @@ export const SearchHits = ({
   const router = useRouter()
   const { sections, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setSelection(0), [hits, sectionData])
 
@@ -100,8 +101,35 @@ export const SearchHits = ({
     }
   }, [handleKeyPress])
 
+  // Ensure selected action is scrolled into view.
+  useEffect(() => {
+    const item = listRef.current?.children[selection]
+    if (!item) {
+      return
+    }
+
+    // Only scroll if not already visible.
+    const { left, right, top, bottom } = item.getBoundingClientRect()
+    const containerRect = listRef.current.getBoundingClientRect()
+    if (
+      left >= containerRect.left &&
+      right <= containerRect.right &&
+      top >= containerRect.top &&
+      bottom <= containerRect.bottom
+    ) {
+      return
+    }
+
+    item.scrollIntoView({
+      behavior: 'smooth',
+    })
+  }, [selection])
+
   return (
-    <div className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4">
+    <div
+      className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4"
+      ref={listRef}
+    >
       {sections.map((sectionIndex, i) => (
         <>
           <div className="py-1 font-medium text-gray-400">

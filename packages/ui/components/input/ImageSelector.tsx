@@ -10,8 +10,8 @@ import {
   UseFormWatch,
   Validate,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'
@@ -61,7 +61,7 @@ export const ImageSelectorModal = <
       onClose={onClose}
     >
       <div
-        aria-label={t('daosLogo')}
+        aria-label={t('info.daosLogo')}
         className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
         role="img"
         style={{ backgroundImage: `url(${imageUrl})` }}
@@ -69,8 +69,8 @@ export const ImageSelectorModal = <
       <div className="flex flex-col gap-1">
         <InputLabel
           mono
-          name={t('Image URL')}
-          tooltip={t('Image URL tooltip')}
+          name={t('form.imageURLTitle')}
+          tooltip={t('form.imageURLTooltip')}
         />
         <TextInput
           autoFocus
@@ -90,7 +90,7 @@ export const ImageSelectorModal = <
       </div>
       <div className="w-full text-right">
         <Button onClick={onClose} size="sm" type="button">
-          {t('done')} <Airplane color="currentColor" />
+          {t('button.done')} <Airplane color="currentColor" />
         </Button>
       </div>
     </Modal>

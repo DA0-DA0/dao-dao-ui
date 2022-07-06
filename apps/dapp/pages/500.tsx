@@ -1,7 +1,7 @@
 import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 
@@ -10,11 +10,11 @@ const Custom500: NextPage = () => {
 
   return (
     <SuspenseLoader fallback={null}>
-      <ErrorPage title={t('500Title')}>
+      <ErrorPage title={t('title.500')}>
         <p>
-          {t('internalServerError')}{' '}
+          {t('error.internalServerError')}{' '}
           <Link href="/">
-            <a className="link">{t('considerReturningHome')}</a>
+            <a className="link">{t('info.considerReturningHome')}</a>
           </Link>
         </p>
       </ErrorPage>

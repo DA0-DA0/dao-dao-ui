@@ -8,9 +8,10 @@ const eslintConfig = {
   overrides: [
     {
       files: ['locales/**/*.json'],
-      plugins: ['jsonc'],
+      plugins: ['i18n-json'],
       rules: {
-        'jsonc/sort-keys': ['error'],
+        'i18n-json/sorted-keys': 'error',
+        'i18n-json/valid-json': 'error',
       },
     },
   ],

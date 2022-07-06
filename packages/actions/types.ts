@@ -14,7 +14,14 @@ export enum ActionKey {
   UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',
   Execute = 'execute',
+  Migrate = 'migrate',
+  UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
+}
+
+export interface ActionAndData {
+  action: Action
+  data: any
 }
 
 export interface ActionKeyAndData {

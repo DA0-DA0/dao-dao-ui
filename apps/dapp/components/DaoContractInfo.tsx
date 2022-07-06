@@ -1,7 +1,7 @@
 import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Votes } from '@dao-dao/icons'
 import {
   useGovernanceTokenInfo,
@@ -48,13 +48,13 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
       <div className="mb-4 md:mb-0">
         <h2 className="mb-4 md:mb-6 primary-text">
-          {t('Voting configuration')}
+          {t('title.votingConfiguration')}
         </h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           {stakingContractConfig && (
             <GovInfoListItem
               icon={<ChartPieIcon className="inline w-4" />}
-              text={t('Unstaking period')}
+              text={t('title.unstakingPeriod')}
               value={
                 stakingContractConfig.unstaking_duration
                   ? humanReadableDuration(
@@ -66,13 +66,13 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
           )}
           <GovInfoListItem
             icon={<Votes fill="currentColor" width="16px" />}
-            text={t('Passing threshold')}
+            text={t('title.passingThreshold')}
             value={threshold.display}
           />
           {quorum && (
             <GovInfoListItem
               icon={<Votes fill="currentColor" width="16px" />}
-              text={t('Quorum')}
+              text={t('title.quorum')}
               value={quorum.display}
             />
           )}
@@ -80,21 +80,23 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
             <>
               <GovInfoListItem
                 icon={<CashIcon className="inline w-4" />}
-                text={t('Proposal deposit')}
+                text={t('title.proposalDeposit')}
                 value={
                   proposalModuleConfig.deposit_info.refund_failed_proposals
-                    ? t('On')
-                    : t('Off')
+                    ? t('info.on')
+                    : t('info.off')
                 }
               />
               <li className="flex flex-row items-center caption-text">
                 <span className="flex gap-1 items-center">
                   <Votes fill="currentColor" width="16px" />
-                  {convertMicroDenomToDenomWithDecimals(
-                    proposalModuleConfig.deposit_info.deposit,
-                    governanceTokenInfo.decimals
-                  )}{' '}
-                  ${governanceTokenInfo.symbol} {t('Proposal deposit')}
+                  {t('info.amountProposalDeposit', {
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      proposalModuleConfig.deposit_info.deposit,
+                      governanceTokenInfo.decimals
+                    ),
+                    tokenSymbol: governanceTokenInfo.symbol,
+                  })}
                 </span>
               </li>
             </>
@@ -102,20 +104,20 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
         </ul>
       </div>
       <div>
-        <h2 className="mb-4 md:mb-6 primary-text">{t('Addresses')}</h2>
+        <h2 className="mb-4 md:mb-6 primary-text">{t('title.addresses')}</h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
           <li>
-            {t('Treasury')} <CopyToClipboardAccent value={coreAddress} />
+            {t('title.treasury')} <CopyToClipboardAccent value={coreAddress} />
           </li>
           {governanceTokenAddress && (
             <li>
-              {t('Governance token')}{' '}
+              {t('title.governanceToken')}{' '}
               <CopyToClipboardAccent value={governanceTokenAddress} />
             </li>
           )}
           {stakingContractAddress && (
             <li>
-              {t('Staking')}{' '}
+              {t('title.staking')}{' '}
               <CopyToClipboardAccent value={stakingContractAddress} />
             </li>
           )}
@@ -137,58 +139,59 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
       <div className="mb-4 md:mb-0">
         <h2 className="mb-4 md:mb-6 primary-text">
-          {t('Voting configuration')}
+          {t('title.votingConfiguration')}
         </h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           <GovInfoListItem
             icon={<ChartPieIcon className="inline w-4" />}
             loading
-            text={t('Unstaking period')}
+            text={t('title.unstakingPeriod')}
           />
           <GovInfoListItem
             icon={<Votes fill="currentColor" width="16px" />}
             loading
-            text={t('Passing threshold')}
+            text={t('title.passingThreshold')}
           />
           <GovInfoListItem
             icon={<CashIcon className="inline w-4" />}
             loading
-            text={t('Proposal deposit refund')}
+            text={t('title.refundFailedProposals')}
           />
           <li className="flex flex-row items-center caption-text">
             <span className="flex gap-1 items-center">
               <Votes fill="currentColor" width="16px" />
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <span className="inline bg-dark rounded-sm animate-pulse">
-                0000 000
-              </span>{' '}
-              {t('Proposal deposit')}
+              {t('info.amountProposalDeposit', {
+                amount: '0000',
+                tokenSymbol: 'ABC',
+              })}
             </span>
           </li>
         </ul>
       </div>
       <div>
-        <h2 className="mb-4 md:mb-6 primary-text">{t('Addresses')}</h2>
+        <h2 className="mb-4 md:mb-6 primary-text">{t('title.addresses')}</h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
           <li>
-            {t('Treasury')} <CopyToClipboardAccent loading value="juno..." />
-          </li>
-          <li>
-            {t('Governance token')}{' '}
+            {t('title.treasury')}{' '}
             <CopyToClipboardAccent loading value="juno..." />
           </li>
           <li>
-            {t('Staking')} <CopyToClipboardAccent loading value="juno..." />
+            {t('title.governanceToken')}{' '}
+            <CopyToClipboardAccent loading value="juno..." />
+          </li>
+          <li>
+            {t('title.staking')}{' '}
+            <CopyToClipboardAccent loading value="juno..." />
           </li>
         </ul>
       </div>
       {!hideTreasury && (
         <div>
           <div className="flex gap-1 justify-between">
-            <h2 className="primary-text">{t('Treasury')}</h2>
+            <h2 className="primary-text">{t('title.treasury')}</h2>
           </div>
         </div>
-      )}{' '}
+      )}
     </div>
   )
 }

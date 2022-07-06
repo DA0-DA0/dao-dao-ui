@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 
@@ -20,7 +20,7 @@ export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
   return (
     <div>
       <p className="mb-3 font-mono text-sm font-bold text-disabled md:mb-7">
-        {t('steps')}
+        {t('title.steps')}
       </p>
 
       <div className="flex flex-col gap-2 items-start md:gap-5">

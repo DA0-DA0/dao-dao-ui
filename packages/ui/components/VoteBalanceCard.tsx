@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { BalanceIcon, CopyToClipboard } from '@dao-dao/ui'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 interface VoteBalanceCardProps {
   weight: number
@@ -15,7 +16,7 @@ export const VoteBalanceCard: FC<VoteBalanceCardProps> = ({
   weightTotal,
   addrTitle,
 }) => (
-  <div className="py-4 px-6 mt-2 w-full rounded-lg border border-default">
+  <div className="py-4 px-6 w-full rounded-lg border border-default">
     {addrTitle ? (
       <CopyToClipboard value={title} />
     ) : (
@@ -25,10 +26,9 @@ export const VoteBalanceCard: FC<VoteBalanceCardProps> = ({
       <BalanceIcon />
       {weight}
       <span className="inline secondary-text">
-        {((weight / weightTotal) * 100).toLocaleString(undefined, {
-          maximumSignificantDigits: 3,
-        })}
-        %
+        {formatPercentOf100(
+          weightTotal === 0 ? 0 : (weight / weightTotal) * 100
+        )}
       </span>
     </div>
   </div>

@@ -14,8 +14,8 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
 }) => (
   <div className="relative">
     <button
-      className={`absolute top-0 left-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-l ${
-        amount <= 1 ? 'bg-transparent border border-inactive' : ''
+      className={`absolute top-0 left-0 flex h-[56px] w-[51px] items-center justify-center rounded-l bg-primary ${
+        amount <= 1 ? 'border border-inactive bg-transparent' : ''
       }`}
       disabled={amount <= 0}
       onClick={() => setAmount(amount - 1)}
@@ -31,8 +31,8 @@ export const AmountSelector: FC<AmountSelectorProps> = ({
       value={amount}
     />
     <button
-      className={`absolute top-0 right-0 h-[56px] w-[51px] flex justify-center items-center bg-primary rounded-r ${
-        Number(amount) >= max ? 'bg-transparent border border-inactive' : ''
+      className={`absolute top-0 right-0 flex h-[56px] w-[51px] items-center justify-center rounded-r bg-primary ${
+        Number(amount) >= max ? 'border border-inactive bg-transparent' : ''
       }`}
       disabled={amount >= max}
       onClick={() => setAmount(amount + 1)}

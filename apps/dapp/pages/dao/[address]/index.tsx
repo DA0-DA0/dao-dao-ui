@@ -3,8 +3,8 @@ import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -61,34 +61,34 @@ const InnerMobileDaoHome: FC = () => {
           icon="🗳"
           onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
           selected={tab === MobileMenuTabSelection.Proposal}
-          text={t('Proposals')}
+          text={t('title.proposals')}
         />
         {votingModuleType === VotingModuleType.Cw4Voting ? (
           <MobileMenuTab
             icon="👥"
             onClick={makeTabSetter(MobileMenuTabSelection.Members)}
             selected={tab === MobileMenuTabSelection.Members}
-            text={t('Members')}
+            text={t('title.members')}
           />
         ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
           <MobileMenuTab
             icon="💵"
             onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
             selected={tab === MobileMenuTabSelection.Staking}
-            text={t('Staking')}
+            text={t('title.staking')}
           />
         ) : null}
         <MobileMenuTab
           icon="🏛"
           onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
           selected={tab === MobileMenuTabSelection.Treasury}
-          text={t('Treasury')}
+          text={t('title.treasury')}
         />
         <MobileMenuTab
           icon="⚙️"
           onClick={makeTabSetter(MobileMenuTabSelection.Info)}
           selected={tab === MobileMenuTabSelection.Info}
-          text={t('Info')}
+          text={t('title.info')}
         />
       </div>
       <div className="py-5 px-6">
@@ -125,7 +125,7 @@ const InnerDAOHome: FC = () => {
   const shouldAddToken = router.query.add_token
   useEffect(() => {
     if (shouldAddToken && governanceTokenAddress) {
-      addToken(governanceTokenAddress)
+      addToken?.(governanceTokenAddress)
     }
   }, [shouldAddToken, governanceTokenAddress, addToken])
 
@@ -138,7 +138,7 @@ const InnerDAOHome: FC = () => {
             <div className="flex justify-between items-center">
               <Breadcrumbs
                 crumbs={[
-                  ['/home', t('home')],
+                  ['/home', t('title.home')],
                   [router.asPath, name],
                 ]}
               />
@@ -147,7 +147,7 @@ const InnerDAOHome: FC = () => {
                   <div className="flex flex-row gap-2 items-center">
                     <MemberCheck fill="currentColor" width="16px" />
                     <p className="text-sm text-primary">
-                      {t('You are a member')}
+                      {t('info.youAreMember')}
                     </p>
                   </div>
                 )}
@@ -157,7 +157,8 @@ const InnerDAOHome: FC = () => {
                       setUnpinned(coreAddress)
                     } else {
                       setPinned(coreAddress)
-                      governanceTokenAddress && addToken(governanceTokenAddress)
+                      governanceTokenAddress &&
+                        addToken?.(governanceTokenAddress)
                     }
                   }}
                   pinned={pinned}
@@ -253,11 +254,11 @@ export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
   // Need to block until i18n translations are ready, since i18n depends
   // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps(async ({ image_url }) => {
+  makeGetDAOStaticProps(async ({ config: { image_url } }) => {
     if (!image_url) {
       return
     }

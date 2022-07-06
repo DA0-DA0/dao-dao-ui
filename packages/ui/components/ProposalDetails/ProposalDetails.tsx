@@ -1,8 +1,13 @@
-import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { FC, ReactNode, useMemo, useState } from 'react'
+import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { ActionsRenderer } from '@dao-dao/actions'
-import { Trans, useTranslation } from '@dao-dao/i18n'
+import {
+  ActionAndData,
+  ActionsRenderer,
+  useActionsForVotingModuleType,
+} from '@dao-dao/actions'
 import {
   Proposal,
   Status,
@@ -18,6 +23,7 @@ import { Button } from '../Button'
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 import { Execute } from '../Execute'
 import { MarkdownPreview } from '../MarkdownPreview'
+import { Trans } from '../Trans'
 import { Vote } from '../Vote'
 import { VoteDisplay } from './VoteDisplay'
 
@@ -33,9 +39,11 @@ interface ProposalDetailsProps {
   setShowStaking: (value: boolean) => void
   stakingModal?: ReactNode
   onExecute: () => void
-  onVote: (choice: VoteChoice) => void
+  onVote: (choice: VoteChoice) => Promise<void>
   connected: boolean
   connectWalletButton?: ReactNode
+  allowRevoting: boolean
+  onDuplicate: (actionData: ActionAndData[]) => void
 }
 
 export const ProposalDetails: FC<ProposalDetailsProps> = ({
@@ -53,6 +61,8 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   onVote,
   connected,
   connectWalletButton,
+  allowRevoting,
+  onDuplicate,
 }) => {
   const { t } = useTranslation()
   const decodedMessages = useMemo(
@@ -60,6 +70,50 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
     [proposal.msgs]
   )
   const [showRaw, setShowRaw] = useState(false)
+
+  const canVote =
+    proposal.status === Status.Open &&
+    (allowRevoting || !walletVote) &&
+    walletWeightPercent !== 0
+
+  // Call relevant action hooks in the same order every time.
+  const actions = useActionsForVotingModuleType(votingModuleType)
+  const actionData: ActionAndData[] = decodedMessages.map((message) => {
+    // Note: Ensure custom is the last message action since it will match
+    // all messages and we return the first successful message match.
+    const { data, action } = actions
+      .map((action) => ({
+        action,
+        ...action.useDecodedCosmosMsg(message, coreAddress),
+      }))
+      // There will always be a match since custom matches all.
+      .find(({ match }) => match)!
+
+    return {
+      action,
+      data,
+    }
+  })
+
+  // Scroll to hash manually if available since this component and thus
+  // the desired target anchor text won't be ready right when the page
+  // renders.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      // Ignore the '#' character at the beginning.
+      const element = document.getElementById(window.location.hash.slice(1))
+      if (!element) {
+        return
+      }
+
+      // 24px offset so the element isn't touching the edge of the browser.
+      const top = element.getBoundingClientRect().top + window.scrollY - 24
+      window.scrollTo({
+        top,
+        behavior: 'smooth',
+      })
+    }
+  }, [])
 
   return (
     <div>
@@ -72,7 +126,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
       {!!decodedMessages?.length && (
         <>
           <div className="mt-9 mb-3 font-mono caption-text">
-            {t('Action', { count: decodedMessages.length })}
+            {t('title.actions', { count: decodedMessages.length })}
           </div>
           {showRaw ? (
             <CosmosMessageDisplay
@@ -80,16 +134,15 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             />
           ) : (
             <ActionsRenderer
+              actionData={actionData}
               coreAddress={coreAddress}
-              messages={decodedMessages}
               proposalId={proposalId}
-              votingModuleType={votingModuleType}
             />
           )}
         </>
       )}
       {!!decodedMessages.length && (
-        <div className="mt-4">
+        <div className="flex flex-row gap-2 items-center mt-4">
           <Button
             onClick={() => setShowRaw((s) => !s)}
             size="sm"
@@ -97,21 +150,29 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           >
             {showRaw ? (
               <>
-                {t('hideRawData')}
+                {t('button.hideRawData')}
                 <EyeOffIcon className="inline ml-1 h-4 stroke-current" />
               </>
             ) : (
               <>
-                {t('showRawData')}
+                {t('button.showRawData')}
                 <EyeIcon className="inline ml-1 h-4 stroke-current" />
               </>
             )}
+          </Button>
+          <Button
+            onClick={() => onDuplicate(actionData)}
+            size="sm"
+            variant="secondary"
+          >
+            {t('button.duplicate')}
+            <DuplicateIcon className="inline ml-1 h-4 stroke-current" />
           </Button>
         </div>
       )}
       {proposal.status === Status.Passed && (
         <>
-          <p className="mt-6 mb-4 link-text">{t('status')}</p>
+          <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
           <Execute
             loading={loading}
             messages={proposal.msgs.length}
@@ -120,33 +181,36 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
         </>
       )}
 
-      <p className="mt-6 mb-4 link-text">{t('vote')}</p>
+      <p className="mt-6 mb-4 link-text">{t('title.vote')}</p>
 
       {connected ? (
         <>
-          {proposal.status === Status.Open &&
-            !walletVote &&
-            walletWeightPercent !== 0 && (
-              <Vote
-                loading={loading}
-                onVote={onVote}
-                voterWeight={walletWeightPercent}
-              />
-            )}
           {walletVote && (
-            <p className="flex flex-row gap-2 items-center body-text">
+            <p
+              className={clsx('flex flex-row gap-2 items-center body-text', {
+                'mb-2': allowRevoting && canVote,
+              })}
+            >
               <Trans
                 components={[<VoteDisplay key="vote" vote={walletVote} />]}
-                i18nKey="votedOnProposal"
+                i18nKey="info.votedOnProposal"
               />
+              {allowRevoting && canVote && ' ' + t('info.voteAgain')}
             </p>
           )}
+          {canVote && (
+            <Vote
+              loading={loading}
+              onVote={onVote}
+              voterWeightPercent={walletWeightPercent}
+            />
+          )}
           {proposal.status !== Status.Open && !walletVote && (
-            <p className="body-text">{t('didNotVote')}</p>
+            <p className="body-text">{t('info.didNotVote')}</p>
           )}
           {walletWeightPercent === 0 && (
             <p className="max-w-prose body-text">
-              {t('mustHaveVotingPowerAtCreation')}{' '}
+              {t('info.mustHaveVotingPowerAtCreation')}{' '}
               {/* Only show staking modal if using staked balance to vote. */}
               {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
                 stakingModal && (
@@ -155,7 +219,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
                       className="underline"
                       onClick={() => setShowStaking(true)}
                     >
-                      {t('stakeTokensSuggestion')}
+                      {t('button.stakeTokensSuggestion')}
                     </button>
                     {showStaking && stakingModal}
                   </>

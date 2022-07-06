@@ -1,6 +1,6 @@
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { CopyToClipboardMobile, HeartButton, Logo } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
@@ -29,7 +29,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
       <div className="relative">
         {imageUrl && HEADER_IMAGES_ENABLED ? (
           <div
-            aria-label={t('daosLogo')}
+            aria-label={t('info.daosLogo')}
             className="w-[72px] h-[72px] bg-center bg-cover rounded-full"
             role="img"
             style={{
@@ -37,7 +37,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
             }}
           ></div>
         ) : (
-          <Logo alt={t('daodaoLogo')} height={72} width={72} />
+          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
         )}
         <div
           className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
@@ -75,7 +75,7 @@ export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
     <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
         <div className="animate-spin-medium">
-          <Logo alt={t('daodaoLogo')} height={72} width={72} />
+          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
         </div>
         <div
           className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
