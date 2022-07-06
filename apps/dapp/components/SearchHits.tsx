@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useRef, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Logo } from '@dao-dao/ui'
@@ -28,7 +28,7 @@ const HitView = ({
       {hit.hit_type == 'dao' ? (
         hit.image_url ? (
           <div
-            aria-label={t('daosLogo')}
+            aria-label={t('info.daosLogo')}
             className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
             role="img"
             style={{
@@ -88,7 +88,7 @@ export const SearchHits = ({
           break
       }
     },
-    [hits, selection, router]
+    [hits, selection, router, onChoice]
   )
 
   useEffect(() => {

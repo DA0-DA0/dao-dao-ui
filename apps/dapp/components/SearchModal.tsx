@@ -124,7 +124,7 @@ const SearchBar: FC<SearchBarProps> = ({
         else if (currentRefinement == '' && ev.key == 'Backspace')
           return onEmptyBack()
       }}
-      placeholder={useTranslation().t('What are you looking for?')}
+      placeholder={useTranslation().t('commandBar.prompt')}
       type="text"
       value={currentRefinement}
     />
@@ -134,6 +134,7 @@ const SearchBar: FC<SearchBarProps> = ({
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const router = useRouter()
+  const { t } = useTranslation()
   const [searchState, setSearchState] = useState<SearchState>({
     type: 'home',
   })
@@ -165,7 +166,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
           : [...DAPP_ACTIONS, ...daoHits],
         FUSE_OPTIONS
       )
-      setHits(fuse.search(currentRefinement).map(o => o.item))
+      setHits(fuse.search(currentRefinement).map((o) => o.item))
     })()
   }, [currentRefinement, searchState])
 
@@ -209,9 +210,9 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
       {/* Modify Meili-search options here based on `searchState` */}
       <div className="flex overflow-hidden flex-col w-full h-full bg-primary rounded-lg">
         <div className="flex gap-1 px-4 pt-4 text-tertiary">
-          <SearchNavElem name="Home" />
+          <SearchNavElem name={t('commandBar.home')} />
           {searchState.type == 'navigate_dao' ? (
-            <SearchNavElem name="Navigate to DAO" />
+            <SearchNavElem name={t('commandBar.navigateDao')} />
           ) : searchState.type == 'dao_chosen' ? (
             <SearchNavElem name={searchState.name} />
           ) : undefined}
@@ -219,8 +220,8 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
 
         <SearchBar
           currentRefinement={currentRefinement}
-          refine={refine}
           onEmptyBack={() => setSearchState({ type: 'home' })}
+          refine={refine}
         />
 
         {/* Because the search items take different actions in different contexts, they
