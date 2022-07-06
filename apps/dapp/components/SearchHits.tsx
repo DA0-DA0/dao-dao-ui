@@ -69,6 +69,8 @@ export const SearchHits = ({
   const { sections, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
 
+  useEffect(() => setSelection(0), [hits, sectionData])
+
   const handleKeyPress = useCallback(
     (event) => {
       switch (event.key) {
