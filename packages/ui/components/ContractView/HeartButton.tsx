@@ -1,8 +1,7 @@
 import { HeartIcon as HeartOutline } from '@heroicons/react/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/solid'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
 
 import { useThemeContext } from '../../theme'
 

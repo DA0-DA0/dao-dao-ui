@@ -1,5 +1,6 @@
 import { TrashIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import {
   Control,
@@ -9,7 +10,6 @@ import {
   useFieldArray,
 } from 'react-hook-form'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   AddressInput,
   Button,

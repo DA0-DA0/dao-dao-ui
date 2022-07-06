@@ -1,4 +1,5 @@
 import { DownloadIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC, useEffect } from 'react'
 import {
   constSelector,
@@ -7,7 +8,6 @@ import {
   useResetRecoilState,
 } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   CwProposalSingleSelectors,
   refreshProposalsIdAtom,

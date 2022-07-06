@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Button } from '@dao-dao/ui'
 
 interface BetaWarningModalProps {

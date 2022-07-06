@@ -1,7 +1,7 @@
 import { CheckIcon, ExternalLinkIcon, XIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { TriangleUp } from '@dao-dao/icons'
 import {
   Proposal,

@@ -1,9 +1,9 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC, useState } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Abstain, Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'

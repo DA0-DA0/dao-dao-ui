@@ -1,7 +1,7 @@
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   CwCoreSelectors,
   nativeBalanceSelector,

@@ -1,11 +1,11 @@
 import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { FC, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'

@@ -1,4 +1,4 @@
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'next-i18next'
 
 import { DAODAOLogo } from '@/components'
 

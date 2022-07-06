@@ -1,9 +1,9 @@
 import { EmojiHappyIcon, HandIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { FC } from 'react'
 import toast from 'react-hot-toast'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Discord, Github, Twitter } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/ui'
 

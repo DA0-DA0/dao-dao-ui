@@ -1,5 +1,6 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
 import { useWallet } from '@noahsaso/cosmodal'
+import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
@@ -20,7 +21,6 @@ import {
   UseTransformToCosmos,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 import {
   Cw20BaseSelectors,

@@ -1,5 +1,6 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
+import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -14,7 +15,6 @@ import {
 import toast from 'react-hot-toast'
 import { useRecoilState } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'

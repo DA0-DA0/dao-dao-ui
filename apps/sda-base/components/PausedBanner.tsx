@@ -1,8 +1,8 @@
 import { PauseIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors, blockHeightSelector } from '@dao-dao/state'
 import { Duration, Expiration } from '@dao-dao/state/clients/cw-core'
 import { humanReadableDuration } from '@dao-dao/utils'

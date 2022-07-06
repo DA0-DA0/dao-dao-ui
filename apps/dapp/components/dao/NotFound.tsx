@@ -1,4 +1,5 @@
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'next-i18next'
+
 import { ErrorPage, LinkText, Trans } from '@dao-dao/ui'
 
 import { useDAOInfoContext } from '../DAOPageWrapper'

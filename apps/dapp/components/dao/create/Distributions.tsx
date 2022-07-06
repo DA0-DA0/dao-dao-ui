@@ -7,10 +7,10 @@ import {
   Tooltip,
 } from 'chart.js'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC, useMemo } from 'react'
 import { Bar, Pie } from 'react-chartjs-2'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { useNamedThemeColor } from '@dao-dao/ui'
 
 import { GovernanceTokenType, NewDAO, NewDAOStructure } from '@/atoms'

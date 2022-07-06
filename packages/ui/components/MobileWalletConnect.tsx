@@ -4,9 +4,9 @@ import {
   XIcon,
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC, useState } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Wallet } from '@dao-dao/icons'
 import { Modal, WalletConnectProps } from '@dao-dao/ui'
 import { CHAIN_NAME } from '@dao-dao/utils'

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Dao, Votes } from '@dao-dao/icons'
 
 interface FeaturedCardProps {

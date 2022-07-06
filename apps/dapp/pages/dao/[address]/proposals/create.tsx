@@ -1,13 +1,13 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
+import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,

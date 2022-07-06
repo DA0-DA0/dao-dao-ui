@@ -1,7 +1,7 @@
+import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { ArrowUpRight } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 

@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 
+import { useTranslation } from 'next-i18next'
 import { FunctionComponent } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   CwCoreSelectors,
   useGovernanceTokenInfo,

@@ -1,7 +1,7 @@
 import { ArrowUpIcon, LinkIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Apr, Dollar, Staked, Wallet } from '@dao-dao/icons'
 import { VotingModuleType, formatPercentOf100 } from '@dao-dao/utils'
 

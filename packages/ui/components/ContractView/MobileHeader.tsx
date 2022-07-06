@@ -1,6 +1,6 @@
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { CopyToClipboardMobile, HeartButton, Logo } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'

@@ -1,7 +1,7 @@
 import type { GetStaticProps, NextPage } from 'next'
+import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 

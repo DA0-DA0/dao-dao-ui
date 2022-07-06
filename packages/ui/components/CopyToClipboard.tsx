@@ -1,9 +1,9 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Copy } from '@dao-dao/icons'
 import { Button, useThemeContext } from '@dao-dao/ui'
 

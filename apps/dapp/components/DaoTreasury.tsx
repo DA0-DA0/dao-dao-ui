@@ -1,7 +1,7 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
 

@@ -1,5 +1,6 @@
 import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
 
 import {
@@ -7,7 +8,6 @@ import {
   ActionsRenderer,
   useActionsForVotingModuleType,
 } from '@dao-dao/actions'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   Proposal,
   Status,

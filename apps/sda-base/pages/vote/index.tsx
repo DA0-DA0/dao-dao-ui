@@ -1,9 +1,9 @@
 import { PlusIcon } from '@heroicons/react/outline'
 import { GetStaticProps, NextPage } from 'next'
+import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { FunctionComponent } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
 
 import {

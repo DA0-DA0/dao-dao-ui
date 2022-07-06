@@ -1,7 +1,7 @@
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { ComponentType, FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Dollar, Pie } from '@dao-dao/icons'
 
 export interface ProposalsInfoProps {

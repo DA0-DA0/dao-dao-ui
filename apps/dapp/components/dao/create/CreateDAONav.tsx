@@ -1,8 +1,8 @@
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 

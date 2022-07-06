@@ -1,5 +1,6 @@
 import { PlusIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import { useState } from 'react'
 import {
   FieldError,
@@ -11,7 +12,6 @@ import {
   Validate,
 } from 'react-hook-form'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../Button'

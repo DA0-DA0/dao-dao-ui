@@ -1,7 +1,7 @@
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Theme, useThemeContext } from '@dao-dao/ui'
 
 export const defaultTheme = 'dark'

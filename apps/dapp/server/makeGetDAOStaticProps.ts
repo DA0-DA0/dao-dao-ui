@@ -2,9 +2,8 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 // eslint-disable-next-line regex/invalid
 import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps } from 'next'
+import { i18n } from 'next-i18next'
 
-// eslint-disable-next-line regex/invalid
-import { _probablyDontUseThisI18n } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Cw20StakedBalanceVotingQueryClient,
@@ -36,7 +35,7 @@ const serverT = (
 ) =>
   // Ok to use here as long as it's used after `serverSideTranslations`.
   // eslint-disable-next-line regex/invalid
-  _probablyDontUseThisI18n?.t(key, defaultValue, options) ??
+  i18n?.t(key, defaultValue, options) ??
   'internal error: translations not loaded'
 
 interface GetStaticPropsMakerProps {

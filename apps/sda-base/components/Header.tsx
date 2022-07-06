@@ -2,6 +2,7 @@ import { XIcon } from '@heroicons/react/outline'
 import { HomeIcon, MenuIcon, PlusIcon } from '@heroicons/react/solid'
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import {
@@ -14,7 +15,6 @@ import {
 } from 'react'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import { Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
 import {
