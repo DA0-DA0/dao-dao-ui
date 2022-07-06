@@ -3,8 +3,8 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
+  CwCoreSelectors,
   addressTVLSelector,
-  cw20BalancesInfoSelector,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import { TreasuryBalances as StatelessTreasuryBalances } from '@dao-dao/ui'
@@ -23,7 +23,7 @@ export const TreasuryBalances: FC = () => {
     useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
 
   const cw20s = useRecoilValue(
-    cw20BalancesInfoSelector({ address: coreAddress })
+    CwCoreSelectors.cw20BalancesInfoSelector({ address: coreAddress })
   )
 
   const cw20MarketingInfo = useRecoilValue(
