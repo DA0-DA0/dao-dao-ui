@@ -563,25 +563,5 @@ export const transformMigrateDaoToCosmos = (
     })
   )
 
-  // Pause the DAO for the rest of time.
-  messages.push(
-    makeWasmMessage({
-      wasm: {
-        execute: {
-          contract_addr: props.sigAddress,
-          funds: [],
-          msg: {
-            pause_d_a_o: {
-              expiration: {
-                never: {},
-              },
-            },
-          },
-        },
-      },
-    })
-  )
-
-  console.log(messages)
   return messages
 }
