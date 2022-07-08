@@ -88,7 +88,7 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
           proposalModuleConfig.deposit_info.refund_failed_proposals,
       }
     : {
-        deposit: '0',
+        deposit: 0,
         refundFailedProposals: false,
       }
   const proposalDuration =
