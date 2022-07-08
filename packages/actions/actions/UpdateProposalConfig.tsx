@@ -87,7 +87,10 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
         refundFailedProposals:
           proposalModuleConfig.deposit_info.refund_failed_proposals,
       }
-    : undefined
+    : {
+        deposit: '0',
+        refundFailedProposals: false,
+      }
   const proposalDuration =
     'time' in proposalModuleConfig.max_voting_period
       ? proposalModuleConfig.max_voting_period.time
