@@ -166,9 +166,7 @@ const InnerProposal: FC = () => {
         })),
       }
 
-      router.push(
-        `/propose/create?prefill=${JSON.stringify(duplicateFormData)}`
-      )
+      router.push(`/propose?prefill=${JSON.stringify(duplicateFormData)}`)
     },
     [
       proposalResponse.proposal.description,
