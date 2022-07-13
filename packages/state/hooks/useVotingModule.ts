@@ -68,7 +68,8 @@ export const useVotingModule = (
   const totalVotingWeight = !isNaN(Number(_totalVotingWeight))
     ? Number(_totalVotingWeight)
     : undefined
-  const isMember = walletVotingWeight ? walletVotingWeight > 0 : undefined
+  const isMember =
+    walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
 
   const cw4VotingGroupAddress = useRecoilValue(
     fetchCw4VotingMembers && votingModuleAddress
