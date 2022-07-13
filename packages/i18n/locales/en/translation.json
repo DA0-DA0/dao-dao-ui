@@ -89,7 +89,7 @@
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
     "invalidExecuteMessage": "Invalid execute message",
     "loadingData": "Failed to load data.",
-    "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal",
+    "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "noGovTokenAddr": "You didn't provide an address for your governance token.",
     "noGovTokenInfo": "You didn't give enough information about your governance token.",
     "noMembers": "You haven't added any members to your DAO",

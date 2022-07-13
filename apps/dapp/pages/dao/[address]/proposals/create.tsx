@@ -15,6 +15,7 @@ import {
   blockHeightSelector,
   refreshProposalsIdAtom,
   useProposalModule,
+  useVotingModule,
   useWalletBalance,
 } from '@dao-dao/state'
 import { Breadcrumbs, CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
@@ -48,6 +49,7 @@ const InnerProposalCreate = () => {
 
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress)
 
   const currentAllowance = useRecoilValue(
     proposalModuleConfig?.deposit_info && proposalModuleAddress && walletAddress
@@ -176,6 +178,12 @@ const InnerProposalCreate = () => {
           <h2 className="mb-6 font-medium lg:hidden">
             {t('title.createAProposal')}
           </h2>
+
+          {!isMember && (
+            <p className="-mt-4 mb-6 text-error caption-text">
+              {t('error.mustBeMemberToCreateProposal')}
+            </p>
+          )}
 
           <SuspenseLoader fallback={<Loader />}>
             <CreateProposalForm
