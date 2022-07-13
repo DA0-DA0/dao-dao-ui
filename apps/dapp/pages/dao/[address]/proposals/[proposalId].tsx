@@ -167,8 +167,8 @@ const InnerProposal: FC = () => {
       }
 
       router.push(
-        `/dao/${coreAddress}/proposals/create?prefill=${JSON.stringify(
-          duplicateFormData
+        `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
+          JSON.stringify(duplicateFormData)
         )}`
       )
     },
