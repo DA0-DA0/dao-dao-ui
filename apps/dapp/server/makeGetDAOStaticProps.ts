@@ -160,6 +160,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           info: {
             coreAddress: address,
             votingModuleType,
+            // PROPOSAL MODULE TYPES ARRAY
             cw4GroupAddress,
             governanceTokenAddress,
             stakingContractAddress,

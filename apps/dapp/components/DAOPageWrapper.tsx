@@ -8,14 +8,16 @@ import {
 } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/ui'
-import { VotingModuleType } from '@dao-dao/utils'
+import { ProposalModule, VotingModuleType } from '@dao-dao/utils'
 
 import { DAONotFound } from './dao/NotFound'
 import { PageLoader } from './Loader'
 
+
 interface DAOInfo {
   coreAddress: string
   votingModuleType: VotingModuleType
+  proposalModules: ProposalModule[]
   // cw4-voting
   cw4GroupAddress: string | null
   // cw20-staked-balance-voting
@@ -25,9 +27,11 @@ interface DAOInfo {
   description: string
   imageUrl: string | null
 }
+
 const DefaultDAOInfo: DAOInfo = {
   coreAddress: '',
   votingModuleType: VotingModuleType.Cw4Voting,
+  proposalModules: [],
   cw4GroupAddress: '',
   governanceTokenAddress: '',
   stakingContractAddress: '',
@@ -35,6 +39,7 @@ const DefaultDAOInfo: DAOInfo = {
   description: '',
   imageUrl: null,
 }
+
 const DAOInfoContext = createContext<DAOInfo | null>(null)
 export const useDAOInfoContext = () => {
   const context = useContext(DAOInfoContext)
