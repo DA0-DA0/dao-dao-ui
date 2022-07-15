@@ -132,6 +132,7 @@ const InnerProposalCreate = () => {
                 err instanceof Error ? err.message : `${err}`
               )})`
             )
+            setLoading(false)
             return
           }
         }
