@@ -1,13 +1,14 @@
 import Fuse from 'fuse.js'
 import { MeiliSearch } from 'meilisearch'
 import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Modal } from '@dao-dao/ui'
 import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
+import { SearchBar } from './SearchBar'
 import { SearchHits } from './SearchHits'
 
 export interface SearchModalProps {
@@ -107,36 +108,6 @@ const searchClient = new MeiliSearch({
 })
 const index = searchClient.index(SEARCH_INDEX)
 
-type SearchBarProps = {
-  currentRefinement: string
-  refine: (s: string) => void
-  onEmptyBack: () => void
-}
-
-const SearchBar: FC<SearchBarProps> = ({
-  currentRefinement,
-  refine,
-  onEmptyBack,
-}) => (
-  <div className="flex items-center px-3 text-tertiary border-b border-default">
-    <input
-      autoFocus
-      className="py-4 px-2 w-full bg-transparent focus:outline-none primary-text focus:ring-none" // Keep focus when clicking on hit
-      onBlur={(ev) => ev.target.focus()}
-      onChange={(event) => refine(event.currentTarget.value)}
-      onKeyDown={(ev) => {
-        if (ev.key == 'ArrowUp' || ev.key == 'ArrowDown')
-          return ev.preventDefault()
-        else if (currentRefinement == '' && ev.key == 'Backspace')
-          return onEmptyBack()
-      }}
-      placeholder={useTranslation().t('commandBar.prompt')}
-      type="text"
-      value={currentRefinement}
-    />
-  </div>
-)
-
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
 export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const router = useRouter()
@@ -176,36 +147,40 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     })()
   }, [currentRefinement, searchState])
 
-  // Sort sections by order of first appearance of hits
-  // ordered list of hit types
-  const hitTypes = hits.reduce(
-    (arr, hit) => (arr.includes(hit.hit_type) ? arr : [...arr, hit.hit_type]),
-    [] as string[]
-  )
-  // Sorted hits based on hitTypes
-  // Note that `sort` has a STABLE SORT invariant, so the order of elements are preserved
-  const sortedHits = hits.sort(
-    (a, b) => hitTypes.indexOf(a.hit_type) - hitTypes.indexOf(b.hit_type)
-  )
-  // Section index array based on contiguous elements, end exclusive
-  const sections = [
-    ...sortedHits.reduce((arr, hit, i) => {
-      return i != 0 && hit.hit_type != sortedHits[i - 1].hit_type
-        ? [...arr, i]
-        : arr
-    }, [] as number[]),
-    sortedHits.length,
-  ]
-  // Map section names
-  const sectionNames = hitTypes.map((t) =>
-    t == 'dao'
-      ? 'DAOs'
-      : t == 'dapp_action'
-      ? 'App Actions'
-      : t == 'dao_action'
-      ? 'DAO Actions'
-      : ''
-  )
+  const [sections, sectionNames] = useMemo(() => {
+    // Sort sections by order of first appearance of hits
+    // ordered list of hit types
+    const hitTypes = hits.reduce(
+      (arr, hit) => (arr.includes(hit.hit_type) ? arr : [...arr, hit.hit_type]),
+      [] as string[]
+    )
+    // Sorted hits based on hitTypes
+    // Note that `sort` has a STABLE SORT invariant, so the order of elements are preserved
+    const sortedHits = hits.sort(
+      (a, b) => hitTypes.indexOf(a.hit_type) - hitTypes.indexOf(b.hit_type)
+    )
+    // Section index array based on contiguous elements, end exclusive
+    const sections = [
+      ...sortedHits.reduce((arr, hit, i) => {
+        return i != 0 && hit.hit_type != sortedHits[i - 1].hit_type
+          ? [...arr, i]
+          : arr
+      }, [] as number[]),
+      sortedHits.length,
+    ]
+    // Map section names
+    const sectionNames = hitTypes.map((t) =>
+      t == 'dao'
+        ? 'DAOs'
+        : t == 'dapp_action'
+        ? 'App Actions'
+        : t == 'dao_action'
+        ? 'DAO Actions'
+        : ''
+    )
+
+    return [sections, sectionNames]
+  }, [hits])
 
   return (
     <Modal
