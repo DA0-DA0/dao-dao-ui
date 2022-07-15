@@ -33,7 +33,7 @@ export const ProposalsInfo: FC<ProposalsInfoProps> = ({ data, className }) => {
       <ProposalInfoStat
         Icon={Dollar}
         title={t('title.refundFailedProposals')}
-        value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
+        value={data ? (data.depositRefunds ? t('info.yes') : t('info.no')) : ''}
       />
       <ProposalInfoStat
         Icon={Pie}
