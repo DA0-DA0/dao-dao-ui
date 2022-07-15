@@ -20,6 +20,7 @@ import {
 } from '@dao-dao/utils'
 
 import { Button } from '../Button'
+import { Close } from '../Close'
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 import { Execute } from '../Execute'
 import { MarkdownPreview } from '../MarkdownPreview'
@@ -39,6 +40,7 @@ interface ProposalDetailsProps {
   setShowStaking: (value: boolean) => void
   stakingModal?: ReactNode
   onExecute: () => void
+  onClose: () => void
   onVote: (choice: VoteChoice) => Promise<void>
   connected: boolean
   connectWalletButton?: ReactNode
@@ -58,6 +60,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   showStaking,
   setShowStaking,
   onExecute,
+  onClose,
   onVote,
   connected,
   connectWalletButton,
@@ -170,6 +173,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           </Button>
         </div>
       )}
+
       {proposal.status === Status.Passed && (
         <>
           <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
@@ -177,6 +181,18 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             loading={loading}
             messages={proposal.msgs.length}
             onExecute={onExecute}
+          />
+        </>
+      )}
+      {proposal.status === Status.Rejected && (
+        <>
+          <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
+          <Close
+            loading={loading}
+            onClose={onClose}
+            willRefundProposalDeposit={
+              proposal.deposit_info?.refund_failed_proposals ?? false
+            }
           />
         </>
       )}

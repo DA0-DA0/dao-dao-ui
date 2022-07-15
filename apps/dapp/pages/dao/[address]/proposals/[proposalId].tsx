@@ -73,6 +73,10 @@ const InnerProposal: FC = () => {
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
+  const closeProposal = CwProposalSingleHooks.useClose({
+    contractAddress: proposalModuleAddress ?? '',
+    sender: walletAddress ?? '',
+  })
 
   const { markPinnedProposalIdDone } = usePinnedDAOs()
 
@@ -155,6 +159,28 @@ const InnerProposal: FC = () => {
     setLoading(false)
   }, [connected, proposalId, executeProposal, refreshProposalAndAll, t])
 
+  const onClose = useCallback(async () => {
+    if (!connected || proposalId === undefined) return
+
+    setLoading(true)
+
+    try {
+      await closeProposal({
+        proposalId,
+      })
+
+      refreshProposalAndAll()
+      toast.success(t('success.proposalClosed'))
+    } catch (err) {
+      console.error(err)
+      toast.error(
+        cleanChainError(err instanceof Error ? err.message : `${err}`)
+      )
+    }
+
+    setLoading(false)
+  }, [connected, proposalId, closeProposal, refreshProposalAndAll, t])
+
   const onDuplicate = useCallback(
     (actionData) => {
       const duplicateFormData: FormProposalData = {
@@ -213,6 +239,7 @@ const InnerProposal: FC = () => {
             connected={connected}
             coreAddress={coreAddress}
             loading={loading}
+            onClose={onClose}
             onDuplicate={onDuplicate}
             onExecute={onExecute}
             onVote={onVote}
