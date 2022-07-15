@@ -9,6 +9,7 @@ export * from './StatusIcons'
 export * from './toasts'
 
 export * from './Breadcrumbs'
+export * from './Close'
 export * from './CopyToClipboard'
 export * from './CosmosMessageDisplay'
 export * from './ErrorBoundary'
