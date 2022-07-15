@@ -40,7 +40,7 @@ export const ProposalsInfo: FC<Omit<ProposalsInfoProps, 'data'>> = (props) => {
               proposalDepositTokenInfo?.symbol
             : 'None',
         depositRefunds:
-          proposalModuleConfig.deposit_info?.refund_failed_proposals || true,
+          proposalModuleConfig.deposit_info?.refund_failed_proposals ?? false,
         passingThresholdString: processThresholdData(
           proposalModuleConfig.threshold
         ).threshold.display,
