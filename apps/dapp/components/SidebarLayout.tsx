@@ -14,7 +14,7 @@ import {
   noKeplrAccountAtom,
   searchVisibleAtom,
 } from '@/atoms'
-import { SearchModal } from 'components/CommandBar'
+import { SearchModal } from '@/components'
 
 import { BetaWarningModal } from './BetaWarning'
 import { InstallKeplr } from './InstallKeplr'

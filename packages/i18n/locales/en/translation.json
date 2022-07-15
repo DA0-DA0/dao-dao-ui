@@ -49,9 +49,9 @@
     "useExistingToken": "Use an existing token"
   },
   "commandBar": {
-    "prompt": "What are you looking for?",
     "home": "Home",
-    "navigateDao": "Navigate to DAO"
+    "navigateDao": "Navigate to DAO",
+    "prompt": "What are you looking for?"
   },
   "emoji": {
     "baby": "Baby",

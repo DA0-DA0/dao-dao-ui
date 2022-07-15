@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Logo } from '@dao-dao/ui'
 
-import { DaoHit, Hit } from '.'
+import { DaoHit, Hit } from './SearchModal'
 
 const HitView = ({
   hit,
