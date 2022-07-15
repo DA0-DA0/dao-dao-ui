@@ -8,9 +8,9 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Cw20StakedBalanceVotingQueryClient,
   Cw4VotingQueryClient,
-  CwCoreQueryClient,
+  CwCoreV_0_1_0QueryClient,
 } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
 import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
 import {
@@ -19,6 +19,8 @@ import {
   LEGACY_URL_PREFIX,
   VotingModuleType,
   cosmWasmClientRouter,
+  fetchProposalModules,
+  parseCoreVersion,
   parseVotingModuleContractName,
   validateContractAddress,
 } from '@dao-dao/utils'
@@ -51,7 +53,7 @@ type GetStaticPropsMaker = (
     context: Parameters<GetStaticProps>[0]
     t: typeof serverT
     cwClient: CosmWasmClient
-    coreClient: CwCoreQueryClient
+    coreClient: CwCoreV_0_1_0QueryClient
     config: ConfigResponse
   }) =>
     | GetStaticPropsMakerProps
@@ -92,9 +94,15 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreQueryClient(cwClient, address)
+      const coreClient = new CwCoreV_0_1_0QueryClient(cwClient, address)
 
       const config = await coreClient.config()
+
+      const coreInfo = (await coreClient.info()).info
+      const coreVersion = parseCoreVersion(coreInfo.version)
+      if (!coreVersion) {
+        throw new Error('Failed to determine core version.')
+      }
 
       const votingModuleAddress = await coreClient.votingModule()
       const {
@@ -108,6 +116,12 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       if (!votingModuleType) {
         throw new Error('Failed to determine voting module type.')
       }
+
+      const proposalModules = await fetchProposalModules(
+        cwClient,
+        address,
+        coreVersion
+      )
 
       let cw4GroupAddress: string | null = null
       let governanceTokenAddress: string | null = null
@@ -160,7 +174,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           info: {
             coreAddress: address,
             votingModuleType,
-            // PROPOSAL MODULE TYPES ARRAY
+            proposalModules,
             cw4GroupAddress,
             governanceTokenAddress,
             stakingContractAddress,

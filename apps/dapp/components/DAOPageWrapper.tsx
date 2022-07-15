@@ -13,7 +13,6 @@ import { ProposalModule, VotingModuleType } from '@dao-dao/utils'
 import { DAONotFound } from './dao/NotFound'
 import { PageLoader } from './Loader'
 
-
 interface DAOInfo {
   coreAddress: string
   votingModuleType: VotingModuleType

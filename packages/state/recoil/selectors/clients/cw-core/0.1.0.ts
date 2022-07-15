@@ -3,7 +3,7 @@ import { selectorFamily, waitForAll } from 'recoil'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
 
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '..'
 import {
   AdminResponse,
   ConfigResponse,
@@ -21,12 +21,12 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../clients/cw-core'
+} from '../../../../clients/cw-core/0.1.0'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
-} from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+} from '../../../atoms'
+import { cosmWasmClientSelector } from '../../chain'
 
 type QueryClientParams = {
   contractAddress: string

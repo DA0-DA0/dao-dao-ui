@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { ProposalResponse } from '@dao-dao/state/clients/cw-proposal-single'
 import { getProposalEnd, zeroPad } from '@dao-dao/utils'
 

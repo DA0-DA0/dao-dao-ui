@@ -7,7 +7,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw20BaseSelectors, CwCoreSelectors } from '@dao-dao/state'
+import { Cw20BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
 import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
@@ -50,7 +50,7 @@ const InnerComponent: ActionComponent = (props) => {
 
   const existingTokenAddresses =
     useRecoilValue(
-      CwCoreSelectors.allCw20TokenListSelector({
+      CwCoreV0_1_0Selectors.allCw20TokenListSelector({
         contractAddress: props.coreAddress,
       })
     ) ?? []

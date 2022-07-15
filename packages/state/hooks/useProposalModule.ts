@@ -2,7 +2,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   CwProposalSingleSelectors,
 } from '@dao-dao/state'
 import {
@@ -44,7 +44,7 @@ export const useProposalModule = (
   const proposalModuleAddress = useRecoilValue(
     oldProposalsAddress
       ? constSelector([oldProposalsAddress])
-      : CwCoreSelectors.proposalModulesSelector({
+      : CwCoreV0_1_0Selectors.proposalModulesSelector({
           contractAddress: coreAddress,
           params: [{}],
         })

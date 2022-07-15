@@ -9,7 +9,7 @@ import {
   totalPowerAtHeightSelector,
   votingModuleSelector,
   votingPowerAtHeightSelector,
-} from '../recoil/selectors/clients/cw-core'
+} from '../recoil/selectors/clients/cw-core/0.1.0'
 import { listAllMembersSelector } from '../recoil/selectors/clients/cw4-group'
 import { groupContractSelector } from '../recoil/selectors/clients/cw4-voting'
 
