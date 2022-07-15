@@ -103,15 +103,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
     () =>
       'wasm' in msg &&
       'execute' in msg.wasm &&
-      'update_cw20_token_list' in msg.wasm.execute.msg &&
-      'to_add' in msg.wasm.execute.msg.update_cw20_token_list &&
-      msg.wasm.execute.msg.update_cw20_token_list.to_add.length === 1 &&
-      'to_remove' in msg.wasm.execute.msg.update_cw20_token_list &&
-      msg.wasm.execute.msg.update_cw20_token_list.to_remove.length === 0
+      'update_cw20_list' in msg.wasm.execute.msg &&
+      'to_add' in msg.wasm.execute.msg.update_cw20_list &&
+      msg.wasm.execute.msg.update_cw20_list.to_add.length === 1 &&
+      'to_remove' in msg.wasm.execute.msg.update_cw20_list &&
+      msg.wasm.execute.msg.update_cw20_list.to_remove.length === 0
         ? {
             match: true,
             data: {
-              address: msg.wasm.execute.msg.update_cw20_token_list.to_add[0],
+              address: msg.wasm.execute.msg.update_cw20_list.to_add[0],
             },
           }
         : { match: false },
