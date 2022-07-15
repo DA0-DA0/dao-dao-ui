@@ -15,19 +15,18 @@ import {
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
-import { VotingModuleType } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
 import {
   ContractHeader,
   ContractProposalsDisplay,
-  Cw20StakedBalanceVotingPowerDisplay,
-  Cw4VotingMemberList,
   DAOMobileHeader,
   DAOPageWrapper,
   DAOPageWrapperProps,
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
   DaoTreasury,
+  Loader,
   PageLoader,
   SmallScreenNav,
   useDAOInfoContext,
@@ -38,15 +37,15 @@ import { useAddToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
-  Members,
-  Staking,
+  Membership,
   Treasury,
   Info,
 }
 
 const InnerMobileDaoHome: FC = () => {
   const { t } = useTranslation()
-  const { votingModuleType } = useDAOInfoContext()
+  const { coreAddress } = useDAOInfoContext()
+  const votingModuleAdapter = useVotingModuleAdapter()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -63,21 +62,10 @@ const InnerMobileDaoHome: FC = () => {
           selected={tab === MobileMenuTabSelection.Proposal}
           text={t('title.proposals')}
         />
-        {votingModuleType === VotingModuleType.Cw4Voting ? (
-          <MobileMenuTab
-            icon="👥"
-            onClick={makeTabSetter(MobileMenuTabSelection.Members)}
-            selected={tab === MobileMenuTabSelection.Members}
-            text={t('title.members')}
-          />
-        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
-          <MobileMenuTab
-            icon="💵"
-            onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
-            selected={tab === MobileMenuTabSelection.Staking}
-            text={t('title.staking')}
-          />
-        ) : null}
+        <votingModuleAdapter.ui.membership.mobileTab
+          onClick={makeTabSetter(MobileMenuTabSelection.Membership)}
+          selected={tab === MobileMenuTabSelection.Membership}
+        />
         <MobileMenuTab
           icon="🏛"
           onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
@@ -95,11 +83,11 @@ const InnerMobileDaoHome: FC = () => {
         {tab === MobileMenuTabSelection.Proposal && (
           <ContractProposalsDisplay />
         )}
-        {tab === MobileMenuTabSelection.Members && (
-          <Cw4VotingMemberList primaryText />
-        )}
-        {tab === MobileMenuTabSelection.Staking && (
-          <Cw20StakedBalanceVotingPowerDisplay primaryText />
+        {tab === MobileMenuTabSelection.Membership && (
+          <votingModuleAdapter.ui.membership.mobile
+            Loader={Loader}
+            coreAddress={coreAddress}
+          />
         )}
         {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
@@ -115,8 +103,8 @@ const InnerDAOHome: FC = () => {
   const router = useRouter()
   const addToken = useAddToken()
 
-  const { votingModuleType, coreAddress, governanceTokenAddress, name } =
-    useDAOInfoContext()
+  const { coreAddress, governanceTokenAddress, name } = useDAOInfoContext()
+  const votingModuleAdapter = useVotingModuleAdapter()
   const { isMember } = useVotingModule(coreAddress)
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
@@ -172,12 +160,10 @@ const InnerDAOHome: FC = () => {
               <DaoHorizontalInfoDisplay />
             </div>
             <div className="block mt-4 lg:hidden">
-              {votingModuleType === VotingModuleType.Cw4Voting ? (
-                <Cw4VotingMemberList />
-              ) : votingModuleType ===
-                VotingModuleType.Cw20StakedBalanceVoting ? (
-                <Cw20StakedBalanceVotingPowerDisplay />
-              ) : null}
+              <votingModuleAdapter.ui.membership.desktop
+                Loader={Loader}
+                coreAddress={coreAddress}
+              />
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
               <DaoContractInfo />
@@ -189,11 +175,10 @@ const InnerDAOHome: FC = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        {votingModuleType === VotingModuleType.Cw4Voting ? (
-          <Cw4VotingMemberList />
-        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
-          <Cw20StakedBalanceVotingPowerDisplay />
-        ) : null}
+        <votingModuleAdapter.ui.membership.desktop
+          Loader={Loader}
+          coreAddress={coreAddress}
+        />
       </div>
     </div>
   )

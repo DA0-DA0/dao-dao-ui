@@ -3,24 +3,23 @@ import Fuse from 'fuse.js'
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Modal, SearchBar } from '@dao-dao/ui'
-import { VotingModuleType } from '@dao-dao/utils'
+import { Action } from '@dao-dao/actions'
 
-import { Action, useActionsForVotingModuleType } from '..'
+import { Modal } from './Modal'
+import { SearchBar } from './SearchBar'
 
 export interface ActionSelectorProps {
+  actions: Action[]
   onClose: () => void
   onSelectAction: (action: Action) => void
-  votingModuleType: VotingModuleType
 }
 
 export const ActionSelector: FC<ActionSelectorProps> = ({
+  actions,
   onClose,
   onSelectAction,
-  votingModuleType,
 }) => {
   const { t } = useTranslation()
-  const actions = useActionsForVotingModuleType(votingModuleType)
   const actionsFuse = useMemo(
     () => new Fuse(actions, { keys: ['label', 'description'] }),
     [actions]

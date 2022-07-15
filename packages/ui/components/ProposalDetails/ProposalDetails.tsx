@@ -3,11 +3,7 @@ import clsx from 'clsx'
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ActionAndData,
-  ActionsRenderer,
-  useActionsForVotingModuleType,
-} from '@dao-dao/actions'
+import { Action, ActionAndData, ActionsRenderer } from '@dao-dao/actions'
 import {
   Proposal,
   Status,
@@ -33,6 +29,7 @@ interface ProposalDetailsProps {
   votingModuleType: VotingModuleType
   proposal: Proposal
   proposalId: number
+  actions: Action[]
   walletVote: VoteChoice | undefined
   walletWeightPercent: number
   loading: boolean
@@ -53,6 +50,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   votingModuleType,
   proposal,
   proposalId,
+  actions,
   walletVote,
   walletWeightPercent,
   loading,
@@ -80,7 +78,6 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
     walletWeightPercent !== 0
 
   // Call relevant action hooks in the same order every time.
-  const actions = useActionsForVotingModuleType(votingModuleType)
   const actionData: ActionAndData[] = decodedMessages.map((message) => {
     // Note: Ensure custom is the last message action since it will match
     // all messages and we return the first successful message match.

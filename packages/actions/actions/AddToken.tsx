@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
 import {
@@ -126,8 +126,4 @@ export const addTokenAction: Action<AddTokenData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

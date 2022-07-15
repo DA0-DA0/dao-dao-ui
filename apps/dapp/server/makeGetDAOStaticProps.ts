@@ -5,11 +5,7 @@ import type { GetStaticProps } from 'next'
 import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import {
-  Cw20StakedBalanceVotingQueryClient,
-  Cw4VotingQueryClient,
-  CwCoreQueryClient,
-} from '@dao-dao/state'
+import { CwCoreQueryClient } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
 import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
@@ -17,11 +13,10 @@ import {
   CHAIN_RPC_ENDPOINT,
   CI,
   LEGACY_URL_PREFIX,
-  VotingModuleType,
   cosmWasmClientRouter,
-  parseVotingModuleContractName,
   validateContractAddress,
 } from '@dao-dao/utils'
+import { matchAdapter } from '@dao-dao/voting-module-adapter'
 
 import { DAOPageWrapperProps } from '@/components'
 
@@ -102,32 +97,11 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
         await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
 
-      const votingModuleType = parseVotingModuleContractName(
-        votingModuleContractName
+      const votingModuleAdapter = matchAdapter(votingModuleContractName)
+      const votingModuleStaticProps = await votingModuleAdapter.getStaticProps(
+        cwClient,
+        votingModuleAddress
       )
-      if (!votingModuleType) {
-        throw new Error('Failed to determine voting module type.')
-      }
-
-      let cw4GroupAddress: string | null = null
-      let governanceTokenAddress: string | null = null
-      let stakingContractAddress: string | null = null
-      if (votingModuleType === VotingModuleType.Cw4Voting) {
-        const votingModuleClient = new Cw4VotingQueryClient(
-          cwClient,
-          votingModuleAddress
-        )
-        cw4GroupAddress = await votingModuleClient.groupContract()
-      } else if (
-        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
-      ) {
-        const votingModuleClient = new Cw20StakedBalanceVotingQueryClient(
-          cwClient,
-          votingModuleAddress
-        )
-        governanceTokenAddress = await votingModuleClient.tokenContract()
-        stakingContractAddress = await votingModuleClient.stakingContract()
-      }
 
       // Must be called after server side translations has been awaited,
       // because props may use the `t` function, and it won't be available
@@ -159,10 +133,12 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           description: overrideDescription ?? config.description,
           info: {
             coreAddress: address,
-            votingModuleType,
-            cw4GroupAddress,
-            governanceTokenAddress,
-            stakingContractAddress,
+            votingModuleContractName,
+            cw4GroupAddress: votingModuleStaticProps.cw4GroupAddress ?? null,
+            governanceTokenAddress:
+              votingModuleStaticProps.governanceTokenAddress ?? null,
+            stakingContractAddress:
+              votingModuleStaticProps.stakingContractAddress ?? null,
             name: config.name,
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,

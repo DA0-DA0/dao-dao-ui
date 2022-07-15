@@ -365,8 +365,4 @@ export const updateProposalConfigAction: Action<UpdateProposalConfigData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

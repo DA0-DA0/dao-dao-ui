@@ -15,11 +15,10 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Action,
   ActionKey,
-  ActionSelector,
   FormProposalData,
   UseDefaults,
   UseTransformToCosmos,
-  useActionsForVotingModuleType,
+  useActionsWithoutDisabledKeys,
 } from '@dao-dao/actions'
 import { Airplane } from '@dao-dao/icons'
 import {
@@ -30,6 +29,7 @@ import {
 } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
+  ActionSelector,
   Button,
   CosmosMessageDisplay,
   InputErrorMessage,
@@ -45,6 +45,7 @@ import {
   usePlatform,
   validateRequired,
 } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
@@ -74,6 +75,7 @@ export const CreateProposalForm = ({
   const router = useRouter()
   const { connected, address: walletAddress } = useWallet()
 
+  const { disabledActionKeys } = useVotingModuleAdapter()
   const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { isMember } = useVotingModule(coreAddress)
 
@@ -151,7 +153,7 @@ export const CreateProposalForm = ({
     shouldUnregister: true,
   })
 
-  const actions = useActionsForVotingModuleType(votingModuleType)
+  const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<
@@ -369,6 +371,7 @@ export const CreateProposalForm = ({
 
       {showActionSelector && (
         <ActionSelector
+          actions={actions}
           onClose={() => setShowActionSelector(false)}
           onSelectAction={({ key }) => {
             append({
@@ -377,7 +380,6 @@ export const CreateProposalForm = ({
             })
             setShowActionSelector(false)
           }}
-          votingModuleType={votingModuleType}
         />
       )}
     </FormProvider>

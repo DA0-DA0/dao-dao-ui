@@ -10,7 +10,7 @@ import {
 import { Cw20BaseSelectors, CwCoreSelectors } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
   ActionCardLoader,
@@ -177,8 +177,4 @@ export const removeTokenAction: Action<RemoveTokenData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

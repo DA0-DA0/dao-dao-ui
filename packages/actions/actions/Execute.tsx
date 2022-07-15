@@ -6,7 +6,6 @@ import { useRecoilValue } from 'recoil'
 import { nativeBalancesSelector } from '@dao-dao/state'
 import {
   NATIVE_DECIMALS,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
@@ -111,8 +110,4 @@ export const executeAction: Action<ExecuteData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

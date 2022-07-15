@@ -1,5 +1,4 @@
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import {
   FunctionComponent,
   PropsWithChildren,
@@ -8,14 +7,14 @@ import {
 } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/ui'
-import { VotingModuleType } from '@dao-dao/utils'
+import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter/react'
 
 import { DAONotFound } from './dao/NotFound'
 import { PageLoader } from './Loader'
 
 interface DAOInfo {
   coreAddress: string
-  votingModuleType: VotingModuleType
+  votingModuleContractName: string
   // cw4-voting
   cw4GroupAddress: string | null
   // cw20-staked-balance-voting
@@ -25,17 +24,9 @@ interface DAOInfo {
   description: string
   imageUrl: string | null
 }
-const DefaultDAOInfo: DAOInfo = {
-  coreAddress: '',
-  votingModuleType: VotingModuleType.Cw4Voting,
-  cw4GroupAddress: '',
-  governanceTokenAddress: '',
-  stakingContractAddress: '',
-  name: '',
-  description: '',
-  imageUrl: null,
-}
+
 const DAOInfoContext = createContext<DAOInfo | null>(null)
+
 export const useDAOInfoContext = () => {
   const context = useContext(DAOInfoContext)
   if (!context) {
@@ -60,35 +51,35 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
   description,
   info,
   children,
-}) => {
-  const { isFallback, isReady } = useRouter()
+}) => (
+  <>
+    <NextSeo
+      description={description}
+      openGraph={{
+        ...(!!url && { url }),
+        type: 'website',
+        title,
+        description,
+        ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+      }}
+      title={title}
+    />
 
-  return (
-    <>
-      <NextSeo
-        description={description}
-        openGraph={{
-          ...(!!url && { url }),
-          type: 'website',
-          title,
-          description,
-          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
-        }}
-        title={title}
-      />
-
-      <SuspenseLoader fallback={<PageLoader />}>
-        {/* We only know a DAO is not found if info is still empty when
-         * when the page is ready and not a fallback page.
-         */}
-        {!info && !isFallback && isReady ? (
-          <DAONotFound />
-        ) : (
-          <DAOInfoContext.Provider value={info || DefaultDAOInfo}>
+    <SuspenseLoader fallback={<PageLoader />}>
+      {/* We only know a DAO is not found if info is still empty when
+       * when the page is ready and not a fallback page.
+       */}
+      {!info ? (
+        <DAONotFound />
+      ) : (
+        <VotingModuleAdapterProvider
+          contractName={info.votingModuleContractName}
+        >
+          <DAOInfoContext.Provider value={info}>
             {children}
           </DAOInfoContext.Provider>
-        )}
-      </SuspenseLoader>
-    </>
-  )
-}
+        </VotingModuleAdapterProvider>
+      )}
+    </SuspenseLoader>
+  </>
+)

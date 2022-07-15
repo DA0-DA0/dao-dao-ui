@@ -12,7 +12,6 @@ import {
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   NATIVE_DECIMALS,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
@@ -199,8 +198,4 @@ export const instantiateAction: Action<InstantiateData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

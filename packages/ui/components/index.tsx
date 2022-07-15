@@ -8,6 +8,7 @@ export * from './StakingModal'
 export * from './StatusIcons'
 export * from './toasts'
 
+export * from './ActionSelector'
 export * from './Breadcrumbs'
 export * from './Close'
 export * from './CopyToClipboard'

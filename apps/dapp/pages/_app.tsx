@@ -11,8 +11,16 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  Cw4VotingAdapter,
+  registerAdapters,
+} from '@dao-dao/voting-module-adapter'
 
-import { HomepageLayout, SidebarLayout } from '@/components'
+import { AppLayout, HomepageLayout } from '@/components'
+
+// Register voting module adapters.
+registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const { t } = useTranslation()
@@ -26,7 +34,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
   const theme = isHomepage ? Theme.Dark : _theme
-  const Layout = isHomepage ? HomepageLayout : SidebarLayout
+  const Layout = isHomepage ? HomepageLayout : AppLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])

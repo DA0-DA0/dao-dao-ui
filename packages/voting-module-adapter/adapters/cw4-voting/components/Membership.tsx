@@ -8,18 +8,26 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
-import { Loader } from './Loader'
+import { BaseMembershipProps } from '../../../types'
 
-interface Cw4VotingMemberListProps {
+interface MembershipProps extends BaseMembershipProps {
   primaryText?: boolean
 }
 
-const InnerCw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
-  primaryText,
-}) => {
-  const { coreAddress } = useDAOInfoContext()
+export const Membership = (props: MembershipProps) => (
+  <SuspenseLoader
+    fallback={
+      <MultisigMemberListLoader
+        loader={<props.Loader />}
+        primaryText={props.primaryText}
+      />
+    }
+  >
+    <InnerMembership {...props} />
+  </SuspenseLoader>
+)
 
+const InnerMembership: FC<MembershipProps> = ({ coreAddress, primaryText }) => {
   const { address: walletAddress } = useWallet()
   const { walletVotingWeight, totalVotingWeight, cw4VotingMembers } =
     useVotingModule(coreAddress, { fetchCw4VotingMembers: true })
@@ -38,15 +46,3 @@ const InnerCw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
     />
   )
 }
-
-export const Cw4VotingMemberList: FC<Cw4VotingMemberListProps> = ({
-  primaryText,
-}) => (
-  <SuspenseLoader
-    fallback={
-      <MultisigMemberListLoader loader={<Loader />} primaryText={primaryText} />
-    }
-  >
-    <InnerCw4VotingMemberList primaryText={primaryText} />
-  </SuspenseLoader>
-)

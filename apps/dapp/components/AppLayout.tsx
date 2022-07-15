@@ -21,7 +21,7 @@ import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 import { SearchModal } from './SearchModal'
 
-const SidebarLayoutInner: FC = ({ children }) => {
+const AppLayoutInner: FC = ({ children }) => {
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
@@ -101,8 +101,8 @@ const SidebarLayoutInner: FC = ({ children }) => {
   )
 }
 
-export const SidebarLayout: FC = ({ children }) => (
+export const AppLayout: FC = ({ children }) => (
   <WalletProvider>
-    <SidebarLayoutInner>{children}</SidebarLayoutInner>
+    <AppLayoutInner>{children}</AppLayoutInner>
   </WalletProvider>
 )

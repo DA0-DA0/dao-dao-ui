@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil'
 
 import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import { UpdateInfoComponent as Component } from '../components'
 import {
@@ -102,8 +102,4 @@ export const updateInfoAction: Action<UpdateInfoData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

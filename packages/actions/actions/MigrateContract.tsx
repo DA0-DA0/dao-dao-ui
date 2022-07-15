@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-import { VotingModuleType } from '@dao-dao/utils'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components'
 import {
@@ -83,8 +82,4 @@ export const migrateAction: Action<MigrateData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

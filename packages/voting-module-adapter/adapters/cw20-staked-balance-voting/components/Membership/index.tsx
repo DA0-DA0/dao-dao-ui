@@ -23,13 +23,30 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { ClaimsPendingList } from './ClaimsPendingList'
-import { useDAOInfoContext } from './DAOPageWrapper'
-import { Loader } from './Loader'
+import { BaseMembershipProps } from '../../../../types'
+import { ClaimsPendingList } from '../ClaimsPendingList'
 
-const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
+export const Membership = ({
+  primaryText,
+  ...props
+}: BaseMembershipProps & { primaryText?: boolean }) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
+
+  return (
+    <>
+      <h2 className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}>
+        {t('title.yourVotingPower')}
+      </h2>
+
+      <SuspenseLoader fallback={<props.Loader className="mt-4 h-min" />}>
+        <InnerMembership {...props} />
+      </SuspenseLoader>
+    </>
+  )
+}
+
+const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress, Loader }) => {
+  const { t } = useTranslation()
   const {
     governanceTokenInfo,
     governanceTokenMarketingInfo,
@@ -199,7 +216,11 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
         )}
       </div>
 
-      <ClaimsPendingList onClaimAvailable={refreshBalances} />
+      <ClaimsPendingList
+        Loader={Loader}
+        coreAddress={coreAddress}
+        onClaimAvailable={refreshBalances}
+      />
 
       {showStakingMode !== undefined && (
         <StakingModal
@@ -210,28 +231,6 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
           onClose={() => setShowStakingMode(undefined)}
         />
       )}
-    </>
-  )
-}
-
-interface Cw20StakedBalanceVotingPowerDisplayProps {
-  primaryText?: boolean
-}
-
-export const Cw20StakedBalanceVotingPowerDisplay: FC<
-  Cw20StakedBalanceVotingPowerDisplayProps
-> = ({ primaryText }) => {
-  const { t } = useTranslation()
-
-  return (
-    <>
-      <h2 className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}>
-        {t('title.yourVotingPower')}
-      </h2>
-
-      <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
-        <InnerCw20StakedBalanceVotingPowerDisplay />
-      </SuspenseLoader>
     </>
   )
 }

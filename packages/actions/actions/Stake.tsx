@@ -6,7 +6,6 @@ import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   StakeType,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeDistributeMessage,
@@ -151,8 +150,4 @@ export const stakeAction: Action<StakeData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

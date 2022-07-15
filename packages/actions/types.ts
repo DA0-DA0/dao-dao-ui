@@ -2,7 +2,6 @@ import { FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { VotingModuleType } from '@dao-dao/utils'
 
 export enum ActionKey {
   Spend = 'spend',
@@ -83,6 +82,4 @@ export interface Action<O extends {} = any, D extends {} = any> {
   useTransformToCosmos: UseTransformToCosmos<D>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<D>
-  // Voting module types that this action supports.
-  votingModuleTypes: VotingModuleType[]
 }

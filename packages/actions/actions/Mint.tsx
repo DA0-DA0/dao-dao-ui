@@ -4,7 +4,6 @@ import { useCallback, useMemo } from 'react'
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeExecutableMintMessage,
@@ -129,5 +128,4 @@ export const mintAction: Action<MintData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [VotingModuleType.Cw20StakedBalanceVoting],
 }

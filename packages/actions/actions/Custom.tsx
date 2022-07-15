@@ -1,7 +1,7 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import { CustomComponent as Component } from '../components'
 import {
@@ -58,8 +58,4 @@ export const customAction: Action<CustomData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

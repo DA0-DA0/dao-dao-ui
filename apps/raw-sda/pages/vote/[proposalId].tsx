@@ -5,7 +5,10 @@ import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { FormProposalData } from '@dao-dao/actions'
+import {
+  FormProposalData,
+  useActionsWithoutDisabledKeys,
+} from '@dao-dao/actions'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
   CwCoreQueryClient,
@@ -32,6 +35,7 @@ import {
   cleanChainError,
   cosmWasmClientRouter,
 } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
 import {
   Loader,
@@ -66,6 +70,9 @@ const InnerProposal: FC = () => {
       oldProposalsAddress: oldQuery ? OLD_PROPOSALS_ADDRESS : undefined,
     }
   )
+
+  const { disabledActionKeys } = useVotingModuleAdapter()
+  const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
 
   const {
     proposalResponse,
@@ -229,6 +236,7 @@ const InnerProposal: FC = () => {
         </div>
 
         <ProposalDetails
+          actions={actions}
           allowRevoting={proposalModuleConfig.allow_revoting}
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           connected={connected}

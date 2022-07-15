@@ -1,21 +1,37 @@
-import { FC } from 'react'
+import { ComponentType, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { ClaimsListItem, SuspenseLoader } from '@dao-dao/ui'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
-import { Loader } from './Loader'
-
 interface ClaimsPendingListProps {
+  coreAddress: string
+  Loader: ComponentType
   onClaimAvailable: () => void
 }
 
+export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
+  const { t } = useTranslation()
+
+  return (
+    <SuspenseLoader
+      fallback={
+        <>
+          <h2 className="mt-4">{t('title.currentlyUnstaking')}</h2>
+          <props.Loader />
+        </>
+      }
+    >
+      <InnerClaimsPendingList {...props} />
+    </SuspenseLoader>
+  )
+}
+
 const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
+  coreAddress,
   onClaimAvailable,
 }) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
   const { blockHeight, claimsPending } = useStakingInfo(coreAddress, {
     fetchClaims: true,
   })
@@ -51,21 +67,4 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
       </ul>
     </>
   ) : null
-}
-
-export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
-  const { t } = useTranslation()
-
-  return (
-    <SuspenseLoader
-      fallback={
-        <>
-          <h2 className="mt-4">{t('title.currentlyUnstaking')}</h2>
-          <Loader />
-        </>
-      }
-    >
-      <InnerClaimsPendingList {...props} />
-    </SuspenseLoader>
-  )
 }
