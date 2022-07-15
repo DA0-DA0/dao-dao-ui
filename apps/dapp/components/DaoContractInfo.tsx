@@ -149,19 +149,15 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
             text={t('title.passingThreshold')}
           />
           <GovInfoListItem
+            icon={<Votes fill="currentColor" width="16px" />}
+            loading
+            text={t('title.proposalDeposit')}
+          />
+          <GovInfoListItem
             icon={<CashIcon className="inline w-4" />}
             loading
             text={t('title.refundFailedProposals')}
           />
-          <li className="flex flex-row items-center caption-text">
-            <span className="flex gap-1 items-center">
-              <Votes fill="currentColor" width="16px" />
-              {t('info.amountProposalDeposit', {
-                amount: '0000',
-                tokenSymbol: 'ABC',
-              })}
-            </span>
-          </li>
         </ul>
       </div>
       <div>
