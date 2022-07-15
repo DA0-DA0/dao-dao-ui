@@ -10,6 +10,7 @@ export enum ActionKey {
   Stake = 'stake',
   AddToken = 'addToken',
   RemoveToken = 'removeToken',
+  ManageMembers = 'manageMembers',
   UpdateInfo = 'updateInfo',
   UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',

@@ -3,6 +3,7 @@ import { addTokenAction } from './AddToken'
 import { customAction } from './Custom'
 import { executeAction } from './Execute'
 import { instantiateAction } from './Instantiate'
+import { manageMembersAction } from './ManageMembers'
 import { migrateAction } from './MigrateContract'
 import { mintAction } from './Mint'
 import { removeTokenAction } from './RemoveToken'
@@ -19,6 +20,8 @@ export const actions: Action[] = [
   updateInfoAction,
   addTokenAction,
   removeTokenAction,
+  // Must be above execute since this is a custom execute message.
+  manageMembersAction,
   updateProposalConfigAction,
   instantiateAction,
   executeAction,
