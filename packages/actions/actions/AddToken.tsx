@@ -85,7 +85,7 @@ const useTransformToCosmos: UseTransformToCosmos<AddTokenData> = (
             contract_addr: coreAddress,
             funds: [],
             msg: {
-              update_cw20_token_list: {
+              update_cw20_list: {
                 to_add: [data.address],
                 to_remove: [],
               },
