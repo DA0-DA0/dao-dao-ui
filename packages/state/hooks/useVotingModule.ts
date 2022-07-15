@@ -23,7 +23,8 @@ interface UseVotingModuleResponse {
   votingModuleType: VotingModuleType | undefined
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
-  cw4VotingMembers?: Member[]
+  cw4GroupAddress: string | undefined
+  cw4VotingMembers: Member[] | undefined
 }
 
 export const useVotingModule = (
@@ -71,8 +72,8 @@ export const useVotingModule = (
   const isMember =
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
 
-  const cw4VotingGroupAddress = useRecoilValue(
-    fetchCw4VotingMembers && votingModuleAddress
+  const cw4GroupAddress = useRecoilValue(
+    votingModuleAddress && votingModuleType === VotingModuleType.Cw4Voting
       ? groupContractSelector({
           contractAddress: votingModuleAddress,
           params: [],
@@ -81,9 +82,9 @@ export const useVotingModule = (
   )
 
   let cw4VotingMembers = useRecoilValue(
-    cw4VotingGroupAddress
+    cw4GroupAddress && fetchCw4VotingMembers
       ? listAllMembersSelector({
-          contractAddress: cw4VotingGroupAddress,
+          contractAddress: cw4GroupAddress,
         })
       : constSelector(undefined)
   )?.members
@@ -94,6 +95,7 @@ export const useVotingModule = (
     votingModuleType,
     walletVotingWeight,
     totalVotingWeight,
+    cw4GroupAddress,
     cw4VotingMembers,
   }
 }

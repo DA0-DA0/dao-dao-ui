@@ -1,6 +1,7 @@
 {
   "button": {
     "acceptTerms": "I accept the terms",
+    "add": "Add",
     "addAnAction": "Add an action",
     "addMember": "Add member",
     "addPayment": "Add payment",
@@ -70,6 +71,7 @@
     "yinYang": "Yin Yang"
   },
   "error": {
+    "addressNotAMember": "This address it not a member of the DAO.",
     "cannotStakeMoreThanYouHave": "You can't stake or unstake more tokens than you have.",
     "cannotTxZeroTokens": "You can't stake, unstake, or claim zero tokens.",
     "cantSpendMoreThanTreasury": "Can't spend more tokens than are in the treasury ({{amount}} ${{tokenSymbol}}).",
@@ -87,6 +89,7 @@
     "internalServerError": "An internal server error occured on this page.",
     "invalidAddress": "Invalid address.",
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
+    "invalidDuplicateFound": "Invalid. Duplicate found in other list.",
     "invalidExecuteMessage": "Invalid execute message",
     "loadingData": "Failed to load data.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
@@ -131,6 +134,8 @@
     "instantiatedAddress": "Instantiated Address",
     "junoAddress": "Juno address",
     "membersAddress": "Member's address",
+    "membersToAddOrUpdate": "Members to add/update",
+    "membersToRemove": "Members to remove",
     "membershipBasedDescription": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
     "membershipBasedTitle": "Membership-based",
     "message": "Message",
@@ -174,7 +179,8 @@
     "updateVotingConfigTitle": "Update Voting Config",
     "validator": "Validator",
     "votingDurationDescription": "The amount of time proposals are open for voting. A low proposal duration may increase the speed at which your DAO can pass proposals. Setting the duration too low may make it diffcult for proposals to pass as voters will have limited time to vote. After this time elapses, the proposal will either pass or fail.",
-    "votingDurationTitle": "Voting duration"
+    "votingDurationTitle": "Voting duration",
+    "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
     "usdc": "{{val, currency(currency: USD)}} USDC"
@@ -346,6 +352,7 @@
     "home": "Home",
     "info": "Info",
     "instantiateSmartContract": "Instantiate Smart Contract",
+    "manageMembers": "Manage members",
     "memberVotingPowers": "Member voting powers",
     "members": "Members",
     "migrateSmartContract": "Migrate Smart Contract",
