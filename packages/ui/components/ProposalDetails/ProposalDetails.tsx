@@ -9,11 +9,7 @@ import {
   Status,
   Vote as VoteChoice,
 } from '@dao-dao/state/clients/cw-proposal-single'
-import {
-  VotingModuleType,
-  decodeMessages,
-  decodedMessagesString,
-} from '@dao-dao/utils'
+import { decodeMessages, decodedMessagesString } from '@dao-dao/utils'
 
 import { Button } from '../Button'
 import { Close } from '../Close'
@@ -24,9 +20,8 @@ import { Trans } from '../Trans'
 import { Vote } from '../Vote'
 import { VoteDisplay } from './VoteDisplay'
 
-interface ProposalDetailsProps {
+export interface ProposalDetailsProps {
   coreAddress: string
-  votingModuleType: VotingModuleType
   proposal: Proposal
   proposalId: number
   actions: Action[]
@@ -47,7 +42,6 @@ interface ProposalDetailsProps {
 
 export const ProposalDetails: FC<ProposalDetailsProps> = ({
   coreAddress,
-  votingModuleType,
   proposal,
   proposalId,
   actions,
@@ -224,19 +218,17 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
           {walletWeightPercent === 0 && (
             <p className="max-w-prose body-text">
               {t('info.mustHaveVotingPowerAtCreation')}{' '}
-              {/* Only show staking modal if using staked balance to vote. */}
-              {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-                stakingModal && (
-                  <>
-                    <button
-                      className="underline"
-                      onClick={() => setShowStaking(true)}
-                    >
-                      {t('button.stakeTokensSuggestion')}
-                    </button>
-                    {showStaking && stakingModal}
-                  </>
-                )}
+              {stakingModal && (
+                <>
+                  <button
+                    className="underline"
+                    onClick={() => setShowStaking(true)}
+                  >
+                    {t('button.stakeTokensSuggestion')}
+                  </button>
+                  {showStaking && stakingModal}
+                </>
+              )}
             </p>
           )}
         </>

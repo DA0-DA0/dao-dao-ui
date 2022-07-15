@@ -276,6 +276,8 @@
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",
     "token": "token",
     "tokens": "tokens",
+    "numMembers_one": "{{count}} member",
+    "numMembers_other": "{{count}} members",
     "tokensStaked": "{{amount}} ${{tokenSymbol}} staked",
     "tos": "DAO DAO TOOLING IS PROVIDED \"AS IS\", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contracts will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.",
     "treasuryBalanceDescription": "{{numberOfTokensMinted, number}} tokens will be minted. {{memberPercent}} will be sent to members according to the distribution below. The remaining {{treasuryPercent}} will go to the DAO's treasury, where they can be distributed later via governance proposals.",

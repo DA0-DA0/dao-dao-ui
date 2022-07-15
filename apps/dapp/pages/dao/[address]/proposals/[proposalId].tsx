@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -9,31 +9,27 @@ import {
   FormProposalData,
   useActionsWithoutDisabledKeys,
 } from '@dao-dao/actions'
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { ConnectWalletButton } from '@dao-dao/common'
 import {
   CwProposalSingleHooks,
   CwProposalSingleQueryClient,
-  useGovernanceTokenInfo,
   useProposalInfo,
   useProposalModule,
 } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Breadcrumbs,
-  ProposalDetails,
+  PageLoader,
   ProposalInfoCard,
   ProposalInfoVoteStatus,
-  StakingMode,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { VotingModuleType, cleanChainError } from '@dao-dao/utils'
+import { cleanChainError } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
 import {
   DAOPageWrapper,
   DAOPageWrapperProps,
-  Loader,
-  PageLoader,
   ProposalNotFound,
   ProposalVotes,
   SmallScreenNav,
@@ -45,7 +41,7 @@ import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 const InnerProposal: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, votingModuleType, name } = useDAOInfoContext()
+  const { coreAddress, name } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
@@ -57,12 +53,16 @@ const InnerProposal: FC = () => {
       ? Number(proposalIdQuery)
       : undefined
 
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddress)
 
-  const { disabledActionKeys } = useVotingModuleAdapter()
+  const {
+    fields: { disabledActionKeys },
+    hooks: { useVoteConversionDecimals },
+    ui: { ProposalDetails },
+  } = useVotingModuleAdapter()
   const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
+  const voteConversionDecimals = useVoteConversionDecimals(coreAddress)
 
   const {
     proposalResponse,
@@ -87,23 +87,7 @@ const InnerProposal: FC = () => {
 
   const { markPinnedProposalIdDone } = usePinnedDAOs()
 
-  const denomConversionDecimals = useMemo(
-    () =>
-      votingModuleType === VotingModuleType.Cw4Voting
-        ? 0
-        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-          governanceTokenInfo
-        ? governanceTokenInfo.decimals
-        : undefined,
-    [votingModuleType, governanceTokenInfo]
-  )
-
-  if (
-    !proposalResponse ||
-    !proposalModuleConfig ||
-    denomConversionDecimals === undefined ||
-    proposalId === undefined
-  ) {
+  if (!proposalResponse || !proposalModuleConfig || proposalId === undefined) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -255,16 +239,6 @@ const InnerProposal: FC = () => {
             proposalId={proposalId}
             setShowStaking={setShowStaking}
             showStaking={showStaking}
-            stakingModal={
-              <StakingModal
-                connectWalletButton={<ConnectWalletButton />}
-                coreAddress={coreAddress}
-                loader={<Loader />}
-                mode={StakingMode.Stake}
-                onClose={() => setShowStaking(false)}
-              />
-            }
-            votingModuleType={votingModuleType}
             walletVote={voteResponse?.vote?.vote ?? undefined}
             walletWeightPercent={
               votingPowerAtHeight
@@ -281,13 +255,13 @@ const InnerProposal: FC = () => {
             </h3>
 
             <ProposalInfoVoteStatus
-              denomConversionDecimals={denomConversionDecimals}
               maxVotingSeconds={
                 'time' in proposalModuleConfig.max_voting_period
                   ? proposalModuleConfig.max_voting_period.time
                   : undefined
               }
               proposal={proposalResponse.proposal}
+              voteConversionDecimals={voteConversionDecimals}
             />
           </div>
         </div>
@@ -310,13 +284,13 @@ const InnerProposal: FC = () => {
           {t('title.voteStatus')}
         </h3>
         <ProposalInfoVoteStatus
-          denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period
               ? proposalModuleConfig.max_voting_period.time
               : undefined
           }
           proposal={proposalResponse.proposal}
+          voteConversionDecimals={voteConversionDecimals}
         />
       </div>
     </div>

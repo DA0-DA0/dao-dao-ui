@@ -15,11 +15,6 @@ import { PageLoader } from './Loader'
 interface DAOInfo {
   coreAddress: string
   votingModuleContractName: string
-  // cw4-voting
-  cw4GroupAddress: string | null
-  // cw20-staked-balance-voting
-  governanceTokenAddress: string | null
-  stakingContractAddress: string | null
   name: string
   description: string
   imageUrl: string | null

@@ -314,6 +314,7 @@ export const allCw20BalancesSelector = selectorFamily<
       const votingModuleInfo = votingModuleAddress
         ? get(infoSelector({ contractAddress: votingModuleAddress }))
         : undefined
+      // TODO(noah/voting-module-adapter): Somehow move this logic into the adapter. Maybe the entire selector?
       const votingModuleType =
         votingModuleInfo &&
         parseVotingModuleContractName(votingModuleInfo.info.contract)

@@ -15,6 +15,7 @@ import {
 import {
   BalanceCard,
   BalanceIcon,
+  Loader,
   StakingMode,
   SuspenseLoader,
 } from '@dao-dao/ui'
@@ -24,7 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 import { BaseMembershipProps } from '../../../../types'
-import { ClaimsPendingList } from '../ClaimsPendingList'
+import { ClaimsPendingList } from './ClaimsPendingList'
 
 export const Membership = ({
   primaryText,
@@ -38,14 +39,14 @@ export const Membership = ({
         {t('title.yourVotingPower')}
       </h2>
 
-      <SuspenseLoader fallback={<props.Loader className="mt-4 h-min" />}>
+      <SuspenseLoader fallback={<Loader className="mt-4 h-min" />}>
         <InnerMembership {...props} />
       </SuspenseLoader>
     </>
   )
 }
 
-const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress, Loader }) => {
+const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress }) => {
   const { t } = useTranslation()
   const {
     governanceTokenInfo,
@@ -217,7 +218,6 @@ const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress, Loader }) => {
       </div>
 
       <ClaimsPendingList
-        Loader={Loader}
         coreAddress={coreAddress}
         onClaimAvailable={refreshBalances}
       />

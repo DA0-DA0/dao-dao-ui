@@ -1,12 +1,11 @@
-import { ComponentType, FC } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { ClaimsListItem, SuspenseLoader } from '@dao-dao/ui'
+import { ClaimsListItem, Loader, SuspenseLoader } from '@dao-dao/ui'
 
 interface ClaimsPendingListProps {
   coreAddress: string
-  Loader: ComponentType
   onClaimAvailable: () => void
 }
 
@@ -18,7 +17,7 @@ export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
       fallback={
         <>
           <h2 className="mt-4">{t('title.currentlyUnstaking')}</h2>
-          <props.Loader />
+          <Loader />
         </>
       }
     >

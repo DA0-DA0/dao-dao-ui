@@ -1,38 +1,37 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 
 import { ActionKey } from '@dao-dao/actions'
+import { ProposalDetailsProps } from '@dao-dao/ui'
 
 export interface IVotingModuleAdapter {
   // Initialization
   id: string
-  matcher: VotingModuleAdapterMatcher
+  matcher: (contractName: string) => boolean
 
   // Fields
-  disabledActionKeys: ActionKey[]
+  fields: {
+    disabledActionKeys: ActionKey[]
+  }
 
-  // Functions
-  getStaticProps: VotingModuleStaticPropsGetter
+  // Hooks
+  hooks: {
+    useVoteConversionDecimals: (coreAddress: string) => number
+  }
 
   // UI
   ui: {
-    membership: {
-      desktop: ComponentType<BaseMembershipProps>
-      mobileTab: ComponentType<MembershipMobileTabProps>
-      mobile: ComponentType<BaseMembershipProps>
+    Membership: {
+      Desktop: ComponentType<BaseMembershipProps>
+      MobileTab: ComponentType<MembershipMobileTabProps>
+      Mobile: ComponentType<BaseMembershipProps>
     }
+    DaoHorizontalInfoDisplayInternal: ComponentType<BaseDaoHorizontalInfoDisplayInternalProps>
+    ProposalDetails: ComponentType<BaseProposalDetailsProps>
+    DaoTreasuryFooter: ComponentType<BaseDaoTreasuryFooterProps>
+    DaoContractInfoContent: ComponentType<BaseDaoContractInfoContentProps>
+    ProposalCreateAddresses: ComponentType<BaseProposalCreateAddressesProps>
   }
 }
-
-export type VotingModuleAdapterMatcher = (contractName: string) => boolean
-export type VotingModuleStaticPropsGetter = (
-  cosmWasmClient: CosmWasmClient,
-  votingModuleAddress: string
-) => Promise<{
-  cw4GroupAddress?: string
-  governanceTokenAddress?: string
-  stakingContractAddress?: string
-}>
 
 export interface MembershipMobileTabProps {
   onClick: () => void
@@ -40,6 +39,26 @@ export interface MembershipMobileTabProps {
 }
 
 export interface BaseMembershipProps {
-  Loader: ComponentType<{ className?: string }>
+  coreAddress: string
+}
+
+export interface BaseDaoHorizontalInfoDisplayInternalProps {
+  coreAddress: string
+}
+
+export type BaseProposalDetailsProps = Omit<
+  ProposalDetailsProps,
+  'stakingModal'
+>
+
+export interface BaseDaoTreasuryFooterProps {
+  coreAddress: string
+}
+
+export interface BaseDaoContractInfoContentProps {
+  coreAddress: string
+}
+
+export interface BaseProposalCreateAddressesProps {
   coreAddress: string
 }

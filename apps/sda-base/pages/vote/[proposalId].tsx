@@ -66,7 +66,9 @@ const InnerProposal: FC = () => {
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(DAO_ADDRESS)
 
-  const { disabledActionKeys } = useVotingModuleAdapter()
+  const {
+    fields: { disabledActionKeys },
+  } = useVotingModuleAdapter()
   const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
 
   const {
@@ -90,7 +92,7 @@ const InnerProposal: FC = () => {
     sender: walletAddress ?? '',
   })
 
-  const denomConversionDecimals = useMemo(
+  const voteConversionDecimals = useMemo(
     () =>
       votingModuleType === VotingModuleType.Cw4Voting
         ? 0
@@ -104,7 +106,7 @@ const InnerProposal: FC = () => {
   if (
     !proposalResponse ||
     !proposalModuleConfig ||
-    denomConversionDecimals === undefined ||
+    voteConversionDecimals === undefined ||
     proposalId === undefined
   ) {
     throw new Error('Failed to load page data.')
@@ -252,7 +254,6 @@ const InnerProposal: FC = () => {
               onClose={() => setShowStaking(false)}
             />
           }
-          votingModuleType={votingModuleType}
           walletVote={voteResponse?.vote?.vote ?? undefined}
           walletWeightPercent={
             votingPowerAtHeight
@@ -269,13 +270,13 @@ const InnerProposal: FC = () => {
           </h3>
 
           <ProposalInfoVoteStatus
-            denomConversionDecimals={denomConversionDecimals}
             maxVotingSeconds={
               'time' in proposalModuleConfig.max_voting_period
                 ? proposalModuleConfig.max_voting_period.time
                 : undefined
             }
             proposal={proposalResponse.proposal}
+            voteConversionDecimals={voteConversionDecimals}
           />
         </div>
       </div>
@@ -294,13 +295,13 @@ const InnerProposal: FC = () => {
           {t('title.voteStatus')}
         </h3>
         <ProposalInfoVoteStatus
-          denomConversionDecimals={denomConversionDecimals}
           maxVotingSeconds={
             'time' in proposalModuleConfig.max_voting_period
               ? proposalModuleConfig.max_voting_period.time
               : undefined
           }
           proposal={proposalResponse.proposal}
+          voteConversionDecimals={voteConversionDecimals}
         />
       </div>
     </div>

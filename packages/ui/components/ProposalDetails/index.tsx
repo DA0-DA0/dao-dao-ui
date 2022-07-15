@@ -1,4 +1,5 @@
 export * from './ProposalDetails'
-export * from './ProposalInfoCards'
+export * from './ProposalInfoCard'
+export * from './ProposalInfoVoteStatus'
 export * from './ProposalVotes'
 export * from './VoteDisplay'

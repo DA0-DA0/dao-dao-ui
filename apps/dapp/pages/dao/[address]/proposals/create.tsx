@@ -18,14 +18,19 @@ import {
   useVotingModule,
   useWalletBalance,
 } from '@dao-dao/state'
-import { Breadcrumbs, CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
+import {
+  Breadcrumbs,
+  CopyToClipboard,
+  Loader,
+  PageLoader,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
 import {
   DAOPageWrapper,
   DAOPageWrapperProps,
-  Loader,
-  PageLoader,
   ProposalsInfo,
   SmallScreenNav,
   useDAOInfoContext,
@@ -35,14 +40,7 @@ import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const {
-    coreAddress,
-    name,
-    votingModuleType,
-    stakingContractAddress,
-    cw4GroupAddress,
-    governanceTokenAddress,
-  } = useDAOInfoContext()
+  const { coreAddress, name } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
   const [loading, setLoading] = useState(false)
@@ -51,6 +49,9 @@ const InnerProposalCreate = () => {
   const { isMember } = useVotingModule(coreAddress)
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddress)
+  const {
+    ui: { ProposalCreateAddresses },
+  } = useVotingModuleAdapter()
 
   if (
     !proposalModuleAddress ||
@@ -207,7 +208,6 @@ const InnerProposalCreate = () => {
               coreAddress={coreAddress}
               loading={loading}
               onSubmit={onProposalSubmit}
-              votingModuleType={votingModuleType}
             />
           </SuspenseLoader>
         </div>
@@ -224,36 +224,8 @@ const InnerProposalCreate = () => {
             <div className="col-span-2">
               <CopyToClipboard value={coreAddress} />
             </div>
-            {stakingContractAddress && (
-              <>
-                <p className="font-mono text-sm text-tertiary">
-                  {t('info.stakingAddress')}
-                </p>
-                <div className="col-span-2">
-                  <CopyToClipboard value={stakingContractAddress} />
-                </div>
-              </>
-            )}
-            {cw4GroupAddress && (
-              <>
-                <p className="font-mono text-sm text-tertiary">
-                  {t('info.groupAddress')}
-                </p>
-                <div className="col-span-2">
-                  <CopyToClipboard value={cw4GroupAddress} />
-                </div>
-              </>
-            )}
-            {governanceTokenAddress && (
-              <>
-                <p className="font-mono text-sm text-tertiary">
-                  {t('info.govTokenAddress')}
-                </p>
-                <div className="col-span-2">
-                  <CopyToClipboard value={governanceTokenAddress} />
-                </div>
-              </>
-            )}
+
+            <ProposalCreateAddresses coreAddress={coreAddress} />
           </div>
 
           <h2 className="mb-4 font-medium text-medium">

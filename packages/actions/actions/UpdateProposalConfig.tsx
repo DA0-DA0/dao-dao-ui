@@ -1,19 +1,12 @@
 import { useCallback, useMemo } from 'react'
-import { constSelector, useRecoilValue } from 'recoil'
 
+import { useGovernanceTokenInfo, useProposalModule } from '@dao-dao/state'
 import {
-  Cw20BaseSelectors,
-  Cw20StakedBalanceVotingSelectors,
-  useGovernanceTokenInfo,
-  useProposalModule,
-  useVotingModule,
-} from '@dao-dao/state'
-import {
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
 } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
 import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 import {
@@ -177,19 +170,16 @@ const maxVotingInfoToCosmos = (
 }
 
 const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
-  coreAddr: string
+  coreAddress: string
 ) => {
   const { proposalModuleAddress, proposalModuleConfig } =
-    useProposalModule(coreAddr)
+    useProposalModule(coreAddress)
+  const {
+    hooks: { useVoteConversionDecimals },
+  } = useVotingModuleAdapter()
+  const voteConversionDecimals = useVoteConversionDecimals(coreAddress)
 
-  const { governanceTokenShouldExist, governanceTokenInfo } =
-    useGovernanceTokenInfo(coreAddr)
-
-  if (
-    !proposalModuleAddress ||
-    !proposalModuleConfig ||
-    (governanceTokenShouldExist && !governanceTokenInfo)
-  ) {
+  if (!proposalModuleAddress || !proposalModuleConfig) {
     throw new Error('Failed to get proposal module.')
   }
 
@@ -226,10 +216,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
                     deposit_info: {
                       deposit: convertDenomToMicroDenomWithDecimals(
                         data.depositInfo.deposit,
-                        // The form won't allow a deposit if a voting
-                        // module token isn't being used so we can
-                        // safely unwrap here.
-                        governanceTokenInfo?.decimals!
+                        voteConversionDecimals
                       ),
                       refund_failed_proposals:
                         data.depositInfo.refundFailedProposals,
@@ -241,11 +228,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
           },
         },
       }),
-    [
-      proposalModuleAddress,
-      governanceTokenInfo?.decimals,
-      proposalModuleConfig.dao,
-    ]
+    [proposalModuleAddress, voteConversionDecimals, proposalModuleConfig.dao]
   )
 }
 
@@ -266,24 +249,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
-  const { votingModuleAddress, votingModuleType } = useVotingModule(coreAddress)
-
-  const maybeTokenContract = useRecoilValue(
-    votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-      votingModuleAddress
-      ? Cw20StakedBalanceVotingSelectors.tokenContractSelector({
-          contractAddress: votingModuleAddress,
-        })
-      : constSelector(undefined)
-  )
-  const maybeTokenContractInfo = useRecoilValue(
-    maybeTokenContract
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: maybeTokenContract,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
+  const {
+    hooks: { useVoteConversionDecimals },
+  } = useVotingModuleAdapter()
+  const voteConversionDecimals = useVoteConversionDecimals(coreAddress)
 
   return useMemo(() => {
     if (
@@ -304,7 +273,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
         ? {
             deposit: convertMicroDenomToDenomWithDecimals(
               Number(config.deposit_info.deposit),
-              maybeTokenContractInfo?.decimals!
+              voteConversionDecimals
             ),
             refundFailedProposals: config.deposit_info.refund_failed_proposals,
           }
@@ -354,7 +323,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
       }
     }
     return { match: false }
-  }, [msg, maybeTokenContractInfo?.decimals])
+  }, [msg, voteConversionDecimals])
 }
 
 export const updateProposalConfigAction: Action<UpdateProposalConfigData> = {

@@ -1,11 +1,8 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
-
 import { Member } from '../clients/cw4-voting'
 import {
-  infoSelector,
   totalPowerAtHeightSelector,
   votingModuleSelector,
   votingPowerAtHeightSelector,
@@ -20,13 +17,13 @@ interface UseVotingModuleOptions {
 interface UseVotingModuleResponse {
   isMember: boolean | undefined
   votingModuleAddress: string | undefined
-  votingModuleType: VotingModuleType | undefined
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
   cw4GroupAddress: string | undefined
   cw4VotingMembers: Member[] | undefined
 }
 
+// TODO(noah/voting-module-adapter): Make this a general hook by removing cw4VotingMembers from here and moving to @dao-dao/voting-module-adapter.
 export const useVotingModule = (
   coreAddress: string,
   { fetchCw4VotingMembers }: UseVotingModuleOptions = {}
@@ -35,16 +32,6 @@ export const useVotingModule = (
   const votingModuleAddress = useRecoilValue(
     votingModuleSelector({ contractAddress: coreAddress })
   )
-
-  // All `info` queries are the same, so just use cw-core's info query.
-  const votingModuleInfo = useRecoilValue(
-    votingModuleAddress
-      ? infoSelector({ contractAddress: votingModuleAddress })
-      : constSelector(undefined)
-  )
-  const votingModuleType =
-    votingModuleInfo &&
-    parseVotingModuleContractName(votingModuleInfo.info.contract)
 
   const _walletVotingWeight = useRecoilValue(
     walletAddress && votingModuleAddress
@@ -92,7 +79,6 @@ export const useVotingModule = (
   return {
     isMember,
     votingModuleAddress,
-    votingModuleType,
     walletVotingWeight,
     totalVotingWeight,
     cw4GroupAddress,

@@ -3,6 +3,7 @@ import { FC } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'
 import {
+  Loader,
   MultisigMemberList,
   MultisigMemberListLoader,
   SuspenseLoader,
@@ -18,7 +19,7 @@ export const Membership = (props: MembershipProps) => (
   <SuspenseLoader
     fallback={
       <MultisigMemberListLoader
-        loader={<props.Loader />}
+        loader={<Loader />}
         primaryText={props.primaryText}
       />
     }

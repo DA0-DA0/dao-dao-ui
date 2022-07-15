@@ -16,7 +16,6 @@ import {
   cosmWasmClientRouter,
   validateContractAddress,
 } from '@dao-dao/utils'
-import { matchAdapter } from '@dao-dao/voting-module-adapter'
 
 import { DAOPageWrapperProps } from '@/components'
 
@@ -97,12 +96,6 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
         await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
 
-      const votingModuleAdapter = matchAdapter(votingModuleContractName)
-      const votingModuleStaticProps = await votingModuleAdapter.getStaticProps(
-        cwClient,
-        votingModuleAddress
-      )
-
       // Must be called after server side translations has been awaited,
       // because props may use the `t` function, and it won't be available
       // until after.
@@ -134,11 +127,6 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           info: {
             coreAddress: address,
             votingModuleContractName,
-            cw4GroupAddress: votingModuleStaticProps.cw4GroupAddress ?? null,
-            governanceTokenAddress:
-              votingModuleStaticProps.governanceTokenAddress ?? null,
-            stakingContractAddress:
-              votingModuleStaticProps.stakingContractAddress ?? null,
             name: config.name,
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,

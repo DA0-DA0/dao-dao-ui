@@ -1,8 +1,16 @@
-import { Cw20StakedBalanceVotingQueryClient } from '@dao-dao/state'
 import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { IVotingModuleAdapter } from '../../types'
-import { Membership, MembershipMobileTab } from './components'
+import {
+  DaoContractInfoContent,
+  DaoHorizontalInfoDisplayInternal,
+  DaoTreasuryFooter,
+  Membership,
+  MembershipMobileTab,
+  ProposalCreateAddresses,
+  ProposalDetails,
+} from './components'
+import { useVoteConversionDecimals } from './hooks'
 
 export const Cw20StakedBalanceVotingAdapter: IVotingModuleAdapter = {
   // Initialization
@@ -11,32 +19,26 @@ export const Cw20StakedBalanceVotingAdapter: IVotingModuleAdapter = {
     contractName.includes(CW20STAKEDBALANCEVOTING_CONTRACT_NAME),
 
   // Fields
-  disabledActionKeys: [],
+  fields: {
+    disabledActionKeys: [],
+  },
 
-  // Functions
-  getStaticProps: async (cosmWasmClient, address) => {
-    const client = new Cw20StakedBalanceVotingQueryClient(
-      cosmWasmClient,
-      address
-    )
-
-    const [governanceTokenAddress, stakingContractAddress] = await Promise.all([
-      await client.tokenContract(),
-      await client.stakingContract(),
-    ])
-
-    return {
-      governanceTokenAddress,
-      stakingContractAddress,
-    }
+  // Hooks
+  hooks: {
+    useVoteConversionDecimals,
   },
 
   // UI
   ui: {
-    membership: {
-      desktop: Membership,
-      mobileTab: MembershipMobileTab,
-      mobile: (props) => <Membership {...props} primaryText />,
+    Membership: {
+      Desktop: Membership,
+      MobileTab: MembershipMobileTab,
+      Mobile: (props) => <Membership {...props} primaryText />,
     },
+    DaoHorizontalInfoDisplayInternal,
+    ProposalDetails,
+    DaoTreasuryFooter,
+    DaoContractInfoContent,
+    ProposalCreateAddresses,
   },
 }

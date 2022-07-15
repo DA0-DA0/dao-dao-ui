@@ -6,7 +6,6 @@ import {
   Cw20StakedBalanceVotingSelectors,
   tokenUSDCPriceSelector,
 } from '@dao-dao/state'
-import { VotingModuleType } from '@dao-dao/utils'
 
 import { MarketingInfoResponse, TokenInfoResponse } from '../clients/cw20-base'
 import { useVotingModule } from './useVotingModule'
@@ -18,9 +17,7 @@ interface UseGovernanceTokenInfoOptions {
 }
 
 interface UseGovernanceTokenInfoResponse {
-  votingModuleType?: VotingModuleType
   stakingContractAddress?: string
-  governanceTokenShouldExist: boolean
   governanceTokenAddress?: string
   governanceTokenInfo?: TokenInfoResponse
   governanceTokenMarketingInfo?: MarketingInfoResponse
@@ -42,12 +39,10 @@ export const useGovernanceTokenInfo = (
   }: UseGovernanceTokenInfoOptions = {}
 ): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
-  const { votingModuleAddress, votingModuleType } = useVotingModule(coreAddress)
-  const governanceTokenShouldExist =
-    votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+  const { votingModuleAddress } = useVotingModule(coreAddress)
 
   const stakingContractAddress = useRecoilValue(
-    votingModuleAddress && governanceTokenShouldExist
+    votingModuleAddress
       ? Cw20StakedBalanceVotingSelectors.stakingContractSelector({
           contractAddress: votingModuleAddress,
         })
@@ -55,7 +50,7 @@ export const useGovernanceTokenInfo = (
   )
 
   const governanceTokenAddress = useRecoilValue(
-    votingModuleAddress && governanceTokenShouldExist
+    votingModuleAddress
       ? Cw20StakedBalanceVotingSelectors.tokenContractSelector({
           contractAddress: votingModuleAddress,
         })
@@ -111,9 +106,7 @@ export const useGovernanceTokenInfo = (
   )
 
   return {
-    votingModuleType,
     stakingContractAddress,
-    governanceTokenShouldExist,
     governanceTokenAddress,
     governanceTokenInfo,
     governanceTokenMarketingInfo,

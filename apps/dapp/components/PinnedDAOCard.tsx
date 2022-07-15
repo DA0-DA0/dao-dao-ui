@@ -5,7 +5,6 @@ import { useRecoilValue } from 'recoil'
 import {
   CwCoreSelectors,
   nativeBalanceSelector,
-  useGovernanceTokenInfo,
   useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
@@ -13,7 +12,6 @@ import { SuspenseLoader } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { usePinnedDAOs } from '@/hooks'
-import { useAddToken } from '@/util'
 
 import { ContractCard, LoadingContractCard } from './ContractCard'
 
@@ -27,12 +25,10 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
     CwCoreSelectors.configSelector({ contractAddress: address })
   )
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
-  const { governanceTokenAddress } = useGovernanceTokenInfo(address)
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address)
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })
-  const addToken = useAddToken()
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
@@ -58,7 +54,6 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
           setUnpinned(address)
         } else {
           setPinned(address)
-          governanceTokenAddress && addToken?.(governanceTokenAddress)
         }
       }}
       pinned={pinned}

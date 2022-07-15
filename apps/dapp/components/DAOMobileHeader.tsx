@@ -9,13 +9,10 @@ import {
 
 import { useDAOInfoContext } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
-import { useAddToken } from '@/util'
 
 const DAOMobileHeaderInternal: FC = () => {
-  const { coreAddress, governanceTokenAddress, name, imageUrl } =
-    useDAOInfoContext()
+  const { coreAddress, name, imageUrl } = useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
-  const addToken = useAddToken()
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)
@@ -31,7 +28,6 @@ const DAOMobileHeaderInternal: FC = () => {
           setUnpinned(coreAddress)
         } else {
           setPinned(coreAddress)
-          governanceTokenAddress && addToken?.(governanceTokenAddress)
         }
       }}
       pinned={pinned}

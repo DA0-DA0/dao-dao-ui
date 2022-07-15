@@ -12,6 +12,7 @@ import {
   GradientHero,
   HeartButton,
   MobileMenuTab,
+  PageLoader,
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
@@ -26,14 +27,11 @@ import {
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
   DaoTreasury,
-  Loader,
-  PageLoader,
   SmallScreenNav,
   useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
 import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
-import { useAddToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -45,7 +43,9 @@ enum MobileMenuTabSelection {
 const InnerMobileDaoHome: FC = () => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
-  const votingModuleAdapter = useVotingModuleAdapter()
+  const {
+    ui: { Membership },
+  } = useVotingModuleAdapter()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -62,7 +62,7 @@ const InnerMobileDaoHome: FC = () => {
           selected={tab === MobileMenuTabSelection.Proposal}
           text={t('title.proposals')}
         />
-        <votingModuleAdapter.ui.membership.mobileTab
+        <Membership.MobileTab
           onClick={makeTabSetter(MobileMenuTabSelection.Membership)}
           selected={tab === MobileMenuTabSelection.Membership}
         />
@@ -84,10 +84,7 @@ const InnerMobileDaoHome: FC = () => {
           <ContractProposalsDisplay />
         )}
         {tab === MobileMenuTabSelection.Membership && (
-          <votingModuleAdapter.ui.membership.mobile
-            Loader={Loader}
-            coreAddress={coreAddress}
-          />
+          <Membership.Mobile coreAddress={coreAddress} />
         )}
         {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
@@ -101,21 +98,15 @@ const InnerMobileDaoHome: FC = () => {
 const InnerDAOHome: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const addToken = useAddToken()
 
-  const { coreAddress, governanceTokenAddress, name } = useDAOInfoContext()
-  const votingModuleAdapter = useVotingModuleAdapter()
+  const { coreAddress, name } = useDAOInfoContext()
+  const {
+    ui: { Membership },
+  } = useVotingModuleAdapter()
   const { isMember } = useVotingModule(coreAddress)
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)
-
-  const shouldAddToken = router.query.add_token
-  useEffect(() => {
-    if (shouldAddToken && governanceTokenAddress) {
-      addToken?.(governanceTokenAddress)
-    }
-  }, [shouldAddToken, governanceTokenAddress, addToken])
 
   return (
     <div className="flex flex-col items-stretch lg:grid lg:grid-cols-6">
@@ -145,8 +136,6 @@ const InnerDAOHome: FC = () => {
                       setUnpinned(coreAddress)
                     } else {
                       setPinned(coreAddress)
-                      governanceTokenAddress &&
-                        addToken?.(governanceTokenAddress)
                     }
                   }}
                   pinned={pinned}
@@ -160,10 +149,7 @@ const InnerDAOHome: FC = () => {
               <DaoHorizontalInfoDisplay />
             </div>
             <div className="block mt-4 lg:hidden">
-              <votingModuleAdapter.ui.membership.desktop
-                Loader={Loader}
-                coreAddress={coreAddress}
-              />
+              <Membership.Desktop coreAddress={coreAddress} />
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
               <DaoContractInfo />
@@ -175,10 +161,7 @@ const InnerDAOHome: FC = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <votingModuleAdapter.ui.membership.desktop
-          Loader={Loader}
-          coreAddress={coreAddress}
-        />
+        <Membership.Desktop coreAddress={coreAddress} />
       </div>
     </div>
   )

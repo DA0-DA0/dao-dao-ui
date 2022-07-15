@@ -9,11 +9,11 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { Loader, Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { searchVisibleAtom } from '@/atoms'
-import { Loader, PinnedDAONavList } from '@/components'
+import { PinnedDAONavList } from '@/components'
 import ThemeToggle from 'components/ThemeToggle'
 
 type NavProps = {

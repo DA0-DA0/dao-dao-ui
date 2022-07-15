@@ -40,7 +40,6 @@ import {
   Tooltip,
 } from '@dao-dao/ui'
 import {
-  VotingModuleType,
   decodedMessagesString,
   usePlatform,
   validateRequired,
@@ -60,7 +59,6 @@ export interface CreateProposalFormProps {
   onSubmit: (data: ProposalData) => void
   loading: boolean
   coreAddress: string
-  votingModuleType: VotingModuleType
   connectWalletButton?: ReactNode
 }
 
@@ -68,14 +66,15 @@ export const CreateProposalForm = ({
   onSubmit,
   loading,
   coreAddress,
-  votingModuleType,
   connectWalletButton,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   const { connected, address: walletAddress } = useWallet()
 
-  const { disabledActionKeys } = useVotingModuleAdapter()
+  const {
+    fields: { disabledActionKeys },
+  } = useVotingModuleAdapter()
   const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { isMember } = useVotingModule(coreAddress)
 

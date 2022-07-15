@@ -1,9 +1,17 @@
 import { ActionKey } from '@dao-dao/actions'
-import { Cw4VotingQueryClient } from '@dao-dao/state'
 import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { IVotingModuleAdapter } from '../../types'
-import { Membership, MembershipMobileTab } from './components'
+import {
+  DaoContractInfoContent,
+  DaoHorizontalInfoDisplayInternal,
+  DaoTreasuryFooter,
+  Membership,
+  MembershipMobileTab,
+  ProposalCreateAddresses,
+  ProposalDetails,
+} from './components'
+import { useVoteConversionDecimals } from './hooks'
 
 export const Cw4VotingAdapter: IVotingModuleAdapter = {
   // Initialization
@@ -12,26 +20,29 @@ export const Cw4VotingAdapter: IVotingModuleAdapter = {
     contractName.includes(CW4VOTING_CONTRACT_NAME),
 
   // Fields
-  disabledActionKeys: [
-    // No governance tokens to mint.
-    ActionKey.Mint,
-  ],
+  fields: {
+    disabledActionKeys: [
+      // No governance tokens to mint.
+      ActionKey.Mint,
+    ],
+  },
 
-  // Functions
-  getStaticProps: async (cosmWasmClient, address) => {
-    const client = new Cw4VotingQueryClient(cosmWasmClient, address)
-
-    return {
-      cw4GroupAddress: await client.groupContract(),
-    }
+  // Hooks
+  hooks: {
+    useVoteConversionDecimals,
   },
 
   // UI
   ui: {
-    membership: {
-      desktop: Membership,
-      mobileTab: MembershipMobileTab,
-      mobile: (props) => <Membership {...props} primaryText />,
+    Membership: {
+      Desktop: Membership,
+      MobileTab: MembershipMobileTab,
+      Mobile: (props) => <Membership {...props} primaryText />,
     },
+    DaoHorizontalInfoDisplayInternal,
+    ProposalDetails,
+    DaoTreasuryFooter,
+    DaoContractInfoContent,
+    ProposalCreateAddresses,
   },
 }
