@@ -24,7 +24,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
-
 import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
 
 interface MembershipProps {

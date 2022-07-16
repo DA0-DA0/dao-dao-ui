@@ -5,12 +5,11 @@ import { Pie } from '@dao-dao/icons'
 import { CwCoreSelectors, useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
-
 import { Membership } from '../Membership'
 import { ClaimsPendingList } from './ClaimsPendingList'
 import { StakeHeader, StakeHeaderLoader } from './StakeHeader'
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 
 export const SdaMembershipPage = ({
   defaultImageUrl,

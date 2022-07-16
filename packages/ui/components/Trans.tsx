@@ -12,7 +12,7 @@ import { Loader } from '.'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const Trans: typeof OriginalTrans = (props) => (
-  <SuspenseLoader fallback={<Loader />}>
+  <SuspenseLoader fallback={<Loader size={20} />}>
     <OriginalTrans {...props} />
   </SuspenseLoader>
 )

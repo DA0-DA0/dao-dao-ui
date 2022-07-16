@@ -29,11 +29,15 @@ export const Loader = ({
   </div>
 )
 
-// On mobile, the container is not as tall as the whole screen when just
-// the loader is showing, so expand to fill screen height.
-export const PageLoader = ({ className, size = 66, ...props }: LoaderProps) => (
+export const PageLoader = ({ className, size = 64, ...props }: LoaderProps) => (
   <Loader
-    className={clsx('w-screen h-screen md:h-full', className)}
+    className={clsx(
+      // On mobile, the app container is not as tall as the whole screen
+      // when just the loader is showing, so set minimum to screen height.
+      'min-h-screen lg:min-h-min',
+      className
+    )}
+    fill
     size={size}
     {...props}
   />
