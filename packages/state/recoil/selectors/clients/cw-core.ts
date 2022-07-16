@@ -1,7 +1,10 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  matchAdapter,
+} from '@dao-dao/voting-module-adapter'
 
 import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
 import {
@@ -210,17 +213,24 @@ export const allCw20TokenListSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
+      // TODO(noah/voting-module-adapter): Somehow move this logic into the adapter. Maybe the entire selector?
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
       // All `info` queries are the same, so just use cw-core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(infoSelector({ contractAddress: votingModuleAddress }))
         : undefined
-      const votingModuleType =
-        votingModuleInfo &&
-        parseVotingModuleContractName(votingModuleInfo.info.contract)
+
+      let hasGovernanceToken
+      try {
+        hasGovernanceToken =
+          !!votingModuleInfo &&
+          matchAdapter(votingModuleInfo.info.contract) ===
+            Cw20StakedBalanceVotingAdapter
+      } catch {
+        hasGovernanceToken = false
+      }
       const governanceTokenAddress =
-        votingModuleAddress &&
-        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+        votingModuleAddress && hasGovernanceToken
           ? get(
               Cw20StakedBalanceVotingSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
@@ -309,18 +319,24 @@ export const allCw20BalancesSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
+      // TODO(noah/voting-module-adapter): Somehow move this logic into the adapter. Maybe the entire selector?
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
       // All `info` queries are the same, so just use cw-core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(infoSelector({ contractAddress: votingModuleAddress }))
         : undefined
-      // TODO(noah/voting-module-adapter): Somehow move this logic into the adapter. Maybe the entire selector?
-      const votingModuleType =
-        votingModuleInfo &&
-        parseVotingModuleContractName(votingModuleInfo.info.contract)
+
+      let hasGovernanceToken
+      try {
+        hasGovernanceToken =
+          !!votingModuleInfo &&
+          matchAdapter(votingModuleInfo.info.contract) ===
+            Cw20StakedBalanceVotingAdapter
+      } catch {
+        hasGovernanceToken = false
+      }
       const governanceTokenAddress =
-        votingModuleAddress &&
-        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
+        votingModuleAddress && hasGovernanceToken
           ? get(
               Cw20StakedBalanceVotingSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
