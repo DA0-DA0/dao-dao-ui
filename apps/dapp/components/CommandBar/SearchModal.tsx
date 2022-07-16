@@ -15,10 +15,16 @@ export interface SearchModalProps {
   onClose: () => void
 }
 
+export enum SearchStateType {
+  Home,
+  NavigateDao,
+  DaoChosen,
+}
+
 type SearchState =
-  | { type: 'home' }
-  | { type: 'navigate_dao' }
-  | { type: 'dao_chosen'; id: string; name: string }
+  | { type: SearchStateType.Home }
+  | { type: SearchStateType.NavigateDao }
+  | { type: SearchStateType.DaoChosen; id: string; name: string }
 
 const SearchNavElem: FC<{ name: string }> = ({ name }) => (
   <div
@@ -30,6 +36,24 @@ const SearchNavElem: FC<{ name: string }> = ({ name }) => (
 
 export type Hit = DaoHit | ActionHit | DaoActionHit
 
+export enum HitType {
+  AppAction,
+  Dao,
+  DaoAction,
+}
+
+enum ActionHitId {
+  CreateDao,
+  NavigateDao,
+}
+
+export interface ActionHit {
+  icon: string
+  id: ActionHitId
+  name: string
+  hitType: HitType.AppAction
+}
+
 export interface DaoHit {
   id: string
   name: string
@@ -37,66 +61,65 @@ export interface DaoHit {
   image_url: string | undefined
   proposal_count: number
   treasury_balance: string
-  hit_type: 'dao'
+  hitType: HitType.Dao
 }
 
-export interface ActionHit {
-  icon: string
-  id: string
-  name: string
-  hit_type: 'dapp_action'
+enum DaoActionHitId {
+  GotoDao,
+  NewProposal,
+  CopyDaoAddress,
 }
 
 export interface DaoActionHit {
   icon: string
-  id: string
+  id: DaoActionHitId
   name: string
-  hit_type: 'dao_action'
+  hitType: HitType.DaoAction
 }
 
-const DAPP_ACTIONS: ActionHit[] = [
+const APP_ACTIONS: ActionHit[] = [
   {
     icon: '➕',
-    id: 'create_dao',
+    id: ActionHitId.CreateDao,
     name: 'Create a DAO',
-    hit_type: 'dapp_action',
   },
   {
     icon: '🗺',
-    id: 'navigate_dao',
+    id: ActionHitId.NavigateDao,
     name: 'Navigate to DAO',
-    hit_type: 'dapp_action',
   },
-]
+].map((data) => ({
+  ...data,
+  hitType: HitType.AppAction,
+}))
 
 const DAO_ACTIONS: DaoActionHit[] = [
   {
     icon: '☘️',
-    id: 'goto_dao',
+    id: DaoActionHitId.GotoDao,
     name: 'Go to DAO page',
-    hit_type: 'dao_action',
   },
   {
     icon: '🗳',
-    id: 'new_proposal',
+    id: DaoActionHitId.NewProposal,
     name: 'Start a new proposal',
-    hit_type: 'dao_action',
   },
   {
     icon: '🏛',
-    id: 'copy_dao_address',
+    id: DaoActionHitId.CopyDaoAddress,
     name: 'Copy DAO address',
-    hit_type: 'dao_action',
   },
   // MARK: Add more DAO actions here
   // {
   //   icon: '👥',
-  //   id: 'add_token',
+  //   id: DaoActionHitId.AddToken,
   //   name: 'Add token to Keplr',
-  //   hit_type: 'dao_action',
   // },
-  // { icon: '💵', id: 'stake', name: 'Manage staking', hit_type: 'dao_action' },
-]
+  // { icon: '💵', id: DaoActionHitId.Stake, name: 'Manage staking' },
+].map((data) => ({
+  ...data,
+  hitType: HitType.DaoAction,
+}))
 
 const MAX_DAOS_DISPLAYED = 7
 
@@ -116,7 +139,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const router = useRouter()
   const { t } = useTranslation()
   const [searchState, setSearchState] = useState<SearchState>({
-    type: 'home',
+    type: SearchStateType.Home,
   })
   const [currentRefinement, refine] = useState<string>('')
   const [hits, setHits] = useState<Hit[]>([])
@@ -126,24 +149,24 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
       const res = await index.search(currentRefinement)
       const daoHits = res.hits
         .slice(0, MAX_DAOS_DISPLAYED)
-        .map((hit) => ({ ...hit, hit_type: 'dao' })) as DaoHit[]
+        .map((hit) => ({ ...hit, hitType: HitType.Dao })) as DaoHit[]
 
       // Display default options
-      if (currentRefinement == '') {
-        if (searchState.type == 'home') {
-          setHits([...daoHits, ...DAPP_ACTIONS])
-        } else if (searchState.type == 'dao_chosen') {
+      if (!currentRefinement) {
+        if (searchState.type === SearchStateType.Home) {
+          setHits([...daoHits, ...APP_ACTIONS])
+        } else if (searchState.type === SearchStateType.DaoChosen) {
           setHits([...DAO_ACTIONS])
-        } else if (searchState.type == 'navigate_dao') {
+        } else if (searchState.type === SearchStateType.NavigateDao) {
           setHits([...daoHits])
         }
         return
       }
       // Else search
       const fuse = new Fuse(
-        searchState.type == 'dao_chosen'
-          ? [...DAPP_ACTIONS, ...daoHits, ...DAO_ACTIONS]
-          : [...DAPP_ACTIONS, ...daoHits],
+        searchState.type === SearchStateType.DaoChosen
+          ? [...APP_ACTIONS, ...daoHits, ...DAO_ACTIONS]
+          : [...APP_ACTIONS, ...daoHits],
         FUSE_OPTIONS
       )
       setHits(fuse.search(currentRefinement).map((o) => o.item))
@@ -154,18 +177,18 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     // Sort sections by order of first appearance of hits
     // ordered list of hit types
     const hitTypes = hits.reduce(
-      (arr, hit) => (arr.includes(hit.hit_type) ? arr : [...arr, hit.hit_type]),
-      [] as string[]
+      (arr, hit) => (arr.includes(hit.hitType) ? arr : [...arr, hit.hitType]),
+      [] as HitType[]
     )
     // Sorted hits based on hitTypes
     // Note that `sort` has a STABLE SORT invariant, so the order of elements are preserved
     const sortedHits = hits.sort(
-      (a, b) => hitTypes.indexOf(a.hit_type) - hitTypes.indexOf(b.hit_type)
+      (a, b) => hitTypes.indexOf(a.hitType) - hitTypes.indexOf(b.hitType)
     )
     // Section index array based on contiguous elements, end exclusive
     const sections = [
       ...sortedHits.reduce((arr, hit, i) => {
-        return i != 0 && hit.hit_type != sortedHits[i - 1].hit_type
+        return i != 0 && hit.hitType != sortedHits[i - 1].hitType
           ? [...arr, i]
           : arr
       }, [] as number[]),
@@ -173,11 +196,11 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     ]
     // Map section names
     const sectionNames = hitTypes.map((t) =>
-      t == 'dao'
+      t === HitType.Dao
         ? 'DAOs'
-        : t == 'dapp_action'
+        : t === HitType.AppAction
         ? 'App Actions'
-        : t == 'dao_action'
+        : t === HitType.DaoAction
         ? 'DAO Actions'
         : ''
     )
@@ -188,39 +211,43 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const onChoice = useCallback(
     (hit: Hit) => {
       // Global app actions do not depend on command context
-      if (hit.hit_type == 'dapp_action') {
-        if (hit.id == 'create_dao') return router.push(`/dao/create`)
-        else if (hit.id == 'navigate_dao') {
+      if (hit.hitType === HitType.AppAction) {
+        if (hit.id === ActionHitId.CreateDao) return router.push(`/dao/create`)
+        else if (hit.id === ActionHitId.NavigateDao) {
           refine('')
-          return setSearchState({ type: 'navigate_dao' })
+          return setSearchState({ type: SearchStateType.NavigateDao })
         }
       }
       // DAO choice on Home and Chosen contexts are the same
       if (
-        hit.hit_type == 'dao' &&
-        (searchState.type == 'home' || searchState.type == 'dao_chosen')
+        hit.hitType === HitType.Dao &&
+        (searchState.type === SearchStateType.Home ||
+          searchState.type === SearchStateType.DaoChosen)
       ) {
         refine('') // Reset text
         return setSearchState({
-          type: 'dao_chosen',
+          type: SearchStateType.DaoChosen,
           name: hit.name,
           id: hit.id,
         })
       }
 
       // Navigation to DAO
-      if (searchState.type == 'navigate_dao') {
+      if (searchState.type === SearchStateType.NavigateDao) {
         return router.push(`/dao/${hit.id}`)
       }
 
       // MARK: Take DAO specific actions here
-      if (hit.hit_type == 'dao_action' && searchState.type == 'dao_chosen') {
-        if (hit.id == 'new_proposal')
+      if (
+        hit.hitType === HitType.DaoAction &&
+        searchState.type === SearchStateType.DaoChosen
+      ) {
+        if (hit.id === DaoActionHitId.NewProposal)
           return router.push(`/dao/${searchState.id}/proposals/create`)
-        else if (hit.id == 'copy_dao_address') {
+        else if (hit.id === DaoActionHitId.CopyDaoAddress) {
           navigator.clipboard.writeText(searchState.id)
           return toast.success('Copied DAO address to clipboard!')
-        } else if (hit.id == 'goto_dao') {
+        } else if (hit.id === DaoActionHitId.GotoDao) {
           return router.push(`/dao/${searchState.id}`)
         }
       }
@@ -240,16 +267,16 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
       <div className="flex overflow-hidden flex-col w-full h-full bg-primary rounded-lg">
         <div className="flex gap-1 px-4 pt-4 text-tertiary">
           <SearchNavElem name={t('commandBar.home')} />
-          {searchState.type == 'navigate_dao' ? (
+          {searchState.type === SearchStateType.NavigateDao ? (
             <SearchNavElem name={t('commandBar.navigateDao')} />
-          ) : searchState.type == 'dao_chosen' ? (
+          ) : searchState.type === SearchStateType.DaoChosen ? (
             <SearchNavElem name={searchState.name} />
           ) : undefined}
         </div>
 
         <SearchBar
           currentRefinement={currentRefinement}
-          onEmptyBack={() => setSearchState({ type: 'home' })}
+          onEmptyBack={() => setSearchState({ type: SearchStateType.Home })}
           refine={refine}
         />
 

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Logo } from '@dao-dao/ui'
 
-import { DaoHit, Hit } from './SearchModal'
+import { DaoHit, Hit, HitType } from './SearchModal'
 
 const HitView = ({
   hit,
@@ -25,7 +25,7 @@ const HitView = ({
       )}
       onClick={onClick}
     >
-      {hit.hit_type == 'dao' ? (
+      {hit.hitType === HitType.Dao ? (
         hit.image_url ? (
           <div
             aria-label={t('info.daosLogo')}
@@ -135,7 +135,7 @@ export const SearchHits = ({
           <div className="py-1 font-medium text-gray-400">
             {sectionNames[i]}
           </div>
-          {(i == 0
+          {(i === 0
             ? hits.slice(0, sectionIndex)
             : hits.slice(sections[i - 1], sectionIndex)
           ).map((hit: DaoHit, index: number) => (
@@ -143,7 +143,9 @@ export const SearchHits = ({
               key={hit.id}
               hit={hit}
               onClick={() => onChoice(hit)}
-              selected={(i == 0 ? index : sections[i - 1] + index) == selection}
+              selected={
+                (i === 0 ? index : sections[i - 1] + index) === selection
+              }
             />
           ))}
         </>
