@@ -1,7 +1,7 @@
 import Fuse from 'fuse.js'
 import { MeiliSearch } from 'meilisearch'
 import { useRouter } from 'next/router'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -88,6 +88,7 @@ const DAO_ACTIONS: DaoActionHit[] = [
     name: 'Copy DAO address',
     hit_type: 'dao_action',
   },
+  // MARK: Add more DAO actions here
   // {
   //   icon: '👥',
   //   id: 'add_token',
@@ -98,6 +99,7 @@ const DAO_ACTIONS: DaoActionHit[] = [
 ]
 
 const MAX_DAOS_DISPLAYED = 7
+
 const FUSE_OPTIONS = {
   keys: ['id', 'name'],
 }
@@ -106,6 +108,7 @@ const searchClient = new MeiliSearch({
   host: SEARCH_URL,
   apiKey: SEARCH_API_KEY,
 })
+
 const index = searchClient.index(SEARCH_INDEX)
 
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
@@ -182,6 +185,49 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     return [sections, sectionNames]
   }, [hits])
 
+  const onChoice = useCallback(
+    (hit: Hit) => {
+      // Global app actions do not depend on command context
+      if (hit.hit_type == 'dapp_action') {
+        if (hit.id == 'create_dao') return router.push(`/dao/create`)
+        else if (hit.id == 'navigate_dao') {
+          refine('')
+          return setSearchState({ type: 'navigate_dao' })
+        }
+      }
+      // DAO choice on Home and Chosen contexts are the same
+      if (
+        hit.hit_type == 'dao' &&
+        (searchState.type == 'home' || searchState.type == 'dao_chosen')
+      ) {
+        refine('') // Reset text
+        return setSearchState({
+          type: 'dao_chosen',
+          name: hit.name,
+          id: hit.id,
+        })
+      }
+
+      // Navigation to DAO
+      if (searchState.type == 'navigate_dao') {
+        return router.push(`/dao/${hit.id}`)
+      }
+
+      // MARK: Take DAO specific actions here
+      if (hit.hit_type == 'dao_action' && searchState.type == 'dao_chosen') {
+        if (hit.id == 'new_proposal')
+          return router.push(`/dao/${searchState.id}/proposals/create`)
+        else if (hit.id == 'copy_dao_address') {
+          navigator.clipboard.writeText(searchState.id)
+          return toast.success('Copied DAO address to clipboard!')
+        } else if (hit.id == 'goto_dao') {
+          return router.push(`/dao/${searchState.id}`)
+        }
+      }
+    },
+    [refine, searchState, setSearchState, router]
+  )
+
   return (
     <Modal
       containerClassName={
@@ -211,48 +257,7 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
             have to be handled here */}
         <SearchHits
           hits={hits}
-          onChoice={(hit: Hit) => {
-            // Global app actions do not depend on command context
-            if (hit.hit_type == 'dapp_action') {
-              if (hit.id == 'create_dao') return router.push(`/dao/create`)
-              else if (hit.id == 'navigate_dao') {
-                refine('')
-                return setSearchState({ type: 'navigate_dao' })
-              }
-            }
-            // DAO choice on Home and Chosen contexts are the same
-            if (
-              hit.hit_type == 'dao' &&
-              (searchState.type == 'home' || searchState.type == 'dao_chosen')
-            ) {
-              refine('') // Reset text
-              return setSearchState({
-                type: 'dao_chosen',
-                name: hit.name,
-                id: hit.id,
-              })
-            }
-
-            // Navigation to DAO
-            if (searchState.type == 'navigate_dao') {
-              return router.push(`/dao/${hit.id}`)
-            }
-
-            // MARK: Take DAO specific actions here
-            if (
-              hit.hit_type == 'dao_action' &&
-              searchState.type == 'dao_chosen'
-            ) {
-              if (hit.id == 'new_proposal')
-                return router.push(`/dao/${searchState.id}/proposals/create`)
-              else if (hit.id == 'copy_dao_address') {
-                navigator.clipboard.writeText(searchState.id)
-                return toast.success('Copied DAO address to clipboard!')
-              } else if (hit.id == 'goto_dao') {
-                return router.push(`/dao/${searchState.id}`)
-              }
-            }
-          }}
+          onChoice={onChoice}
           sectionData={{ sections, sectionNames }}
         />
       </div>
