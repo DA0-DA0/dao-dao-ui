@@ -20,7 +20,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   matcher: (contractName: string) =>
     contractName.includes(CW20STAKEDBALANCEVOTING_CONTRACT_NAME),
 
-  loader: () => ({
+  load: () => ({
     // Fields
     fields: {
       disabledActionKeys: [],

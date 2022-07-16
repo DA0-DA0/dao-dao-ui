@@ -21,7 +21,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
   matcher: (contractName: string) =>
     contractName.includes(CW4VOTING_CONTRACT_NAME),
 
-  loader: () => ({
+  load: () => ({
     // Fields
     fields: {
       disabledActionKeys: [
