@@ -3,7 +3,7 @@ import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { Button, Trans } from '@dao-dao/ui'
+import { Trans } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -11,6 +11,7 @@ import {
 
 import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
 
+import { Button } from '../Button'
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
 

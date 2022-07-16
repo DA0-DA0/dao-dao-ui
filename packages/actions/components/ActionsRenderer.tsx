@@ -1,8 +1,14 @@
 import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
-import { FC, FunctionComponent, useEffect, useState } from 'react'
+import {
+  ComponentType,
+  FC,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { SuspenseLoader } from '@dao-dao/ui'
+import { LoaderProps, SuspenseLoader } from '@dao-dao/ui'
 
 import { ActionAndData, ActionCardLoader } from '..'
 
@@ -11,10 +17,11 @@ export interface ActionsRendererProps {
   coreAddress: string
   proposalId: number
   actionData: ActionAndData[]
+  Loader: ComponentType<LoaderProps>
 }
 
 export const ActionsRenderer: FC<ActionsRendererProps> = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader />}>
+  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
     <InnerActionsRenderer {...props} />
   </SuspenseLoader>
 )
@@ -23,6 +30,7 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
   coreAddress,
   proposalId,
   actionData,
+  Loader,
 }) => {
   const formMethods = useForm({
     defaultValues: actionData.reduce(
@@ -48,6 +56,7 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
         {actionData.map(({ action: { Component } }, index) => (
           <div key={index} className="group relative" id={`A${index + 1}`}>
             <Component
+              Loader={Loader}
               allActionsWithData={actionData.map(
                 ({ action: { key }, data }) => ({
                   key,

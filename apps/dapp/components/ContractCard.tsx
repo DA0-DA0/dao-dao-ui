@@ -6,9 +6,8 @@ import { FC, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dao, Pencil, Votes } from '@dao-dao/icons'
-import { Logo } from '@dao-dao/ui'
+import { Loader, Logo } from '@dao-dao/ui'
 import {
-  CARD_IMAGES_ENABLED,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -142,7 +141,7 @@ export const ContractCard: FC<ContractCardProps> = ({
         votingPowerPercent={votingPowerPercent}
       >
         <div className={clsx({ 'animate-spin-medium': _loading || loading })}>
-          {imgUrl && CARD_IMAGES_ENABLED ? (
+          {imgUrl ? (
             <div
               aria-label={t('info.daosLogo')}
               className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
@@ -152,7 +151,7 @@ export const ContractCard: FC<ContractCardProps> = ({
               }}
             ></div>
           ) : (
-            <Logo alt={name} height={80} width={80} />
+            <Logo size={80} />
           )}
         </div>
       </ContractCardBase>
@@ -176,9 +175,7 @@ export const LoadingContractCard = () => (
   <div className="flex relative flex-col justify-center items-center p-6 w-[260px]  h-[320px] bg-card from-transparent rounded-lg shadow transition-shadow">
     <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
     <div className="flex justify-center items-center w-[70px] h-[70px]">
-      <div className="inline-block animate-spin-medium">
-        <Logo height={72} width={72} />
-      </div>
+      <Loader size={72} />
     </div>
   </div>
 )

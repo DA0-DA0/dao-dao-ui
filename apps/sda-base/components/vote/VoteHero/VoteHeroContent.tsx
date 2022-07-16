@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { CwCoreSelectors } from '@dao-dao/state'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
@@ -19,7 +19,7 @@ export const VoteHeroContentLoader = () => {
   return (
     <>
       <VoteHeroHeader image={<Loader size="100%" />} />
-      <VoteHeroStats coreAddress={DAO_ADDRESS} loader />
+      <VoteHeroStats loader />
     </>
   )
 }
@@ -51,7 +51,7 @@ export const VoteHeroContent = () => {
         }
         title={config.name}
       />
-      <VoteHeroStats coreAddress={DAO_ADDRESS} />
+      <VoteHeroStats />
     </>
   )
 }

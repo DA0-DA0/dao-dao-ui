@@ -10,7 +10,7 @@ import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Loader, Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
-import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
+import { usePlatform } from '@dao-dao/utils'
 
 import { searchVisibleAtom } from '@/atoms'
 import { PinnedDAONavList } from '@/components'
@@ -32,7 +32,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           <div className="flex justify-between items-center lg:justify-start">
             <Link href="/home">
               <a>
-                <Logo alt={`${SITE_TITLE} Logo`} height={28} width={28} />
+                <Logo size={28} />
               </a>
             </Link>
             <div className="cursor-pointer lg:hidden" onClick={onMenuClick}>

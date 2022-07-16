@@ -228,7 +228,7 @@ const InnerSpendComponent: ActionComponent = (props) => {
 }
 
 const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader />}>
+  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
     <InnerSpendComponent {...props} />
   </SuspenseLoader>
 )

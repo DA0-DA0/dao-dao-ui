@@ -1,13 +1,33 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { ActionKey } from '@dao-dao/actions'
-import { ProposalDetailsProps } from '@dao-dao/ui'
+import { LoaderProps, LogoProps, ProposalDetailsProps } from '@dao-dao/ui'
+
+export interface SdaMembershipPageNavInfo {
+  renderIcon: (color: string, mobile: boolean) => ReactNode
+  label: string
+}
+
+export interface MembershipMobileTabProps {
+  onClick: () => void
+  selected: boolean
+}
+
+export type BaseProposalDetailsProps = Omit<
+  ProposalDetailsProps,
+  'stakingModal' | 'coreAddress'
+>
+
+export interface BaseVoteHeroStatsProps {
+  loader?: boolean
+}
+
+export interface BaseSdaMembershipPageProps {
+  defaultImageUrl: string
+  Loader: ComponentType<{ size?: number | string }>
+}
 
 export interface IVotingModuleAdapter {
-  // Initialization
-  id: string
-  matcher: (contractName: string) => boolean
-
   // Fields
   fields: {
     disabledActionKeys: ActionKey[]
@@ -22,62 +42,33 @@ export interface IVotingModuleAdapter {
   // UI
   ui: {
     Membership: {
-      Desktop: ComponentType<BaseMembershipProps>
+      Desktop: ComponentType
       MobileTab: ComponentType<MembershipMobileTabProps>
-      Mobile: ComponentType<BaseMembershipProps>
+      Mobile: ComponentType
     }
-    DaoHorizontalInfoDisplayInternal: ComponentType<BaseDaoHorizontalInfoDisplayInternalProps>
+    DaoHorizontalInfoDisplayInternal: ComponentType
     ProposalDetails: ComponentType<BaseProposalDetailsProps>
-    DaoTreasuryFooter: ComponentType<BaseDaoTreasuryFooterProps>
-    DaoContractInfoContent: ComponentType<BaseDaoContractInfoContentProps>
-    ProposalCreateAddresses: ComponentType<BaseProposalCreateAddressesProps>
+    DaoTreasuryFooter: ComponentType
+    DaoContractInfoContent: ComponentType
+    ProposalCreateAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
   }
 }
 
-export interface SdaMembershipPageNavInfo {
-  renderIcon: (color: string, mobile: boolean) => ReactNode
-  label: string
+export type VotingModuleAdapter = {
+  id: string
+  matcher: (contractName: string) => boolean
+  loader: () => IVotingModuleAdapter | Promise<IVotingModuleAdapter>
 }
 
-export interface MembershipMobileTabProps {
-  onClick: () => void
-  selected: boolean
-}
-
-export interface BaseMembershipProps {
+export interface IVotingModuleAdapterOptions {
   coreAddress: string
+  Logo: ComponentType<LogoProps>
+  Loader: ComponentType<LoaderProps>
 }
 
-export interface BaseDaoHorizontalInfoDisplayInternalProps {
-  coreAddress: string
-}
-
-export type BaseProposalDetailsProps = Omit<
-  ProposalDetailsProps,
-  'stakingModal'
->
-
-export interface BaseDaoTreasuryFooterProps {
-  coreAddress: string
-}
-
-export interface BaseDaoContractInfoContentProps {
-  coreAddress: string
-}
-
-export interface BaseProposalCreateAddressesProps {
-  coreAddress: string
-}
-
-export interface BaseVoteHeroStatsProps {
-  coreAddress: string
-  loader?: boolean
-}
-
-export interface BaseSdaMembershipPageProps {
-  coreAddress: string
-  defaultImageUrl: string
-  Loader: ComponentType<{ size?: number | string }>
+export interface IVotingModuleAdapterContext {
+  options: IVotingModuleAdapterOptions
+  adapter: IVotingModuleAdapter
 }

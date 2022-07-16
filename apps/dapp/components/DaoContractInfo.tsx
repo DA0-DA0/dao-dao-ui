@@ -6,13 +6,12 @@ import { Votes } from '@dao-dao/icons'
 import {
   CopyToClipboardAccent,
   GovInfoListItem,
+  Loader,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
 import { DaoTreasury } from './DaoTreasury'
-import { Loader } from './Loader'
 
 interface DaoContractInfoProps {
   hideTreasury?: boolean
@@ -22,11 +21,10 @@ const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
   const {
     ui: { DaoContractInfoContent },
   } = useVotingModuleAdapter()
-  const { coreAddress } = useDAOInfoContext()
 
   return (
     <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
-      <DaoContractInfoContent coreAddress={coreAddress} />
+      <DaoContractInfoContent />
 
       {!hideTreasury && (
         <SuspenseLoader fallback={<Loader />}>

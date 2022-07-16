@@ -26,7 +26,7 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   DAOPageWrapper,
@@ -205,6 +205,7 @@ const InnerProposalCreate = () => {
 
           <SuspenseLoader fallback={<Loader />}>
             <CreateProposalForm
+              Loader={Loader}
               coreAddress={coreAddress}
               loading={loading}
               onSubmit={onProposalSubmit}
@@ -225,7 +226,7 @@ const InnerProposalCreate = () => {
               <CopyToClipboard value={coreAddress} />
             </div>
 
-            <ProposalCreateAddresses coreAddress={coreAddress} />
+            <ProposalCreateAddresses />
           </div>
 
           <h2 className="mb-4 font-medium text-medium">

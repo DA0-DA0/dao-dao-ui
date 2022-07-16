@@ -6,17 +6,11 @@ import { Wallet } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import { HeroStat } from '@dao-dao/ui'
 
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseVoteHeroStatsProps } from '../../../types'
 
-export const VoteHeroStats = ({
-  loader,
-  coreAddress,
-}: BaseVoteHeroStatsProps) =>
-  loader ? (
-    <InnerVoteHeroStats />
-  ) : (
-    <InnerVoteHeroStatsContent coreAddress={coreAddress} />
-  )
+export const VoteHeroStats = ({ loader }: BaseVoteHeroStatsProps) =>
+  loader ? <InnerVoteHeroStats /> : <InnerVoteHeroStatsContent />
 
 export interface InnerVoteHeroStatsProps {
   data?: {
@@ -38,15 +32,9 @@ export const InnerVoteHeroStats = ({ data }: InnerVoteHeroStatsProps) => {
   )
 }
 
-type InnerVoteHeroStatsContentProps = Pick<
-  BaseVoteHeroStatsProps,
-  'coreAddress'
->
-
-const InnerVoteHeroStatsContent = ({
-  coreAddress,
-}: InnerVoteHeroStatsContentProps) => {
+const InnerVoteHeroStatsContent = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { cw4VotingMembers } = useVotingModule(coreAddress, {
     fetchCw4VotingMembers: true,
   })

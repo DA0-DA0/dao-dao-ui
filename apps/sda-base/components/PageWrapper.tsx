@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { ErrorPage, PageLoader, SuspenseLoader } from '@dao-dao/ui'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter/react'
 
-import { DAOInfo, DAOInfoContext, Header } from '.'
+import { DAO_ADDRESS } from '@/util'
+
+import { DAOInfo, DAOInfoContext, Header, Loader, Logo } from '.'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string
@@ -48,10 +50,21 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
         {daoInfo ? (
           <VotingModuleAdapterProvider
             contractName={daoInfo.votingModuleContractName}
+            options={{
+              coreAddress: DAO_ADDRESS,
+              Logo,
+              Loader,
+            }}
           >
             <DAOInfoContext.Provider value={daoInfo}>
               <Header />
-              <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
+
+              <SuspenseLoader
+                // Make room at top for Header.
+                fallback={<PageLoader className="!min-h-[calc(100vh-5rem)]" />}
+              >
+                <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
+              </SuspenseLoader>
             </DAOInfoContext.Provider>
           </VotingModuleAdapterProvider>
         ) : (

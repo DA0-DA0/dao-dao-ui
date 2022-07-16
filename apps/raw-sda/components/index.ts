@@ -1,7 +1,8 @@
 export * from './stake'
 export * from './vote'
 
-export * from './DAODAOLogo'
+export * from './Button'
+export * from './DaoDaoLogo'
 export * from './DAOInfoContext'
 export * from './DescriptionAndAirdropAllocation'
 export * from './Footer'

@@ -13,12 +13,11 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { BaseDaoHorizontalInfoDisplayInternalProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoHorizontalInfoDisplayInternal = ({
-  coreAddress,
-}: BaseDaoHorizontalInfoDisplayInternalProps) => {
+export const DaoHorizontalInfoDisplayInternal = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const { totalVotingWeight } = useVotingModule(coreAddress)
   const { proposalCount } = useProposalModule(coreAddress, {

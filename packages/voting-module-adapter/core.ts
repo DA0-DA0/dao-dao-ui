@@ -1,20 +1,16 @@
-import { IVotingModuleAdapter } from './types'
+import { VotingModuleAdapter } from './types'
 
-const registeredAdapters: IVotingModuleAdapter[] = []
+const registeredAdapters: VotingModuleAdapter[] = []
 
-export const registerAdapters = (adapters: IVotingModuleAdapter[]) => {
-  // Prevent ID duplicates.
-  if (new Set(adapters.map(({ id }) => id)).size !== adapters.length) {
-    throw new Error('Duplicate adapter IDs.')
-  }
+// Lazy loading adapters instead of defining objects reduces memory usage
+// and avoids cyclic dependencies when enums or other objects are stored in
+// the adapter object.
+export const registerAdapters = async (loaders: VotingModuleAdapter[]) =>
+  registeredAdapters.push(...loaders)
 
-  // Replace all registered adapters with new adapters.
-  registeredAdapters.splice(0, registeredAdapters.length, ...adapters)
-}
-
-export const matchAdapter = (contractName: string) => {
-  const adapter = registeredAdapters.find((adapter) =>
-    adapter.matcher(contractName)
+export const matchAdapter = async (contractName: string) => {
+  const adapter = registeredAdapters.find(({ matcher }) =>
+    matcher(contractName)
   )
 
   if (!adapter) {
@@ -25,5 +21,8 @@ export const matchAdapter = (contractName: string) => {
     )
   }
 
-  return adapter
+  return {
+    id: adapter.id,
+    adapter: await adapter.loader(),
+  }
 }

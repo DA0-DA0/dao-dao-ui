@@ -1,6 +1,13 @@
 import { DuplicateIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import {
+  ComponentType,
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Action, ActionAndData, ActionsRenderer } from '@dao-dao/actions'
@@ -15,6 +22,7 @@ import { Button } from '../Button'
 import { Close } from '../Close'
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 import { Execute } from '../Execute'
+import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { MarkdownPreview } from '../MarkdownPreview'
 import { Trans } from '../Trans'
 import { Vote } from '../Vote'
@@ -38,6 +46,7 @@ export interface ProposalDetailsProps {
   connectWalletButton?: ReactNode
   allowRevoting: boolean
   onDuplicate: (actionData: ActionAndData[]) => void
+  Loader?: ComponentType<LoaderProps>
 }
 
 export const ProposalDetails: FC<ProposalDetailsProps> = ({
@@ -58,6 +67,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
   connectWalletButton,
   allowRevoting,
   onDuplicate,
+  Loader = DefaultLoader,
 }) => {
   const { t } = useTranslation()
   const decodedMessages = useMemo(
@@ -128,6 +138,7 @@ export const ProposalDetails: FC<ProposalDetailsProps> = ({
             />
           ) : (
             <ActionsRenderer
+              Loader={Loader}
               actionData={actionData}
               coreAddress={coreAddress}
               proposalId={proposalId}

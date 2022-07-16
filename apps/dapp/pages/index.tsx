@@ -9,12 +9,11 @@ import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
   GradientWrapper,
-  LoadingScreen,
   Logo,
+  PageLoader,
   RotatableLogo,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { SITE_TITLE } from '@dao-dao/utils'
 
 import {
   AnouncementCard,
@@ -42,14 +41,14 @@ const Home: NextPage = () => {
     .then((data) => setProposals(data[data.length - 1].value))
 
   return (
-    <SuspenseLoader fallback={<LoadingScreen />}>
+    <SuspenseLoader fallback={<PageLoader />}>
       <GradientWrapper>
         <nav className="py-4 px-6 w-full bg-clip-padding bg-opacity-40 border-b border-inactive backdrop-blur-xl backdrop-filter">
           <div className="flex justify-between items-center mx-auto max-w-screen-lg">
             <Link href="/" passHref>
               <a className="flex items-center">
                 <div className="mr-3">
-                  <Logo alt={`${SITE_TITLE} Logo`} height={32} width={32} />
+                  <Logo size={32} />
                 </div>
                 <p className="mr-1 font-medium">DAO</p>
                 <p

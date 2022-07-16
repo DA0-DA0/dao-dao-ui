@@ -1,3 +1,4 @@
 export * from './adapters'
 export * from './core'
-export * as React from './react'
+export * from './react'
+export * from './types'

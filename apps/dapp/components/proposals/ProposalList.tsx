@@ -13,13 +13,12 @@ import {
   refreshProposalsIdAtom,
   useProposalModule,
 } from '@dao-dao/state'
-import { Button, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
+import { Button, Loader, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
 import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
 
 import { useDAOInfoContext } from '../DAOPageWrapper'
 import { EmptyContractCard } from '../EmptyContractCard'
-import { Loader } from '../Loader'
 
 const PROP_LOAD_LIMIT = 10
 

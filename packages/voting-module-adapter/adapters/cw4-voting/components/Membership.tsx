@@ -1,5 +1,4 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { FC } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -9,9 +8,9 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { BaseMembershipProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-interface MembershipProps extends BaseMembershipProps {
+interface MembershipProps {
   primaryText?: boolean
 }
 
@@ -28,8 +27,9 @@ export const Membership = (props: MembershipProps) => (
   </SuspenseLoader>
 )
 
-const InnerMembership: FC<MembershipProps> = ({ coreAddress, primaryText }) => {
+const InnerMembership = ({ primaryText }: MembershipProps) => {
   const { address: walletAddress } = useWallet()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { walletVotingWeight, totalVotingWeight, cw4VotingMembers } =
     useVotingModule(coreAddress, { fetchCw4VotingMembers: true })
 

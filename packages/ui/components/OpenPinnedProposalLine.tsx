@@ -1,7 +1,7 @@
 import { EyeOffIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { FC } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
@@ -10,7 +10,7 @@ import { getProposalEnd, zeroPad } from '@dao-dao/utils'
 
 import { Tooltip } from '.'
 import { Button } from './Button'
-import { Logo } from './Logo'
+import { Logo as DefaultLogo, LogoProps } from './Logo'
 
 export interface OpenPinnedProposalLineProps {
   daoConfig: ConfigResponse
@@ -18,13 +18,15 @@ export interface OpenPinnedProposalLineProps {
   proposalViewUrl: string
   className?: string
   markDone: () => void
+  Logo?: ComponentType<LogoProps>
 }
 
-const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
+const LargeOpenPinnedProposalLine = ({
   daoConfig,
   proposalResponse: { id, proposal },
   className,
-}) => {
+  Logo = DefaultLogo,
+}: OpenPinnedProposalLineProps) => {
   const { t } = useTranslation()
   return (
     <div
@@ -43,7 +45,7 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
             src={daoConfig.image_url}
           />
         ) : (
-          <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
+          <Logo size="1.5rem" />
         )}
         <p className="link-text">{daoConfig.name}</p>
       </div>
@@ -55,11 +57,12 @@ const LargeOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   )
 }
 
-const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
+const SmallOpenPinnedProposalLine = ({
   daoConfig,
   proposalResponse: { id, proposal },
   className,
-}) => {
+  Logo = DefaultLogo,
+}: OpenPinnedProposalLineProps) => {
   const { t } = useTranslation()
 
   return (
@@ -79,7 +82,7 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
               src={daoConfig.image_url}
             />
           ) : (
-            <Logo alt={t('info.daodaoLogo')} height="1.5rem" width="1.5rem" />
+            <Logo size="1.5rem" />
           )}
           <p className="link-text">{daoConfig.name}</p>
         </div>
@@ -95,9 +98,7 @@ const SmallOpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = ({
   )
 }
 
-export const OpenPinnedProposalLine: FC<OpenPinnedProposalLineProps> = (
-  props
-) => {
+export const OpenPinnedProposalLine = (props: OpenPinnedProposalLineProps) => {
   const { t } = useTranslation()
 
   return (

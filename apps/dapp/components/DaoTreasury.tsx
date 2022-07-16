@@ -1,14 +1,12 @@
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Loader, SuspenseLoader } from '@dao-dao/ui'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { TreasuryBalances, useDAOInfoContext } from '@/components'
+import { TreasuryBalances } from '@/components'
 
-export const DaoTreasury: FC = () => {
+export const DaoTreasury = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
   const {
     ui: { DaoTreasuryFooter },
   } = useVotingModuleAdapter()
@@ -21,7 +19,7 @@ export const DaoTreasury: FC = () => {
         <TreasuryBalances />
       </SuspenseLoader>
 
-      <DaoTreasuryFooter coreAddress={coreAddress} />
+      <DaoTreasuryFooter />
     </div>
   )
 }

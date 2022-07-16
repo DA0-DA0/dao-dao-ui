@@ -156,6 +156,7 @@ const InnerProposalCreate = () => {
 
         <SuspenseLoader fallback={<Loader />}>
           <CreateProposalForm
+            Loader={Loader}
             coreAddress={DAO_ADDRESS}
             loading={loading}
             onSubmit={onProposalSubmit}

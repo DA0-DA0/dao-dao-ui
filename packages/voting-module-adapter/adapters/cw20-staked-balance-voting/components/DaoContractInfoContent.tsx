@@ -14,12 +14,11 @@ import {
   useProcessThresholdData,
 } from '@dao-dao/utils'
 
-import { BaseDaoContractInfoContentProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoContractInfoContent = ({
-  coreAddress,
-}: BaseDaoContractInfoContentProps) => {
+export const DaoContractInfoContent = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo(coreAddress)
   const { proposalModuleConfig } = useProposalModule(coreAddress)

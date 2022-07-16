@@ -1,7 +1,13 @@
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
-import { ReactNode, useCallback, useEffect, useState } from 'react'
+import {
+  ComponentType,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -34,6 +40,7 @@ import {
   CosmosMessageDisplay,
   InputErrorMessage,
   InputLabel,
+  LoaderProps,
   MarkdownPreview,
   TextAreaInput,
   TextInput,
@@ -44,7 +51,7 @@ import {
   usePlatform,
   validateRequired,
 } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
@@ -60,6 +67,7 @@ export interface CreateProposalFormProps {
   loading: boolean
   coreAddress: string
   connectWalletButton?: ReactNode
+  Loader: ComponentType<LoaderProps>
 }
 
 export const CreateProposalForm = ({
@@ -67,6 +75,7 @@ export const CreateProposalForm = ({
   loading,
   coreAddress,
   connectWalletButton,
+  Loader,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
   const router = useRouter()
@@ -291,6 +300,7 @@ export const CreateProposalForm = ({
               return (
                 <li key={index}>
                   <Component
+                    Loader={Loader}
                     allActionsWithData={proposalActionData}
                     coreAddress={coreAddress}
                     errors={errors.actionData?.[index]?.data || {}}

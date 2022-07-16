@@ -2,7 +2,7 @@ import { ActionKey } from '@dao-dao/actions'
 import { Wallet } from '@dao-dao/icons'
 import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
-import { IVotingModuleAdapter } from '../../types'
+import { VotingModuleAdapter } from '../../types'
 import {
   DaoContractInfoContent,
   DaoHorizontalInfoDisplayInternal,
@@ -16,48 +16,49 @@ import {
 } from './components'
 import { useVoteConversionDecimals } from './hooks'
 
-export const Cw4VotingAdapter: IVotingModuleAdapter = {
-  // Initialization
-  id: 'cw4-voting',
+export const Cw4VotingAdapter: VotingModuleAdapter = {
+  id: CW4VOTING_CONTRACT_NAME,
   matcher: (contractName: string) =>
     contractName.includes(CW4VOTING_CONTRACT_NAME),
 
-  // Fields
-  fields: {
-    disabledActionKeys: [
-      // No governance tokens to mint.
-      ActionKey.Mint,
-    ],
-    sdaMembershipPageNavInfo: {
-      renderIcon: (color, mobile) => (
-        <Wallet
-          color={color}
-          height={mobile ? 16 : 14}
-          width={mobile ? 16 : 14}
-        />
-      ),
-      label: 'Members',
+  loader: () => ({
+    // Fields
+    fields: {
+      disabledActionKeys: [
+        // No governance tokens to mint.
+        ActionKey.Mint,
+      ],
+      sdaMembershipPageNavInfo: {
+        renderIcon: (color, mobile) => (
+          <Wallet
+            color={color}
+            height={mobile ? 16 : 14}
+            width={mobile ? 16 : 14}
+          />
+        ),
+        label: 'Members',
+      },
     },
-  },
 
-  // Hooks
-  hooks: {
-    useVoteConversionDecimals,
-  },
-
-  // UI
-  ui: {
-    Membership: {
-      Desktop: Membership,
-      MobileTab: MembershipMobileTab,
-      Mobile: (props) => <Membership {...props} primaryText />,
+    // Hooks
+    hooks: {
+      useVoteConversionDecimals,
     },
-    DaoHorizontalInfoDisplayInternal,
-    ProposalDetails,
-    DaoTreasuryFooter,
-    DaoContractInfoContent,
-    ProposalCreateAddresses,
-    VoteHeroStats,
-    SdaMembershipPage,
-  },
+
+    // UI
+    ui: {
+      Membership: {
+        Desktop: () => <Membership />,
+        MobileTab: MembershipMobileTab,
+        Mobile: () => <Membership primaryText />,
+      },
+      DaoHorizontalInfoDisplayInternal,
+      ProposalDetails,
+      DaoTreasuryFooter,
+      DaoContractInfoContent,
+      ProposalCreateAddresses,
+      VoteHeroStats,
+      SdaMembershipPage,
+    },
+  }),
 }

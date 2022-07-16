@@ -6,11 +6,10 @@ import {
   useContext,
 } from 'react'
 
-import { SuspenseLoader } from '@dao-dao/ui'
+import { Loader, Logo, PageLoader, SuspenseLoader } from '@dao-dao/ui'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter/react'
 
 import { DAONotFound } from './dao/NotFound'
-import { PageLoader } from './Loader'
 
 interface DAOInfo {
   coreAddress: string
@@ -64,6 +63,11 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
       {info ? (
         <VotingModuleAdapterProvider
           contractName={info.votingModuleContractName}
+          options={{
+            coreAddress: info.coreAddress,
+            Logo,
+            Loader,
+          }}
         >
           <DAOInfoContext.Provider value={info}>
             {children}

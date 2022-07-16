@@ -1,28 +1,40 @@
 import clsx from 'clsx'
-import { FC } from 'react'
+import { ComponentType } from 'react'
 
-import { Logo } from './Logo'
+import { Logo as DefaultLogo, LogoProps } from './Logo'
 
-interface LoaderProps {
+export interface LoaderProps {
+  fill?: boolean
   size?: number | string
   className?: string
+  Logo?: ComponentType<LogoProps>
 }
 
-export const Loader: FC<LoaderProps> = ({ size = 42, className }) => (
+export const Loader = ({
+  fill = true,
+  size = 42,
+  className,
+  Logo = DefaultLogo,
+}: LoaderProps) => (
   <div
     className={clsx(
-      'flex flex-row justify-center items-center w-full h-full',
+      'flex flex-row justify-center items-center',
+      { 'grow w-full h-full': fill },
       className
     )}
   >
     <div className="animate-spin-medium">
-      <Logo height={size} width={size} />
+      <Logo size={size} />
     </div>
   </div>
 )
 
-// On mobile, the container is not as tall as the whole screen, so
-// set to screen height.
-export const PageLoader: FC = () => (
-  <Loader className="min-h-screen md:h-full" size={66} />
+// On mobile, the container is not as tall as the whole screen when just
+// the loader is showing, so expand to fill screen height.
+export const PageLoader = ({ className, size = 66, ...props }: LoaderProps) => (
+  <Loader
+    className={clsx('w-screen h-screen md:h-full', className)}
+    size={size}
+    {...props}
+  />
 )

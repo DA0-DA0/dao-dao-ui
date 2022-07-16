@@ -4,12 +4,11 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { Cw4VotingSelectors, useVotingModule } from '@dao-dao/state'
 import { CopyToClipboard } from '@dao-dao/ui'
 
-import { BaseProposalCreateAddressesProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const ProposalCreateAddresses = ({
-  coreAddress,
-}: BaseProposalCreateAddressesProps) => {
+export const ProposalCreateAddresses = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { votingModuleAddress } = useVotingModule(coreAddress)
   const cw4GroupAddress = useRecoilValue(

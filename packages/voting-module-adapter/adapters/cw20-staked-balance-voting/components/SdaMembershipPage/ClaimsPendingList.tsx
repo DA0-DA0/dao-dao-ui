@@ -5,18 +5,19 @@ import { useTranslation } from 'react-i18next'
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
+
 interface ClaimsPendingListProps {
-  coreAddress: string
   fallbackImageUrl: string
   showClaim: () => void
 }
 
 export const ClaimsPendingList: FunctionComponent<ClaimsPendingListProps> = ({
-  coreAddress,
   fallbackImageUrl,
   showClaim,
 }) => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { connected } = useWalletManager()
   const { governanceTokenInfo, governanceTokenMarketingInfo } =
     useGovernanceTokenInfo(coreAddress)

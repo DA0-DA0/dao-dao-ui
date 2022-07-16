@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { FC, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
@@ -16,7 +16,7 @@ import {
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   ContractHeader,
@@ -40,9 +40,8 @@ enum MobileMenuTabSelection {
   Info,
 }
 
-const InnerMobileDaoHome: FC = () => {
+const InnerMobileDaoHome = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
   const {
     ui: { Membership },
   } = useVotingModuleAdapter()
@@ -83,9 +82,7 @@ const InnerMobileDaoHome: FC = () => {
         {tab === MobileMenuTabSelection.Proposal && (
           <ContractProposalsDisplay />
         )}
-        {tab === MobileMenuTabSelection.Membership && (
-          <Membership.Mobile coreAddress={coreAddress} />
-        )}
+        {tab === MobileMenuTabSelection.Membership && <Membership.Mobile />}
         {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
         {tab === MobileMenuTabSelection.Info && (
           <DaoContractInfo hideTreasury />
@@ -95,7 +92,7 @@ const InnerMobileDaoHome: FC = () => {
   )
 }
 
-const InnerDAOHome: FC = () => {
+const InnerDAOHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -149,7 +146,7 @@ const InnerDAOHome: FC = () => {
               <DaoHorizontalInfoDisplay />
             </div>
             <div className="block mt-4 lg:hidden">
-              <Membership.Desktop coreAddress={coreAddress} />
+              <Membership.Desktop />
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
               <DaoContractInfo />
@@ -161,7 +158,7 @@ const InnerDAOHome: FC = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <Membership.Desktop coreAddress={coreAddress} />
+        <Membership.Desktop />
       </div>
     </div>
   )

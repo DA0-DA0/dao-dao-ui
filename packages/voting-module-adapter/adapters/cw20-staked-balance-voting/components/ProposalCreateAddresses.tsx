@@ -3,12 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { CopyToClipboard } from '@dao-dao/ui'
 
-import { BaseProposalCreateAddressesProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const ProposalCreateAddresses = ({
-  coreAddress,
-}: BaseProposalCreateAddressesProps) => {
+export const ProposalCreateAddresses = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { stakingContractAddress, governanceTokenAddress } =
     useGovernanceTokenInfo(coreAddress)

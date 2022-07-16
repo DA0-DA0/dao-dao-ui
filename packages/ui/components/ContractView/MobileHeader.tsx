@@ -1,9 +1,11 @@
-import { FC } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, HeartButton, Logo } from '@dao-dao/ui'
-import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
+import { CopyToClipboardMobile, HeartButton } from '@dao-dao/ui'
+
+import { Loader as DefaultLoader, LoaderProps } from '../Loader'
+import { Logo as DefaultLogo, LogoProps } from '../Logo'
 
 export interface MobileHeaderProps {
   imageUrl?: string
@@ -12,22 +14,24 @@ export interface MobileHeaderProps {
   pinned: boolean
   onPin: () => void
   contractAddress: string
+  Logo?: ComponentType<LogoProps>
 }
 
-export const MobileHeader: FC<MobileHeaderProps> = ({
+export const MobileHeader = ({
   imageUrl,
   name,
   member,
   pinned,
   onPin,
   contractAddress,
-}) => {
+  Logo = DefaultLogo,
+}: MobileHeaderProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
-        {imageUrl && HEADER_IMAGES_ENABLED ? (
+        {imageUrl ? (
           <div
             aria-label={t('info.daosLogo')}
             className="w-[72px] h-[72px] bg-center bg-cover rounded-full"
@@ -37,7 +41,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
             }}
           ></div>
         ) : (
-          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
+          <Logo size={72} />
         )}
         <div
           className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
@@ -66,17 +70,22 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
   )
 }
 
-export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
+export interface MobileHeaderLoaderProps {
+  contractAddress: string
+  Loader?: ComponentType<LoaderProps>
+}
+
+export const MobileHeaderLoader = ({
   contractAddress,
-}) => {
+  Loader = DefaultLoader,
+}: MobileHeaderLoaderProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
-        <div className="animate-spin-medium">
-          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
-        </div>
+        <Loader fill={false} size={72} />
+
         <div
           className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
           style={{

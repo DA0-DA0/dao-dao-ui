@@ -5,12 +5,11 @@ import { Pencil } from '@dao-dao/icons'
 import { useProposalModule, useVotingModule } from '@dao-dao/state'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 
-import { BaseDaoHorizontalInfoDisplayInternalProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoHorizontalInfoDisplayInternal = ({
-  coreAddress,
-}: BaseDaoHorizontalInfoDisplayInternalProps) => {
+export const DaoHorizontalInfoDisplayInternal = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
     fetchCw4VotingMembers: true,
   })

@@ -23,10 +23,11 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { BaseMembershipProps } from '../../../../types'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
+
 import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
 
-interface MembershipProps extends BaseMembershipProps {
+interface MembershipProps {
   primaryText?: boolean
   // If displayed in the SDA, we want to hide the title and claim card as
   // well as make the balance cards responsive. This is because it is laid
@@ -34,7 +35,6 @@ interface MembershipProps extends BaseMembershipProps {
   // handled separately. See ../SdaMembershipPage/index.tsx
   sdaMode?: boolean
   ClaimsPendingList?: ComponentType<{
-    coreAddress: string
     showClaim: () => void
   }>
 }
@@ -60,11 +60,11 @@ export const Membership = ({ primaryText, ...props }: MembershipProps) => {
 }
 
 const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
-  coreAddress,
   sdaMode,
   ClaimsPendingList = DefaultClaimsPendingList,
 }) => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const {
     governanceTokenInfo,
     governanceTokenMarketingInfo,
@@ -238,7 +238,6 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
       </div>
 
       <ClaimsPendingList
-        coreAddress={coreAddress}
         showClaim={() => setShowStakingMode(StakingMode.Claim)}
       />
 

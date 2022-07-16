@@ -1,14 +1,11 @@
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { ClaimsListItem, Loader, SuspenseLoader } from '@dao-dao/ui'
 
-interface ClaimsPendingListProps {
-  coreAddress: string
-}
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 
-export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
+export const ClaimsPendingList = () => {
   const { t } = useTranslation()
 
   return (
@@ -20,15 +17,14 @@ export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
         </>
       }
     >
-      <InnerClaimsPendingList {...props} />
+      <InnerClaimsPendingList />
     </SuspenseLoader>
   )
 }
 
-const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
-  coreAddress,
-}) => {
+const InnerClaimsPendingList = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { blockHeight, claimsPending, refreshClaims } = useStakingInfo(
     coreAddress,
     {

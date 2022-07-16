@@ -31,7 +31,7 @@ import {
   cleanChainError,
   cosmWasmClientRouter,
 } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { PageWrapper, PageWrapperProps } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
@@ -218,7 +218,6 @@ const InnerProposal: FC = () => {
           allowRevoting={proposalModuleConfig.allow_revoting}
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
           connected={connected}
-          coreAddress={DAO_ADDRESS}
           loading={loading}
           onClose={onClose}
           onDuplicate={onDuplicate}

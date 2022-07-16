@@ -5,12 +5,11 @@ import { useProposalModule } from '@dao-dao/state'
 import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
 import { useProcessThresholdData } from '@dao-dao/utils'
 
-import { BaseDaoContractInfoContentProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoContractInfoContent = ({
-  coreAddress,
-}: BaseDaoContractInfoContentProps) => {
+export const DaoContractInfoContent = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { proposalModuleConfig } = useProposalModule(coreAddress)
 
   if (!proposalModuleConfig) {

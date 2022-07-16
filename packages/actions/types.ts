@@ -1,7 +1,8 @@
-import { FunctionComponent } from 'react'
+import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { LoaderProps } from '@dao-dao/ui'
 
 export enum ActionKey {
   Spend = 'spend',
@@ -45,6 +46,7 @@ export type ActionComponentProps<T = undefined> = {
   readOnly?: boolean
   allActionsWithData: ActionKeyAndData[]
   index: number
+  Loader: ComponentType<LoaderProps>
 } & (T extends undefined ? {} : { options: T })
 
 export type ActionComponent<T = undefined> = FunctionComponent<

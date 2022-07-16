@@ -1,7 +1,7 @@
 import { Pie } from '@dao-dao/icons'
 import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
-import { IVotingModuleAdapter } from '../../types'
+import { VotingModuleAdapter } from '../../types'
 import {
   DaoContractInfoContent,
   DaoHorizontalInfoDisplayInternal,
@@ -15,41 +15,46 @@ import {
 } from './components'
 import { useVoteConversionDecimals } from './hooks'
 
-export const Cw20StakedBalanceVotingAdapter: IVotingModuleAdapter = {
-  // Initialization
-  id: 'cw20-staked-balance-voting',
+export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
+  id: CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
   matcher: (contractName: string) =>
     contractName.includes(CW20STAKEDBALANCEVOTING_CONTRACT_NAME),
 
-  // Fields
-  fields: {
-    disabledActionKeys: [],
-    sdaMembershipPageNavInfo: {
-      renderIcon: (color, mobile) => (
-        <Pie color={color} height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
-      ),
-      label: 'Stake',
+  loader: () => ({
+    // Fields
+    fields: {
+      disabledActionKeys: [],
+      sdaMembershipPageNavInfo: {
+        renderIcon: (color, mobile) => (
+          <Pie
+            color={color}
+            height={mobile ? 16 : 14}
+            width={mobile ? 16 : 14}
+          />
+        ),
+        label: 'Stake',
+      },
     },
-  },
 
-  // Hooks
-  hooks: {
-    useVoteConversionDecimals,
-  },
-
-  // UI
-  ui: {
-    Membership: {
-      Desktop: Membership,
-      MobileTab: MembershipMobileTab,
-      Mobile: (props) => <Membership {...props} primaryText />,
+    // Hooks
+    hooks: {
+      useVoteConversionDecimals,
     },
-    DaoHorizontalInfoDisplayInternal,
-    ProposalDetails,
-    DaoTreasuryFooter,
-    DaoContractInfoContent,
-    ProposalCreateAddresses,
-    VoteHeroStats,
-    SdaMembershipPage,
-  },
+
+    // UI
+    ui: {
+      Membership: {
+        Desktop: () => <Membership />,
+        MobileTab: MembershipMobileTab,
+        Mobile: (props) => <Membership {...props} primaryText />,
+      },
+      DaoHorizontalInfoDisplayInternal,
+      ProposalDetails,
+      DaoTreasuryFooter,
+      DaoContractInfoContent,
+      ProposalCreateAddresses,
+      VoteHeroStats,
+      SdaMembershipPage,
+    },
+  }),
 }

@@ -25,7 +25,7 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { cleanChainError } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   DAOPageWrapper,
@@ -229,7 +229,6 @@ const InnerProposal: FC = () => {
             allowRevoting={proposalModuleConfig.allow_revoting}
             connectWalletButton={<ConnectWalletButton />}
             connected={connected}
-            coreAddress={coreAddress}
             loading={loading}
             onClose={onClose}
             onDuplicate={onDuplicate}

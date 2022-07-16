@@ -6,7 +6,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
 } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 import {

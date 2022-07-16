@@ -1,9 +1,3 @@
-export const CARD_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
-
-export const HEADER_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
-
 export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE as string
 export const SITE_DESCRIPTION = process.env
   .NEXT_PUBLIC_SITE_DESCRIPTION as string

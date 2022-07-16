@@ -1,31 +1,24 @@
-import { FC } from 'react'
-
 import {
   HorizontalInfo,
   HorizontalInfoSection,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
-
-const FallbackDisplay: FC = () => (
+const FallbackDisplay = () => (
   <HorizontalInfo>
-    <HorizontalInfoSection>
-      <></>
-    </HorizontalInfoSection>
+    <HorizontalInfoSection />
   </HorizontalInfo>
 )
 
-export const DaoHorizontalInfoDisplay: FC = () => {
+export const DaoHorizontalInfoDisplay = () => {
   const {
     ui: { DaoHorizontalInfoDisplayInternal },
   } = useVotingModuleAdapter()
-  const { coreAddress } = useDAOInfoContext()
 
   return (
     <SuspenseLoader fallback={<FallbackDisplay />}>
-      <DaoHorizontalInfoDisplayInternal coreAddress={coreAddress} />
+      <DaoHorizontalInfoDisplayInternal />
     </SuspenseLoader>
   )
 }

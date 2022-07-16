@@ -18,7 +18,7 @@ import { ConnectWalletButton } from '@dao-dao/common'
 import { Governance, Hash } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { SdaMembershipPageNavInfo } from '@dao-dao/voting-module-adapter/types'
 
 import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'

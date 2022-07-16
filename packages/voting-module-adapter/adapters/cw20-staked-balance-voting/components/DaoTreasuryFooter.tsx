@@ -5,12 +5,11 @@ import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import { useAddToken } from '@dao-dao/utils'
 
-import { BaseDaoTreasuryFooterProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoTreasuryFooter = ({
-  coreAddress,
-}: BaseDaoTreasuryFooterProps) => {
+export const DaoTreasuryFooter = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const addToken = useAddToken()
   const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)

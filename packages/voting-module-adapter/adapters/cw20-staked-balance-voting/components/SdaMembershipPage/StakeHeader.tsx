@@ -10,18 +10,16 @@ import {
 } from '@dao-dao/state'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
 
 interface StakeHeaderProps {
-  coreAddress: string
   defaultImageUrl: string
 }
 
-export const StakeHeader = ({
-  coreAddress,
-  defaultImageUrl,
-}: StakeHeaderProps) => {
+export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
   const { t } = useTranslation()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const daoConfig = useRecoilValue(
     CwCoreSelectors.configSelector({ contractAddress: coreAddress })
   )

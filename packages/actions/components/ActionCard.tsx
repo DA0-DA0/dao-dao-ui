@@ -1,7 +1,7 @@
 import { XIcon } from '@heroicons/react/solid'
-import { FC, ReactNode } from 'react'
+import { ComponentType, FC, ReactNode } from 'react'
 
-import { Loader } from '@dao-dao/ui'
+import { LoaderProps } from '@dao-dao/ui'
 
 import { ActionComponentProps } from '..'
 
@@ -34,7 +34,11 @@ export const ActionCard: FC<ActionCardProps> = ({
   </div>
 )
 
-export const ActionCardLoader = () => (
+export interface ActionCardLoaderProps {
+  Loader: ComponentType<LoaderProps>
+}
+
+export const ActionCardLoader = ({ Loader }: ActionCardLoaderProps) => (
   <div className="p-3 my-2 bg-primary rounded-lg">
     <Loader />
   </div>

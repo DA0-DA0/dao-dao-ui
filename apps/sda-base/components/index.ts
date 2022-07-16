@@ -1,6 +1,7 @@
 export * from './vote'
 
-export * from './DAODAOLogo'
+export * from './Button'
+export * from './DaoDaoLogo'
 export * from './DAOInfoContext'
 export * from './Footer'
 export * from './Header'

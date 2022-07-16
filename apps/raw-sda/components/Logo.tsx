@@ -1,27 +1,11 @@
-import { useTranslation } from 'react-i18next'
+import { LogoFromImage, LogoProps } from '@dao-dao/ui'
 
 import { DEFAULT_IMAGE_URL } from '@/util'
 
 import { useDAOInfoContext } from '.'
 
-export const Logo = ({
-  size = 28,
-  className,
-}: {
-  size?: number | string
-  className?: string
-}) => {
-  const { t } = useTranslation()
+export const Logo = (props: LogoProps) => {
   const { imageUrl } = useDAOInfoContext()
 
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      alt={t('info.logo')}
-      className={className}
-      height={size}
-      src={imageUrl ?? DEFAULT_IMAGE_URL}
-      width={size}
-    />
-  )
+  return <LogoFromImage src={imageUrl ?? DEFAULT_IMAGE_URL} {...props} />
 }

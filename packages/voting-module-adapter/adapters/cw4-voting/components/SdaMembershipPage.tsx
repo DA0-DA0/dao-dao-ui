@@ -9,11 +9,10 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { BaseSdaMembershipPageProps } from '../../../types'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const SdaMembershipPage = ({
-  coreAddress,
-}: BaseSdaMembershipPageProps) => {
+export const SdaMembershipPage = () => {
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { connected, address: walletAddress } = useWallet()
   const { cw4VotingMembers, walletVotingWeight, totalVotingWeight } =
     useVotingModule(coreAddress, {

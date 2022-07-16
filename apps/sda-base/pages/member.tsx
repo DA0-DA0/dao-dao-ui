@@ -1,11 +1,11 @@
 import type { NextPage } from 'next'
 import React from 'react'
 
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader, PageWrapper, PageWrapperProps } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+import { DEFAULT_IMAGE_URL } from '@/util'
 
 const InnerMembershipPage = () => {
   const {
@@ -13,11 +13,7 @@ const InnerMembershipPage = () => {
   } = useVotingModuleAdapter()
 
   return (
-    <SdaMembershipPage
-      Loader={Loader}
-      coreAddress={DAO_ADDRESS}
-      defaultImageUrl={DEFAULT_IMAGE_URL}
-    />
+    <SdaMembershipPage Loader={Loader} defaultImageUrl={DEFAULT_IMAGE_URL} />
   )
 }
 

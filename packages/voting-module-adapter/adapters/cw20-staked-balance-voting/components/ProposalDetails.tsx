@@ -1,23 +1,29 @@
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import {
-  Loader,
   ProposalDetails as OriginalProposalDetails,
   StakingMode,
 } from '@dao-dao/ui'
 
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalDetailsProps } from '../../../types'
 
-export const ProposalDetails = (props: BaseProposalDetailsProps) => (
-  <OriginalProposalDetails
-    {...props}
-    stakingModal={
-      <StakingModal
-        connectWalletButton={<ConnectWalletButton className="!w-auto" />}
-        coreAddress={props.coreAddress}
-        loader={<Loader />}
-        mode={StakingMode.Stake}
-        onClose={() => props.setShowStaking(false)}
-      />
-    }
-  />
-)
+export const ProposalDetails = (props: BaseProposalDetailsProps) => {
+  const { coreAddress, Loader } = useVotingModuleAdapterOptions()
+
+  return (
+    <OriginalProposalDetails
+      {...props}
+      Loader={Loader}
+      coreAddress={coreAddress}
+      stakingModal={
+        <StakingModal
+          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+          coreAddress={coreAddress}
+          loader={<Loader />}
+          mode={StakingMode.Stake}
+          onClose={() => props.setShowStaking(false)}
+        />
+      }
+    />
+  )
+}

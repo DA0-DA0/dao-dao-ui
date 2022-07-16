@@ -224,8 +224,8 @@ export const allCw20TokenListSelector = selectorFamily<
       try {
         hasGovernanceToken =
           !!votingModuleInfo &&
-          matchAdapter(votingModuleInfo.info.contract) ===
-            Cw20StakedBalanceVotingAdapter
+          (await matchAdapter(votingModuleInfo.info.contract)).id ===
+            Cw20StakedBalanceVotingAdapter.id
       } catch {
         hasGovernanceToken = false
       }
@@ -330,8 +330,8 @@ export const allCw20BalancesSelector = selectorFamily<
       try {
         hasGovernanceToken =
           !!votingModuleInfo &&
-          matchAdapter(votingModuleInfo.info.contract) ===
-            Cw20StakedBalanceVotingAdapter
+          (await matchAdapter(votingModuleInfo.info.contract)).id ===
+            Cw20StakedBalanceVotingAdapter.id
       } catch {
         hasGovernanceToken = false
       }

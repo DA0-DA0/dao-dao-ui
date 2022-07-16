@@ -4,9 +4,10 @@ import { useRouter } from 'next/router'
 import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, SuspenseLoader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/ui'
 
 import {
+  Button,
   Loader,
   PageWrapper,
   PageWrapperProps,
