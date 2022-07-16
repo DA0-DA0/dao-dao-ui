@@ -8,7 +8,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { ConnectWalletButton } from '@dao-dao/common'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
-import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
+import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 
 import { Loader } from './Loader'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
@@ -20,7 +20,7 @@ interface SmallScreenNavProps {
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
-  const setSearchVisible = useSetRecoilState(searchVisibleAtom)
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
 
   return (
@@ -50,7 +50,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
         <div>
           <button
             className="flex gap-2 items-center p-2 w-full bg-primary rounded-lg link-text"
-            onClick={() => setSearchVisible(true)}
+            onClick={() => setCommandModalVisible(true)}
           >
             <SearchIcon className="w-4 h-4" /> {t('title.search')}
           </button>

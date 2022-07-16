@@ -4,7 +4,6 @@ import {
   SearchIcon,
 } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
@@ -12,17 +11,17 @@ import { ConnectWalletButton } from '@dao-dao/common'
 import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
-import { searchVisibleAtom } from '@/atoms'
+import { commandModalVisibleAtom } from '@/atoms'
 import { Loader, PinnedDAONavList } from '@/components'
 import ThemeToggle from 'components/ThemeToggle'
 
-type NavProps = {
+interface NavProps {
   onMenuClick?: () => void
 }
 
-export const Nav: FC<NavProps> = ({ onMenuClick }) => {
+export const Nav = ({ onMenuClick }: NavProps) => {
   const { t } = useTranslation()
-  const setSearchVisible = useSetRecoilState(searchVisibleAtom)
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
   const { isMac } = usePlatform()
 
   return (
@@ -41,7 +40,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </div>
           <button
             className="flex justify-between items-center p-2 mt-5 w-full bg-primary rounded-lg hover:outline-brand hover:outline link-text"
-            onClick={() => setSearchVisible(true)}
+            onClick={() => setCommandModalVisible(true)}
           >
             <p className="flex gap-2 items-center">
               <SearchIcon className="w-4 h-4" /> {t('title.search')}

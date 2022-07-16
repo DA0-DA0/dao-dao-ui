@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 export interface SearchBarProps extends Omit<ComponentProps<'input'>, 'type'> {
   containerClassName?: string
+  hideIcon?: boolean
 }
 
 export const SearchBar: FC<SearchBarProps> = ({

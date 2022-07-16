@@ -8,23 +8,23 @@ import { useTranslation } from 'react-i18next'
 import { Modal } from '@dao-dao/ui'
 import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
-import { SearchBar } from './SearchBar'
-import { SearchHits } from './SearchHits'
+import { CommandBar } from './CommandBar'
+import { CommandHits } from './CommandHits'
 
-export interface SearchModalProps {
+export interface CommandModalProps {
   onClose: () => void
 }
 
-export enum SearchStateType {
+export enum CommandStateType {
   Home,
   NavigateDao,
   DaoChosen,
 }
 
-type SearchState =
-  | { type: SearchStateType.Home }
-  | { type: SearchStateType.NavigateDao }
-  | { type: SearchStateType.DaoChosen; id: string; name: string }
+type CommandState =
+  | { type: CommandStateType.Home }
+  | { type: CommandStateType.NavigateDao }
+  | { type: CommandStateType.DaoChosen; id: string; name: string }
 
 const SearchNavElem: FC<{ name: string }> = ({ name }) => (
   <div
@@ -135,11 +135,11 @@ const searchClient = new MeiliSearch({
 const index = searchClient.index(SEARCH_INDEX)
 
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
-export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
+export const CommandModal: FC<CommandModalProps> = ({ onClose }) => {
   const router = useRouter()
   const { t } = useTranslation()
-  const [searchState, setSearchState] = useState<SearchState>({
-    type: SearchStateType.Home,
+  const [commandState, setCommandState] = useState<CommandState>({
+    type: CommandStateType.Home,
   })
   const [currentRefinement, refine] = useState<string>('')
   const [hits, setHits] = useState<Hit[]>([])
@@ -153,25 +153,25 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
 
       // Display default options
       if (!currentRefinement) {
-        if (searchState.type === SearchStateType.Home) {
+        if (commandState.type === CommandStateType.Home) {
           setHits([...daoHits, ...APP_ACTIONS])
-        } else if (searchState.type === SearchStateType.DaoChosen) {
+        } else if (commandState.type === CommandStateType.DaoChosen) {
           setHits([...DAO_ACTIONS])
-        } else if (searchState.type === SearchStateType.NavigateDao) {
+        } else if (commandState.type === CommandStateType.NavigateDao) {
           setHits([...daoHits])
         }
         return
       }
       // Else search
       const fuse = new Fuse(
-        searchState.type === SearchStateType.DaoChosen
+        commandState.type === CommandStateType.DaoChosen
           ? [...APP_ACTIONS, ...daoHits, ...DAO_ACTIONS]
           : [...APP_ACTIONS, ...daoHits],
         FUSE_OPTIONS
       )
       setHits(fuse.search(currentRefinement).map((o) => o.item))
     })()
-  }, [currentRefinement, searchState])
+  }, [currentRefinement, commandState])
 
   const [sections, sectionNames] = useMemo(() => {
     // Sort sections by order of first appearance of hits
@@ -215,44 +215,44 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
         if (hit.id === ActionHitId.CreateDao) return router.push(`/dao/create`)
         else if (hit.id === ActionHitId.NavigateDao) {
           refine('')
-          return setSearchState({ type: SearchStateType.NavigateDao })
+          return setCommandState({ type: CommandStateType.NavigateDao })
         }
       }
       // DAO choice on Home and Chosen contexts are the same
       if (
         hit.hitType === HitType.Dao &&
-        (searchState.type === SearchStateType.Home ||
-          searchState.type === SearchStateType.DaoChosen)
+        (commandState.type === CommandStateType.Home ||
+          commandState.type === CommandStateType.DaoChosen)
       ) {
         refine('') // Reset text
-        return setSearchState({
-          type: SearchStateType.DaoChosen,
+        return setCommandState({
+          type: CommandStateType.DaoChosen,
           name: hit.name,
           id: hit.id,
         })
       }
 
       // Navigation to DAO
-      if (searchState.type === SearchStateType.NavigateDao) {
+      if (commandState.type === CommandStateType.NavigateDao) {
         return router.push(`/dao/${hit.id}`)
       }
 
       // MARK: Take DAO specific actions here
       if (
         hit.hitType === HitType.DaoAction &&
-        searchState.type === SearchStateType.DaoChosen
+        commandState.type === CommandStateType.DaoChosen
       ) {
         if (hit.id === DaoActionHitId.NewProposal)
-          return router.push(`/dao/${searchState.id}/proposals/create`)
+          return router.push(`/dao/${commandState.id}/proposals/create`)
         else if (hit.id === DaoActionHitId.CopyDaoAddress) {
-          navigator.clipboard.writeText(searchState.id)
+          navigator.clipboard.writeText(commandState.id)
           return toast.success('Copied DAO address to clipboard!')
         } else if (hit.id === DaoActionHitId.GotoDao) {
-          return router.push(`/dao/${searchState.id}`)
+          return router.push(`/dao/${commandState.id}`)
         }
       }
     },
-    [refine, searchState, setSearchState, router]
+    [refine, commandState, setCommandState, router]
   )
 
   return (
@@ -263,26 +263,26 @@ export const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
       hideCloseButton
       onClose={onClose}
     >
-      {/* Modify Meili-search options here based on `searchState` */}
+      {/* Modify Meili-search options here based on `commandState` */}
       <div className="flex overflow-hidden flex-col w-full h-full bg-primary rounded-lg">
         <div className="flex gap-1 px-4 pt-4 text-tertiary">
           <SearchNavElem name={t('commandBar.home')} />
-          {searchState.type === SearchStateType.NavigateDao ? (
+          {commandState.type === CommandStateType.NavigateDao ? (
             <SearchNavElem name={t('commandBar.navigateDao')} />
-          ) : searchState.type === SearchStateType.DaoChosen ? (
-            <SearchNavElem name={searchState.name} />
+          ) : commandState.type === CommandStateType.DaoChosen ? (
+            <SearchNavElem name={commandState.name} />
           ) : undefined}
         </div>
 
-        <SearchBar
+        <CommandBar
           currentRefinement={currentRefinement}
-          onEmptyBack={() => setSearchState({ type: SearchStateType.Home })}
+          onEmptyBack={() => setCommandState({ type: CommandStateType.Home })}
           refine={refine}
         />
 
-        {/* Because the search items take different actions in different contexts, they
+        {/* Because the command items take different actions in different contexts, they
             have to be handled here */}
-        <SearchHits
+        <CommandHits
           hits={hits}
           onChoice={onChoice}
           sectionData={{ sections, sectionNames }}

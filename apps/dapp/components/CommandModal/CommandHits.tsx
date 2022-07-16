@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Logo } from '@dao-dao/ui'
 
-import { DaoHit, Hit, HitType } from './SearchModal'
+import { DaoHit, Hit, HitType } from '.'
 
 const HitView = ({
   hit,
@@ -56,7 +56,7 @@ type HitSectionData = {
 
 // Need to use `any` here as instantsearch does't export the required
 // types.
-export const SearchHits = ({
+export const CommandHits = ({
   sectionData,
   hits,
   onChoice,
