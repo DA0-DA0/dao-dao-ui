@@ -313,8 +313,6 @@ import {
 registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
 ```
 
-<br/>
-
 ### **2. Wrap the app**
 
 Add the `VotingModuleAdapterProvider` to your app, likely at a high enough level
@@ -364,7 +362,6 @@ const votingModuleContractName = (
 ```
 
 </details>
-<br/>
 
 ### **3. Use the hook**
 
