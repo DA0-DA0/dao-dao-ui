@@ -41,7 +41,7 @@ const Home: NextPage = () => {
     .then((data) => setProposals(data[data.length - 1].value))
 
   return (
-    <SuspenseLoader fallback={<PageLoader />}>
+    <SuspenseLoader fallback={<PageLoader className="w-screen h-screen" />}>
       <GradientWrapper>
         <nav className="py-4 px-6 w-full bg-clip-padding bg-opacity-40 border-b border-inactive backdrop-blur-xl backdrop-filter">
           <div className="flex justify-between items-center mx-auto max-w-screen-lg">
