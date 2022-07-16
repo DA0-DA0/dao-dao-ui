@@ -1,3 +1,4 @@
+import { ActionKey } from '@dao-dao/actions'
 import { Pie } from '@dao-dao/icons'
 import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
@@ -23,7 +24,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   load: () => ({
     // Fields
     fields: {
-      disabledActionKeys: [],
+      disabledActionKeys: [ActionKey.ManageMembers],
       sdaMembershipPageNavInfo: {
         renderIcon: (color, mobile) => (
           <Pie

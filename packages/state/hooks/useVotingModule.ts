@@ -11,6 +11,7 @@ import { listAllMembersSelector } from '../recoil/selectors/clients/cw4-group'
 import { groupContractSelector } from '../recoil/selectors/clients/cw4-voting'
 
 interface UseVotingModuleOptions {
+  fetchCw4GroupAddress?: boolean
   fetchCw4VotingMembers?: boolean
 }
 
@@ -26,7 +27,7 @@ interface UseVotingModuleResponse {
 // TODO(noah/voting-module-adapter): Make this a general hook by removing cw4VotingMembers from here and moving to @dao-dao/voting-module-adapter.
 export const useVotingModule = (
   coreAddress: string,
-  { fetchCw4VotingMembers }: UseVotingModuleOptions = {}
+  { fetchCw4GroupAddress, fetchCw4VotingMembers }: UseVotingModuleOptions = {}
 ): UseVotingModuleResponse => {
   const { address: walletAddress } = useWallet()
   const votingModuleAddress = useRecoilValue(
@@ -60,7 +61,7 @@ export const useVotingModule = (
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
 
   const cw4GroupAddress = useRecoilValue(
-    votingModuleAddress && votingModuleType === VotingModuleType.Cw4Voting
+    votingModuleAddress && (fetchCw4GroupAddress || fetchCw4VotingMembers)
       ? groupContractSelector({
           contractAddress: votingModuleAddress,
           params: [],

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 
 import { useVotingModule } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
   ActionCardLoader,
@@ -26,7 +26,9 @@ const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
 const useTransformToCosmos: UseTransformToCosmos<ManageMembersData> = (
   coreAddress: string
 ) => {
-  const { cw4GroupAddress } = useVotingModule(coreAddress)
+  const { cw4GroupAddress } = useVotingModule(coreAddress, {
+    fetchCw4GroupAddress: true,
+  })
 
   if (!cw4GroupAddress) {
     throw new Error('Failed to load data.')
@@ -55,7 +57,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
-  const { cw4GroupAddress } = useVotingModule(coreAddress)
+  const { cw4GroupAddress } = useVotingModule(coreAddress, {
+    fetchCw4GroupAddress: true,
+  })
 
   if (!cw4GroupAddress) {
     throw new Error('Failed to load data.')
@@ -108,7 +112,7 @@ const InnerManageMembersComponent: ActionComponent = (props) => {
 }
 
 const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader />}>
+  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
     <InnerManageMembersComponent {...props} />
   </SuspenseLoader>
 )
@@ -121,5 +125,4 @@ export const manageMembersAction: Action<ManageMembersData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [VotingModuleType.Cw4Voting],
 }
