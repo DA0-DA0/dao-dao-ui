@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { DaoDaoLogo } from '@/components'
+import { Logo as DaoDaoLogo } from '@dao-dao/ui'
 
 export const Footer = () => {
   const { t } = useTranslation()
