@@ -209,7 +209,7 @@ const InnerProposal: FC = () => {
         <ProposalDetails
           actions={actions}
           allowRevoting={proposalModuleConfig.allow_revoting}
-          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+          connectWalletButton={<ConnectWalletButton />}
           connected={connected}
           loading={loading}
           onClose={onClose}

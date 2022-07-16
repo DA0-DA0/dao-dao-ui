@@ -235,7 +235,7 @@ export const Header: FunctionComponent = () => {
           </div>
         ) : (
           <div className="hidden md:block">
-            <ConnectWalletButton className="!w-auto" />
+            <ConnectWalletButton />
           </div>
         )}
       </div>

@@ -107,13 +107,13 @@ const InnerStake = () => {
             </SuspenseLoader>
           </>
         ) : (
-          <ConnectWalletButton className="!w-auto" />
+          <ConnectWalletButton />
         )}
       </div>
 
       {showStakingMode !== undefined && (
         <StakingModal
-          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+          connectWalletButton={<ConnectWalletButton />}
           coreAddress={DAO_ADDRESS}
           loader={<Loader />}
           mode={showStakingMode}

@@ -25,7 +25,7 @@ export const SdaMembershipPage = () => {
 
   return (
     <div className="space-y-8">
-      {!connected && <ConnectWalletButton className="!w-auto" />}
+      {!connected && <ConnectWalletButton />}
 
       <SuspenseLoader fallback={<MultisigMemberListLoader loader={Loader} />}>
         <MultisigMemberList

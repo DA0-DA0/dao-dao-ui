@@ -16,7 +16,7 @@ const InnerHome = () => {
       {/* eslint-disable-next-line i18next/no-literal-string */}
       <p className="text-xl">Welcome to the DAO!</p>
 
-      <ConnectWalletButton className="!w-auto" />
+      <ConnectWalletButton />
     </div>
   )
 }

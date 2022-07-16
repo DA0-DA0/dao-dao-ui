@@ -48,7 +48,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
     />
   ) : (
     <WalletConnect
-      className={clsx('w-full', className)}
+      className={className}
       connected={connected}
       onConnect={connect}
       onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}

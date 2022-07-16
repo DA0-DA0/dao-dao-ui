@@ -50,7 +50,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
           </button>
 
           <div className="my-4 w-full">
-            <ConnectWalletButton />
+            <ConnectWalletButton className="w-full" />
           </div>
           <div className="ml-1 text-sm">
             <div className="mt-6">

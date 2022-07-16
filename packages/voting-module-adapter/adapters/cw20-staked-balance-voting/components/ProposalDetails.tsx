@@ -17,7 +17,7 @@ export const ProposalDetails = (props: BaseProposalDetailsProps) => {
       coreAddress={coreAddress}
       stakingModal={
         <StakingModal
-          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+          connectWalletButton={<ConnectWalletButton />}
           coreAddress={coreAddress}
           loader={<Loader />}
           mode={StakingMode.Stake}
