@@ -5,8 +5,7 @@
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "typescript": "^4.5.3"
   },
