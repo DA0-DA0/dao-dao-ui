@@ -36,7 +36,7 @@ export interface IVotingModuleAdapter {
 
   // Hooks
   hooks: {
-    useVoteConversionDecimals: (coreAddress: string) => number
+    useVoteConversionDecimals: () => number
   }
 
   // UI

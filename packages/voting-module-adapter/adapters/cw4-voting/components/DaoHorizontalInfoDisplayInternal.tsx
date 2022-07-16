@@ -22,7 +22,7 @@ export const DaoHorizontalInfoDisplayInternal = () => {
     proposalCount === undefined ||
     !cw4VotingMembers
   ) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   return (

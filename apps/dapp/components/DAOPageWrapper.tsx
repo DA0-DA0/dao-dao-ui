@@ -7,7 +7,7 @@ import {
 } from 'react'
 
 import { Loader, Logo, PageLoader, SuspenseLoader } from '@dao-dao/ui'
-import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter/react'
+import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { DAONotFound } from './dao/NotFound'
 

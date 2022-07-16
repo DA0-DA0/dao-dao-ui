@@ -66,7 +66,7 @@ const InnerProposal: FC = () => {
     ui: { ProposalDetails },
   } = useVotingModuleAdapter()
   const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
-  const voteConversionDecimals = useVoteConversionDecimals(DAO_ADDRESS)
+  const voteConversionDecimals = useVoteConversionDecimals()
 
   const {
     proposalResponse,

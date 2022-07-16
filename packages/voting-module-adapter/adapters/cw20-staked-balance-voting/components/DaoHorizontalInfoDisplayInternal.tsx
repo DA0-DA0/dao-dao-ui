@@ -29,7 +29,7 @@ export const DaoHorizontalInfoDisplayInternal = () => {
     totalVotingWeight === undefined ||
     proposalCount === undefined
   ) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   const totalGovernanceTokenSupply = Number(governanceTokenInfo.total_supply)

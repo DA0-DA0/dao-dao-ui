@@ -177,7 +177,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   const {
     hooks: { useVoteConversionDecimals },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useVoteConversionDecimals(coreAddress)
+  const voteConversionDecimals = useVoteConversionDecimals()
 
   if (!proposalModuleAddress || !proposalModuleConfig) {
     throw new Error('Failed to get proposal module.')
@@ -246,13 +246,12 @@ const Component: ActionComponent = (props) => {
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
-  msg: Record<string, any>,
-  coreAddress: string
+  msg: Record<string, any>
 ) => {
   const {
     hooks: { useVoteConversionDecimals },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useVoteConversionDecimals(coreAddress)
+  const voteConversionDecimals = useVoteConversionDecimals()
 
   return useMemo(() => {
     if (
