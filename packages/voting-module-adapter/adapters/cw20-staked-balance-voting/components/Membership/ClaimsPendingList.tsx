@@ -6,7 +6,6 @@ import { ClaimsListItem, Loader, SuspenseLoader } from '@dao-dao/ui'
 
 interface ClaimsPendingListProps {
   coreAddress: string
-  onClaimAvailable: () => void
 }
 
 export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
@@ -28,17 +27,24 @@ export const ClaimsPendingList: FC<ClaimsPendingListProps> = (props) => {
 
 const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
   coreAddress,
-  onClaimAvailable,
 }) => {
   const { t } = useTranslation()
-  const { blockHeight, claimsPending } = useStakingInfo(coreAddress, {
-    fetchClaims: true,
-  })
+  const { blockHeight, claimsPending, refreshClaims } = useStakingInfo(
+    coreAddress,
+    {
+      fetchClaims: true,
+    }
+  )
   const { governanceTokenInfo, governanceTokenMarketingInfo } =
     useGovernanceTokenInfo(coreAddress)
 
-  if (!blockHeight || !governanceTokenInfo) {
-    throw new Error('Failed to load data.')
+  if (
+    !blockHeight ||
+    !claimsPending ||
+    !refreshClaims ||
+    !governanceTokenInfo
+  ) {
+    throw new Error(t('error.loadingData'))
   }
 
   const tokenImageUrl =
@@ -48,7 +54,7 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
       ? governanceTokenMarketingInfo.logo.url
       : undefined
 
-  return claimsPending?.length ? (
+  return claimsPending.length ? (
     <>
       <h2 className="mt-4 mb-2">{t('title.currentlyUnstaking')}</h2>
 
@@ -59,7 +65,7 @@ const InnerClaimsPendingList: FC<ClaimsPendingListProps> = ({
             blockHeight={blockHeight}
             claim={claim}
             iconURI={tokenImageUrl}
-            onClaimAvailable={onClaimAvailable}
+            onClaimAvailable={refreshClaims}
             tokenInfo={governanceTokenInfo}
           />
         ))}

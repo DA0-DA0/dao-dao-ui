@@ -15,14 +15,9 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Airdrop, Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
+import { Airdrop, Governance, Hash, Pie } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
-import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  VotingModuleType,
-  nativeTokenLabel,
-} from '@dao-dao/utils'
+import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
 import { AIRDROP_URL } from '@/util'
@@ -86,7 +81,7 @@ export const Header: FunctionComponent = () => {
     disconnect,
   } = useWalletManager()
   const { walletBalance = 0 } = useWalletBalance()
-  const { name: daoName, votingModuleType } = useDAOInfoContext()
+  const { name: daoName } = useDAOInfoContext()
 
   const [mobileNavVisible, setMobileNavVisible] = useState(false)
 
@@ -109,40 +104,19 @@ export const Header: FunctionComponent = () => {
             },
           ]
         : []),
-      ...(votingModuleType === VotingModuleType.Cw4Voting
-        ? [
-            {
-              renderIcon: (color, mobile) => (
-                <Wallet
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
-              ),
-              label: 'Members',
-              href: '/',
-              active: router.pathname === '/',
-              external: false,
-            },
-          ]
-        : []),
-      ...(votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
-        ? [
-            {
-              renderIcon: (color, mobile) => (
-                <Pie
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
-              ),
-              label: 'Stake',
-              href: '/',
-              active: router.pathname === '/',
-              external: false,
-            },
-          ]
-        : []),
+      {
+        renderIcon: (color, mobile) => (
+          <Pie
+            color={color}
+            height={mobile ? 16 : 14}
+            width={mobile ? 16 : 14}
+          />
+        ),
+        label: 'Stake',
+        href: '/',
+        active: router.pathname === '/',
+        external: false,
+      },
       {
         renderIcon: (color, mobile) => (
           <Governance
@@ -196,7 +170,6 @@ export const Header: FunctionComponent = () => {
         : []),
     ],
     [
-      votingModuleType,
       router.pathname,
       router.isReady,
       router.isFallback,

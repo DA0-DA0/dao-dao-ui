@@ -1,45 +1,42 @@
-import { useWallet } from '@noahsaso/cosmodal'
-import type { NextPage } from 'next'
-import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { Pie } from '@dao-dao/icons'
-import { useGovernanceTokenInfo } from '@dao-dao/state'
-import { StakingMode, SuspenseLoader, TooltipIcon } from '@dao-dao/ui'
+import { CwCoreSelectors, useGovernanceTokenInfo } from '@dao-dao/state'
+import { SuspenseLoader } from '@dao-dao/ui'
 
-import {
-  BalanceCardLoader,
-  ClaimsList,
+import { BaseSdaMembershipPageProps } from '../../../../types'
+import { Membership } from '../Membership'
+import { ClaimsPendingList } from './ClaimsPendingList'
+import { StakeHeader, StakeHeaderLoader } from './StakeHeader'
+
+export const SdaMembershipPage = ({
+  coreAddress,
+  defaultImageUrl,
   Loader,
-  PageWrapper,
-  PageWrapperProps,
-  StakeHeader,
-  StakeHeaderLoader,
-  StakedBalanceCard,
-  UnstakedBalanceCard,
-} from '@/components'
-import { makeGetStaticProps } from '@/server/makeGetStaticProps'
-import { DAO_ADDRESS } from '@/util'
-
-const InnerStake = () => {
+}: BaseSdaMembershipPageProps) => {
   const { t } = useTranslation()
-  const { connected } = useWallet()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  // const { connected } = useWallet()
+  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const daoConfig = useRecoilValue(
+    CwCoreSelectors.configSelector({ contractAddress: coreAddress })
+  )
 
   // Set to default mode to display, and undefined to hide.
-  const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
 
-  if (!governanceTokenInfo) {
+  if (!daoConfig || !governanceTokenInfo) {
     throw new Error('Failed to load page data.')
   }
 
   return (
     <>
       <div className="space-y-8">
-        <div className="flex relative flex-col items-center mt-16 bg-primary rounded-b-lg border-t border-inactive lg:mt-32">
-          <SuspenseLoader fallback={<StakeHeaderLoader />}>
-            <StakeHeader />
+        <div className="flex relative flex-col items-center mt-16 rounded-b-lg border-t lg:mt-32 bg-primary border-inactive">
+          <SuspenseLoader fallback={<StakeHeaderLoader Loader={Loader} />}>
+            <StakeHeader
+              coreAddress={coreAddress}
+              defaultImageUrl={defaultImageUrl}
+            />
           </SuspenseLoader>
         </div>
 
@@ -48,13 +45,24 @@ const InnerStake = () => {
           <p>{t('title.yourTokens')}</p>
         </div>
 
-        {connected ? (
+        <Membership
+          ClaimsPendingList={(props) => (
+            <ClaimsPendingList
+              fallbackImageUrl={daoConfig.image_url ?? defaultImageUrl}
+              {...props}
+            />
+          )}
+          coreAddress={coreAddress}
+          sdaMode
+        />
+
+        {/* {connected ? (
           <>
             <div className="flex flex-col gap-4 justify-start items-stretch !mt-4 lg:flex-row">
               <div className="flex-1 p-6 rounded-lg border border-default">
                 <p className="mb-2 font-mono text-sm text-tertiary">
                   {t('title.balanceUnstaked', {
-                    name: governanceTokenInfo.name,
+                    name: '$' + governanceTokenInfo.symbol,
                   })}
                 </p>
 
@@ -68,15 +76,10 @@ const InnerStake = () => {
               </div>
 
               <div className="flex-1 p-6 rounded-lg border border-default">
-                <p className="flex gap-2 mb-2 font-mono text-sm text-tertiary">
-                  <span>
-                    {t('title.votingPowerStakedAndRewards', {
-                      name: governanceTokenInfo.name,
-                    })}
-                  </span>
-                  <TooltipIcon
-                    label={t('info.autoCompoundStakingRewardsTooltip')}
-                  />
+                <p className="mb-2 font-mono text-sm text-tertiary">
+                  {t('title.votingPowerStaked', {
+                    name: '$' + governanceTokenInfo.symbol,
+                  })}
                 </p>
 
                 <SuspenseLoader fallback={<BalanceCardLoader />}>
@@ -94,7 +97,7 @@ const InnerStake = () => {
                 <>
                   <p className="text-lg title-text">
                     {t('title.unstakingNamedTokens', {
-                      name: governanceTokenInfo.name,
+                      name: '$' + governanceTokenInfo.symbol,
                     })}
                   </p>
                   <Loader />
@@ -108,31 +111,18 @@ const InnerStake = () => {
           </>
         ) : (
           <ConnectWalletButton className="!w-auto" />
-        )}
+        )} */}
       </div>
 
-      {showStakingMode !== undefined && (
+      {/* {showStakingMode !== undefined && (
         <StakingModal
           connectWalletButton={<ConnectWalletButton className="!w-auto" />}
-          coreAddress={DAO_ADDRESS}
+          coreAddress={coreAddress}
           loader={<Loader />}
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
-      )}
+      )} */}
     </>
   )
 }
-
-const MembersOrStakePage: NextPage<PageWrapperProps> = ({
-  children: _,
-  ...props
-}) => (
-  <PageWrapper {...props}>
-    <InnerStake />
-  </PageWrapper>
-)
-
-export default MembersOrStakePage
-
-export const getStaticProps = makeGetStaticProps()

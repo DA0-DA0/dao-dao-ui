@@ -25,7 +25,6 @@ import {
   PageWrapper,
   PageWrapperProps,
   ProposalsInfo,
-  useDAOInfoContext,
 } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS } from '@/util'
@@ -33,7 +32,6 @@ import { DAO_ADDRESS } from '@/util'
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
   const [loading, setLoading] = useState(false)
@@ -161,7 +159,6 @@ const InnerProposalCreate = () => {
             coreAddress={DAO_ADDRESS}
             loading={loading}
             onSubmit={onProposalSubmit}
-            votingModuleType={votingModuleType}
           />
         </SuspenseLoader>
       </div>

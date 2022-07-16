@@ -15,14 +15,11 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Governance, Hash, Pie, Wallet } from '@dao-dao/icons'
+import { Governance, Hash } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
-import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  VotingModuleType,
-  nativeTokenLabel,
-} from '@dao-dao/utils'
+import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
+import { SdaMembershipPageNavInfo } from '@dao-dao/voting-module-adapter/types'
 
 import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
 
@@ -85,7 +82,16 @@ export const Header: FunctionComponent = () => {
     disconnect,
   } = useWalletManager()
   const { walletBalance = 0 } = useWalletBalance()
-  const { name: daoName, votingModuleType } = useDAOInfoContext()
+  const { name: daoName } = useDAOInfoContext()
+
+  // If on error page, this hook will throw an error. Ignore it since
+  // Header is rendered on error pages.
+  let sdaMembershipPageNavInfo: SdaMembershipPageNavInfo | undefined
+  try {
+    sdaMembershipPageNavInfo =
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useVotingModuleAdapter().fields.sdaMembershipPageNavInfo
+  } catch {}
 
   const [mobileNavVisible, setMobileNavVisible] = useState(false)
 
@@ -104,34 +110,10 @@ export const Header: FunctionComponent = () => {
         active: router.pathname === '/',
         external: false,
       },
-      ...(votingModuleType === VotingModuleType.Cw4Voting
+      ...(sdaMembershipPageNavInfo
         ? [
             {
-              renderIcon: (color, mobile) => (
-                <Wallet
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
-              ),
-              label: 'Members',
-              href: '/member',
-              active: router.pathname === '/member',
-              external: false,
-            },
-          ]
-        : []),
-      ...(votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
-        ? [
-            {
-              renderIcon: (color, mobile) => (
-                <Pie
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
-              ),
-              label: 'Stake',
+              ...sdaMembershipPageNavInfo,
               href: '/member',
               active: router.pathname === '/member',
               external: false,
@@ -191,12 +173,12 @@ export const Header: FunctionComponent = () => {
         : []),
     ],
     [
-      votingModuleType,
       router.pathname,
       router.isReady,
       router.isFallback,
       router.query.proposalId,
       router.asPath,
+      sdaMembershipPageNavInfo,
     ]
   )
 

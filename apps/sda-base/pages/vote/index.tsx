@@ -15,8 +15,6 @@ import {
   ProposalsInfo,
   ProposalsInfoLoader,
   VoteHero,
-  VoteHeroContent,
-  VoteHeroContentLoader,
 } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 
@@ -26,11 +24,7 @@ const InnerVote: FunctionComponent = () => {
 
   return (
     <div className="space-y-8">
-      <VoteHero>
-        <SuspenseLoader fallback={<VoteHeroContentLoader />}>
-          <VoteHeroContent />
-        </SuspenseLoader>
-      </VoteHero>
+      <VoteHero />
 
       <div className="flex flex-row justify-between items-center">
         <h3 className="title-text">{t('title.proposals')}</h3>

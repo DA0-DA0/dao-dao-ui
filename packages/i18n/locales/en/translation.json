@@ -187,7 +187,7 @@
     "usdc": "{{val, currency(currency: USD)}} USDC"
   },
   "info": {
-    "aboutToUnstake": "You are about to unstake governance tokens",
+    "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
     "advancedQuorumDisabledConfigWarning": "This is an advanced feature. If you disable quorum and set your threshold too high, you will need significant participation to pass proposals. A quorum allows a subset of members to pass proposals and can help prevent locking your DAO.",
@@ -285,7 +285,7 @@
     "txAbbr": "TX",
     "unstaked": "unstaked",
     "unstakedTokens": "unstaked ${{tokenSymbol}}",
-    "unstakingMechanics": "If you unstake now, it will take {{humanReadableTime}} until they are available to you. During that time, you will not recieve staking rewards. You will not be able to cancel the unbonding.",
+    "unstakingMechanics": "If you unstake now, it will take {{humanReadableTime}} until they are available to you. During that time, you will not receive staking rewards. You will not be able to cancel the unbonding.",
     "verifyingGovernanceToken": "Verifying CW20 token...",
     "voteAgain": "Vote again?",
     "votedOnProposal": "You voted <0/> on this proposal.",

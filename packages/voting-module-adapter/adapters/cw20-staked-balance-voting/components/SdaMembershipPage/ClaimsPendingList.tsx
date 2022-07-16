@@ -5,31 +5,30 @@ import { useTranslation } from 'react-i18next'
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
-
-import { useDAOInfoContext } from '../DAOInfoContext'
-
-interface ClaimsListProps {
+interface ClaimsPendingListProps {
+  coreAddress: string
+  fallbackImageUrl: string
   showClaim: () => void
 }
 
-export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
+export const ClaimsPendingList: FunctionComponent<ClaimsPendingListProps> = ({
+  coreAddress,
+  fallbackImageUrl,
   showClaim,
 }) => {
   const { t } = useTranslation()
   const { connected } = useWalletManager()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  const { governanceTokenInfo, governanceTokenMarketingInfo } =
+    useGovernanceTokenInfo(coreAddress)
   const {
     stakingContractConfig,
     blockHeight,
     claims,
     refreshClaims,
     sumClaimsAvailable,
-  } = useStakingInfo(DAO_ADDRESS, {
+  } = useStakingInfo(coreAddress, {
     fetchClaims: true,
   })
-
-  const { imageUrl } = useDAOInfoContext()
 
   if (
     !governanceTokenInfo ||
@@ -40,6 +39,13 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
   ) {
     return null
   }
+
+  const tokenImageUrl =
+    !!governanceTokenMarketingInfo?.logo &&
+    governanceTokenMarketingInfo.logo !== 'embedded' &&
+    'url' in governanceTokenMarketingInfo.logo
+      ? governanceTokenMarketingInfo.logo.url
+      : undefined
 
   return (
     <>
@@ -64,7 +70,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
               key={idx}
               blockHeight={blockHeight}
               claim={claim}
-              iconURI={imageUrl ?? DEFAULT_IMAGE_URL}
+              iconURI={tokenImageUrl ?? fallbackImageUrl}
               onClaimAvailable={refreshClaims}
               tokenInfo={governanceTokenInfo}
             />

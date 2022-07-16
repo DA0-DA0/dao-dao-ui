@@ -1,4 +1,3 @@
-export * from './stake'
 export * from './vote'
 
 export * from './DAODAOLogo'

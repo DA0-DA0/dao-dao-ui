@@ -17,8 +17,16 @@ import {
   SITE_TITLE,
   SITE_URL,
 } from '@dao-dao/utils'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  Cw4VotingAdapter,
+  registerAdapters,
+} from '@dao-dao/voting-module-adapter'
 
 import { Footer } from '@/components'
+
+// Register voting module adapters.
+registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const { t } = useTranslation()
@@ -49,7 +57,9 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
       updateTheme={setTheme}
     >
       <ErrorBoundary title={t('error.unexpectedError')}>
-        <Component {...pageProps} />
+        <WalletProvider>
+          <Component {...pageProps} />
+        </WalletProvider>
       </ErrorBoundary>
 
       <Footer />
@@ -111,9 +121,7 @@ const SDA: FC<AppProps> = (props) => (
     />
 
     <RecoilRoot>
-      <WalletProvider>
-        <InnerApp {...props} />
-      </WalletProvider>
+      <InnerApp {...props} />
     </RecoilRoot>
   </>
 )

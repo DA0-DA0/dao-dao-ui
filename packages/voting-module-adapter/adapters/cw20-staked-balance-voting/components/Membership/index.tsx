@@ -1,7 +1,7 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { ComponentType, FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -10,7 +10,6 @@ import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
   useStakingInfo,
-  useWalletBalance,
 } from '@dao-dao/state'
 import {
   BalanceCard,
@@ -25,17 +24,31 @@ import {
 } from '@dao-dao/utils'
 
 import { BaseMembershipProps } from '../../../../types'
-import { ClaimsPendingList } from './ClaimsPendingList'
+import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
 
-export const Membership = ({
-  primaryText,
-  ...props
-}: BaseMembershipProps & { primaryText?: boolean }) => {
+interface MembershipProps extends BaseMembershipProps {
+  primaryText?: boolean
+  // If displayed in the SDA, we want to hide the title and claim card as
+  // well as make the balance cards responsive. This is because it is laid
+  // out differently, taking up a full page, and the title and claim are
+  // handled separately. See ../SdaMembershipPage/index.tsx
+  sdaMode?: boolean
+  ClaimsPendingList?: ComponentType<{
+    coreAddress: string
+    showClaim: () => void
+  }>
+}
+
+export const Membership = ({ primaryText, ...props }: MembershipProps) => {
   const { t } = useTranslation()
 
   return (
     <>
-      <h2 className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text')}>
+      <h2
+        className={clsx('mb-4', primaryText ? 'primary-text' : 'title-text', {
+          hidden: props.sdaMode,
+        })}
+      >
         {t('title.yourVotingPower')}
       </h2>
 
@@ -46,7 +59,11 @@ export const Membership = ({
   )
 }
 
-const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress }) => {
+const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
+  coreAddress,
+  sdaMode,
+  ClaimsPendingList = DefaultClaimsPendingList,
+}) => {
   const { t } = useTranslation()
   const {
     governanceTokenInfo,
@@ -65,23 +82,23 @@ const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress }) => {
   })
 
   const { connected } = useWalletManager()
-  const { refreshBalances } = useWalletBalance()
 
   // Set to a StakingMode to display modal.
   const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  if (!governanceTokenInfo || blockHeight === undefined) {
-    throw new Error('Failed to load data.')
+  if (!connected) {
+    return <ConnectWalletButton />
   }
 
   if (
-    !connected ||
+    !governanceTokenInfo ||
+    blockHeight === undefined ||
     unstakedGovTokenBalance === undefined ||
     walletStakedValue === undefined ||
     totalStakedValue === undefined
   ) {
-    return <ConnectWalletButton />
+    throw new Error(t('error.loadingData'))
   }
 
   const tokenImageUrl =
@@ -93,12 +110,15 @@ const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress }) => {
 
   return (
     <>
-      <div className="flex flex-col gap-2 items-stretch">
+      <div
+        className={clsx('flex flex-col gap-2 items-stretch lg:gap-4', {
+          'md:flex-row': sdaMode,
+        })}
+      >
         {!unstakedGovTokenBalance &&
           !walletStakedValue &&
-          !sumClaimsAvailable && (
-            <p className="caption-text">{t('info.notAMember')}</p>
-          )}
+          !sumClaimsAvailable &&
+          !sdaMode && <p className="caption-text">{t('info.notAMember')}</p>}
         {unstakedGovTokenBalance > 0 && walletStakedValue === 0 && (
           <BalanceCard
             buttonLabel={t('button.stakeTokens')}
@@ -162,7 +182,7 @@ const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress }) => {
             </div>
           </BalanceCard>
         )}
-        {!!sumClaimsAvailable && (
+        {!!sumClaimsAvailable && !sdaMode && (
           <BalanceCard
             buttonLabel={t('button.claimTokens')}
             icon={<HandIcon className="w-4 h-4" />}
@@ -219,7 +239,7 @@ const InnerMembership: FC<BaseMembershipProps> = ({ coreAddress }) => {
 
       <ClaimsPendingList
         coreAddress={coreAddress}
-        onClaimAvailable={refreshBalances}
+        showClaim={() => setShowStakingMode(StakingMode.Claim)}
       />
 
       {showStakingMode !== undefined && (

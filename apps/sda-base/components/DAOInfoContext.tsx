@@ -1,19 +1,18 @@
 import { createContext, useContext } from 'react'
 
-import { VotingModuleType } from '@dao-dao/utils'
-
 export interface DAOInfo {
-  votingModuleType: VotingModuleType
+  votingModuleContractName: string
   name: string
   imageUrl: string | null
 }
 
-export const DefaultDAOInfo: DAOInfo = {
-  votingModuleType: VotingModuleType.Cw4Voting,
-  name: '',
+const FallbackDAOInfo: DAOInfo = {
+  votingModuleContractName: 'Error',
+  name: 'Error',
   imageUrl: null,
 }
 
-export const DAOInfoContext = createContext<DAOInfo>(DefaultDAOInfo)
+export const DAOInfoContext = createContext<DAOInfo | null>(null)
 
-export const useDAOInfoContext = () => useContext(DAOInfoContext)
+export const useDAOInfoContext = () =>
+  useContext(DAOInfoContext) ?? FallbackDAOInfo

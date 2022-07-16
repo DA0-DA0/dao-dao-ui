@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 import { ActionKey } from '@dao-dao/actions'
 import { ProposalDetailsProps } from '@dao-dao/ui'
@@ -11,6 +11,7 @@ export interface IVotingModuleAdapter {
   // Fields
   fields: {
     disabledActionKeys: ActionKey[]
+    sdaMembershipPageNavInfo: SdaMembershipPageNavInfo
   }
 
   // Hooks
@@ -30,7 +31,14 @@ export interface IVotingModuleAdapter {
     DaoTreasuryFooter: ComponentType<BaseDaoTreasuryFooterProps>
     DaoContractInfoContent: ComponentType<BaseDaoContractInfoContentProps>
     ProposalCreateAddresses: ComponentType<BaseProposalCreateAddressesProps>
+    VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
+    SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
   }
+}
+
+export interface SdaMembershipPageNavInfo {
+  renderIcon: (color: string, mobile: boolean) => ReactNode
+  label: string
 }
 
 export interface MembershipMobileTabProps {
@@ -61,4 +69,15 @@ export interface BaseDaoContractInfoContentProps {
 
 export interface BaseProposalCreateAddressesProps {
   coreAddress: string
+}
+
+export interface BaseVoteHeroStatsProps {
+  coreAddress: string
+  loader?: boolean
+}
+
+export interface BaseSdaMembershipPageProps {
+  coreAddress: string
+  defaultImageUrl: string
+  Loader: ComponentType<{ size?: number | string }>
 }

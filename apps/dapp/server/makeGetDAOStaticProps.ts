@@ -6,9 +6,7 @@ import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { CwCoreQueryClient } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
-import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
-import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
+import { ConfigResponse, InfoResponse } from '@dao-dao/state/clients/cw-core'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
@@ -91,10 +89,12 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       const config = await coreClient.config()
 
       const votingModuleAddress = await coreClient.votingModule()
+      // All info queries are the same for DAO DAO contracts.
       const {
         info: { contract: votingModuleContractName },
-      }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
-        await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
+      }: InfoResponse = await cwClient.queryContractSmart(votingModuleAddress, {
+        info: {},
+      })
 
       // Must be called after server side translations has been awaited,
       // because props may use the `t` function, and it won't be available

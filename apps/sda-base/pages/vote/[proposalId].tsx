@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -9,12 +9,11 @@ import {
   FormProposalData,
   useActionsWithoutDisabledKeys,
 } from '@dao-dao/actions'
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { ConnectWalletButton } from '@dao-dao/common'
 import {
   CwCoreQueryClient,
   CwProposalSingleHooks,
   CwProposalSingleQueryClient,
-  useGovernanceTokenInfo,
   useProposalInfo,
   useProposalModule,
 } from '@dao-dao/state'
@@ -22,27 +21,19 @@ import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   ErrorPage,
   LinkText,
-  ProposalDetails,
   ProposalInfoCard,
   ProposalInfoVoteStatus,
-  StakingMode,
   Trans,
 } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
-  VotingModuleType,
   cleanChainError,
   cosmWasmClientRouter,
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter/react'
 
-import {
-  Loader,
-  PageWrapper,
-  PageWrapperProps,
-  useDAOInfoContext,
-} from '@/components'
+import { PageWrapper, PageWrapperProps } from '@/components'
 import { makeGetStaticProps } from '@/server/makeGetStaticProps'
 import { DAO_ADDRESS } from '@/util'
 
@@ -50,7 +41,6 @@ const InnerProposal: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const [showStaking, setShowStaking] = useState(false)
@@ -62,14 +52,16 @@ const InnerProposal: FC = () => {
       ? Number(proposalIdQuery)
       : undefined
 
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(DAO_ADDRESS)
 
   const {
     fields: { disabledActionKeys },
+    hooks: { useVoteConversionDecimals },
+    ui: { ProposalDetails },
   } = useVotingModuleAdapter()
   const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
+  const voteConversionDecimals = useVoteConversionDecimals(DAO_ADDRESS)
 
   const {
     proposalResponse,
@@ -92,23 +84,7 @@ const InnerProposal: FC = () => {
     sender: walletAddress ?? '',
   })
 
-  const voteConversionDecimals = useMemo(
-    () =>
-      votingModuleType === VotingModuleType.Cw4Voting
-        ? 0
-        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-          governanceTokenInfo
-        ? governanceTokenInfo.decimals
-        : undefined,
-    [votingModuleType, governanceTokenInfo]
-  )
-
-  if (
-    !proposalResponse ||
-    !proposalModuleConfig ||
-    voteConversionDecimals === undefined ||
-    proposalId === undefined
-  ) {
+  if (!proposalResponse || !proposalModuleConfig || proposalId === undefined) {
     throw new Error('Failed to load page data.')
   }
 
@@ -245,15 +221,6 @@ const InnerProposal: FC = () => {
           proposalId={proposalId}
           setShowStaking={setShowStaking}
           showStaking={showStaking}
-          stakingModal={
-            <StakingModal
-              connectWalletButton={<ConnectWalletButton className="!w-auto" />}
-              coreAddress={DAO_ADDRESS}
-              loader={Loader}
-              mode={StakingMode.Stake}
-              onClose={() => setShowStaking(false)}
-            />
-          }
           walletVote={voteResponse?.vote?.vote ?? undefined}
           walletWeightPercent={
             votingPowerAtHeight

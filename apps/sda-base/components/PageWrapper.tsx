@@ -1,10 +1,12 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { FunctionComponent, PropsWithChildren } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader } from '@dao-dao/ui'
+import { ErrorPage, PageLoader, SuspenseLoader } from '@dao-dao/ui'
+import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter/react'
 
-import { DAOInfo, DAOInfoContext, DefaultDAOInfo, Header, Loader } from '.'
+import { DAOInfo, DAOInfoContext, Header } from '.'
 
 export type PageWrapperProps = PropsWithChildren<{
   url?: string
@@ -20,7 +22,8 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
   daoInfo,
   children,
 }) => {
-  const { isFallback, isReady } = useRouter()
+  const { t } = useTranslation()
+  const { isFallback } = useRouter()
 
   // If not on a fallback page, DAO info must be loaded.
   if (!isFallback && !daoInfo) {
@@ -41,17 +44,22 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
         title={title}
       />
 
-      <DAOInfoContext.Provider value={daoInfo || DefaultDAOInfo}>
-        <Header />
-
-        {/* Suspend children so SEO stays intact while page loads. */}
-        <SuspenseLoader
-          fallback={<Loader fillScreen size={64} />}
-          forceFallback={isFallback || !isReady}
-        >
-          <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
-        </SuspenseLoader>
-      </DAOInfoContext.Provider>
+      <SuspenseLoader fallback={<PageLoader />}>
+        {daoInfo ? (
+          <VotingModuleAdapterProvider
+            contractName={daoInfo.votingModuleContractName}
+          >
+            <DAOInfoContext.Provider value={daoInfo}>
+              <Header />
+              <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
+            </DAOInfoContext.Provider>
+          </VotingModuleAdapterProvider>
+        ) : (
+          <ErrorPage title={t('title.500')}>
+            <p>{t('error.internalServerError')}</p>
+          </ErrorPage>
+        )}
+      </SuspenseLoader>
     </>
   )
 }

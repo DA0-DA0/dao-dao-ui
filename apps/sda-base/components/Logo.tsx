@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { DEFAULT_IMAGE_URL } from '@/util'
@@ -18,7 +19,7 @@ export const Logo = ({
     // eslint-disable-next-line @next/next/no-img-element
     <img
       alt={t('info.logo')}
-      className={className}
+      className={clsx('overflow-hidden rounded-full', className)}
       height={size}
       src={imageUrl ?? DEFAULT_IMAGE_URL}
       width={size}

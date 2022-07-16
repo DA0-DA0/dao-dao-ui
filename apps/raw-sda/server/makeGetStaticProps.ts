@@ -5,14 +5,7 @@ import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { CwCoreQueryClient } from '@dao-dao/state'
-import { InfoResponse as Cw20StakedBalanceVotingInfoResponse } from '@dao-dao/state/clients/cw20-staked-balance-voting'
-import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw4-voting'
-import {
-  CHAIN_RPC_ENDPOINT,
-  CI,
-  cosmWasmClientRouter,
-  parseVotingModuleContractName,
-} from '@dao-dao/utils'
+import { CHAIN_RPC_ENDPOINT, CI, cosmWasmClientRouter } from '@dao-dao/utils'
 
 import { PageWrapperProps } from '@/components'
 import { DAO_ADDRESS } from '@/util'
@@ -59,19 +52,6 @@ export const makeGetStaticProps: GetStaticPropsMaker =
 
       const config = await client.config()
 
-      const votingModuleAddress = await client.votingModule()
-      const {
-        info: { contract: votingModuleContractName },
-      }: Cw4VotingInfoResponse | Cw20StakedBalanceVotingInfoResponse =
-        await cwClient.queryContractSmart(votingModuleAddress, { info: {} })
-
-      const votingModuleType = parseVotingModuleContractName(
-        votingModuleContractName
-      )
-      if (!votingModuleType) {
-        throw new Error('Failed to determine voting module type.')
-      }
-
       // Must be called after server side translations has been awaited,
       // because props may use the `t` function, and it won't be available
       // until after.
@@ -92,7 +72,6 @@ export const makeGetStaticProps: GetStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           daoInfo: {
-            votingModuleType,
             name: config.name,
             imageUrl: config.image_url ?? null,
           },

@@ -1,4 +1,5 @@
 import { ActionKey } from '@dao-dao/actions'
+import { Wallet } from '@dao-dao/icons'
 import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { IVotingModuleAdapter } from '../../types'
@@ -10,6 +11,8 @@ import {
   MembershipMobileTab,
   ProposalCreateAddresses,
   ProposalDetails,
+  SdaMembershipPage,
+  VoteHeroStats,
 } from './components'
 import { useVoteConversionDecimals } from './hooks'
 
@@ -25,6 +28,16 @@ export const Cw4VotingAdapter: IVotingModuleAdapter = {
       // No governance tokens to mint.
       ActionKey.Mint,
     ],
+    sdaMembershipPageNavInfo: {
+      renderIcon: (color, mobile) => (
+        <Wallet
+          color={color}
+          height={mobile ? 16 : 14}
+          width={mobile ? 16 : 14}
+        />
+      ),
+      label: 'Members',
+    },
   },
 
   // Hooks
@@ -44,5 +57,7 @@ export const Cw4VotingAdapter: IVotingModuleAdapter = {
     DaoTreasuryFooter,
     DaoContractInfoContent,
     ProposalCreateAddresses,
+    VoteHeroStats,
+    SdaMembershipPage,
   },
 }
