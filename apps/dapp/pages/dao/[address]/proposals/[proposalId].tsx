@@ -70,7 +70,7 @@ const InnerProposal: FC = () => {
   const voteConversionDecimals = useVoteConversionDecimals()
 
   const {
-    ui: { ProposalVotes, ProposalVoteDecisionStatus, ProposalInfoCard },
+    components: { ProposalVotes, ProposalVoteDecisionStatus, ProposalInfoCard },
   } = useProposalModuleAdapter()
 
   const {

@@ -22,8 +22,8 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
     // Hooks
     hooks: {},
 
-    // UI
-    ui: {
+    // Components
+    components: {
       ProposalVotes,
       ProposalVoteDecisionStatus,
       ProposalInfoCard,

@@ -14,8 +14,8 @@ export interface IProposalModuleAdapter {
   // Hooks
   hooks: {}
 
-  // UI
-  ui: {
+  // Components
+  components: {
     ProposalVotes: ComponentType<BaseProposalVotesProps>
     ProposalVoteDecisionStatus: ComponentType<BaseProposalVoteDecisionStatusProps>
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
