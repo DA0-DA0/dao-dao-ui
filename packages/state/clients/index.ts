@@ -1,5 +1,9 @@
 export { CwCoreClient, CwCoreQueryClient as CwCoreQueryClient } from './cw-core'
 export {
+  CwProposalMultipleClient,
+  CwProposalMultipleQueryClient,
+} from './cw-proposal-multiple'
+export {
   CwProposalSingleClient,
   CwProposalSingleQueryClient,
 } from './cw-proposal-single'

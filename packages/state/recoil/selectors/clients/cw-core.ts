@@ -132,7 +132,7 @@ export const proposalModulesSelector = selectorFamily<
   ProposalModulesResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['proposalModules']> }
 >({
-  key: 'cwCoreGovernanceModules',
+  key: 'cwCoreProposalModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {

@@ -1,4 +1,5 @@
 export * as CwCoreSelectors from './cw-core'
+export * as CwProposalMultipleSelectors from './cw-proposal-multiple'
 export * as CwProposalSingleSelectors from './cw-proposal-single'
 export * as CwRewardsSelectors from './cw-rewards'
 export * as Cw4GroupSelectors from './cw4-group'
