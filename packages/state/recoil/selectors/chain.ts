@@ -30,6 +30,22 @@ export const blockHeightSelector = selector({
   },
 })
 
+export const blockHeightTimestampSelector = selectorFamily<
+  Date | undefined,
+  number
+>({
+  key: 'blockHeightTimestamp',
+  get:
+    (blockHeight) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      if (!client) return
+
+      const block = await client.getBlock(blockHeight)
+      return new Date(Date.parse(block.header.time))
+    },
+})
+
 export const nativeBalancesSelector = selectorFamily({
   key: 'nativeBalances',
   get:
