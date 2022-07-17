@@ -2,7 +2,11 @@ import { UsersIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { Pencil } from '@dao-dao/icons'
-import { useProposalModule, useVotingModule } from '@dao-dao/state'
+import {
+  useCw4VotingModule,
+  useProposalModule,
+  useVotingModule,
+} from '@dao-dao/state'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -10,9 +14,10 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 export const DaoHorizontalInfoDisplayInternal = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
-    fetchCw4VotingMembers: true,
+  const { totalVotingWeight } = useVotingModule(coreAddress, {
+    fetchMembership: true,
   })
+  const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
   const { proposalCount } = useProposalModule(coreAddress, {
     fetchProposalCount: true,
   })
@@ -20,7 +25,7 @@ export const DaoHorizontalInfoDisplayInternal = () => {
   if (
     totalVotingWeight === undefined ||
     proposalCount === undefined ||
-    !cw4VotingMembers
+    !members
   ) {
     throw new Error(t('error.loadingData'))
   }
@@ -29,7 +34,7 @@ export const DaoHorizontalInfoDisplayInternal = () => {
     <HorizontalInfo>
       <HorizontalInfoSection>
         <UsersIcon className="inline w-4" />
-        {t('info.numMembers', { count: cw4VotingMembers.length })}
+        {t('info.numMembers', { count: members.length })}
       </HorizontalInfoSection>
       <HorizontalInfoSection>
         <Pencil className="inline" fill="currentColor" />

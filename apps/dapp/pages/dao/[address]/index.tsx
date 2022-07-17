@@ -100,7 +100,7 @@ const InnerDAOHome = () => {
   const {
     ui: { Membership },
   } = useVotingModuleAdapter()
-  const { isMember } = useVotingModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)

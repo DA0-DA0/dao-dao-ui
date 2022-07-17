@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useVotingModule } from '@dao-dao/state'
+import { useCw4VotingModule } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
@@ -26,12 +27,10 @@ const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
 const useTransformToCosmos: UseTransformToCosmos<ManageMembersData> = (
   coreAddress: string
 ) => {
-  const { cw4GroupAddress } = useVotingModule(coreAddress, {
-    fetchCw4GroupAddress: true,
-  })
-
+  const { t } = useTranslation()
+  const { cw4GroupAddress } = useCw4VotingModule(coreAddress)
   if (!cw4GroupAddress) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   return useCallback(
@@ -57,12 +56,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
-  const { cw4GroupAddress } = useVotingModule(coreAddress, {
-    fetchCw4GroupAddress: true,
-  })
-
+  const { t } = useTranslation()
+  const { cw4GroupAddress } = useCw4VotingModule(coreAddress)
   if (!cw4GroupAddress) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   return useMemo(() => {
@@ -93,19 +90,19 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
 }
 
 const InnerManageMembersComponent: ActionComponent = (props) => {
-  const { cw4VotingMembers } = useVotingModule(props.coreAddress, {
-    fetchCw4VotingMembers: true,
+  const { t } = useTranslation()
+  const { members } = useCw4VotingModule(props.coreAddress, {
+    fetchMembers: true,
   })
-
-  if (!cw4VotingMembers) {
-    throw new Error('Failed to load data.')
+  if (!members) {
+    throw new Error(t('error.loadingData'))
   }
 
   return (
     <StatelessManageMembersComponent
       {...props}
       options={{
-        currentMembers: cw4VotingMembers.map(({ addr }) => addr),
+        currentMembers: members.map(({ addr }) => addr),
       }}
     />
   )

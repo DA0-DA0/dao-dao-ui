@@ -3,7 +3,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { Wallet } from '@dao-dao/icons'
-import { useVotingModule } from '@dao-dao/state'
+import { useCw4VotingModule } from '@dao-dao/state'
 import { HeroStat } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -35,18 +35,18 @@ export const InnerVoteHeroStats = ({ data }: InnerVoteHeroStatsProps) => {
 const InnerVoteHeroStatsContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { cw4VotingMembers } = useVotingModule(coreAddress, {
-    fetchCw4VotingMembers: true,
-  })
 
-  if (!cw4VotingMembers) {
+  const { members } = useCw4VotingModule(coreAddress, {
+    fetchMembers: true,
+  })
+  if (!members) {
     throw new Error(t('error.loadingData'))
   }
 
   return (
     <InnerVoteHeroStats
       data={{
-        members: cw4VotingMembers?.length,
+        members: members?.length,
       }}
     />
   )

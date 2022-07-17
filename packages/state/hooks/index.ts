@@ -1,4 +1,5 @@
 export * from './clients'
+export * from './useCw4VotingModule'
 export * from './useGovernanceTokenInfo'
 export * from './useProposalInfo'
 export * from './useProposalModule'

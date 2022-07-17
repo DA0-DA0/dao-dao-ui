@@ -25,7 +25,9 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
     CwCoreSelectors.configSelector({ contractAddress: address })
   )
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
-  const { walletVotingWeight, totalVotingWeight } = useVotingModule(address)
+  const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {
+    fetchMembership: true,
+  })
   const { proposalCount } = useProposalModule(address, {
     fetchProposalCount: true,
   })

@@ -12,7 +12,7 @@ import { usePinnedDAOs } from '@/hooks'
 
 const DAOMobileHeaderInternal: FC = () => {
   const { coreAddress, name, imageUrl } = useDAOInfoContext()
-  const { isMember } = useVotingModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)

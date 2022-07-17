@@ -1,6 +1,6 @@
 import { useWallet } from '@noahsaso/cosmodal'
 
-import { useVotingModule } from '@dao-dao/state'
+import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
 import {
   Loader,
   MultisigMemberList,
@@ -30,16 +30,21 @@ export const Membership = (props: MembershipProps) => (
 const InnerMembership = ({ primaryText }: MembershipProps) => {
   const { address: walletAddress } = useWallet()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { walletVotingWeight, totalVotingWeight, cw4VotingMembers } =
-    useVotingModule(coreAddress, { fetchCw4VotingMembers: true })
+  const { walletVotingWeight, totalVotingWeight } = useVotingModule(
+    coreAddress,
+    {
+      fetchMembership: true,
+    }
+  )
+  const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
 
-  if (totalVotingWeight === undefined || !cw4VotingMembers) {
+  if (totalVotingWeight === undefined || !members) {
     throw new Error('Failed to load data.')
   }
 
   return (
     <MultisigMemberList
-      members={cw4VotingMembers}
+      members={members}
       primaryText={primaryText}
       totalWeight={totalVotingWeight}
       walletAddress={walletAddress}

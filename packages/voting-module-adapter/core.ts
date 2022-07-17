@@ -8,10 +8,11 @@ const registeredAdapters: VotingModuleAdapter[] = []
 export const registerAdapters = async (adapters: VotingModuleAdapter[]) =>
   registeredAdapters.push(...adapters)
 
-export const matchAdapter = async (contractName: string) => {
-  const adapter = registeredAdapters.find(({ matcher }) =>
-    matcher(contractName)
-  )
+export const matchAdapter = (contractName: string) =>
+  registeredAdapters.find(({ matcher }) => matcher(contractName))
+
+export const matchAndLoadAdapter = async (contractName: string) => {
+  const adapter = matchAdapter(contractName)
 
   if (!adapter) {
     throw new Error(

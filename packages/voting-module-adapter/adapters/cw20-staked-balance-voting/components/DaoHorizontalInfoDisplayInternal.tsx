@@ -19,7 +19,9 @@ export const DaoHorizontalInfoDisplayInternal = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-  const { totalVotingWeight } = useVotingModule(coreAddress)
+  const { totalVotingWeight } = useVotingModule(coreAddress, {
+    fetchMembership: true,
+  })
   const { proposalCount } = useProposalModule(coreAddress, {
     fetchProposalCount: true,
   })

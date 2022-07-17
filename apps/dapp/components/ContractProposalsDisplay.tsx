@@ -14,7 +14,7 @@ import { ProposalList } from './proposals/ProposalList'
 export const InnerContractProposalsDisplay: FC = () => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
-  const { isMember } = useVotingModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
   const router = useRouter()
 
   // Detect if Mac for checking keypress.

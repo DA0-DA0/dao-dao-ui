@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
 
-import { matchAdapter } from '../core'
+import { matchAndLoadAdapter } from '../core'
 import { IVotingModuleAdapter, IVotingModuleAdapterOptions } from '../types'
 import { VotingModuleAdapterContext } from './context'
 
@@ -18,7 +18,7 @@ export const VotingModuleAdapterProvider = ({
   const [adapter, setAdapter] = useState<IVotingModuleAdapter>()
 
   useEffect(() => {
-    matchAdapter(contractName).then(({ adapter }) => setAdapter(adapter))
+    matchAndLoadAdapter(contractName).then(({ adapter }) => setAdapter(adapter))
   }, [contractName, options])
 
   return adapter ? (

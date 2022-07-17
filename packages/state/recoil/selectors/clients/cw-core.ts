@@ -213,7 +213,6 @@ export const allCw20TokenListSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
-      // TODO(noah/voting-module-adapter): Somehow move this logic into the adapter. Maybe the entire selector?
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
       // All `info` queries are the same, so just use cw-core's info query.
       const votingModuleInfo = votingModuleAddress
@@ -224,7 +223,7 @@ export const allCw20TokenListSelector = selectorFamily<
       try {
         hasGovernanceToken =
           !!votingModuleInfo &&
-          (await matchAdapter(votingModuleInfo.info.contract)).id ===
+          matchAdapter(votingModuleInfo.info.contract)?.id ===
             Cw20StakedBalanceVotingAdapter.id
       } catch {
         hasGovernanceToken = false
@@ -319,7 +318,6 @@ export const allCw20BalancesSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
-      // TODO(noah/voting-module-adapter): Somehow move this logic into the adapter. Maybe the entire selector?
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
       // All `info` queries are the same, so just use cw-core's info query.
       const votingModuleInfo = votingModuleAddress
@@ -330,7 +328,7 @@ export const allCw20BalancesSelector = selectorFamily<
       try {
         hasGovernanceToken =
           !!votingModuleInfo &&
-          (await matchAdapter(votingModuleInfo.info.contract)).id ===
+          matchAdapter(votingModuleInfo.info.contract)?.id ===
             Cw20StakedBalanceVotingAdapter.id
       } catch {
         hasGovernanceToken = false

@@ -85,7 +85,7 @@ export const CreateProposalForm = ({
     fields: { disabledActionKeys },
   } = useVotingModuleAdapter()
   const { proposalModuleConfig } = useProposalModule(coreAddress)
-  const { isMember } = useVotingModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
 
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(

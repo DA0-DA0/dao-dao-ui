@@ -46,7 +46,7 @@ const InnerProposalCreate = () => {
   const [loading, setLoading] = useState(false)
 
   const blockHeight = useRecoilValue(blockHeightSelector)
-  const { isMember } = useVotingModule(coreAddress)
+  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddress)
   const {
