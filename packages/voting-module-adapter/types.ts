@@ -63,6 +63,7 @@ export type VotingModuleAdapter = {
 }
 
 export interface IVotingModuleAdapterOptions {
+  votingModuleAddress: string
   coreAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>

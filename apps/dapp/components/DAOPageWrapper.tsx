@@ -13,6 +13,7 @@ import { DAONotFound } from './dao/NotFound'
 
 interface DAOInfo {
   coreAddress: string
+  votingModuleAddress: string
   votingModuleContractName: string
   name: string
   description: string
@@ -64,6 +65,7 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
         <VotingModuleAdapterProvider
           contractName={info.votingModuleContractName}
           options={{
+            votingModuleAddress: info.votingModuleAddress,
             coreAddress: info.coreAddress,
             Logo,
             Loader,

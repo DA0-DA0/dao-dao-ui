@@ -1,12 +1,14 @@
 import { createContext, useContext } from 'react'
 
 export interface DAOInfo {
+  votingModuleAddress: string
   votingModuleContractName: string
   name: string
   imageUrl: string | null
 }
 
 const FallbackDAOInfo: DAOInfo = {
+  votingModuleAddress: 'error not loaded',
   votingModuleContractName: 'Error',
   name: 'Error',
   imageUrl: null,

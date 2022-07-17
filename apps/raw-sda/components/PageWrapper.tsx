@@ -55,6 +55,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
       <VotingModuleAdapterProvider
         contractName={CW20STAKEDBALANCEVOTING_CONTRACT_NAME}
         options={{
+          votingModuleAddress: daoInfo?.votingModuleAddress ?? '',
           coreAddress: DAO_ADDRESS,
           Logo,
           Loader,

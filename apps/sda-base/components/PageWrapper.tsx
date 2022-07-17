@@ -51,6 +51,7 @@ export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
           <VotingModuleAdapterProvider
             contractName={daoInfo.votingModuleContractName}
             options={{
+              votingModuleAddress: daoInfo.votingModuleAddress,
               coreAddress: DAO_ADDRESS,
               Logo,
               Loader,

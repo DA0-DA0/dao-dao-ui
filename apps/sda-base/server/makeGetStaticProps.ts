@@ -81,6 +81,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           daoInfo: {
+            votingModuleAddress,
             votingModuleContractName,
             name: config.name,
             imageUrl: config.image_url ?? null,
