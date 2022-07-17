@@ -18,7 +18,9 @@ export const VotingModuleAdapterProvider = ({
   const [adapter, setAdapter] = useState<IVotingModuleAdapter>()
 
   useEffect(() => {
-    matchAndLoadAdapter(contractName).then(({ adapter }) => setAdapter(adapter))
+    matchAndLoadAdapter(contractName, options).then(({ adapter }) =>
+      setAdapter(adapter)
+    )
   }, [contractName, options])
 
   return adapter ? (
