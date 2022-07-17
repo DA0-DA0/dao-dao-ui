@@ -42,16 +42,18 @@ registerAdapters([CwProposalSingleAdapter, CwProposalMultipleAdapter])
 
 Add the `ProposalModuleAdapterProvider` to your app, likely at a high enough
 level to encompass the entire app or entire pages. At this point, you must
-already know the proposal ID of the proposal so that the correct adapter can be
-chosen and its interface passed down to descendant components. You will also
-need to pass some options, like the contract address of the DAO's `cw-core`
-contract, as well as some commonly used components, like `Logo` and `Loader`.
+already know the available proposal modules and proposal ID of the relevant
+proposal so that the correct adapter can be chosen and its interface passed down
+to descendant components. You will also need to pass some options, like the
+contract address of the DAO's `cw-core` contract, as well as some commonly used
+components, like `Logo` and `Loader`.
 
 ```typescriptreact
 import { ProposalModuleAdapterProvider } from '@dao-dao/proposal-module-adapter'
 
 const App = () => (
   <ProposalModuleAdapterProvider
+    proposalModules={proposalModules}
     proposalId={proposalId}
     options={{
       coreAddress,
@@ -64,9 +66,9 @@ const App = () => (
 )
 ```
 
-In the `@dao-dao/dapp` Next.js app, `coreAddress` is fetched via
-`getStaticProps` and passed to a common page wrapper component, on each page,
-and `proposalId` is extracted from the URL parameters.
+In the `@dao-dao/dapp` Next.js app, `proposalModules` and `coreAddress` are
+fetched via `getStaticProps` and passed to a common page wrapper component, on
+each page, and `proposalId` is extracted from the URL parameters.
 
 ### **3. Use the hook**
 
@@ -124,6 +126,7 @@ There's one more thing to be aware of when writing adapters... the
 ### **useProposalModuleAdapterOptions**
 
 This hook simply provides the `options` passed to the
-`ProposalModuleAdapterProvider`, so you can easily access the `coreAddress` as
-well as other common data and components instead of needing to manually pass
-them into everything.
+`ProposalModuleAdapterProvider` (with `proposalModuleAddress`, `proposalId`, and
+`proposalNumber` added), so you can easily access the `coreAddress` as well as
+other common data and components instead of needing to manually pass them into
+everything.

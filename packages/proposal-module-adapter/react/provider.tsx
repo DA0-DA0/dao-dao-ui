@@ -1,4 +1,6 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
+
+import { ProposalModule } from '@dao-dao/utils'
 
 import { matchAndLoadAdapter } from '../core'
 import { IProposalModuleAdapter, IProposalModuleAdapterOptions } from '../types'
@@ -8,7 +10,10 @@ export interface ProposalModuleAdapterProviderProps {
   proposalModules: ProposalModule[]
   proposalId: string
   children: ReactNode | ReactNode[]
-  options: IProposalModuleAdapterOptions
+  options: Omit<
+    IProposalModuleAdapterOptions,
+    'proposalModuleAddress' | 'proposalId' | 'proposalNumber'
+  >
 }
 
 export const ProposalModuleAdapterProvider = ({
@@ -19,7 +24,35 @@ export const ProposalModuleAdapterProvider = ({
 }: ProposalModuleAdapterProviderProps) => {
   const [adapter, setAdapter] = useState<IProposalModuleAdapter>()
 
-  const proposalModule = proposalModules[0]
+  const { proposalModule, proposalNumber } = useMemo(() => {
+    // Non-numeric sequence followed by numeric sequence.
+    const proposalIdParts = proposalId.match(/^([^\d]*)(\d+)$/)
+    if (proposalIdParts?.length !== 3) {
+      throw new Error('Failed to parse proposal ID.')
+    }
+
+    const proposalPrefix = proposalIdParts[1]
+
+    const proposalNumber = Number(proposalIdParts[2])
+    if (isNaN(proposalNumber)) {
+      throw new Error(`Invalid proposal number "${proposalNumber}".`)
+    }
+
+    const proposalModule = proposalModules.find(
+      ({ prefix }) => prefix === proposalPrefix
+    )
+    if (!proposalModule) {
+      throw new Error(
+        `Failed to find proposal module for prefix "${proposalPrefix}".`
+      )
+    }
+
+    return {
+      proposalNumber,
+      proposalModule,
+    }
+  }, [proposalModules, proposalId])
+
   useEffect(() => {
     matchAndLoadAdapter(proposalModule.contractName).then(({ adapter }) =>
       setAdapter(adapter)
@@ -30,7 +63,12 @@ export const ProposalModuleAdapterProvider = ({
     <ProposalModuleAdapterContext.Provider
       value={{
         adapter,
-        options,
+        options: {
+          ...options,
+          proposalModuleAddress: proposalModule.address,
+          proposalId,
+          proposalNumber,
+        },
       }}
     >
       {children}

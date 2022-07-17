@@ -17,6 +17,9 @@ export type ProposalModuleAdapter = {
 }
 
 export interface IProposalModuleAdapterOptions {
+  proposalModuleAddress: string
+  proposalId: string
+  proposalNumber: number
   coreAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>
