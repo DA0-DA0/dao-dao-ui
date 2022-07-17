@@ -5,7 +5,7 @@ import type { GetStaticProps } from 'next'
 import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { CwCoreV_0_1_0QueryClient } from '@dao-dao/state'
+import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
 import {
   ConfigResponse,
   InfoResponse,
@@ -14,6 +14,7 @@ import {
   CHAIN_RPC_ENDPOINT,
   CI,
   LEGACY_URL_PREFIX,
+  ProposalModule,
   cosmWasmClientRouter,
   fetchProposalModules,
   parseCoreVersion,
@@ -48,8 +49,10 @@ type GetStaticPropsMaker = (
     context: Parameters<GetStaticProps>[0]
     t: typeof serverT
     cwClient: CosmWasmClient
-    coreClient: CwCoreV_0_1_0QueryClient
+    coreClient: CwCoreV0_1_0QueryClient
     config: ConfigResponse
+    coreAddress: string
+    proposalModules: ProposalModule[]
   }) =>
     | GetStaticPropsMakerProps
     | undefined
@@ -89,7 +92,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreV_0_1_0QueryClient(cwClient, address)
+      const coreClient = new CwCoreV0_1_0QueryClient(cwClient, address)
 
       const config = await coreClient.config()
 
@@ -130,6 +133,8 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           cwClient,
           coreClient,
           config,
+          coreAddress: address,
+          proposalModules,
         })) ?? {}
 
       return {

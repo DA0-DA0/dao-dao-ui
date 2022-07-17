@@ -11,16 +11,8 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
-import {
-  Cw20StakedBalanceVotingAdapter,
-  Cw4VotingAdapter,
-  registerAdapters,
-} from '@dao-dao/voting-module-adapter'
 
 import { AppLayout, HomepageLayout } from '@/components'
-
-// Register voting module adapters.
-registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
 
 const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const { t } = useTranslation()

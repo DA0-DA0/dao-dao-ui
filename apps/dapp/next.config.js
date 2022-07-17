@@ -13,6 +13,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/common',
   '@dao-dao/i18n',
   '@dao-dao/voting-module-adapter',
+  '@dao-dao/proposal-module-adapter',
 ])
 
 const { i18n } = require('./next-i18next.config')

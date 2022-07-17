@@ -1,8 +1,21 @@
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
+export interface CommonProposalInfo {
+  id: number
+  title: string
+}
+
 export interface IProposalModuleAdapter {
+  // Functions
+  functions: {
+    getProposalInfo: (
+      cosmWasmClient: CosmWasmClient
+    ) => Promise<CommonProposalInfo | undefined>
+  }
+
   // Hooks
   hooks: {}
 
@@ -13,7 +26,9 @@ export interface IProposalModuleAdapter {
 export type ProposalModuleAdapter = {
   id: string
   matcher: (contractName: string) => boolean
-  load: () => IProposalModuleAdapter | Promise<IProposalModuleAdapter>
+  load: (
+    options: IProposalModuleAdapterOptions
+  ) => IProposalModuleAdapter | Promise<IProposalModuleAdapter>
 }
 
 export interface IProposalModuleAdapterOptions {
@@ -25,7 +40,12 @@ export interface IProposalModuleAdapterOptions {
   Loader: ComponentType<LoaderProps>
 }
 
-export interface IProposalModuleAdapterContext {
+export type IProposalModuleAdapterInitialOptions = Omit<
+  IProposalModuleAdapterOptions,
+  'proposalModuleAddress' | 'proposalId' | 'proposalNumber'
+>
+
+export interface IProposalModuleAdapterAdapterWithOptions {
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
 }

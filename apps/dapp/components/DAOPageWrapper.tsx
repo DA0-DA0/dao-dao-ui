@@ -6,9 +6,18 @@ import {
   useContext,
 } from 'react'
 
+import {
+  CwProposalSingleAdapter,
+  registerAdapters as registerProposalModuleAdapters,
+} from '@dao-dao/proposal-module-adapter'
 import { Loader, Logo, PageLoader, SuspenseLoader } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
-import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  Cw4VotingAdapter,
+  VotingModuleAdapterProvider,
+  registerAdapters as registerVotingModuleAdapters,
+} from '@dao-dao/voting-module-adapter'
 
 import { DAONotFound } from './dao/NotFound'
 
@@ -83,3 +92,9 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
     </SuspenseLoader>
   </>
 )
+
+// Register voting module adapters.
+registerVotingModuleAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
+
+// Register proposal module adapters.
+registerProposalModuleAdapters([CwProposalSingleAdapter])

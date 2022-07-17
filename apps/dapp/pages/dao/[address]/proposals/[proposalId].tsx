@@ -11,14 +11,21 @@ import {
 } from '@dao-dao/actions'
 import { ConnectWalletButton } from '@dao-dao/common'
 import {
+  CommonProposalInfo,
+  ProposalModuleAdapterError,
+  ProposalModuleAdapterProvider,
+  matchAndLoadAdapter,
+} from '@dao-dao/proposal-module-adapter'
+import {
   CwProposalSingleHooks,
-  CwProposalSingleQueryClient,
   useProposalInfo,
   useProposalModule,
 } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Breadcrumbs,
+  Loader,
+  Logo,
   PageLoader,
   ProposalInfoCard,
   ProposalInfoVoteStatus,
@@ -297,7 +304,7 @@ const InnerProposal: FC = () => {
 }
 
 interface ProposalPageProps extends DAOPageWrapperProps {
-  exists: boolean
+  proposalId: string | undefined
 }
 
 const ProposalPage: NextPage<ProposalPageProps> = ({
@@ -306,7 +313,21 @@ const ProposalPage: NextPage<ProposalPageProps> = ({
 }) => (
   <DAOPageWrapper {...props}>
     <SuspenseLoader fallback={<PageLoader />}>
-      {props.exists ? <InnerProposal /> : <ProposalNotFound />}
+      {props.proposalId && props.info ? (
+        <ProposalModuleAdapterProvider
+          initialOptions={{
+            coreAddress: props.info.coreAddress,
+            Logo,
+            Loader,
+          }}
+          proposalId={props.proposalId}
+          proposalModules={props.info.proposalModules}
+        >
+          <InnerProposal />
+        </ProposalModuleAdapterProvider>
+      ) : (
+        <ProposalNotFound />
+      )}
     </SuspenseLoader>
   </DAOPageWrapper>
 )
@@ -325,63 +346,57 @@ export const getStaticPaths: GetStaticPaths = () => ({
 export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
   makeGetDAOStaticProps(
     async ({
-      context: { params: { proposalId: proposalIdQuery } = {} },
+      context: { params: { proposalId } = {} },
       t,
       cwClient,
-      coreClient,
+      coreAddress,
+      proposalModules,
     }) => {
       // If invalid proposal ID, not found.
-      if (
-        typeof proposalIdQuery !== 'string' ||
-        isNaN(Number(proposalIdQuery))
-      ) {
+      if (typeof proposalId !== 'string') {
         return {
           followingTitle: t('error.proposalNotFound'),
           additionalProps: {
-            exists: false,
+            proposalId: undefined,
           },
         }
       }
 
-      const proposalId = Number(proposalIdQuery)
-
+      let proposalInfo: CommonProposalInfo | undefined
       try {
-        // Get proposal module address.
-        const proposalAddress = (await coreClient.proposalModules({}))[0]
-        // Get proposal.
-        const proposalClient = new CwProposalSingleQueryClient(
-          cwClient,
-          proposalAddress
-        )
-
-        let exists = false
-        try {
-          exists = !!(await proposalClient.proposal({ proposalId })).proposal
-        } catch (err) {
-          // If proposal doesn't exist, handle 404 manually on frontend.
-          // Rethrow all other errors.
-          if (
-            !(err instanceof Error) ||
-            !err.message.includes('Proposal not found')
-          ) {
-            throw err
-          }
-
-          console.error(err)
-        }
-
-        return {
-          followingTitle: exists
-            ? `${t('title.proposal')} #${proposalId}`
-            : t('error.proposalNotFound'),
-          additionalProps: {
-            exists,
+        const {
+          adapter: {
+            functions: { getProposalInfo },
           },
-        }
+        } = await matchAndLoadAdapter(proposalModules, proposalId, {
+          coreAddress,
+          Logo,
+          Loader,
+        })
+
+        // undefined if proposal does not exist.
+        proposalInfo = await getProposalInfo(cwClient)
       } catch (error) {
-        console.error(error)
-        // Throw error to trigger 500.
-        throw new Error('An unexpected error occurred. Please try again later.')
+        // If ProposalModuleAdapterError, treat as 404 below.
+        // Otherwise display 500.
+        if (!(error instanceof ProposalModuleAdapterError)) {
+          console.error(error)
+          // Throw error to trigger 500.
+          throw new Error(
+            'An unexpected error occurred. Please try again later.'
+          )
+        }
+      }
+
+      return {
+        followingTitle: proposalInfo
+          ? `${t('title.proposal')} ${proposalId}`
+          : t('error.proposalNotFound'),
+        overrideDescription: proposalInfo ? proposalInfo.title : undefined,
+        additionalProps: {
+          // If proposal does not exist, pass undefined to indicate 404.
+          proposalId: proposalInfo ? proposalId : undefined,
+        },
       }
     }
   )
