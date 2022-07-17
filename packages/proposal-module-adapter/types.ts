@@ -3,11 +3,6 @@ import { ComponentType } from 'react'
 
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
-export interface CommonProposalInfo {
-  id: number
-  title: string
-}
-
 export interface IProposalModuleAdapter {
   // Functions
   functions: {
@@ -20,7 +15,11 @@ export interface IProposalModuleAdapter {
   hooks: {}
 
   // UI
-  ui: {}
+  ui: {
+    ProposalVotes: ComponentType<BaseProposalVotesProps>
+    ProposalVoteDecisionStatus: ComponentType<BaseProposalVoteDecisionStatusProps>
+    ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
+  }
 }
 
 export type ProposalModuleAdapter = {
@@ -34,6 +33,7 @@ export type ProposalModuleAdapter = {
 export interface IProposalModuleAdapterOptions {
   proposalModuleAddress: string
   proposalId: string
+  proposalPrefix: string
   proposalNumber: number
   coreAddress: string
   Logo: ComponentType<LogoProps>
@@ -42,10 +42,30 @@ export interface IProposalModuleAdapterOptions {
 
 export type IProposalModuleAdapterInitialOptions = Omit<
   IProposalModuleAdapterOptions,
-  'proposalModuleAddress' | 'proposalId' | 'proposalNumber'
+  'proposalModuleAddress' | 'proposalId' | 'proposalPrefix' | 'proposalNumber'
 >
 
 export interface IProposalModuleAdapterAdapterWithOptions {
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
+}
+
+// Internal Adapter Types
+
+export interface CommonProposalInfo {
+  id: number
+  title: string
+}
+
+export interface BaseProposalVotesProps {
+  className?: string
+}
+
+export interface BaseProposalVoteDecisionStatusProps {
+  voteConversionDecimals: number
+}
+
+export interface BaseProposalInfoCardProps {
+  connected: boolean
+  walletAddress?: string
 }

@@ -5,6 +5,7 @@ import { StatusIcons } from '../StatusIcons'
 
 export const ProposalStatus = ({ status }: { status: `${Status}` }) => {
   const Icon = StatusIcons[status]
+
   return (
     <div className="flex flex-row gap-1 items-center">
       {Icon && <Icon style={{ display: 'inline' }} />}

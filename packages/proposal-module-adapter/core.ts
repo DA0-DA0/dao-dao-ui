@@ -30,7 +30,7 @@ export const matchAndLoadAdapter = async (
   }
 
   // Undefined if matching group doesn't exist, i.e. no prefix exists.
-  const proposalPrefix: string | undefined = proposalIdParts[1]
+  const proposalPrefix = proposalIdParts[1] ?? ''
 
   const proposalNumber = Number(proposalIdParts[2])
   if (isNaN(proposalNumber)) {
@@ -70,6 +70,7 @@ export const matchAndLoadAdapter = async (
     ...initialOptions,
     proposalModuleAddress: proposalModule.address,
     proposalId,
+    proposalPrefix,
     proposalNumber,
   }
 

@@ -1,9 +1,11 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
 import { TriangleUp } from '@dao-dao/icons'
-import { Proposal, Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { CwProposalSingleSelectors } from '@dao-dao/state'
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { Progress, Tooltip } from '@dao-dao/ui'
 import {
   ProcessedTQType,
   convertMicroDenomToDenomWithDecimals,
@@ -13,22 +15,35 @@ import {
   useProcessThresholdData,
 } from '@dao-dao/utils'
 
-import { Progress } from '../Progress'
-import { Tooltip } from '../Tooltip'
+import { useProposalModuleAdapterOptions } from '../../../react/context'
+import { BaseProposalVoteDecisionStatusProps } from '../../../types'
 
-export interface ProposalInfoVoteStatusProps {
-  proposal: Proposal
-  voteConversionDecimals: number
-  // Undefined if max voting period is in blocks.
-  maxVotingSeconds?: number
-}
-
-export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
-  proposal,
+export const ProposalVoteDecisionStatus = ({
   voteConversionDecimals,
-  maxVotingSeconds,
-}) => {
+}: BaseProposalVoteDecisionStatusProps) => {
   const { t } = useTranslation()
+  const { proposalModuleAddress, proposalNumber } =
+    useProposalModuleAdapterOptions()
+
+  const config = useRecoilValue(
+    CwProposalSingleSelectors.configSelector({
+      contractAddress: proposalModuleAddress,
+    })
+  )
+  const proposal = useRecoilValue(
+    CwProposalSingleSelectors.proposalSelector({
+      contractAddress: proposalModuleAddress,
+      params: [
+        {
+          proposalId: proposalNumber,
+        },
+      ],
+    })
+  )?.proposal
+
+  if (!proposal || !config) {
+    throw new Error(t('error.loadingData'))
+  }
 
   const yesVotes = Number(
     convertMicroDenomToDenomWithDecimals(
@@ -219,7 +234,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label={t('info.proposalThresholdTooltip')}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     {t('title.passingThreshold')}:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -297,7 +312,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label={t('info.proposalQuorumTooltip')}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     {t('title.quorum')}:{' '}
                     <span className="font-mono">{quorum.display}</span>
@@ -412,7 +427,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               />
 
               <Tooltip label={t('info.proposalThresholdTooltip')}>
-                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full bg-light rounded-md">
+                <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     {t('title.passingThreshold')}:{' '}
                     <span className="font-mono">{threshold.display}</span>
@@ -447,7 +462,7 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
         expiresInSeconds !== undefined &&
         expiresInSeconds > 0 && (
           <>
-            <p className="overflow-hidden mt-4 font-mono text-sm text-tertiary text-ellipsis">
+            <p className="overflow-hidden mt-4 font-mono text-sm text-ellipsis text-tertiary">
               {t('title.timeLeft')}
             </p>
 
@@ -455,24 +470,28 @@ export const ProposalInfoVoteStatus: FC<ProposalInfoVoteStatusProps> = ({
               {secondsToWdhms(expiresInSeconds, 2)}
             </p>
 
-            {maxVotingSeconds !== undefined && (
-              <div className="mt-1">
-                <Progress
-                  alignEnd
-                  rows={[
-                    {
-                      thickness: 3,
-                      data: [
-                        {
-                          value: (expiresInSeconds / maxVotingSeconds) * 100,
-                          color: 'rgb(var(--dark))',
-                        },
-                      ],
-                    },
-                  ]}
-                />
-              </div>
-            )}
+            {'time' in config.max_voting_period &&
+              config.max_voting_period.time > 0 && (
+                <div className="mt-1">
+                  <Progress
+                    alignEnd
+                    rows={[
+                      {
+                        thickness: 3,
+                        data: [
+                          {
+                            value:
+                              (expiresInSeconds /
+                                config.max_voting_period.time) *
+                              100,
+                            color: 'rgb(var(--dark))',
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </div>
+              )}
           </>
         )}
 

@@ -1,53 +1,98 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  ProposalResponse,
-  Status,
-  Vote,
-} from '@dao-dao/state/clients/cw-proposal-single'
+  CwCoreV0_1_0Selectors,
+  CwProposalSingleSelectors,
+  proposalExecutionTXHashSelector,
+} from '@dao-dao/state'
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { CopyToClipboard, Tooltip } from '@dao-dao/ui'
 import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
 
-import { CopyToClipboard } from '../CopyToClipboard'
-import { ProposalStatus } from '../ProposalStatus'
-import { Tooltip } from '../Tooltip'
+import { useProposalModuleAdapterOptions } from '../../../react/context'
+import { BaseProposalInfoCardProps } from '../../../types'
+import { ProposalStatus } from './ProposalStatus'
 import { VoteDisplay } from './VoteDisplay'
 
-export interface ProposalInfoCardProps {
-  proposalResponse: ProposalResponse
-  memberWhenProposalCreated: boolean
-  walletVote?: Vote
-  proposalExecutionTXHash: string | undefined
-  connected: boolean
-}
-
-export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
-  proposalResponse: { id, proposal },
-  memberWhenProposalCreated,
-  walletVote,
-  proposalExecutionTXHash,
+export const ProposalInfoCard = ({
   connected,
-}) => {
+  walletAddress,
+}: BaseProposalInfoCardProps) => {
   const { t } = useTranslation()
+  const { coreAddress, proposalModuleAddress, proposalPrefix, proposalNumber } =
+    useProposalModuleAdapterOptions()
+
+  const proposal = useRecoilValue(
+    CwProposalSingleSelectors.proposalSelector({
+      contractAddress: proposalModuleAddress,
+      params: [
+        {
+          proposalId: proposalNumber,
+        },
+      ],
+    })
+  )?.proposal
+
+  if (!proposal) {
+    throw new Error(t('error.loadingData'))
+  }
+
+  const executionTxHash = useRecoilValue(
+    proposal.status === Status.Executed
+      ? proposalExecutionTXHashSelector({
+          contractAddress: proposalModuleAddress,
+          proposalId: proposalNumber,
+        })
+      : constSelector(undefined)
+  )
+
+  const walletVotingPowerWhenProposalCreated = useRecoilValue(
+    walletAddress && proposal
+      ? CwCoreV0_1_0Selectors.votingPowerAtHeightSelector({
+          contractAddress: coreAddress,
+          params: [
+            {
+              address: walletAddress,
+              height: proposal.start_height,
+            },
+          ],
+        })
+      : constSelector(undefined)
+  )?.power
+  const memberWhenProposalCreated = connected
+    ? Number(walletVotingPowerWhenProposalCreated ?? '0') > 0
+    : undefined
+
+  const walletVote = useRecoilValue(
+    walletAddress
+      ? CwProposalSingleSelectors.getVoteSelector({
+          contractAddress: proposalModuleAddress,
+          params: [{ proposalId: proposalNumber, voter: walletAddress }],
+        })
+      : constSelector(undefined)
+  )?.vote?.vote
 
   return (
     <div className="rounded-md border border-light">
       <div className="flex flex-row justify-evenly items-stretch py-4 md:py-5">
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             {t('title.proposal')}
           </p>
 
           <p className="font-mono text-sm">
-            # {id.toString().padStart(6, '0')}
+            {proposalPrefix} #{' '}
+            {proposalNumber.toString().padStart(8 - proposalPrefix.length, '0')}
           </p>
         </div>
 
         <div className="w-[1px] bg-light"></div>
 
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             {t('title.status')}
           </p>
 
@@ -59,7 +104,7 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
         <div className="w-[1px] bg-light"></div>
 
         <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-tertiary text-ellipsis">
+          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             {t('title.you')}
           </p>
 
@@ -82,7 +127,7 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-3 p-5 border-t border-light md:p-7">
+      <div className="flex flex-col gap-3 p-5 border-t md:p-7 border-light">
         <div className="flex flex-col gap-2 items-start">
           <p className="font-mono text-sm text-tertiary">
             {t('title.proposer')}
@@ -90,19 +135,19 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
           <CopyToClipboard takeN={9} value={proposal.proposer} />
         </div>
 
-        {proposal.status === Status.Executed && !proposalExecutionTXHash ? (
+        {proposal.status === Status.Executed && !executionTxHash ? (
           <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
             <p className="col-span-3 font-mono text-sm text-tertiary">
               {t('info.txAbbr')}
             </p>
             <p className="col-span-7">{t('info.loading')}</p>
           </div>
-        ) : !!proposalExecutionTXHash ? (
+        ) : !!executionTxHash ? (
           <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
             {CHAIN_TXN_URL_PREFIX ? (
               <a
                 className="flex flex-row col-span-3 gap-1 items-center font-mono text-sm text-tertiary"
-                href={CHAIN_TXN_URL_PREFIX + proposalExecutionTXHash}
+                href={CHAIN_TXN_URL_PREFIX + executionTxHash}
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -115,7 +160,7 @@ export const ProposalInfoCard: FC<ProposalInfoCardProps> = ({
               </p>
             )}
             <div className="col-span-7">
-              <CopyToClipboard takeN={9} value={proposalExecutionTXHash} />
+              <CopyToClipboard takeN={9} value={executionTxHash} />
             </div>
           </div>
         ) : null}
@@ -130,7 +175,7 @@ interface YouTooltipProps {
 
 const YouTooltip: FC<YouTooltipProps> = ({ label }) => (
   <Tooltip label={label}>
-    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs text-tertiary rounded-full border cursor-pointer border-tertiary">
+    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
       ?
     </p>
   </Tooltip>

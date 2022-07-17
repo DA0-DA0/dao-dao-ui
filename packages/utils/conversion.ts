@@ -53,11 +53,14 @@ export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
 
 export const zeroPad = (num: number, target: number) => {
   const s = num.toString()
-  if (s.length > target) {
+  if (s.length >= target) {
     return s
   }
   return '0'.repeat(target - s.length) + s
 }
+
+export const spacePad = (number: string, target: number) =>
+  number.length >= length ? number : ' '.repeat(target - number.length) + number
 
 export const getProposalEnd = (exp: Expiration, status: `${Status}`) => {
   if (status !== Status.Open) {

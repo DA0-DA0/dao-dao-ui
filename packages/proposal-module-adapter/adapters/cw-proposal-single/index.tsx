@@ -1,6 +1,11 @@
 import { CWPROPOSALSINGLE_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { ProposalModuleAdapter } from '../../types'
+import {
+  ProposalInfoCard,
+  ProposalVoteDecisionStatus,
+  ProposalVotes,
+} from './components'
 import { makeProposalInfo } from './functions'
 
 export const CwProposalSingleAdapter: ProposalModuleAdapter = {
@@ -18,6 +23,10 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
     hooks: {},
 
     // UI
-    ui: {},
+    ui: {
+      ProposalVotes,
+      ProposalVoteDecisionStatus,
+      ProposalInfoCard,
+    },
   }),
 }

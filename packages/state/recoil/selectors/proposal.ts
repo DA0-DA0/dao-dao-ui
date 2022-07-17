@@ -1,8 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { Status } from '../../clients/cw-proposal-single'
 import { cosmWasmClientSelector } from './chain'
-import { proposalSelector } from './clients/cw-proposal-single'
 
 export const proposalExecutionTXHashSelector = selectorFamily<
   string | undefined,
@@ -13,12 +11,6 @@ export const proposalExecutionTXHashSelector = selectorFamily<
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      const proposal = get(
-        proposalSelector({ contractAddress, params: [{ proposalId }] })
-      )
-
-      // No TX Hash if proposal not yet executed.
-      if (!client || proposal?.proposal.status !== Status.Executed) return
 
       const events = await client.searchTx({
         tags: [

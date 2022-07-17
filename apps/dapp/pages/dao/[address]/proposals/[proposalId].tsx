@@ -15,6 +15,7 @@ import {
   ProposalModuleAdapterError,
   ProposalModuleAdapterProvider,
   matchAndLoadAdapter,
+  useProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import {
   CwProposalSingleHooks,
@@ -27,8 +28,6 @@ import {
   Loader,
   Logo,
   PageLoader,
-  ProposalInfoCard,
-  ProposalInfoVoteStatus,
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { cleanChainError } from '@dao-dao/utils'
@@ -38,7 +37,6 @@ import {
   DAOPageWrapper,
   DAOPageWrapperProps,
   ProposalNotFound,
-  ProposalVotes,
   SmallScreenNav,
   useDAOInfoContext,
 } from '@/components'
@@ -72,10 +70,13 @@ const InnerProposal: FC = () => {
   const voteConversionDecimals = useVoteConversionDecimals()
 
   const {
+    ui: { ProposalVotes, ProposalVoteDecisionStatus, ProposalInfoCard },
+  } = useProposalModuleAdapter()
+
+  const {
     proposalResponse,
     voteResponse,
     votingPowerAtHeight,
-    txHash,
     refreshProposalAndAll,
   } = useProposalInfo(coreAddress, proposalId)
 
@@ -204,9 +205,6 @@ const InnerProposal: FC = () => {
     ]
   )
 
-  const memberWhenProposalCreated =
-    !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
-
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
       <div className="col-span-4 w-full lg:p-6">
@@ -224,10 +222,7 @@ const InnerProposal: FC = () => {
           <div className="lg:hidden">
             <ProposalInfoCard
               connected={connected}
-              memberWhenProposalCreated={memberWhenProposalCreated}
-              proposalExecutionTXHash={txHash}
-              proposalResponse={proposalResponse}
-              walletVote={voteResponse?.vote?.vote ?? undefined}
+              walletAddress={walletAddress}
             />
           </div>
 
@@ -260,42 +255,22 @@ const InnerProposal: FC = () => {
               {t('title.voteStatus')}
             </h3>
 
-            <ProposalInfoVoteStatus
-              maxVotingSeconds={
-                'time' in proposalModuleConfig.max_voting_period
-                  ? proposalModuleConfig.max_voting_period.time
-                  : undefined
-              }
-              proposal={proposalResponse.proposal}
+            <ProposalVoteDecisionStatus
               voteConversionDecimals={voteConversionDecimals}
             />
           </div>
         </div>
 
-        <div className="mx-6 mt-8 max-w-3xl lg:mx-0">
-          <ProposalVotes coreAddress={coreAddress} proposalId={proposalId} />
-        </div>
+        <ProposalVotes className="mx-6 mt-8 max-w-3xl lg:mx-0" />
       </div>
       <div className="hidden col-span-2 p-6 min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
-        <ProposalInfoCard
-          connected={connected}
-          memberWhenProposalCreated={memberWhenProposalCreated}
-          proposalExecutionTXHash={txHash}
-          proposalResponse={proposalResponse}
-          walletVote={voteResponse?.vote?.vote ?? undefined}
-        />
+        <ProposalInfoCard connected={connected} walletAddress={walletAddress} />
 
         <h3 className="mt-8 mb-6 text-base font-medium">
           {t('title.voteStatus')}
         </h3>
-        <ProposalInfoVoteStatus
-          maxVotingSeconds={
-            'time' in proposalModuleConfig.max_voting_period
-              ? proposalModuleConfig.max_voting_period.time
-              : undefined
-          }
-          proposal={proposalResponse.proposal}
+        <ProposalVoteDecisionStatus
           voteConversionDecimals={voteConversionDecimals}
         />
       </div>
