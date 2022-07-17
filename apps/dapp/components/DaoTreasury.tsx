@@ -8,7 +8,7 @@ import { TreasuryBalances } from '@/components'
 export const DaoTreasury = () => {
   const { t } = useTranslation()
   const {
-    ui: { DaoTreasuryFooter },
+    components: { DaoTreasuryFooter },
   } = useVotingModuleAdapter()
 
   return (

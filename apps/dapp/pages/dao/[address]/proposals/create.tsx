@@ -50,7 +50,7 @@ const InnerProposalCreate = () => {
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddress)
   const {
-    ui: { ProposalCreateAddresses },
+    components: { ProposalCreateAddresses },
   } = useVotingModuleAdapter()
 
   if (

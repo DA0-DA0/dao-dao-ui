@@ -13,7 +13,7 @@ import { VoteHeroHeader } from './VoteHeroHeader'
 
 export const VoteHeroContentLoader = () => {
   const {
-    ui: { VoteHeroStats },
+    components: { VoteHeroStats },
   } = useVotingModuleAdapter()
 
   return (
@@ -31,7 +31,7 @@ export const VoteHeroContent = () => {
     CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const {
-    ui: { VoteHeroStats },
+    components: { VoteHeroStats },
   } = useVotingModuleAdapter()
 
   if (!config) {

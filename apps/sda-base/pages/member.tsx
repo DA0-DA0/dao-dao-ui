@@ -9,7 +9,7 @@ import { DEFAULT_IMAGE_URL } from '@/util'
 
 const InnerMembershipPage = () => {
   const {
-    ui: { SdaMembershipPage },
+    components: { SdaMembershipPage },
   } = useVotingModuleAdapter()
 
   return (
