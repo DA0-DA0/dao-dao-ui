@@ -51,6 +51,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
       const client = new CwCoreQueryClient(cwClient, DAO_ADDRESS)
 
       const config = await client.config()
+      const votingModuleAddress = await client.votingModule()
 
       // Must be called after server side translations has been awaited,
       // because props may use the `t` function, and it won't be available
@@ -72,6 +73,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           daoInfo: {
+            votingModuleAddress,
             name: config.name,
             imageUrl: config.image_url ?? null,
           },

@@ -1,11 +1,13 @@
 import { createContext, useContext } from 'react'
 
 export interface DAOInfo {
+  votingModuleAddress: string
   name: string
   imageUrl: string | null
 }
 
 export const DefaultDAOInfo: DAOInfo = {
+  votingModuleAddress: '',
   name: '',
   imageUrl: null,
 }

@@ -330,6 +330,7 @@ const App = () => (
   <VotingModuleAdapterProvider
     contractName={votingModuleContractName}
     options={{
+      votingModuleAddress,
       coreAddress,
       Logo,
       Loader,
@@ -340,9 +341,9 @@ const App = () => (
 )
 ```
 
-In the `@dao-dao/dapp` Next.js app, `votingModuleContractName` and `coreAddress`
-are fetched via `getStaticProps` and passed to a common page wrapper component,
-on each page.
+In the `@dao-dao/dapp` Next.js app, `votingModuleAddress`,
+`votingModuleContractName`, and `coreAddress` are fetched via `getStaticProps`
+and passed to a common page wrapper component, on each page.
 
 <details>
 <summary>Code</summary>

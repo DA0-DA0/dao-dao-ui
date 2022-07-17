@@ -143,6 +143,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           description: overrideDescription ?? config.description,
           info: {
             coreAddress: address,
+            votingModuleAddress,
             votingModuleContractName,
             proposalModules,
             name: config.name,
