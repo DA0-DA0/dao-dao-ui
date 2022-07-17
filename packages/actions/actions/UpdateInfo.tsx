@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreSelectors } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { UpdateInfoComponent as Component } from '../components'
@@ -18,7 +18,7 @@ type UpdateInfoData = ConfigResponse
 
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
   const config = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: coreAddress })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
   ) ?? {
     name: '',
     description: '',

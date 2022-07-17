@@ -3,8 +3,11 @@ import { FC, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { CwCoreSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import {
+  CwCoreV0_1_0Selectors,
+  CwProposalSingleSelectors,
+} from '@dao-dao/state'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import {
   ProposalResponse,
   Status,
@@ -32,14 +35,14 @@ const InnerPinnedProposalsList: FC = () => {
   const pinnedDAOConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((contractAddress) =>
-        CwCoreSelectors.configSelector({ contractAddress })
+        CwCoreV0_1_0Selectors.configSelector({ contractAddress })
       )
     )
   )
   const pinnedProposalModuleAddresses = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((contractAddress) =>
-        CwCoreSelectors.proposalModulesSelector({
+        CwCoreV0_1_0Selectors.proposalModulesSelector({
           contractAddress,
           params: [{}],
         })

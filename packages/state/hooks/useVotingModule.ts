@@ -5,7 +5,7 @@ import {
   totalPowerAtHeightSelector,
   votingModuleSelector,
   votingPowerAtHeightSelector,
-} from '../recoil/selectors/clients/cw-core'
+} from '../recoil/selectors/clients/cw-core/0.1.0'
 
 interface UseVotingModuleOptions {
   fetchMembership?: boolean

@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
@@ -51,7 +51,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   coreAddress: string
 ) => {
   const cw20Addresses = useRecoilValue(
-    CwCoreSelectors.allCw20TokenListSelector({
+    CwCoreV0_1_0Selectors.allCw20TokenListSelector({
       contractAddress: coreAddress,
     })
   )
@@ -188,7 +188,7 @@ const InnerSpendComponent: ActionComponent = (props) => {
 
   const cw20AddressesAndBalances =
     useRecoilValue(
-      CwCoreSelectors.allCw20BalancesSelector({
+      CwCoreV0_1_0Selectors.allCw20BalancesSelector({
         contractAddress: props.coreAddress,
       })
     ) ?? []

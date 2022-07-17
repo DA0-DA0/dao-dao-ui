@@ -6,12 +6,12 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { validateCwCoreInstantiateMsg } from '@dao-dao/utils'
 
-import { CwCoreClient as ExecuteClient } from '../../clients/cw-core'
+import { CwCoreClient as ExecuteClient } from '../../../clients/cw-core/0.2.0'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/cw-core'
-import { FunctionKeyOf } from '../../types'
+} from '../../../recoil/selectors/clients/cw-core/0.2.0'
+import { FunctionKeyOf } from '../../../types'
 
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>

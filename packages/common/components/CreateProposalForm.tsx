@@ -29,7 +29,7 @@ import {
 import { Airplane } from '@dao-dao/icons'
 import {
   Cw20BaseSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
@@ -107,7 +107,7 @@ export const CreateProposalForm = ({
 
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
-    CwCoreSelectors.pauseInfoSelector({ contractAddress: coreAddress })
+    CwCoreV0_1_0Selectors.pauseInfoSelector({ contractAddress: coreAddress })
   )
   const isPaused = pauseInfo && 'Paused' in pauseInfo
 

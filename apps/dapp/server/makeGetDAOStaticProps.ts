@@ -5,13 +5,18 @@ import type { GetStaticProps } from 'next'
 import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { CwCoreQueryClient } from '@dao-dao/state'
-import { ConfigResponse, InfoResponse } from '@dao-dao/state/clients/cw-core'
+import { CwCoreV_0_1_0QueryClient } from '@dao-dao/state'
+import {
+  ConfigResponse,
+  InfoResponse,
+} from '@dao-dao/state/clients/cw-core/0.1.0'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
   LEGACY_URL_PREFIX,
   cosmWasmClientRouter,
+  fetchProposalModules,
+  parseCoreVersion,
   validateContractAddress,
 } from '@dao-dao/utils'
 
@@ -43,7 +48,7 @@ type GetStaticPropsMaker = (
     context: Parameters<GetStaticProps>[0]
     t: typeof serverT
     cwClient: CosmWasmClient
-    coreClient: CwCoreQueryClient
+    coreClient: CwCoreV_0_1_0QueryClient
     config: ConfigResponse
   }) =>
     | GetStaticPropsMakerProps
@@ -84,9 +89,15 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreQueryClient(cwClient, address)
+      const coreClient = new CwCoreV_0_1_0QueryClient(cwClient, address)
 
       const config = await coreClient.config()
+
+      const coreInfo = (await coreClient.info()).info
+      const coreVersion = parseCoreVersion(coreInfo.version)
+      if (!coreVersion) {
+        throw new Error('Failed to determine core version.')
+      }
 
       const votingModuleAddress = await coreClient.votingModule()
       // All info queries are the same for DAO DAO contracts.
@@ -95,6 +106,12 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       }: InfoResponse = await cwClient.queryContractSmart(votingModuleAddress, {
         info: {},
       })
+
+      const proposalModules = await fetchProposalModules(
+        cwClient,
+        address,
+        coreVersion
+      )
 
       // Must be called after server side translations has been awaited,
       // because props may use the `t` function, and it won't be available
@@ -127,6 +144,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           info: {
             coreAddress: address,
             votingModuleContractName,
+            proposalModules,
             name: config.name,
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,

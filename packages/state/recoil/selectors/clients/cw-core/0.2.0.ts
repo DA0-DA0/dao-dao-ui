@@ -1,12 +1,9 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import {
-  Cw20StakedBalanceVotingAdapter,
-  matchAdapter,
-} from '@dao-dao/voting-module-adapter'
+import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
 
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '..'
 import {
   AdminResponse,
   ConfigResponse,
@@ -24,12 +21,12 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../clients/cw-core'
+} from '../../../../clients/cw-core/0.2.0'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
-} from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+} from '../../../atoms'
+import { cosmWasmClientSelector } from '../../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -132,7 +129,7 @@ export const proposalModulesSelector = selectorFamily<
   ProposalModulesResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['proposalModules']> }
 >({
-  key: 'cwCoreProposalModules',
+  key: 'cwCoreGovernanceModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -218,18 +215,12 @@ export const allCw20TokenListSelector = selectorFamily<
       const votingModuleInfo = votingModuleAddress
         ? get(infoSelector({ contractAddress: votingModuleAddress }))
         : undefined
-
-      let hasGovernanceToken
-      try {
-        hasGovernanceToken =
-          !!votingModuleInfo &&
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-            Cw20StakedBalanceVotingAdapter.id
-      } catch {
-        hasGovernanceToken = false
-      }
+      const votingModuleType =
+        votingModuleInfo &&
+        parseVotingModuleContractName(votingModuleInfo.info.contract)
       const governanceTokenAddress =
-        votingModuleAddress && hasGovernanceToken
+        votingModuleAddress &&
+        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
           ? get(
               Cw20StakedBalanceVotingSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
@@ -323,18 +314,12 @@ export const allCw20BalancesSelector = selectorFamily<
       const votingModuleInfo = votingModuleAddress
         ? get(infoSelector({ contractAddress: votingModuleAddress }))
         : undefined
-
-      let hasGovernanceToken
-      try {
-        hasGovernanceToken =
-          !!votingModuleInfo &&
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-            Cw20StakedBalanceVotingAdapter.id
-      } catch {
-        hasGovernanceToken = false
-      }
+      const votingModuleType =
+        votingModuleInfo &&
+        parseVotingModuleContractName(votingModuleInfo.info.contract)
       const governanceTokenAddress =
-        votingModuleAddress && hasGovernanceToken
+        votingModuleAddress &&
+        votingModuleType === VotingModuleType.Cw20StakedBalanceVoting
           ? get(
               Cw20StakedBalanceVotingSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,

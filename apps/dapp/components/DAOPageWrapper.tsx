@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 import { Loader, Logo, PageLoader, SuspenseLoader } from '@dao-dao/ui'
+import { ProposalModule } from '@dao-dao/utils'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { DAONotFound } from './dao/NotFound'
@@ -14,6 +15,7 @@ import { DAONotFound } from './dao/NotFound'
 interface DAOInfo {
   coreAddress: string
   votingModuleContractName: string
+  proposalModules: ProposalModule[]
   name: string
   description: string
   imageUrl: string | null

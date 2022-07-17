@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   nativeBalanceSelector,
   useProposalModule,
   useVotingModule,
@@ -22,7 +22,7 @@ interface PinnedDAOCardProps {
 const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { t } = useTranslation()
   const config = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: address })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: address })
   )
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {

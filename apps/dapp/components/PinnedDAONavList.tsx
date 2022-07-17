@@ -4,8 +4,8 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { CwCoreSelectors } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { Logo } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms'
@@ -17,7 +17,7 @@ export const PinnedDAONavList: FC = () => {
   const daoConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((a) =>
-        CwCoreSelectors.configSelector({ contractAddress: a })
+        CwCoreV0_1_0Selectors.configSelector({ contractAddress: a })
       )
     )
   )
@@ -57,7 +57,7 @@ export const MobilePinnedDAONavList: FC = () => {
   const daoConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((a) =>
-        CwCoreSelectors.configSelector({ contractAddress: a })
+        CwCoreV0_1_0Selectors.configSelector({ contractAddress: a })
       )
     )
   )

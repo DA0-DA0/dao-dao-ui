@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { CwCoreSelectors, blockHeightSelector } from '@dao-dao/state'
-import { Duration, Expiration } from '@dao-dao/state/clients/cw-core'
+import { Duration, Expiration } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { humanReadableDuration } from '@dao-dao/utils'
 
 import { DAO_ADDRESS } from '@/util'

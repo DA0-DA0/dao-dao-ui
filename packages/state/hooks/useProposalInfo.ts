@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   CwProposalSingleSelectors,
   proposalExecutionTXHashSelector,
   refreshProposalIdAtom,
@@ -49,7 +49,7 @@ export const useProposalInfo = (
 
   const votingPowerAtHeight = useRecoilValue(
     walletAddress && proposalResponse
-      ? CwCoreSelectors.votingPowerAtHeightSelector({
+      ? CwCoreV0_1_0Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           params: [
             {

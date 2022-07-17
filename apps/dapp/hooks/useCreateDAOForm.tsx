@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
-import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
+import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Cw20Coin,

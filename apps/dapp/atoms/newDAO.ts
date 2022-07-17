@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-import { Duration } from '@dao-dao/state/clients/cw-core'
+import { Duration } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
 
 export enum DurationUnits {
