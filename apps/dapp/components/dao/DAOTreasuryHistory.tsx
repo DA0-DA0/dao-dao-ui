@@ -16,31 +16,41 @@ import {
 
 import { useDAOInfoContext } from '../DAOPageWrapper'
 
-export const DAOTreasuryHistory: FC = () => {
+interface DAOTreasuryHistoryProps {
+  shortTitle?: boolean
+}
+
+export const DAOTreasuryHistory = (props: DAOTreasuryHistoryProps) => {
   const { t } = useTranslation()
 
   return (
     <SuspenseLoader
       fallback={
         <div className="flex justify-between items-center">
-          <h2 className="primary-text">{t('title.treasuryHistory')}</h2>
+          <h2 className="primary-text">
+            {props.shortTitle ? t('title.history') : t('title.treasuryHistory')}
+          </h2>
           <Loader />
         </div>
       }
     >
-      <InnerDAOTreasuryHistory />
+      <InnerDAOTreasuryHistory {...props} />
     </SuspenseLoader>
   )
 }
 
-export const InnerDAOTreasuryHistory: FC = () => {
+export const InnerDAOTreasuryHistory = ({
+  shortTitle,
+}: DAOTreasuryHistoryProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
   const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
   return (
     <div className="space-y-4">
-      <h2 className="primary-text">{t('title.treasuryHistory')}</h2>
+      <h2 className="primary-text">
+        {shortTitle ? t('title.history') : t('title.treasuryHistory')}
+      </h2>
 
       <div className="md:px-4">
         {transactions?.map((transaction) => (
@@ -59,7 +69,11 @@ interface TransactionRendererProps {
 }
 
 const TransactionRenderer: FC<TransactionRendererProps> = ({
-  transaction: { tx, events },
+  transaction: {
+    tx: { height },
+    timestamp,
+    events,
+  },
 }) => {
   const { coreAddress } = useDAOInfoContext()
 
@@ -101,8 +115,8 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
   const spentFromDAO = sender === coreAddress
 
   return (
-    <div className="flex flex-row gap-8 justify-between items-center">
-      <div className="flex flex-row gap-1 items-center">
+    <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
+      <div className="flex flex-row flex-wrap gap-x-1 items-center text-sm leading-6">
         {spentFromDAO ? (
           <Trans i18nKey="info.treasurySent">
             <p className="font-extrabold">
@@ -124,7 +138,9 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
         )}
       </div>
 
-      {/* <p>{tx.height}</p> */}
+      <p className="font-mono text-xs leading-6 text-right">
+        {timestamp?.toLocaleString() ?? `${height} block`}
+      </p>
     </div>
   )
 }

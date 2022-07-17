@@ -102,7 +102,12 @@ const InnerMobileDaoHome: FC = () => {
         {tab === MobileMenuTabSelection.Staking && (
           <Cw20StakedBalanceVotingPowerDisplay primaryText />
         )}
-        {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <div className="space-y-8">
+            <DaoTreasury />
+            <DAOTreasuryHistory shortTitle />
+          </div>
+        )}
         {tab === MobileMenuTabSelection.Info && (
           <DaoContractInfo hideTreasury />
         )}

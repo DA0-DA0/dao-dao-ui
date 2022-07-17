@@ -1,7 +1,7 @@
 import { IndexedTx } from '@cosmjs/stargate'
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
-import { cosmWasmClientSelector } from './chain'
+import { blockHeightTimestampSelector, cosmWasmClientSelector } from './chain'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -17,14 +17,9 @@ export const contractInstantiateTimeSelector = selectorFamily<
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
       })
-      if (events.length == 0) return
+      if (events.length === 0) return
 
-      // The timestamp field is available when running this query via the
-      // command line but is not available from CosmJS, so we need to run a
-      // second query to get the block info.
-      const height = events[0].height
-      const block = await client.getBlock(height)
-      return new Date(Date.parse(block.header.time))
+      return get(blockHeightTimestampSelector(events[0].height))
     },
 })
 
@@ -51,6 +46,7 @@ export const contractAdminSelector = selectorFamily<string | undefined, string>(
 
 export interface TreasuryTransaction {
   tx: IndexedTx
+  timestamp: Date | undefined
   events: {
     type: string
     attributes: {
@@ -74,8 +70,14 @@ export const treasuryTransactionsSelector = selectorFamily({
         sentFromOrTo: address,
       })
 
+      const txDates = get(
+        waitForAll(
+          txs.map(({ height }) => blockHeightTimestampSelector(height))
+        )
+      )
+
       return txs
-        .map((tx) => {
+        .map((tx, index) => {
           let events
           try {
             events = JSON.parse(tx.rawLog)[0].events
@@ -85,6 +87,7 @@ export const treasuryTransactionsSelector = selectorFamily({
 
           return {
             tx,
+            timestamp: txDates[index],
             events,
           }
         })
