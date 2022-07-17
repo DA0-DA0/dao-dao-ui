@@ -13,7 +13,7 @@ const FallbackDisplay = () => (
 
 export const DaoHorizontalInfoDisplay = () => {
   const {
-    ui: { DaoHorizontalInfoDisplayInternal },
+    components: { DaoHorizontalInfoDisplayInternal },
   } = useVotingModuleAdapter()
 
   return (

@@ -39,8 +39,8 @@ export interface IVotingModuleAdapter {
     useVoteConversionDecimals: () => number
   }
 
-  // UI
-  ui: {
+  // Components
+  components: {
     Membership: {
       Desktop: ComponentType
       MobileTab: ComponentType<MembershipMobileTabProps>

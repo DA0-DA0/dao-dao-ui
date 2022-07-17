@@ -42,8 +42,8 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
       useVoteConversionDecimals,
     },
 
-    // UI
-    ui: {
+    // Components
+    components: {
       Membership: {
         Desktop: () => <Membership />,
         MobileTab: MembershipMobileTab,

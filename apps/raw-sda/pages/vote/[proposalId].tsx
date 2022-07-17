@@ -63,7 +63,7 @@ const InnerProposal: FC = () => {
   const {
     fields: { disabledActionKeys },
     hooks: { useVoteConversionDecimals },
-    ui: { ProposalDetails },
+    components: { ProposalDetails },
   } = useVotingModuleAdapter()
   const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
   const voteConversionDecimals = useVoteConversionDecimals()

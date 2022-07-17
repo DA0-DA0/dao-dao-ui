@@ -19,7 +19,7 @@ interface DaoContractInfoProps {
 
 const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
   const {
-    ui: { DaoContractInfoContent },
+    components: { DaoContractInfoContent },
   } = useVotingModuleAdapter()
 
   return (

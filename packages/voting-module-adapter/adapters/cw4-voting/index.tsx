@@ -45,8 +45,8 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
       useVoteConversionDecimals,
     },
 
-    // UI
-    ui: {
+    // Components
+    components: {
       Membership: {
         Desktop: () => <Membership />,
         MobileTab: MembershipMobileTab,

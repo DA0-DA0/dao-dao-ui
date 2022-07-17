@@ -43,7 +43,7 @@ enum MobileMenuTabSelection {
 const InnerMobileDaoHome = () => {
   const { t } = useTranslation()
   const {
-    ui: { Membership },
+    components: { Membership },
   } = useVotingModuleAdapter()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
@@ -98,7 +98,7 @@ const InnerDAOHome = () => {
 
   const { coreAddress, name } = useDAOInfoContext()
   const {
-    ui: { Membership },
+    components: { Membership },
   } = useVotingModuleAdapter()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
 
