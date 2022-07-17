@@ -5,13 +5,31 @@ import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
-import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
+import { Button, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
-import { ProposalList } from './proposals/ProposalList'
+import { useDAOInfoContext } from '../../DAOPageWrapper'
+import { Loader } from '../../Loader'
+import { ProposalList } from './ProposalList'
 
-export const InnerContractProposalsDisplay: FC = () => {
+export const DaoProposals: FC = () => {
+  const { t } = useTranslation()
+
+  return (
+    <SuspenseLoader
+      fallback={
+        <div className="flex flex-col gap-4">
+          <h2 className="primary-text">{t('title.proposals')}</h2>
+          <Loader />
+        </div>
+      }
+    >
+      <InnerDaoProposals />
+    </SuspenseLoader>
+  )
+}
+
+const InnerDaoProposals: FC = () => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
   const { isMember } = useVotingModule(coreAddress)
@@ -61,27 +79,8 @@ export const InnerContractProposalsDisplay: FC = () => {
       </div>
 
       <div className="md:px-4">
-        <SuspenseLoader fallback={<Loader />}>
-          <ProposalList />
-        </SuspenseLoader>
+        <ProposalList />
       </div>
     </div>
-  )
-}
-
-export const ContractProposalsDisplay: FC = () => {
-  const { t } = useTranslation()
-
-  return (
-    <SuspenseLoader
-      fallback={
-        <div className="flex justify-between items-center">
-          <h2 className="primary-text">{t('title.proposals')}</h2>
-          <Loader />
-        </div>
-      }
-    >
-      <InnerContractProposalsDisplay />
-    </SuspenseLoader>
   )
 }

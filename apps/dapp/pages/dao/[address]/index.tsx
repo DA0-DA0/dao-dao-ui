@@ -19,16 +19,16 @@ import { VotingModuleType } from '@dao-dao/utils'
 
 import {
   ContractHeader,
-  ContractProposalsDisplay,
   Cw20StakedBalanceVotingPowerDisplay,
   Cw4VotingMemberList,
   DAOMobileHeader,
   DAOPageWrapper,
   DAOPageWrapperProps,
-  DAOTreasuryHistory,
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
+  DaoProposals,
   DaoTreasury,
+  DaoTreasuryHistory,
   PageLoader,
   SmallScreenNav,
   useDAOInfoContext,
@@ -93,9 +93,7 @@ const InnerMobileDaoHome: FC = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Proposal && (
-          <ContractProposalsDisplay />
-        )}
+        {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
         {tab === MobileMenuTabSelection.Members && (
           <Cw4VotingMemberList primaryText />
         )}
@@ -105,7 +103,7 @@ const InnerMobileDaoHome: FC = () => {
         {tab === MobileMenuTabSelection.Treasury && (
           <div className="space-y-8">
             <DaoTreasury />
-            <DAOTreasuryHistory shortTitle />
+            <DaoTreasuryHistory shortTitle />
           </div>
         )}
         {tab === MobileMenuTabSelection.Info && (
@@ -190,9 +188,9 @@ const InnerDAOHome: FC = () => {
             </div>
           </div>
         </GradientHero>
-        <div className="px-6 mb-8 space-y-6">
-          <ContractProposalsDisplay />
-          <DAOTreasuryHistory />
+        <div className="px-6 mb-8 space-y-10">
+          <DaoProposals />
+          <DaoTreasuryHistory />
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">

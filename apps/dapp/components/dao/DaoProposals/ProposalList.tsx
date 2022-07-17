@@ -17,9 +17,9 @@ import { Button, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
 import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
 
-import { useDAOInfoContext } from '../DAOPageWrapper'
-import { EmptyContractCard } from '../EmptyContractCard'
-import { Loader } from '../Loader'
+import { useDAOInfoContext } from '../../DAOPageWrapper'
+import { EmptyContractCard } from '../../EmptyContractCard'
+import { Loader } from '../../Loader'
 
 const PROP_LOAD_LIMIT = 10
 

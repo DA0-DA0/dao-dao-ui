@@ -1,4 +1,5 @@
 import { parseCoins } from '@cosmjs/stargate'
+import { ExternalLinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -7,26 +8,28 @@ import {
   TreasuryTransaction,
   treasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { CopyToClipboard, Loader, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { CopyToClipboard, SuspenseLoader, Trans } from '@dao-dao/ui'
 import {
+  CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from '../DAOPageWrapper'
+import { Loader } from '../Loader'
 
-interface DAOTreasuryHistoryProps {
+interface DaoTreasuryHistoryProps {
   shortTitle?: boolean
 }
 
-export const DAOTreasuryHistory = (props: DAOTreasuryHistoryProps) => {
+export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
 
   return (
     <SuspenseLoader
       fallback={
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4">
           <h2 className="primary-text">
             {props.shortTitle ? t('title.history') : t('title.treasuryHistory')}
           </h2>
@@ -34,26 +37,26 @@ export const DAOTreasuryHistory = (props: DAOTreasuryHistoryProps) => {
         </div>
       }
     >
-      <InnerDAOTreasuryHistory {...props} />
+      <InnerDaoTreasuryHistory {...props} />
     </SuspenseLoader>
   )
 }
 
-export const InnerDAOTreasuryHistory = ({
+export const InnerDaoTreasuryHistory = ({
   shortTitle,
-}: DAOTreasuryHistoryProps) => {
+}: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDAOInfoContext()
   const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
-  return (
+  return transactions?.length ? (
     <div className="space-y-4">
       <h2 className="primary-text">
         {shortTitle ? t('title.history') : t('title.treasuryHistory')}
       </h2>
 
       <div className="md:px-4">
-        {transactions?.map((transaction) => (
+        {transactions.map((transaction) => (
           <TransactionRenderer
             key={transaction.tx.hash}
             transaction={transaction}
@@ -61,7 +64,7 @@ export const InnerDAOTreasuryHistory = ({
         ))}
       </div>
     </div>
-  )
+  ) : null
 }
 
 interface TransactionRendererProps {
@@ -70,7 +73,7 @@ interface TransactionRendererProps {
 
 const TransactionRenderer: FC<TransactionRendererProps> = ({
   transaction: {
-    tx: { height },
+    tx: { hash, height },
     timestamp,
     events,
   },
@@ -124,7 +127,7 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
             </p>
             <p>was sent</p>
             <p className="font-bold">{{ amount: readableAmount }}</p>
-            <p>from the treasury.</p>
+            <p className="pr-1">from the treasury.</p>
           </Trans>
         ) : (
           <Trans i18nKey="info.treasuryReceived">
@@ -133,9 +136,18 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
             </p>
             <p>sent</p>
             <p className="font-bold">{{ amount: readableAmount }}</p>
-            <p>to the treasury.</p>
+            <p className="pr-1">to the treasury.</p>
           </Trans>
         )}
+
+        <a
+          className="text-tertiary"
+          href={CHAIN_TXN_URL_PREFIX + hash}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <ExternalLinkIcon className="w-4" />
+        </a>
       </div>
 
       <p className="font-mono text-xs leading-6 text-right">

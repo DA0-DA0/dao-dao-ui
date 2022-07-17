@@ -1,4 +1,5 @@
 export * from './create'
 
-export * from './DAOTreasuryHistory'
+export * from './DaoProposals'
+export * from './DaoTreasuryHistory'
 export * from './NotFound'
