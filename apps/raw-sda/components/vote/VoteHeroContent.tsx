@@ -3,7 +3,7 @@
 import { useRecoilValue } from 'recoil'
 
 import {
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   useGovernanceTokenInfo,
   useProposalModule,
   useStakingInfo,
@@ -29,7 +29,7 @@ export const VoteHeroContentLoader = () => (
 
 export const VoteHeroContent = () => {
   const config = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
   const apr = useApr()

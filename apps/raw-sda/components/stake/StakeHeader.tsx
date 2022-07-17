@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   useGovernanceTokenInfo,
   useStakingInfo,
 } from '@dao-dao/state'
@@ -68,7 +68,7 @@ export const StakeHeaderLoader: FunctionComponent = () => {
 export const StakeHeader: FunctionComponent = () => {
   const { t } = useTranslation()
   const daoConfig = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const {
     governanceTokenInfo,

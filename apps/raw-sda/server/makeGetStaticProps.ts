@@ -4,7 +4,7 @@ import type { GetStaticProps } from 'next'
 import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { CwCoreQueryClient } from '@dao-dao/state'
+import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
 import { CHAIN_RPC_ENDPOINT, CI, cosmWasmClientRouter } from '@dao-dao/utils'
 
 import { PageWrapperProps } from '@/components'
@@ -48,7 +48,7 @@ export const makeGetStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const client = new CwCoreQueryClient(cwClient, DAO_ADDRESS)
+      const client = new CwCoreV0_1_0QueryClient(cwClient, DAO_ADDRESS)
 
       const config = await client.config()
       const votingModuleAddress = await client.votingModule()

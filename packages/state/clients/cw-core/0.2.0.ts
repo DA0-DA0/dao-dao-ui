@@ -337,7 +337,7 @@ export interface CwCoreReadOnlyInterface {
   }) => Promise<TotalPowerAtHeightResponse>
   info: () => Promise<InfoResponse>
 }
-export class CwCoreQueryClient implements CwCoreReadOnlyInterface {
+export class CwCoreV0_1_0QueryClient implements CwCoreReadOnlyInterface {
   client: CosmWasmClient
   contractAddress: string
 
@@ -632,7 +632,10 @@ export interface CwCoreInterface extends CwCoreReadOnlyInterface {
     funds?: readonly Coin[]
   ) => Promise<ExecuteResult>
 }
-export class CwCoreClient extends CwCoreQueryClient implements CwCoreInterface {
+export class CwCoreClient
+  extends CwCoreV0_1_0QueryClient
+  implements CwCoreInterface
+{
   client: SigningCosmWasmClient
   sender: string
   contractAddress: string

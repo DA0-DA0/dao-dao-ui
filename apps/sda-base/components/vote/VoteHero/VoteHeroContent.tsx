@@ -3,7 +3,7 @@
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreSelectors } from '@dao-dao/state'
+import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
@@ -28,7 +28,7 @@ export const VoteHeroContent = () => {
   const { t } = useTranslation()
 
   const config = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: DAO_ADDRESS })
   )
   const {
     ui: { VoteHeroStats },

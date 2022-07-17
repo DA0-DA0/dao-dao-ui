@@ -1,8 +1,8 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
 import {
-  CwCoreV_0_1_0QueryClient,
-  CwCoreV_0_2_0QueryClient,
+  CwCoreV0_1_0QueryClient,
+  CwCoreV0_2_0QueryClient,
 } from '@dao-dao/state/clients'
 import { InfoResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 
@@ -47,8 +47,8 @@ export const fetchProposalModules = async (
   coreAddress: string,
   coreVersion: CwCoreVersion
 ): Promise<ProposalModule[]> => {
-  const coreV0_1_0Client = new CwCoreV_0_1_0QueryClient(cwClient, coreAddress)
-  const coreV0_2_0Client = new CwCoreV_0_2_0QueryClient(cwClient, coreAddress)
+  const coreV0_1_0Client = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
+  const coreV0_2_0Client = new CwCoreV0_2_0QueryClient(cwClient, coreAddress)
 
   const proposalModules: ProposalModule[] = []
   let paginationStart: string | undefined

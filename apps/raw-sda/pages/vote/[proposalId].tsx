@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/actions'
 import { ConnectWalletButton } from '@dao-dao/common'
 import {
-  CwCoreQueryClient,
+  CwCoreV0_1_0QueryClient,
   CwProposalSingleHooks,
   CwProposalSingleQueryClient,
   useProposalInfo,
@@ -358,7 +358,7 @@ export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
     // Verify proposal exists.
     const rpcClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
     // Get proposal module address.
-    const daoClient = new CwCoreQueryClient(rpcClient, DAO_ADDRESS)
+    const daoClient = new CwCoreV0_1_0QueryClient(rpcClient, DAO_ADDRESS)
     const proposalAddress = (await daoClient.proposalModules({}))[0]
     // Get proposal.
     const proposalClient = new CwProposalSingleQueryClient(

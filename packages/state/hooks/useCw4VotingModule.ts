@@ -4,7 +4,7 @@ import { Member } from '../clients/cw4-voting'
 import {
   Cw4GroupSelectors,
   Cw4VotingSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
 } from '../recoil'
 
 interface UseCw4VotingModuleOptions {
@@ -22,7 +22,7 @@ export const useCw4VotingModule = (
   { fetchMembers }: UseCw4VotingModuleOptions = {}
 ): UseCw4VotingModuleResponse => {
   const votingModuleAddress = useRecoilValue(
-    CwCoreSelectors.votingModuleSelector({ contractAddress: coreAddress })
+    CwCoreV0_1_0Selectors.votingModuleSelector({ contractAddress: coreAddress })
   )
 
   const cw4GroupAddress = useRecoilValue(

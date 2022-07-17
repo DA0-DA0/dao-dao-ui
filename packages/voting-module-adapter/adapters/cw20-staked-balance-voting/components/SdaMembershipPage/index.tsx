@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { Pie } from '@dao-dao/icons'
-import { CwCoreSelectors, useGovernanceTokenInfo } from '@dao-dao/state'
+import { CwCoreV0_1_0Selectors, useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
@@ -19,7 +19,7 @@ export const SdaMembershipPage = ({
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const daoConfig = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: coreAddress })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
   )
 
   // Set to default mode to display, and undefined to hide.

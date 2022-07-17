@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   useGovernanceTokenInfo,
   useStakingInfo,
 } from '@dao-dao/state'
@@ -21,7 +21,7 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const daoConfig = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: coreAddress })
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
   )
   const { governanceTokenInfo, treasuryBalance: treasuryBalance } =
     useGovernanceTokenInfo(coreAddress, {

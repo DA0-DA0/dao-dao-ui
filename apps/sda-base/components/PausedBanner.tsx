@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreSelectors, blockHeightSelector } from '@dao-dao/state'
+import { CwCoreV0_1_0Selectors, blockHeightSelector } from '@dao-dao/state'
 import { Duration, Expiration } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { humanReadableDuration } from '@dao-dao/utils'
 
@@ -35,7 +35,7 @@ export const remainingTime = (
 export const PausedBanner: FC<PausedBannerProps> = ({}) => {
   const { t } = useTranslation()
   const pauseInfo = useRecoilValue(
-    CwCoreSelectors.pauseInfoSelector({ contractAddress: DAO_ADDRESS })
+    CwCoreV0_1_0Selectors.pauseInfoSelector({ contractAddress: DAO_ADDRESS })
   )
   const blockHeight = useRecoilValue(blockHeightSelector)
 

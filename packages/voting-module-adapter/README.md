@@ -352,7 +352,7 @@ and passed to a common page wrapper component, on each page.
 const coreAddress = context.params.address as string
 
 const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-const coreClient = new CwCoreQueryClient(cwClient, coreAddress)
+const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
 
 const votingModuleAddress = await coreClient.votingModule()
 const votingModuleContractName = (

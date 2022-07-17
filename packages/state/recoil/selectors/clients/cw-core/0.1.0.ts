@@ -20,7 +20,7 @@ import {
   ListItemsResponse,
   PauseInfoResponse,
   ProposalModulesResponse,
-  CwCoreQueryClient as QueryClient,
+  CwCoreV0_1_0QueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
@@ -36,7 +36,7 @@ type QueryClientParams = {
 }
 
 const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
-  key: 'cwCoreQueryClient',
+  key: 'cwCoreV0_1_0QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
@@ -56,7 +56,7 @@ export const executeClient = selectorFamily<
   ExecuteClient | undefined,
   ExecuteClientParams
 >({
-  key: 'cwCoreExecuteClient',
+  key: 'cwCoreV0_1_0ExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
@@ -72,7 +72,7 @@ export const adminSelector = selectorFamily<
   AdminResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreAdmin',
+  key: 'cwCoreV0_1_0Admin',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -87,7 +87,7 @@ export const configSelector = selectorFamily<
   ConfigResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreConfig',
+  key: 'cwCoreV0_1_0Config',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -102,7 +102,7 @@ export const votingModuleSelector = selectorFamily<
   VotingModuleResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreVotingModule',
+  key: 'cwCoreV0_1_0VotingModule',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -117,7 +117,7 @@ export const pauseInfoSelector = selectorFamily<
   PauseInfoResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCorePauseInfo',
+  key: 'cwCoreV0_1_0PauseInfo',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -132,7 +132,7 @@ export const proposalModulesSelector = selectorFamily<
   ProposalModulesResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['proposalModules']> }
 >({
-  key: 'cwCoreProposalModules',
+  key: 'cwCoreV0_1_0ProposalModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -147,7 +147,7 @@ export const dumpStateSelector = selectorFamily<
   DumpStateResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreDumpState',
+  key: 'cwCoreV0_1_0DumpState',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -162,7 +162,7 @@ export const getItemSelector = selectorFamily<
   GetItemResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['getItem']> }
 >({
-  key: 'cwCoreGetItem',
+  key: 'cwCoreV0_1_0GetItem',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -177,7 +177,7 @@ export const listItemsSelector = selectorFamily<
   ListItemsResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['listItems']> }
 >({
-  key: 'cwCoreListItems',
+  key: 'cwCoreV0_1_0ListItems',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -192,7 +192,7 @@ export const cw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw20TokenList']> }
 >({
-  key: 'cwCoreCw20TokenList',
+  key: 'cwCoreV0_1_0Cw20TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -208,7 +208,7 @@ export const allCw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreAllCw20TokenList',
+  key: 'cwCoreV0_1_0AllCw20TokenList',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -280,7 +280,7 @@ export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
 >({
-  key: 'cwCoreCw721TokenList',
+  key: 'cwCoreV0_1_0Cw721TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -295,7 +295,7 @@ export const cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['cw20Balances']> }
 >({
-  key: 'cwCoreCw20Balances',
+  key: 'cwCoreV0_1_0Cw20Balances',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -313,7 +313,7 @@ export const allCw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreAllCw20Balances',
+  key: 'cwCoreV0_1_0AllCw20Balances',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -431,7 +431,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
 >({
-  key: 'cwCoreVotingPowerAtHeight',
+  key: 'cwCoreV0_1_0VotingPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -448,7 +448,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse | undefined,
   QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
 >({
-  key: 'cwCoreTotalPowerAtHeight',
+  key: 'cwCoreV0_1_0TotalPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -465,7 +465,7 @@ export const infoSelector = selectorFamily<
   InfoResponse | undefined,
   QueryClientParams
 >({
-  key: 'cwCoreInfo',
+  key: 'cwCoreV0_1_0Info',
   get:
     (queryClientParams) =>
     async ({ get }) => {
