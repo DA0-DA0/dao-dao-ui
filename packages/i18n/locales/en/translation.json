@@ -49,6 +49,11 @@
     "unstakeTokens": "Unstake tokens",
     "useExistingToken": "Use an existing token"
   },
+  "commandBar": {
+    "home": "Home",
+    "navigateDao": "Navigate to DAO",
+    "prompt": "What are you looking for?"
+  },
   "emoji": {
     "baby": "Baby",
     "ballotBox": "Ballot box",
