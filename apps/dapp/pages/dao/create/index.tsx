@@ -41,6 +41,13 @@ const CreateDAOPage: NextPage = () => {
     (structure: NewDAOStructure) => {
       setValue('structure', structure)
 
+      // If a DAOs structure is changed to the token model
+      // allow revoting.
+      setValue(
+        'advancedVotingConfig.allowRevoting',
+        structure === NewDAOStructure.GovernanceToken
+      )
+
       // Swap initial tier voting power to the default for the structure
       // if the tiers have not yet been edited.
       if (tiersAreUntouched) {
