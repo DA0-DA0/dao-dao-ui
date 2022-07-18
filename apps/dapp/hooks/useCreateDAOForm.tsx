@@ -102,6 +102,8 @@ export const useCreateDAOForm = (pageIndex: number) => {
     setValue,
     setError,
     clearErrors,
+    // Set defaultValues to the atom's state so that we preserve the form on
+    // page change. The atom gets updated on button submit / page navigation.
   } = useForm({ defaultValues: newDAO })
 
   const watchedNewDAO = watch()

@@ -1,5 +1,6 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
+import cloneDeep from 'lodash.clonedeep'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
@@ -559,7 +560,11 @@ const CreateDAOVotingPage: NextPage = () => {
                 // values modified while the config was showing are undone.
                 setValue(
                   'advancedVotingConfig',
-                  DefaultNewDAO.advancedVotingConfig
+                  // Clone so that modifying the form doesn't modify the default
+                  // value object. Without cloning, this error occurs on
+                  // development:
+                  // Uncaught TypeError: Cannot assign to read only property 'thresholdQuorum' of object '#<Object>'
+                  cloneDeep(DefaultNewDAO.advancedVotingConfig)
                 )
               }
             }}
