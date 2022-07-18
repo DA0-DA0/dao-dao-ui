@@ -15,7 +15,7 @@ import { validateRequired } from '@dao-dao/utils'
 
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
   NewDAOStructure,
 } from '@/atoms'
 import {
@@ -41,7 +41,7 @@ const CreateDAOPage: NextPage = () => {
     (structure: NewDAOStructure) => {
       setValue('structure', structure)
 
-      // If a DAOs structure is changed to the token model
+      // If a DAOs structure is changed to the token model,
       // allow revoting.
       setValue(
         'advancedVotingConfig.allowRevoting',
@@ -55,7 +55,7 @@ const CreateDAOPage: NextPage = () => {
           'tiers.0.weight',
           structure === NewDAOStructure.GovernanceToken
             ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-            : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT
+            : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
         )
       }
     },
