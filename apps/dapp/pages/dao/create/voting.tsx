@@ -1,6 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import cloneDeep from 'lodash.clonedeep'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
@@ -35,8 +34,7 @@ import {
 
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
-  DefaultNewDAO,
+  DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
@@ -64,6 +62,7 @@ const CreateDAOVotingPage: NextPage = () => {
   const { address: walletAddress } = useWallet()
   const {
     watchedNewDAO,
+    defaultNewDAOForStructure,
     tiersAreUntouched,
     control,
     register,
@@ -510,7 +509,7 @@ const CreateDAOVotingPage: NextPage = () => {
                         getValues('structure') ===
                         NewDAOStructure.GovernanceToken
                           ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-                          : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+                          : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
                       members: [
                         {
                           address: '',
@@ -560,11 +559,7 @@ const CreateDAOVotingPage: NextPage = () => {
                 // values modified while the config was showing are undone.
                 setValue(
                   'advancedVotingConfig',
-                  // Clone so that modifying the form doesn't modify the default
-                  // value object. Without cloning, this error occurs on
-                  // development:
-                  // Uncaught TypeError: Cannot assign to read only property 'thresholdQuorum' of object '#<Object>'
-                  cloneDeep(DefaultNewDAO.advancedVotingConfig)
+                  defaultNewDAOForStructure.advancedVotingConfig
                 )
               }
             }}
