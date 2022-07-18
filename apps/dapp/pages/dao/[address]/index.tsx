@@ -20,13 +20,14 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   ContractHeader,
-  ContractProposalsDisplay,
   DAOMobileHeader,
   DAOPageWrapper,
   DAOPageWrapperProps,
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
+  DaoProposals,
   DaoTreasury,
+  DaoTreasuryHistory,
   SmallScreenNav,
   useDAOInfoContext,
 } from '@/components'
@@ -79,11 +80,14 @@ const InnerMobileDaoHome = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Proposal && (
-          <ContractProposalsDisplay />
-        )}
+        {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
         {tab === MobileMenuTabSelection.Membership && <Membership.Mobile />}
-        {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <div className="space-y-8">
+            <DaoTreasury />
+            <DaoTreasuryHistory shortTitle />
+          </div>
+        )}
         {tab === MobileMenuTabSelection.Info && (
           <DaoContractInfo hideTreasury />
         )}
@@ -153,8 +157,9 @@ const InnerDAOHome = () => {
             </div>
           </div>
         </GradientHero>
-        <div className="px-6">
-          <ContractProposalsDisplay />
+        <div className="px-6 mb-8 space-y-10">
+          <DaoProposals />
+          <DaoTreasuryHistory />
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
@@ -217,8 +222,6 @@ export default DaoHomePage
 // Fallback to loading screen if page has not yet been statically generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
   fallback: true,
 })
 
