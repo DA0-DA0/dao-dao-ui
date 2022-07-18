@@ -32,6 +32,8 @@ const CreateDAOPage: NextPage = () => {
     watch,
     errors,
     watchedNewDAO,
+    defaultNewDAOForStructure,
+    getValues,
     setValue,
     formWrapperProps,
     tiersAreUntouched,
@@ -41,12 +43,17 @@ const CreateDAOPage: NextPage = () => {
     (structure: NewDAOStructure) => {
       setValue('structure', structure)
 
-      // If a DAOs structure is changed to the token model,
-      // allow revoting.
-      setValue(
-        'advancedVotingConfig.allowRevoting',
-        structure === NewDAOStructure.GovernanceToken
-      )
+      // If a DAOs structure is changed to the token model and allow revoting is
+      // set to default, allow revoting.
+      if (
+        getValues('advancedVotingConfig.allowRevoting') ===
+        defaultNewDAOForStructure.advancedVotingConfig.allowRevoting
+      ) {
+        setValue(
+          'advancedVotingConfig.allowRevoting',
+          structure === NewDAOStructure.GovernanceToken
+        )
+      }
 
       // Swap initial tier voting power to the default for the structure
       // if the tiers have not yet been edited.
@@ -59,7 +66,12 @@ const CreateDAOPage: NextPage = () => {
         )
       }
     },
-    [setValue, tiersAreUntouched]
+    [
+      defaultNewDAOForStructure.advancedVotingConfig.allowRevoting,
+      getValues,
+      setValue,
+      tiersAreUntouched,
+    ]
   )
 
   return (
