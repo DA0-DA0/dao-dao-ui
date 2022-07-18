@@ -24,11 +24,11 @@ import {
 
 import {
   DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
-  DefaultNewDAO,
   DurationUnits,
   DurationUnitsValues,
   GovernanceTokenType,
   NewDAO,
+  generateDefaultNewDAO,
 } from '@/atoms'
 
 import { CreateDAOConfigCard } from './CreateDAOConfigCard'
@@ -128,6 +128,7 @@ interface CreateDAOQuorumCardProps extends CreateDAOConfigCardSharedProps {
 
 export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   newDAO: {
+    structure,
     advancedVotingConfig: {
       thresholdQuorum: { quorumEnabled, quorum },
     },
@@ -216,8 +217,8 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
                     value === 'majority'
                       ? 'majority'
                       : // value === '%'
-                        DefaultNewDAO.advancedVotingConfig.thresholdQuorum
-                          .quorum
+                        generateDefaultNewDAO(structure).advancedVotingConfig
+                          .thresholdQuorum.quorum
                   )
                 }
                 validation={[validateRequired]}
