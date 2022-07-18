@@ -18,6 +18,7 @@ export interface IProposalModuleAdapter {
       refreshProposal: () => void
       refreshProposalAndAll: () => void
     }
+    useProposalExecutionTxHash: () => string | undefined
   }
 
   // Components

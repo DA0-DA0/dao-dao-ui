@@ -4,12 +4,11 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { useProposalModuleAdapter } from '@dao-dao/proposal-module-adapter'
 import {
   nativeBalancesSelector,
   transactionEventsSelector,
-  useProposalInfo,
 } from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
@@ -106,15 +105,14 @@ const Component: ActionComponent = (props) => {
   const nativeBalances =
     useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
 
-  // TODO(noah/proposal-module-adapters): Pass something else to components
-  // instead of `proposalId`.
-  const { proposalResponse, txHash } = useProposalInfo(
-    props.coreAddress,
-    props.proposalId
-  )
+  const {
+    hooks: { useProposalExecutionTxHash },
+  } = useProposalModuleAdapter()
+  const executionTxHash = useProposalExecutionTxHash()
+
   const txEvents = useRecoilValue(
-    proposalResponse?.proposal?.status === Status.Executed && txHash
-      ? transactionEventsSelector(txHash)
+    executionTxHash
+      ? transactionEventsSelector(executionTxHash)
       : constSelector(undefined)
   )
 

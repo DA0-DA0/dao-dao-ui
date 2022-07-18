@@ -6,7 +6,6 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   CwCoreV0_1_0Selectors,
   CwProposalSingleSelectors,
-  proposalExecutionTXHashSelector,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { CopyToClipboard, Tooltip } from '@dao-dao/ui'
@@ -14,6 +13,7 @@ import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalInfoCardProps } from '../../../types'
+import { useProposalExecutionTxHash } from '../hooks'
 import { ProposalStatus } from './ProposalStatus'
 import { VoteDisplay } from './VoteDisplay'
 
@@ -40,14 +40,7 @@ export const ProposalInfoCard = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const executionTxHash = useRecoilValue(
-    proposal.status === Status.Executed
-      ? proposalExecutionTXHashSelector({
-          contractAddress: proposalModuleAddress,
-          proposalId: proposalNumber,
-        })
-      : constSelector(undefined)
-  )
+  const executionTxHash = useProposalExecutionTxHash()
 
   const walletVotingPowerWhenProposalCreated = useRecoilValue(
     walletAddress && proposal

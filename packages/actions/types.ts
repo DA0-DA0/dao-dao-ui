@@ -39,7 +39,6 @@ export interface FormProposalData {
 // A component which will render an action's input form.
 export type ActionComponentProps<T = undefined> = {
   coreAddress: string
-  proposalId?: number
   getFieldName: (field: string) => string
   onRemove?: () => void
   errors?: FieldErrors

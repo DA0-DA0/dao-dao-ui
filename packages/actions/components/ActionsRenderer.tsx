@@ -1,11 +1,5 @@
 import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
-import {
-  ComponentType,
-  FC,
-  FunctionComponent,
-  useEffect,
-  useState,
-} from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { LoaderProps, SuspenseLoader } from '@dao-dao/ui'
@@ -15,23 +9,21 @@ import { ActionAndData, ActionCardLoader } from '..'
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   coreAddress: string
-  proposalId: number
   actionData: ActionAndData[]
   Loader: ComponentType<LoaderProps>
 }
 
-export const ActionsRenderer: FC<ActionsRendererProps> = (props) => (
+export const ActionsRenderer = (props: ActionsRendererProps) => (
   <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
     <InnerActionsRenderer {...props} />
   </SuspenseLoader>
 )
 
-const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
+const InnerActionsRenderer = ({
   coreAddress,
-  proposalId,
   actionData,
   Loader,
-}) => {
+}: ActionsRendererProps) => {
   const formMethods = useForm({
     defaultValues: actionData.reduce(
       (acc, { data }, index) => ({
@@ -66,7 +58,6 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
               coreAddress={coreAddress}
               getFieldName={(field: string) => `${index}.${field}`}
               index={index}
-              proposalId={proposalId}
               readOnly
             />
 

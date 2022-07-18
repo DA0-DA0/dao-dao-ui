@@ -8,7 +8,7 @@ import {
   ProposalVotes,
 } from './components'
 import { makeProposalInfo } from './functions'
-import { useProposalRefreshers } from './hooks'
+import { useProposalExecutionTxHash, useProposalRefreshers } from './hooks'
 
 export const CwProposalSingleAdapter: ProposalModuleAdapter = {
   id: CWPROPOSALSINGLE_CONTRACT_NAME,
@@ -24,6 +24,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
     // Hooks
     hooks: {
       useProposalRefreshers,
+      useProposalExecutionTxHash,
     },
 
     // Components

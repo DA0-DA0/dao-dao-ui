@@ -263,7 +263,6 @@ export const ProposalDetails = ({
               Loader={Loader}
               actionData={actionData}
               coreAddress={coreAddress}
-              proposalId={proposalNumber}
             />
           )}
         </>
