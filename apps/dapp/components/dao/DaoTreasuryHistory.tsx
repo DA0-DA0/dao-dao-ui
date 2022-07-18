@@ -8,7 +8,7 @@ import {
   TreasuryTransaction,
   treasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { CopyToClipboard, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { CopyToClipboard, Loader, SuspenseLoader, Trans } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
@@ -17,7 +17,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from '../DAOPageWrapper'
-import { Loader } from '../Loader'
 
 interface DaoTreasuryHistoryProps {
   shortTitle?: boolean

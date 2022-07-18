@@ -5,11 +5,10 @@ import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
-import { Button, SuspenseLoader, Tooltip } from '@dao-dao/ui'
+import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
 import { useDAOInfoContext } from '../../DAOPageWrapper'
-import { Loader } from '../../Loader'
 import { ProposalList } from './ProposalList'
 
 export const DaoProposals: FC = () => {
