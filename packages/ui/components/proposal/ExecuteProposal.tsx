@@ -1,22 +1,23 @@
-import { ArchiveIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from './Button'
+import { Airplane } from '@dao-dao/icons'
 
-export interface CloseProps {
-  onClose: () => void
-  willRefundProposalDeposit: boolean
+import { Button } from '../Button'
+
+export interface ExecuteProposalProps {
+  onExecute: () => void
+  messages: number
   loading: boolean
 }
 
-export const Close: FC<CloseProps> = ({
-  onClose,
-  willRefundProposalDeposit,
+export const ExecuteProposal = ({
+  onExecute,
+  messages,
   loading,
-}) => {
+}: ExecuteProposalProps) => {
   const { t } = useTranslation()
   const [partyMode, setPartyMode] = useState(false)
   const [partyPhase, setPartyPhase] = useState(1)
@@ -24,31 +25,26 @@ export const Close: FC<CloseProps> = ({
   return (
     <>
       {!partyMode && (
-        <div className="flex gap-4 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className="mr-1 text-2xl"
               onClick={() => setPartyMode(true)}
             >
-              <Emoji label={t('emoji.x')} symbol="❌" />
+              <Emoji label={t('emoji.party')} symbol="🎉" />
             </button>
-
-            <div className="flex flex-col gap-1">
-              <p className="primary-text">{t('info.rejected')}</p>
-              {willRefundProposalDeposit && (
-                <p className="secondary-text">
-                  {t('info.proposalDepositWillBeRefunded')}
-                </p>
-              )}
-            </div>
+            <p className="primary-text">{t('info.passed')}</p>
+            <p className="secondary-text">
+              {t('info.numMessages', { count: messages })}
+            </p>
           </div>
-          <Button loading={loading} onClick={onClose}>
-            {t('button.close')} <ArchiveIcon className="w-4 h-4" />
+          <Button loading={loading} onClick={onExecute}>
+            {t('button.execute')} <Airplane stroke="currentColor" />
           </Button>
         </div>
       )}
       {partyMode && (
-        <div className="flex gap-4 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className={clsx(
@@ -69,17 +65,12 @@ export const Close: FC<CloseProps> = ({
             >
               <Emoji label={t('emoji.rocketShip')} symbol="🚀" />
             </button>
-
-            <div className="flex flex-col gap-1">
-              <p className="primary-text">{t('info.closing')}</p>
-              {willRefundProposalDeposit && (
-                <p className="secondary-text">
-                  {t('info.proposalDepositWillBeRefunded')}
-                </p>
-              )}
-            </div>
+            <p className="primary-text">{t('info.executing')}</p>
+            <p className="secondary-text">
+              {t('info.numMessages', { count: messages })}
+            </p>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             <Button
               className={clsx('text-white bg-error hover:bg-error hover:ring', {
                 invisible: partyPhase !== 1,
@@ -109,13 +100,11 @@ export const Close: FC<CloseProps> = ({
             </Button>
 
             <Button
-              className={clsx({
-                invisible: partyPhase !== 4,
-              })}
+              className={`${partyPhase !== 4 ? 'invisible' : ''}`}
               loading={loading}
-              onClick={onClose}
+              onClick={onExecute}
             >
-              {t('button.close')} <ArchiveIcon className="w-4 h-4" />
+              {t('button.execute')} <Airplane stroke="currentColor" />
             </Button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -16,13 +16,8 @@ import {
   ProposalModuleAdapterProvider,
   matchAndLoadAdapter,
   useProposalModuleAdapter,
+  useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
-import {
-  CwProposalSingleHooks,
-  useProposalInfo,
-  useProposalModule,
-} from '@dao-dao/state'
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Breadcrumbs,
   Loader,
@@ -30,7 +25,6 @@ import {
   PageLoader,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { cleanChainError } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
@@ -40,170 +34,56 @@ import {
   SmallScreenNav,
   useDAOInfoContext,
 } from '@/components'
-import { usePinnedDAOs } from '@/hooks'
 import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
-const InnerProposal: FC = () => {
+const InnerProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress, name } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
-  const [showStaking, setShowStaking] = useState(false)
-  const [loading, setLoading] = useState(false)
-
-  const proposalIdQuery = router.query.proposalId
-  const proposalId =
-    typeof proposalIdQuery === 'string' && !isNaN(Number(proposalIdQuery))
-      ? Number(proposalIdQuery)
-      : undefined
-
-  const { proposalModuleAddress, proposalModuleConfig } =
-    useProposalModule(coreAddress)
-
   const {
     fields: { disabledActionKeys },
     hooks: { useVoteConversionDecimals },
-    components: { ProposalDetails },
+    components: { ProposalDetailsVotingPowerWidget },
   } = useVotingModuleAdapter()
   const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
   const voteConversionDecimals = useVoteConversionDecimals()
 
   const {
-    components: { ProposalVotes, ProposalVoteDecisionStatus, ProposalInfoCard },
+    components: {
+      ProposalVotes,
+      ProposalVoteDecisionStatus,
+      ProposalInfoCard,
+      ProposalDetails,
+    },
+    hooks: { useProposalRefreshers },
   } = useProposalModuleAdapter()
+  const { proposalId } = useProposalModuleAdapterOptions()
 
-  const {
-    proposalResponse,
-    voteResponse,
-    votingPowerAtHeight,
-    refreshProposalAndAll,
-  } = useProposalInfo(coreAddress, proposalId)
+  const { refreshProposalAndAll } = useProposalRefreshers()
 
-  const castVote = CwProposalSingleHooks.useCastVote({
-    contractAddress: proposalModuleAddress ?? '',
-    sender: walletAddress ?? '',
-  })
-  const executeProposal = CwProposalSingleHooks.useExecute({
-    contractAddress: proposalModuleAddress ?? '',
-    sender: walletAddress ?? '',
-  })
-  const closeProposal = CwProposalSingleHooks.useClose({
-    contractAddress: proposalModuleAddress ?? '',
-    sender: walletAddress ?? '',
-  })
+  const onVoteSuccess = useCallback(async () => {
+    refreshProposalAndAll()
+    toast.success(t('success.voteCast'))
+  }, [refreshProposalAndAll, t])
 
-  const { markPinnedProposalIdDone } = usePinnedDAOs()
+  const onExecuteSuccess = useCallback(async () => {
+    refreshProposalAndAll()
+    toast.success(t('success.proposalExecuted'))
+  }, [refreshProposalAndAll, t])
 
-  if (!proposalResponse || !proposalModuleConfig || proposalId === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
+  const onCloseSuccess = useCallback(async () => {
+    refreshProposalAndAll()
+    toast.success(t('success.proposalClosed'))
+  }, [refreshProposalAndAll, t])
 
-  const onVote = useCallback(
-    async (vote: Vote) => {
-      if (!connected || proposalId === undefined) return
-
-      setLoading(true)
-
-      try {
-        await castVote({
-          proposalId,
-          vote,
-        })
-
-        // Mark this proposal done so it doesn't show on homepage.
-        markPinnedProposalIdDone(coreAddress, proposalId)
-
-        refreshProposalAndAll()
-        toast.success(t('success.voteCast'))
-      } catch (err) {
-        console.error(err)
-        toast.error(
-          cleanChainError(err instanceof Error ? err.message : `${err}`)
-        )
-      }
-
-      setLoading(false)
-    },
-    [
-      connected,
-      proposalId,
-      castVote,
-      markPinnedProposalIdDone,
-      coreAddress,
-      refreshProposalAndAll,
-      t,
-    ]
-  )
-
-  const onExecute = useCallback(async () => {
-    if (!connected || proposalId === undefined) return
-
-    setLoading(true)
-
-    try {
-      await executeProposal({
-        proposalId,
-      })
-
-      refreshProposalAndAll()
-      toast.success(t('success.proposalExecuted'))
-    } catch (err) {
-      console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
-    }
-
-    setLoading(false)
-  }, [connected, proposalId, executeProposal, refreshProposalAndAll, t])
-
-  const onClose = useCallback(async () => {
-    if (!connected || proposalId === undefined) return
-
-    setLoading(true)
-
-    try {
-      await closeProposal({
-        proposalId,
-      })
-
-      refreshProposalAndAll()
-      toast.success(t('success.proposalClosed'))
-    } catch (err) {
-      console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
-    }
-
-    setLoading(false)
-  }, [connected, proposalId, closeProposal, refreshProposalAndAll, t])
-
-  const onDuplicate = useCallback(
-    (actionData) => {
-      const duplicateFormData: FormProposalData = {
-        title: proposalResponse.proposal.title,
-        description: proposalResponse.proposal.description,
-        actionData: actionData.map(({ action: { key }, data }) => ({
-          key,
-          data,
-        })),
-      }
-
-      router.push(
-        `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
-          JSON.stringify(duplicateFormData)
-        )}`
-      )
-    },
-    [
-      coreAddress,
-      proposalResponse.proposal.description,
-      proposalResponse.proposal.title,
-      router,
-    ]
-  )
+  const duplicate = (data: FormProposalData) =>
+    router.push(
+      `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
+        JSON.stringify(data)
+      )}`
+    )
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-6">
@@ -227,27 +107,15 @@ const InnerProposal: FC = () => {
           </div>
 
           <ProposalDetails
+            ConnectWalletButton={ConnectWalletButton}
+            VotingPowerWidget={ProposalDetailsVotingPowerWidget}
             actions={actions}
-            allowRevoting={proposalModuleConfig.allow_revoting}
-            connectWalletButton={<ConnectWalletButton />}
             connected={connected}
-            loading={loading}
-            onClose={onClose}
-            onDuplicate={onDuplicate}
-            onExecute={onExecute}
-            onVote={onVote}
-            proposal={proposalResponse.proposal}
-            proposalId={proposalId}
-            setShowStaking={setShowStaking}
-            showStaking={showStaking}
-            walletVote={voteResponse?.vote?.vote ?? undefined}
-            walletWeightPercent={
-              votingPowerAtHeight
-                ? (Number(votingPowerAtHeight.power) /
-                    Number(proposalResponse.proposal.total_power)) *
-                  100
-                : 0
-            }
+            duplicate={duplicate}
+            onCloseSuccess={onCloseSuccess}
+            onExecuteSuccess={onExecuteSuccess}
+            onVoteSuccess={onVoteSuccess}
+            walletAddress={walletAddress}
           />
 
           <div className="lg:hidden">

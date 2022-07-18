@@ -40,6 +40,8 @@ import {
 // and #5 will be the first one loaded next time without having to manually
 // filter out 2 and 4 like before, and keeping the localStorage size down.
 
+// TODO: Fix this for string (non-numeric) proposalIds.
+// TODO: Reimplement auto-marking as done on vote success.
 export const usePinnedDAOs = () => {
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)

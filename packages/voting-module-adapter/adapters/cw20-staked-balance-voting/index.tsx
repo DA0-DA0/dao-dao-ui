@@ -10,7 +10,7 @@ import {
   Membership,
   MembershipMobileTab,
   ProposalCreateAddresses,
-  ProposalDetails,
+  ProposalDetailsVotingPowerWidget,
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
@@ -50,12 +50,12 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
         Mobile: (props) => <Membership {...props} primaryText />,
       },
       DaoHorizontalInfoDisplayInternal,
-      ProposalDetails,
       DaoTreasuryFooter,
       DaoContractInfoContent,
       ProposalCreateAddresses,
       VoteHeroStats,
       SdaMembershipPage,
+      ProposalDetailsVotingPowerWidget,
     },
   }),
 }

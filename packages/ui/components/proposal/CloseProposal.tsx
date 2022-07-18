@@ -1,19 +1,22 @@
+import { ArchiveIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Airplane } from '@dao-dao/icons'
+import { Button } from '../Button'
 
-import { Button } from './Button'
-
-export interface ExecuteProps {
-  onExecute: () => void
-  messages: number
+export interface CloseProposalProps {
+  onClose: () => void
+  willRefundProposalDeposit: boolean
   loading: boolean
 }
 
-export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
+export const CloseProposal = ({
+  onClose,
+  willRefundProposalDeposit,
+  loading,
+}: CloseProposalProps) => {
   const { t } = useTranslation()
   const [partyMode, setPartyMode] = useState(false)
   const [partyPhase, setPartyPhase] = useState(1)
@@ -21,26 +24,31 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
   return (
     <>
       {!partyMode && (
-        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+        <div className="flex gap-4 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className="mr-1 text-2xl"
               onClick={() => setPartyMode(true)}
             >
-              <Emoji label={t('emoji.party')} symbol="🎉" />
+              <Emoji label={t('emoji.x')} symbol="❌" />
             </button>
-            <p className="primary-text">{t('info.passed')}</p>
-            <p className="secondary-text">
-              {t('info.numMessages', { count: messages })}
-            </p>
+
+            <div className="flex flex-col gap-1">
+              <p className="primary-text">{t('info.rejected')}</p>
+              {willRefundProposalDeposit && (
+                <p className="secondary-text">
+                  {t('info.proposalDepositWillBeRefunded')}
+                </p>
+              )}
+            </div>
           </div>
-          <Button loading={loading} onClick={onExecute}>
-            {t('button.execute')} <Airplane stroke="currentColor" />
+          <Button loading={loading} onClick={onClose}>
+            {t('button.close')} <ArchiveIcon className="w-4 h-4" />
           </Button>
         </div>
       )}
       {partyMode && (
-        <div className="flex justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+        <div className="flex gap-4 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className={clsx(
@@ -61,12 +69,17 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
             >
               <Emoji label={t('emoji.rocketShip')} symbol="🚀" />
             </button>
-            <p className="primary-text">{t('info.executing')}</p>
-            <p className="secondary-text">
-              {t('info.numMessages', { count: messages })}
-            </p>
+
+            <div className="flex flex-col gap-1">
+              <p className="primary-text">{t('info.closing')}</p>
+              {willRefundProposalDeposit && (
+                <p className="secondary-text">
+                  {t('info.proposalDepositWillBeRefunded')}
+                </p>
+              )}
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <Button
               className={clsx('text-white bg-error hover:bg-error hover:ring', {
                 invisible: partyPhase !== 1,
@@ -96,11 +109,13 @@ export const Execute: FC<ExecuteProps> = ({ onExecute, messages, loading }) => {
             </Button>
 
             <Button
-              className={`${partyPhase !== 4 ? 'invisible' : ''}`}
+              className={clsx({
+                invisible: partyPhase !== 4,
+              })}
               loading={loading}
-              onClick={onExecute}
+              onClick={onClose}
             >
-              {t('button.execute')} <Airplane stroke="currentColor" />
+              {t('button.close')} <ArchiveIcon className="w-4 h-4" />
             </Button>
           </div>
         </div>

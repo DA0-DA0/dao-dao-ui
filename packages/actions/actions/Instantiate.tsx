@@ -106,6 +106,8 @@ const Component: ActionComponent = (props) => {
   const nativeBalances =
     useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
 
+  // TODO(noah/proposal-module-adapters): Pass something else to components
+  // instead of `proposalId`.
   const { proposalResponse, txHash } = useProposalInfo(
     props.coreAddress,
     props.proposalId

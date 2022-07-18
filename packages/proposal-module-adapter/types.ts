@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 
+import { Action, FormProposalData } from '@dao-dao/actions'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
 export interface IProposalModuleAdapter {
@@ -12,13 +13,19 @@ export interface IProposalModuleAdapter {
   }
 
   // Hooks
-  hooks: {}
+  hooks: {
+    useProposalRefreshers: () => {
+      refreshProposal: () => void
+      refreshProposalAndAll: () => void
+    }
+  }
 
   // Components
   components: {
     ProposalVotes: ComponentType<BaseProposalVotesProps>
     ProposalVoteDecisionStatus: ComponentType<BaseProposalVoteDecisionStatusProps>
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
+    ProposalDetails: ComponentType<BaseProposalDetailsProps>
   }
 }
 
@@ -68,4 +75,16 @@ export interface BaseProposalVoteDecisionStatusProps {
 export interface BaseProposalInfoCardProps {
   connected: boolean
   walletAddress?: string
+}
+
+export interface BaseProposalDetailsProps {
+  actions: Action[]
+  onExecuteSuccess: () => void
+  onCloseSuccess: () => void
+  onVoteSuccess: () => void
+  connected: boolean
+  ConnectWalletButton: ComponentType
+  duplicate: (data: FormProposalData) => void
+  walletAddress?: string
+  VotingPowerWidget?: ComponentType
 }

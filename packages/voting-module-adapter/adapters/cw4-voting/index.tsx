@@ -10,7 +10,6 @@ import {
   Membership,
   MembershipMobileTab,
   ProposalCreateAddresses,
-  ProposalDetails,
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
@@ -53,7 +52,6 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
         Mobile: () => <Membership primaryText />,
       },
       DaoHorizontalInfoDisplayInternal,
-      ProposalDetails,
       DaoTreasuryFooter,
       DaoContractInfoContent,
       ProposalCreateAddresses,

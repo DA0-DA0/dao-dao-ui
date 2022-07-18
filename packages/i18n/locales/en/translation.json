@@ -258,7 +258,7 @@
     "numProposals_other": "{{count}} proposals",
     "off": "Off",
     "on": "On",
-    "openProposalsTooltip": "These are open proposals you have not yet voted on for your favorited DAOs shown below.",
+    "openProposalsTooltip": "These are open proposals for your favorited DAOs shown below.",
     "passed": "Passed",
     "passing": "Passing",
     "percentOfAllVotingPower": "{{percent}} <2>of all voting power</2>",

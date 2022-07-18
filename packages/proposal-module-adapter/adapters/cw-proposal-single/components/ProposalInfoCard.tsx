@@ -84,7 +84,7 @@ export const ProposalInfoCard = ({
           </p>
 
           <p className="font-mono text-sm">
-            {proposalPrefix} #{' '}
+            {proposalPrefix ? `${proposalPrefix} # ` : '# '}
             {proposalNumber.toString().padStart(8 - proposalPrefix.length, '0')}
           </p>
         </div>

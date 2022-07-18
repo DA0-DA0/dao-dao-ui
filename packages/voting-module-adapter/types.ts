@@ -1,7 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { ActionKey } from '@dao-dao/actions'
-import { LoaderProps, LogoProps, ProposalDetailsProps } from '@dao-dao/ui'
+import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
 export interface SdaMembershipPageNavInfo {
   renderIcon: (color: string, mobile: boolean) => ReactNode
@@ -12,11 +12,6 @@ export interface MembershipMobileTabProps {
   onClick: () => void
   selected: boolean
 }
-
-export type BaseProposalDetailsProps = Omit<
-  ProposalDetailsProps,
-  'stakingModal' | 'coreAddress'
->
 
 export interface BaseVoteHeroStatsProps {
   loader?: boolean
@@ -47,12 +42,12 @@ export interface IVotingModuleAdapter {
       Mobile: ComponentType
     }
     DaoHorizontalInfoDisplayInternal: ComponentType
-    ProposalDetails: ComponentType<BaseProposalDetailsProps>
     DaoTreasuryFooter: ComponentType
     DaoContractInfoContent: ComponentType
     ProposalCreateAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
+    ProposalDetailsVotingPowerWidget?: ComponentType
   }
 }
 
