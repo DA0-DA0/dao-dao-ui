@@ -37,6 +37,7 @@ export interface IProposalModuleAdapter {
     }
     useProposalExecutionTxHash: () => string | undefined
     useProposalProcessedTQ: () => ProcessedThresholdQuorum
+    useProposalExpirationString: () => string | undefined
   }
 
   // Components

@@ -17,6 +17,7 @@ import {
 import { makeGetProposalInfo } from './functions'
 import {
   useProposalExecutionTxHash,
+  useProposalExpirationString,
   useProposalProcessedTQ,
   useProposalRefreshers,
 } from './hooks'
@@ -62,6 +63,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       useProposalRefreshers,
       useProposalExecutionTxHash,
       useProposalProcessedTQ,
+      useProposalExpirationString,
     },
 
     // Components

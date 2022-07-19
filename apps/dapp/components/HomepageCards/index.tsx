@@ -1,11 +1,11 @@
 import { EmojiHappyIcon, HandIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 import { FC } from 'react'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Discord, Github, Twitter } from '@dao-dao/icons'
-import { Vote } from '@dao-dao/ui'
+
+import { HomepageCardVote } from './HomepageCardVote'
 
 export const HomepageCards: FC = () => {
   const { t } = useTranslation()
@@ -19,16 +19,7 @@ export const HomepageCards: FC = () => {
           </div>
           <h3 className="header-text">{t('splash.proposeAndVote')}</h3>
           <div className="xl:-ml-24">
-            <Vote
-              blur={true}
-              loading={false}
-              onVote={() =>
-                toast.success(
-                  'Think this is neat? You should try the real thing! :)'
-                )
-              }
-              voterWeightPercent={7}
-            />
+            <HomepageCardVote />
           </div>
         </div>
         <div

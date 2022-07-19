@@ -4,10 +4,10 @@ import { useRecoilValue } from 'recoil'
 
 import { CwProposalSingleSelectors } from '@dao-dao/state'
 import { ProposalIdDisplay } from '@dao-dao/ui'
-import { getProposalEnd } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../../react'
 import { BaseProposalLineProps } from '../../../../types'
+import { useProposalExpirationString } from '../../hooks'
 import { ProposalStatus } from '../ProposalStatus'
 
 export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
@@ -30,6 +30,8 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
     throw new Error(t('error.loadingData'))
   }
 
+  const expirationString = useProposalExpirationString()
+
   return (
     <div
       className={clsx(
@@ -48,9 +50,7 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
             proposalPrefix={proposalPrefix}
           />
         </p>
-        <p className="truncate caption-text">
-          {getProposalEnd(proposal.expiration, proposal.status)}
-        </p>
+        <p className="truncate caption-text">{expirationString}</p>
       </div>
     </div>
   )

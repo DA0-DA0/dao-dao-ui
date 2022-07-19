@@ -203,6 +203,7 @@
     "available": "Available",
     "claimToReceiveUnstaked": "Claim them to receive your unstaked tokens.",
     "closing": "Closing",
+    "completed": "Completed",
     "configureVotingDescription": "Add members, configure voting thresholds, and (optionally) use governance tokens to determine voting share.",
     "configureWalletModalExplanation": "You have Keplr installed, but it doesn't seem like you've set up a wallet. To continue, open the Keplr extension and set up a wallet.\nTo open the Keplr extension press the puzzle icon in the top right of your browser and then press the Keplr button. Once you've done that, a new page will open where you'll be able to create a new account. Configure your wallet to continue",
     "connectWalletToViewUnstaking": "Connect your wallet to view unstaking tokens.",

@@ -1,7 +1,8 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Abstain, Airplane } from '@dao-dao/icons'
@@ -9,31 +10,14 @@ import { Vote as VoteChoice } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-export { VoteChoice }
+const VOTER_WEIGHT_PERCENT = formatPercentOf100(7)
 
-export interface VoteProps {
-  onVote: (choice: VoteChoice) => unknown
-  voterWeightPercent: number
-  loading: boolean
-  blur?: boolean
-}
-
-export const Vote: FC<VoteProps> = ({
-  onVote,
-  voterWeightPercent,
-  loading,
-  blur,
-}) => {
+export const HomepageCardVote = () => {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col gap-3 p-4 max-w-3xl bg-primary rounded-lg border border-default',
-        { 'backdrop-blur-lg': blur }
-      )}
-    >
+    <div className="flex flex-col gap-3 p-4 max-w-3xl bg-primary rounded-lg border border-default backdrop-blur-lg">
       <div className="flex gap-2 items-center">
         <p className="mr-1 text-2xl">
           <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
@@ -41,7 +25,7 @@ export const Vote: FC<VoteProps> = ({
         <p className="primary-text">{t('title.casting')}</p>
         <p className="secondary-text">
           {t('info.percentVotingPower', {
-            percent: formatPercentOf100(voterWeightPercent),
+            percent: VOTER_WEIGHT_PERCENT,
           })}
         </p>
       </div>
@@ -101,13 +85,9 @@ export const Vote: FC<VoteProps> = ({
       </div>
       <Button
         disabled={selected === undefined}
-        loading={loading}
-        onClick={async () => {
-          try {
-            await onVote(selected as VoteChoice)
-          } finally {
-            setSelected(undefined)
-          }
+        onClick={() => {
+          toast.success('Think this is neat? You should try the real thing! :)')
+          setSelected(undefined)
         }}
       >
         <div className="flex gap-2 justify-center items-center w-full">
