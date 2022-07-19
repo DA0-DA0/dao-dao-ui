@@ -27,7 +27,9 @@ export const NavListDraftItem: FC<NavListDraftItemProps> = ({
   onDelete,
 }) => {
   return (
-    <li className={`py-2 px-2 rounded-lg ${isActive ? 'bg-primary' : ''}`}>
+    <li
+      className={`py-2 px-2 rounded-lg group ${isActive ? 'bg-primary' : ''}`}
+    >
       <Link href={`/dao/${address}/proposals/create?draftId=${id}`}>
         <a className="w-full hover:underline transition-all">
           <div className="flex relative flex-row gap-2 justify-start items-center mt-1">
@@ -38,7 +40,10 @@ export const NavListDraftItem: FC<NavListDraftItemProps> = ({
               <div className="primary-text">{title}</div>
               <div className="caption-text">{label}</div>
             </div>
-            <div className="absolute right-0" onClick={onDelete}>
+            <div
+              className="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={onDelete}
+            >
               <XCircleIcon className="w-5 h-5" />
             </div>
           </div>

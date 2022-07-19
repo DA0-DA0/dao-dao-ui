@@ -1,4 +1,4 @@
-import { atom, atomFamily } from 'recoil'
+import { AtomEffect, atom, atomFamily } from 'recoil'
 
 import { FormProposalData } from '@dao-dao/actions'
 
@@ -12,6 +12,25 @@ export interface NavDraft {
   id: string
 }
 
+export const draftsRemoveLocalStorageEffect: AtomEffect<NavDraft[]> = ({
+  onSet,
+  node: _,
+}) => {
+  // Do nothing on server.
+  if (typeof localStorage === 'undefined') {
+    return
+  }
+
+  onSet((newValue: NavDraft[], oldValue: NavDraft[], _: boolean) => {
+    const removedDrafts = oldValue.filter(
+      (oldDraft) => !newValue.some(({ id }) => oldDraft.id === id)
+    ) // warning: inefficient double loop here
+
+    for (let { id } of removedDrafts) {
+      localStorage.removeItem(`draft_${id}`)
+    }
+  })
+}
 export const activeDraftIdAtom = atom<string | undefined>({
   key: 'activeDraftId',
   default: undefined,
@@ -20,7 +39,10 @@ export const activeDraftIdAtom = atom<string | undefined>({
 export const draftsAtom = atom<NavDraft[]>({
   key: 'drafts',
   default: [],
-  effects: [localStorageEffect<NavDraft[]>('drafts')],
+  effects: [
+    draftsRemoveLocalStorageEffect,
+    localStorageEffect<NavDraft[]>('drafts'),
+  ],
 })
 
 export const draftAtom = atomFamily<LocalFormProposalData, string>({
