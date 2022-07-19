@@ -27,7 +27,7 @@ export const UpdateInfoComponent: ActionComponent = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.info')} symbol="ℹ️" />}
+      Icon={UpdateInfoIcon}
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
@@ -110,4 +110,9 @@ export const UpdateInfoComponent: ActionComponent = ({
       </div>
     </ActionCard>
   )
+}
+
+export const UpdateInfoIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.info')} symbol="ℹ️" />
 }

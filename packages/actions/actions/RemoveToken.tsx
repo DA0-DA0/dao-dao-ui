@@ -14,6 +14,7 @@ import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
   ActionCardLoader,
+  RemoveTokenIcon,
   RemoveTokenComponent as StatelessRemoveTokenComponent,
 } from '../components'
 import {
@@ -171,7 +172,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveTokenData> = (
 
 export const removeTokenAction: Action<RemoveTokenData> = {
   key: ActionKey.RemoveToken,
-  label: '⭕️ Remove Treasury Token',
+  Icon: RemoveTokenIcon,
+  label: 'Remove Treasury Token',
   description: "Remove a token from your DAO's treasury.",
   Component,
   useDefaults,

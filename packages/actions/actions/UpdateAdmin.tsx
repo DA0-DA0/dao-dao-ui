@@ -3,7 +3,10 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 
-import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components'
+import {
+  UpdateAdminComponent as StatelessUpdateAdminComponent,
+  UpdateAdminIcon,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -72,7 +75,8 @@ const Component: ActionComponent = (props) => {
 
 export const updateAdminAction: Action<UpdateAdminData> = {
   key: ActionKey.UpdateAdmin,
-  label: '🍄 Update Contract Admin',
+  Icon: UpdateAdminIcon,
+  label: 'Update Contract Admin',
   description: 'Update the CosmWasm level admin of a smart contract.',
   Component,
   useDefaults,

@@ -38,7 +38,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.whale')} symbol="🐋" />}
+      Icon={MigrateContractIcon}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
@@ -97,4 +97,9 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       </div>
     </ActionCard>
   )
+}
+
+export const MigrateContractIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.whale')} symbol="🐋" />
 }

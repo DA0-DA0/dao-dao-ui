@@ -1,14 +1,15 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   CwCoreV0_1_0Selectors,
+  cwCoreProposalModulesSelector,
   nativeBalanceSelector,
-  useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/ui'
+import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { usePinnedDAOs } from '@/hooks'
@@ -28,9 +29,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {
     fetchMembership: true,
   })
-  const { proposalCount } = useProposalModule(address, {
-    fetchProposalCount: true,
-  })
+  const proposalModules = useRecoilValue(cwCoreProposalModulesSelector(address))
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
@@ -38,11 +37,30 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   if (
     !config ||
     nativeBalance === undefined ||
-    proposalCount === undefined ||
-    totalVotingWeight === undefined
+    totalVotingWeight === undefined ||
+    !proposalModules
   ) {
     throw new Error(t('error.loadingData'))
   }
+
+  const useProposalCountHooks = useMemo(
+    () =>
+      proposalModules.map(
+        (proposalModule) =>
+          matchAndLoadCommon(proposalModule, {
+            coreAddress: address,
+            Loader,
+            Logo,
+          }).hooks.useProposalCount
+      ),
+    [address, proposalModules]
+  )
+  // Always called in the same order, so this is safe.
+  const proposalCount = useProposalCountHooks.reduce(
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    (acc, useProposalCount) => acc + useProposalCount(),
+    0
+  )
 
   return (
     <ContractCard

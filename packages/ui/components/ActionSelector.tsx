@@ -129,31 +129,24 @@ interface ActionDisplayItemProps {
 }
 
 const ActionDisplayItem: FC<ActionDisplayItemProps> = ({
-  action,
+  action: { Icon, label, description },
   onClick,
   selected,
-}) => {
-  const words = action.label.split(' ')
-
-  const icon = words[0]
-  words.shift()
-  const label = words.join(' ')
-  const description = action.description
-
-  return (
-    <button
-      className={clsx(
-        'flex flex-row gap-3 items-center p-2 w-full text-left hover:bg-primary rounded transition',
-        { 'bg-primary': selected }
-      )}
-      onClick={onClick}
-      type="button"
-    >
-      <p className="text-3xl">{icon}</p>
-      <div className="flex flex-col items-start">
-        <p className="body-text">{label}</p>
-        <p className="secondary-text">{description}</p>
-      </div>
-    </button>
-  )
-}
+}) => (
+  <button
+    className={clsx(
+      'flex flex-row gap-3 items-center p-2 w-full text-left hover:bg-primary rounded transition',
+      { 'bg-primary': selected }
+    )}
+    onClick={onClick}
+    type="button"
+  >
+    <p className="text-3xl">
+      <Icon />
+    </p>
+    <div className="flex flex-col items-start">
+      <p className="body-text">{label}</p>
+      <p className="secondary-text">{description}</p>
+    </div>
+  </button>
+)

@@ -1,5 +1,5 @@
 export * from './DaoContractInfoContent'
-export * from './DaoHorizontalInfoDisplayInternal'
+export * from './DaoHorizontalInfoDisplayContent'
 export * from './DaoTreasuryFooter'
 export * from './Membership'
 export * from './MembershipMobileTab'

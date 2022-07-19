@@ -5,7 +5,9 @@ import {
   CreateProposalForm,
   ProposalCreateInfo,
   makeUseListAllProposalInfos,
+  makeUseProposalCount,
   makeUseReverseProposalInfos,
+  useActions,
 } from './common'
 import {
   PinnedProposalLineDesktop,
@@ -35,6 +37,8 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
     hooks: {
       useReverseProposalInfos: makeUseReverseProposalInfos(proposalModule),
       useListAllProposalInfos: makeUseListAllProposalInfos(proposalModule),
+      useProposalCount: makeUseProposalCount(proposalModule),
+      useActions,
     },
 
     // Components

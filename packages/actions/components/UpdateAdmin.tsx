@@ -30,7 +30,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.whale')} symbol="🍄" />}
+      Icon={UpdateAdminIcon}
       onRemove={onRemove}
       title={t('title.updateContractAdmin')}
     >
@@ -67,4 +67,9 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       </div>
     </ActionCard>
   )
+}
+
+export const UpdateAdminIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.mushroom')} symbol="🍄" />
 }

@@ -20,6 +20,7 @@ import {
 
 import {
   ActionCardLoader,
+  SpendIcon,
   SpendComponent as StatelessSpendComponent,
 } from '../components'
 import {
@@ -235,7 +236,8 @@ const Component: ActionComponent = (props) => (
 
 export const spendAction: Action<SpendData> = {
   key: ActionKey.Spend,
-  label: '💵 Spend',
+  Icon: SpendIcon,
+  label: 'Spend',
   description: 'Spend native or cw20 tokens from the treasury.',
   Component,
   useDefaults,

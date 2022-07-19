@@ -1,22 +1,13 @@
-import { CashIcon, ChartPieIcon } from '@heroicons/react/outline'
+import { ChartPieIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import { Votes } from '@dao-dao/icons'
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
 import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  humanReadableDuration,
-} from '@dao-dao/utils'
+import { humanReadableDuration } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { BaseDaoContractInfoContentProps } from '../../../types'
 
-export const DaoContractInfoContent = ({
-  threshold,
-  quorum,
-  depositInfo,
-}: BaseDaoContractInfoContentProps) => {
+export const DaoContractInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenAddress, governanceTokenInfo } =
@@ -51,39 +42,6 @@ export const DaoContractInfoContent = ({
                 : 'None'
             }
           />
-          <GovInfoListItem
-            icon={<Votes fill="currentColor" width="16px" />}
-            text={t('title.passingThreshold')}
-            value={threshold}
-          />
-          {quorum && (
-            <GovInfoListItem
-              icon={<Votes fill="currentColor" width="16px" />}
-              text={t('title.quorum')}
-              value={quorum}
-            />
-          )}
-          {depositInfo && (
-            <>
-              <GovInfoListItem
-                icon={<Votes fill="currentColor" width="16px" />}
-                text={t('title.proposalDeposit')}
-                value={`${convertMicroDenomToDenomWithDecimals(
-                  depositInfo.deposit,
-                  governanceTokenInfo.decimals
-                )} $${governanceTokenInfo.symbol}`}
-              />
-              <GovInfoListItem
-                icon={<CashIcon className="inline w-4" />}
-                text={t('title.refundFailedProposals')}
-                value={
-                  depositInfo.refund_failed_proposals
-                    ? t('info.yes')
-                    : t('info.no')
-                }
-              />
-            </>
-          )}
         </ul>
       </div>
       <div>

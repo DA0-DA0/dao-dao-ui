@@ -12,6 +12,7 @@ import {
 
 import {
   ActionCardLoader,
+  MintIcon,
   MintComponent as StatelessMintComponent,
 } from '../components'
 import {
@@ -122,7 +123,8 @@ const Component: ActionComponent = (props) => (
 
 export const mintAction: Action<MintData> = {
   key: ActionKey.Mint,
-  label: '🌿 Mint',
+  Icon: MintIcon,
+  label: 'Mint',
   description: 'Mint new governance tokens.',
   Component,
   useDefaults,

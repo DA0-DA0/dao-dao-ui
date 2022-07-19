@@ -5,8 +5,11 @@ import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
 import { StakingMode } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { BaseProposalDetailsVotingPowerWidgetProps } from '../../../types'
 
-export const ProposalDetailsVotingPowerWidget = () => {
+export const ProposalDetailsVotingPowerWidget = ({
+  depositInfo,
+}: BaseProposalDetailsVotingPowerWidgetProps) => {
   const { t } = useTranslation()
   const { coreAddress, Loader } = useVotingModuleAdapterOptions()
   const [showStaking, setShowStaking] = useState(false)
@@ -21,6 +24,7 @@ export const ProposalDetailsVotingPowerWidget = () => {
         <StakingModal
           connectWalletButton={<ConnectWalletButton />}
           coreAddress={coreAddress}
+          deposit={depositInfo?.deposit}
           loader={<Loader />}
           mode={StakingMode.Stake}
           onClose={() => setShowStaking(false)}

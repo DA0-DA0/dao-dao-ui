@@ -3,6 +3,7 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionCard, ActionComponent } from '@dao-dao/actions'
 import {
   FormSwitch,
   InputErrorMessage,
@@ -17,8 +18,6 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { ActionCard, ActionComponent } from '..'
 
 export interface UpdateProposalConfigOptions {
   governanceTokenSymbol?: string
@@ -49,7 +48,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.gear')} symbol="⚙️" />}
+      Icon={UpdateProposalConfigIcon}
       onRemove={onRemove}
       title={t('form.updateVotingConfigTitle')}
     >
@@ -71,7 +70,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </p>
       <div className="flex flex-row flex-wrap gap-2">
         {governanceTokenSymbol !== undefined && (
-          <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md md:w-min">
+          <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md md:w-min bg-card">
             <div className="flex flex-row gap-2">
               <Tooltip label={t('form.requireProposalDepositTooltip')}>
                 <InformationCircleIcon className="w-4 h-4 secondary-text" />
@@ -90,7 +89,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             />
           </div>
         )}
-        <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md md:w-min">
+        <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md md:w-min bg-card">
           <div className="flex flex-row gap-2">
             <Tooltip label={t('form.onlyMembersExecuteTooltip')}>
               <InformationCircleIcon className="w-4 h-4 secondary-text" />
@@ -111,7 +110,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </div>
 
       {depositRequired && (
-        <div className="flex flex-row flex-wrap gap-4 justify-between p-3 rounded-lg border border-default md:gap-1">
+        <div className="flex flex-row flex-wrap gap-4 justify-between p-3 rounded-lg border md:gap-1 border-default">
           <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
             <h3 className="primary-text">
               <Emoji label={t('emoji.money')} symbol="💵" />{' '}
@@ -138,7 +137,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               />
               <InputErrorMessage error={errors?.depositInfo?.deposit} />
             </div>
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md bg-card">
               <div className="flex flex-row gap-2">
                 <Tooltip label={t('form.refundFailedProposalsTooltip')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
@@ -159,7 +158,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
         </div>
       )}
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
+      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border md:gap-1 border-default">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.chart')} symbol="📊" />{' '}
@@ -205,7 +204,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
+      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border md:gap-1 border-default">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.people')} symbol="👥" />{' '}
@@ -249,7 +248,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
+      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border md:gap-1 border-default">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.clock')} symbol="⏰" />{' '}
@@ -316,7 +315,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
+      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border md:gap-1 border-default">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
           <h3 className="primary-text">
             <Emoji label={t('emoji.recycle')} symbol="♻️" />{' '}
@@ -335,4 +334,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </div>
     </ActionCard>
   )
+}
+
+export const UpdateProposalConfigIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.gear')} symbol="⚙️" />
 }

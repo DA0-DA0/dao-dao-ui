@@ -3,7 +3,10 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 
-import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components'
+import {
+  MigrateContractIcon,
+  MigrateContractComponent as StatelessMigrateContractComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -76,7 +79,8 @@ const Component: ActionComponent = (props) => {
 
 export const migrateAction: Action<MigrateData> = {
   key: ActionKey.Migrate,
-  label: '🐋 Migrate Smart Contract',
+  Icon: MigrateContractIcon,
+  label: 'Migrate Smart Contract',
   description: 'Migrate a CosmWasm contract to a new code ID.',
   Component,
   useDefaults,

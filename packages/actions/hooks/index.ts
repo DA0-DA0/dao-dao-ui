@@ -1,1 +1,1 @@
-export * from './useActionsWithoutDisabledKeys'
+export * from './useActions'

@@ -1,14 +1,7 @@
 import { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { constSelector, useRecoilValue } from 'recoil'
 
-import { useGovernanceTokenInfo, useProposalModule } from '@dao-dao/state'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  makeWasmMessage,
-} from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
-
-import { UpdateProposalConfigComponent as StatelessUpdateProposalConfigComponent } from '../components'
 import {
   Action,
   ActionComponent,
@@ -16,9 +9,25 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/actions'
+import {
+  Cw20BaseSelectors,
+  CwProposalSingleSelectors,
+  useGovernanceTokenInfo,
+} from '@dao-dao/state'
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  makeWasmMessage,
+} from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-interface UpdateProposalConfigData {
+import {
+  UpdateProposalConfigComponent,
+  UpdateProposalConfigIcon,
+} from './UpdateProposalConfigComponent'
+
+export interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
 
   depositRequired: boolean
@@ -40,33 +49,28 @@ interface UpdateProposalConfigData {
 }
 
 const useDefaults: UseDefaults<UpdateProposalConfigData> = (
-  coreAddr: string
+  _,
+  { address: proposalModuleAddress }
 ) => {
-  const { proposalModuleConfig, proposalDepositTokenInfo } = useProposalModule(
-    coreAddr,
-    {
-      fetchProposalDepositTokenInfo: true,
-    }
+  const { t } = useTranslation()
+
+  const proposalModuleConfig = useRecoilValue(
+    CwProposalSingleSelectors.configSelector({
+      contractAddress: proposalModuleAddress,
+    })
   )
-
-  if (proposalModuleConfig === undefined) {
-    // We will only hit this case if the CosmWasmClient is undefined in which
-    // case a lot of things have likely broken before we've gotten here. Return
-    // some default values.
-    return {
-      onlyMembersExecute: true,
-
-      depositRequired: false,
-
-      thresholdType: 'majority',
-      quorumType: 'majority',
-
-      proposalDuration: 1,
-      proposalDurationUnits: 'weeks',
-
-      allowRevoting: false,
-    }
+  if (!proposalModuleConfig) {
+    throw new Error(t('error.loadingData'))
   }
+
+  const proposalDepositTokenInfo = useRecoilValue(
+    proposalModuleConfig.deposit_info?.token
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: proposalModuleConfig.deposit_info.token,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
 
   const onlyMembersExecute = proposalModuleConfig.only_members_execute
   const depositRequired = !!proposalModuleConfig.deposit_info
@@ -170,10 +174,20 @@ const maxVotingInfoToCosmos = (
 }
 
 const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
-  coreAddress: string
+  _,
+  { address: proposalModuleAddress }
 ) => {
-  const { proposalModuleAddress, proposalModuleConfig } =
-    useProposalModule(coreAddress)
+  const { t } = useTranslation()
+
+  const proposalModuleConfig = useRecoilValue(
+    CwProposalSingleSelectors.configSelector({
+      contractAddress: proposalModuleAddress,
+    })
+  )
+  if (!proposalModuleConfig) {
+    throw new Error(t('error.loadingData'))
+  }
+
   const {
     hooks: { useVoteConversionDecimals },
   } = useVotingModuleAdapter()
@@ -233,12 +247,10 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  const coreAddress = props.coreAddress
-
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)
 
   return (
-    <StatelessUpdateProposalConfigComponent
+    <UpdateProposalConfigComponent
       {...props}
       options={{ governanceTokenSymbol: governanceTokenInfo?.symbol }}
     />
@@ -325,12 +337,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   }, [msg, voteConversionDecimals])
 }
 
-export const updateProposalConfigAction: Action<UpdateProposalConfigData> = {
-  key: ActionKey.UpdateProposalConfig,
-  label: '⚙️ Update Voting Config',
-  description: 'Update the voting paramaters for your DAO.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-}
+export const makeUpdateProposalConfigAction =
+  (): Action<UpdateProposalConfigData> => ({
+    key: ActionKey.UpdateProposalConfig,
+    Icon: UpdateProposalConfigIcon,
+    label: 'Update Voting Config',
+    description: 'Update the voting paramaters for your DAO.',
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  })

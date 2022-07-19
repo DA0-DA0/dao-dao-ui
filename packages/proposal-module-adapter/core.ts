@@ -1,7 +1,6 @@
 import { ProposalModule } from '@dao-dao/utils'
 
 import {
-  IProposalModuleAdapterCommonInitialOptions,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleContext,
@@ -21,7 +20,7 @@ export const matchAdapter = (contractName: string) =>
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
-  initialOptions: IProposalModuleAdapterCommonInitialOptions
+  initialOptions: IProposalModuleAdapterInitialOptions
 ) => {
   const adapter = matchAdapter(proposalModule.contractName)
 
@@ -91,9 +90,8 @@ export const matchAndLoadAdapter = async (
 
   const adapterOptions: IProposalModuleAdapterOptions = {
     ...initialOptions,
-    proposalModuleAddress: proposalModule.address,
+    proposalModule,
     proposalId,
-    proposalPrefix,
     proposalNumber,
   }
 
@@ -101,6 +99,7 @@ export const matchAndLoadAdapter = async (
     id: adapter.id,
     options: adapterOptions,
     adapter: await adapter.load(adapterOptions),
+    common: matchAndLoadCommon(proposalModule, initialOptions),
   }
 }
 

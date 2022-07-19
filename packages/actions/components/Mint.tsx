@@ -27,11 +27,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   const amount = watch(getFieldName('amount'))
 
   return (
-    <ActionCard
-      emoji={<Emoji label={t('emoji.herb')} symbol="🌿" />}
-      onRemove={onRemove}
-      title={t('title.mint')}
-    >
+    <ActionCard Icon={MintIcon} onRemove={onRemove} title={t('title.mint')}>
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
           <div>
@@ -79,4 +75,9 @@ export const MintComponent: ActionComponent<MintOptions> = ({
       </div>
     </ActionCard>
   )
+}
+
+export const MintIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.herb')} symbol="🌿" />
 }

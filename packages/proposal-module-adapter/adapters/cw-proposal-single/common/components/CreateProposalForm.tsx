@@ -19,7 +19,7 @@ import {
   FormProposalData,
   UseDefaults,
   UseTransformToCosmos,
-  useActionsWithoutDisabledKeys,
+  useActions,
 } from '@dao-dao/actions'
 import { Airplane } from '@dao-dao/icons'
 import {
@@ -56,6 +56,7 @@ import {
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { BaseCreateProposalFormProps } from '../../../../types'
+import { useActions as useProposalModuleActions } from '../hooks'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
@@ -74,10 +75,7 @@ interface CreateProposalFormProps extends BaseCreateProposalFormProps {
 
 export const CreateProposalForm = ({
   coreAddress,
-  proposalModule: {
-    address: proposalModuleAddress,
-    prefix: proposalModulePrefix,
-  },
+  proposalModule,
   Loader,
   connected,
   walletAddress,
@@ -92,6 +90,8 @@ export const CreateProposalForm = ({
     fields: { disabledActionKeys },
   } = useVotingModuleAdapter()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+  const { address: proposalModuleAddress, prefix: proposalModulePrefix } =
+    proposalModule
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
@@ -198,7 +198,8 @@ export const CreateProposalForm = ({
     shouldUnregister: true,
   })
 
-  const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
+  const proposalModuleActions = useProposalModuleActions()
+  const actions = useActions(disabledActionKeys, proposalModuleActions)
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<
@@ -214,8 +215,8 @@ export const CreateProposalForm = ({
       ...acc,
       [action.key]: {
         action,
-        transform: action.useTransformToCosmos(coreAddress),
-        defaults: action.useDefaults(coreAddress),
+        transform: action.useTransformToCosmos(coreAddress, proposalModule),
+        defaults: action.useDefaults(coreAddress, proposalModule),
       },
     }),
     {}
@@ -431,6 +432,7 @@ export const CreateProposalForm = ({
                     }
                     index={index}
                     onRemove={() => remove(index)}
+                    proposalModule={proposalModule}
                   />
                 </li>
               )

@@ -57,7 +57,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.people')} symbol="👥" />}
+      Icon={ManageMembersIcon}
       onRemove={onRemove}
       title={t('title.manageMembers')}
     >
@@ -186,4 +186,9 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       </div>
     </ActionCard>
   )
+}
+
+export const ManageMembersIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.people')} symbol="👥" />
 }

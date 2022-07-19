@@ -22,8 +22,10 @@ export const ProposalVoteDecisionStatus = ({
   voteConversionDecimals,
 }: BaseProposalVoteDecisionStatusProps) => {
   const { t } = useTranslation()
-  const { proposalModuleAddress, proposalNumber } =
-    useProposalModuleAdapterOptions()
+  const {
+    proposalModule: { address: proposalModuleAddress },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({

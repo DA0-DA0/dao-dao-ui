@@ -4,6 +4,7 @@ import { ComponentType } from 'react'
 import { Action, FormProposalData } from '@dao-dao/actions'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
+import { BaseProposalDetailsVotingPowerWidgetProps } from '@dao-dao/voting-module-adapter'
 
 export interface IProposalModuleAdapterCommon {
   // Hooks
@@ -15,6 +16,8 @@ export interface IProposalModuleAdapterCommon {
     useListAllProposalInfos: (
       startAfter: number | undefined
     ) => CommonProposalListInfo[]
+    useProposalCount: () => number
+    useActions: () => Action[]
   }
 
   // Components
@@ -73,37 +76,29 @@ export type ProposalModuleAdapter = {
   ) => IProposalModuleAdapter | Promise<IProposalModuleAdapter>
 }
 
-export interface IProposalModuleAdapterCommonOptions {
+export interface IProposalModuleAdapterInitialOptions {
+  coreAddress: string
+  Logo: ComponentType<LogoProps>
+  Loader: ComponentType<LoaderProps>
+}
+
+export interface IProposalModuleAdapterCommonOptions
+  extends IProposalModuleAdapterInitialOptions {
   proposalModule: ProposalModule
-  coreAddress: string
-  Logo: ComponentType<LogoProps>
-  Loader: ComponentType<LoaderProps>
 }
 
-export type IProposalModuleAdapterCommonInitialOptions = Omit<
-  IProposalModuleAdapterCommonOptions,
-  'proposalModule'
->
-
-export interface IProposalModuleAdapterOptions {
-  proposalModuleAddress: string
+export interface IProposalModuleAdapterOptions
+  extends IProposalModuleAdapterInitialOptions {
+  proposalModule: ProposalModule
   proposalId: string
-  proposalPrefix: string
   proposalNumber: number
-  coreAddress: string
-  Logo: ComponentType<LogoProps>
-  Loader: ComponentType<LoaderProps>
 }
-
-export type IProposalModuleAdapterInitialOptions = Omit<
-  IProposalModuleAdapterOptions,
-  'proposalModuleAddress' | 'proposalId' | 'proposalPrefix' | 'proposalNumber'
->
 
 export interface IProposalModuleContext {
   id: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
+  common: IProposalModuleAdapterCommon
 }
 
 // Internal Adapter Types
@@ -142,7 +137,7 @@ export interface BaseProposalDetailsProps {
   ConnectWalletButton: ComponentType
   duplicate: (data: FormProposalData) => void
   walletAddress?: string
-  VotingPowerWidget?: ComponentType
+  VotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
 }
 
 export interface BaseProposalLineProps {

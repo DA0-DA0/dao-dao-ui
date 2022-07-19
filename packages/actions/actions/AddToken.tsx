@@ -5,7 +5,10 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
+import {
+  AddTokenIcon,
+  AddTokenComponent as StatelessAddTokenComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -120,7 +123,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
 
 export const addTokenAction: Action<AddTokenData> = {
   key: ActionKey.AddToken,
-  label: '🔘 Add Treasury Token',
+  Icon: AddTokenIcon,
+  label: 'Add Treasury Token',
   description: "Add a token to your DAO's treasury.",
   Component,
   useDefaults,

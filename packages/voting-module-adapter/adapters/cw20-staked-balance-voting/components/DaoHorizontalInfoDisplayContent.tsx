@@ -2,11 +2,7 @@ import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { Pencil } from '@dao-dao/icons'
-import {
-  useGovernanceTokenInfo,
-  useProposalModule,
-  useVotingModule,
-} from '@dao-dao/state'
+import { useGovernanceTokenInfo, useVotingModule } from '@dao-dao/state'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -14,23 +10,19 @@ import {
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { BaseDaoHorizontalInfoDisplayContentProps } from '../../../types'
 
-export const DaoHorizontalInfoDisplayInternal = () => {
+export const DaoHorizontalInfoDisplayContent = ({
+  proposalCount,
+}: BaseDaoHorizontalInfoDisplayContentProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const { totalVotingWeight } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })
-  const { proposalCount } = useProposalModule(coreAddress, {
-    fetchProposalCount: true,
-  })
 
-  if (
-    !governanceTokenInfo ||
-    totalVotingWeight === undefined ||
-    proposalCount === undefined
-  ) {
+  if (!governanceTokenInfo || totalVotingWeight === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

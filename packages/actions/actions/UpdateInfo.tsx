@@ -5,7 +5,7 @@ import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { UpdateInfoComponent as Component } from '../components'
+import { UpdateInfoComponent as Component, UpdateInfoIcon } from '../components'
 import {
   Action,
   ActionKey,
@@ -96,7 +96,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
 
 export const updateInfoAction: Action<UpdateInfoData> = {
   key: ActionKey.UpdateInfo,
-  label: 'ℹ️ Update Info',
+  Icon: UpdateInfoIcon,
+  label: 'Update Info',
   description: "Update your DAO's name, image, and description.",
   Component,
   useDefaults,

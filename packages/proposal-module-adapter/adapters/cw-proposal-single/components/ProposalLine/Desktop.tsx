@@ -12,8 +12,10 @@ import { ProposalStatus } from '../ProposalStatus'
 
 export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
   const { t } = useTranslation()
-  const { proposalModuleAddress, proposalNumber, proposalPrefix } =
-    useProposalModuleAdapterOptions()
+  const {
+    proposalModule: { address: proposalModuleAddress, prefix: proposalPrefix },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const proposal = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({

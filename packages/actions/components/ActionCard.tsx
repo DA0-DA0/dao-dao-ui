@@ -1,17 +1,17 @@
 import { XIcon } from '@heroicons/react/solid'
-import { ComponentType, FC, ReactNode } from 'react'
+import { ComponentType, FC } from 'react'
 
 import { LoaderProps } from '@dao-dao/ui'
 
 import { ActionComponentProps } from '..'
 
 interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
-  emoji: ReactNode
+  Icon: ComponentType
   title: string
 }
 
 export const ActionCard: FC<ActionCardProps> = ({
-  emoji,
+  Icon,
   title,
   onRemove,
   children,
@@ -19,7 +19,9 @@ export const ActionCard: FC<ActionCardProps> = ({
   <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
     <div className="flex flex-row gap-2 justify-between items-start">
       <div className="flex flex-row gap-2 items-center">
-        <h2 className="text-3xl">{emoji}</h2>
+        <h2 className="text-3xl">
+          <Icon />
+        </h2>
         <h2>{title}</h2>
       </div>
 

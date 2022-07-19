@@ -2,14 +2,15 @@ import { createContext, useContext } from 'react'
 
 import {
   IProposalModuleAdapter,
+  IProposalModuleAdapterCommon,
   IProposalModuleAdapterOptions,
-  IProposalModuleAdapterWithOptions,
+  IProposalModuleContext,
 } from '../types'
 
 // External API
 
 export const ProposalModuleAdapterContext =
-  createContext<IProposalModuleAdapterWithOptions | null>(null)
+  createContext<IProposalModuleContext | null>(null)
 
 export const useProposalModuleAdapter = (): IProposalModuleAdapter => {
   const context = useContext(ProposalModuleAdapterContext)
@@ -35,4 +36,17 @@ export const useProposalModuleAdapterOptions =
     }
 
     return context.options
+  }
+
+export const useProposalModuleAdapterCommon =
+  (): IProposalModuleAdapterCommon => {
+    const context = useContext(ProposalModuleAdapterContext)
+
+    if (!context) {
+      throw new Error(
+        'useProposalModuleAdapterCommon can only be used in a descendant of ProposalModuleAdapterProvider.'
+      )
+    }
+
+    return context.common
   }

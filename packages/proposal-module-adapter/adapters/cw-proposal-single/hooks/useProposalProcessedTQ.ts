@@ -10,8 +10,10 @@ import { useProcessTQ } from '../common'
 
 export const useProposalProcessedTQ = (): ProcessedThresholdQuorum => {
   const { t } = useTranslation()
-  const { proposalModuleAddress, proposalNumber } =
-    useProposalModuleAdapterOptions()
+  const {
+    proposalModule: { address: proposalModuleAddress },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const proposal = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({

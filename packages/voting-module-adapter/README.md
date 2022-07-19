@@ -34,11 +34,11 @@ information displayed is significantly different:
 ```typescriptreact
 const DaoHorizontalInfoDisplay = () => (
   <SuspenseLoader fallback={<FallbackDisplay />}>
-    <DaoHorizontalInfoDisplayInternal />
+    <DaoHorizontalInfoDisplayContent />
   </SuspenseLoader>
 )
 
-const DaoHorizontalInfoDisplayInternal: FC = () => {
+const DaoHorizontalInfoDisplayContent: FC = () => {
   const { t } = useTranslation()
   const { coreAddress, votingModuleType } = useDAOInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
@@ -114,12 +114,12 @@ const DaoHorizontalInfoDisplayInternal: FC = () => {
 ```typescriptreact
 const DaoHorizontalInfoDisplay = () => {
   const {
-    ui: { DaoHorizontalInfoDisplayInternal },
+    ui: { DaoHorizontalInfoDisplayContent },
   } = useVotingModuleAdapter()
 
   return (
     <SuspenseLoader fallback={<FallbackDisplay />}>
-      <DaoHorizontalInfoDisplayInternal />
+      <DaoHorizontalInfoDisplayContent />
     </SuspenseLoader>
   )
 }
@@ -129,10 +129,10 @@ const DaoHorizontalInfoDisplay = () => {
 <br/>
 
 <details>
-<summary>`cw4-voting/components/DaoHorizontalInfoDisplayInternal.tsx`</summary>
+<summary>`cw4-voting/components/DaoHorizontalInfoDisplayContent.tsx`</summary>
 
 ```typescriptreact
-const DaoHorizontalInfoDisplayInternal = () => {
+const DaoHorizontalInfoDisplayContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
@@ -168,10 +168,10 @@ const DaoHorizontalInfoDisplayInternal = () => {
 </details>
 
 <details>
-<summary>`cw20-staked-balance-voting/components/DaoHorizontalInfoDisplayInternal.tsx`</summary>
+<summary>`cw20-staked-balance-voting/components/DaoHorizontalInfoDisplayContent.tsx`</summary>
 
 ```typescriptreact
-const DaoHorizontalInfoDisplayInternal = () => {
+const DaoHorizontalInfoDisplayContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
@@ -375,12 +375,12 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 const DaoHorizontalInfoDisplay = () => {
   const {
-    ui: { DaoHorizontalInfoDisplayInternal },
+    ui: { DaoHorizontalInfoDisplayContent },
   } = useVotingModuleAdapter()
 
   return (
     <SuspenseLoader fallback={<Loader />}>
-      <DaoHorizontalInfoDisplayInternal />
+      <DaoHorizontalInfoDisplayContent />
     </SuspenseLoader>
   )
 }

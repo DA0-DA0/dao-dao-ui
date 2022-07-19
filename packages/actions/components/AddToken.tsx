@@ -28,7 +28,7 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.token')} symbol="🔘" />}
+      Icon={AddTokenIcon}
       onRemove={onRemove}
       title={t('title.addTreasuryToken')}
     >
@@ -47,4 +47,9 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
       <TokenInfoDisplay {...options} />
     </ActionCard>
   )
+}
+
+export const AddTokenIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.token')} symbol="🔘" />
 }

@@ -9,7 +9,6 @@ import {
   StakeCw20Selectors,
   stakingLoadingAtom,
   useGovernanceTokenInfo,
-  useProposalModule,
   useStakingInfo,
   useWalletBalance,
 } from '@dao-dao/state'
@@ -31,6 +30,7 @@ interface StakingModalProps {
   connectWalletButton: ReactNode
   loader: ReactNode
   coreAddress: string
+  deposit?: string
 }
 
 export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
@@ -44,6 +44,7 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   onClose,
   connectWalletButton,
   coreAddress,
+  deposit,
 }) => {
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
@@ -70,7 +71,6 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
     fetchClaims: true,
     fetchWalletStakedValue: true,
   })
-  const { proposalModuleConfig } = useProposalModule(coreAddress)
 
   const totalStakedBalance = useRecoilValue(
     stakingContractAddress
@@ -313,9 +313,9 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
       onAction={onAction}
       onClose={onClose}
       proposalDeposit={
-        proposalModuleConfig?.deposit_info?.deposit
+        deposit
           ? convertMicroDenomToDenomWithDecimals(
-              proposalModuleConfig.deposit_info.deposit,
+              deposit,
               governanceTokenInfo.decimals
             )
           : undefined

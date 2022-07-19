@@ -8,6 +8,7 @@ import { makeWasmMessage } from '@dao-dao/utils'
 import {
   ActionCardLoader,
   ManageMembersData,
+  ManageMembersIcon,
   ManageMembersComponent as StatelessManageMembersComponent,
 } from '../components'
 import {
@@ -116,7 +117,8 @@ const Component: ActionComponent = (props) => (
 
 export const manageMembersAction: Action<ManageMembersData> = {
   key: ActionKey.ManageMembers,
-  label: '👥 Manage Members',
+  Icon: ManageMembersIcon,
+  label: 'Manage Members',
   description: 'Add, update, or remove members from the DAO.',
   Component,
   useDefaults,

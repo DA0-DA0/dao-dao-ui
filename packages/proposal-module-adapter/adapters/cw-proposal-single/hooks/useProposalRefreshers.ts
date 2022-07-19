@@ -6,8 +6,10 @@ import { refreshProposalIdAtom, refreshProposalsIdAtom } from '@dao-dao/state'
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 
 export const useProposalRefreshers = () => {
-  const { proposalModuleAddress, proposalNumber } =
-    useProposalModuleAdapterOptions()
+  const {
+    proposalModule: { address: proposalModuleAddress },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const setRefreshProposalId = useSetRecoilState(

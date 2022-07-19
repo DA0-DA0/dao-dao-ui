@@ -17,13 +17,13 @@ interface DaoContractInfoProps {
   hideTreasury?: boolean
 }
 
-const DaoContractInfoInternal = ({ hideTreasury }: DaoContractInfoProps) => {
+const InnerDaoContractInfo = ({ hideTreasury }: DaoContractInfoProps) => {
   const {
     components: { DaoContractInfoContent },
   } = useVotingModuleAdapter()
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 md:grid md:grid-cols-3">
+    <div className="flex flex-row flex-wrap gap-3">
       <DaoContractInfoContent />
 
       {!hideTreasury && (
@@ -97,6 +97,6 @@ const DaoContractInfoLoading: FC<DaoContractInfoProps> = ({ hideTreasury }) => {
 
 export const DaoContractInfo: FC<DaoContractInfoProps> = (props) => (
   <SuspenseLoader fallback={<DaoContractInfoLoading {...props} />}>
-    <DaoContractInfoInternal {...props} />
+    <InnerDaoContractInfo {...props} />
   </SuspenseLoader>
 )

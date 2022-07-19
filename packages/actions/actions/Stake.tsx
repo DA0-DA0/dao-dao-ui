@@ -15,6 +15,7 @@ import {
 
 import {
   ActionCardLoader,
+  StakeIcon,
   StakeComponent as StatelessStakeComponent,
   stakeActions,
 } from '../components'
@@ -144,7 +145,8 @@ const Component: ActionComponent = (props) => (
 
 export const stakeAction: Action<StakeData> = {
   key: ActionKey.Stake,
-  label: '📤 Staking',
+  Icon: StakeIcon,
+  label: 'Stake',
   description: 'Manage native token staking.',
   Component,
   useDefaults,

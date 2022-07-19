@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react'
 
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { CustomComponent as Component } from '../components'
+import { CustomComponent as Component, CustomIcon } from '../components'
 import {
   Action,
   ActionKey,
@@ -52,7 +52,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CustomData> = (
 
 export const customAction: Action<CustomData> = {
   key: ActionKey.Custom,
-  label: '🤖 Custom',
+  Icon: CustomIcon,
+  label: 'Custom',
   description: 'Perform any custom action a wallet can.',
   Component,
   useDefaults,

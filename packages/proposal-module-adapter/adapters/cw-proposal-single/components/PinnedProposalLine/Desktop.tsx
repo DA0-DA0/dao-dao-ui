@@ -17,9 +17,8 @@ export const PinnedProposalLineDesktop = ({
 }: BasePinnedProposalLineProps) => {
   const { t } = useTranslation()
   const {
-    proposalModuleAddress,
+    proposalModule: { address: proposalModuleAddress, prefix: proposalPrefix },
     proposalNumber,
-    proposalPrefix,
     Logo,
     coreAddress,
   } = useProposalModuleAdapterOptions()

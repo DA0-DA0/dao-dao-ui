@@ -22,8 +22,11 @@ export const ProposalInfoCard = ({
   walletAddress,
 }: BaseProposalInfoCardProps) => {
   const { t } = useTranslation()
-  const { coreAddress, proposalModuleAddress, proposalNumber, proposalPrefix } =
-    useProposalModuleAdapterOptions()
+  const {
+    coreAddress,
+    proposalModule: { address: proposalModuleAddress, prefix: proposalPrefix },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const proposal = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({

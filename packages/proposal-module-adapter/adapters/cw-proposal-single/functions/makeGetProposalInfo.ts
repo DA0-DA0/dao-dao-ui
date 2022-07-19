@@ -9,14 +9,14 @@ import {
 } from '../../../types'
 
 export const makeGetProposalInfo =
-  ({ proposalModuleAddress, proposalNumber }: IProposalModuleAdapterOptions) =>
+  ({
+    proposalModule: { address },
+    proposalNumber,
+  }: IProposalModuleAdapterOptions) =>
   async (
     cosmWasmClient: CosmWasmClient
   ): Promise<CommonProposalInfo | undefined> => {
-    const queryClient = new CwProposalSingleQueryClient(
-      cosmWasmClient,
-      proposalModuleAddress
-    )
+    const queryClient = new CwProposalSingleQueryClient(cosmWasmClient, address)
 
     let proposalResponse: ProposalResponse | undefined
     try {

@@ -14,10 +14,8 @@ export interface MembershipMobileTabProps {
   selected: boolean
 }
 
-export interface BaseDaoContractInfoContentProps {
-  threshold: string
-  quorum: string | undefined
-  depositInfo?: CheckedDepositInfo
+export interface BaseDaoHorizontalInfoDisplayContentProps {
+  proposalCount: number
 }
 
 export interface BaseVoteHeroStatsProps {
@@ -27,6 +25,10 @@ export interface BaseVoteHeroStatsProps {
 export interface BaseSdaMembershipPageProps {
   defaultImageUrl: string
   Loader: ComponentType<{ size?: number | string }>
+}
+
+export interface BaseProposalDetailsVotingPowerWidgetProps {
+  depositInfo?: CheckedDepositInfo
 }
 
 export interface IVotingModuleAdapter {
@@ -48,13 +50,13 @@ export interface IVotingModuleAdapter {
       MobileTab: ComponentType<MembershipMobileTabProps>
       Mobile: ComponentType
     }
-    DaoHorizontalInfoDisplayInternal: ComponentType
+    DaoHorizontalInfoDisplayContent: ComponentType<BaseDaoHorizontalInfoDisplayContentProps>
     DaoTreasuryFooter: ComponentType
-    DaoContractInfoContent: ComponentType<BaseDaoContractInfoContentProps>
+    DaoContractInfoContent: ComponentType
     ProposalCreateAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
-    ProposalDetailsVotingPowerWidget?: ComponentType
+    ProposalDetailsVotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
   }
 }
 

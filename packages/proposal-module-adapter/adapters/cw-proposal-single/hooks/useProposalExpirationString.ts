@@ -13,8 +13,10 @@ import { useProposalModuleAdapterOptions } from '../../../react'
 
 export const useProposalExpirationString = () => {
   const { t } = useTranslation()
-  const { proposalModuleAddress, proposalNumber } =
-    useProposalModuleAdapterOptions()
+  const {
+    proposalModule: { address: proposalModuleAddress },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const proposal = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({

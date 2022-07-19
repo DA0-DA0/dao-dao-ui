@@ -17,8 +17,10 @@ const VOTE_LIMIT = 30
 
 export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
   const { t } = useTranslation()
-  const { proposalModuleAddress, proposalNumber } =
-    useProposalModuleAdapterOptions()
+  const {
+    proposalModule: { address: proposalModuleAddress },
+    proposalNumber,
+  } = useProposalModuleAdapterOptions()
 
   const proposal = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({

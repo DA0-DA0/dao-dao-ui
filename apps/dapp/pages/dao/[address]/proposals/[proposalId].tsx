@@ -5,10 +5,7 @@ import { useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  FormProposalData,
-  useActionsWithoutDisabledKeys,
-} from '@dao-dao/actions'
+import { FormProposalData, useActions } from '@dao-dao/actions'
 import { ConnectWalletButton } from '@dao-dao/common'
 import {
   CommonProposalInfo,
@@ -16,6 +13,7 @@ import {
   ProposalModuleAdapterProvider,
   matchAndLoadAdapter,
   useProposalModuleAdapter,
+  useProposalModuleAdapterCommon,
   useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
 import {
@@ -43,14 +41,6 @@ const InnerProposal = () => {
   const { address: walletAddress, connected } = useWallet()
 
   const {
-    fields: { disabledActionKeys },
-    hooks: { useVoteConversionDecimals },
-    components: { ProposalDetailsVotingPowerWidget },
-  } = useVotingModuleAdapter()
-  const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
-  const voteConversionDecimals = useVoteConversionDecimals()
-
-  const {
     components: {
       ProposalVotes,
       ProposalVoteDecisionStatus,
@@ -59,7 +49,20 @@ const InnerProposal = () => {
     },
     hooks: { useProposalRefreshers },
   } = useProposalModuleAdapter()
+  const {
+    hooks: { useActions: useProposalModuleActions },
+  } = useProposalModuleAdapterCommon()
   const { proposalId } = useProposalModuleAdapterOptions()
+
+  const {
+    fields: { disabledActionKeys },
+    hooks: { useVoteConversionDecimals },
+    components: { ProposalDetailsVotingPowerWidget },
+  } = useVotingModuleAdapter()
+  const voteConversionDecimals = useVoteConversionDecimals()
+
+  const proposalModuleActions = useProposalModuleActions()
+  const actions = useActions(disabledActionKeys, proposalModuleActions)
 
   const { refreshProposalAndAll } = useProposalRefreshers()
 

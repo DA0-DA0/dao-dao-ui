@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { ActionAndData, ActionsRenderer } from '@dao-dao/actions'
+import { ActionAndData, ActionKey, ActionsRenderer } from '@dao-dao/actions'
 import {
   CwCoreV0_1_0Selectors,
   CwProposalSingleHooks,
@@ -43,17 +43,17 @@ export const ProposalDetails = ({
   VotingPowerWidget,
 }: BaseProposalDetailsProps) => {
   const { t } = useTranslation()
-  const { coreAddress, proposalModuleAddress, proposalNumber, Loader } =
+  const { coreAddress, proposalModule, proposalNumber, Loader } =
     useProposalModuleAdapterOptions()
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
-      contractAddress: proposalModuleAddress,
+      contractAddress: proposalModule.address,
     })
   )
   const proposal = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
+      contractAddress: proposalModule.address,
       params: [
         {
           proposalId: proposalNumber,
@@ -69,7 +69,7 @@ export const ProposalDetails = ({
   const walletVote = useRecoilValue(
     walletAddress
       ? CwProposalSingleSelectors.getVoteSelector({
-          contractAddress: proposalModuleAddress,
+          contractAddress: proposalModule.address,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })
       : constSelector(undefined)
@@ -111,14 +111,27 @@ export const ProposalDetails = ({
     (config.allow_revoting || !walletVote) &&
     memberWhenProposalCreated
 
+  // Ensure the last two actions are execute smart contract followed by
+  // custom, since a lot of actions are smart contract executions, and custom
+  // is a catch-all that will display any message. Do this by assigning values
+  // and sorting the actions in ascending order.
+  const orderedActions = useMemo(() => {
+    const keyToValue = (key: ActionKey) =>
+      key === ActionKey.Execute ? 1 : key === ActionKey.Custom ? 2 : 0
+
+    return actions.sort((a, b) => {
+      const aValue = keyToValue(a.key)
+      const bValue = keyToValue(b.key)
+      return aValue - bValue
+    })
+  }, [actions])
+
   // Call relevant action hooks in the same order every time.
   const actionData: ActionAndData[] = decodedMessages.map((message) => {
-    // Note: Ensure custom is the last message action since it will match
-    // all messages and we return the first successful message match.
-    const { data, action } = actions
+    const { data, action } = orderedActions
       .map((action) => ({
         action,
-        ...action.useDecodedCosmosMsg(message, coreAddress),
+        ...action.useDecodedCosmosMsg(message, coreAddress, proposalModule),
       }))
       // There will always be a match since custom matches all.
       .find(({ match }) => match)!
@@ -150,15 +163,15 @@ export const ProposalDetails = ({
   }, [])
 
   const castVote = CwProposalSingleHooks.useCastVote({
-    contractAddress: proposalModuleAddress,
+    contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })
   const executeProposal = CwProposalSingleHooks.useExecute({
-    contractAddress: proposalModuleAddress,
+    contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })
   const closeProposal = CwProposalSingleHooks.useClose({
-    contractAddress: proposalModuleAddress,
+    contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })
 
@@ -263,6 +276,7 @@ export const ProposalDetails = ({
               Loader={Loader}
               actionData={actionData}
               coreAddress={coreAddress}
+              proposalModule={proposalModule}
             />
           )}
         </>
@@ -346,7 +360,11 @@ export const ProposalDetails = ({
           {!memberWhenProposalCreated && (
             <p className="max-w-prose body-text">
               {t('info.mustHaveVotingPowerAtCreation')}{' '}
-              {VotingPowerWidget && <VotingPowerWidget />}
+              {VotingPowerWidget && (
+                <VotingPowerWidget
+                  depositInfo={proposal.deposit_info ?? undefined}
+                />
+              )}
             </p>
           )}
         </>

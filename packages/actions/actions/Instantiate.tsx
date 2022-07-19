@@ -16,7 +16,10 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { InstantiateComponent as StatelessInstantiateComponent } from '../components'
+import {
+  InstantiateIcon,
+  InstantiateComponent as StatelessInstantiateComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -192,7 +195,8 @@ const Component: ActionComponent = (props) => {
 
 export const instantiateAction: Action<InstantiateData> = {
   key: ActionKey.Instantiate,
-  label: '👶 Instantiate Smart Contract',
+  Icon: InstantiateIcon,
+  label: 'Instantiate Smart Contract',
   description: 'Instantiate a smart contract.',
   Component,
   useDefaults,
