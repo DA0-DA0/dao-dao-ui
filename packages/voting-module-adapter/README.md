@@ -32,13 +32,13 @@ information displayed is significantly different:
 <summary>Before</summary>
 
 ```typescriptreact
-const DaoHorizontalInfoDisplay = () => (
+const DaoThinInfoDisplay = () => (
   <SuspenseLoader fallback={<FallbackDisplay />}>
-    <DaoHorizontalInfoDisplayContent />
+    <DaoThinInfoContent />
   </SuspenseLoader>
 )
 
-const DaoHorizontalInfoDisplayContent: FC = () => {
+const DaoThinInfoContent: FC = () => {
   const { t } = useTranslation()
   const { coreAddress, votingModuleType } = useDAOInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
@@ -112,14 +112,14 @@ const DaoHorizontalInfoDisplayContent: FC = () => {
 <summary>After</summary>
 
 ```typescriptreact
-const DaoHorizontalInfoDisplay = () => {
+const DaoThinInfoDisplay = () => {
   const {
-    ui: { DaoHorizontalInfoDisplayContent },
+    ui: { DaoThinInfoContent },
   } = useVotingModuleAdapter()
 
   return (
     <SuspenseLoader fallback={<FallbackDisplay />}>
-      <DaoHorizontalInfoDisplayContent />
+      <DaoThinInfoContent />
     </SuspenseLoader>
   )
 }
@@ -129,10 +129,10 @@ const DaoHorizontalInfoDisplay = () => {
 <br/>
 
 <details>
-<summary>`cw4-voting/components/DaoHorizontalInfoDisplayContent.tsx`</summary>
+<summary>`cw4-voting/components/DaoThinInfoContent.tsx`</summary>
 
 ```typescriptreact
-const DaoHorizontalInfoDisplayContent = () => {
+const DaoThinInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
@@ -168,10 +168,10 @@ const DaoHorizontalInfoDisplayContent = () => {
 </details>
 
 <details>
-<summary>`cw20-staked-balance-voting/components/DaoHorizontalInfoDisplayContent.tsx`</summary>
+<summary>`cw20-staked-balance-voting/components/DaoThinInfoContent.tsx`</summary>
 
 ```typescriptreact
-const DaoHorizontalInfoDisplayContent = () => {
+const DaoThinInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
@@ -373,14 +373,14 @@ descendant of the Provider to access the voting module adapter interface.
 import { SuspenseLoader, Loader } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-const DaoHorizontalInfoDisplay = () => {
+const DaoThinInfoDisplay = () => {
   const {
-    ui: { DaoHorizontalInfoDisplayContent },
+    ui: { DaoThinInfoContent },
   } = useVotingModuleAdapter()
 
   return (
     <SuspenseLoader fallback={<Loader />}>
-      <DaoHorizontalInfoDisplayContent />
+      <DaoThinInfoContent />
     </SuspenseLoader>
   )
 }

@@ -1,21 +1,20 @@
 import { useTranslation } from 'react-i18next'
 
-import { CopyToClipboardAccent } from '@dao-dao/ui'
+import { CopyToClipboard } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoContractInfoContent = () => {
+export const DaoInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   return (
     <div>
       <h2 className="mb-4 md:mb-6 primary-text">{t('title.addresses')}</h2>
-      <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
-        <li>
-          {t('title.treasury')} <CopyToClipboardAccent value={coreAddress} />
-        </li>
-      </ul>
+      <div className="grid grid-cols-[auto_auto] gap-x-6 gap-y-2 justify-start items-center mt-3 md:ml-2 caption-text">
+        <p>{t('title.treasury')}</p>
+        <CopyToClipboard value={coreAddress} />
+      </div>
     </div>
   )
 }

@@ -6,11 +6,11 @@ import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { BaseDaoHorizontalInfoDisplayContentProps } from '../../../types'
+import { BaseDaoThinInfoContentProps } from '../../../types'
 
-export const DaoHorizontalInfoDisplayContent = ({
+export const DaoThinInfoContent = ({
   proposalCount,
-}: BaseDaoHorizontalInfoDisplayContentProps) => {
+}: BaseDaoThinInfoContentProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { totalVotingWeight } = useVotingModule(coreAddress, {

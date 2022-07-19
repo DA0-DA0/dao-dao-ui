@@ -14,7 +14,7 @@ export interface MembershipMobileTabProps {
   selected: boolean
 }
 
-export interface BaseDaoHorizontalInfoDisplayContentProps {
+export interface BaseDaoThinInfoContentProps {
   proposalCount: number
 }
 
@@ -50,9 +50,9 @@ export interface IVotingModuleAdapter {
       MobileTab: ComponentType<MembershipMobileTabProps>
       Mobile: ComponentType
     }
-    DaoHorizontalInfoDisplayContent: ComponentType<BaseDaoHorizontalInfoDisplayContentProps>
+    DaoThinInfoContent: ComponentType<BaseDaoThinInfoContentProps>
     DaoTreasuryFooter: ComponentType
-    DaoContractInfoContent: ComponentType
+    DaoInfoContent: ComponentType
     ProposalCreateAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>

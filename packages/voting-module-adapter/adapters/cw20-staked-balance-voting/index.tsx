@@ -4,8 +4,8 @@ import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
-  DaoContractInfoContent,
-  DaoHorizontalInfoDisplayContent,
+  DaoInfoContent,
+  DaoThinInfoContent,
   DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
@@ -49,9 +49,9 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
         MobileTab: MembershipMobileTab,
         Mobile: (props) => <Membership {...props} primaryText />,
       },
-      DaoHorizontalInfoDisplayContent,
+      DaoThinInfoContent,
       DaoTreasuryFooter,
-      DaoContractInfoContent,
+      DaoInfoContent,
       ProposalCreateAddresses,
       VoteHeroStats,
       SdaMembershipPage,

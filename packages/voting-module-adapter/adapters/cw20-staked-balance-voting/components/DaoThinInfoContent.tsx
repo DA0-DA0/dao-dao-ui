@@ -10,11 +10,11 @@ import {
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { BaseDaoHorizontalInfoDisplayContentProps } from '../../../types'
+import { BaseDaoThinInfoContentProps } from '../../../types'
 
-export const DaoHorizontalInfoDisplayContent = ({
+export const DaoThinInfoContent = ({
   proposalCount,
-}: BaseDaoHorizontalInfoDisplayContentProps) => {
+}: BaseDaoThinInfoContentProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)

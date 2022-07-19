@@ -24,8 +24,8 @@ import {
   DAOMobileHeader,
   DAOPageWrapper,
   DAOPageWrapperProps,
-  DaoContractInfo,
-  DaoHorizontalInfoDisplay,
+  DaoInfo,
+  DaoThinInfo,
   DaoProposals,
   DaoTreasury,
   DaoTreasuryHistory,
@@ -90,7 +90,7 @@ const InnerMobileDaoHome = () => {
           </div>
         )}
         {tab === MobileMenuTabSelection.Info && (
-          <DaoContractInfo hideTreasury />
+          <DaoInfo hideTreasury />
         )}
       </div>
     </div>
@@ -148,13 +148,13 @@ const InnerDAOHome = () => {
             <ContractHeader />
 
             <div className="mt-2">
-              <DaoHorizontalInfoDisplay />
+              <DaoThinInfo />
             </div>
             <div className="block mt-4 lg:hidden">
               <Membership.Desktop />
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
-              <DaoContractInfo />
+              <DaoInfo />
             </div>
           </div>
         </GradientHero>

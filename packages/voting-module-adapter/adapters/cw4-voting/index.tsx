@@ -4,8 +4,8 @@ import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
-  DaoContractInfoContent,
-  DaoHorizontalInfoDisplayContent,
+  DaoInfoContent,
+  DaoThinInfoContent,
   DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
@@ -51,9 +51,9 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
         MobileTab: MembershipMobileTab,
         Mobile: () => <Membership primaryText />,
       },
-      DaoHorizontalInfoDisplayContent,
+      DaoThinInfoContent,
       DaoTreasuryFooter,
-      DaoContractInfoContent,
+      DaoInfoContent,
       ProposalCreateAddresses,
       VoteHeroStats,
       SdaMembershipPage,

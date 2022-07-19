@@ -2,12 +2,12 @@ import { ChartPieIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
+import { CopyToClipboard, GovInfoListItem } from '@dao-dao/ui'
 import { humanReadableDuration } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const DaoContractInfoContent = () => {
+export const DaoInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenAddress, governanceTokenInfo } =
@@ -46,19 +46,16 @@ export const DaoContractInfoContent = () => {
       </div>
       <div>
         <h2 className="mb-4 md:mb-6 primary-text">{t('title.addresses')}</h2>
-        <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2 caption-text">
-          <li>
-            {t('title.treasury')} <CopyToClipboardAccent value={coreAddress} />
-          </li>
-          <li>
-            {t('title.governanceToken')}{' '}
-            <CopyToClipboardAccent value={governanceTokenAddress} />
-          </li>
-          <li>
-            {t('title.staking')}{' '}
-            <CopyToClipboardAccent value={stakingContractAddress} />
-          </li>
-        </ul>
+        <div className="grid grid-cols-[auto_auto] gap-x-6 gap-y-2 justify-start items-center mt-3 md:ml-2 caption-text">
+          <p>{t('title.treasury')}</p>
+          <CopyToClipboard value={coreAddress} />
+
+          <p>{t('title.governanceToken')}</p>
+          <CopyToClipboard value={governanceTokenAddress} />
+
+          <p>{t('title.staking')}</p>
+          <CopyToClipboard value={stakingContractAddress} />
+        </div>
       </div>
     </>
   )

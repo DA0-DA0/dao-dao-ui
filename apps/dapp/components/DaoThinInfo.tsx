@@ -12,21 +12,21 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { useDAOInfoContext } from '.'
 
-const FallbackDisplay = () => (
-  <HorizontalInfo>
-    <HorizontalInfoSection />
-  </HorizontalInfo>
-)
-
-export const DaoHorizontalInfoDisplay = () => (
-  <SuspenseLoader fallback={<FallbackDisplay />}>
-    <InnerDaoHorizontalInfoDisplay />
+export const DaoThinInfo = () => (
+  <SuspenseLoader
+    fallback={
+      <HorizontalInfo>
+        <HorizontalInfoSection />
+      </HorizontalInfo>
+    }
+  >
+    <InnerDaoThinInfo />
   </SuspenseLoader>
 )
 
-const InnerDaoHorizontalInfoDisplay = () => {
+const InnerDaoThinInfo = () => {
   const {
-    components: { DaoHorizontalInfoDisplayContent },
+    components: { DaoThinInfoContent },
   } = useVotingModuleAdapter()
   const { coreAddress, proposalModules } = useDAOInfoContext()
 
@@ -50,5 +50,5 @@ const InnerDaoHorizontalInfoDisplay = () => {
     0
   )
 
-  return <DaoHorizontalInfoDisplayContent proposalCount={proposalCount} />
+  return <DaoThinInfoContent proposalCount={proposalCount} />
 }
