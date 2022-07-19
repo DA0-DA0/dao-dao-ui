@@ -23,7 +23,6 @@ export const navDraftsSelector = selector<INavDrafts[]>({
         address,
       }
     })
-    console.log('draftszz', drafts)
 
     return drafts
   },

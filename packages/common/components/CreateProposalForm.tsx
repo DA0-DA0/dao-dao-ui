@@ -148,12 +148,9 @@ export const CreateProposalForm = ({
   const proposalTitle = watch('title')
   const proposalActionData = watch('actionData')
 
-  console.log('query.draft', router.query.draftId)
-  const queryDraftId = router.query.draftId as string | undefined
   const [activeDraftId, setActiveDraftId] = useRecoilState(activeDraftIdAtom)
   const [myDraft, setMyDraft] = useRecoilState(draftAtom(activeDraftId || ''))
   const [draftIds, setDraftIds] = useRecoilState(draftsAtom)
-  console.log('myDraft', myDraft)
 
   useEffect(() => {
     if (router.query.draftId && typeof router.query.draftId == 'string') {
@@ -165,12 +162,6 @@ export const CreateProposalForm = ({
   }, [router.query.draftId])
 
   useEffect(() => {
-    console.log(
-      'write to local storage',
-      proposalDescription,
-      proposalTitle,
-      proposalActionData
-    )
     const isNonEmpty =
       proposalDescription.length > 0 ||
       proposalTitle.length > 0 ||
@@ -191,8 +182,6 @@ export const CreateProposalForm = ({
       })
     }
   }, [proposalDescription, proposalTitle, proposalActionData])
-
-  console.log('draftIds', draftIds)
 
   const [loadedDraft, setLoadedDraft] = useState<boolean>(false)
 
