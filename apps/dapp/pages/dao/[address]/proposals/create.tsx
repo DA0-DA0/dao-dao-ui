@@ -16,6 +16,7 @@ import {
   PageLoader,
   SuspenseLoader,
 } from '@dao-dao/ui'
+import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
@@ -145,6 +146,9 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetDAOStaticProps(({ t }) => ({
-  followingTitle: t('title.createAProposal'),
-}))
+export const getStaticProps = makeGetDAOStaticProps(
+  ({ t, context: { params: { address } = {} } }) => ({
+    url: `${SITE_URL}/dao/${address}/proposals/create`,
+    followingTitle: t('title.createAProposal'),
+  })
+)

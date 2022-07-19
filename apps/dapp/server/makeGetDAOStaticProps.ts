@@ -1,7 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 // eslint-disable-next-line regex/invalid
 import { StringMap, TFunctionKeys, TOptions } from 'i18next'
-import type { GetStaticProps } from 'next'
+import type { GetStaticProps, Redirect } from 'next'
 import { i18n } from 'next-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
@@ -43,6 +43,7 @@ interface GetStaticPropsMakerProps {
   overrideDescription?: string
   overrideImageUrl?: string
   additionalProps?: Record<string, any> | null | undefined
+  url?: string
 }
 type GetStaticPropsMaker = (
   getProps?: (options: {
@@ -126,6 +127,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         overrideDescription,
         overrideImageUrl,
         additionalProps,
+        url,
       } =
         (await getProps?.({
           context,
@@ -140,6 +142,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       return {
         props: {
           ...i18nProps,
+          url: url ?? null,
           title:
             overrideTitle ??
             [leadingTitle?.trim(), config.name.trim(), followingTitle?.trim()]
@@ -162,6 +165,13 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         revalidate: 1,
       }
     } catch (error) {
+      // Redirect.
+      if (error instanceof RedirectError) {
+        return {
+          redirect: error.redirect,
+        }
+      }
+
       // Redirect legacy DAOs (legacy multisigs redirected in
       // next.config.js redirects list).
       if (
@@ -201,3 +211,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       throw error
     }
   }
+
+export class RedirectError {
+  constructor(public redirect: Redirect) {}
+}

@@ -45,7 +45,7 @@ export const useDAOInfoContext = () => {
 }
 
 export type DAOPageWrapperProps = PropsWithChildren<{
-  url?: string
+  url?: string | null
   title: string
   description: string
   info?: DAOInfo

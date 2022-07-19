@@ -16,6 +16,7 @@ import {
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
+import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
@@ -226,18 +227,26 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps(async ({ config: { image_url } }) => {
-    if (!image_url) {
-      return
-    }
+  makeGetDAOStaticProps(
+    async ({
+      config: { image_url },
+      context: { params: { address } = {} },
+    }) => {
+      const url = `${SITE_URL}/dao/${address}`
 
-    const response = await axios.get(image_url, {
-      responseType: 'arraybuffer',
-    })
-    const buffer = Buffer.from(response.data, 'binary')
-    const result = await getAverageColor(buffer)
+      if (!image_url) {
+        return { url }
+      }
 
-    return {
-      additionalProps: { accentColor: result.rgb },
+      const response = await axios.get(image_url, {
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+      const result = await getAverageColor(buffer)
+
+      return {
+        url,
+        additionalProps: { accentColor: result.rgb },
+      }
     }
-  })
+  )

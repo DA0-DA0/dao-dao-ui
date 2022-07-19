@@ -23,6 +23,7 @@ import {
   PageLoader,
   SuspenseLoader,
 } from '@dao-dao/ui'
+import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
@@ -32,7 +33,10 @@ import {
   SmallScreenNav,
   useDAOInfoContext,
 } from '@/components'
-import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
+import {
+  RedirectError,
+  makeGetDAOStaticProps,
+} from '@/server/makeGetDAOStaticProps'
 
 const InnerProposal = () => {
   const { t } = useTranslation()
@@ -190,7 +194,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
   makeGetDAOStaticProps(
     async ({
-      context: { params: { proposalId } = {} },
+      context: { params: { address, proposalId } = {} },
       t,
       cwClient,
       coreAddress,
@@ -209,6 +213,9 @@ export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
       let proposalInfo: CommonProposalInfo | undefined
       try {
         const {
+          options: {
+            proposalModule: { prefix },
+          },
           adapter: {
             functions: { getProposalInfo },
           },
@@ -218,9 +225,22 @@ export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
           Loader,
         })
 
+        // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.
+        if (!isNaN(Number(proposalId))) {
+          throw new RedirectError({
+            destination: `${SITE_URL}/dao/${address}/proposals/${prefix}${proposalId}`,
+            permanent: true,
+          })
+        }
+
         // undefined if proposal does not exist.
         proposalInfo = await getProposalInfo(cwClient)
       } catch (error) {
+        // Rethrow.
+        if (error instanceof RedirectError) {
+          throw error
+        }
+
         // If ProposalModuleAdapterError, treat as 404 below.
         // Otherwise display 500.
         if (!(error instanceof ProposalModuleAdapterError)) {
@@ -233,6 +253,7 @@ export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
       }
 
       return {
+        url: `${SITE_URL}/dao/${address}/proposals/${proposalId}`,
         followingTitle: proposalInfo
           ? `${t('title.proposal')} ${proposalId}`
           : t('error.proposalNotFound'),
