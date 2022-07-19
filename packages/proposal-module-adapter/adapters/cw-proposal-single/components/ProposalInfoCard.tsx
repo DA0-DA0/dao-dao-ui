@@ -8,7 +8,7 @@ import {
   CwProposalSingleSelectors,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { CopyToClipboard, Tooltip } from '@dao-dao/ui'
+import { CopyToClipboard, ProposalIdDisplay, Tooltip } from '@dao-dao/ui'
 import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
@@ -22,7 +22,7 @@ export const ProposalInfoCard = ({
   walletAddress,
 }: BaseProposalInfoCardProps) => {
   const { t } = useTranslation()
-  const { coreAddress, proposalModuleAddress, proposalPrefix, proposalNumber } =
+  const { coreAddress, proposalModuleAddress, proposalNumber, proposalPrefix } =
     useProposalModuleAdapterOptions()
 
   const proposal = useRecoilValue(
@@ -77,8 +77,10 @@ export const ProposalInfoCard = ({
           </p>
 
           <p className="font-mono text-sm">
-            {proposalPrefix ? `${proposalPrefix} # ` : '# '}
-            {proposalNumber.toString().padStart(8 - proposalPrefix.length, '0')}
+            <ProposalIdDisplay
+              proposalNumber={proposalNumber}
+              proposalPrefix={proposalPrefix}
+            />
           </p>
         </div>
 

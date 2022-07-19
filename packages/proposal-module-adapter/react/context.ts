@@ -2,14 +2,14 @@ import { createContext, useContext } from 'react'
 
 import {
   IProposalModuleAdapter,
-  IProposalModuleAdapterAdapterWithOptions,
   IProposalModuleAdapterOptions,
+  IProposalModuleAdapterWithOptions,
 } from '../types'
 
 // External API
 
 export const ProposalModuleAdapterContext =
-  createContext<IProposalModuleAdapterAdapterWithOptions | null>(null)
+  createContext<IProposalModuleAdapterWithOptions | null>(null)
 
 export const useProposalModuleAdapter = (): IProposalModuleAdapter => {
   const context = useContext(ProposalModuleAdapterContext)

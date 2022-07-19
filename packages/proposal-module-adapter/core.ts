@@ -1,9 +1,9 @@
 import { ProposalModule } from '@dao-dao/utils'
 
 import {
-  IProposalModuleAdapterAdapterWithOptions,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
+  IProposalModuleAdapterWithOptions,
   ProposalModuleAdapter,
 } from './types'
 
@@ -18,11 +18,27 @@ export const registerAdapters = async (adapters: ProposalModuleAdapter[]) =>
 export const matchAdapter = (contractName: string) =>
   registeredAdapters.find(({ matcher }) => matcher(contractName))
 
+export const matchAndLoadCommon = (proposalModule: ProposalModule) => {
+  const adapter = matchAdapter(proposalModule.contractName)
+
+  if (!adapter) {
+    throw new ProposalModuleAdapterError(
+      `Failed to find proposal module adapter matching contract "${
+        proposalModule.contractName
+      }". Registered adapters: ${registeredAdapters
+        .map(({ id }) => id)
+        .join(', ')}`
+    )
+  }
+
+  return adapter.loadCommon(proposalModule)
+}
+
 export const matchAndLoadAdapter = async (
   proposalModules: ProposalModule[],
   proposalId: string,
   initialOptions: IProposalModuleAdapterInitialOptions
-): Promise<IProposalModuleAdapterAdapterWithOptions & { id: string }> => {
+): Promise<IProposalModuleAdapterWithOptions & { id: string }> => {
   // Last character of prefix is non-numeric, followed by numeric prop number.
   const proposalIdParts = proposalId.match(/^(.*\D)?(\d+)$/)
   if (proposalIdParts?.length !== 3) {

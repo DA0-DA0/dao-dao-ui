@@ -52,7 +52,8 @@ export enum ThresholdType {
   AbsoluteCount,
 }
 export type ThresholdValue = 'majority' | number
-export const convertThresholdValueToPercentageThreshold = (
+
+export const convertThresholdValueToCwProposalSinglePercentageThreshold = (
   value: ThresholdValue
 ): PercentageThreshold =>
   value === 'majority'

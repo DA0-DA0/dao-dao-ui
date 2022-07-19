@@ -8,7 +8,7 @@ import {
   IProposalModuleAdapterOptions,
 } from '../../../types'
 
-export const makeProposalInfo =
+export const makeGetProposalInfo =
   ({ proposalModuleAddress, proposalNumber }: IProposalModuleAdapterOptions) =>
   async (
     cosmWasmClient: CosmWasmClient

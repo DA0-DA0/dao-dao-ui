@@ -3,6 +3,17 @@ import { ComponentType } from 'react'
 
 import { Action, FormProposalData } from '@dao-dao/actions'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
+import { ProposalModule } from '@dao-dao/utils'
+
+export interface IProposalModuleAdapterCommon {
+  // Hooks
+  hooks: {
+    useReverseProposalInfos: (
+      startBefore: number | undefined,
+      limit: number | undefined
+    ) => CommonProposalListInfo[]
+  }
+}
 
 export interface IProposalModuleAdapter {
   // Functions
@@ -27,12 +38,19 @@ export interface IProposalModuleAdapter {
     ProposalVoteDecisionStatus: ComponentType<BaseProposalVoteDecisionStatusProps>
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
     ProposalDetails: ComponentType<BaseProposalDetailsProps>
+    ProposalLine: {
+      Desktop: ComponentType<BaseProposalLineProps>
+      Mobile: ComponentType<BaseProposalLineProps>
+    }
   }
 }
 
 export type ProposalModuleAdapter = {
   id: string
   matcher: (contractName: string) => boolean
+
+  loadCommon: (proposalModule: ProposalModule) => IProposalModuleAdapterCommon
+
   load: (
     options: IProposalModuleAdapterOptions
   ) => IProposalModuleAdapter | Promise<IProposalModuleAdapter>
@@ -53,12 +71,18 @@ export type IProposalModuleAdapterInitialOptions = Omit<
   'proposalModuleAddress' | 'proposalId' | 'proposalPrefix' | 'proposalNumber'
 >
 
-export interface IProposalModuleAdapterAdapterWithOptions {
+export interface IProposalModuleAdapterWithOptions {
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
 }
 
 // Internal Adapter Types
+
+export interface CommonProposalListInfo {
+  id: string
+  proposalNumber: number
+  timestamp: Date | undefined
+}
 
 export interface CommonProposalInfo {
   id: number
@@ -88,4 +112,8 @@ export interface BaseProposalDetailsProps {
   duplicate: (data: FormProposalData) => void
   walletAddress?: string
   VotingPowerWidget?: ComponentType
+}
+
+export interface BaseProposalLineProps {
+  className?: string
 }

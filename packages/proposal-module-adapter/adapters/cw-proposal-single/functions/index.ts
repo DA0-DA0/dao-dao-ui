@@ -1,1 +1,1 @@
-export * from './makeProposalInfo'
+export * from './makeGetProposalInfo'

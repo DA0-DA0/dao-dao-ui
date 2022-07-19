@@ -1,10 +1,10 @@
-import { atom } from 'recoil'
+import { atomFamily } from 'recoil'
 
-// Store proposal ID list endings for proposal pagination.
-// Map list index to its ending.
-// Example with 25 proposals: { 0: 16, 1: 6, 2: 1 }
-export const proposalStartBeforesAtom = atom<
-  Record<number, number | undefined>
+// Store proposal ID list endings for proposal pagination for the given
+// coreAddress. Map list index to its ending for each proposal module address.
+export const proposalStartBeforesAtom = atomFamily<
+  Record<number, Record<string, number | undefined> | undefined>,
+  string
 >({
   key: 'proposalStartBefores',
   // Start first list (index 0) at the beginning.
@@ -13,9 +13,9 @@ export const proposalStartBeforesAtom = atom<
   default: { [-1]: undefined },
 })
 
-// Count of proposal lists that have been loaded. Each 'load more' action
-// increments this.
-export const proposalListCountAtom = atom<number>({
+// Count of proposal lists that have been loaded for the given coreAddress. Each
+// 'load more' action increments this.
+export const proposalListCountAtom = atomFamily<number, string>({
   key: 'proposalListCount',
   default: 1,
 })

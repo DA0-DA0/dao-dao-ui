@@ -49,7 +49,7 @@ import {
   NewDAO,
   NewDAOStructure,
   convertDurationWithUnitsToDuration,
-  convertThresholdValueToPercentageThreshold,
+  convertThresholdValueToCwProposalSinglePercentageThreshold,
   newDAOAtom,
 } from '@/atoms'
 
@@ -541,15 +541,22 @@ const useMakeCreateDAOMsg = () => {
           threshold: quorumEnabled
             ? {
                 threshold_quorum: {
-                  quorum: convertThresholdValueToPercentageThreshold(quorum),
+                  quorum:
+                    convertThresholdValueToCwProposalSinglePercentageThreshold(
+                      quorum
+                    ),
                   threshold:
-                    convertThresholdValueToPercentageThreshold(threshold),
+                    convertThresholdValueToCwProposalSinglePercentageThreshold(
+                      threshold
+                    ),
                 },
               }
             : {
                 absolute_percentage: {
                   percentage:
-                    convertThresholdValueToPercentageThreshold(threshold),
+                    convertThresholdValueToCwProposalSinglePercentageThreshold(
+                      threshold
+                    ),
                 },
               },
         }

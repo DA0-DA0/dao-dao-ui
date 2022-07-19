@@ -1,4 +1,5 @@
 export * from './ProposalDetails'
 export * from './ProposalInfoCard'
+export * from './ProposalLine'
 export * from './ProposalVotes'
 export * from './ProposalVoteDecisionStatus'
