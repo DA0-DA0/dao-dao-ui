@@ -10,19 +10,15 @@ import { ProposalModule } from '@dao-dao/utils'
 
 import { CommonProposalListInfo } from '../../../../types'
 
-export const makeUseReverseProposalInfos =
+export const makeUseListAllProposalInfos =
   ({ address, prefix }: ProposalModule) =>
-  (
-    startBefore: number | undefined,
-    limit: number | undefined
-  ): CommonProposalListInfo[] => {
+  (startAfter: number | undefined): CommonProposalListInfo[] => {
     const proposalResponses = useRecoilValue(
-      CwProposalSingleSelectors.reverseProposalsSelector({
+      CwProposalSingleSelectors.listAllProposalsSelector({
         contractAddress: address,
         params: [
           {
-            startBefore,
-            limit,
+            startAfter,
           },
         ],
       })

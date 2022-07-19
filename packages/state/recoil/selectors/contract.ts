@@ -1,7 +1,10 @@
 import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
+import { CwCoreVersion, parseCoreVersion } from '@dao-dao/utils'
+
 import { blockHeightTimestampSelector, cosmWasmClientSelector } from './chain'
+import { CwCoreV0_1_0Selectors } from './clients'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -92,5 +95,25 @@ export const treasuryTransactionsSelector = selectorFamily({
           }
         })
         .filter(Boolean) as TreasuryTransaction[]
+    },
+})
+
+export const cwCoreVersionSelector = selectorFamily<
+  CwCoreVersion | undefined,
+  string
+>({
+  key: 'cwCoreVersion',
+  get:
+    (coreAddress) =>
+    async ({ get }) => {
+      const coreInfo = get(
+        CwCoreV0_1_0Selectors.infoSelector({ contractAddress: coreAddress })
+      )?.info
+      if (!coreInfo) {
+        return
+      }
+
+      const coreVersion = parseCoreVersion(coreInfo.version)
+      return coreVersion
     },
 })

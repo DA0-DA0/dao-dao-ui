@@ -12,6 +12,9 @@ export interface IProposalModuleAdapterCommon {
       startBefore: number | undefined,
       limit: number | undefined
     ) => CommonProposalListInfo[]
+    useListAllProposalInfos: (
+      startAfter: number | undefined
+    ) => CommonProposalListInfo[]
   }
 
   // Components
@@ -50,6 +53,10 @@ export interface IProposalModuleAdapter {
       Desktop: ComponentType<BaseProposalLineProps>
       Mobile: ComponentType<BaseProposalLineProps>
     }
+    PinnedProposalLine: {
+      Desktop: ComponentType<BasePinnedProposalLineProps>
+      Mobile: ComponentType<BasePinnedProposalLineProps>
+    }
   }
 }
 
@@ -72,6 +79,11 @@ export interface IProposalModuleAdapterCommonOptions {
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>
 }
+
+export type IProposalModuleAdapterCommonInitialOptions = Omit<
+  IProposalModuleAdapterCommonOptions,
+  'proposalModule'
+>
 
 export interface IProposalModuleAdapterOptions {
   proposalModuleAddress: string
@@ -100,6 +112,7 @@ export interface CommonProposalListInfo {
   id: string
   proposalNumber: number
   timestamp: Date | undefined
+  isOpen: boolean
 }
 
 export interface CommonProposalInfo {
@@ -145,4 +158,8 @@ export interface BaseCreateProposalFormProps {
   walletAddress?: string
   onCreateSuccess: (proposalId: string) => void
   ConnectWalletButton: ComponentType
+}
+
+export interface BasePinnedProposalLineProps {
+  className?: string
 }

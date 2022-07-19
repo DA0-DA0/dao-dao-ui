@@ -4,9 +4,12 @@ import { ProposalModuleAdapter } from '../../types'
 import {
   CreateProposalForm,
   ProposalCreateInfo,
+  makeUseListAllProposalInfos,
   makeUseReverseProposalInfos,
 } from './common'
 import {
+  PinnedProposalLineDesktop,
+  PinnedProposalLineMobile,
   ProposalDetails,
   ProposalInfoCard,
   ProposalLineDesktop,
@@ -31,6 +34,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
     // Hooks
     hooks: {
       useReverseProposalInfos: makeUseReverseProposalInfos(proposalModule),
+      useListAllProposalInfos: makeUseListAllProposalInfos(proposalModule),
     },
 
     // Components
@@ -75,6 +79,10 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       ProposalLine: {
         Desktop: ProposalLineDesktop,
         Mobile: ProposalLineMobile,
+      },
+      PinnedProposalLine: {
+        Desktop: PinnedProposalLineDesktop,
+        Mobile: PinnedProposalLineMobile,
       },
     },
   }),

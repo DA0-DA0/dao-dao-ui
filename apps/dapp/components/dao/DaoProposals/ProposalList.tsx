@@ -5,7 +5,7 @@ import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil'
 
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { refreshProposalsIdAtom } from '@dao-dao/state'
-import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
+import { Button, Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
 import { EmptyContractCard, ProposalLine } from '@/components'
@@ -89,11 +89,14 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
   const useReverseProposalInfosHooks = useMemo(
     () =>
       proposalModules.map((proposalModule) => ({
-        useReverseProposalInfos:
-          matchAndLoadCommon(proposalModule).hooks.useReverseProposalInfos,
+        useReverseProposalInfos: matchAndLoadCommon(proposalModule, {
+          coreAddress,
+          Logo,
+          Loader,
+        }).hooks.useReverseProposalInfos,
         proposalModule,
       })),
-    [proposalModules]
+    [coreAddress, proposalModules]
   )
 
   // Hooks always called in the same order, so this is safe. But damn are we

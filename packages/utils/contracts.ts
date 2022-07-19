@@ -47,16 +47,13 @@ export const fetchProposalModules = async (
   coreAddress: string,
   coreVersion: CwCoreVersion
 ): Promise<ProposalModule[]> => {
-  const coreV0_1_0Client = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
-  const coreV0_2_0Client = new CwCoreV0_2_0QueryClient(cwClient, coreAddress)
-
   const proposalModules: ProposalModule[] = []
   let paginationStart: string | undefined
   const limit = 10
 
   const getV0_1_0ProposalModules = async () =>
     (
-      await coreV0_1_0Client.proposalModules({
+      await new CwCoreV0_1_0QueryClient(cwClient, coreAddress).proposalModules({
         startAt: paginationStart,
         limit,
         // Ignore first address if startAt was set.
@@ -80,7 +77,7 @@ export const fetchProposalModules = async (
 
   const getV0_2_0ProposalModules = async () =>
     (
-      await coreV0_2_0Client.proposalModules({
+      await new CwCoreV0_2_0QueryClient(cwClient, coreAddress).proposalModules({
         startAfter: paginationStart,
         limit,
       })

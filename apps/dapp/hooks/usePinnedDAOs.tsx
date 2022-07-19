@@ -3,8 +3,8 @@ import { useRecoilState } from 'recoil'
 
 import {
   pinnedAddressesAtom,
-  pinnedLatestProposalIDsMarkedDoneAtom,
-  pinnedProposalIDsMarkedDoneAtom,
+  pinnedLatestProposalsMarkedDoneAtom,
+  pinnedProposalsMarkedDoneAtom,
 } from '@/atoms'
 
 // There are three important pieces of state:
@@ -45,46 +45,47 @@ import {
 export const usePinnedDAOs = () => {
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)
-  const [pinnedProposalIDsMarkedDone, setPinnedProposalIDsMarkedDone] =
-    useRecoilState(pinnedProposalIDsMarkedDoneAtom)
-  const [
-    pinnedLatestProposalIDsMarkedDone,
-    setPinnedLatestProposalIDsMarkedDone,
-  ] = useRecoilState(pinnedLatestProposalIDsMarkedDoneAtom)
+  const [pinnedProposalsMarkedDone, setPinnedProposalsMarkedDone] =
+    useRecoilState(pinnedProposalsMarkedDoneAtom)
+  const [pinnedLatestProposalsMarkedDone, setPinnedLatestProposalsMarkedDone] =
+    useRecoilState(pinnedLatestProposalsMarkedDoneAtom)
 
   const isPinned = useCallback(
     (coreAddress: string) => pinnedAddresses.includes(coreAddress),
     [pinnedAddresses]
   )
   const setPinned = useCallback(
-    (coreAddress: string, mostRecentProposalId?: number) => {
+    (
+      coreAddress: string,
+      mostRecentProposalIds?: Record<string, number | undefined>
+    ) => {
       setPinnedAddresses((pinned) => pinned.concat([coreAddress]))
-      if (mostRecentProposalId !== undefined) {
-        // Initialize empty since the latest map below will cache the
-        // latest proposal ID marked done and ignore everything before.
-        setPinnedProposalIDsMarkedDone((curr) => ({
-          ...curr,
-          [coreAddress]: [],
-        }))
-        // Initialize with latest proposal ID if provided so we don't load
+      // Initialize empty.
+      setPinnedProposalsMarkedDone((curr) => ({
+        ...curr,
+        [coreAddress]: {},
+      }))
+
+      if (mostRecentProposalIds) {
+        // Initialize with latest proposal IDs if provided so we don't load
         // proposals created before they pinned the DAO.
-        setPinnedLatestProposalIDsMarkedDone((curr) => ({
+        setPinnedLatestProposalsMarkedDone((curr) => ({
           ...curr,
-          [coreAddress]: mostRecentProposalId,
+          [coreAddress]: mostRecentProposalIds,
         }))
       }
     },
     [
       setPinnedAddresses,
-      setPinnedLatestProposalIDsMarkedDone,
-      setPinnedProposalIDsMarkedDone,
+      setPinnedLatestProposalsMarkedDone,
+      setPinnedProposalsMarkedDone,
     ]
   )
   const setUnpinned = useCallback(
     (coreAddress: string) => {
       setPinnedAddresses((pinned) => pinned.filter((a) => a !== coreAddress))
       // Remove proposals marked done.
-      setPinnedProposalIDsMarkedDone((curr) =>
+      setPinnedProposalsMarkedDone((curr) =>
         Object.keys(curr).reduce(
           (acc, key) => ({
             ...acc,
@@ -93,7 +94,7 @@ export const usePinnedDAOs = () => {
           {}
         )
       )
-      setPinnedLatestProposalIDsMarkedDone((curr) =>
+      setPinnedLatestProposalsMarkedDone((curr) =>
         Object.keys(curr).reduce(
           (acc, key) => ({
             ...acc,
@@ -105,82 +106,126 @@ export const usePinnedDAOs = () => {
     },
     [
       setPinnedAddresses,
-      setPinnedLatestProposalIDsMarkedDone,
-      setPinnedProposalIDsMarkedDone,
+      setPinnedLatestProposalsMarkedDone,
+      setPinnedProposalsMarkedDone,
     ]
   )
 
-  const isProposalIdMarkedDone = useCallback(
-    (coreAddress: string, proposalId: number) =>
-      pinnedProposalIDsMarkedDone[coreAddress]?.includes(proposalId) ?? false,
-    [pinnedProposalIDsMarkedDone]
+  const isProposalMarkedDone = useCallback(
+    (
+      coreAddress: string,
+      proposalModuleAddress: string,
+      proposalNumber: number
+    ) =>
+      pinnedProposalsMarkedDone[coreAddress]?.[proposalModuleAddress]?.includes(
+        proposalNumber
+      ) ?? false,
+    [pinnedProposalsMarkedDone]
   )
-  const getLatestPinnedProposalIdMarkedDone = useCallback(
-    (coreAddress: string) => pinnedLatestProposalIDsMarkedDone[coreAddress],
-    [pinnedLatestProposalIDsMarkedDone]
+  const getLatestPinnedProposalNumberMarkedDone = useCallback(
+    (coreAddress: string, proposalModuleAddress: string) =>
+      pinnedLatestProposalsMarkedDone[coreAddress]?.[proposalModuleAddress],
+    [pinnedLatestProposalsMarkedDone]
   )
-  const markPinnedProposalIdDone = useCallback(
-    (coreAddress: string, proposalId: number) => {
+  const markPinnedProposalDone = useCallback(
+    (
+      coreAddress: string,
+      proposalModuleAddress: string,
+      proposalNumber: number
+    ) => {
       // Don't need to save proposal ID if DAO is not pinned.
       if (!isPinned(coreAddress)) {
         return
       }
 
       // Mark done, avoiding duplicates.
-      const newDone = (pinnedProposalIDsMarkedDone[coreAddress] ?? []).concat(
-        pinnedProposalIDsMarkedDone[coreAddress]?.includes(proposalId)
+      const newDone = (
+        pinnedProposalsMarkedDone[coreAddress]?.[proposalModuleAddress] ?? []
+      ).concat(
+        pinnedProposalsMarkedDone[coreAddress]?.[
+          proposalModuleAddress
+        ]?.includes(proposalNumber)
           ? []
-          : [proposalId]
+          : [proposalNumber]
       )
       // Update latest to be the most recent consecutive marked done.
       // For example, if the current latest is 2 and marked done is
       // [3, 5], and then we mark 4 done, then the latest should be 5 since
       // everything from 2 to 5 is now marked done.
       const allMarkedDone = newDone
-        .concat(getLatestPinnedProposalIdMarkedDone(coreAddress) ?? [])
-        .sort()
+        .concat(
+          getLatestPinnedProposalNumberMarkedDone(
+            coreAddress,
+            proposalModuleAddress
+          ) ?? []
+        )
+        .sort((a, b) => a - b)
       const newLatest = allMarkedDone.reduce(
         (acc, curr) => (acc === curr || acc === curr - 1 ? curr : acc),
         allMarkedDone[0]
       )
 
-      setPinnedProposalIDsMarkedDone((curr) => ({
+      setPinnedProposalsMarkedDone((curr) => ({
         ...curr,
-        [coreAddress]: newDone.filter((id) => id > newLatest),
+        [coreAddress]: {
+          ...curr[coreAddress],
+          [proposalModuleAddress]: newDone.filter((id) => id > newLatest),
+        },
       }))
-      setPinnedLatestProposalIDsMarkedDone((curr) => ({
+      setPinnedLatestProposalsMarkedDone((curr) => ({
         ...curr,
-        [coreAddress]: newLatest,
+        [coreAddress]: {
+          ...curr[coreAddress],
+          [proposalModuleAddress]: newLatest,
+        },
       }))
     },
     [
       isPinned,
-      pinnedProposalIDsMarkedDone,
-      getLatestPinnedProposalIdMarkedDone,
-      setPinnedProposalIDsMarkedDone,
-      setPinnedLatestProposalIDsMarkedDone,
+      pinnedProposalsMarkedDone,
+      getLatestPinnedProposalNumberMarkedDone,
+      setPinnedProposalsMarkedDone,
+      setPinnedLatestProposalsMarkedDone,
     ]
   )
-  const cacheLatestProposalIDsMarkedDone = useCallback(
-    (latestProposalIDsMarkedDone: Record<string, number | undefined>) => {
-      setPinnedLatestProposalIDsMarkedDone(latestProposalIDsMarkedDone)
+  const cacheLatestProposalsMarkedDone = useCallback(
+    (
+      latestProposalIDsMarkedDone: Record<
+        string,
+        Record<string, number | undefined> | undefined
+      >
+    ) => {
+      setPinnedLatestProposalsMarkedDone(latestProposalIDsMarkedDone)
       // Remove all proposal IDs marked done before the new latest.
-      setPinnedProposalIDsMarkedDone((curr) =>
+      setPinnedProposalsMarkedDone((curr) =>
         Object.keys(latestProposalIDsMarkedDone).reduce(
           (acc, coreAddress) => ({
             ...acc,
-            [coreAddress]: (curr[coreAddress] ?? []).filter(
-              (proposalId) =>
-                latestProposalIDsMarkedDone[coreAddress] === undefined ||
-                // Only keep proposal ID marked done if newer than cached.
-                proposalId > latestProposalIDsMarkedDone[coreAddress]!
+            [coreAddress]: Object.keys(curr[coreAddress] ?? {}).reduce(
+              (coreAcc, proposalModuleAddress) => ({
+                ...coreAcc,
+                [proposalModuleAddress]: (
+                  curr[coreAddress]?.[proposalModuleAddress] ?? []
+                ).filter(
+                  (proposalId) =>
+                    latestProposalIDsMarkedDone[coreAddress]?.[
+                      proposalModuleAddress
+                    ] === undefined ||
+                    // Only keep proposal ID marked done if newer than cached.
+                    proposalId >
+                      latestProposalIDsMarkedDone[coreAddress]![
+                        proposalModuleAddress
+                      ]!
+                ),
+              }),
+              {}
             ),
           }),
           {}
         )
       )
     },
-    [setPinnedLatestProposalIDsMarkedDone, setPinnedProposalIDsMarkedDone]
+    [setPinnedLatestProposalsMarkedDone, setPinnedProposalsMarkedDone]
   )
 
   return {
@@ -189,9 +234,10 @@ export const usePinnedDAOs = () => {
     isPinned,
     setPinned,
     setUnpinned,
-    isProposalIdMarkedDone,
-    getLatestPinnedProposalIdMarkedDone,
-    markPinnedProposalIdDone,
-    cacheLatestProposalIDsMarkedDone,
+    isProposalMarkedDone,
+    getLatestPinnedProposalNumberMarkedDone,
+    markPinnedProposalDone,
+    cacheLatestProposalsMarkedDone,
+    pinnedLatestProposalsMarkedDone,
   }
 }

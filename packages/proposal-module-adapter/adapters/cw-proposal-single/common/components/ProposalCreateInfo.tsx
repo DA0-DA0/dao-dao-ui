@@ -8,7 +8,7 @@ import { ProposalInfoStat, SuspenseLoader } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { BaseProposalCreateInfo } from '../../../../types'
-import { useProposalProcessedTQ } from '../../hooks'
+import { useProcessTQ } from '../hooks'
 
 interface ProposalCreateInfo extends BaseProposalCreateInfo {
   proposalModuleAddress: string
@@ -25,7 +25,6 @@ const InnerProposalCreateInfo = ({
   ...props
 }: ProposalCreateInfo) => {
   const { t } = useTranslation()
-  const { threshold, quorum } = useProposalProcessedTQ()
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
@@ -36,6 +35,9 @@ const InnerProposalCreateInfo = ({
   if (!config) {
     throw new Error(t('error.loadingData'))
   }
+
+  const processTQ = useProcessTQ()
+  const { threshold, quorum } = processTQ(config.threshold)
 
   const proposalDepositTokenInfo = useRecoilValue(
     config.deposit_info?.token

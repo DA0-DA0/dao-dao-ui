@@ -12,6 +12,7 @@ import {
   Breadcrumbs,
   CopyToClipboard,
   Loader,
+  Logo,
   PageLoader,
   SuspenseLoader,
 } from '@dao-dao/ui'
@@ -40,8 +41,13 @@ const InnerProposalCreate = () => {
     components: { ProposalCreateInfo, CreateProposalForm },
   } = useMemo(
     // TODO: Make a switcher and pick which proposal module to use.
-    () => matchAndLoadCommon(proposalModules[0]),
-    [proposalModules]
+    () =>
+      matchAndLoadCommon(proposalModules[0], {
+        coreAddress,
+        Logo,
+        Loader,
+      }),
+    [coreAddress, proposalModules]
   )
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
