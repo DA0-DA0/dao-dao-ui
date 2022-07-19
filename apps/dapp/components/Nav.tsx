@@ -6,10 +6,9 @@ import {
 import Link from 'next/link'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { navDraftsSelector } from '@dao-dao/state'
 import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
@@ -25,9 +24,6 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
   const { t } = useTranslation()
   const setSearchVisible = useSetRecoilState(searchVisibleAtom)
   const { isMac } = usePlatform()
-
-  const drafts = useRecoilValue(navDraftsSelector)
-  console.log('Nav drafts', drafts)
 
   return (
     <>
@@ -61,7 +57,11 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
               <h3 className="mb-4 font-mono caption-text">
                 {t('title.drafts')}
               </h3>
-              <DraftsNavList drafts={drafts} />
+              <SuspenseLoader
+                fallback={<Loader className="!justify-start ml-2" size={20} />}
+              >
+                <DraftsNavList />
+              </SuspenseLoader>
             </div>
           </div>
           <div className="ml-1 text-sm">
