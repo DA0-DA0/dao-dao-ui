@@ -3,7 +3,7 @@ import { ComponentType } from 'react'
 
 import { Action, FormProposalData } from '@dao-dao/actions'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
+import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
 
 export interface IProposalModuleAdapterCommon {
   // Hooks
@@ -12,6 +12,12 @@ export interface IProposalModuleAdapterCommon {
       startBefore: number | undefined,
       limit: number | undefined
     ) => CommonProposalListInfo[]
+  }
+
+  // Components
+  components: {
+    ProposalCreateInfo: ComponentType<BaseProposalCreateInfo>
+    CreateProposalForm: ComponentType<BaseCreateProposalFormProps>
   }
 }
 
@@ -30,6 +36,7 @@ export interface IProposalModuleAdapter {
       refreshProposalAndAll: () => void
     }
     useProposalExecutionTxHash: () => string | undefined
+    useProposalProcessedTQ: () => ProcessedThresholdQuorum
   }
 
   // Components
@@ -49,11 +56,20 @@ export type ProposalModuleAdapter = {
   id: string
   matcher: (contractName: string) => boolean
 
-  loadCommon: (proposalModule: ProposalModule) => IProposalModuleAdapterCommon
+  loadCommon: (
+    options: IProposalModuleAdapterCommonOptions
+  ) => IProposalModuleAdapterCommon
 
   load: (
     options: IProposalModuleAdapterOptions
   ) => IProposalModuleAdapter | Promise<IProposalModuleAdapter>
+}
+
+export interface IProposalModuleAdapterCommonOptions {
+  proposalModule: ProposalModule
+  coreAddress: string
+  Logo: ComponentType<LogoProps>
+  Loader: ComponentType<LoaderProps>
 }
 
 export interface IProposalModuleAdapterOptions {
@@ -71,7 +87,8 @@ export type IProposalModuleAdapterInitialOptions = Omit<
   'proposalModuleAddress' | 'proposalId' | 'proposalPrefix' | 'proposalNumber'
 >
 
-export interface IProposalModuleAdapterWithOptions {
+export interface IProposalModuleContext {
+  id: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
 }
@@ -116,4 +133,15 @@ export interface BaseProposalDetailsProps {
 
 export interface BaseProposalLineProps {
   className?: string
+}
+
+export interface BaseProposalCreateInfo {
+  className?: string
+}
+
+export interface BaseCreateProposalFormProps {
+  connected: boolean
+  walletAddress?: string
+  onCreateSuccess: (proposalId: string) => void
+  ConnectWalletButton: ComponentType
 }

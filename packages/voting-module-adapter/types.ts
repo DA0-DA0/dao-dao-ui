@@ -1,6 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { ActionKey } from '@dao-dao/actions'
+import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
 export interface SdaMembershipPageNavInfo {
@@ -11,6 +12,12 @@ export interface SdaMembershipPageNavInfo {
 export interface MembershipMobileTabProps {
   onClick: () => void
   selected: boolean
+}
+
+export interface BaseDaoContractInfoContentProps {
+  threshold: string
+  quorum: string | undefined
+  depositInfo?: CheckedDepositInfo
 }
 
 export interface BaseVoteHeroStatsProps {
@@ -43,7 +50,7 @@ export interface IVotingModuleAdapter {
     }
     DaoHorizontalInfoDisplayInternal: ComponentType
     DaoTreasuryFooter: ComponentType
-    DaoContractInfoContent: ComponentType
+    DaoContractInfoContent: ComponentType<BaseDaoContractInfoContentProps>
     ProposalCreateAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>

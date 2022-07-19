@@ -3,7 +3,7 @@ import { ProposalModule } from '@dao-dao/utils'
 import {
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
-  IProposalModuleAdapterWithOptions,
+  IProposalModuleContext,
   ProposalModuleAdapter,
 } from './types'
 
@@ -38,7 +38,7 @@ export const matchAndLoadAdapter = async (
   proposalModules: ProposalModule[],
   proposalId: string,
   initialOptions: IProposalModuleAdapterInitialOptions
-): Promise<IProposalModuleAdapterWithOptions & { id: string }> => {
+): Promise<IProposalModuleContext> => {
   // Last character of prefix is non-numeric, followed by numeric prop number.
   const proposalIdParts = proposalId.match(/^(.*\D)?(\d+)$/)
   if (proposalIdParts?.length !== 3) {
@@ -92,8 +92,8 @@ export const matchAndLoadAdapter = async (
 
   return {
     id: adapter.id,
-    adapter: await adapter.load(adapterOptions),
     options: adapterOptions,
+    adapter: await adapter.load(adapterOptions),
   }
 }
 

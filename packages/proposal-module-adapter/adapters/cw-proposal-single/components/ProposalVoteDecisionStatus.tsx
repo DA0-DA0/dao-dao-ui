@@ -12,11 +12,11 @@ import {
   expirationAtTimeToSecondsFromNow,
   formatPercentOf100,
   secondsToWdhms,
-  useProcessThresholdData,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalVoteDecisionStatusProps } from '../../../types'
+import { useProposalProcessedTQ } from '../hooks'
 
 export const ProposalVoteDecisionStatus = ({
   voteConversionDecimals,
@@ -93,7 +93,7 @@ export const ProposalVoteDecisionStatus = ({
       ? expirationAtTimeToSecondsFromNow(proposal.expiration)
       : undefined
 
-  const { threshold, quorum } = useProcessThresholdData()(proposal.threshold)
+  const { threshold, quorum } = useProposalProcessedTQ()
 
   const thresholdReached =
     !!threshold &&

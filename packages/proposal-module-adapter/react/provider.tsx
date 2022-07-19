@@ -5,7 +5,7 @@ import { ProposalModule } from '@dao-dao/utils'
 import { matchAndLoadAdapter } from '../core'
 import {
   IProposalModuleAdapterInitialOptions,
-  IProposalModuleAdapterWithOptions,
+  IProposalModuleContext,
 } from '../types'
 import { ProposalModuleAdapterContext } from './context'
 
@@ -26,17 +26,16 @@ export const ProposalModuleAdapterProvider = ({
   initialOptions,
   ProviderLoader,
 }: ProposalModuleAdapterProviderProps) => {
-  const [adapterWithOptions, setAdapterWithOptions] =
-    useState<IProposalModuleAdapterWithOptions>()
+  const [context, setContext] = useState<IProposalModuleContext>()
 
   useEffect(() => {
     matchAndLoadAdapter(proposalModules, proposalId, initialOptions).then(
-      setAdapterWithOptions
+      setContext
     )
   }, [initialOptions, proposalId, proposalModules])
 
-  return adapterWithOptions ? (
-    <ProposalModuleAdapterContext.Provider value={adapterWithOptions}>
+  return context ? (
+    <ProposalModuleAdapterContext.Provider value={context}>
       {children}
     </ProposalModuleAdapterContext.Provider>
   ) : ProviderLoader ? (

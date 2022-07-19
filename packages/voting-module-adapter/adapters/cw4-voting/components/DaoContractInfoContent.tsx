@@ -1,24 +1,17 @@
 import { useTranslation } from 'react-i18next'
 
 import { Votes } from '@dao-dao/icons'
-import { useProposalModule } from '@dao-dao/state'
 import { CopyToClipboardAccent, GovInfoListItem } from '@dao-dao/ui'
-import { useProcessThresholdData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { BaseDaoContractInfoContentProps } from '../../../types'
 
-export const DaoContractInfoContent = () => {
+export const DaoContractInfoContent = ({
+  threshold,
+  quorum,
+}: BaseDaoContractInfoContentProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { proposalModuleConfig } = useProposalModule(coreAddress)
-
-  if (!proposalModuleConfig) {
-    throw new Error(t('errors.loadingData'))
-  }
-
-  const { threshold, quorum } = useProcessThresholdData()(
-    proposalModuleConfig.threshold
-  )
 
   return (
     <>
@@ -30,13 +23,13 @@ export const DaoContractInfoContent = () => {
           <GovInfoListItem
             icon={<Votes fill="currentColor" width="16px" />}
             text={t('title.passingThreshold')}
-            value={threshold.display}
+            value={threshold}
           />
           {quorum && (
             <GovInfoListItem
               icon={<Votes fill="currentColor" width="16px" />}
               text={t('title.quorum')}
-              value={quorum.display}
+              value={quorum}
             />
           )}
         </ul>

@@ -1,13 +1,7 @@
+import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
-import {
-  ComponentType,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -15,8 +9,9 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   Action,
@@ -28,9 +23,13 @@ import {
 } from '@dao-dao/actions'
 import { Airplane } from '@dao-dao/icons'
 import {
+  Cw20BaseHooks,
   Cw20BaseSelectors,
   CwCoreV0_1_0Selectors,
-  useProposalModule,
+  CwProposalSingleHooks,
+  CwProposalSingleSelectors,
+  blockHeightSelector,
+  refreshWalletBalancesIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
@@ -47,63 +46,101 @@ import {
   Tooltip,
 } from '@dao-dao/ui'
 import {
+  ProposalModule,
+  cleanChainError,
   decodedMessagesString,
+  expirationExpired,
   usePlatform,
   validateRequired,
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+
+import { BaseCreateProposalFormProps } from '../../../../types'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
   Submit = 'Submit',
 }
 
-export interface ProposalData extends Omit<FormProposalData, 'actionData'> {
-  messages: CosmosMsgFor_Empty[]
+interface ProposalData extends Omit<FormProposalData, 'actionData'> {
+  msgs: CosmosMsgFor_Empty[]
 }
 
-export interface CreateProposalFormProps {
-  onSubmit: (data: ProposalData) => void
-  loading: boolean
+interface CreateProposalFormProps extends BaseCreateProposalFormProps {
   coreAddress: string
-  connectWalletButton?: ReactNode
+  proposalModule: ProposalModule
   Loader: ComponentType<LoaderProps>
 }
 
 export const CreateProposalForm = ({
-  onSubmit,
-  loading,
   coreAddress,
-  connectWalletButton,
+  proposalModule: {
+    address: proposalModuleAddress,
+    prefix: proposalModulePrefix,
+  },
   Loader,
+  connected,
+  walletAddress,
+  onCreateSuccess,
+  ConnectWalletButton,
 }: CreateProposalFormProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { connected, address: walletAddress } = useWallet()
+  const [loading, setLoading] = useState(false)
 
   const {
     fields: { disabledActionKeys },
   } = useVotingModuleAdapter()
-  const { proposalModuleConfig } = useProposalModule(coreAddress)
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+
+  const config = useRecoilValue(
+    CwProposalSingleSelectors.configSelector({
+      contractAddress: proposalModuleAddress,
+    })
+  )
+
+  const blockHeight = useRecoilValue(blockHeightSelector)
+
+  if (!config || blockHeight === undefined) {
+    throw new Error(t('error.loadingData'))
+  }
+
+  const requiredProposalDeposit = Number(config.deposit_info?.deposit ?? '0')
+
+  const allowanceResponse = useRecoilValue(
+    config.deposit_info && requiredProposalDeposit && walletAddress
+      ? Cw20BaseSelectors.allowanceSelector({
+          contractAddress: config.deposit_info.token,
+          params: [{ owner: walletAddress, spender: proposalModuleAddress }],
+        })
+      : constSelector(undefined)
+  )
+
+  const increaseAllowance = Cw20BaseHooks.useIncreaseAllowance({
+    contractAddress: config.deposit_info?.token ?? '',
+    sender: walletAddress ?? '',
+  })
+  const createProposal = CwProposalSingleHooks.usePropose({
+    contractAddress: proposalModuleAddress,
+    sender: walletAddress ?? '',
+  })
 
   // Info about if deposit can be paid.
   const depositTokenBalance = useRecoilValue(
-    proposalModuleConfig?.deposit_info?.deposit &&
-      proposalModuleConfig?.deposit_info?.deposit !== '0' &&
+    config.deposit_info?.deposit &&
+      config.deposit_info?.deposit !== '0' &&
       walletAddress
       ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: proposalModuleConfig.deposit_info.token,
+          contractAddress: config.deposit_info.token,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
   )
 
   const canPayDeposit =
-    !proposalModuleConfig?.deposit_info?.deposit ||
-    proposalModuleConfig?.deposit_info?.deposit === '0' ||
-    Number(depositTokenBalance?.balance) >=
-      Number(proposalModuleConfig?.deposit_info?.deposit)
+    !config.deposit_info?.deposit ||
+    config.deposit_info?.deposit === '0' ||
+    Number(depositTokenBalance?.balance) >= Number(config.deposit_info?.deposit)
 
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
@@ -184,34 +221,6 @@ export const CreateProposalForm = ({
     {}
   )
 
-  const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
-    ({ actionData, ...data }, event) => {
-      setShowSubmitErrorNote(false)
-
-      const nativeEvent = event?.nativeEvent as SubmitEvent
-      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
-
-      if (submitterValue === ProposeSubmitValue.Preview) {
-        setShowPreview((p) => !p)
-        return
-      }
-
-      onSubmit({
-        ...data,
-        messages: actionData
-          .map(({ key, data }) => actionsWithData[key]?.transform(data))
-          // Filter out undefined messages.
-          .filter(Boolean) as CosmosMsgFor_Empty[],
-      })
-    },
-    [onSubmit, actionsWithData]
-  )
-
-  const onSubmitError: SubmitErrorHandler<FormProposalData> = useCallback(
-    () => setShowSubmitErrorNote(true),
-    [setShowSubmitErrorNote]
-  )
-
   // Detect if Mac for checking keypress.
   const { isMac } = usePlatform()
   // Keybinding to open add action selector.
@@ -243,6 +252,119 @@ export const CreateProposalForm = ({
     document.addEventListener('keydown', handleKeyPress)
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [handleKeyPress])
+
+  const setRefreshWalletBalancesId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(walletAddress ?? '')
+  )
+  const refreshBalances = useCallback(
+    () => setRefreshWalletBalancesId((id) => id + 1),
+    [setRefreshWalletBalancesId]
+  )
+
+  const onSubmit = useCallback(
+    async (newProposalData: ProposalData) => {
+      if (
+        !connected ||
+        // If required deposit, ensure the allowance and unstaked balance
+        // data have loaded.
+        (requiredProposalDeposit && !allowanceResponse)
+      ) {
+        throw new Error('Failed to load required info to create a proposal.')
+      }
+
+      setLoading(true)
+
+      // Typecheck for TS; should've already been verified above.
+      if (requiredProposalDeposit && allowanceResponse) {
+        const remainingAllowanceNeeded =
+          requiredProposalDeposit -
+          // If allowance expired, none.
+          (expirationExpired(allowanceResponse.expires, blockHeight)
+            ? 0
+            : Number(allowanceResponse.allowance))
+
+        // Request to increase the contract's allowance for the proposal
+        // deposit if needed.
+        if (remainingAllowanceNeeded) {
+          try {
+            await increaseAllowance({
+              amount: remainingAllowanceNeeded.toString(),
+              spender: proposalModuleAddress,
+            })
+
+            // Allowances will not update until the next block has been added.
+            setTimeout(refreshBalances, 6500)
+          } catch (err) {
+            console.error(err)
+            toast.error(
+              `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
+                err instanceof Error ? err.message : `${err}`
+              )})`
+            )
+            setLoading(false)
+            return
+          }
+        }
+      }
+
+      try {
+        const response = await createProposal(newProposalData)
+
+        const proposalNumber = Number(
+          findAttribute(response.logs, 'wasm', 'proposal_id').value
+        )
+
+        onCreateSuccess(`${proposalModulePrefix}${proposalNumber}`)
+        // Don't stop loading indicator since we are navigating.
+      } catch (err) {
+        console.error(err)
+        toast.error(
+          cleanChainError(err instanceof Error ? err.message : `${err}`)
+        )
+        setLoading(false)
+      }
+    },
+    [
+      connected,
+      proposalModuleAddress,
+      requiredProposalDeposit,
+      allowanceResponse,
+      blockHeight,
+      increaseAllowance,
+      refreshBalances,
+      createProposal,
+      onCreateSuccess,
+      proposalModulePrefix,
+    ]
+  )
+
+  const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
+    ({ actionData, ...data }, event) => {
+      setShowSubmitErrorNote(false)
+
+      const nativeEvent = event?.nativeEvent as SubmitEvent
+      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+
+      if (submitterValue === ProposeSubmitValue.Preview) {
+        setShowPreview((p) => !p)
+        return
+      }
+
+      onSubmit({
+        ...data,
+        msgs: actionData
+          .map(({ key, data }) => actionsWithData[key]?.transform(data))
+          // Filter out undefined messages.
+          .filter(Boolean) as CosmosMsgFor_Empty[],
+      })
+    },
+    [onSubmit, actionsWithData]
+  )
+
+  const onSubmitError: SubmitErrorHandler<FormProposalData> = useCallback(
+    () => setShowSubmitErrorNote(true),
+    [setShowSubmitErrorNote]
+  )
 
   return (
     <FormProvider {...formMethods}>
@@ -350,7 +472,7 @@ export const CreateProposalForm = ({
               </Button>
             </Tooltip>
           ) : (
-            connectWalletButton
+            <ConnectWalletButton />
           )}
           <Button
             disabled={loading}

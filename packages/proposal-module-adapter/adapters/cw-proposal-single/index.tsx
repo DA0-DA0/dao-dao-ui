@@ -1,7 +1,11 @@
 import { CWPROPOSALSINGLE_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { ProposalModuleAdapter } from '../../types'
-import { makeUseReverseProposalInfos } from './common'
+import {
+  CreateProposalForm,
+  ProposalCreateInfo,
+  makeUseReverseProposalInfos,
+} from './common'
 import {
   ProposalDetails,
   ProposalInfoCard,
@@ -11,17 +15,39 @@ import {
   ProposalVotes,
 } from './components'
 import { makeGetProposalInfo } from './functions'
-import { useProposalExecutionTxHash, useProposalRefreshers } from './hooks'
+import {
+  useProposalExecutionTxHash,
+  useProposalProcessedTQ,
+  useProposalRefreshers,
+} from './hooks'
 
 export const CwProposalSingleAdapter: ProposalModuleAdapter = {
   id: CWPROPOSALSINGLE_CONTRACT_NAME,
   matcher: (contractName: string) =>
     contractName.includes(CWPROPOSALSINGLE_CONTRACT_NAME),
 
-  loadCommon: (proposalModule) => ({
+  loadCommon: ({ proposalModule, coreAddress, Loader }) => ({
     // Hooks
     hooks: {
       useReverseProposalInfos: makeUseReverseProposalInfos(proposalModule),
+    },
+
+    // Components
+    components: {
+      ProposalCreateInfo: (props) => (
+        <ProposalCreateInfo
+          proposalModuleAddress={proposalModule.address}
+          {...props}
+        />
+      ),
+      CreateProposalForm: (props) => (
+        <CreateProposalForm
+          Loader={Loader}
+          coreAddress={coreAddress}
+          proposalModule={proposalModule}
+          {...props}
+        />
+      ),
     },
   }),
 
@@ -35,6 +61,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
     hooks: {
       useProposalRefreshers,
       useProposalExecutionTxHash,
+      useProposalProcessedTQ,
     },
 
     // Components
