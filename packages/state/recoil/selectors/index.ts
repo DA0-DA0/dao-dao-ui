@@ -1,6 +1,7 @@
 export * from './clients'
 export * from './chain'
 export * from './contract'
+export * from './drafts'
 export * from './price'
 export * from './proposal'
 export * from './pools'

@@ -6,14 +6,15 @@ import {
 import Link from 'next/link'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
+import { navDraftsSelector } from '@dao-dao/state'
 import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { searchVisibleAtom } from '@/atoms'
-import { Loader, PinnedDAONavList } from '@/components'
+import { DraftsNavList, Loader, PinnedDAONavList } from '@/components'
 import ThemeToggle from 'components/ThemeToggle'
 
 type NavProps = {
@@ -24,6 +25,9 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
   const { t } = useTranslation()
   const setSearchVisible = useSetRecoilState(searchVisibleAtom)
   const { isMac } = usePlatform()
+
+  const drafts = useRecoilValue(navDraftsSelector)
+  console.log('Nav drafts', drafts)
 
   return (
     <>
@@ -40,7 +44,7 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
             </div>
           </div>
           <button
-            className="flex justify-between items-center p-2 mt-5 w-full bg-primary rounded-lg hover:outline-brand hover:outline link-text"
+            className="flex justify-between items-center p-2 mt-5 w-full rounded-lg hover:outline bg-primary hover:outline-brand link-text"
             onClick={() => setSearchVisible(true)}
           >
             <p className="flex gap-2 items-center">
@@ -51,6 +55,14 @@ export const Nav: FC<NavProps> = ({ onMenuClick }) => {
 
           <div className="my-4 w-full">
             <ConnectWalletButton />
+          </div>
+          <div className="ml-1 text-sm">
+            <div className="mt-6">
+              <h3 className="mb-4 font-mono caption-text">
+                {t('title.drafts')}
+              </h3>
+              <DraftsNavList drafts={drafts} />
+            </div>
           </div>
           <div className="ml-1 text-sm">
             <div className="mt-6">

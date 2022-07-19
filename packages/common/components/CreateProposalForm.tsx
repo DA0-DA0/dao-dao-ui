@@ -10,7 +10,7 @@ import {
   useForm,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   Action,
@@ -25,6 +25,9 @@ import { Airplane } from '@dao-dao/icons'
 import {
   Cw20BaseSelectors,
   CwCoreSelectors,
+  activeDraftIdAtom,
+  draftAtom,
+  draftsAtom,
   useProposalModule,
   useVotingModule,
 } from '@dao-dao/state'
@@ -144,6 +147,61 @@ export const CreateProposalForm = ({
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
   const proposalActionData = watch('actionData')
+
+  console.log('query.draft', router.query.draftId)
+  const queryDraftId = router.query.draftId as string | undefined
+  const [activeDraftId, setActiveDraftId] = useRecoilState(activeDraftIdAtom)
+  const [myDraft, setMyDraft] = useRecoilState(draftAtom(activeDraftId || ''))
+  const [draftIds, setDraftIds] = useRecoilState(draftsAtom)
+  console.log('myDraft', myDraft)
+
+  useEffect(() => {
+    if (router.query.draftId && typeof router.query.draftId == 'string') {
+      // check if valid draft in local storage
+      // OR if proposal fields are non-empty
+      // otherwise clear query string
+      setActiveDraftId(router.query.draftId)
+    }
+  }, [router.query.draftId])
+
+  useEffect(() => {
+    console.log(
+      'write to local storage',
+      proposalDescription,
+      proposalTitle,
+      proposalActionData
+    )
+    const isNonEmpty =
+      proposalDescription.length > 0 ||
+      proposalTitle.length > 0 ||
+      proposalActionData.length > 0
+    if (activeDraftId === undefined && isNonEmpty) {
+      const draftId = Date.now().toString()
+      router.replace({ query: { ...router.query, draftId } })
+    } else if (activeDraftId !== undefined && isNonEmpty) {
+      // save to local storage
+      let newDrafts = draftIds.filter(({ id }) => id !== activeDraftId)
+      newDrafts.unshift({ id: activeDraftId, address: coreAddress })
+      setDraftIds(newDrafts)
+      setMyDraft({
+        title: proposalTitle,
+        description: proposalDescription,
+        actionData: proposalActionData,
+        daoAddress: coreAddress,
+      })
+    }
+  }, [proposalDescription, proposalTitle, proposalActionData])
+
+  console.log('draftIds', draftIds)
+
+  const [loadedDraft, setLoadedDraft] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!formMethods.formState.isDirty && myDraft && !loadedDraft) {
+      formMethods.reset(myDraft)
+      setLoadedDraft(true)
+    }
+  }, [formMethods.formState.isDirty, myDraft, loadedDraft])
 
   const { append, remove } = useFieldArray({
     name: 'actionData',
