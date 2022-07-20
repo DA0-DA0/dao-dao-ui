@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   HorizontalInfo,
@@ -9,8 +10,6 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
-
-import { useDAOInfoContext } from '.'
 
 export const DaoThinInfo = () => (
   <SuspenseLoader
@@ -28,7 +27,7 @@ const InnerDaoThinInfo = () => {
   const {
     components: { DaoThinInfoContent },
   } = useVotingModuleAdapter()
-  const { coreAddress, proposalModules } = useDAOInfoContext()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
 
   const useProposalCountHooks = useMemo(
     () =>

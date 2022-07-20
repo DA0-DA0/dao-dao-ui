@@ -7,11 +7,15 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { cwCoreProposalModulesSelector } from '@dao-dao/state'
-import { Loader, Logo, SuspenseLoader, TooltipIcon } from '@dao-dao/ui'
+import {
+  Loader,
+  Logo,
+  PinnedProposalLine,
+  SuspenseLoader,
+  TooltipIcon,
+} from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
-
-import { PinnedProposalLine } from '../proposals'
 
 export const PinnedProposalsList: FC = () => {
   const { t } = useTranslation()

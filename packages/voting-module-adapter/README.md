@@ -40,7 +40,7 @@ const DaoThinInfoDisplay = () => (
 
 const DaoThinInfoContent: FC = () => {
   const { t } = useTranslation()
-  const { coreAddress, votingModuleType } = useDAOInfoContext()
+  const { coreAddress, votingModuleType } = useDaoInfoContext()
   const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
   const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
     fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,
@@ -233,7 +233,7 @@ Other times it makes sense to create objects or hooks:
 <summary>Before</summary>
 
 ```typescript
-const { coreAddress, votingModuleType } = useDAOInfoContext()
+const { coreAddress, votingModuleType } = useDaoInfoContext()
 const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
 
 const voteConversionDecimals = useMemo(

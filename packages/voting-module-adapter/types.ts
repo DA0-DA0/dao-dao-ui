@@ -54,7 +54,7 @@ export interface IVotingModuleAdapter {
     DaoTreasuryFooter: ComponentType
     DaoInfoAdditionalAddresses: ComponentType
     DaoInfoVotingConfiguration: ComponentType
-    ProposalCreateAddresses: ComponentType
+    ProposalModuleAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
     ProposalDetailsVotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>

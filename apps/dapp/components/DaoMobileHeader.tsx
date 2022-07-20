@@ -1,5 +1,4 @@
-import { FC } from 'react'
-
+import { useDaoInfoContext } from '@dao-dao/common'
 import { useVotingModule } from '@dao-dao/state'
 import {
   MobileHeaderLoader,
@@ -7,11 +6,20 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-import { useDAOInfoContext } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
 
-const DAOMobileHeaderInternal: FC = () => {
-  const { coreAddress, name, imageUrl } = useDAOInfoContext()
+export const DaoMobileHeader = () => (
+  <SuspenseLoader
+    fallback={
+      <MobileHeaderLoader contractAddress={useDaoInfoContext().coreAddress} />
+    }
+  >
+    <DaoMobileHeaderInternal />
+  </SuspenseLoader>
+)
+
+const DaoMobileHeaderInternal = () => {
+  const { coreAddress, name, imageUrl } = useDaoInfoContext()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
@@ -34,13 +42,3 @@ const DAOMobileHeaderInternal: FC = () => {
     />
   )
 }
-
-export const DAOMobileHeader: FC = () => (
-  <SuspenseLoader
-    fallback={
-      <MobileHeaderLoader contractAddress={useDAOInfoContext().coreAddress} />
-    }
-  >
-    <DAOMobileHeaderInternal />
-  </SuspenseLoader>
-)

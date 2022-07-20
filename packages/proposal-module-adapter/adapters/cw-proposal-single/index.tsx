@@ -4,7 +4,7 @@ import { ProposalModuleAdapter } from '../../types'
 import {
   CreateProposalForm,
   DaoInfoVotingConfiguration,
-  ProposalCreateInfo,
+  ProposalModuleInfo,
   makeUseListAllProposalInfos,
   makeUseProposalCount,
   makeUseReverseProposalInfos,
@@ -44,8 +44,8 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
 
     // Components
     components: {
-      ProposalCreateInfo: (props) => (
-        <ProposalCreateInfo
+      ProposalModuleInfo: (props) => (
+        <ProposalModuleInfo
           proposalModuleAddress={proposalModule.address}
           {...props}
         />

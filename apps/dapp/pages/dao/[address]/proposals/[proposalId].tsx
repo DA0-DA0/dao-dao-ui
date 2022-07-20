@@ -1,17 +1,20 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { FormProposalData, useActions } from '@dao-dao/actions'
-import { ConnectWalletButton } from '@dao-dao/common'
 import {
-  CommonProposalInfo,
-  ProposalModuleAdapterError,
+  ConnectWalletButton,
+  DaoPageWrapper,
+  DaoProposalPageWrapperProps,
+  useDaoInfoContext,
+} from '@dao-dao/common'
+import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
+import {
   ProposalModuleAdapterProvider,
-  matchAndLoadAdapter,
   useProposalModuleAdapter,
   useProposalModuleAdapterCommon,
   useProposalModuleAdapterOptions,
@@ -21,27 +24,18 @@ import {
   Loader,
   Logo,
   PageLoader,
+  ProposalNotFound,
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import {
-  DAOPageWrapper,
-  DAOPageWrapperProps,
-  ProposalNotFound,
-  SmallScreenNav,
-  useDAOInfoContext,
-} from '@/components'
-import {
-  RedirectError,
-  makeGetDAOStaticProps,
-} from '@/server/makeGetDAOStaticProps'
+import { SmallScreenNav } from '@/components'
 
 const InnerProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, name } = useDAOInfoContext()
+  const { coreAddress, name } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const {
@@ -153,15 +147,11 @@ const InnerProposal = () => {
   )
 }
 
-interface ProposalPageProps extends DAOPageWrapperProps {
-  proposalId: string | undefined
-}
-
-const ProposalPage: NextPage<ProposalPageProps> = ({
+const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
-  <DAOPageWrapper {...props}>
+  <DaoPageWrapper {...props}>
     <SuspenseLoader fallback={<PageLoader />}>
       {props.proposalId && props.info ? (
         <ProposalModuleAdapterProvider
@@ -176,10 +166,12 @@ const ProposalPage: NextPage<ProposalPageProps> = ({
           <InnerProposal />
         </ProposalModuleAdapterProvider>
       ) : (
-        <ProposalNotFound />
+        <ProposalNotFound
+          homeHref={props.info ? `/dao/${props.info.coreAddress}` : '/home'}
+        />
       )}
     </SuspenseLoader>
-  </DAOPageWrapper>
+  </DaoPageWrapper>
 )
 
 export default ProposalPage
@@ -191,77 +183,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =
-  makeGetDAOStaticProps(
-    async ({
-      context: { params: { address, proposalId } = {} },
-      t,
-      cwClient,
-      coreAddress,
-      proposalModules,
-    }) => {
-      // If invalid proposal ID, not found.
-      if (typeof proposalId !== 'string') {
-        return {
-          followingTitle: t('error.proposalNotFound'),
-          additionalProps: {
-            proposalId: undefined,
-          },
-        }
-      }
-
-      let proposalInfo: CommonProposalInfo | undefined
-      try {
-        const {
-          options: {
-            proposalModule: { prefix },
-          },
-          adapter: {
-            functions: { getProposalInfo },
-          },
-        } = await matchAndLoadAdapter(proposalModules, proposalId, {
-          coreAddress,
-          Logo,
-          Loader,
-        })
-
-        // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.
-        if (!isNaN(Number(proposalId))) {
-          throw new RedirectError({
-            destination: `${SITE_URL}/dao/${address}/proposals/${prefix}${proposalId}`,
-            permanent: true,
-          })
-        }
-
-        // undefined if proposal does not exist.
-        proposalInfo = await getProposalInfo(cwClient)
-      } catch (error) {
-        // Rethrow.
-        if (error instanceof RedirectError) {
-          throw error
-        }
-
-        // If ProposalModuleAdapterError, treat as 404 below.
-        // Otherwise display 500.
-        if (!(error instanceof ProposalModuleAdapterError)) {
-          console.error(error)
-          // Throw error to trigger 500.
-          throw new Error(
-            'An unexpected error occurred. Please try again later.'
-          )
-        }
-      }
-
-      return {
-        url: `${SITE_URL}/dao/${address}/proposals/${proposalId}`,
-        followingTitle: proposalInfo
-          ? `${t('title.proposal')} ${proposalId}`
-          : t('error.proposalNotFound'),
-        overrideDescription: proposalInfo ? proposalInfo.title : undefined,
-        additionalProps: {
-          // If proposal does not exist, pass undefined to indicate 404.
-          proposalId: proposalInfo ? proposalId : undefined,
-        },
-      }
-    }
-  )
+export const getStaticProps = makeGetDaoProposalStaticProps({
+  getProposalUrlPrefix: ({ address }) =>
+    `${SITE_URL}/dao/${address}/proposals/`,
+})

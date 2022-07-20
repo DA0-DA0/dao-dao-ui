@@ -22,7 +22,7 @@ export interface IProposalModuleAdapterCommon {
 
   // Components
   components: {
-    ProposalCreateInfo: ComponentType<BaseProposalCreateInfo>
+    ProposalModuleInfo: ComponentType<BaseProposalModuleInfo>
     CreateProposalForm: ComponentType<BaseCreateProposalFormProps>
     DaoInfoVotingConfiguration: ComponentType
   }
@@ -145,7 +145,7 @@ export interface BaseProposalLineProps {
   className?: string
 }
 
-export interface BaseProposalCreateInfo {
+export interface BaseProposalModuleInfo {
   className?: string
 }
 

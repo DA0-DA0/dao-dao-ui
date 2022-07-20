@@ -4,10 +4,11 @@ import { useMemo } from 'react'
 
 import { useProposalModule } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { ProposalLine } from '@dao-dao/ui'
 
 import { DAO_ADDRESS } from '@/util'
 
-import { ProposalItem } from './ProposalItem'
+import { useDAOInfoContext } from '../DAOInfoContext'
 
 export const ProposalsContent = () => {
   const { proposalResponses: allProposalResponses } = useProposalModule(
@@ -16,6 +17,7 @@ export const ProposalsContent = () => {
       fetchProposalResponses: true,
     }
   )
+  const { proposalModules } = useDAOInfoContext()
 
   const openProposalResponses = useMemo(() => {
     if (!allProposalResponses) return []
@@ -51,7 +53,13 @@ export const ProposalsContent = () => {
           {openProposalResponses.length > 0 && (
             <div className="mb-8 space-y-1">
               {openProposalResponses.map((response) => (
-                <ProposalItem key={response.id} proposalResponse={response} />
+                <ProposalLine
+                  key={response.id}
+                  coreAddress={DAO_ADDRESS}
+                  proposalId={response.id}
+                  proposalModules={proposalModules}
+                  proposalViewUrl={`/vote/${response.id}`}
+                />
               ))}
             </div>
           )}
@@ -70,7 +78,13 @@ export const ProposalsContent = () => {
       {historyProposalResponses.length > 0 && (
         <div className="mt-4 space-y-1">
           {historyProposalResponses.map((response) => (
-            <ProposalItem key={response.id} proposalResponse={response} />
+            <ProposalLine
+              key={response.id}
+              coreAddress={DAO_ADDRESS}
+              proposalId={response.id}
+              proposalModules={proposalModules}
+              proposalViewUrl={`/vote/${response.id}`}
+            />
           ))}
         </div>
       )}

@@ -46,7 +46,7 @@ let config = {
       permanent: false,
     },
     // Redirect legacy multisigs (legacy DAOs redirected in
-    // makeGetDAOStaticProps function).
+    // makeGetDaoStaticProps function).
     {
       source: '/multisig/:slug*',
       destination:

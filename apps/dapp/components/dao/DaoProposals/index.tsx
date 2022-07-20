@@ -4,11 +4,11 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import { useVotingModule } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
-import { useDAOInfoContext } from '../../DAOPageWrapper'
 import { ProposalList } from './ProposalList'
 
 export const DaoProposals: FC = () => {
@@ -30,7 +30,7 @@ export const DaoProposals: FC = () => {
 
 const InnerDaoProposals: FC = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
   const router = useRouter()
 

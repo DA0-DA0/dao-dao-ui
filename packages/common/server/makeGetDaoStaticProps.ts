@@ -4,12 +4,19 @@ import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps, Redirect } from 'next'
 import { i18n } from 'next-i18next'
 
+import { DaoPageWrapperProps } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import {
+  CommonProposalInfo,
+  ProposalModuleAdapterError,
+  matchAndLoadAdapter,
+} from '@dao-dao/proposal-module-adapter'
 import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
 import {
   ConfigResponse,
   InfoResponse,
 } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
@@ -20,8 +27,6 @@ import {
   parseCoreVersion,
   validateContractAddress,
 } from '@dao-dao/utils'
-
-import { DAOPageWrapperProps } from '@/components'
 
 // Swap order of arguments and use error fallback string if client null.
 // It shouldn't be null as long as we only call this on the server once the
@@ -36,7 +41,7 @@ const serverT = (
   i18n?.t(key, defaultValue, options) ??
   'internal error: translations not loaded'
 
-interface GetStaticPropsMakerProps {
+interface GetDaoStaticPropsMakerProps {
   leadingTitle?: string
   followingTitle?: string
   overrideTitle?: string
@@ -45,7 +50,9 @@ interface GetStaticPropsMakerProps {
   additionalProps?: Record<string, any> | null | undefined
   url?: string
 }
-type GetStaticPropsMaker = (
+
+interface GetDaoStaticPropsMakerOptions {
+  coreAddress?: string
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
     t: typeof serverT
@@ -55,31 +62,37 @@ type GetStaticPropsMaker = (
     coreAddress: string
     proposalModules: ProposalModule[]
   }) =>
-    | GetStaticPropsMakerProps
+    | GetDaoStaticPropsMakerProps
     | undefined
     | null
-    | Promise<GetStaticPropsMakerProps | undefined | null>
-) => GetStaticProps<DAOPageWrapperProps>
+    | Promise<GetDaoStaticPropsMakerProps | undefined | null>
+}
 
-// Computes DAOPageWrapperProps for the DAO with optional alterations.
-export const makeGetDAOStaticProps: GetStaticPropsMaker =
-  (getProps) => async (context) => {
+type GetDaoStaticPropsMaker = (
+  options?: GetDaoStaticPropsMakerOptions
+) => GetStaticProps<DaoPageWrapperProps>
+
+// Computes DaoPageWrapperProps for the DAO with optional alterations.
+export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
+  ({ coreAddress: _coreAddress, getProps } = {}) =>
+  async (context) => {
     // Don't query chain if running in CI.
     if (CI) {
       return { notFound: true }
     }
 
-    const { params: { address } = { address: undefined }, locale } = context
-
     // Run before any `t` call since i18n is not loaded globally on the
     // server before this is awaited.
-    const i18nProps = await serverSideTranslations(locale, ['translation'])
+    const i18nProps = await serverSideTranslations(context.locale, [
+      'translation',
+    ])
 
+    const coreAddress = _coreAddress ?? context.params?.address
     // If invalid address, display not found.
     if (
-      typeof address !== 'string' ||
-      !address ||
-      validateContractAddress(address) !== true
+      !coreAddress ||
+      typeof coreAddress !== 'string' ||
+      validateContractAddress(coreAddress) !== true
     ) {
       // Excluding `info` will render DAONotFound.
       return {
@@ -93,7 +106,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
 
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreV0_1_0QueryClient(cwClient, address)
+      const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
 
       const config = await coreClient.config()
 
@@ -113,7 +126,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
 
       const proposalModules = await fetchProposalModules(
         cwClient,
-        address,
+        coreAddress,
         coreVersion
       )
 
@@ -135,7 +148,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
           cwClient,
           coreClient,
           config,
-          coreAddress: address,
+          coreAddress: coreAddress,
           proposalModules,
         })) ?? {}
 
@@ -150,7 +163,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           info: {
-            coreAddress: address,
+            coreAddress: coreAddress,
             votingModuleAddress,
             votingModuleContractName,
             proposalModules,
@@ -182,7 +195,7 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       ) {
         return {
           redirect: {
-            destination: LEGACY_URL_PREFIX + `/dao/${address}`,
+            destination: LEGACY_URL_PREFIX + `/dao/${coreAddress}`,
             permanent: false,
           },
         }
@@ -211,6 +224,96 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
       throw error
     }
   }
+
+interface GetDaoProposalStaticPropsMakerOptions
+  extends Omit<GetDaoStaticPropsMakerOptions, 'getProps'> {
+  getProposalUrlPrefix: (
+    params: Record<string, string | string[] | undefined>
+  ) => string
+  proposalIdParamKey?: string
+}
+
+export const makeGetDaoProposalStaticProps = ({
+  getProposalUrlPrefix,
+  proposalIdParamKey = 'proposalId',
+  ...options
+}: GetDaoProposalStaticPropsMakerOptions) =>
+  makeGetDaoStaticProps({
+    ...options,
+    getProps: async ({
+      context: { params = {} },
+      t,
+      cwClient,
+      coreAddress,
+      proposalModules,
+    }) => {
+      const proposalId = params[proposalIdParamKey]
+
+      // If invalid proposal ID, not found.
+      if (typeof proposalId !== 'string') {
+        return {
+          followingTitle: t('error.proposalNotFound'),
+          additionalProps: {
+            proposalId: undefined,
+          },
+        }
+      }
+
+      let proposalInfo: CommonProposalInfo | undefined
+      try {
+        const {
+          options: {
+            proposalModule: { prefix },
+          },
+          adapter: {
+            functions: { getProposalInfo },
+          },
+        } = await matchAndLoadAdapter(proposalModules, proposalId, {
+          coreAddress,
+          Logo,
+          Loader,
+        })
+
+        // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.
+        if (!isNaN(Number(proposalId))) {
+          throw new RedirectError({
+            destination: getProposalUrlPrefix(params) + prefix + proposalId,
+            permanent: true,
+          })
+        }
+
+        // undefined if proposal does not exist.
+        proposalInfo = await getProposalInfo(cwClient)
+      } catch (error) {
+        // Rethrow.
+        if (error instanceof RedirectError) {
+          throw error
+        }
+
+        // If ProposalModuleAdapterError, treat as 404 below.
+        // Otherwise display 500.
+        if (!(error instanceof ProposalModuleAdapterError)) {
+          console.error(error)
+          // Throw error to trigger 500.
+          throw new Error(
+            'An unexpected error occurred. Please try again later.'
+          )
+        }
+      }
+
+      return {
+        url: getProposalUrlPrefix(params) + proposalId,
+        followingTitle: proposalInfo
+          ? `${t('title.proposal')} ${proposalId}`
+          : t('error.proposalNotFound'),
+        overrideDescription: proposalInfo ? proposalInfo.title : undefined,
+        additionalProps: {
+          // If proposal does not exist, pass undefined to indicate 404.
+          proposalId: proposalInfo ? proposalId : undefined,
+        },
+      }
+    },
+  })
 
 export class RedirectError {
   constructor(public redirect: Redirect) {}

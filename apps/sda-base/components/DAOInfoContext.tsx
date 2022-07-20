@@ -1,8 +1,11 @@
 import { createContext, useContext } from 'react'
 
+import { ProposalModule } from '@dao-dao/utils'
+
 export interface DAOInfo {
   votingModuleAddress: string
   votingModuleContractName: string
+  proposalModules: ProposalModule[]
   name: string
   imageUrl: string | null
 }
@@ -10,6 +13,7 @@ export interface DAOInfo {
 const FallbackDAOInfo: DAOInfo = {
   votingModuleAddress: 'error not loaded',
   votingModuleContractName: 'Error',
+  proposalModules: [],
   name: 'Error',
   imageUrl: null,
 }

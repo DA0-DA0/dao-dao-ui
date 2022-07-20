@@ -51,7 +51,7 @@ export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
         <ProposalStatus status={proposal.status} />
       </div>
       <p className="col-span-3 truncate link-text">{proposal.title}</p>
-      <p className="truncate body-text">{expirationString}</p>
+      <p className="text-right truncate body-text">{expirationString}</p>
     </div>
   )
 }

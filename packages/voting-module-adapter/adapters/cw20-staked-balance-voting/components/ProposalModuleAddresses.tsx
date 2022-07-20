@@ -5,7 +5,7 @@ import { CopyToClipboard } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const ProposalCreateAddresses = () => {
+export const ProposalModuleAddresses = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
 

@@ -1,3 +1,3 @@
 export * from './CreateProposalForm'
 export * from './DaoInfoVotingConfiguration'
-export * from './ProposalCreateInfo'
+export * from './ProposalModuleInfo'

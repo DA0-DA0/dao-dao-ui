@@ -5,6 +5,12 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  DaoPageWrapper,
+  DaoPageWrapperProps,
+  useDaoInfoContext,
+} from '@dao-dao/common'
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -21,19 +27,15 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   ContractHeader,
-  DAOMobileHeader,
-  DAOPageWrapper,
-  DAOPageWrapperProps,
+  DaoMobileHeader,
   DaoInfo,
-  DaoThinInfo,
   DaoProposals,
+  DaoThinInfo,
   DaoTreasury,
   DaoTreasuryHistory,
   SmallScreenNav,
-  useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
-import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -54,7 +56,7 @@ const InnerMobileDaoHome = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <DAOMobileHeader />
+        <DaoMobileHeader />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -89,9 +91,7 @@ const InnerMobileDaoHome = () => {
             <DaoTreasuryHistory shortTitle />
           </div>
         )}
-        {tab === MobileMenuTabSelection.Info && (
-          <DaoInfo hideTreasury />
-        )}
+        {tab === MobileMenuTabSelection.Info && <DaoInfo hideTreasury />}
       </div>
     </div>
   )
@@ -101,7 +101,7 @@ const InnerDAOHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const { coreAddress, name } = useDAOInfoContext()
+  const { coreAddress, name } = useDaoInfoContext()
   const {
     components: { Membership },
   } = useVotingModuleAdapter()
@@ -170,7 +170,7 @@ const InnerDAOHome = () => {
   )
 }
 
-interface DaoHomePageProps extends DAOPageWrapperProps {
+interface DaoHomePageProps extends DaoPageWrapperProps {
   accentColor?: string
 }
 
@@ -205,7 +205,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
   }, [accentColor, setAccentColor, isReady, isFallback])
 
   return (
-    <DAOPageWrapper {...props}>
+    <DaoPageWrapper {...props}>
       <SuspenseLoader fallback={<PageLoader />}>
         <div className="block md:hidden">
           <InnerMobileDaoHome />
@@ -214,7 +214,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
           <InnerDAOHome />
         </div>
       </SuspenseLoader>
-    </DAOPageWrapper>
+    </DaoPageWrapper>
   )
 }
 
@@ -227,8 +227,8 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDAOStaticProps(
-    async ({
+  makeGetDaoStaticProps({
+    getProps: async ({
       config: { image_url },
       context: { params: { address } = {} },
     }) => {
@@ -248,5 +248,5 @@ export const getStaticProps: GetStaticProps<DaoHomePageProps> =
         url,
         additionalProps: { accentColor: result.rgb },
       }
-    }
-  )
+    },
+  })

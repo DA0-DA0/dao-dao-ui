@@ -5,7 +5,13 @@ import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import {
+  ConnectWalletButton,
+  DaoPageWrapper,
+  DaoPageWrapperProps,
+  useDaoInfoContext,
+} from '@dao-dao/common'
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { refreshProposalsIdAtom, useVotingModule } from '@dao-dao/state'
 import {
@@ -19,29 +25,23 @@ import {
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import {
-  DAOPageWrapper,
-  DAOPageWrapperProps,
-  SmallScreenNav,
-  useDAOInfoContext,
-} from '@/components'
-import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
+import { SmallScreenNav } from '@/components'
 
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, name, proposalModules } = useDAOInfoContext()
+  const { coreAddress, name, proposalModules } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
   const {
-    components: { ProposalCreateAddresses },
+    components: { ProposalModuleAddresses },
   } = useVotingModuleAdapter()
 
   const {
-    components: { ProposalCreateInfo, CreateProposalForm },
+    components: { ProposalModuleInfo, CreateProposalForm },
   } = useMemo(
-    // TODO: Make a switcher and pick which proposal module to use.
+    // TODO(noah/proposal-module-adapters): Make a switcher and pick which proposal module to use.
     () =>
       matchAndLoadCommon(proposalModules[0], {
         coreAddress,
@@ -113,28 +113,28 @@ const InnerProposalCreate = () => {
               <CopyToClipboard value={coreAddress} />
             </div>
 
-            <ProposalCreateAddresses />
+            <ProposalModuleAddresses />
           </div>
 
           <h2 className="mb-4 font-medium text-medium">
             {t('title.proposalInfo')}
           </h2>
-          <ProposalCreateInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+          <ProposalModuleInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
         </div>
       </div>
     </>
   )
 }
 
-const ProposalCreatePage: NextPage<DAOPageWrapperProps> = ({
+const ProposalCreatePage: NextPage<DaoPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
-  <DAOPageWrapper {...props}>
+  <DaoPageWrapper {...props}>
     <SuspenseLoader fallback={<PageLoader />}>
       <InnerProposalCreate />
     </SuspenseLoader>
-  </DAOPageWrapper>
+  </DaoPageWrapper>
 )
 
 export default ProposalCreatePage
@@ -146,9 +146,9 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps = makeGetDAOStaticProps(
-  ({ t, context: { params: { address } = {} } }) => ({
+export const getStaticProps = makeGetDaoStaticProps({
+  getProps: ({ t, context: { params: { address } = {} } }) => ({
     url: `${SITE_URL}/dao/${address}/proposals/create`,
     followingTitle: t('title.createAProposal'),
-  })
-)
+  }),
+})

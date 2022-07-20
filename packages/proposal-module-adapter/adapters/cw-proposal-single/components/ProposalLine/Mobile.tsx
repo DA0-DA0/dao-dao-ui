@@ -52,7 +52,7 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
             proposalPrefix={proposalPrefix}
           />
         </p>
-        <p className="truncate caption-text">{expirationString}</p>
+        <p className="text-right truncate caption-text">{expirationString}</p>
       </div>
     </div>
   )

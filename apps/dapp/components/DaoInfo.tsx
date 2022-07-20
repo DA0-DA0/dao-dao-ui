@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { CopyToClipboard, Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
 import { DaoTreasury } from './DaoTreasury'
 
 interface DaoInfoProps {
@@ -14,7 +14,7 @@ interface DaoInfoProps {
 
 export const DaoInfo = ({ hideTreasury }: DaoInfoProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const {
     components: { DaoInfoAdditionalAddresses, DaoInfoVotingConfiguration },
   } = useVotingModuleAdapter()
@@ -56,7 +56,7 @@ export const DaoInfo = ({ hideTreasury }: DaoInfoProps) => {
 }
 
 export const DaoInfoVotingProposalVotingConfigurations = () => {
-  const { coreAddress, proposalModules } = useDAOInfoContext()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
   const components = useMemo(
     () =>
       proposalModules.map((proposalModule) => ({

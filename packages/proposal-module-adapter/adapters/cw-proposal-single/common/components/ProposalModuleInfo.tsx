@@ -7,23 +7,23 @@ import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { ProposalInfoStat, SuspenseLoader } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { BaseProposalCreateInfo } from '../../../../types'
+import { BaseProposalModuleInfo } from '../../../../types'
 import { useProcessTQ } from '../hooks'
 
-interface ProposalCreateInfo extends BaseProposalCreateInfo {
+interface ProposalModuleInfo extends BaseProposalModuleInfo {
   proposalModuleAddress: string
 }
 
-export const ProposalCreateInfo = (props: ProposalCreateInfo) => (
-  <SuspenseLoader fallback={<StatelessProposalCreateInfo />}>
-    <InnerProposalCreateInfo {...props} />
+export const ProposalModuleInfo = (props: ProposalModuleInfo) => (
+  <SuspenseLoader fallback={<StatelessProposalModuleInfo />}>
+    <InnerProposalModuleInfo {...props} />
   </SuspenseLoader>
 )
 
-const InnerProposalCreateInfo = ({
+const InnerProposalModuleInfo = ({
   proposalModuleAddress,
   ...props
-}: ProposalCreateInfo) => {
+}: ProposalModuleInfo) => {
   const { t } = useTranslation()
 
   const config = useRecoilValue(
@@ -49,7 +49,7 @@ const InnerProposalCreateInfo = ({
   )
 
   return (
-    <StatelessProposalCreateInfo
+    <StatelessProposalModuleInfo
       data={{
         denom: proposalDepositTokenInfo?.symbol || '',
         macroDeposit:
@@ -70,7 +70,7 @@ const InnerProposalCreateInfo = ({
   )
 }
 
-interface StatelessProposalCreateInfoProps extends BaseProposalCreateInfo {
+interface StatelessProposalModuleInfoProps extends BaseProposalModuleInfo {
   data?: {
     denom: string
     macroDeposit: string
@@ -80,10 +80,10 @@ interface StatelessProposalCreateInfoProps extends BaseProposalCreateInfo {
   }
 }
 
-const StatelessProposalCreateInfo = ({
+const StatelessProposalModuleInfo = ({
   data,
   className,
-}: StatelessProposalCreateInfoProps) => {
+}: StatelessProposalModuleInfoProps) => {
   const { t } = useTranslation()
 
   return (

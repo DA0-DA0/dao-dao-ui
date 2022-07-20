@@ -3,20 +3,19 @@ import { FC, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { refreshProposalsIdAtom } from '@dao-dao/state'
-import { Button, Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { Button, Loader, Logo, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
 
 import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
-import { EmptyContractCard, ProposalLine } from '@/components'
-
-import { useDAOInfoContext } from '../../DAOPageWrapper'
+import { EmptyContractCard } from '@/components'
 
 const PROP_LOAD_LIMIT = 10
 
 export const ProposalList: FC = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   // Load from Recoil so that loaded propoals are shared by desktop and mobile
   // views.
@@ -79,7 +78,7 @@ interface SingleProposalListProps {
 
 const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
   const { t } = useTranslation()
-  const { coreAddress, proposalModules } = useDAOInfoContext()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
 
   const [startBefores, setStartBefores] = useRecoilState(
     proposalStartBeforesAtom(coreAddress)
@@ -203,7 +202,9 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
       {proposalListInfosToDisplay.map(({ id }) => (
         <ProposalLine
           key={id}
+          coreAddress={coreAddress}
           proposalId={id}
+          proposalModules={proposalModules}
           proposalViewUrl={`/dao/${coreAddress}/proposals/${id}`}
         />
       ))}

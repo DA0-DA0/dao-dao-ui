@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo'
 import {
-  FunctionComponent,
+  ComponentType,
   PropsWithChildren,
   createContext,
   useContext,
@@ -10,7 +10,15 @@ import {
   CwProposalSingleAdapter,
   registerAdapters as registerProposalModuleAdapters,
 } from '@dao-dao/proposal-module-adapter'
-import { Loader, Logo, PageLoader, SuspenseLoader } from '@dao-dao/ui'
+import {
+  DaoNotFound,
+  Loader as DefaultLoader,
+  Logo as DefaultLogo,
+  LoaderProps,
+  LogoProps,
+  PageLoader,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
 import {
   Cw20StakedBalanceVotingAdapter,
@@ -19,9 +27,7 @@ import {
   registerAdapters as registerVotingModuleAdapters,
 } from '@dao-dao/voting-module-adapter'
 
-import { DAONotFound } from './dao/NotFound'
-
-interface DAOInfo {
+export interface DaoInfo {
   coreAddress: string
   votingModuleAddress: string
   votingModuleContractName: string
@@ -31,33 +37,41 @@ interface DAOInfo {
   imageUrl: string | null
 }
 
-const DAOInfoContext = createContext<DAOInfo | null>(null)
+const DaoInfoContext = createContext<DaoInfo | null>(null)
 
-export const useDAOInfoContext = () => {
-  const context = useContext(DAOInfoContext)
+export const useDaoInfoContext = () => {
+  const context = useContext(DaoInfoContext)
   if (!context) {
     throw new Error(
-      'useDAOInfoContext can only be used in a descendant of DAOInfoContext.'
+      'useDaoInfoContext can only be used in a descendant of DaoInfoContext.Provider.'
     )
   }
 
   return context
 }
 
-export type DAOPageWrapperProps = PropsWithChildren<{
+export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
   title: string
   description: string
-  info?: DAOInfo
+  info?: DaoInfo
+  Logo?: ComponentType<LogoProps>
+  Loader?: ComponentType<LoaderProps>
 }>
 
-export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
+export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
+  proposalId: string | undefined
+}
+
+export const DaoPageWrapper = ({
   url,
   title,
   description,
   info,
   children,
-}) => (
+  Logo = DefaultLogo,
+  Loader = DefaultLoader,
+}: DaoPageWrapperProps) => (
   <>
     <NextSeo
       description={description}
@@ -82,12 +96,12 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
             Loader,
           }}
         >
-          <DAOInfoContext.Provider value={info}>
+          <DaoInfoContext.Provider value={info}>
             {children}
-          </DAOInfoContext.Provider>
+          </DaoInfoContext.Provider>
         </VotingModuleAdapterProvider>
       ) : (
-        <DAONotFound />
+        <DaoNotFound />
       )}
     </SuspenseLoader>
   </>

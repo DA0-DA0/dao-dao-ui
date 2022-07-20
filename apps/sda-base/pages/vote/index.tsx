@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { SuspenseLoader } from '@dao-dao/ui'
 
 import {
@@ -17,7 +18,7 @@ import {
   ProposalsInfoLoader,
   VoteHero,
 } from '@/components'
-import { makeGetStaticProps } from '@/server/makeGetStaticProps'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerVote: FunctionComponent = () => {
   const { t } = useTranslation()
@@ -62,4 +63,6 @@ const VotePage: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
 
 export default VotePage
 
-export const getStaticProps: GetStaticProps = makeGetStaticProps()
+export const getStaticProps: GetStaticProps = makeGetDaoStaticProps({
+  coreAddress: DAO_ADDRESS,
+})

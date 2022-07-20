@@ -1,4 +1,5 @@
 export * from './CloseProposal'
 export * from './ExecuteProposal'
+export * from './PinnedProposalLine'
 export * from './ProposalIdDisplay'
-export * from './ProposalLineLoader'
+export * from './ProposalLine'
