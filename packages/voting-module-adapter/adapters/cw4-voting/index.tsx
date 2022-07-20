@@ -4,7 +4,8 @@ import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
-  DaoInfoContent,
+  DaoInfoAdditionalAddresses,
+  DaoInfoVotingConfiguration,
   DaoThinInfoContent,
   DaoTreasuryFooter,
   Membership,
@@ -27,7 +28,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
         // No governance tokens to mint.
         ActionKey.Mint,
       ],
-      sdaMembershipPageNavInfo: {
+      membershipPageInfo: {
         renderIcon: (color, mobile) => (
           <Wallet
             color={color}
@@ -53,7 +54,8 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
       },
       DaoThinInfoContent,
       DaoTreasuryFooter,
-      DaoInfoContent,
+      DaoInfoAdditionalAddresses,
+      DaoInfoVotingConfiguration,
       ProposalCreateAddresses,
       VoteHeroStats,
       SdaMembershipPage,

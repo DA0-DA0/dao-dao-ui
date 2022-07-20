@@ -19,7 +19,7 @@ import { Governance, Hash } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
-import { SdaMembershipPageNavInfo } from '@dao-dao/voting-module-adapter/types'
+import { MembershipPageInfo } from '@dao-dao/voting-module-adapter/types'
 
 import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
 
@@ -86,11 +86,11 @@ export const Header: FunctionComponent = () => {
 
   // If on error page, this hook will throw an error. Ignore it since
   // Header is rendered on error pages.
-  let sdaMembershipPageNavInfo: SdaMembershipPageNavInfo | undefined
+  let membershipPageInfo: MembershipPageInfo | undefined
   try {
-    sdaMembershipPageNavInfo =
+    membershipPageInfo =
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      useVotingModuleAdapter().fields.sdaMembershipPageNavInfo
+      useVotingModuleAdapter().fields.membershipPageInfo
   } catch {}
 
   const [mobileNavVisible, setMobileNavVisible] = useState(false)
@@ -110,10 +110,10 @@ export const Header: FunctionComponent = () => {
         active: router.pathname === '/',
         external: false,
       },
-      ...(sdaMembershipPageNavInfo
+      ...(membershipPageInfo
         ? [
             {
-              ...sdaMembershipPageNavInfo,
+              ...membershipPageInfo,
               href: '/member',
               active: router.pathname === '/member',
               external: false,
@@ -178,7 +178,7 @@ export const Header: FunctionComponent = () => {
       router.isFallback,
       router.query.proposalId,
       router.asPath,
-      sdaMembershipPageNavInfo,
+      membershipPageInfo,
     ]
   )
 

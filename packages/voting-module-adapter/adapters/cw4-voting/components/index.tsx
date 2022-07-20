@@ -1,4 +1,5 @@
-export * from './DaoInfoContent'
+export * from './DaoInfoAdditionalAddresses'
+export * from './DaoInfoVotingConfiguration'
 export * from './DaoThinInfoContent'
 export * from './DaoTreasuryFooter'
 export * from './Membership'

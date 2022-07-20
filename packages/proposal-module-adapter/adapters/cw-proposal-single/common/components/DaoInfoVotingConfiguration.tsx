@@ -1,0 +1,90 @@
+import { CashIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'react-i18next'
+import { constSelector, useRecoilValue } from 'recoil'
+
+import { Votes } from '@dao-dao/icons'
+import {
+  Cw20BaseSelectors,
+  CwProposalSingleSelectors,
+  useStakingInfo,
+} from '@dao-dao/state'
+import { GovInfoListItem } from '@dao-dao/ui'
+import {
+  ProposalModule,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
+
+import { useProcessTQ } from '../hooks'
+
+interface DaoInfoVotingConfigurationProps {
+  coreAddress: string
+  proposalModule: ProposalModule
+}
+
+export const DaoInfoVotingConfiguration = ({
+  coreAddress,
+  proposalModule,
+}: DaoInfoVotingConfigurationProps) => {
+  const { t } = useTranslation()
+  const { stakingContractConfig } = useStakingInfo(coreAddress)
+
+  const config = useRecoilValue(
+    CwProposalSingleSelectors.configSelector({
+      contractAddress: proposalModule.address,
+    })
+  )
+
+  if (!stakingContractConfig || !config) {
+    throw new Error(t('error.loadingData'))
+  }
+
+  const processTQ = useProcessTQ()
+  const { threshold, quorum } = processTQ(config.threshold)
+
+  const proposalDepositTokenInfo = useRecoilValue(
+    config.deposit_info?.token
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: config.deposit_info.token,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+
+  return (
+    <>
+      <GovInfoListItem
+        icon={<Votes fill="currentColor" width="1rem" />}
+        text={t('title.passingThreshold')}
+        value={threshold.display}
+      />
+      {quorum && (
+        <GovInfoListItem
+          icon={<Votes fill="currentColor" width="1rem" />}
+          text={t('title.quorum')}
+          value={quorum.display}
+        />
+      )}
+      {config.deposit_info && proposalDepositTokenInfo && (
+        <>
+          <GovInfoListItem
+            icon={<Votes fill="currentColor" width="1rem" />}
+            text={t('title.proposalDeposit')}
+            value={`${convertMicroDenomToDenomWithDecimals(
+              config.deposit_info.deposit,
+              proposalDepositTokenInfo.decimals
+            )} $${proposalDepositTokenInfo.symbol}`}
+          />
+          <GovInfoListItem
+            icon={<CashIcon className="inline w-4" />}
+            text={t('title.refundFailedProposals')}
+            value={
+              config.deposit_info.refund_failed_proposals
+                ? t('info.yes')
+                : t('info.no')
+            }
+          />
+        </>
+      )}
+    </>
+  )
+}

@@ -4,7 +4,7 @@ import { ActionKey } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
-export interface SdaMembershipPageNavInfo {
+export interface MembershipPageInfo {
   renderIcon: (color: string, mobile: boolean) => ReactNode
   label: string
 }
@@ -35,7 +35,7 @@ export interface IVotingModuleAdapter {
   // Fields
   fields: {
     disabledActionKeys: ActionKey[]
-    sdaMembershipPageNavInfo: SdaMembershipPageNavInfo
+    membershipPageInfo: MembershipPageInfo
   }
 
   // Hooks
@@ -52,7 +52,8 @@ export interface IVotingModuleAdapter {
     }
     DaoThinInfoContent: ComponentType<BaseDaoThinInfoContentProps>
     DaoTreasuryFooter: ComponentType
-    DaoInfoContent: ComponentType
+    DaoInfoAdditionalAddresses: ComponentType
+    DaoInfoVotingConfiguration: ComponentType
     ProposalCreateAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>

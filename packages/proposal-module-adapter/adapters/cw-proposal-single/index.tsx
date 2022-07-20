@@ -3,6 +3,7 @@ import { CWPROPOSALSINGLE_CONTRACT_NAME } from '@dao-dao/utils'
 import { ProposalModuleAdapter } from '../../types'
 import {
   CreateProposalForm,
+  DaoInfoVotingConfiguration,
   ProposalCreateInfo,
   makeUseListAllProposalInfos,
   makeUseProposalCount,
@@ -52,6 +53,13 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       CreateProposalForm: (props) => (
         <CreateProposalForm
           Loader={Loader}
+          coreAddress={coreAddress}
+          proposalModule={proposalModule}
+          {...props}
+        />
+      ),
+      DaoInfoVotingConfiguration: (props) => (
+        <DaoInfoVotingConfiguration
           coreAddress={coreAddress}
           proposalModule={proposalModule}
           {...props}

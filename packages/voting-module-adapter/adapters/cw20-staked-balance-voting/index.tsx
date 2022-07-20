@@ -4,7 +4,8 @@ import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
-  DaoInfoContent,
+  DaoInfoAdditionalAddresses,
+  DaoInfoVotingConfiguration,
   DaoThinInfoContent,
   DaoTreasuryFooter,
   Membership,
@@ -25,7 +26,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
     // Fields
     fields: {
       disabledActionKeys: [ActionKey.ManageMembers],
-      sdaMembershipPageNavInfo: {
+      membershipPageInfo: {
         renderIcon: (color, mobile) => (
           <Pie
             color={color}
@@ -51,7 +52,8 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
       },
       DaoThinInfoContent,
       DaoTreasuryFooter,
-      DaoInfoContent,
+      DaoInfoAdditionalAddresses,
+      DaoInfoVotingConfiguration,
       ProposalCreateAddresses,
       VoteHeroStats,
       SdaMembershipPage,

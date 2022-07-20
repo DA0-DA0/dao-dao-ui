@@ -24,6 +24,7 @@ export interface IProposalModuleAdapterCommon {
   components: {
     ProposalCreateInfo: ComponentType<BaseProposalCreateInfo>
     CreateProposalForm: ComponentType<BaseCreateProposalFormProps>
+    DaoInfoVotingConfiguration: ComponentType
   }
 }
 
