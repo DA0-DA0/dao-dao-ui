@@ -168,7 +168,9 @@ export const CreateProposalForm = ({
       proposalActionData.length > 0
     if (activeDraftId === undefined && isNonEmpty) {
       const draftId = Date.now().toString()
-      router.replace({ query: { ...router.query, draftId } })
+      router.replace({ query: { ...router.query, draftId } }, undefined, {
+        shallow: true,
+      })
     } else if (activeDraftId !== undefined && isNonEmpty) {
       // save to local storage
       let newDrafts = draftIds.filter(({ id }) => id !== activeDraftId)
