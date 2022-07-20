@@ -187,7 +187,8 @@ export const CreateProposalForm = ({
 
   useEffect(() => {
     if (!formMethods.formState.isDirty && myDraft && !loadedDraft) {
-      formMethods.reset(myDraft)
+      const { title, description, actionData } = myDraft
+      formMethods.reset({ title, description, actionData })
       setLoadedDraft(true)
     }
   }, [formMethods.formState.isDirty, myDraft, loadedDraft])
