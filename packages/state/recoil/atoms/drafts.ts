@@ -2,7 +2,7 @@ import { AtomEffect, atom, atomFamily } from 'recoil'
 
 import { FormProposalData } from '@dao-dao/actions'
 
-import { localStorageEffect } from './localStorageEffect'
+import { localStorageEffectJSON } from '../effects'
 
 interface LocalFormProposalData extends FormProposalData {
   daoAddress: string
@@ -41,7 +41,7 @@ export const draftsAtom = atom<NavDraft[]>({
   default: [],
   effects: [
     draftsRemoveLocalStorageEffect,
-    localStorageEffect<NavDraft[]>('drafts'),
+    localStorageEffectJSON<NavDraft[]>('drafts'),
   ],
 })
 
@@ -50,6 +50,6 @@ export const draftAtom = atomFamily<LocalFormProposalData, string>({
   default: undefined,
   effects: (draftId) =>
     draftId && draftId.length > 0
-      ? [localStorageEffect<LocalFormProposalData>(`draft_${draftId}`)]
+      ? [localStorageEffectJSON<LocalFormProposalData>(`draft_${draftId}`)]
       : [],
 })
