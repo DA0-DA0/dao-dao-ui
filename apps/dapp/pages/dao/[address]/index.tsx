@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  DaoProposals,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
@@ -27,9 +28,8 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   ContractHeader,
-  DaoMobileHeader,
   DaoInfo,
-  DaoProposals,
+  DaoMobileHeader,
   DaoThinInfo,
   DaoTreasury,
   DaoTreasuryHistory,
@@ -46,6 +46,7 @@ enum MobileMenuTabSelection {
 
 const InnerMobileDaoHome = () => {
   const { t } = useTranslation()
+  const { coreAddress } = useDaoInfoContext()
   const {
     components: { Membership },
   } = useVotingModuleAdapter()
@@ -83,7 +84,11 @@ const InnerMobileDaoHome = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
+        {tab === MobileMenuTabSelection.Proposal && (
+          <DaoProposals
+            createProposalUrl={`/dao/${coreAddress}/proposals/create`}
+          />
+        )}
         {tab === MobileMenuTabSelection.Membership && <Membership.Mobile />}
         {tab === MobileMenuTabSelection.Treasury && (
           <div className="space-y-8">
@@ -159,7 +164,9 @@ const InnerDAOHome = () => {
           </div>
         </GradientHero>
         <div className="px-6 mb-8 space-y-10">
-          <DaoProposals />
+          <DaoProposals
+            createProposalUrl={`/dao/${coreAddress}/proposals/create`}
+          />
           <DaoTreasuryHistory />
         </div>
       </div>

@@ -14,14 +14,14 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
 import { Governance, Hash } from '@dao-dao/icons'
 import { useWalletBalance } from '@dao-dao/state'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { MembershipPageInfo } from '@dao-dao/voting-module-adapter/types'
 
-import { Footer, Logo, WalletAvatarIcon, useDAOInfoContext } from '@/components'
+import { Footer, Logo, WalletAvatarIcon } from '@/components'
 
 interface NavItemData {
   renderIcon: (color: string, mobile: boolean) => ReactNode
@@ -82,7 +82,7 @@ export const Header: FunctionComponent = () => {
     disconnect,
   } = useWalletManager()
   const { walletBalance = 0 } = useWalletBalance()
-  const { name: daoName } = useDAOInfoContext()
+  const { name: daoName } = useDaoInfoContext()
 
   // If on error page, this hook will throw an error. Ignore it since
   // Header is rendered on error pages.

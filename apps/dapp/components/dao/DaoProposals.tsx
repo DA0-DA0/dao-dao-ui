@@ -4,12 +4,10 @@ import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext } from '@dao-dao/common'
+import { ProposalList, useDaoInfoContext } from '@dao-dao/common'
 import { useVotingModule } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
-
-import { ProposalList } from './ProposalList'
 
 export const DaoProposals: FC = () => {
   const { t } = useTranslation()
@@ -78,7 +76,10 @@ const InnerDaoProposals: FC = () => {
       </div>
 
       <div className="md:px-4">
-        <ProposalList />
+        <ProposalList
+          proposalCreateUrl={`/dao/${coreAddress}/proposals/create`}
+          proposalUrlPrefix={`/dao/${coreAddress}/proposals/`}
+        />
       </div>
     </div>
   )

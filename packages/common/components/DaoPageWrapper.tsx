@@ -14,9 +14,9 @@ import {
   DaoNotFound,
   Loader as DefaultLoader,
   Logo as DefaultLogo,
+  PageLoader as DefaultPageLoader,
   LoaderProps,
   LogoProps,
-  PageLoader,
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
@@ -57,6 +57,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   info?: DaoInfo
   Logo?: ComponentType<LogoProps>
   Loader?: ComponentType<LoaderProps>
+  PageLoader?: ComponentType<LoaderProps>
 }>
 
 export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
@@ -71,6 +72,7 @@ export const DaoPageWrapper = ({
   children,
   Logo = DefaultLogo,
   Loader = DefaultLoader,
+  PageLoader = DefaultPageLoader,
 }: DaoPageWrapperProps) => (
   <>
     <NextSeo
@@ -85,25 +87,25 @@ export const DaoPageWrapper = ({
       title={title}
     />
 
-    <SuspenseLoader fallback={<PageLoader />}>
-      {info ? (
-        <VotingModuleAdapterProvider
-          contractName={info.votingModuleContractName}
-          options={{
-            votingModuleAddress: info.votingModuleAddress,
-            coreAddress: info.coreAddress,
-            Logo,
-            Loader,
-          }}
-        >
-          <DaoInfoContext.Provider value={info}>
+    {info ? (
+      <DaoInfoContext.Provider value={info}>
+        <SuspenseLoader fallback={<PageLoader />}>
+          <VotingModuleAdapterProvider
+            contractName={info.votingModuleContractName}
+            options={{
+              votingModuleAddress: info.votingModuleAddress,
+              coreAddress: info.coreAddress,
+              Logo,
+              Loader,
+            }}
+          >
             {children}
-          </DaoInfoContext.Provider>
-        </VotingModuleAdapterProvider>
-      ) : (
-        <DaoNotFound />
-      )}
-    </SuspenseLoader>
+          </VotingModuleAdapterProvider>
+        </SuspenseLoader>
+      </DaoInfoContext.Provider>
+    ) : (
+      <DaoNotFound />
+    )}
   </>
 )
 

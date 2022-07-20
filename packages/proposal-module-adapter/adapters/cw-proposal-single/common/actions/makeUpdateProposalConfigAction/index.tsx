@@ -247,6 +247,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
 }
 
 const Component: ActionComponent = (props) => {
+  // TODO(noah/proposal-module-adapter): Only load this for cw20-staked-balance-voting module.
   const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)
 
   return (

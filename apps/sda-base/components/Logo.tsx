@@ -1,11 +1,12 @@
+import { useDaoInfoContext } from '@dao-dao/common'
 import { LogoFromImage, LogoProps } from '@dao-dao/ui'
 
 import { DEFAULT_IMAGE_URL } from '@/util'
 
-import { useDAOInfoContext } from '.'
-
 export const Logo = (props: LogoProps) => {
-  const { imageUrl } = useDAOInfoContext()
+  const { imageUrl } = useDaoInfoContext()
 
-  return <LogoFromImage src={imageUrl ?? DEFAULT_IMAGE_URL} {...props} />
+  return (
+    <LogoFromImage rounded src={imageUrl ?? DEFAULT_IMAGE_URL} {...props} />
+  )
 }

@@ -15,7 +15,6 @@ import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
   useProposalModuleAdapterCommon,
-  useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
 import { ErrorPage, LinkText, SuspenseLoader, Trans } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
@@ -41,7 +40,6 @@ const InnerProposal: FC = () => {
   const {
     hooks: { useActions: useProposalModuleActions },
   } = useProposalModuleAdapterCommon()
-  const { proposalId } = useProposalModuleAdapterOptions()
 
   const {
     fields: { disabledActionKeys },
@@ -177,5 +175,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps = makeGetDaoProposalStaticProps({
+  coreAddress: DAO_ADDRESS,
   getProposalUrlPrefix: () => `${SITE_URL}/vote/`,
 })

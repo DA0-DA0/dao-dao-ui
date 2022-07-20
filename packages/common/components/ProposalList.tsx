@@ -1,21 +1,40 @@
 import { DownloadIcon } from '@heroicons/react/outline'
-import { FC, useEffect, useMemo } from 'react'
+import { ComponentType, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { refreshProposalsIdAtom } from '@dao-dao/state'
-import { Button, Loader, Logo, ProposalLine, SuspenseLoader } from '@dao-dao/ui'
+import {
+  proposalListCountAtom,
+  proposalStartBeforesAtom,
+  refreshProposalsIdAtom,
+} from '@dao-dao/state'
+import {
+  Button,
+  Loader as DefaultLoader,
+  Logo as DefaultLogo,
+  ImagePromptCard,
+  LoaderProps,
+  LogoProps,
+  ProposalLine,
+  SuspenseLoader,
+} from '@dao-dao/ui'
 
-import { proposalListCountAtom, proposalStartBeforesAtom } from '@/atoms'
-import { EmptyContractCard } from '@/components'
+import { useDaoInfoContext } from './DaoPageWrapper'
 
 const PROP_LOAD_LIMIT = 10
 
-export const ProposalList: FC = () => {
+export interface ProposalListProps {
+  proposalCreateUrl: string
+  proposalUrlPrefix: string
+  Logo?: ComponentType<LogoProps>
+  Loader?: ComponentType<LoaderProps>
+}
+
+export const ProposalList = (props: ProposalListProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
+  const { Loader = DefaultLoader } = props
 
   // Load from Recoil so that loaded propoals are shared by desktop and mobile
   // views.
@@ -52,7 +71,7 @@ export const ProposalList: FC = () => {
       <div className="flex flex-col gap-2 md:gap-1">
         {[...Array(listCount)].map((_, idx) => (
           <SuspenseLoader key={idx} fallback={<Loader className="mt-2" />}>
-            <SingleProposalList listIndex={idx} />
+            <SingleProposalList listIndex={idx} {...props} />
           </SuspenseLoader>
         ))}
       </div>
@@ -72,11 +91,17 @@ export const ProposalList: FC = () => {
   )
 }
 
-interface SingleProposalListProps {
+interface SingleProposalListProps extends ProposalListProps {
   listIndex: number
 }
 
-const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
+const SingleProposalList = ({
+  proposalCreateUrl,
+  proposalUrlPrefix,
+  Logo = DefaultLogo,
+  Loader = DefaultLoader,
+  listIndex,
+}: SingleProposalListProps) => {
   const { t } = useTranslation()
   const { coreAddress, proposalModules } = useDaoInfoContext()
 
@@ -95,7 +120,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
         }).hooks.useReverseProposalInfos,
         proposalModule,
       })),
-    [coreAddress, proposalModules]
+    [Loader, Logo, coreAddress, proposalModules]
   )
 
   // Hooks always called in the same order, so this is safe. But damn are we
@@ -186,11 +211,11 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
   if (listIndex === 0 && !proposalListInfosToDisplay.length) {
     return (
       <div className="flex">
-        <EmptyContractCard
+        <ImagePromptCard
           backgroundUrl="/empty-state-proposal.jpeg"
           description={t('info.firstProposalPrompt')}
           fullWidth
-          href={`/dao/${coreAddress}/proposals/create`}
+          href={proposalCreateUrl}
           title={t('title.createAProposal')}
         />
       </div>
@@ -205,7 +230,7 @@ const SingleProposalList: FC<SingleProposalListProps> = ({ listIndex }) => {
           coreAddress={coreAddress}
           proposalId={id}
           proposalModules={proposalModules}
-          proposalViewUrl={`/dao/${coreAddress}/proposals/${id}`}
+          proposalViewUrl={proposalUrlPrefix + id}
         />
       ))}
     </>

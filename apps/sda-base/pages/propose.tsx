@@ -5,26 +5,20 @@ import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { refreshProposalsIdAtom, useVotingModule } from '@dao-dao/state'
 import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import {
-  Loader,
-  Logo,
-  PageWrapper,
-  PageWrapperProps,
-  useDAOInfoContext,
-} from '@/components'
+import { Loader, Logo, PageWrapper, PageWrapperProps } from '@/components'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { proposalModules } = useDAOInfoContext()
+  const { proposalModules } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const { isMember } = useVotingModule(DAO_ADDRESS, { fetchMembership: true })

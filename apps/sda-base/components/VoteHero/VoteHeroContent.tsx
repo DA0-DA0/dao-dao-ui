@@ -8,7 +8,7 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
-import { Loader } from '../../Loader'
+import { Loader } from '../Loader'
 import { VoteHeroHeader } from './VoteHeroHeader'
 
 export const VoteHeroContentLoader = () => {

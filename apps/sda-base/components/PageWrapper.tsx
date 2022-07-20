@@ -8,7 +8,12 @@ import { Logo } from './Logo'
 export type PageWrapperProps = DaoPageWrapperProps
 
 export const PageWrapper = ({ children, ...props }: PageWrapperProps) => (
-  <DaoPageWrapper {...props} Loader={Loader} Logo={Logo}>
+  <DaoPageWrapper
+    {...props}
+    Loader={Loader}
+    Logo={Logo}
+    PageLoader={PageLoader}
+  >
     <Header />
 
     <SuspenseLoader
