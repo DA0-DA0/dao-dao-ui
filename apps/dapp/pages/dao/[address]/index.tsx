@@ -266,13 +266,18 @@ export const getStaticProps: GetStaticProps<DaoHomePageProps> =
       return
     }
 
-    const response = await axios.get(image_url, {
-      responseType: 'arraybuffer',
-    })
-    const buffer = Buffer.from(response.data, 'binary')
-    const result = await getAverageColor(buffer)
+    try {
+      const response = await axios.get(image_url, {
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+      const result = await getAverageColor(buffer)
 
-    return {
-      additionalProps: { accentColor: result.rgb },
+      return {
+        additionalProps: { accentColor: result.rgb },
+      }
+    } catch (error) {
+      // If fail to load image or get color, don't prevent page render.
+      console.error(error)
     }
   })
