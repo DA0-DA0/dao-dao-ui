@@ -4,7 +4,6 @@ import { ArrowUpIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { Dollar, Staked } from '@dao-dao/icons'
-import { useStakingInfo } from '@dao-dao/state'
 import { HeroStat } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -14,7 +13,7 @@ import {
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseVoteHeroStatsProps } from '../../../types'
-import { useGovernanceTokenInfo } from '../hooks'
+import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
 export const VoteHeroStats = ({ loader }: BaseVoteHeroStatsProps) =>
   loader ? <InnerVoteHeroStats /> : <InnerVoteHeroStatsContent />

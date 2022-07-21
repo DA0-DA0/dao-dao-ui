@@ -1,11 +1,11 @@
 import { ChartPieIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import { useStakingInfo } from '@dao-dao/state'
 import { GovInfoListItem } from '@dao-dao/ui'
 import { humanReadableDuration } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useStakingInfo } from '../hooks'
 
 export const DaoInfoVotingConfiguration = () => {
   const { t } = useTranslation()

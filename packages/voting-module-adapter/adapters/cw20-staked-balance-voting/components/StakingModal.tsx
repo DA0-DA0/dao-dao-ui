@@ -8,7 +8,6 @@ import {
   StakeCw20Hooks,
   StakeCw20Selectors,
   stakingLoadingAtom,
-  useStakingInfo,
   useWalletBalance,
 } from '@dao-dao/state'
 import {
@@ -23,7 +22,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { useGovernanceTokenInfo } from '../hooks'
+import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
 interface StakingModalProps {
   mode: StakingMode
