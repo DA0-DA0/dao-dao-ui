@@ -49,7 +49,11 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = (
             funds: [],
             msg: {
               update_config: {
-                config: data,
+                config: {
+                  ...data,
+                  // Replace empty string with null.
+                  image_url: data.image_url?.trim() || null,
+                },
               },
             },
           },
