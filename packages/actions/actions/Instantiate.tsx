@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { useProposalModuleAdapter } from '@dao-dao/proposal-module-adapter'
+import { useProposalModuleAdapterIfAvailable } from '@dao-dao/proposal-module-adapter/react/context'
 import {
   nativeBalancesSelector,
   transactionEventsSelector,
@@ -110,8 +110,8 @@ const Component: ActionComponent = (props) => {
 
   const {
     hooks: { useProposalExecutionTxHash },
-  } = useProposalModuleAdapter()
-  const executionTxHash = useProposalExecutionTxHash()
+  } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
+  const executionTxHash = useProposalExecutionTxHash?.()
 
   const txEvents = useRecoilValue(
     executionTxHash

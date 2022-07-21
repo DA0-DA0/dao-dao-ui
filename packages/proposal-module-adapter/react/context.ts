@@ -24,6 +24,13 @@ export const useProposalModuleAdapter = (): IProposalModuleAdapter => {
   return context.adapter
 }
 
+export const useProposalModuleAdapterIfAvailable = ():
+  | IProposalModuleAdapter
+  | undefined => {
+  const context = useContext(ProposalModuleAdapterContext)
+  return context?.adapter
+}
+
 // For internal use to pass around options.
 export const useProposalModuleAdapterOptions =
   (): IProposalModuleAdapterOptions => {
