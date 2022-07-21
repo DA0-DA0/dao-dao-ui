@@ -228,25 +228,27 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
   makeGetDaoStaticProps({
-    getProps: async ({
-      config: { image_url },
-      context: { params: { address } = {} },
-    }) => {
-      const url = `${SITE_URL}/dao/${address}`
+    getProps: async ({ coreAddress, config: { image_url } }) => {
+      const url = `${SITE_URL}/dao/${coreAddress}`
 
       if (!image_url) {
         return { url }
       }
 
-      const response = await axios.get(image_url, {
-        responseType: 'arraybuffer',
-      })
-      const buffer = Buffer.from(response.data, 'binary')
-      const result = await getAverageColor(buffer)
+      try {
+        const response = await axios.get(image_url, {
+          responseType: 'arraybuffer',
+        })
+        const buffer = Buffer.from(response.data, 'binary')
+        const result = await getAverageColor(buffer)
 
-      return {
-        url,
-        additionalProps: { accentColor: result.rgb },
+        return {
+          url,
+          additionalProps: { accentColor: result.rgb },
+        }
+      } catch (error) {
+        // If fail to load image or get color, don't prevent page render.
+        console.error(error)
       }
     },
   })

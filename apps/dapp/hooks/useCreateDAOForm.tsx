@@ -43,13 +43,13 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAO,
   NewDAOStructure,
   convertDurationWithUnitsToDuration,
   convertThresholdValueToCwProposalSinglePercentageThreshold,
+  generateDefaultNewDAO,
   newDAOAtom,
 } from '@/atoms'
 
@@ -107,15 +107,19 @@ export const useCreateDAOForm = (pageIndex: number) => {
   } = useForm({ defaultValues: newDAO })
 
   const watchedNewDAO = watch()
+  const defaultNewDAOForStructure = useMemo(
+    () => generateDefaultNewDAO(watchedNewDAO.structure),
+    [watchedNewDAO.structure]
+  )
   // Determine if tiers have been edited yet.
   const tiersAreUntouched =
-    watchedNewDAO.tiers.length === DefaultNewDAO.tiers.length &&
-    (watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name ||
+    watchedNewDAO.tiers.length === defaultNewDAOForStructure.tiers.length &&
+    (watchedNewDAO.tiers[0].name === defaultNewDAOForStructure.tiers[0].name ||
       watchedNewDAO.tiers[0].name === t('form.defaultTierName')) &&
     watchedNewDAO.tiers[0].members.length ===
-      DefaultNewDAO.tiers[0].members.length &&
+      defaultNewDAOForStructure.tiers[0].members.length &&
     (watchedNewDAO.tiers[0].members[0].address ===
-      DefaultNewDAO.tiers[0].members[0].address ||
+      defaultNewDAOForStructure.tiers[0].members[0].address ||
       watchedNewDAO.tiers[0].members[0].address === walletAddress)
 
   const invalidPages = createDAOFormPages.map(
@@ -289,6 +293,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
 
   return {
     watchedNewDAO,
+    defaultNewDAOForStructure,
     tiersAreUntouched,
     errors,
     register,
