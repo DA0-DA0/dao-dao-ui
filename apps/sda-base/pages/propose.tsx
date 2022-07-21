@@ -1,7 +1,8 @@
+import { InformationCircleIcon } from '@heroicons/react/outline'
 import { useWallet } from '@noahsaso/cosmodal'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
@@ -9,7 +10,12 @@ import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { refreshProposalsIdAtom, useVotingModule } from '@dao-dao/state'
-import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
+import {
+  CopyToClipboard,
+  InputThemedText,
+  SuspenseLoader,
+  Tooltip,
+} from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader, Logo, PageWrapper, PageWrapperProps } from '@/components'
@@ -26,19 +32,6 @@ const InnerProposalCreate = () => {
     components: { ProposalModuleAddresses },
   } = useVotingModuleAdapter()
 
-  const {
-    components: { ProposalModuleInfo, CreateProposalForm },
-  } = useMemo(
-    // TODO(noah/proposal-module-adapters): Make a switcher and pick which proposal module to use.
-    () =>
-      matchAndLoadCommon(proposalModules[0], {
-        coreAddress: DAO_ADDRESS,
-        Logo,
-        Loader,
-      }),
-    [proposalModules]
-  )
-
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const refreshProposals = useCallback(
     () => setRefreshProposalsId((id) => id + 1),
@@ -51,6 +44,20 @@ const InnerProposalCreate = () => {
       router.push(`/vote/${proposalId}`)
     },
     [refreshProposals, router]
+  )
+
+  const [selectedProposalModuleIndex, setSelectedProposalModuleIndex] =
+    useState(0)
+  const selectedProposalModule = proposalModules[selectedProposalModuleIndex]
+
+  const selectedProposalModuleCommon = useMemo(
+    () =>
+      matchAndLoadCommon(selectedProposalModule, {
+        coreAddress: DAO_ADDRESS,
+        Logo,
+        Loader,
+      }),
+    [selectedProposalModule]
   )
 
   return (
@@ -66,14 +73,50 @@ const InnerProposalCreate = () => {
           </p>
         )}
 
-        <SuspenseLoader fallback={<Loader />}>
-          <CreateProposalForm
-            ConnectWalletButton={ConnectWalletButton}
-            connected={connected}
-            onCreateSuccess={onCreateSuccess}
-            walletAddress={walletAddress}
-          />
-        </SuspenseLoader>
+        {proposalModules.length > 1 ? (
+          <select
+            className="py-2 px-3 mb-2 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition"
+            onChange={({ target: { value } }) =>
+              setSelectedProposalModuleIndex(Number(value))
+            }
+            value={selectedProposalModuleIndex}
+          >
+            {proposalModules.map(({ address, contractName }, index) => (
+              <option key={address} value={index}>
+                {t(
+                  `proposalModuleLabel.${contractName.split(':').slice(-1)[0]}`
+                )}{' '}
+                {t('title.proposals', { count: 1 })}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <Tooltip label={t('info.youCanAddMoreProposalModules')}>
+            <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
+              <span>
+                {t(
+                  `proposalModuleLabel.${
+                    selectedProposalModule.contractName.split(':').slice(-1)[0]
+                  }`
+                )}{' '}
+                {t('title.proposals', { count: 1 })}
+              </span>
+
+              <InformationCircleIcon className="shrink-0 w-4 h-4 text-disabled cursor-help" />
+            </InputThemedText>
+          </Tooltip>
+        )}
+
+        {selectedProposalModuleCommon && (
+          <SuspenseLoader fallback={<Loader />}>
+            <selectedProposalModuleCommon.components.CreateProposalForm
+              ConnectWalletButton={ConnectWalletButton}
+              connected={connected}
+              onCreateSuccess={onCreateSuccess}
+              walletAddress={walletAddress}
+            />
+          </SuspenseLoader>
+        )}
       </div>
 
       <div className="flex-1">
@@ -90,10 +133,14 @@ const InnerProposalCreate = () => {
           <ProposalModuleAddresses />
         </div>
 
-        <h2 className="mb-4 font-medium text-medium">
-          {t('title.proposalInfo')}
-        </h2>
-        <ProposalModuleInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+        {selectedProposalModuleCommon && (
+          <>
+            <h2 className="mb-4 font-medium text-medium">
+              {t('title.proposalInfo')}
+            </h2>
+            <selectedProposalModuleCommon.components.ProposalModuleInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+          </>
+        )}
       </div>
     </div>
   )
