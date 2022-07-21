@@ -195,8 +195,8 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps = makeGetDaoStaticProps({
-  getProps: ({ t, context: { params: { address } = {} } }) => ({
-    url: `${SITE_URL}/dao/${address}/proposals/create`,
+  getProps: ({ t, coreAddress }) => ({
+    url: `${SITE_URL}/dao/${coreAddress}/proposals/create`,
     followingTitle: t('title.createAProposal'),
   }),
 })
