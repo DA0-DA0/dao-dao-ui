@@ -31,7 +31,7 @@ information displayed is significantly different:
 <details>
 <summary>Before</summary>
 
-```typescriptreact
+```tsx
 const DaoThinInfoDisplay = () => (
   <SuspenseLoader fallback={<FallbackDisplay />}>
     <DaoThinInfoContent />
@@ -111,7 +111,7 @@ const DaoThinInfoContent: FC = () => {
 <details>
 <summary>After</summary>
 
-```typescriptreact
+```tsx
 const DaoThinInfoDisplay = () => {
   const {
     ui: { DaoThinInfoContent },
@@ -131,7 +131,7 @@ const DaoThinInfoDisplay = () => {
 <details>
 <summary>`cw4-voting/components/DaoThinInfoContent.tsx`</summary>
 
-```typescriptreact
+```tsx
 const DaoThinInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
@@ -170,7 +170,7 @@ const DaoThinInfoContent = () => {
 <details>
 <summary>`cw20-staked-balance-voting/components/DaoThinInfoContent.tsx`</summary>
 
-```typescriptreact
+```tsx
 const DaoThinInfoContent = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
@@ -232,7 +232,7 @@ Other times it makes sense to create objects or hooks:
 <details>
 <summary>Before</summary>
 
-```typescript
+```ts
 const { coreAddress, votingModuleType } = useDaoInfoContext()
 const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
 
@@ -253,7 +253,7 @@ const voteConversionDecimals = useMemo(
 <details>
 <summary>After</summary>
 
-```typescript
+```ts
 const {
   hooks: { useVoteConversionDecimals },
 } = useVotingModuleAdapter()
@@ -267,7 +267,7 @@ const voteConversionDecimals = useVoteConversionDecimals()
 <details>
 <summary>`cw4-voting/hooks/useVoteConversionDecimals.ts`</summary>
 
-```typescript
+```ts
 const useVoteConversionDecimals = () => 0
 ```
 
@@ -276,7 +276,7 @@ const useVoteConversionDecimals = () => 0
 <details>
 <summary>`cw20-staked-balance-voting/hooks/useVoteConversionDecimals.ts`</summary>
 
-```typescript
+```ts
 const useVoteConversionDecimals = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
@@ -303,7 +303,7 @@ voting module code together.
 Registration should occur once, before any rendering. In a Next.js app, sticking
 this code in a `useEffect` in `_app.tsx` should work just fine.
 
-```typescriptreact
+```tsx
 import {
   Cw20StakedBalanceVotingAdapter,
   Cw4VotingAdapter,
@@ -329,7 +329,7 @@ components. You will also need to pass some options, like the contract address
 of the DAO's `cw-core` contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
-```typescriptreact
+```tsx
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 const App = () => (
@@ -354,7 +354,7 @@ and passed to a common page wrapper component, on each page.
 <details>
 <summary>Code</summary>
 
-```typescript
+```ts
 const coreAddress = context.params.address as string
 
 const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
@@ -375,7 +375,7 @@ const votingModuleContractName = (
 Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the voting module adapter interface.
 
-```typescriptreact
+```tsx
 import { SuspenseLoader, Loader } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
@@ -401,7 +401,7 @@ reference the existing adapters which follow the exact same pattern.
 All you need to do is define an adapter object and register it using the
 registration function shown above.
 
-```typescript
+```ts
 import { VotingModuleAdapter } from '@dao-dao/voting-module-adapter/types'
 
 const MyVotingModuleAdapter: VotingModuleAdapter = {
@@ -439,7 +439,7 @@ Example:
 <details>
 <summary>`cw20-staked-balance-voting/components/DaoTreasuryFooter.tsx`</summary>
 
-```typescriptreact
+```tsx
 import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'
 
 const DaoTreasuryFooter = () => {
@@ -454,9 +454,7 @@ const DaoTreasuryFooter = () => {
   }
 
   return addToken ? (
-    <Button
-      onClick={() => addToken(governanceTokenAddress)}
-    >
+    <Button onClick={() => addToken(governanceTokenAddress)}>
       {t('button.addToKeplr')}
     </Button>
   ) : null

@@ -28,7 +28,7 @@ to, unsurprisingly, confusing and unreadable code.
 Registration should occur once, before any rendering. In a Next.js app, sticking
 this code in a `useEffect` in `_app.tsx` should work just fine.
 
-```typescriptreact
+```tsx
 import {
   CwProposalMultipleAdapter,
   CwProposalSingleAdapter,
@@ -54,7 +54,7 @@ components. You will also need to pass some options, like the contract address
 of the DAO's `cw-core` contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
-```typescriptreact
+```tsx
 import { ProposalModuleAdapterProvider } from '@dao-dao/proposal-module-adapter'
 
 const App = () => (
@@ -81,7 +81,7 @@ each page, and `proposalId` is extracted from the URL parameters.
 Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the proposal module adapter interface.
 
-```typescriptreact
+```tsx
 import { SuspenseLoader, Loader } from '@dao-dao/ui'
 import { useProposalModuleAdapter } from '@dao-dao/proposal-module-adapter'
 
@@ -106,7 +106,7 @@ components to display configuration, such as the voting configuration.
 Here is an example that displays a dropdown of proposal modules and lets you
 view the voting configuration for each one:
 
-```typescriptreact
+```tsx
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 
 export const DaoInfo = () => {
@@ -131,9 +131,7 @@ export const DaoInfo = () => {
   return (
     <div>
       <select
-        onChange={({ target: { value } }) =>
-          setSelectedIndex(Number(value))
-        }
+        onChange={({ target: { value } }) => setSelectedIndex(Number(value))}
         value={selectedIndex}
       >
         {components.map(({ proposalModule }, index) => (
@@ -158,7 +156,7 @@ reference the existing adapters which follow the exact same pattern.
 All you need to do is define an adapter object and register it using the
 registration function shown above.
 
-```typescript
+```ts
 import { ProposalModuleAdapter } from '@dao-dao/proposal-module-adapter/types'
 
 const MyProposalModuleAdapter: ProposalModuleAdapter = {
