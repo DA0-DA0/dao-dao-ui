@@ -31,6 +31,7 @@ export interface ProposalListProps {
   Loader?: ComponentType<LoaderProps>
 }
 
+// TODO(noah/proposal-module-adapter): Separate Open and History like ProposalsContent.tsx_back
 export const ProposalList = (props: ProposalListProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()

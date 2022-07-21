@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { CwProposalSingleSelectors } from '@dao-dao/state'
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalIdDisplay } from '@dao-dao/ui'
 
 import { useProposalModuleAdapterOptions } from '../../../../react'
@@ -10,6 +11,7 @@ import { BaseProposalLineProps } from '../../../../types'
 import { useProposalExpirationString } from '../../hooks'
 import { ProposalStatus } from '../ProposalStatus'
 
+// TODO(noah/proposal-module-adapter): Add wallet vote if available.
 export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
   const { t } = useTranslation()
   const {
@@ -37,7 +39,11 @@ export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
   return (
     <div
       className={clsx(
-        'grid grid-cols-6 items-center p-4 text-sm rounded-lg bg-primary',
+        'grid grid-cols-6 items-center p-4 text-sm rounded-lg transition bg-primary hover:bg-secondary',
+        {
+          'bg-card': proposal.status === Status.Open,
+          'bg-disabled': proposal.status !== Status.Open,
+        },
         className
       )}
     >
