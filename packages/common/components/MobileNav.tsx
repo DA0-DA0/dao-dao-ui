@@ -94,9 +94,9 @@ export const MobileNav = ({
               <WalletAvatarIcon height={40} width={40} />
             </div>
           </div>
-        ) : (
+        ) : status !== undefined ? (
           <ConnectWalletButton contentContainerClassName="justify-center" />
-        )}
+        ) : null}
 
         <div className="flex flex-col gap-1 items-stretch px-1 mt-4 mb-10">
           {items.map((item) => (

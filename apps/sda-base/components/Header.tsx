@@ -204,11 +204,11 @@ export const Header = () => {
               <WalletAvatarIcon height={40} width={40} />
             </div>
           </div>
-        ) : (
+        ) : status !== undefined ? (
           <div className="hidden md:block">
             <ConnectWalletButton />
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   )
