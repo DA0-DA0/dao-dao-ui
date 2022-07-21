@@ -14,6 +14,14 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/i18n',
 ])
 
+const { withSentryConfig } = require('@sentry/nextjs')
+/** @type {import("@sentry/nextjs").SentryWebpackPluginOptions} */
+const sentryWebpackPluginOptions = {
+  silent: true,
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options.
+}
+
 const { i18n } = require('./next-i18next.config')
 
 /** @type {import("next").NextConfig} */
@@ -82,14 +90,17 @@ if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
   }
 }
 
-module.exports = withBundleAnalyzer(
-  withInterceptStdout(
-    withTM(config),
-    // Silence Recoil duplicate warnings on dev.
-    (text) =>
-      process.env.NODE_ENV === 'development' &&
-      text.includes('Expectation Violation: Duplicate atom key')
-        ? ''
-        : text
-  )
+module.exports = withSentryConfig(
+  withBundleAnalyzer(
+    withInterceptStdout(
+      withTM(config),
+      // Silence Recoil duplicate warnings on dev.
+      (text) =>
+        process.env.NODE_ENV === 'development' &&
+        text.includes('Expectation Violation: Duplicate atom key')
+          ? ''
+          : text
+    )
+  ),
+  sentryWebpackPluginOptions
 )
