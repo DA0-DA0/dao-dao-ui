@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalList, useDaoInfoContext } from '@dao-dao/common'
@@ -9,7 +9,7 @@ import { useVotingModule } from '@dao-dao/state'
 import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
-export const DaoProposals: FC = () => {
+export const DaoProposals = () => {
   const { t } = useTranslation()
 
   return (
@@ -26,7 +26,7 @@ export const DaoProposals: FC = () => {
   )
 }
 
-const InnerDaoProposals: FC = () => {
+const InnerDaoProposals = () => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
