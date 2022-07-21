@@ -38,7 +38,7 @@ export interface FormProposalData {
 }
 
 // A component which will render an action's input form.
-export type ActionComponentProps<T = undefined> = {
+export type ActionComponentProps<T = undefined, D = any> = {
   coreAddress: string
   proposalModule: ProposalModule
   getFieldName: (field: string) => string
@@ -46,12 +46,13 @@ export type ActionComponentProps<T = undefined> = {
   errors?: FieldErrors
   readOnly?: boolean
   allActionsWithData: ActionKeyAndData[]
+  data: D
   index: number
   Loader: ComponentType<LoaderProps>
 } & (T extends undefined ? {} : { options: T })
 
-export type ActionComponent<T = undefined> = FunctionComponent<
-  ActionComponentProps<T>
+export type ActionComponent<T = undefined, D = any> = FunctionComponent<
+  ActionComponentProps<T, D>
 >
 
 export type UseDefaults<D extends {} = any> = (

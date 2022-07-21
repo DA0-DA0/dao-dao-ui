@@ -424,7 +424,9 @@ export const CreateProposalForm = ({
               const Component =
                 actionsWithData[actionData.key]?.action?.Component
               if (!Component) {
-                throw new Error(`Error detecting action type ${actionData.key}`)
+                throw new Error(
+                  `Error detecting action type "${actionData.key}".`
+                )
               }
 
               return (
@@ -433,6 +435,7 @@ export const CreateProposalForm = ({
                     Loader={Loader}
                     allActionsWithData={proposalActionData}
                     coreAddress={coreAddress}
+                    data={actionData.data}
                     errors={errors.actionData?.[index]?.data || {}}
                     getFieldName={(fieldName) =>
                       `actionData.${index}.data.${fieldName}`

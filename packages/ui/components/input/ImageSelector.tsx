@@ -109,7 +109,6 @@ export interface ImageSelectorProps<
   error?: FieldError
   className?: string
   size?: string | number
-  center?: boolean
 }
 
 export const ImageSelector = <
@@ -124,7 +123,6 @@ export const ImageSelector = <
   className,
   disabled,
   size,
-  center = true,
 }: ImageSelectorProps<FieldValues, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
   const imageUrl = watch(fieldName) ?? ''
@@ -133,10 +131,9 @@ export const ImageSelector = <
     <>
       <button
         className={clsx(
-          'flex shrink-0 bg-center bg-cover rounded-full border border-inactive transition',
+          'flex shrink-0 justify-center items-center bg-center bg-cover rounded-full border border-inactive transition',
           {
             'hover:ring': !disabled,
-            'justify-center items-center mx-auto': center,
             'ring ring-error': error,
             'w-24 h-24': size === undefined,
           },

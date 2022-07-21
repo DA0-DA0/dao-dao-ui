@@ -3,11 +3,13 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import {
   FormSwitch,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
+  Logo,
   TextAreaInput,
   TextInput,
   Tooltip,
@@ -16,12 +18,12 @@ import { validateRequired, validateUrl } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
 
-export const UpdateInfoComponent: ActionComponent = ({
-  getFieldName,
-  errors,
-  onRemove,
-  readOnly,
-}) => {
+export type UpdateInfoData = ConfigResponse
+
+export const UpdateInfoComponent: ActionComponent<
+  undefined,
+  UpdateInfoData
+> = ({ getFieldName, errors, onRemove, readOnly, data }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
@@ -33,16 +35,27 @@ export const UpdateInfoComponent: ActionComponent = ({
     >
       <div className="flex flex-row flex-wrap gap-6 justify-center items-center">
         <div className="flex flex-col gap-4 pl-2">
-          <ImageSelector
-            center={false}
-            disabled={readOnly}
-            error={errors?.name}
-            fieldName={getFieldName('image_url')}
-            register={register}
-            validation={[validateUrl]}
-            watch={watch}
-          />
-          <InputLabel name={t('form.selectAnImage')} />
+          {!readOnly ? (
+            <>
+              <ImageSelector
+                error={errors?.name}
+                fieldName={getFieldName('image_url')}
+                register={register}
+                validation={[validateUrl]}
+                watch={watch}
+              />
+              <InputLabel name={t('form.selectAnImage')} />
+            </>
+          ) : data.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              alt={t('info.daosLogo')}
+              className="object-cover w-24 h-24 rounded-full"
+              src={data.image_url}
+            />
+          ) : (
+            <Logo size={96} />
+          )}
         </div>
 
         <div className="flex flex-col grow gap-3">
