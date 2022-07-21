@@ -133,7 +133,7 @@ const ProposalNotFound = () => {
   return (
     <ErrorPage title={t('error.proposalNotFound')}>
       <p>
-        <Trans i18nKey="error.couldntFindProposal">
+        <Trans Loader={Loader} i18nKey="error.couldntFindProposal">
           We couldn&apos;t find a proposal with that ID. See all proposals on
           the{' '}
           <LinkText aProps={{ className: 'underline link-text' }} href="/vote">

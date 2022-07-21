@@ -1,11 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import { Pie } from '@dao-dao/icons'
-import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
 import { useGovernanceTokenInfo } from '../../hooks'
 import { ClaimsPendingList } from '../ClaimsPendingList'
@@ -17,15 +15,12 @@ export const SdaMembershipPage = ({
   Loader,
 }: BaseSdaMembershipPageProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
   const { governanceTokenInfo } = useGovernanceTokenInfo()
-  const daoConfig = useRecoilValue(
-    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
-  )
+  const { imageUrl } = useDaoInfoContext()
 
   // Set to default mode to display, and undefined to hide.
 
-  if (!daoConfig || !governanceTokenInfo) {
+  if (!governanceTokenInfo) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -45,7 +40,7 @@ export const SdaMembershipPage = ({
       <Membership
         ClaimsPendingList={(props) => (
           <ClaimsPendingList
-            fallbackImageUrl={daoConfig.image_url ?? defaultImageUrl}
+            fallbackImageUrl={imageUrl ?? defaultImageUrl}
             {...props}
           />
         )}

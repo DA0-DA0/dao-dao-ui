@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
-import { ClaimsListItem, Loader, SuspenseLoader } from '@dao-dao/ui'
+import { ClaimsListItem, SuspenseLoader } from '@dao-dao/ui'
 
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
 export const ClaimsPendingList = () => {
   const { t } = useTranslation()
+  const { Loader } = useVotingModuleAdapterOptions()
 
   return (
     <SuspenseLoader

@@ -126,7 +126,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         </div>
 
         <p className="text-base text-secondary">
-          <Trans i18nKey="info.percentOfAllVotingPower">
+          <Trans Loader={Loader} i18nKey="info.percentOfAllVotingPower">
             {{
               percent: formatPercentOf100(
                 totalStakedValue === 0

@@ -3,7 +3,6 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ConnectWalletButton } from '@dao-dao/common'
 import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
 import {
-  Loader,
   MultisigMemberList,
   MultisigMemberListLoader,
   SuspenseLoader,
@@ -12,7 +11,7 @@ import {
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const SdaMembershipPage = () => {
-  const { coreAddress } = useVotingModuleAdapterOptions()
+  const { coreAddress, Loader } = useVotingModuleAdapterOptions()
   const { connected, address: walletAddress } = useWallet()
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(
     coreAddress,
@@ -30,7 +29,7 @@ export const SdaMembershipPage = () => {
     <div className="space-y-8">
       {!connected && <ConnectWalletButton />}
 
-      <SuspenseLoader fallback={<MultisigMemberListLoader loader={Loader} />}>
+      <SuspenseLoader fallback={<MultisigMemberListLoader Loader={Loader} />}>
         <MultisigMemberList
           members={members}
           totalWeight={totalVotingWeight}

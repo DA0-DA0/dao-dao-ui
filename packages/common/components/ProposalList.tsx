@@ -228,6 +228,8 @@ const SingleProposalList = ({
       {proposalListInfosToDisplay.map(({ id }) => (
         <ProposalLine
           key={id}
+          Loader={Loader}
+          Logo={Logo}
           coreAddress={coreAddress}
           proposalId={id}
           proposalModules={proposalModules}

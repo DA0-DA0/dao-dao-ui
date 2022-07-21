@@ -32,6 +32,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   readOnly,
   coreAddress,
   options: { onContractChange, contractAdmin },
+  Loader,
 }) => {
   const { register, control } = useFormContext()
   const { t } = useTranslation()
@@ -43,7 +44,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       title={t('title.migrateSmartContract')}
     >
       <p className="mb-4 max-w-prose secondary-text">
-        <Trans key={'form.migrateDescription'}>
+        <Trans key={'form.migrateDescription'} Loader={Loader}>
           This will{' '}
           <a
             className="underline"

@@ -27,7 +27,7 @@ const useDefaults: UseDefaults<AddTokenData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { getFieldName, errors } = props
+  const { getFieldName, errors, Loader } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
@@ -72,6 +72,7 @@ const Component: ActionComponent = (props) => {
           tokenInfoLoadable.state === 'hasValue'
             ? tokenInfoLoadable.contents
             : undefined,
+        Loader,
       }}
     />
   )

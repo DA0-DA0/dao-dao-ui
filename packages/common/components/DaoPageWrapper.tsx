@@ -18,6 +18,8 @@ import {
 import { ProposalModule } from '@dao-dao/utils'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
+import { WalletProvider } from './WalletProvider'
+
 export interface DaoInfo {
   coreAddress: string
   votingModuleAddress: string
@@ -121,13 +123,15 @@ export const SdaDaoPageWrapper = ({
     Logo={Logo}
     PageLoader={PageLoader}
   >
-    <Header />
+    <WalletProvider Loader={Loader}>
+      <Header />
 
-    <SuspenseLoader
-      // Make room at top for Header.
-      fallback={<PageLoader className="!min-h-[calc(100vh-5rem)]" />}
-    >
-      <div className="p-4 mx-auto sm:p-8 max-w-page">{children}</div>
-    </SuspenseLoader>
+      <SuspenseLoader
+        // Make room at top for Header.
+        fallback={<PageLoader className="!min-h-[calc(100vh-5rem)]" />}
+      >
+        <div className="p-4 mx-auto sm:p-8 max-w-page">{children}</div>
+      </SuspenseLoader>
+    </WalletProvider>
   </DaoPageWrapper>
 )

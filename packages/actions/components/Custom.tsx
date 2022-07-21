@@ -16,6 +16,7 @@ export const CustomComponent: ActionComponent = ({
   onRemove,
   errors,
   readOnly,
+  Loader,
 }) => {
   const { t } = useTranslation()
   const { control } = useFormContext()
@@ -52,7 +53,7 @@ export const CustomComponent: ActionComponent = ({
           <p className="flex gap-1 items-center text-sm text-error">
             <XIcon className="inline w-5" />{' '}
             {errors.message.message === INVALID_COSMOS_MSG ? (
-              <Trans i18nKey="error.invalidCosmosMessage">
+              <Trans Loader={Loader} i18nKey="error.invalidCosmosMessage">
                 Invalid{' '}
                 <a
                   className="inline underline link"

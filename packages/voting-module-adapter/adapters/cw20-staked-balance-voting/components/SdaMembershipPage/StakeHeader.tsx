@@ -1,12 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
-import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { useDaoInfoContext } from '@dao-dao/common'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
@@ -16,10 +14,7 @@ interface StakeHeaderProps {
 
 export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const daoConfig = useRecoilValue(
-    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
-  )
+  const { imageUrl } = useDaoInfoContext()
   const { governanceTokenInfo, treasuryBalance: treasuryBalance } =
     useGovernanceTokenInfo({
       fetchTreasuryBalance: true,
@@ -29,7 +24,6 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
   })
 
   if (
-    !daoConfig ||
     !governanceTokenInfo ||
     totalStakedValue === undefined ||
     treasuryBalance === undefined
@@ -47,7 +41,7 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
           <img
             alt={t('info.logo')}
             className="w-full h-full"
-            src={daoConfig.image_url ?? defaultImageUrl}
+            src={imageUrl ?? defaultImageUrl}
           />
         </div>
       </div>

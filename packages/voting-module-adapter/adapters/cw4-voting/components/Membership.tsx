@@ -2,7 +2,6 @@ import { useWallet } from '@noahsaso/cosmodal'
 
 import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
 import {
-  Loader,
   MultisigMemberList,
   MultisigMemberListLoader,
   SuspenseLoader,
@@ -14,18 +13,22 @@ interface MembershipProps {
   primaryText?: boolean
 }
 
-export const Membership = (props: MembershipProps) => (
-  <SuspenseLoader
-    fallback={
-      <MultisigMemberListLoader
-        loader={<Loader />}
-        primaryText={props.primaryText}
-      />
-    }
-  >
-    <InnerMembership {...props} />
-  </SuspenseLoader>
-)
+export const Membership = (props: MembershipProps) => {
+  const { Loader } = useVotingModuleAdapterOptions()
+
+  return (
+    <SuspenseLoader
+      fallback={
+        <MultisigMemberListLoader
+          Loader={Loader}
+          primaryText={props.primaryText}
+        />
+      }
+    >
+      <InnerMembership {...props} />
+    </SuspenseLoader>
+  )
+}
 
 const InnerMembership = ({ primaryText }: MembershipProps) => {
   const { address: walletAddress } = useWallet()

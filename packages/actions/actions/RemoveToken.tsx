@@ -35,7 +35,7 @@ const useDefaults: UseDefaults<RemoveTokenData> = () => ({
 })
 
 const InnerComponent: ActionComponent = (props) => {
-  const { getFieldName, errors } = props
+  const { getFieldName, errors, Loader } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
@@ -115,6 +115,7 @@ const InnerComponent: ActionComponent = (props) => {
           tokenInfoLoadable.state === 'hasValue'
             ? tokenInfoLoadable.contents
             : undefined,
+        Loader,
       }}
     />
   )

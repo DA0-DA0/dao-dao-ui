@@ -5,11 +5,10 @@ import '@fontsource/jetbrains-mono/latin.css'
 import { appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { WalletProvider, useRegisterAdaptersOnMount } from '@dao-dao/common'
+import { useRegisterAdaptersOnMount } from '@dao-dao/common'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import {
@@ -24,7 +23,6 @@ import { Footer } from '@/components'
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   useRegisterAdaptersOnMount()
 
-  const { isFallback } = useRouter()
   const { t } = useTranslation()
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
@@ -53,15 +51,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       updateTheme={setTheme}
     >
       <ErrorBoundary title={t('error.unexpectedError')}>
-        {isFallback ? (
-          <Component {...pageProps} />
-        ) : (
-          // Don't mount wallet while static page data is still loading. Things
-          // look weird and broken, and the wallet connects twice.
-          <WalletProvider>
-            <Component {...pageProps} />
-          </WalletProvider>
-        )}
+        <Component {...pageProps} />
       </ErrorBoundary>
 
       <Footer />

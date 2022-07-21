@@ -31,6 +31,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   onRemove,
   readOnly,
   options: { governanceTokenSymbol },
+  Loader,
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
@@ -53,7 +54,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       title={t('form.updateVotingConfigTitle')}
     >
       <p className="mb-3 max-w-prose secondary-text">
-        <Trans i18nKey="form.updateVotingConfigDescription">
+        <Trans Loader={Loader} i18nKey="form.updateVotingConfigDescription">
           This will update the voting configuration for this DAO. A bad
           configuration can lock the DAO or create unexpected voting outcomes.
           Take care. If you have questions, please feel free to ask in the{' '}

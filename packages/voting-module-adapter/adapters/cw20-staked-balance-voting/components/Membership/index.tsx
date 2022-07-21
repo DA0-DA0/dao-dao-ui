@@ -10,7 +10,6 @@ import { stakingLoadingAtom } from '@dao-dao/state'
 import {
   BalanceCard,
   BalanceIcon,
-  Loader,
   StakingMode,
   SuspenseLoader,
 } from '@dao-dao/ui'
@@ -19,6 +18,7 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from '../StakingModal'
 import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
@@ -37,6 +37,7 @@ interface MembershipProps {
 
 export const Membership = ({ primaryText, ...props }: MembershipProps) => {
   const { t } = useTranslation()
+  const { Loader } = useVotingModuleAdapterOptions()
 
   return (
     <>

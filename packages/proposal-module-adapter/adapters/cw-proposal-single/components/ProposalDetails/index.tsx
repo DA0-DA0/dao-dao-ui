@@ -341,6 +341,7 @@ export const ProposalDetails = ({
               })}
             >
               <Trans
+                Loader={Loader}
                 components={[<VoteDisplay key="vote" vote={walletVote} />]}
                 i18nKey="info.votedOnProposal"
               />
