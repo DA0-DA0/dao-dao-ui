@@ -33,7 +33,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
   matcher: (contractName: string) =>
     contractName.includes(CWPROPOSALSINGLE_CONTRACT_NAME),
 
-  loadCommon: ({ proposalModule, coreAddress, Loader }) => ({
+  loadCommon: ({ proposalModule, coreAddress, Loader, Logo }) => ({
     // Hooks
     hooks: {
       useReverseProposalInfos: makeUseReverseProposalInfos(proposalModule),
@@ -53,6 +53,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       CreateProposalForm: (props) => (
         <CreateProposalForm
           Loader={Loader}
+          Logo={Logo}
           coreAddress={coreAddress}
           proposalModule={proposalModule}
           {...props}

@@ -9,7 +9,6 @@ import {
   ImageSelector,
   InputErrorMessage,
   InputLabel,
-  Logo,
   TextAreaInput,
   TextInput,
   Tooltip,
@@ -23,7 +22,7 @@ export type UpdateInfoData = ConfigResponse
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ getFieldName, errors, onRemove, readOnly, data }) => {
+> = ({ getFieldName, errors, onRemove, readOnly, data, Logo }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 

@@ -2,7 +2,7 @@ import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { LoaderProps } from '@dao-dao/ui'
+import { LoaderProps, LogoProps } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
 
 export enum ActionKey {
@@ -49,6 +49,7 @@ export type ActionComponentProps<T = undefined, D = any> = {
   data: D
   index: number
   Loader: ComponentType<LoaderProps>
+  Logo: ComponentType<LogoProps>
 } & (T extends undefined ? {} : { options: T })
 
 export type ActionComponent<T = undefined, D = any> = FunctionComponent<

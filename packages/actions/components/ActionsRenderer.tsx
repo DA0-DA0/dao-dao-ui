@@ -2,7 +2,7 @@ import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
 import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { LoaderProps, SuspenseLoader } from '@dao-dao/ui'
+import { LoaderProps, LogoProps, SuspenseLoader } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
 
 import { ActionAndData, ActionCardLoader } from '..'
@@ -13,6 +13,7 @@ export interface ActionsRendererProps {
   proposalModule: ProposalModule
   actionData: ActionAndData[]
   Loader: ComponentType<LoaderProps>
+  Logo: ComponentType<LogoProps>
 }
 
 export const ActionsRenderer = (props: ActionsRendererProps) => (
@@ -26,6 +27,7 @@ const InnerActionsRenderer = ({
   proposalModule,
   actionData,
   Loader,
+  Logo,
 }: ActionsRendererProps) => {
   const formMethods = useForm({
     defaultValues: actionData.reduce(
@@ -52,6 +54,7 @@ const InnerActionsRenderer = ({
           <div key={index} className="group relative" id={`A${index + 1}`}>
             <Component
               Loader={Loader}
+              Logo={Logo}
               allActionsWithData={actionData.map(
                 ({ action: { key }, data }) => ({
                   key,

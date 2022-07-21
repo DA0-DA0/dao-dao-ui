@@ -43,7 +43,7 @@ export const ProposalDetails = ({
   VotingPowerWidget,
 }: BaseProposalDetailsProps) => {
   const { t } = useTranslation()
-  const { coreAddress, proposalModule, proposalNumber, Loader } =
+  const { coreAddress, proposalModule, proposalNumber, Loader, Logo } =
     useProposalModuleAdapterOptions()
 
   const config = useRecoilValue(
@@ -274,6 +274,7 @@ export const ProposalDetails = ({
           ) : (
             <ActionsRenderer
               Loader={Loader}
+              Logo={Logo}
               actionData={actionData}
               coreAddress={coreAddress}
               proposalModule={proposalModule}

@@ -40,6 +40,7 @@ import {
   InputErrorMessage,
   InputLabel,
   LoaderProps,
+  LogoProps,
   MarkdownPreview,
   TextAreaInput,
   TextInput,
@@ -71,12 +72,14 @@ interface CreateProposalFormProps extends BaseCreateProposalFormProps {
   coreAddress: string
   proposalModule: ProposalModule
   Loader: ComponentType<LoaderProps>
+  Logo: ComponentType<LogoProps>
 }
 
 export const CreateProposalForm = ({
   coreAddress,
   proposalModule,
   Loader,
+  Logo,
   connected,
   walletAddress,
   onCreateSuccess,
@@ -433,6 +436,7 @@ export const CreateProposalForm = ({
                 <li key={index}>
                   <Component
                     Loader={Loader}
+                    Logo={Logo}
                     allActionsWithData={proposalActionData}
                     coreAddress={coreAddress}
                     data={actionData.data}
