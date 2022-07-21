@@ -301,7 +301,7 @@ voting module code together.
 ### **1. Register the desired voting module adapters**
 
 Registration should occur once, before any rendering. In a Next.js app, sticking
-this code in `_app.tsx` or a config file imported by `_app.tsx` should work just fine.
+this code in a `useEffect` in `_app.tsx` should work just fine.
 
 ```typescript
 import {

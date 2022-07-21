@@ -4,12 +4,13 @@ import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps, Redirect } from 'next'
 import { i18n } from 'next-i18next'
 
-import { DaoPageWrapperProps } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   CommonProposalInfo,
+  CwProposalSingleAdapter,
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
+  registerAdapters as registerProposalModuleAdapters,
 } from '@dao-dao/proposal-module-adapter'
 import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
 import {
@@ -27,6 +28,8 @@ import {
   parseCoreVersion,
   validateContractAddress,
 } from '@dao-dao/utils'
+
+import { DaoPageWrapperProps } from '../components'
 
 // Swap order of arguments and use error fallback string if client null.
 // It shouldn't be null as long as we only call this on the server once the
@@ -261,6 +264,13 @@ export const makeGetDaoProposalStaticProps = ({
 
       let proposalInfo: CommonProposalInfo | undefined
       try {
+        // Register proposal module adapters.
+        registerProposalModuleAdapters([
+          CwProposalSingleAdapter,
+          // When adding new proposal module adapters here, don't forget to
+          // register in `DaoPageWrapper` as well.
+        ])
+
         const {
           options: {
             proposalModule: { prefix },

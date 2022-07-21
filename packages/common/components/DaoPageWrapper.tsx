@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
 } from 'react'
 
 import {
@@ -73,44 +74,56 @@ export const DaoPageWrapper = ({
   Logo = DefaultLogo,
   Loader = DefaultLoader,
   PageLoader = DefaultPageLoader,
-}: DaoPageWrapperProps) => (
-  <>
-    <NextSeo
-      description={description}
-      openGraph={{
-        ...(!!url && { url }),
-        type: 'website',
-        title,
-        description,
-        ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
-      }}
-      title={title}
-    />
+}: DaoPageWrapperProps) => {
+  // Register adapters once on page load.
+  useEffect(() => {
+    // Register voting module adapters.
+    registerVotingModuleAdapters([
+      Cw4VotingAdapter,
+      Cw20StakedBalanceVotingAdapter,
+    ])
 
-    {info ? (
-      <DaoInfoContext.Provider value={info}>
-        <SuspenseLoader fallback={<PageLoader />}>
-          <VotingModuleAdapterProvider
-            contractName={info.votingModuleContractName}
-            options={{
-              votingModuleAddress: info.votingModuleAddress,
-              coreAddress: info.coreAddress,
-              Logo,
-              Loader,
-            }}
-          >
-            {children}
-          </VotingModuleAdapterProvider>
-        </SuspenseLoader>
-      </DaoInfoContext.Provider>
-    ) : (
-      <DaoNotFound />
-    )}
-  </>
-)
+    // Register proposal module adapters.
+    registerProposalModuleAdapters([
+      CwProposalSingleAdapter,
+      // When adding new proposal module adapters here, don't forget to register
+      // in `makeGetDaoStaticProps` as well.
+    ])
+  }, [])
 
-// Register voting module adapters.
-registerVotingModuleAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
+  return (
+    <>
+      <NextSeo
+        description={description}
+        openGraph={{
+          ...(!!url && { url }),
+          type: 'website',
+          title,
+          description,
+          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+        }}
+        title={title}
+      />
 
-// Register proposal module adapters.
-registerProposalModuleAdapters([CwProposalSingleAdapter])
+      {info ? (
+        <DaoInfoContext.Provider value={info}>
+          <SuspenseLoader fallback={<PageLoader />}>
+            <VotingModuleAdapterProvider
+              contractName={info.votingModuleContractName}
+              options={{
+                votingModuleAddress: info.votingModuleAddress,
+                coreAddress: info.coreAddress,
+                Logo,
+                Loader,
+              }}
+            >
+              {children}
+            </VotingModuleAdapterProvider>
+          </SuspenseLoader>
+        </DaoInfoContext.Provider>
+      ) : (
+        <DaoNotFound />
+      )}
+    </>
+  )
+}
