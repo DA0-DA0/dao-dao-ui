@@ -1,6 +1,12 @@
 import { selector } from 'recoil'
 
-import { draftAtom, draftsAtom } from '../atoms/drafts'
+import {
+  LocalFormProposalData,
+  activeDraftIdAtom,
+  draftAtom,
+  draftByIdAtom,
+  draftsAtom,
+} from '../atoms/drafts'
 import { configSelector } from './clients/cw-core'
 
 export interface INavDrafts {
@@ -25,5 +31,20 @@ export const navDraftsSelector = selector<INavDrafts[]>({
     })
 
     return drafts
+  },
+})
+
+export const activeDraftSelector = selector<LocalFormProposalData | undefined>({
+  key: 'activeDraftSelector',
+  get: ({ get }) => {
+    const draftId = get(activeDraftIdAtom)
+    const draft = get(draftByIdAtom(draftId))
+
+    return draft
+  },
+  set: ({ set, get }, newValue) => {
+    const draftId = get(activeDraftIdAtom)
+    console.log('set activeDraftSelector', draftId)
+    set(draftByIdAtom(draftId), newValue)
   },
 })

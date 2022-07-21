@@ -4,7 +4,7 @@ import { FormProposalData } from '@dao-dao/actions'
 
 import { localStorageEffectJSON } from '../effects'
 
-interface LocalFormProposalData extends FormProposalData {
+export interface LocalFormProposalData extends FormProposalData {
   daoAddress: string
 }
 export interface NavDraft {
@@ -43,6 +43,18 @@ export const draftsAtom = atom<NavDraft[]>({
     draftsRemoveLocalStorageEffect,
     localStorageEffectJSON<NavDraft[]>('drafts'),
   ],
+})
+
+export const draftByIdAtom = atomFamily<
+  LocalFormProposalData | undefined,
+  string | undefined
+>({
+  key: 'draftById',
+  default: undefined,
+  effects: (draftId) =>
+    draftId && draftId.length > 0
+      ? [localStorageEffectJSON<LocalFormProposalData>(`draft_${draftId}`)]
+      : [],
 })
 
 export const draftAtom = atomFamily<LocalFormProposalData, string>({
