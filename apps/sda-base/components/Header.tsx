@@ -1,5 +1,9 @@
 import { HomeIcon, PlusIcon } from '@heroicons/react/solid'
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
+import {
+  IWalletManagerContext,
+  WalletConnectionStatus,
+  useWalletManager,
+} from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -21,15 +25,29 @@ import { Footer, Logo, WalletAvatarIcon } from '@/components'
 
 export const Header = () => {
   const router = useRouter()
+
+  // If on error page, these hooks will throw errors. Ignore since Header is
+  // rendered on error pages.
+  let walletManager: IWalletManagerContext | undefined
+  let walletBalance = 0
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    walletManager = useWalletManager()
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { walletBalance: _walletBalance } = useWalletBalance()
+    walletBalance = _walletBalance ?? 0
+  } catch {}
+
   const {
     status,
-    connectedWallet: { name: walletName } = {},
+    connectedWallet: { name: walletName } = { name: undefined },
     disconnect,
-  } = useWalletManager()
-  const { walletBalance = 0 } = useWalletBalance()
+  } = walletManager ?? {
+    connectedWallet: {},
+  }
 
-  // If on error page, this hook will throw an error. Ignore it since
-  // Header is rendered on error pages.
+  // If on error page, this hook will throw an error. Ignore it since Header is
+  // rendered on error pages.
   let daoName: string | undefined
   try {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -37,8 +55,8 @@ export const Header = () => {
     daoName = name
   } catch {}
 
-  // If on error page, this hook will throw an error. Ignore it since
-  // Header is rendered on error pages.
+  // If on error page, this hook will throw an error. Ignore it since Header is
+  // rendered on error pages.
   let membershipPageInfo: MembershipPageInfo | undefined
   try {
     membershipPageInfo =
