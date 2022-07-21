@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
-import {
-  Cw20BaseSelectors,
-  CwProposalSingleSelectors,
-  useStakingInfo,
-} from '@dao-dao/state'
+import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { GovInfoListItem } from '@dao-dao/ui'
 import {
   ProposalModule,
@@ -17,16 +13,13 @@ import {
 import { useProcessTQ } from '../hooks'
 
 interface DaoInfoVotingConfigurationProps {
-  coreAddress: string
   proposalModule: ProposalModule
 }
 
 export const DaoInfoVotingConfiguration = ({
-  coreAddress,
   proposalModule,
 }: DaoInfoVotingConfigurationProps) => {
   const { t } = useTranslation()
-  const { stakingContractConfig } = useStakingInfo(coreAddress)
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
@@ -34,7 +27,7 @@ export const DaoInfoVotingConfiguration = ({
     })
   )
 
-  if (!stakingContractConfig || !config) {
+  if (!config) {
     throw new Error(t('error.loadingData'))
   }
 

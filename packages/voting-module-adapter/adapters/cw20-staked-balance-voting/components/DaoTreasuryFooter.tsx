@@ -1,11 +1,11 @@
 import { PlusSmIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { Button } from '@dao-dao/ui'
 import { useAddToken } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useGovernanceTokenInfo } from '../hooks'
 
 export const DaoTreasuryFooter = () => {
   const { t } = useTranslation()

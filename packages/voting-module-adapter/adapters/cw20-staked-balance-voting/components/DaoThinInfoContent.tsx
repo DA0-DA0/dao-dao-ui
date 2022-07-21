@@ -2,7 +2,7 @@ import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { Pencil } from '@dao-dao/icons'
-import { useGovernanceTokenInfo, useVotingModule } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/state'
 import { HorizontalInfo, HorizontalInfoSection } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -11,6 +11,7 @@ import {
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseDaoThinInfoContentProps } from '../../../types'
+import { useGovernanceTokenInfo } from '../hooks'
 
 export const DaoThinInfoContent = ({
   proposalCount,

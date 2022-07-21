@@ -10,11 +10,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/actions'
-import {
-  Cw20BaseSelectors,
-  CwProposalSingleSelectors,
-  useGovernanceTokenInfo,
-} from '@dao-dao/state'
+import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -189,9 +185,9 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   }
 
   const {
-    hooks: { useVoteConversionDecimals },
+    hooks: { useGovernanceTokenInfoIfExists },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useVoteConversionDecimals()
+  const voteConversionDecimals = useGovernanceTokenInfoIfExists()?.decimals ?? 0
 
   if (!proposalModuleAddress || !proposalModuleConfig) {
     throw new Error('Failed to get proposal module.')
@@ -247,13 +243,15 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  // TODO(noah/proposal-module-adapter): Only load this for cw20-staked-balance-voting module.
-  const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)
+  const {
+    hooks: { useGovernanceTokenInfoIfExists },
+  } = useVotingModuleAdapter()
+  const governanceTokenSymbol = useGovernanceTokenInfoIfExists()?.symbol
 
   return (
     <UpdateProposalConfigComponent
       {...props}
-      options={{ governanceTokenSymbol: governanceTokenInfo?.symbol }}
+      options={{ governanceTokenSymbol }}
     />
   )
 }
@@ -262,9 +260,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>
 ) => {
   const {
-    hooks: { useVoteConversionDecimals },
+    hooks: { useGovernanceTokenInfoIfExists },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useVoteConversionDecimals()
+  const voteConversionDecimals = useGovernanceTokenInfoIfExists()?.decimals ?? 0
 
   return useMemo(() => {
     if (

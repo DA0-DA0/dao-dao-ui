@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
+import { useStakingInfo } from '@dao-dao/state'
 import { CopyToClipboard } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useGovernanceTokenInfo } from '../hooks'
 
 export const DaoInfoAdditionalAddresses = () => {
   const { t } = useTranslation()

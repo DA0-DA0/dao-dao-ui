@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import React, { FunctionComponent, ReactNode, useState } from 'react'
+import { PropsWithChildren, ReactNode, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
@@ -8,7 +8,6 @@ import {
   StakeCw20Hooks,
   StakeCw20Selectors,
   stakingLoadingAtom,
-  useGovernanceTokenInfo,
   useStakingInfo,
   useWalletBalance,
 } from '@dao-dao/state'
@@ -24,6 +23,8 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
+import { useGovernanceTokenInfo } from '../hooks'
+
 interface StakingModalProps {
   mode: StakingMode
   onClose: () => void
@@ -33,19 +34,19 @@ interface StakingModalProps {
   deposit?: string
 }
 
-export const StakingModal: FunctionComponent<StakingModalProps> = (props) => (
+export const StakingModal = (props: StakingModalProps) => (
   <SuspenseLoader fallback={<StakingModalLoader {...props} />}>
     <InnerStakingModal {...props} />
   </SuspenseLoader>
 )
 
-const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
+const InnerStakingModal = ({
   mode,
   onClose,
   connectWalletButton,
   coreAddress,
   deposit,
-}) => {
+}: StakingModalProps) => {
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
 
@@ -336,17 +337,19 @@ const InnerStakingModal: FunctionComponent<StakingModalProps> = ({
   )
 }
 
-type StakingModalWrapperProps = Pick<StakingModalProps, 'onClose'>
-export const StakingModalWrapper: FunctionComponent<
-  StakingModalWrapperProps
-> = ({ children, onClose }) => (
+type StakingModalWrapperProps = PropsWithChildren<
+  Pick<StakingModalProps, 'onClose'>
+>
+
+export const StakingModalWrapper = ({
+  children,
+  onClose,
+}: StakingModalWrapperProps) => (
   <Modal containerClassName="!p-40" onClose={onClose}>
     {children}
   </Modal>
 )
 
-const StakingModalLoader: FunctionComponent<
-  Omit<StakingModalWrapperProps, 'children'> & { loader: ReactNode }
-> = (props) => (
-  <StakingModalWrapper {...props}>{props.loader}</StakingModalWrapper>
-)
+const StakingModalLoader = (
+  props: Omit<StakingModalWrapperProps, 'children'> & { loader: ReactNode }
+) => <StakingModalWrapper {...props}>{props.loader}</StakingModalWrapper>

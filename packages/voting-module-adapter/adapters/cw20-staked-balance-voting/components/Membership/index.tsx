@@ -5,12 +5,8 @@ import { ComponentType, FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import {
-  stakingLoadingAtom,
-  useGovernanceTokenInfo,
-  useStakingInfo,
-} from '@dao-dao/state'
+import { ConnectWalletButton } from '@dao-dao/common'
+import { stakingLoadingAtom, useStakingInfo } from '@dao-dao/state'
 import {
   BalanceCard,
   BalanceIcon,
@@ -24,6 +20,8 @@ import {
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
+import { useGovernanceTokenInfo } from '../../hooks'
+import { StakingModal } from '../StakingModal'
 import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
 
 interface MembershipProps {

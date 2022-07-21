@@ -2,6 +2,7 @@ import { ComponentType, ReactNode } from 'react'
 
 import { Action } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
 export interface MembershipPageInfo {
@@ -39,7 +40,7 @@ export interface IVotingModuleAdapter {
 
   // Hooks
   hooks: {
-    useVoteConversionDecimals: () => number
+    useGovernanceTokenInfoIfExists: () => TokenInfoResponse | undefined
     useActions: () => Action[]
   }
 

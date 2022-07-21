@@ -3,15 +3,12 @@
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import {
-  CwCoreV0_1_0Selectors,
-  useGovernanceTokenInfo,
-  useStakingInfo,
-} from '@dao-dao/state'
+import { CwCoreV0_1_0Selectors, useStakingInfo } from '@dao-dao/state'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
+import { useGovernanceTokenInfo } from '../../hooks'
 
 interface StakeHeaderProps {
   defaultImageUrl: string

@@ -5,10 +5,12 @@ import {
   Cw20BaseSelectors,
   Cw20StakedBalanceVotingSelectors,
   tokenUSDCPriceSelector,
+  useVotingModule,
 } from '@dao-dao/state'
-
-import { MarketingInfoResponse, TokenInfoResponse } from '../clients/cw20-base'
-import { useVotingModule } from './useVotingModule'
+import {
+  MarketingInfoResponse,
+  TokenInfoResponse,
+} from '@dao-dao/state/clients/cw20-base'
 
 interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean

@@ -14,7 +14,7 @@ import {
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
-import { useActions, useVoteConversionDecimals } from './hooks'
+import { useActions, useGovernanceTokenInfoIfExists } from './hooks'
 
 export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   id: CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
@@ -38,7 +38,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
 
     // Hooks
     hooks: {
-      useVoteConversionDecimals,
+      useGovernanceTokenInfoIfExists,
       useActions,
     },
 

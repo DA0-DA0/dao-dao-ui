@@ -3,15 +3,15 @@ import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
+  Cw20StakedBalanceVotingSelectors,
   StakeCw20Selectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
+  useVotingModule,
 } from '@dao-dao/state'
 import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
 import { claimAvailable } from '@dao-dao/utils'
-
-import { useGovernanceTokenInfo } from '.'
 
 interface UseStakingOptions {
   fetchClaims?: boolean
@@ -47,7 +47,15 @@ export const useStakingInfo = (
   }: UseStakingOptions = {}
 ): UseStakingResponse => {
   const { address: walletAddress } = useWallet()
-  const { stakingContractAddress } = useGovernanceTokenInfo(coreAddress)
+  const { votingModuleAddress } = useVotingModule(coreAddress)
+
+  const stakingContractAddress = useRecoilValue(
+    votingModuleAddress
+      ? Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+          contractAddress: votingModuleAddress,
+        })
+      : constSelector(undefined)
+  )
 
   const stakingContractConfig = useRecoilValue(
     stakingContractAddress

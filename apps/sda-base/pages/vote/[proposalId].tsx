@@ -42,10 +42,13 @@ const InnerProposal: FC = () => {
   } = useProposalModuleAdapterCommon()
 
   const {
-    hooks: { useVoteConversionDecimals, useActions: useVotingModuleActions },
+    hooks: {
+      useGovernanceTokenInfoIfExists,
+      useActions: useVotingModuleActions,
+    },
     components: { ProposalDetailsVotingPowerWidget },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useVoteConversionDecimals()
+  const voteConversionDecimals = useGovernanceTokenInfoIfExists()?.decimals ?? 0
 
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()

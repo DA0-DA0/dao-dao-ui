@@ -60,7 +60,6 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       ),
       DaoInfoVotingConfiguration: (props) => (
         <DaoInfoVotingConfiguration
-          coreAddress={coreAddress}
           proposalModule={proposalModule}
           {...props}
         />

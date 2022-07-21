@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { CopyToClipboard } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useGovernanceTokenInfo } from '../hooks'
 
 export const ProposalModuleAddresses = () => {
   const { t } = useTranslation()

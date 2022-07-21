@@ -13,7 +13,7 @@ import {
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
-import { useActions, useVoteConversionDecimals } from './hooks'
+import { useActions, useGovernanceTokenInfoIfExists } from './hooks'
 
 export const Cw4VotingAdapter: VotingModuleAdapter = {
   id: CW4VOTING_CONTRACT_NAME,
@@ -37,7 +37,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
 
     // Hooks
     hooks: {
-      useVoteConversionDecimals,
+      useGovernanceTokenInfoIfExists,
       useActions,
     },
 

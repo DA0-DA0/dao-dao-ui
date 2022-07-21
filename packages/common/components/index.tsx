@@ -1,5 +1,4 @@
 export * from './ConnectWalletButton'
 export * from './DaoPageWrapper'
 export * from './ProposalList'
-export * from './StakingModal'
 export * from './WalletProvider'

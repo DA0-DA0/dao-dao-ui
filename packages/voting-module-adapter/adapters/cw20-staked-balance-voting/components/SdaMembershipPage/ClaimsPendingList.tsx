@@ -2,10 +2,11 @@ import { useWalletManager } from '@noahsaso/cosmodal'
 import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
+import { useStakingInfo } from '@dao-dao/state'
 import { Button, ClaimsListItem } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
+import { useGovernanceTokenInfo } from '../../hooks'
 
 interface ClaimsPendingListProps {
   fallbackImageUrl: string

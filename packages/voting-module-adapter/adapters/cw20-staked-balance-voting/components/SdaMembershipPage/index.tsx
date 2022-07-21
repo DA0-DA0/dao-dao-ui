@@ -2,11 +2,12 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { Pie } from '@dao-dao/icons'
-import { CwCoreV0_1_0Selectors, useGovernanceTokenInfo } from '@dao-dao/state'
+import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
+import { useGovernanceTokenInfo } from '../../hooks'
 import { Membership } from '../Membership'
 import { ClaimsPendingList } from './ClaimsPendingList'
 import { StakeHeader, StakeHeaderLoader } from './StakeHeader'

@@ -10,7 +10,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/actions'
-import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
@@ -19,6 +18,7 @@ import {
   makeMintMessage,
 } from '@dao-dao/utils'
 
+import { useGovernanceTokenInfo } from '../../hooks'
 import {
   MintIcon,
   MintComponent as StatelessMintComponent,

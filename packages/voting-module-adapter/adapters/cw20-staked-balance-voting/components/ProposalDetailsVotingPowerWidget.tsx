@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { ConnectWalletButton } from '@dao-dao/common'
 import { StakingMode } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalDetailsVotingPowerWidgetProps } from '../../../types'
+import { StakingModal } from './StakingModal'
 
 export const ProposalDetailsVotingPowerWidget = ({
   depositInfo,
