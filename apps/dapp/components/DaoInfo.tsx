@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useDaoInfoContext } from '@dao-dao/common'
@@ -55,7 +55,8 @@ export const DaoInfo = ({ hideTreasury }: DaoInfoProps) => {
   )
 }
 
-export const DaoInfoVotingProposalVotingConfigurations = () => {
+const DaoInfoVotingProposalVotingConfigurations = () => {
+  const { t } = useTranslation()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const components = useMemo(
     () =>
@@ -70,18 +71,46 @@ export const DaoInfoVotingProposalVotingConfigurations = () => {
     [coreAddress, proposalModules]
   )
 
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const { DaoInfoVotingConfiguration } = components[selectedIndex]
+
   return (
     <>
-      {components.map(({ DaoInfoVotingConfiguration, proposalModule }) => (
-        <ul
-          key={proposalModule.address}
-          className="flex flex-col gap-2 mt-3 list-none"
-        >
-          <p>{proposalModule.contractName.split(':').slice(-1)[0]}</p>
+      <ul className="flex flex-col gap-2 mt-3 list-none">
+        {components.length > 1 ? (
+          <select
+            className="py-2 px-3 mb-2 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition"
+            onChange={({ target: { value } }) =>
+              setSelectedIndex(Number(value))
+            }
+            value={selectedIndex}
+          >
+            {components.map(({ proposalModule }, index) => (
+              <option key={proposalModule.address} value={index}>
+                {t(
+                  `proposalModuleLabel.${
+                    proposalModule.contractName.split(':').slice(-1)[0]
+                  }`
+                )}{' '}
+                {t('title.proposals')}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <p className="mb-2">
+            {t(
+              `proposalModuleLabel.${
+                proposalModules[selectedIndex].contractName
+                  .split(':')
+                  .slice(-1)[0]
+              }`
+            )}{' '}
+            {t('title.proposals')}
+          </p>
+        )}
 
-          <DaoInfoVotingConfiguration />
-        </ul>
-      ))}
+        <DaoInfoVotingConfiguration />
+      </ul>
     </>
   )
 }

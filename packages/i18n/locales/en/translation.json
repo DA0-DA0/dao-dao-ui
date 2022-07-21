@@ -441,5 +441,8 @@
     "weeks": "Weeks",
     "weeks_one": "Week",
     "weeks_other": "Weeks"
+  },
+  "proposalModuleLabel": {
+    "cw-govmod-single": "Single Choice"
   }
 }
