@@ -97,25 +97,27 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           <Nav />
         </div>
 
-        <AppInner>{children}</AppInner>
+        <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
+          {children}
+        </main>
       </div>
     </>
   )
 }
 
-const AppInner = ({ children }: PropsWithChildren<{}>) => (
-  <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
-    {children}
-  </main>
+const AppLayoutLoadingInner = ({ children }: PropsWithChildren<{}>) => (
+  <main className="overflow-hidden w-full h-full min-h-screen">{children}</main>
 )
 
 export const AppLayout = ({ children }: PropsWithChildren<{}>) => {
   const { isFallback } = useRouter()
 
   // Don't mount wallet or modals while static page data is still loading.
-  // Things look weird and broken, and the wallet connects twice.
+  // Things look weird and broken, and the wallet connects twice. Nav in
+  // AppLayoutInner above uses wallet hook, which depends on WalletProvider, so
+  // use placeholder Layout during fallback.
   return isFallback ? (
-    <AppInner>{children}</AppInner>
+    <AppLayoutLoadingInner>{children}</AppLayoutLoadingInner>
   ) : (
     <WalletProvider>
       <AppLayoutInner>{children}</AppLayoutInner>

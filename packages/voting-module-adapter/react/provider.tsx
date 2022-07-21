@@ -1,7 +1,10 @@
 import { ReactNode, useEffect, useState } from 'react'
 
 import { matchAndLoadAdapter } from '../core'
-import { IVotingModuleAdapter, IVotingModuleAdapterOptions } from '../types'
+import {
+  IVotingModuleAdapterContext,
+  IVotingModuleAdapterOptions,
+} from '../types'
 import { VotingModuleAdapterContext } from './context'
 
 export interface VotingModuleAdapterProviderProps {
@@ -15,21 +18,19 @@ export const VotingModuleAdapterProvider = ({
   children,
   options,
 }: VotingModuleAdapterProviderProps) => {
-  const [adapter, setAdapter] = useState<IVotingModuleAdapter>()
+  const [context, setContext] = useState<IVotingModuleAdapterContext>()
 
   useEffect(() => {
     matchAndLoadAdapter(contractName, options).then(({ adapter }) =>
-      setAdapter(adapter)
+      setContext({
+        adapter,
+        options,
+      })
     )
   }, [contractName, options])
 
-  return adapter ? (
-    <VotingModuleAdapterContext.Provider
-      value={{
-        adapter,
-        options,
-      }}
-    >
+  return context ? (
+    <VotingModuleAdapterContext.Provider value={context}>
       {children}
     </VotingModuleAdapterContext.Provider>
   ) : (

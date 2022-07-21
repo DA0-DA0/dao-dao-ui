@@ -31,12 +31,7 @@ export const Loader = ({
 
 export const PageLoader = ({ className, size = 64, ...props }: LoaderProps) => (
   <Loader
-    className={clsx(
-      // On mobile, the app container is not as tall as the whole screen
-      // when just the loader is showing, so set minimum to screen height.
-      'min-h-screen lg:min-h-min',
-      className
-    )}
+    className={clsx('min-h-screen', className)}
     fill
     size={size}
     {...props}
