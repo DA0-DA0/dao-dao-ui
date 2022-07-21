@@ -105,9 +105,9 @@ export const DaoPageWrapper = ({
         title={title}
       />
 
-      {info ? (
-        <DaoInfoContext.Provider value={info}>
-          <SuspenseLoader fallback={<PageLoader />}>
+      <SuspenseLoader fallback={<PageLoader />}>
+        {info ? (
+          <DaoInfoContext.Provider value={info}>
             <VotingModuleAdapterProvider
               contractName={info.votingModuleContractName}
               options={{
@@ -119,11 +119,11 @@ export const DaoPageWrapper = ({
             >
               {children}
             </VotingModuleAdapterProvider>
-          </SuspenseLoader>
-        </DaoInfoContext.Provider>
-      ) : (
-        <DaoNotFound />
-      )}
+          </DaoInfoContext.Provider>
+        ) : (
+          <DaoNotFound />
+        )}
+      </SuspenseLoader>
     </>
   )
 }
