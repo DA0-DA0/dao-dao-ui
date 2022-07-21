@@ -109,7 +109,7 @@ const InnerProposal: FC = () => {
           />
         </div>
 
-        <ProposalVotes className="mx-6 mt-8 max-w-3xl lg:mx-0" />
+        <ProposalVotes className="mt-8 max-w-3xl" />
       </div>
 
       <div className="hidden min-h-screen lg:block bg-base-200">
