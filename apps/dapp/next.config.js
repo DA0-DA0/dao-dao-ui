@@ -76,6 +76,13 @@ let config = {
 
     return config
   },
+  // Only upload source maps to Sentry in CI action when token is provided.
+  sentry: {
+    disableServerWebpackPlugin:
+      process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
+    disableClientWebpackPlugin:
+      process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
+  },
 }
 
 // Only need rewrites for local development
