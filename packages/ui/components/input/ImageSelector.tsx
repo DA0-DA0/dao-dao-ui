@@ -147,7 +147,9 @@ export const ImageSelector = <
         }}
         type="button"
       >
-        {!imageUrl && <PlusIcon className="w-4" />}
+        {(typeof imageUrl !== 'string' || !imageUrl?.trim()) && (
+          <PlusIcon className="w-4" />
+        )}
       </button>
 
       {showImageSelect && (
