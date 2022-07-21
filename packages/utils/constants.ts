@@ -88,3 +88,5 @@ export const CWPROPOSALMULTIPLE_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CWPROPOSALMULTIPLE_CONTRACT_NAME as string
 
 export const JUNO_BLOCKS_PER_YEAR = 5086451
+
+export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV as string
