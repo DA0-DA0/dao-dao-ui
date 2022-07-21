@@ -92,21 +92,21 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         <CommandModal onClose={() => setCommandModalVisible(false)} />
       )}
 
-      <AppInner>{children}</AppInner>
+      <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
+        <div className="hidden lg:block lg:w-[264px]">
+          <Nav />
+        </div>
+
+        <AppInner>{children}</AppInner>
+      </div>
     </>
   )
 }
 
 const AppInner = ({ children }: PropsWithChildren<{}>) => (
-  <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
-    <div className="hidden lg:block lg:w-[264px]">
-      <Nav />
-    </div>
-
-    <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
-      {children}
-    </main>
-  </div>
+  <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
+    {children}
+  </main>
 )
 
 export const AppLayout = ({ children }: PropsWithChildren<{}>) => {
