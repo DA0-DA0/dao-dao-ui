@@ -132,9 +132,7 @@ export interface IVotingModuleAdapter {
 export type VotingModuleAdapter = {
   id: string
   matcher: (contractName: string) => boolean
-  load: (
-    options: IVotingModuleAdapterOptions
-  ) => IVotingModuleAdapter | Promise<IVotingModuleAdapter>
+  load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
 }
 
 export interface IVotingModuleAdapterOptions {
@@ -145,6 +143,7 @@ export interface IVotingModuleAdapterOptions {
 }
 
 export interface IVotingModuleAdapterContext {
+  id: string
   options: IVotingModuleAdapterOptions
   adapter: IVotingModuleAdapter
 }

@@ -72,9 +72,7 @@ export type ProposalModuleAdapter = {
     options: IProposalModuleAdapterCommonOptions
   ) => IProposalModuleAdapterCommon
 
-  load: (
-    options: IProposalModuleAdapterOptions
-  ) => IProposalModuleAdapter | Promise<IProposalModuleAdapter>
+  load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter
 }
 
 export interface IProposalModuleAdapterInitialOptions {

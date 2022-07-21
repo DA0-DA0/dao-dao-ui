@@ -1,4 +1,8 @@
-import { IVotingModuleAdapterOptions, VotingModuleAdapter } from './types'
+import {
+  IVotingModuleAdapterContext,
+  IVotingModuleAdapterOptions,
+  VotingModuleAdapter,
+} from './types'
 
 const registeredAdapters: VotingModuleAdapter[] = []
 
@@ -11,10 +15,10 @@ export const registerAdapters = async (adapters: VotingModuleAdapter[]) =>
 export const matchAdapter = (contractName: string) =>
   registeredAdapters.find(({ matcher }) => matcher(contractName))
 
-export const matchAndLoadAdapter = async (
+export const matchAndLoadAdapter = (
   contractName: string,
   options: IVotingModuleAdapterOptions
-) => {
+): IVotingModuleAdapterContext => {
   const adapter = matchAdapter(contractName)
 
   if (!adapter) {
@@ -27,6 +31,7 @@ export const matchAndLoadAdapter = async (
 
   return {
     id: adapter.id,
-    adapter: await adapter.load(options),
+    adapter: adapter.load(options),
+    options,
   }
 }

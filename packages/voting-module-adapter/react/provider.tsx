@@ -18,19 +18,23 @@ export const VotingModuleAdapterProvider = ({
   children,
   options,
 }: VotingModuleAdapterProviderProps) => {
-  const [context, setContext] = useState<IVotingModuleAdapterContext>()
+  const [state, setState] = useState<{
+    contractName: string
+    context: IVotingModuleAdapterContext
+  }>()
 
   useEffect(() => {
-    matchAndLoadAdapter(contractName, options).then(({ adapter }) =>
-      setContext({
-        adapter,
-        options,
-      })
-    )
+    setState({
+      contractName,
+      context: matchAndLoadAdapter(contractName, options),
+    })
   }, [contractName, options])
 
-  return context ? (
-    <VotingModuleAdapterContext.Provider value={context}>
+  // If `contractName` changes and state has not yet been updated with the newly
+  // loaded adapter, do not render the components that expect the correct voting
+  // module. Load instead.
+  return state && state.contractName === contractName ? (
+    <VotingModuleAdapterContext.Provider value={state.context}>
       {children}
     </VotingModuleAdapterContext.Provider>
   ) : (

@@ -26,16 +26,27 @@ export const ProposalModuleAdapterProvider = ({
   initialOptions,
   ProviderLoader,
 }: ProposalModuleAdapterProviderProps) => {
-  const [context, setContext] = useState<IProposalModuleContext>()
+  const [state, setState] = useState<{
+    proposalId: string
+    proposalModules: ProposalModule[]
+    context: IProposalModuleContext
+  }>()
 
   useEffect(() => {
-    matchAndLoadAdapter(proposalModules, proposalId, initialOptions).then(
-      setContext
-    )
+    setState({
+      proposalId,
+      proposalModules,
+      context: matchAndLoadAdapter(proposalModules, proposalId, initialOptions),
+    })
   }, [initialOptions, proposalId, proposalModules])
 
-  return context ? (
-    <ProposalModuleAdapterContext.Provider value={context}>
+  // If `proposalId` or `proposalModules` changes and state has not yet been
+  // updated with the newly loaded adapter, do not render the components that
+  // expect the correct proposal module. Load instead.
+  return state &&
+    state.proposalId === proposalId &&
+    state.proposalModules === proposalModules ? (
+    <ProposalModuleAdapterContext.Provider value={state.context}>
       {children}
     </ProposalModuleAdapterContext.Provider>
   ) : ProviderLoader ? (

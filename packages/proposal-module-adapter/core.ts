@@ -12,7 +12,7 @@ const registeredAdapters: ProposalModuleAdapter[] = []
 // Lazy loading adapters instead of defining objects reduces memory usage
 // and avoids cyclic dependencies when enums or other objects are stored in
 // the adapter object.
-export const registerAdapters = async (adapters: ProposalModuleAdapter[]) =>
+export const registerAdapters = (adapters: ProposalModuleAdapter[]) =>
   registeredAdapters.push(
     // Avoid duplicates.
     ...adapters.filter(
@@ -45,11 +45,11 @@ export const matchAndLoadCommon = (
   })
 }
 
-export const matchAndLoadAdapter = async (
+export const matchAndLoadAdapter = (
   proposalModules: ProposalModule[],
   proposalId: string,
   initialOptions: IProposalModuleAdapterInitialOptions
-): Promise<IProposalModuleContext> => {
+): IProposalModuleContext => {
   // Last character of prefix is non-numeric, followed by numeric prop number.
   const proposalIdParts = proposalId.match(/^(.*\D)?(\d+)$/)
   if (proposalIdParts?.length !== 3) {
@@ -103,7 +103,7 @@ export const matchAndLoadAdapter = async (
   return {
     id: adapter.id,
     options: adapterOptions,
-    adapter: await adapter.load(adapterOptions),
+    adapter: adapter.load(adapterOptions),
     common: matchAndLoadCommon(proposalModule, initialOptions),
   }
 }
