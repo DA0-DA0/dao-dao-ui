@@ -1,6 +1,6 @@
 import { ComponentType, ReactNode } from 'react'
 
-import { ActionKey } from '@dao-dao/actions'
+import { Action } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
@@ -34,13 +34,13 @@ export interface BaseProposalDetailsVotingPowerWidgetProps {
 export interface IVotingModuleAdapter {
   // Fields
   fields: {
-    disabledActionKeys: ActionKey[]
     membershipPageInfo: MembershipPageInfo
   }
 
   // Hooks
   hooks: {
     useVoteConversionDecimals: () => number
+    useActions: () => Action[]
   }
 
   // Components

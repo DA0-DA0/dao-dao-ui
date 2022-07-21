@@ -82,7 +82,15 @@ export const Header: FunctionComponent = () => {
     disconnect,
   } = useWalletManager()
   const { walletBalance = 0 } = useWalletBalance()
-  const { name: daoName } = useDaoInfoContext()
+
+  // If on error page, this hook will throw an error. Ignore it since
+  // Header is rendered on error pages.
+  let daoName: string | undefined
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { name } = useDaoInfoContext()
+    daoName = name
+  } catch {}
 
   // If on error page, this hook will throw an error. Ignore it since
   // Header is rendered on error pages.

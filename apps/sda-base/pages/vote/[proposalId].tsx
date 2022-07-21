@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -42,14 +42,19 @@ const InnerProposal: FC = () => {
   } = useProposalModuleAdapterCommon()
 
   const {
-    fields: { disabledActionKeys },
-    hooks: { useVoteConversionDecimals },
+    hooks: { useVoteConversionDecimals, useActions: useVotingModuleActions },
     components: { ProposalDetailsVotingPowerWidget },
   } = useVotingModuleAdapter()
   const voteConversionDecimals = useVoteConversionDecimals()
 
+  const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
-  const actions = useActions(disabledActionKeys, proposalModuleActions)
+  const actions = useActions(
+    useMemo(
+      () => [...votingModuleActions, ...proposalModuleActions],
+      [proposalModuleActions, votingModuleActions]
+    )
+  )
 
   const { refreshProposalAndAll } = useProposalRefreshers()
 

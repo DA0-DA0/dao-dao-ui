@@ -1,4 +1,3 @@
-import { ActionKey } from '@dao-dao/actions'
 import { Wallet } from '@dao-dao/icons'
 import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
@@ -14,7 +13,7 @@ import {
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
-import { useVoteConversionDecimals } from './hooks'
+import { useActions, useVoteConversionDecimals } from './hooks'
 
 export const Cw4VotingAdapter: VotingModuleAdapter = {
   id: CW4VOTING_CONTRACT_NAME,
@@ -24,10 +23,6 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
   load: () => ({
     // Fields
     fields: {
-      disabledActionKeys: [
-        // No governance tokens to mint.
-        ActionKey.Mint,
-      ],
       membershipPageInfo: {
         renderIcon: (color, mobile) => (
           <Wallet
@@ -43,6 +38,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useVoteConversionDecimals,
+      useActions,
     },
 
     // Components

@@ -2,14 +2,13 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionCard, ActionComponent } from '@dao-dao/actions'
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   validateAddress,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { ActionCard, ActionComponent } from '..'
 
 export interface MintOptions {
   govTokenSymbol: string
@@ -54,7 +53,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             <InputErrorMessage error={errors?.amount} />
           </div>
           {govTokenSymbol && (
-            <p className="font-mono text-sm text-secondary uppercase">
+            <p className="font-mono text-sm uppercase text-secondary">
               ${govTokenSymbol}
             </p>
           )}

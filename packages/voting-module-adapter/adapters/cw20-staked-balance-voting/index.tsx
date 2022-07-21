@@ -1,4 +1,3 @@
-import { ActionKey } from '@dao-dao/actions'
 import { Pie } from '@dao-dao/icons'
 import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
@@ -10,12 +9,12 @@ import {
   DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
-  ProposalModuleAddresses,
   ProposalDetailsVotingPowerWidget,
+  ProposalModuleAddresses,
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
-import { useVoteConversionDecimals } from './hooks'
+import { useActions, useVoteConversionDecimals } from './hooks'
 
 export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   id: CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
@@ -25,7 +24,6 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   load: () => ({
     // Fields
     fields: {
-      disabledActionKeys: [ActionKey.ManageMembers],
       membershipPageInfo: {
         renderIcon: (color, mobile) => (
           <Pie
@@ -41,6 +39,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useVoteConversionDecimals,
+      useActions,
     },
 
     // Components

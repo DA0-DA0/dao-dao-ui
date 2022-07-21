@@ -1,7 +1,7 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
 import { useRouter } from 'next/router'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -87,7 +87,7 @@ export const CreateProposalForm = ({
   const [loading, setLoading] = useState(false)
 
   const {
-    fields: { disabledActionKeys },
+    hooks: { useActions: useVotingModuleActions },
   } = useVotingModuleAdapter()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
   const { address: proposalModuleAddress, prefix: proposalModulePrefix } =
@@ -198,8 +198,15 @@ export const CreateProposalForm = ({
     shouldUnregister: true,
   })
 
+  const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
-  const actions = useActions(disabledActionKeys, proposalModuleActions)
+  const actions = useActions(
+    useMemo(
+      () => [...votingModuleActions, ...proposalModuleActions],
+      [proposalModuleActions, votingModuleActions]
+    )
+  )
+
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<

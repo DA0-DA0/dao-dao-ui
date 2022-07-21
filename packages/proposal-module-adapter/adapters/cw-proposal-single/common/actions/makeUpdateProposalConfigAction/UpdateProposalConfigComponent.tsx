@@ -123,9 +123,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
           <div className="flex flex-col grow gap-1">
             <div className="flex flex-col gap-1">
               <InputLabel
-                name={`${t(
-                  'form.proposalDepositTitle'
-                )} ($${governanceTokenSymbol})`}
+                name={`${t('form.proposalDepositTitle')}${
+                  governanceTokenSymbol ? ` ($${governanceTokenSymbol})` : ''
+                }`}
               />
               <NumberInput
                 disabled={readOnly}

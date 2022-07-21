@@ -1,24 +1,24 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useCw4VotingModule } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/ui'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  ActionCardLoader,
-  ManageMembersData,
-  ManageMembersIcon,
-  ManageMembersComponent as StatelessManageMembersComponent,
-} from '../components'
 import {
   Action,
+  ActionCardLoader,
   ActionComponent,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/actions'
+import { useCw4VotingModule } from '@dao-dao/state'
+import { SuspenseLoader } from '@dao-dao/ui'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import {
+  ManageMembersData,
+  ManageMembersIcon,
+  ManageMembersComponent as StatelessManageMembersComponent,
+} from './ManageMembersComponent'
 
 const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
   toAdd: [],
@@ -115,7 +115,7 @@ const Component: ActionComponent = (props) => (
   </SuspenseLoader>
 )
 
-export const manageMembersAction: Action<ManageMembersData> = {
+export const makeManageMembersAction = (): Action<ManageMembersData> => ({
   key: ActionKey.ManageMembers,
   Icon: ManageMembersIcon,
   label: 'Manage Members',
@@ -124,4 +124,4 @@ export const manageMembersAction: Action<ManageMembersData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-}
+})

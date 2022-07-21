@@ -5,10 +5,7 @@ import { FC, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  FormProposalData,
-  useActionsWithoutDisabledKeys,
-} from '@dao-dao/actions'
+import { FormProposalData, useActions } from '@dao-dao/actions'
 import { ConnectWalletButton } from '@dao-dao/common'
 import {
   CwCoreV0_1_0QueryClient,
@@ -61,11 +58,11 @@ const InnerProposal: FC = () => {
   )
 
   const {
-    fields: { disabledActionKeys },
-    hooks: { useVoteConversionDecimals },
+    hooks: { useVoteConversionDecimals, useActions: useVotingModuleActions },
     components: { ProposalDetails },
   } = useVotingModuleAdapter()
-  const actions = useActionsWithoutDisabledKeys(disabledActionKeys)
+  const votingModuleActions = useVotingModuleActions()
+  const actions = useActions(votingModuleActions)
   const voteConversionDecimals = useVoteConversionDecimals()
 
   const {

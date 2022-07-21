@@ -1,6 +1,15 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 
+import {
+  Action,
+  ActionCardLoader,
+  ActionComponent,
+  ActionKey,
+  UseDecodedCosmosMsg,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/actions'
 import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
@@ -11,20 +20,11 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
   MintIcon,
   MintComponent as StatelessMintComponent,
-} from '../components'
-import {
-  Action,
-  ActionComponent,
-  ActionKey,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '../types'
+} from './MintComponent'
 
-interface MintData {
+export interface MintData {
   to: string
   amount: number
 }
@@ -121,7 +121,7 @@ const Component: ActionComponent = (props) => (
   </SuspenseLoader>
 )
 
-export const mintAction: Action<MintData> = {
+export const makeMintAction = (): Action<MintData> => ({
   key: ActionKey.Mint,
   Icon: MintIcon,
   label: 'Mint',
@@ -130,4 +130,4 @@ export const mintAction: Action<MintData> = {
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-}
+})
