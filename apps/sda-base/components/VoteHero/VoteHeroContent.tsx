@@ -1,14 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
-
-import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
-
-import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { useDaoInfoContext } from '@dao-dao/common'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
-
 import { Loader } from '../Loader'
+import { Logo } from '../Logo'
 import { VoteHeroHeader } from './VoteHeroHeader'
 
 export const VoteHeroContentLoader = () => {
@@ -25,31 +19,18 @@ export const VoteHeroContentLoader = () => {
 }
 
 export const VoteHeroContent = () => {
-  const { t } = useTranslation()
+  const { name, description } = useDaoInfoContext()
 
-  const config = useRecoilValue(
-    CwCoreV0_1_0Selectors.configSelector({ contractAddress: DAO_ADDRESS })
-  )
   const {
     components: { VoteHeroStats },
   } = useVotingModuleAdapter()
 
-  if (!config) {
-    throw new Error(t('error.loadingData'))
-  }
-
   return (
     <>
       <VoteHeroHeader
-        description={config.description}
-        image={
-          <img
-            alt="logo"
-            className="w-full h-full"
-            src={config.image_url ?? DEFAULT_IMAGE_URL}
-          />
-        }
-        title={config.name}
+        description={description}
+        image={<Logo className="w-full h-full" />}
+        title={name}
       />
       <VoteHeroStats />
     </>

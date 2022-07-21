@@ -7,40 +7,20 @@ import {
   tokenUSDCPriceSelector,
   useVotingModule,
 } from '@dao-dao/state'
+
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
-  MarketingInfoResponse,
-  TokenInfoResponse,
-} from '@dao-dao/state/clients/cw20-base'
+  UseGovernanceTokenInfoOptions,
+  UseGovernanceTokenInfoResponse,
+} from '../../../types'
 
-interface UseGovernanceTokenInfoOptions {
-  fetchWalletBalance?: boolean
-  fetchTreasuryBalance?: boolean
-  fetchPriceWithSwapAddress?: string
-}
-
-interface UseGovernanceTokenInfoResponse {
-  stakingContractAddress?: string
-  governanceTokenAddress?: string
-  governanceTokenInfo?: TokenInfoResponse
-  governanceTokenMarketingInfo?: MarketingInfoResponse
-  /// Optional
-  // Wallet balance
-  walletBalance?: number
-  // Treasury balance
-  treasuryBalance?: number
-  // Price
-  price?: number
-}
-
-export const useGovernanceTokenInfo = (
-  coreAddress: string,
-  {
-    fetchWalletBalance = false,
-    fetchTreasuryBalance = false,
-    fetchPriceWithSwapAddress,
-  }: UseGovernanceTokenInfoOptions = {}
-): UseGovernanceTokenInfoResponse => {
+export const useGovernanceTokenInfo = ({
+  fetchWalletBalance = false,
+  fetchTreasuryBalance = false,
+  fetchPriceWithSwapAddress,
+}: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { votingModuleAddress } = useVotingModule(coreAddress)
 
   const stakingContractAddress = useRecoilValue(

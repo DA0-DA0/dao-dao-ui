@@ -4,21 +4,29 @@ import { useTranslation } from 'react-i18next'
 
 import { Wallet } from '@dao-dao/icons'
 import { useCw4VotingModule } from '@dao-dao/state'
-import { HeroStat } from '@dao-dao/ui'
+import { HeroStat, HeroStatLink } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseVoteHeroStatsProps } from '../../../types'
 
-export const VoteHeroStats = ({ loader }: BaseVoteHeroStatsProps) =>
-  loader ? <InnerVoteHeroStats /> : <InnerVoteHeroStatsContent />
+export const VoteHeroStats = ({ loader, ...props }: BaseVoteHeroStatsProps) =>
+  loader ? (
+    <InnerVoteHeroStats {...props} />
+  ) : (
+    <InnerVoteHeroStatsContent {...props} />
+  )
 
-export interface InnerVoteHeroStatsProps {
+export interface InnerVoteHeroStatsProps
+  extends Pick<BaseVoteHeroStatsProps, 'additionalStats'> {
   data?: {
     members: number
   }
 }
 
-export const InnerVoteHeroStats = ({ data }: InnerVoteHeroStatsProps) => {
+export const InnerVoteHeroStats = ({
+  data,
+  additionalStats,
+}: InnerVoteHeroStatsProps) => {
   const { t } = useTranslation()
 
   return (
@@ -28,11 +36,21 @@ export const InnerVoteHeroStats = ({ data }: InnerVoteHeroStatsProps) => {
         title={t('title.members') + ':'}
         value={data?.members.toLocaleString()}
       />
+      {additionalStats?.map(({ link, ...props }, index) =>
+        link ? (
+          <HeroStatLink key={index} {...props} />
+        ) : (
+          <HeroStat key={index} {...props} />
+        )
+      )}
     </div>
   )
 }
 
-const InnerVoteHeroStatsContent = () => {
+interface InnerVoteHeroStatsContentProps
+  extends Pick<BaseVoteHeroStatsProps, 'additionalStats'> {}
+
+const InnerVoteHeroStatsContent = (props: InnerVoteHeroStatsContentProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
@@ -46,8 +64,9 @@ const InnerVoteHeroStatsContent = () => {
   return (
     <InnerVoteHeroStats
       data={{
-        members: members?.length,
+        members: members.length,
       }}
+      {...props}
     />
   )
 }

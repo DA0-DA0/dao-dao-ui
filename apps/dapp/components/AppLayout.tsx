@@ -1,7 +1,7 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect } from 'react'
+import { PropsWithChildren, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { WalletProvider } from '@dao-dao/common'
@@ -21,7 +21,7 @@ import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 
-const AppLayoutInner: FC = ({ children }) => {
+const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
@@ -92,21 +92,33 @@ const AppLayoutInner: FC = ({ children }) => {
         <CommandModal onClose={() => setCommandModalVisible(false)} />
       )}
 
-      <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
-        <div className="hidden lg:block lg:w-[264px]">
-          <Nav />
-        </div>
-
-        <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
-          {children}
-        </main>
-      </div>
+      <AppInner>{children}</AppInner>
     </>
   )
 }
 
-export const AppLayout: FC = ({ children }) => (
-  <WalletProvider>
-    <AppLayoutInner>{children}</AppLayoutInner>
-  </WalletProvider>
+const AppInner = ({ children }: PropsWithChildren<{}>) => (
+  <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
+    <div className="hidden lg:block lg:w-[264px]">
+      <Nav />
+    </div>
+
+    <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
+      {children}
+    </main>
+  </div>
 )
+
+export const AppLayout = ({ children }: PropsWithChildren<{}>) => {
+  const { isFallback } = useRouter()
+
+  // Don't mount wallet or modals while static page data is still loading.
+  // Things look weird and broken, and the wallet connects twice.
+  return isFallback ? (
+    <AppInner>{children}</AppInner>
+  ) : (
+    <WalletProvider>
+      <AppLayoutInner>{children}</AppLayoutInner>
+    </WalletProvider>
+  )
+}

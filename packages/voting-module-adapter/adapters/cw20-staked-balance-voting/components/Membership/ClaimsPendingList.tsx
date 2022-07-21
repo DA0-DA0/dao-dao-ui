@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 
 import { ClaimsListItem, Loader, SuspenseLoader } from '@dao-dao/ui'
 
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
 export const ClaimsPendingList = () => {
@@ -24,18 +23,14 @@ export const ClaimsPendingList = () => {
 
 const InnerClaimsPendingList = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { blockHeight, claimsPending, refreshClaims } = useStakingInfo(
-    coreAddress,
-    {
-      fetchClaims: true,
-    }
-  )
+  const { blockHeight, claimsPending, refreshClaims } = useStakingInfo({
+    fetchClaims: true,
+  })
   const { governanceTokenInfo, governanceTokenMarketingInfo } =
-    useGovernanceTokenInfo(coreAddress)
+    useGovernanceTokenInfo()
 
   if (
-    !blockHeight ||
+    blockHeight === undefined ||
     !claimsPending ||
     !refreshClaims ||
     !governanceTokenInfo

@@ -41,8 +41,12 @@ export const blockHeightTimestampSelector = selectorFamily<
       const client = get(cosmWasmClientSelector)
       if (!client) return
 
-      const block = await client.getBlock(blockHeight)
-      return new Date(Date.parse(block.header.time))
+      try {
+        const block = await client.getBlock(blockHeight)
+        return new Date(Date.parse(block.header.time))
+      } catch (error) {
+        console.error(error)
+      }
     },
 })
 

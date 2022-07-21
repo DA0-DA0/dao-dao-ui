@@ -1,36 +1,28 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
-import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { ClaimsListItem } from '@dao-dao/ui'
+import { Button, ClaimsListItem } from '@dao-dao/ui'
 
-import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
+import { BaseClaimsPendingListProps } from '../../../types'
+import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
-import { Button } from '../Button'
-import { useDAOInfoContext } from '../DAOInfoContext'
-
-interface ClaimsListProps {
-  showClaim: () => void
-}
-
-export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
+export const ClaimsPendingList = ({
+  fallbackImageUrl,
   showClaim,
-}) => {
+}: BaseClaimsPendingListProps) => {
   const { t } = useTranslation()
   const { connected } = useWalletManager()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  const { governanceTokenInfo, governanceTokenMarketingInfo } =
+    useGovernanceTokenInfo()
   const {
     stakingContractConfig,
     blockHeight,
     claims,
     refreshClaims,
     sumClaimsAvailable,
-  } = useStakingInfo(DAO_ADDRESS, {
+  } = useStakingInfo({
     fetchClaims: true,
   })
-
-  const { imageUrl } = useDAOInfoContext()
 
   if (
     !governanceTokenInfo ||
@@ -42,11 +34,20 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
     return null
   }
 
+  const tokenImageUrl =
+    !!governanceTokenMarketingInfo?.logo &&
+    governanceTokenMarketingInfo.logo !== 'embedded' &&
+    'url' in governanceTokenMarketingInfo.logo
+      ? governanceTokenMarketingInfo.logo.url
+      : undefined
+
   return (
     <>
       <div className="flex flex-row justify-between items-center">
         <p className="text-lg title-text">
-          {t('title.unstakingNamedTokens', { name: governanceTokenInfo.name })}
+          {t('title.unstakingNamedTokens', {
+            name: '$' + governanceTokenInfo.symbol,
+          })}
         </p>
 
         {!!sumClaimsAvailable && (
@@ -63,7 +64,7 @@ export const ClaimsList: FunctionComponent<ClaimsListProps> = ({
               key={idx}
               blockHeight={blockHeight}
               claim={claim}
-              iconURI={imageUrl ?? DEFAULT_IMAGE_URL}
+              iconURI={tokenImageUrl ?? fallbackImageUrl}
               onClaimAvailable={refreshClaims}
               tokenInfo={governanceTokenInfo}
             />

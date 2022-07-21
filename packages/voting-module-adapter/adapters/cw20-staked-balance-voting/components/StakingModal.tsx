@@ -1,8 +1,9 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { PropsWithChildren, ReactNode, useState } from 'react'
+import { PropsWithChildren, useState } from 'react'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
+import { ConnectWalletButton } from '@dao-dao/common'
 import {
   Cw20BaseHooks,
   StakeCw20Hooks,
@@ -22,18 +23,11 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
+import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { BaseStakingModalProps } from '../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
-interface StakingModalProps {
-  mode: StakingMode
-  onClose: () => void
-  connectWalletButton: ReactNode
-  loader: ReactNode
-  coreAddress: string
-  deposit?: string
-}
-
-export const StakingModal = (props: StakingModalProps) => (
+export const StakingModal = (props: BaseStakingModalProps) => (
   <SuspenseLoader fallback={<StakingModalLoader {...props} />}>
     <InnerStakingModal {...props} />
   </SuspenseLoader>
@@ -42,10 +36,8 @@ export const StakingModal = (props: StakingModalProps) => (
 const InnerStakingModal = ({
   mode,
   onClose,
-  connectWalletButton,
-  coreAddress,
   deposit,
-}: StakingModalProps) => {
+}: BaseStakingModalProps) => {
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
 
@@ -56,7 +48,7 @@ const InnerStakingModal = ({
     governanceTokenAddress,
     governanceTokenInfo,
     walletBalance: unstakedBalance,
-  } = useGovernanceTokenInfo(coreAddress, {
+  } = useGovernanceTokenInfo({
     fetchWalletBalance: true,
   })
   const {
@@ -67,7 +59,7 @@ const InnerStakingModal = ({
     sumClaimsAvailable,
     walletStakedValue,
     refreshClaims,
-  } = useStakingInfo(coreAddress, {
+  } = useStakingInfo({
     fetchClaims: true,
     fetchWalletStakedValue: true,
   })
@@ -298,7 +290,7 @@ const InnerStakingModal = ({
   if (!connected) {
     return (
       <StakingModalWrapper onClose={onClose}>
-        {connectWalletButton}
+        <ConnectWalletButton />
       </StakingModalWrapper>
     )
   }
@@ -337,7 +329,7 @@ const InnerStakingModal = ({
 }
 
 type StakingModalWrapperProps = PropsWithChildren<
-  Pick<StakingModalProps, 'onClose'>
+  Pick<BaseStakingModalProps, 'onClose'>
 >
 
 export const StakingModalWrapper = ({
@@ -350,5 +342,13 @@ export const StakingModalWrapper = ({
 )
 
 const StakingModalLoader = (
-  props: Omit<StakingModalWrapperProps, 'children'> & { loader: ReactNode }
-) => <StakingModalWrapper {...props}>{props.loader}</StakingModalWrapper>
+  props: Omit<StakingModalWrapperProps, 'children'>
+) => {
+  const { Loader } = useVotingModuleAdapterOptions()
+
+  return (
+    <StakingModalWrapper {...props}>
+      <Loader />
+    </StakingModalWrapper>
+  )
+}

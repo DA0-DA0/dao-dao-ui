@@ -3,14 +3,14 @@ import type { NextPage } from 'next'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { Pie } from '@dao-dao/icons'
-import { useGovernanceTokenInfo } from '@dao-dao/state'
 import { StakingMode, SuspenseLoader, TooltipIcon } from '@dao-dao/ui'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   BalanceCardLoader,
-  ClaimsList,
   Loader,
   PageWrapper,
   PageWrapperProps,
@@ -19,20 +19,24 @@ import {
   StakedBalanceCard,
   UnstakedBalanceCard,
 } from '@/components'
-import { makeGetStaticProps } from '@/server/makeGetStaticProps'
-import { DAO_ADDRESS } from '@/util'
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 const InnerStake = () => {
   const { t } = useTranslation()
+  const { imageUrl } = useDaoInfoContext()
   const { connected } = useWallet()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  const {
+    hooks: { useGovernanceTokenInfo },
+    components: { StakingModal, ClaimsPendingList },
+  } = useVotingModuleAdapter()
+
+  const governanceTokenInfo = useGovernanceTokenInfo?.().governanceTokenInfo
+  if (!governanceTokenInfo || !StakingModal || !ClaimsPendingList) {
+    throw new Error(t('error.loadingData'))
+  }
 
   // Set to default mode to display, and undefined to hide.
   const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
-
-  if (!governanceTokenInfo) {
-    throw new Error('Failed to load page data.')
-  }
 
   return (
     <>
@@ -101,7 +105,8 @@ const InnerStake = () => {
                 </>
               }
             >
-              <ClaimsList
+              <ClaimsPendingList
+                fallbackImageUrl={imageUrl ?? DEFAULT_IMAGE_URL}
                 showClaim={() => setShowStakingMode(StakingMode.Claim)}
               />
             </SuspenseLoader>
@@ -113,9 +118,6 @@ const InnerStake = () => {
 
       {showStakingMode !== undefined && (
         <StakingModal
-          connectWalletButton={<ConnectWalletButton />}
-          coreAddress={DAO_ADDRESS}
-          loader={<Loader />}
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
@@ -135,4 +137,6 @@ const MembersOrStakePage: NextPage<PageWrapperProps> = ({
 
 export default MembersOrStakePage
 
-export const getStaticProps = makeGetStaticProps()
+export const getStaticProps = makeGetDaoStaticProps({
+  coreAddress: DAO_ADDRESS,
+})

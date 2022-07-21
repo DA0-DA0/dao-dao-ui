@@ -1,24 +1,26 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { ArrowUpIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { Dollar, Staked } from '@dao-dao/icons'
-import { HeroStat } from '@dao-dao/ui'
+import { HeroStat, HeroStatLink } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   humanReadableDuration,
 } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseVoteHeroStatsProps } from '../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
-export const VoteHeroStats = ({ loader }: BaseVoteHeroStatsProps) =>
-  loader ? <InnerVoteHeroStats /> : <InnerVoteHeroStatsContent />
+export const VoteHeroStats = ({ loader, ...props }: BaseVoteHeroStatsProps) =>
+  loader ? (
+    <InnerVoteHeroStats {...props} />
+  ) : (
+    <InnerVoteHeroStatsContent {...props} />
+  )
 
-export interface InnerVoteHeroStatsProps {
+export interface InnerVoteHeroStatsProps
+  extends Pick<BaseVoteHeroStatsProps, 'additionalStats'> {
   data?: {
     denom: string
     totalSupply: number
@@ -27,7 +29,10 @@ export interface InnerVoteHeroStatsProps {
   }
 }
 
-export const InnerVoteHeroStats = ({ data }: InnerVoteHeroStatsProps) => {
+export const InnerVoteHeroStats = ({
+  data,
+  additionalStats,
+}: InnerVoteHeroStatsProps) => {
   const { t } = useTranslation()
 
   return (
@@ -47,20 +52,26 @@ export const InnerVoteHeroStats = ({ data }: InnerVoteHeroStatsProps) => {
         title={t('title.unstakingPeriod') + ':'}
         value={data?.unstakingDuration}
       />
+      {additionalStats?.map(({ link, ...props }, index) =>
+        link ? (
+          <HeroStatLink key={index} {...props} />
+        ) : (
+          <HeroStat key={index} {...props} />
+        )
+      )}
     </div>
   )
 }
 
-const InnerVoteHeroStatsContent = () => {
+interface InnerVoteHeroStatsContentProps
+  extends Pick<BaseVoteHeroStatsProps, 'additionalStats'> {}
+
+const InnerVoteHeroStatsContent = (props: InnerVoteHeroStatsContentProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-  const { stakingContractConfig, totalStakedValue } = useStakingInfo(
-    coreAddress,
-    {
-      fetchTotalStakedValue: true,
-    }
-  )
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { stakingContractConfig, totalStakedValue } = useStakingInfo({
+    fetchTotalStakedValue: true,
+  })
 
   if (
     !governanceTokenInfo ||
@@ -84,6 +95,7 @@ const InnerVoteHeroStatsContent = () => {
           ? humanReadableDuration(stakingContractConfig.unstaking_duration)
           : 'None',
       }}
+      {...props}
     />
   )
 }

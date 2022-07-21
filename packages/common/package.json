@@ -12,6 +12,7 @@
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@dao-dao/voting-module-adapter": "*",
+    "@dao-dao/proposal-module-adapter": "*",
     "react": "18.1.0",
     "recoil": "^0.7.2"
   },

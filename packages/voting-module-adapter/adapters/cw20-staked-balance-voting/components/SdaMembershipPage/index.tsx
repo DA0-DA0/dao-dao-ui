@@ -8,8 +8,8 @@ import { SuspenseLoader } from '@dao-dao/ui'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { BaseSdaMembershipPageProps } from '../../../../types'
 import { useGovernanceTokenInfo } from '../../hooks'
+import { ClaimsPendingList } from '../ClaimsPendingList'
 import { Membership } from '../Membership'
-import { ClaimsPendingList } from './ClaimsPendingList'
 import { StakeHeader, StakeHeaderLoader } from './StakeHeader'
 
 export const SdaMembershipPage = ({
@@ -18,7 +18,7 @@ export const SdaMembershipPage = ({
 }: BaseSdaMembershipPageProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
   const daoConfig = useRecoilValue(
     CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
   )

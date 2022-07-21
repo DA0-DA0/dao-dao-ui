@@ -13,7 +13,12 @@ const registeredAdapters: ProposalModuleAdapter[] = []
 // and avoids cyclic dependencies when enums or other objects are stored in
 // the adapter object.
 export const registerAdapters = async (adapters: ProposalModuleAdapter[]) =>
-  registeredAdapters.push(...adapters)
+  registeredAdapters.push(
+    // Avoid duplicates.
+    ...adapters.filter(
+      ({ id }) => !registeredAdapters.some((registered) => registered.id === id)
+    )
+  )
 
 export const matchAdapter = (contractName: string) =>
   registeredAdapters.find(({ matcher }) => matcher(contractName))

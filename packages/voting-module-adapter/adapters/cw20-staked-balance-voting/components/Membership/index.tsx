@@ -19,7 +19,6 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from '../StakingModal'
 import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
@@ -61,18 +60,17 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
   ClaimsPendingList = DefaultClaimsPendingList,
 }) => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
   const {
     governanceTokenInfo,
     governanceTokenMarketingInfo,
     walletBalance: unstakedGovTokenBalance,
-  } = useGovernanceTokenInfo(coreAddress, { fetchWalletBalance: true })
+  } = useGovernanceTokenInfo({ fetchWalletBalance: true })
   const {
     walletStakedValue,
     totalStakedValue,
     blockHeight,
     sumClaimsAvailable,
-  } = useStakingInfo(coreAddress, {
+  } = useStakingInfo({
     fetchWalletStakedValue: true,
     fetchTotalStakedValue: true,
     fetchClaims: true,
@@ -240,9 +238,6 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
 
       {showStakingMode !== undefined && (
         <StakingModal
-          connectWalletButton={<ConnectWalletButton />}
-          coreAddress={coreAddress}
-          loader={<Loader />}
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />

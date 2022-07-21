@@ -1,7 +1,7 @@
-import { ComponentProps } from 'react'
+import { ComponentType } from 'react'
 
 export interface HeroStatProps {
-  Icon: (props: ComponentProps<any>) => JSX.Element
+  Icon: ComponentType<{ className?: string }>
   title: string
   value: string | undefined
 }
@@ -13,5 +13,19 @@ export const HeroStat = ({ Icon, title, value }: HeroStatProps) => (
       <span className="secondary-text">{title}</span>
       <span className="link-text">{value ?? '...'}</span>
     </div>
+  </div>
+)
+
+export const HeroStatLink = ({ Icon, title, value }: HeroStatProps) => (
+  <div className="flex gap-3 items-center">
+    <Icon className="h-3 secondary-text" />
+    <a
+      className="link-text"
+      href={value ?? '#'}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {title}
+    </a>
   </div>
 )

@@ -3,6 +3,7 @@ import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
+  ClaimsPendingList,
   DaoInfoAdditionalAddresses,
   DaoInfoVotingConfiguration,
   DaoThinInfoContent,
@@ -12,9 +13,10 @@ import {
   ProposalDetailsVotingPowerWidget,
   ProposalModuleAddresses,
   SdaMembershipPage,
+  StakingModal,
   VoteHeroStats,
 } from './components'
-import { useActions, useGovernanceTokenInfoIfExists } from './hooks'
+import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
 
 export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   id: CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
@@ -38,8 +40,9 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
 
     // Hooks
     hooks: {
-      useGovernanceTokenInfoIfExists,
       useActions,
+      useGovernanceTokenInfo,
+      useStakingInfo,
     },
 
     // Components
@@ -56,7 +59,10 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
       ProposalModuleAddresses,
       VoteHeroStats,
       SdaMembershipPage,
+
       ProposalDetailsVotingPowerWidget,
+      StakingModal,
+      ClaimsPendingList,
     },
   }),
 }

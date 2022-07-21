@@ -4,13 +4,8 @@ import {
   PropsWithChildren,
   createContext,
   useContext,
-  useEffect,
 } from 'react'
 
-import {
-  CwProposalSingleAdapter,
-  registerAdapters as registerProposalModuleAdapters,
-} from '@dao-dao/proposal-module-adapter'
 import {
   DaoNotFound,
   Loader as DefaultLoader,
@@ -21,12 +16,7 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
-import {
-  Cw20StakedBalanceVotingAdapter,
-  Cw4VotingAdapter,
-  VotingModuleAdapterProvider,
-  registerAdapters as registerVotingModuleAdapters,
-} from '@dao-dao/voting-module-adapter'
+import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 export interface DaoInfo {
   coreAddress: string
@@ -74,56 +64,70 @@ export const DaoPageWrapper = ({
   Logo = DefaultLogo,
   Loader = DefaultLoader,
   PageLoader = DefaultPageLoader,
-}: DaoPageWrapperProps) => {
-  // Register adapters once on page load.
-  useEffect(() => {
-    // Register voting module adapters.
-    registerVotingModuleAdapters([
-      Cw4VotingAdapter,
-      Cw20StakedBalanceVotingAdapter,
-    ])
+}: DaoPageWrapperProps) => (
+  <>
+    <NextSeo
+      description={description}
+      openGraph={{
+        ...(!!url && { url }),
+        type: 'website',
+        title,
+        description,
+        ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+      }}
+      title={title}
+    />
 
-    // Register proposal module adapters.
-    registerProposalModuleAdapters([
-      CwProposalSingleAdapter,
-      // When adding new proposal module adapters here, don't forget to register
-      // in `makeGetDaoStaticProps` as well.
-    ])
-  }, [])
+    <SuspenseLoader fallback={<PageLoader />}>
+      {info ? (
+        <DaoInfoContext.Provider value={info}>
+          <VotingModuleAdapterProvider
+            contractName={info.votingModuleContractName}
+            options={{
+              votingModuleAddress: info.votingModuleAddress,
+              coreAddress: info.coreAddress,
+              Logo,
+              Loader,
+            }}
+          >
+            {children}
+          </VotingModuleAdapterProvider>
+        </DaoInfoContext.Provider>
+      ) : (
+        <DaoNotFound />
+      )}
+    </SuspenseLoader>
+  </>
+)
 
-  return (
-    <>
-      <NextSeo
-        description={description}
-        openGraph={{
-          ...(!!url && { url }),
-          type: 'website',
-          title,
-          description,
-          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
-        }}
-        title={title}
-      />
-
-      <SuspenseLoader fallback={<PageLoader />}>
-        {info ? (
-          <DaoInfoContext.Provider value={info}>
-            <VotingModuleAdapterProvider
-              contractName={info.votingModuleContractName}
-              options={{
-                votingModuleAddress: info.votingModuleAddress,
-                coreAddress: info.coreAddress,
-                Logo,
-                Loader,
-              }}
-            >
-              {children}
-            </VotingModuleAdapterProvider>
-          </DaoInfoContext.Provider>
-        ) : (
-          <DaoNotFound />
-        )}
-      </SuspenseLoader>
-    </>
-  )
+export interface SdaDaoPageWrapperProps extends DaoPageWrapperProps {
+  Header: ComponentType
+  Loader: ComponentType<LoaderProps>
+  PageLoader: ComponentType<LoaderProps>
+  Logo: ComponentType<LogoProps>
 }
+
+export const SdaDaoPageWrapper = ({
+  Header,
+  Loader,
+  PageLoader,
+  Logo,
+  children,
+  ...props
+}: SdaDaoPageWrapperProps) => (
+  <DaoPageWrapper
+    {...props}
+    Loader={Loader}
+    Logo={Logo}
+    PageLoader={PageLoader}
+  >
+    <Header />
+
+    <SuspenseLoader
+      // Make room at top for Header.
+      fallback={<PageLoader className="!min-h-[calc(100vh-5rem)]" />}
+    >
+      <div className="p-4 mx-auto sm:p-8 max-w-page">{children}</div>
+    </SuspenseLoader>
+  </DaoPageWrapper>
+)

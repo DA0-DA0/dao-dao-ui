@@ -330,7 +330,7 @@ export const ProposalDetails = ({
         </>
       )}
 
-      <p className="mt-6 mb-4 link-text">{t('title.vote')}</p>
+      <p className="mt-6 mb-4 font-mono caption-text">{t('title.vote')}</p>
 
       {connected ? (
         <>

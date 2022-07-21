@@ -38,11 +38,9 @@ const useDefaults: UseDefaults<MintData> = (): MintData => {
   }
 }
 
-const useTransformToCosmos: UseTransformToCosmos<MintData> = (
-  coreAddress: string
-) => {
+const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
   const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo(coreAddress)
+    useGovernanceTokenInfo()
 
   if (!governanceTokenAddress || !governanceTokenInfo) {
     throw new Error('Failed to load data.')
@@ -64,11 +62,10 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = (
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
-  msg: Record<string, any>,
-  coreAddress: string
+  msg: Record<string, any>
 ) => {
   const { governanceTokenAddress, governanceTokenInfo } =
-    useGovernanceTokenInfo(coreAddress)
+    useGovernanceTokenInfo()
 
   if (!governanceTokenAddress || !governanceTokenInfo) {
     throw new Error('Failed to load data.')
@@ -103,7 +100,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
 }
 
 const InnerMintComponent: ActionComponent = (props) => {
-  const { governanceTokenInfo } = useGovernanceTokenInfo(props.coreAddress)
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
 
   return (
     <StatelessMintComponent

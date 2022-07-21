@@ -21,10 +21,10 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
     CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
   )
   const { governanceTokenInfo, treasuryBalance: treasuryBalance } =
-    useGovernanceTokenInfo(coreAddress, {
+    useGovernanceTokenInfo({
       fetchTreasuryBalance: true,
     })
-  const { totalStakedValue } = useStakingInfo(coreAddress, {
+  const { totalStakedValue } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
 

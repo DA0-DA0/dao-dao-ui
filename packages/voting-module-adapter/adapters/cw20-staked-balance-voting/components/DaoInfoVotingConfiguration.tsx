@@ -4,13 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { GovInfoListItem } from '@dao-dao/ui'
 import { humanReadableDuration } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useStakingInfo } from '../hooks'
 
 export const DaoInfoVotingConfiguration = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { stakingContractConfig } = useStakingInfo(coreAddress)
+  const { stakingContractConfig } = useStakingInfo()
 
   if (!stakingContractConfig) {
     throw new Error(t('error.loadingData'))

@@ -1,7 +1,7 @@
 import { PlusIcon } from '@heroicons/react/outline'
 import { GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FunctionComponent, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalList, useDaoInfoContext } from '@dao-dao/common'
@@ -19,7 +19,7 @@ import {
 } from '@/components'
 import { DAO_ADDRESS } from '@/util'
 
-const InnerVote: FunctionComponent = () => {
+const InnerVote = () => {
   const { t } = useTranslation()
   const router = useRouter()
 

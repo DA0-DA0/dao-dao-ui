@@ -2,15 +2,13 @@ import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboard } from '@dao-dao/ui'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from '../hooks'
 
 export const ProposalModuleAddresses = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { stakingContractAddress, governanceTokenAddress } =
-    useGovernanceTokenInfo(coreAddress)
+    useGovernanceTokenInfo()
 
   if (!stakingContractAddress || !governanceTokenAddress) {
     throw new Error(t('error.loadingData'))

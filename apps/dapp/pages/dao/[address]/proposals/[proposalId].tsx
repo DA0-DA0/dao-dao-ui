@@ -53,13 +53,11 @@ const InnerProposal = () => {
   const { proposalId } = useProposalModuleAdapterOptions()
 
   const {
-    hooks: {
-      useGovernanceTokenInfoIfExists,
-      useActions: useVotingModuleActions,
-    },
+    hooks: { useGovernanceTokenInfo, useActions: useVotingModuleActions },
     components: { ProposalDetailsVotingPowerWidget },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useGovernanceTokenInfoIfExists()?.decimals ?? 0
+  const voteConversionDecimals =
+    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
 
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()

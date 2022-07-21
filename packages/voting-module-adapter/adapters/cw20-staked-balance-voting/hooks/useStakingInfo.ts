@@ -10,43 +10,18 @@ import {
   refreshWalletBalancesIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
-import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
 import { claimAvailable } from '@dao-dao/utils'
 
-interface UseStakingOptions {
-  fetchClaims?: boolean
-  fetchTotalStakedValue?: boolean
-  fetchWalletStakedValue?: boolean
-}
+import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { UseStakingInfoOptions, UseStakingInfoResponse } from '../../../types'
 
-interface UseStakingResponse {
-  stakingContractAddress?: string
-  stakingContractConfig?: GetConfigResponse
-  refreshStakingContractBalances: () => void
-  refreshTotals: () => void
-  /// Optional
-  // Claims
-  blockHeight?: number
-  refreshClaims?: () => void
-  claims?: Claim[]
-  claimsPending?: Claim[]
-  claimsAvailable?: Claim[]
-  sumClaimsAvailable?: number
-  // Total staked value
-  totalStakedValue?: number
-  // Wallet staked value
-  walletStakedValue?: number
-}
-
-export const useStakingInfo = (
-  coreAddress: string,
-  {
-    fetchClaims = false,
-    fetchTotalStakedValue = false,
-    fetchWalletStakedValue = false,
-  }: UseStakingOptions = {}
-): UseStakingResponse => {
+export const useStakingInfo = ({
+  fetchClaims = false,
+  fetchTotalStakedValue = false,
+  fetchWalletStakedValue = false,
+}: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { address: walletAddress } = useWallet()
+  const { coreAddress } = useVotingModuleAdapterOptions()
   const { votingModuleAddress } = useVotingModule(coreAddress)
 
   const stakingContractAddress = useRecoilValue(

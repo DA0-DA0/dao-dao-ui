@@ -4,15 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@dao-dao/ui'
 import { useAddToken } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from '../hooks'
 
 export const DaoTreasuryFooter = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const addToken = useAddToken()
-  const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
+  const { governanceTokenAddress } = useGovernanceTokenInfo()
   if (!governanceTokenAddress) {
     throw new Error(t('error.loadingData'))
   }

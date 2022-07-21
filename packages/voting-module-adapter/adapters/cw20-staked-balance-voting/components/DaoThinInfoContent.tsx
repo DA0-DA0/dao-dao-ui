@@ -18,7 +18,7 @@ export const DaoThinInfoContent = ({
 }: BaseDaoThinInfoContentProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
+  const { governanceTokenInfo } = useGovernanceTokenInfo()
   const { totalVotingWeight } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })

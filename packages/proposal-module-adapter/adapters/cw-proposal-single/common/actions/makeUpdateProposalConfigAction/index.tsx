@@ -185,13 +185,10 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   }
 
   const {
-    hooks: { useGovernanceTokenInfoIfExists },
+    hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useGovernanceTokenInfoIfExists()?.decimals ?? 0
-
-  if (!proposalModuleAddress || !proposalModuleConfig) {
-    throw new Error('Failed to get proposal module.')
-  }
+  const voteConversionDecimals =
+    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
 
   return useCallback(
     (data: UpdateProposalConfigData) =>
@@ -244,9 +241,10 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
 
 const Component: ActionComponent = (props) => {
   const {
-    hooks: { useGovernanceTokenInfoIfExists },
+    hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const governanceTokenSymbol = useGovernanceTokenInfoIfExists()?.symbol
+  const governanceTokenSymbol =
+    useGovernanceTokenInfo?.().governanceTokenInfo?.symbol
 
   return (
     <UpdateProposalConfigComponent
@@ -260,9 +258,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>
 ) => {
   const {
-    hooks: { useGovernanceTokenInfoIfExists },
+    hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals = useGovernanceTokenInfoIfExists()?.decimals ?? 0
+  const voteConversionDecimals =
+    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
 
   return useMemo(() => {
     if (

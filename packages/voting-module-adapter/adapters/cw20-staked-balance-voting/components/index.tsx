@@ -1,3 +1,4 @@
+export * from './ClaimsPendingList'
 export * from './DaoInfoAdditionalAddresses'
 export * from './DaoInfoVotingConfiguration'
 export * from './DaoThinInfoContent'
