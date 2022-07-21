@@ -303,14 +303,20 @@ voting module code together.
 Registration should occur once, before any rendering. In a Next.js app, sticking
 this code in a `useEffect` in `_app.tsx` should work just fine.
 
-```typescript
+```typescriptreact
 import {
   Cw20StakedBalanceVotingAdapter,
   Cw4VotingAdapter,
   registerAdapters,
 } from '@dao-dao/voting-module-adapter'
 
-registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
+const App = () => {
+  useEffect(() => {
+    registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
+  }, [])
+
+  ...
+}
 ```
 
 ### **2. Wrap the app**
@@ -402,7 +408,7 @@ const MyVotingModuleAdapter: VotingModuleAdapter = {
   id: 'my_voting_module_adapter_id',
   matcher: (contractName: string) => contractName === 'my_voting_module',
 
-  loader: () => ({
+  load: (options) => ({
     fields: {
       ...
     },

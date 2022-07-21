@@ -28,38 +28,44 @@ to, unsurprisingly, confusing and unreadable code.
 Registration should occur once, before any rendering. In a Next.js app, sticking
 this code in a `useEffect` in `_app.tsx` should work just fine.
 
-```typescript
+```typescriptreact
 import {
   CwProposalMultipleAdapter,
   CwProposalSingleAdapter,
   registerAdapters,
 } from '@dao-dao/proposal-module-adapter'
 
-registerAdapters([CwProposalSingleAdapter, CwProposalMultipleAdapter])
+const App = () => {
+  useEffect(() => {
+    registerAdapters([CwProposalSingleAdapter, CwProposalMultipleAdapter])
+  }, [])
+
+  ...
+}
 ```
 
 ### **2. Wrap the app**
 
 Add the `ProposalModuleAdapterProvider` to your app, likely at a high enough
-level to encompass the entire app or entire pages. At this point, you must
-already know the available proposal modules and proposal ID of the relevant
-proposal so that the correct adapter can be chosen and its interface passed down
-to descendant components. You will also need to pass some options, like the
-contract address of the DAO's `cw-core` contract, as well as some commonly used
-components, like `Logo` and `Loader`.
+level to encompass entire pages. At this point, you must already know the
+available proposal modules and proposal ID of the relevant proposal so that the
+correct adapter can be chosen and its interface passed down to descendant
+components. You will also need to pass some options, like the contract address
+of the DAO's `cw-core` contract, as well as some commonly used components, like
+`Logo` and `Loader`.
 
 ```typescriptreact
 import { ProposalModuleAdapterProvider } from '@dao-dao/proposal-module-adapter'
 
 const App = () => (
   <ProposalModuleAdapterProvider
-    proposalModules={proposalModules}
-    proposalId={proposalId}
-    options={{
+    initialOptions={{
       coreAddress,
       Logo,
       Loader,
     }}
+    proposalModules={proposalModules}
+    proposalId={proposalId}
   >
     {children}
   </ProposalModuleAdapterProvider>
@@ -70,7 +76,7 @@ In the `@dao-dao/dapp` Next.js app, `proposalModules` and `coreAddress` are
 fetched via `getStaticProps` and passed to a common page wrapper component, on
 each page, and `proposalId` is extracted from the URL parameters.
 
-### **3. Use the hook**
+### **3. Use the hooks**
 
 Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the proposal module adapter interface.
@@ -92,6 +98,57 @@ const ProposalVoteInfo = () => {
 }
 ```
 
+We can also use `matchAndLoadCommon` to get the common objects that don't depend
+on a specific `proposalId`, but are specific to a proposal module. These are
+things such as a hook to list all proposals, used in `ProposaList`, or
+components to display configuration, such as the voting configuration.
+
+Here is an example that displays a dropdown of proposal modules and lets you
+view the voting configuration for each one:
+
+```typescriptreact
+import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
+
+export const DaoInfo = () => {
+  const { coreAddress, proposalModules } = useDaoInfoContext()
+
+  const components = useMemo(
+    () =>
+      proposalModules.map((proposalModule) => ({
+        DaoInfoVotingConfiguration: matchAndLoadCommon(proposalModule, {
+          coreAddress,
+          Loader,
+          Logo,
+        }).components.DaoInfoVotingConfiguration,
+        proposalModule,
+      })),
+    [coreAddress, proposalModules]
+  )
+
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const { DaoInfoVotingConfiguration } = components[selectedIndex]
+
+  return (
+    <div>
+      <select
+        onChange={({ target: { value } }) =>
+          setSelectedIndex(Number(value))
+        }
+        value={selectedIndex}
+      >
+        {components.map(({ proposalModule }, index) => (
+          <option key={proposalModule.address} value={index}>
+            {proposalModule.contractName}
+          </option>
+        ))}
+      </select>
+
+      <DaoInfoVotingConfiguration />
+    </div>
+  )
+}
+```
+
 ## Writing an adapter
 
 It's very easy to write an adapter, especially because TypeScript will tell you
@@ -108,12 +165,22 @@ const MyProposalModuleAdapter: ProposalModuleAdapter = {
   id: 'my_proposal_module_adapter_id',
   matcher: (contractName: string) => contractName === 'my_proposal_module_adapter_id',
 
-  loader: () => ({
+  loadCommon: (options) => ({
     hooks: {
       ...
     },
 
-    ui: {
+    components: {
+      ...
+    },
+  }),
+
+  load: (options) => ({
+    hooks: {
+      ...
+    },
+
+    components: {
       ...
     },
   }),
