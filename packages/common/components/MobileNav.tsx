@@ -1,6 +1,10 @@
 import { XIcon } from '@heroicons/react/outline'
 import { MenuIcon } from '@heroicons/react/solid'
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
+import {
+  IWalletManagerContext,
+  WalletConnectionStatus,
+  useWalletManager,
+} from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { ComponentType, Dispatch, SVGProps, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,12 +31,24 @@ export const MobileNav = ({
   WalletAvatarIcon,
 }: MobileNavProps) => {
   const { t } = useTranslation()
+
+  // If on error page, these hooks will throw errors. Ignore since Header is
+  // rendered on error pages.
+  let walletManager: IWalletManagerContext | undefined
+  let walletBalance = 0
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    walletManager = useWalletManager()
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { walletBalance: _walletBalance } = useWalletBalance()
+    walletBalance = _walletBalance ?? 0
+  } catch {}
+
   const {
     status,
-    connectedWallet: { name: walletName } = {},
+    connectedWallet: { name: walletName } = { name: undefined },
     disconnect,
-  } = useWalletManager()
-  const { walletBalance = 0 } = useWalletBalance()
+  } = walletManager ?? {}
 
   return (
     <>

@@ -41,9 +41,7 @@ export const Header = () => {
     status,
     connectedWallet: { name: walletName } = { name: undefined },
     disconnect,
-  } = walletManager ?? {
-    connectedWallet: {},
-  }
+  } = walletManager ?? {}
 
   // If on error page, this hook will throw an error. Ignore it since Header is
   // rendered on error pages.
