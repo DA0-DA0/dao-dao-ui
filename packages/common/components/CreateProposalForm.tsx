@@ -236,11 +236,6 @@ export const CreateProposalForm = ({
         loadedDraft
       )
 
-      // save to local storage
-      let newDrafts = draftIds.filter(({ id }) => id !== activeDraftId)
-      newDrafts.push({ id: activeDraftId, address: coreAddress })
-      newDrafts.sort((a, b) => b.id.localeCompare(a.id))
-      setDraftIds(newDrafts)
       setMyDraft({
         title: proposalTitle,
         description: proposalDescription,

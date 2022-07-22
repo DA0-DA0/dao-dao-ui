@@ -45,6 +45,15 @@ export const activeDraftSelector = selector<LocalFormProposalData | undefined>({
   set: ({ set, get }, newValue) => {
     const draftId = get(activeDraftIdAtom)
     console.log('set activeDraftSelector', draftId)
+    if (draftId === undefined || newValue === undefined) {
+      return
+    }
     set(draftByIdAtom(draftId), newValue)
+    const draftIds = get(draftsAtom)
+    // save to local storage
+    let newDrafts = draftIds.filter(({ id }) => id !== draftId)
+    newDrafts.push({ id: draftId, address: newValue.daoAddress })
+    newDrafts.sort((a, b) => b.id.localeCompare(a.id))
+    set(draftsAtom, newDrafts)
   },
 })

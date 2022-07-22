@@ -1,7 +1,8 @@
 import { PencilIcon, XCircleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FC } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   activeDraftIdAtom,
@@ -56,7 +57,8 @@ export const NavListDraftItem: FC<NavListDraftItemProps> = ({
 export const DraftsNavList: FC = () => {
   const drafts = useRecoilValue(navDraftsSelector)
   const setDraftIds = useSetRecoilState(draftsAtom)
-  const activeDraftId = useRecoilValue(activeDraftIdAtom)
+  const [activeDraftId, setActiveDraftId] = useRecoilState(activeDraftIdAtom)
+  const router = useRouter()
   return (
     <ul className="list-none">
       {drafts?.map(({ label, id, title, address }) => (
@@ -70,6 +72,14 @@ export const DraftsNavList: FC = () => {
             setDraftIds((prevDrafts) =>
               prevDrafts.filter(({ id: oldId }) => id !== oldId)
             )
+            if (id === activeDraftId) {
+              router.replace(
+                { query: { ...router.query, draftId: '' } },
+                undefined,
+                {}
+              )
+              setActiveDraftId(undefined)
+            }
           }}
           title={title}
         />
