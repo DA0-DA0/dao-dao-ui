@@ -1,16 +1,17 @@
 import { SearchIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { ComponentProps, FC } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 export interface SearchBarProps extends Omit<ComponentProps<'input'>, 'type'> {
   containerClassName?: string
+  hideIcon?: boolean
 }
 
 export const SearchBar: FC<SearchBarProps> = ({
   containerClassName,
   className,
+  hideIcon,
   ...props
 }) => {
   const { t } = useTranslation()
@@ -22,7 +23,7 @@ export const SearchBar: FC<SearchBarProps> = ({
         containerClassName
       )}
     >
-      <SearchIcon className="w-5" />
+      {!hideIcon && <SearchIcon className="w-5" />}
 
       <input
         autoFocus

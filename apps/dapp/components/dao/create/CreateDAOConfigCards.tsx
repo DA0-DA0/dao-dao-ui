@@ -6,8 +6,8 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   FormSwitchCard,
   InputThemedText,
@@ -22,14 +22,16 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { CreateDAOConfigCard } from './CreateDAOConfigCard'
 import {
   DEFAULT_NEW_DAO_THRESHOLD_PERCENT,
-  DefaultNewDAO,
+  DurationUnits,
   DurationUnitsValues,
   GovernanceTokenType,
   NewDAO,
+  generateDefaultNewDAO,
 } from '@/atoms'
+
+import { CreateDAOConfigCard } from './CreateDAOConfigCard'
 
 export interface CreateDAOConfigCardSharedProps {
   newDAO: NewDAO
@@ -126,6 +128,7 @@ interface CreateDAOQuorumCardProps extends CreateDAOConfigCardSharedProps {
 
 export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   newDAO: {
+    structure,
     advancedVotingConfig: {
       thresholdQuorum: { quorumEnabled, quorum },
     },
@@ -214,8 +217,8 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
                     value === 'majority'
                       ? 'majority'
                       : // value === '%'
-                        DefaultNewDAO.advancedVotingConfig.thresholdQuorum
-                          .quorum
+                        generateDefaultNewDAO(structure).advancedVotingConfig
+                          .thresholdQuorum.quorum
                   )
                 }
                 validation={[validateRequired]}
@@ -270,7 +273,16 @@ export const CreateDAOVotingDurationCard: FC<
             register={register}
             sizing="sm"
             step={1}
-            validation={[validatePositive, validateRequired]}
+            validation={[
+              validatePositive,
+              validateRequired,
+              // Prevent < 60 second voting duration since DAOs will brick
+              // if the voting duration is shorter tahn 1 block.
+              (value) =>
+                votingDuration.units !== DurationUnits.Seconds ||
+                value >= 60 ||
+                'Cannot be shorter than 60 seconds.',
+            ]}
           />
 
           <SelectInput
@@ -489,7 +501,7 @@ export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
       accentColor="#1cae121a"
       description={t('form.allowRevotingDescription')}
       error={errors?.advancedVotingConfig?.allowRevoting}
-      image={<Emoji label="recycle" symbol="♻️" />}
+      image={<Emoji label={t('emoji.recycle')} symbol="♻️" />}
       title={t('form.allowRevotingTitle')}
     >
       {readOnly ? (

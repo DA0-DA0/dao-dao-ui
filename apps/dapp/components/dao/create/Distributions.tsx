@@ -9,8 +9,8 @@ import {
 import clsx from 'clsx'
 import { FC, useMemo } from 'react'
 import { Bar, Pie } from 'react-chartjs-2'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { useNamedThemeColor } from '@dao-dao/ui'
 
 import { GovernanceTokenType, NewDAO, NewDAOStructure } from '@/atoms'

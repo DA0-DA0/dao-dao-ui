@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 
 import { formatPercentOf100 } from './format'

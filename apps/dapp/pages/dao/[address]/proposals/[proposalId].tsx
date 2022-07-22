@@ -1,17 +1,18 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
+import { FormProposalData } from '@dao-dao/actions'
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   CwProposalSingleHooks,
   CwProposalSingleQueryClient,
   useGovernanceTokenInfo,
   useProposalInfo,
   useProposalModule,
-  useWallet,
 } from '@dao-dao/state'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -72,8 +73,33 @@ const InnerProposal: FC = () => {
     contractAddress: proposalModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
+  const closeProposal = CwProposalSingleHooks.useClose({
+    contractAddress: proposalModuleAddress ?? '',
+    sender: walletAddress ?? '',
+  })
 
   const { markPinnedProposalIdDone } = usePinnedDAOs()
+
+  const denomConversionDecimals = useMemo(
+    () =>
+      votingModuleType === VotingModuleType.Cw4Voting
+        ? 0
+        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
+          governanceTokenInfo
+        ? governanceTokenInfo.decimals
+        : undefined,
+    [votingModuleType, governanceTokenInfo]
+  )
+
+  if (
+    !proposalResponse ||
+    !proposalModuleConfig ||
+    denomConversionDecimals === undefined ||
+    proposalId === undefined
+  ) {
+    throw new Error(t('error.loadingData'))
+  }
+
   const onVote = useCallback(
     async (vote: Vote) => {
       if (!connected || proposalId === undefined) return
@@ -133,25 +159,52 @@ const InnerProposal: FC = () => {
     setLoading(false)
   }, [connected, proposalId, executeProposal, refreshProposalAndAll, t])
 
-  const denomConversionDecimals = useMemo(
-    () =>
-      votingModuleType === VotingModuleType.Cw4Voting
-        ? 0
-        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-          governanceTokenInfo
-        ? governanceTokenInfo.decimals
-        : undefined,
-    [votingModuleType, governanceTokenInfo]
-  )
+  const onClose = useCallback(async () => {
+    if (!connected || proposalId === undefined) return
 
-  if (
-    !proposalResponse ||
-    !proposalModuleConfig ||
-    denomConversionDecimals === undefined ||
-    proposalId === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
+    setLoading(true)
+
+    try {
+      await closeProposal({
+        proposalId,
+      })
+
+      refreshProposalAndAll()
+      toast.success(t('success.proposalClosed'))
+    } catch (err) {
+      console.error(err)
+      toast.error(
+        cleanChainError(err instanceof Error ? err.message : `${err}`)
+      )
+    }
+
+    setLoading(false)
+  }, [connected, proposalId, closeProposal, refreshProposalAndAll, t])
+
+  const onDuplicate = useCallback(
+    (actionData) => {
+      const duplicateFormData: FormProposalData = {
+        title: proposalResponse.proposal.title,
+        description: proposalResponse.proposal.description,
+        actionData: actionData.map(({ action: { key }, data }) => ({
+          key,
+          data,
+        })),
+      }
+
+      router.push(
+        `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
+          JSON.stringify(duplicateFormData)
+        )}`
+      )
+    },
+    [
+      coreAddress,
+      proposalResponse.proposal.description,
+      proposalResponse.proposal.title,
+      router,
+    ]
+  )
 
   const memberWhenProposalCreated =
     !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
@@ -186,6 +239,8 @@ const InnerProposal: FC = () => {
             connected={connected}
             coreAddress={coreAddress}
             loading={loading}
+            onClose={onClose}
+            onDuplicate={onDuplicate}
             onExecute={onExecute}
             onVote={onVote}
             proposal={proposalResponse.proposal}
@@ -281,9 +336,7 @@ export default ProposalPage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
 export const getStaticProps: GetStaticProps<DAOPageWrapperProps> =

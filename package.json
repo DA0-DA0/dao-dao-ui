@@ -6,13 +6,14 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "turbo run build --continue",
+    "dev": "yarn dapp dev",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
-    "sda": "yarn workspace @dao-dao/sda",
+    "raw-sda": "yarn workspace @dao-dao/raw-sda",
+    "sda-base": "yarn workspace @dao-dao/sda-base",
     "icons": "yarn workspace @dao-dao/icons",
     "state": "yarn workspace @dao-dao/state",
     "ui": "yarn workspace @dao-dao/ui",

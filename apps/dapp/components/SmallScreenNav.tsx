@@ -2,15 +2,16 @@ import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import { Logo, SuspenseLoader } from '@dao-dao/ui'
+
+import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 
 import { Loader } from './Loader'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
-import { pinnedAddressesAtom, searchVisibleAtom } from '@/atoms'
 
 interface SmallScreenNavProps {
   className?: string
@@ -19,7 +20,7 @@ interface SmallScreenNavProps {
 export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
-  const setSearchVisible = useSetRecoilState(searchVisibleAtom)
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
 
   return (
@@ -49,7 +50,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
         <div>
           <button
             className="flex gap-2 items-center p-2 w-full bg-primary rounded-lg link-text"
-            onClick={() => setSearchVisible(true)}
+            onClick={() => setCommandModalVisible(true)}
           >
             <SearchIcon className="w-4 h-4" /> {t('title.search')}
           </button>

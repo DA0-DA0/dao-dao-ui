@@ -1,18 +1,14 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { GasPrice } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import {
   CHAIN_RPC_ENDPOINT,
-  GAS_PRICE,
   NATIVE_DENOM,
   cosmWasmClientRouter,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
 import { refreshWalletBalancesIdAtom } from '../atoms/refresh'
-import { walletOfflineSignerSelector } from './wallet'
 
 export const stargateClientSelector = selector({
   key: 'stargateClient',
@@ -24,27 +20,6 @@ export const cosmWasmClientSelector = selector({
   get: () => cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
 })
 
-export const signingCosmWasmClientSelector = selector({
-  key: 'signingCosmWasmClient',
-  get: async ({ get }) => {
-    const signer = get(walletOfflineSignerSelector)
-    if (!signer) return
-
-    const client = await SigningCosmWasmClient.connectWithSigner(
-      CHAIN_RPC_ENDPOINT,
-      signer,
-      {
-        gasPrice: GasPrice.fromString(GAS_PRICE),
-      }
-    )
-    // Load client ID before becoming immutable.
-    await client.getChainId()
-
-    return client
-  },
-  dangerouslyAllowMutability: true,
-})
-
 export const blockHeightSelector = selector({
   key: 'blockHeight',
   get: async ({ get }) => {
@@ -53,6 +28,22 @@ export const blockHeightSelector = selector({
 
     return await client.getHeight()
   },
+})
+
+export const blockHeightTimestampSelector = selectorFamily<
+  Date | undefined,
+  number
+>({
+  key: 'blockHeightTimestamp',
+  get:
+    (blockHeight) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      if (!client) return
+
+      const block = await client.getBlock(blockHeight)
+      return new Date(Date.parse(block.header.time))
+    },
 })
 
 export const nativeBalancesSelector = selectorFamily({

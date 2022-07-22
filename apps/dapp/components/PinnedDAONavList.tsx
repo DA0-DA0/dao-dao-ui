@@ -1,9 +1,9 @@
 import { LibraryIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { CwCoreSelectors } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
 import { Logo } from '@dao-dao/ui'

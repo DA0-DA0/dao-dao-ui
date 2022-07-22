@@ -8,8 +8,9 @@ import {
   useState,
 } from 'react'
 
-import { FeaturedCard } from './FeaturedCard'
 import { featuredDaos } from '@/util'
+
+import { FeaturedCard } from './FeaturedCard'
 
 export { FeaturedCard }
 

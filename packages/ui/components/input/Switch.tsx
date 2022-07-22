@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import { FC } from 'react'
 import { Path, PathValue, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 interface SwitchProps {
   enabled: boolean

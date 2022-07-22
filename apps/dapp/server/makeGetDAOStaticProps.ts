@@ -2,9 +2,8 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 // eslint-disable-next-line regex/invalid
 import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps } from 'next'
+import { i18n } from 'next-i18next'
 
-// eslint-disable-next-line regex/invalid
-import { _probablyDontUseThisI18n } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Cw20StakedBalanceVotingQueryClient,
@@ -17,6 +16,7 @@ import { InfoResponse as Cw4VotingInfoResponse } from '@dao-dao/state/clients/cw
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  LEGACY_URL_PREFIX,
   VotingModuleType,
   cosmWasmClientRouter,
   parseVotingModuleContractName,
@@ -35,7 +35,7 @@ const serverT = (
 ) =>
   // Ok to use here as long as it's used after `serverSideTranslations`.
   // eslint-disable-next-line regex/invalid
-  _probablyDontUseThisI18n?.t(key, defaultValue, options) ??
+  i18n?.t(key, defaultValue, options) ??
   'internal error: translations not loaded'
 
 interface GetStaticPropsMakerProps {
@@ -174,6 +174,22 @@ export const makeGetDAOStaticProps: GetStaticPropsMaker =
         revalidate: 1,
       }
     } catch (error) {
+      // Redirect legacy DAOs (legacy multisigs redirected in
+      // next.config.js redirects list).
+      if (
+        error instanceof Error &&
+        error.message.includes(
+          'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `config`'
+        )
+      ) {
+        return {
+          redirect: {
+            destination: LEGACY_URL_PREFIX + `/dao/${address}`,
+            permanent: false,
+          },
+        }
+      }
+
       console.error(error)
 
       if (

@@ -1,12 +1,13 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CreateProposalForm } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -14,7 +15,8 @@ import {
   blockHeightSelector,
   refreshProposalsIdAtom,
   useProposalModule,
-  useWallet,
+  useVotingModule,
+  useWalletBalance,
 } from '@dao-dao/state'
 import { Breadcrumbs, CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
 import { cleanChainError, expirationExpired } from '@dao-dao/utils'
@@ -41,21 +43,37 @@ const InnerProposalCreate = () => {
     cw4GroupAddress,
     governanceTokenAddress,
   } = useDAOInfoContext()
-  const { address: walletAddress, connected, refreshBalances } = useWallet()
+  const { address: walletAddress, connected } = useWallet()
+  const { refreshBalances } = useWalletBalance()
   const [loading, setLoading] = useState(false)
 
+  const blockHeight = useRecoilValue(blockHeightSelector)
+  const { isMember } = useVotingModule(coreAddress)
   const { proposalModuleAddress, proposalModuleConfig } =
     useProposalModule(coreAddress)
 
-  const currentAllowance = useRecoilValue(
-    proposalModuleConfig?.deposit_info && proposalModuleAddress && walletAddress
+  if (
+    !proposalModuleAddress ||
+    !proposalModuleConfig ||
+    blockHeight === undefined
+  ) {
+    throw new Error('Failed to load info.')
+  }
+
+  const requiredProposalDeposit = Number(
+    proposalModuleConfig.deposit_info?.deposit ?? '0'
+  )
+
+  const allowanceResponse = useRecoilValue(
+    proposalModuleConfig.deposit_info &&
+      requiredProposalDeposit &&
+      walletAddress
       ? Cw20BaseSelectors.allowanceSelector({
           contractAddress: proposalModuleConfig.deposit_info.token,
           params: [{ owner: walletAddress, spender: proposalModuleAddress }],
         })
       : constSelector(undefined)
   )
-  const blockHeight = useRecoilValue(blockHeightSelector)
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const refreshProposals = useCallback(
@@ -64,11 +82,11 @@ const InnerProposalCreate = () => {
   )
 
   const increaseAllowance = Cw20BaseHooks.useIncreaseAllowance({
-    contractAddress: proposalModuleConfig?.deposit_info?.token ?? '',
+    contractAddress: proposalModuleConfig.deposit_info?.token ?? '',
     sender: walletAddress ?? '',
   })
   const createProposal = CwProposalSingleHooks.usePropose({
-    contractAddress: proposalModuleAddress ?? '',
+    contractAddress: proposalModuleAddress,
     sender: walletAddress ?? '',
   })
 
@@ -76,45 +94,47 @@ const InnerProposalCreate = () => {
     async (d: any) => {
       if (
         !connected ||
-        !blockHeight ||
         !proposalModuleConfig ||
-        (proposalModuleConfig.deposit_info && !currentAllowance) ||
-        !proposalModuleAddress
-      )
-        throw new Error('Required info not loaded to create a proposal.')
-
-      const proposalDeposit = Number(
-        proposalModuleConfig?.deposit_info?.deposit ?? '0'
-      )
+        !proposalModuleAddress ||
+        // If required deposit, ensure the allowance and unstaked balance
+        // data have loaded.
+        (requiredProposalDeposit && !allowanceResponse)
+      ) {
+        throw new Error('Failed to load required info to create a proposal.')
+      }
 
       setLoading(true)
 
-      // Request to increase the contract's allowance for the proposal deposit if needed.
-      if (
-        proposalDeposit &&
-        currentAllowance &&
-        // Ensure current allowance is insufficient or expired.
-        (expirationExpired(currentAllowance.expires, blockHeight) ||
-          Number(currentAllowance.allowance) < proposalDeposit)
-      ) {
-        try {
-          await increaseAllowance({
-            amount: (
-              proposalDeposit - Number(currentAllowance.allowance)
-            ).toString(),
-            spender: proposalModuleAddress,
-          })
+      // Typecheck for TS; should've already been verified above.
+      if (requiredProposalDeposit && allowanceResponse) {
+        const remainingAllowanceNeeded =
+          requiredProposalDeposit -
+          // If allowance expired, none.
+          (expirationExpired(allowanceResponse.expires, blockHeight)
+            ? 0
+            : Number(allowanceResponse.allowance))
 
-          // Allowances will not update until the next block has been added.
-          setTimeout(refreshBalances, 6500)
-        } catch (err) {
-          console.error(err)
-          toast.error(
-            `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
-              err instanceof Error ? err.message : `${err}`
-            )})`
-          )
-          return
+        // Request to increase the contract's allowance for the proposal
+        // deposit if needed.
+        if (remainingAllowanceNeeded) {
+          try {
+            await increaseAllowance({
+              amount: remainingAllowanceNeeded.toString(),
+              spender: proposalModuleAddress,
+            })
+
+            // Allowances will not update until the next block has been added.
+            setTimeout(refreshBalances, 6500)
+          } catch (err) {
+            console.error(err)
+            toast.error(
+              `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
+                err instanceof Error ? err.message : `${err}`
+              )})`
+            )
+            setLoading(false)
+            return
+          }
         }
       }
 
@@ -143,10 +163,11 @@ const InnerProposalCreate = () => {
     },
     [
       connected,
-      blockHeight,
       proposalModuleConfig,
-      currentAllowance,
       proposalModuleAddress,
+      requiredProposalDeposit,
+      allowanceResponse,
+      blockHeight,
       increaseAllowance,
       refreshBalances,
       createProposal,
@@ -174,6 +195,12 @@ const InnerProposalCreate = () => {
           <h2 className="mb-6 font-medium lg:hidden">
             {t('title.createAProposal')}
           </h2>
+
+          {!isMember && (
+            <p className="-mt-4 mb-6 text-error caption-text">
+              {t('error.mustBeMemberToCreateProposal')}
+            </p>
+          )}
 
           <SuspenseLoader fallback={<Loader />}>
             <CreateProposalForm
@@ -256,9 +283,7 @@ export default ProposalCreatePage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
 export const getStaticProps = makeGetDAOStaticProps(({ t }) => ({

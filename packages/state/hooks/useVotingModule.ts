@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { VotingModuleType, parseVotingModuleContractName } from '@dao-dao/utils'
@@ -11,7 +12,6 @@ import {
 } from '../recoil/selectors/clients/cw-core'
 import { listAllMembersSelector } from '../recoil/selectors/clients/cw4-group'
 import { groupContractSelector } from '../recoil/selectors/clients/cw4-voting'
-import { useWallet } from './useWallet'
 
 interface UseVotingModuleOptions {
   fetchCw4VotingMembers?: boolean
@@ -23,7 +23,8 @@ interface UseVotingModuleResponse {
   votingModuleType: VotingModuleType | undefined
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
-  cw4VotingMembers?: Member[]
+  cw4GroupAddress: string | undefined
+  cw4VotingMembers: Member[] | undefined
 }
 
 export const useVotingModule = (
@@ -68,10 +69,11 @@ export const useVotingModule = (
   const totalVotingWeight = !isNaN(Number(_totalVotingWeight))
     ? Number(_totalVotingWeight)
     : undefined
-  const isMember = walletVotingWeight ? walletVotingWeight > 0 : undefined
+  const isMember =
+    walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
 
-  const cw4VotingGroupAddress = useRecoilValue(
-    fetchCw4VotingMembers && votingModuleAddress
+  const cw4GroupAddress = useRecoilValue(
+    votingModuleAddress && votingModuleType === VotingModuleType.Cw4Voting
       ? groupContractSelector({
           contractAddress: votingModuleAddress,
           params: [],
@@ -80,9 +82,9 @@ export const useVotingModule = (
   )
 
   let cw4VotingMembers = useRecoilValue(
-    cw4VotingGroupAddress
+    cw4GroupAddress && fetchCw4VotingMembers
       ? listAllMembersSelector({
-          contractAddress: cw4VotingGroupAddress,
+          contractAddress: cw4GroupAddress,
         })
       : constSelector(undefined)
   )?.members
@@ -93,6 +95,7 @@ export const useVotingModule = (
     votingModuleType,
     walletVotingWeight,
     totalVotingWeight,
+    cw4GroupAddress,
     cw4VotingMembers,
   }
 }

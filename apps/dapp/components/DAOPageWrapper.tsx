@@ -7,10 +7,11 @@ import {
   useContext,
 } from 'react'
 
-import { Loader, SuspenseLoader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
 import { DAONotFound } from './dao/NotFound'
+import { PageLoader } from './Loader'
 
 interface DAOInfo {
   coreAddress: string
@@ -24,6 +25,7 @@ interface DAOInfo {
   description: string
   imageUrl: string | null
 }
+
 const DefaultDAOInfo: DAOInfo = {
   coreAddress: '',
   votingModuleType: VotingModuleType.Cw4Voting,
@@ -76,7 +78,7 @@ export const DAOPageWrapper: FunctionComponent<DAOPageWrapperProps> = ({
         title={title}
       />
 
-      <SuspenseLoader fallback={<Loader />}>
+      <SuspenseLoader fallback={<PageLoader />}>
         {/* We only know a DAO is not found if info is still empty when
          * when the page is ready and not a fallback page.
          */}

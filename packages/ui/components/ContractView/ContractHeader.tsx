@@ -1,6 +1,7 @@
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
+import { MarkdownPreview } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 import { Logo } from '../Logo'
@@ -40,7 +41,10 @@ export const ContractHeader: FC<ContractHeaderProps> = ({
         {established && <EstablishedDate date={established} />}
       </div>
       <div className="mt-2 mb-4">
-        <p className="whitespace-pre-wrap body-text">{description}</p>
+        <MarkdownPreview
+          className="whitespace-pre-wrap body-text"
+          markdown={description}
+        />
       </div>
     </div>
   )

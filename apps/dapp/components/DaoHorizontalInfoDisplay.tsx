@@ -1,7 +1,7 @@
 import { LibraryIcon, UsersIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Pencil } from '@dao-dao/icons'
 import {
   useGovernanceTokenInfo,

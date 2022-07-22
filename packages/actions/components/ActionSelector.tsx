@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Modal, SearchBar } from '@dao-dao/ui'
 import { VotingModuleType } from '@dao-dao/utils'
 
@@ -106,7 +106,7 @@ export const ActionSelector: FC<ActionSelectorProps> = ({
       />
 
       <ul
-        className="flex overflow-y-auto flex-col grow gap-3 list-none"
+        className="flex overflow-y-auto flex-col grow gap-3 pr-2 list-none styled-scrollbar"
         ref={actionsListRef}
       >
         {filteredActions.map((action, index) => (

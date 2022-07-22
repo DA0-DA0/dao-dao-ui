@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { useCallback as CwProposalSingleHooks } from 'react'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
+import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { CwProposalSingleClient as ExecuteClient } from '../../clients/cw-proposal-single'
@@ -17,13 +18,13 @@ const wrapExecuteHook =
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 
-    return CwProposalSingleHooks(
+    return useCallback(
       (...args: Parameters<ExecuteClient[T]>) => {
         if (client)
           return (
             client[fn] as (
               ...args: Parameters<ExecuteClient[T]>
-            ) => ReturnType<ExecuteClient[T]>
+            ) => Promise<ExecuteResult>
           )(...args)
         throw new Error('Client undefined.')
       },

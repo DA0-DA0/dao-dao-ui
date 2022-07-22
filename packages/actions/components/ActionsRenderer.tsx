@@ -1,25 +1,16 @@
-import { FC, FunctionComponent } from 'react'
+import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
+import { FC, FunctionComponent, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CosmosMessageDisplay, SuspenseLoader } from '@dao-dao/ui'
-import { VotingModuleType } from '@dao-dao/utils'
+import { SuspenseLoader } from '@dao-dao/ui'
 
-import {
-  Action,
-  ActionCardLoader,
-  ActionKey,
-  DecodeCosmosMsgMatch,
-  useActionsForVotingModuleType,
-} from '..'
-
-type Message = { [key: string]: any }
+import { ActionAndData, ActionCardLoader } from '..'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   coreAddress: string
-  votingModuleType: VotingModuleType
   proposalId: number
-  messages: Message[]
+  actionData: ActionAndData[]
 }
 
 export const ActionsRenderer: FC<ActionsRendererProps> = (props) => (
@@ -30,30 +21,11 @@ export const ActionsRenderer: FC<ActionsRendererProps> = (props) => (
 
 const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
   coreAddress,
-  votingModuleType,
   proposalId,
-  messages,
+  actionData,
 }) => {
-  // Call relevant action hooks in the same order every time.
-  const actions = useActionsForVotingModuleType(votingModuleType)
-  const messagesWithActions = messages.map((message) => ({
-    message,
-    // Note: Ensure custom is the last message action since it will match
-    // most proposals and we return the first successful message match.
-    ...((actions
-      .map((action) => ({
-        action,
-        ...action.useDecodedCosmosMsg(message, coreAddress),
-      }))
-      .find(({ match }) => match) as
-      | (DecodeCosmosMsgMatch & {
-          action: Action
-        })
-      | undefined) ?? { action: undefined, match: false, data: undefined }),
-  }))
-
   const formMethods = useForm({
-    defaultValues: messagesWithActions.reduce(
+    defaultValues: actionData.reduce(
       (acc, { data }, index) => ({
         ...acc,
         [index.toString()]: data,
@@ -62,17 +34,23 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
     ),
   })
 
+  const [copied, setCopied] = useState<number>()
+  // Unset copied after 2 seconds.
+  useEffect(() => {
+    const timeout = setTimeout(() => setCopied(undefined), 2000)
+    // Cleanup on unmount.
+    return () => clearTimeout(timeout)
+  }, [copied])
+
   return (
     <FormProvider {...formMethods}>
       <form>
-        {messagesWithActions.map((messageWithAction, index) =>
-          messageWithAction.action ? (
-            <messageWithAction.action.Component
-              key={index}
-              allActionsWithData={messagesWithActions.map(
-                ({ action, data }) => ({
-                  // Custom matches everything, so this should not matter.
-                  key: action?.key ?? ActionKey.Custom,
+        {actionData.map(({ action: { Component } }, index) => (
+          <div key={index} className="group relative" id={`A${index + 1}`}>
+            <Component
+              allActionsWithData={actionData.map(
+                ({ action: { key }, data }) => ({
+                  key,
                   data,
                 })
               )}
@@ -82,14 +60,25 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
               proposalId={proposalId}
               readOnly
             />
-          ) : (
-            // If could not load required state or did not match action,
-            // display raw message.
-            <CosmosMessageDisplay
-              value={JSON.stringify(messageWithAction.message, undefined, 2)}
-            />
-          )
-        )}
+
+            <button
+              className="absolute top-1 -right-5 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => {
+                const url = new URL(window.location.href)
+                url.hash = '#' + `A${index + 1}`
+                navigator.clipboard.writeText(url.href)
+                setCopied(index)
+              }}
+              type="button"
+            >
+              {copied === index ? (
+                <CheckCircleIcon className="w-4" />
+              ) : (
+                <LinkIcon className="w-4" />
+              )}
+            </button>
+          </div>
+        ))}
       </form>
     </FormProvider>
   )

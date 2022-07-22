@@ -1,8 +1,8 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { Trans, useTranslation } from '@dao-dao/i18n'
 import {
   FormSwitch,
   InputErrorMessage,
@@ -10,6 +10,7 @@ import {
   NumberInput,
   SelectInput,
   Tooltip,
+  Trans,
 } from '@dao-dao/ui'
 import {
   validatePercent,
@@ -39,6 +40,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const thresholdType = watch(getFieldName('thresholdType'))
   const quorumType = watch(getFieldName('quorumType'))
   const proposalDuration = watch(getFieldName('proposalDuration'))
+  const proposalDurationUnits = watch(getFieldName('proposalDurationUnits'))
   const thresholdPercentage = watch(getFieldName('thresholdPercentage'))
   const quorumPercentage = watch(getFieldName('quorumPercentage'))
 
@@ -277,7 +279,17 @@ export const UpdateProposalConfigComponent: ActionComponent<
               ]}
               register={register}
               sizing="sm"
-              validation={[validatePositive, validateRequired]}
+              step={1}
+              validation={[
+                validatePositive,
+                validateRequired,
+                // Prevent < 60 second voting duration since DAOs will
+                // brick if the voting duration is shorter tahn 1 block.
+                (value) =>
+                  proposalDurationUnits !== 'seconds' ||
+                  value >= 60 ||
+                  'Cannot be shorter than 60 seconds.',
+              ]}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>
@@ -302,6 +314,23 @@ export const UpdateProposalConfigComponent: ActionComponent<
               {t('unit.seconds', { count: proposalDuration })}
             </option>
           </SelectInput>
+        </div>
+      </div>
+      <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border border-default md:gap-1">
+        <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
+          <h3 className="primary-text">
+            <Emoji label={t('emoji.recycle')} symbol="♻️" />{' '}
+            {t('form.allowRevotingTitle')}
+          </h3>
+          <p className="secondary-text">{t('form.allowRevotingDescription')}</p>
+        </div>
+        <div className="flex grow justify-center items-center">
+          <FormSwitch
+            fieldName={getFieldName('allowRevoting')}
+            readOnly={readOnly}
+            setValue={setValue}
+            watch={watch}
+          />
         </div>
       </div>
     </ActionCard>

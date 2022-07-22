@@ -1,15 +1,16 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
+import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
-import { useTranslation } from '@dao-dao/i18n'
 import {
   stakingLoadingAtom,
   useGovernanceTokenInfo,
   useStakingInfo,
-  useWallet,
+  useWalletBalance,
 } from '@dao-dao/state'
 import {
   BalanceCard,
@@ -45,7 +46,8 @@ const InnerCw20StakedBalanceVotingPowerDisplay: FC = () => {
     fetchClaims: true,
   })
 
-  const { connected, refreshBalances } = useWallet()
+  const { connected } = useWalletManager()
+  const { refreshBalances } = useWalletBalance()
 
   // Set to a StakingMode to display modal.
   const [showStakingMode, setShowStakingMode] = useState<StakingMode>()

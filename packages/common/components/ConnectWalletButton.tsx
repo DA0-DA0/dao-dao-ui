@@ -1,21 +1,16 @@
+import { useWalletManager } from '@noahsaso/cosmodal'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import { FC } from 'react'
 
-import { useWallet } from '@dao-dao/state'
+import { useWalletBalance } from '@dao-dao/state'
 import {
   MobileWalletConnect,
   NoMobileWallet,
   WalletConnect,
   WalletConnectProps,
 } from '@dao-dao/ui'
-import {
-  CHAIN_ID,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
-} from '@dao-dao/utils'
+import { CHAIN_ID, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 export interface ConnectWalletButtonProps extends Partial<WalletConnectProps> {
   mobile?: boolean
@@ -29,17 +24,11 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
   const {
     connect,
     disconnect,
-    address,
-    name,
-    nativeBalance,
-    isMobileWeb,
+    isEmbeddedKeplrMobileWeb,
     connected,
-  } = useWallet()
-
-  const walletBalanceHuman = convertMicroDenomToDenomWithDecimals(
-    nativeBalance ?? 0,
-    NATIVE_DECIMALS
-  )
+    connectedWallet: { name, address } = {},
+  } = useWalletManager()
+  const { walletBalance = 0 } = useWalletBalance()
 
   if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {
     return <NoMobileWallet />
@@ -50,9 +39,9 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
       className={clsx('w-full', className)}
       connected={connected}
       onConnect={connect}
-      onDisconnect={isMobileWeb ? undefined : disconnect}
+      onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
-      walletBalance={walletBalanceHuman}
+      walletBalance={walletBalance}
       walletBalanceDenom={nativeTokenLabel(NATIVE_DENOM)}
       walletName={name}
       {...props}
@@ -62,9 +51,9 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
       className={clsx('w-full', className)}
       connected={connected}
       onConnect={connect}
-      onDisconnect={isMobileWeb ? undefined : disconnect}
+      onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
       walletAddress={address ?? ''}
-      walletBalance={walletBalanceHuman}
+      walletBalance={walletBalance}
       walletBalanceDenom={nativeTokenLabel(NATIVE_DENOM)}
       walletName={name}
       {...props}

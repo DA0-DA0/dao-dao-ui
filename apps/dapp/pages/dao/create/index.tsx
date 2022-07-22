@@ -1,8 +1,8 @@
 import Emoji from 'a11y-react-emoji'
 import { GetStaticProps, NextPage } from 'next'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ImageSelector,
@@ -15,7 +15,7 @@ import { validateRequired } from '@dao-dao/utils'
 
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
   NewDAOStructure,
 } from '@/atoms'
 import {
@@ -32,6 +32,8 @@ const CreateDAOPage: NextPage = () => {
     watch,
     errors,
     watchedNewDAO,
+    defaultNewDAOForStructure,
+    getValues,
     setValue,
     formWrapperProps,
     tiersAreUntouched,
@@ -41,6 +43,18 @@ const CreateDAOPage: NextPage = () => {
     (structure: NewDAOStructure) => {
       setValue('structure', structure)
 
+      // If a DAOs structure is changed to the token model and allow revoting is
+      // set to default, allow revoting.
+      if (
+        getValues('advancedVotingConfig.allowRevoting') ===
+        defaultNewDAOForStructure.advancedVotingConfig.allowRevoting
+      ) {
+        setValue(
+          'advancedVotingConfig.allowRevoting',
+          structure === NewDAOStructure.GovernanceToken
+        )
+      }
+
       // Swap initial tier voting power to the default for the structure
       // if the tiers have not yet been edited.
       if (tiersAreUntouched) {
@@ -48,11 +62,16 @@ const CreateDAOPage: NextPage = () => {
           'tiers.0.weight',
           structure === NewDAOStructure.GovernanceToken
             ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-            : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT
+            : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
         )
       }
     },
-    [setValue, tiersAreUntouched]
+    [
+      defaultNewDAOForStructure.advancedVotingConfig.allowRevoting,
+      getValues,
+      setValue,
+      tiersAreUntouched,
+    ]
   )
 
   return (

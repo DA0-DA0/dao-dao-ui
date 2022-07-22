@@ -1,6 +1,5 @@
 import { FC, useCallback } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '../Button'
 import { Tooltip } from '../Tooltip'
@@ -23,7 +22,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
   return (
     <Tooltip label={error}>
       <Button disabled={!!error} loading={loading} onClick={onClick}>
-        <span className="capitalize">{stakingModeButtonLabel(mode)}</span>
+        {stakingModeButtonLabel(mode)}
       </Button>
     </Tooltip>
   )

@@ -7,8 +7,8 @@ import {
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Wallet } from '@dao-dao/icons'
 
 export interface AddressInputProps<

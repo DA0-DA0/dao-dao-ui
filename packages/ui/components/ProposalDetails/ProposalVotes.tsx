@@ -1,8 +1,8 @@
 import { CheckIcon, DownloadIcon, XIcon } from '@heroicons/react/outline'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Abstain } from '@dao-dao/icons'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { Button } from '@dao-dao/ui'

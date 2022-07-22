@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { Dollar, Pie } from '@dao-dao/icons'
 
 export interface ProposalsInfoProps {
@@ -33,7 +33,7 @@ export const ProposalsInfo: FC<ProposalsInfoProps> = ({ data, className }) => {
       <ProposalInfoStat
         Icon={Dollar}
         title={t('title.refundFailedProposals')}
-        value={data ? (data.depositRefunds ? 'Yes' : 'No') : ''}
+        value={data ? (data.depositRefunds ? t('info.yes') : t('info.no')) : ''}
       />
       <ProposalInfoStat
         Icon={Pie}

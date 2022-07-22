@@ -1,4 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -11,10 +12,10 @@ import {
   useForm,
 } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
-import { CwAdminFactoryHooks, CwCoreHooks, useWallet } from '@dao-dao/state'
+import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -41,17 +42,18 @@ import {
   validateCwProposalSingleInstantiateMsg,
 } from '@dao-dao/utils'
 
-import { usePinnedDAOs } from './usePinnedDAOs'
 import {
-  DefaultNewDAO,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAO,
   NewDAOStructure,
   convertDurationWithUnitsToDuration,
   convertThresholdValueToPercentageThreshold,
+  generateDefaultNewDAO,
   newDAOAtom,
 } from '@/atoms'
+
+import { usePinnedDAOs } from './usePinnedDAOs'
 
 export type ValidateDAOFormPage = (
   newDAO: NewDAO,
@@ -78,7 +80,8 @@ export enum CreateDAOSubmitLabel {
 export const useCreateDAOForm = (pageIndex: number) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { connected, address: walletAddress, refreshBalances } = useWallet()
+  const { connected, address: walletAddress } = useWallet()
+  const { refreshBalances } = useWalletBalance()
   const createDAOFormPages = useCreateDAOFormPages()
 
   const currentPage = useMemo(
@@ -99,18 +102,24 @@ export const useCreateDAOForm = (pageIndex: number) => {
     setValue,
     setError,
     clearErrors,
+    // Set defaultValues to the atom's state so that we preserve the form on
+    // page change. The atom gets updated on button submit / page navigation.
   } = useForm({ defaultValues: newDAO })
 
   const watchedNewDAO = watch()
+  const defaultNewDAOForStructure = useMemo(
+    () => generateDefaultNewDAO(watchedNewDAO.structure),
+    [watchedNewDAO.structure]
+  )
   // Determine if tiers have been edited yet.
   const tiersAreUntouched =
-    watchedNewDAO.tiers.length === DefaultNewDAO.tiers.length &&
-    (watchedNewDAO.tiers[0].name === DefaultNewDAO.tiers[0].name ||
+    watchedNewDAO.tiers.length === defaultNewDAOForStructure.tiers.length &&
+    (watchedNewDAO.tiers[0].name === defaultNewDAOForStructure.tiers[0].name ||
       watchedNewDAO.tiers[0].name === t('form.defaultTierName')) &&
     watchedNewDAO.tiers[0].members.length ===
-      DefaultNewDAO.tiers[0].members.length &&
+      defaultNewDAOForStructure.tiers[0].members.length &&
     (watchedNewDAO.tiers[0].members[0].address ===
-      DefaultNewDAO.tiers[0].members[0].address ||
+      defaultNewDAOForStructure.tiers[0].members[0].address ||
       watchedNewDAO.tiers[0].members[0].address === walletAddress)
 
   const invalidPages = createDAOFormPages.map(
@@ -143,11 +152,6 @@ export const useCreateDAOForm = (pageIndex: number) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     invalidPages.map(String).join(),
   ])
-
-  const instantiate = CwCoreHooks.useInstantiate({
-    codeId: CWCORE_CODE_ID,
-    sender: walletAddress ?? '',
-  })
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
@@ -231,7 +235,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
       pageIndex,
       connected,
       createDAOWithFactory,
-      instantiate,
+      instantiateWithFactory,
       refreshBalances,
       setPinned,
     ]
@@ -289,6 +293,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
 
   return {
     watchedNewDAO,
+    defaultNewDAOForStructure,
     tiersAreUntouched,
     errors,
     register,

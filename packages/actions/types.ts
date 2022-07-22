@@ -10,11 +10,19 @@ export enum ActionKey {
   Stake = 'stake',
   AddToken = 'addToken',
   RemoveToken = 'removeToken',
+  ManageMembers = 'manageMembers',
   UpdateInfo = 'updateInfo',
   UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',
   Execute = 'execute',
+  Migrate = 'migrate',
+  UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
+}
+
+export interface ActionAndData {
+  action: Action
+  data: any
 }
 
 export interface ActionKeyAndData {

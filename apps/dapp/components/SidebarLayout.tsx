@@ -1,24 +1,27 @@
+import { useWalletManager } from '@noahsaso/cosmodal'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { WalletProvider, mountedInBrowserAtom, useWallet } from '@dao-dao/state'
-import { KeplrNotInstalledError, SITE_TITLE, usePlatform } from '@dao-dao/utils'
+import { WalletProvider } from '@dao-dao/common'
+import { mountedInBrowserAtom } from '@dao-dao/state'
+import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
+
+import {
+  betaWarningAcceptedAtom,
+  commandModalVisibleAtom,
+  installWarningVisibleAtom,
+  noKeplrAccountAtom,
+} from '@/atoms'
 
 import { BetaWarningModal } from './BetaWarning'
+import { CommandModal } from './CommandModal'
 import { InstallKeplr } from './InstallKeplr'
 import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
-import { SearchModal } from './SearchModal'
-import {
-  betaWarningAcceptedAtom,
-  installWarningVisibleAtom,
-  noKeplrAccountAtom,
-  searchVisibleAtom,
-} from '@/atoms'
 
-export const SidebarLayoutInner: FC = ({ children }) => {
+const SidebarLayoutInner: FC = ({ children }) => {
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
@@ -28,37 +31,41 @@ export const SidebarLayoutInner: FC = ({ children }) => {
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
-  const [searchVisible, setSearchVisible] = useRecoilState(searchVisibleAtom)
+  const [commandModalVisible, setCommandModalVisible] = useRecoilState(
+    commandModalVisibleAtom
+  )
 
   //! WALLET CONNECTION ERROR MODALS
-  const { connectionError } = useWallet()
+  const { error } = useWalletManager()
   useEffect(() => {
-    setInstallWarningVisible(connectionError instanceof KeplrNotInstalledError)
-    setNoKeplrAccount(
-      connectionError instanceof Error &&
-        connectionError.message === "key doesn't exist"
+    setInstallWarningVisible(
+      error instanceof Error &&
+        error.message === 'Failed to retrieve wallet client.'
     )
-  }, [connectionError, setInstallWarningVisible, setNoKeplrAccount])
+    setNoKeplrAccount(
+      error instanceof Error && error.message === "key doesn't exist"
+    )
+  }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
-  //! SEARCH MODAL
+  //! COMMAND MODAL
   // Hide modal when we nav away.
   useEffect(() => {
-    setSearchVisible(false)
-  }, [router.asPath, setSearchVisible])
+    setCommandModalVisible(false)
+  }, [router.asPath, setCommandModalVisible])
   // Detect if Mac for checking keypress.
   const { isMac } = usePlatform()
-  // Handle keypress to show search or not.
+  // Handle keypress to show command modal or not.
   const handleKeyPress = useCallback(
     (event) => {
       if ((!isMac && event.ctrlKey) || event.metaKey) {
         if (event.key === 'k') {
-          setSearchVisible((showSearch) => !showSearch)
+          setCommandModalVisible((showSearch) => !showSearch)
         }
       }
     },
-    [isMac, setSearchVisible]
+    [isMac, setCommandModalVisible]
   )
-  // Setup search keypress.
+  // Setup command modal keypress.
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress)
     return () => document.removeEventListener('keydown', handleKeyPress)
@@ -81,7 +88,9 @@ export const SidebarLayoutInner: FC = ({ children }) => {
       {mountedInBrowser && !betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}
-      {searchVisible && <SearchModal onClose={() => setSearchVisible(false)} />}
+      {commandModalVisible && (
+        <CommandModal onClose={() => setCommandModalVisible(false)} />
+      )}
 
       <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
         <div className="hidden lg:block lg:w-[264px]">

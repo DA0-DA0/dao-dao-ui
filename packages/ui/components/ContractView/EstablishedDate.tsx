@@ -1,6 +1,5 @@
 import { FC } from 'react'
-
-import { useTranslation } from '@dao-dao/i18n'
+import { useTranslation } from 'react-i18next'
 
 export interface EstablishedDateProps {
   date: Date

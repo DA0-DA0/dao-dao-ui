@@ -1,13 +1,14 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { PlaceholderToken } from '@dao-dao/icons'
-import { Cw20BaseSelectors, useWallet } from '@dao-dao/state'
+import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   Button,
   ImageSelector,
@@ -33,8 +34,7 @@ import {
 
 import {
   DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
-  DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
-  DefaultNewDAO,
+  DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
@@ -62,6 +62,7 @@ const CreateDAOVotingPage: NextPage = () => {
   const { address: walletAddress } = useWallet()
   const {
     watchedNewDAO,
+    defaultNewDAOForStructure,
     tiersAreUntouched,
     control,
     register,
@@ -508,7 +509,7 @@ const CreateDAOVotingPage: NextPage = () => {
                         getValues('structure') ===
                         NewDAOStructure.GovernanceToken
                           ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-                          : DEFAULT_NEW_DAO_SIMPLE_INITIAL_TIER_WEIGHT,
+                          : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
                       members: [
                         {
                           address: '',
@@ -558,7 +559,7 @@ const CreateDAOVotingPage: NextPage = () => {
                 // values modified while the config was showing are undone.
                 setValue(
                   'advancedVotingConfig',
-                  DefaultNewDAO.advancedVotingConfig
+                  defaultNewDAOForStructure.advancedVotingConfig
                 )
               }
             }}

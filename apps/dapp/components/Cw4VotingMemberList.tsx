@@ -1,6 +1,7 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { FC } from 'react'
 
-import { useVotingModule, useWallet } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/state'
 import {
   MultisigMemberList,
   MultisigMemberListLoader,

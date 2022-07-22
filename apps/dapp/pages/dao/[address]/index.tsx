@@ -3,8 +3,8 @@ import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
@@ -19,7 +19,6 @@ import { VotingModuleType } from '@dao-dao/utils'
 
 import {
   ContractHeader,
-  ContractProposalsDisplay,
   Cw20StakedBalanceVotingPowerDisplay,
   Cw4VotingMemberList,
   DAOMobileHeader,
@@ -27,7 +26,9 @@ import {
   DAOPageWrapperProps,
   DaoContractInfo,
   DaoHorizontalInfoDisplay,
+  DaoProposals,
   DaoTreasury,
+  DaoTreasuryHistory,
   PageLoader,
   SmallScreenNav,
   useDAOInfoContext,
@@ -92,16 +93,19 @@ const InnerMobileDaoHome: FC = () => {
         />
       </div>
       <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Proposal && (
-          <ContractProposalsDisplay />
-        )}
+        {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
         {tab === MobileMenuTabSelection.Members && (
           <Cw4VotingMemberList primaryText />
         )}
         {tab === MobileMenuTabSelection.Staking && (
           <Cw20StakedBalanceVotingPowerDisplay primaryText />
         )}
-        {tab === MobileMenuTabSelection.Treasury && <DaoTreasury />}
+        {tab === MobileMenuTabSelection.Treasury && (
+          <div className="space-y-8">
+            <DaoTreasury />
+            <DaoTreasuryHistory shortTitle />
+          </div>
+        )}
         {tab === MobileMenuTabSelection.Info && (
           <DaoContractInfo hideTreasury />
         )}
@@ -184,8 +188,9 @@ const InnerDAOHome: FC = () => {
             </div>
           </div>
         </GradientHero>
-        <div className="px-6">
-          <ContractProposalsDisplay />
+        <div className="px-6 mb-8 space-y-10">
+          <DaoProposals />
+          <DaoTreasuryHistory />
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
@@ -252,9 +257,7 @@ export default DaoHomePage
 // Fallback to loading screen if page has not yet been statically generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
@@ -263,13 +266,18 @@ export const getStaticProps: GetStaticProps<DaoHomePageProps> =
       return
     }
 
-    const response = await axios.get(image_url, {
-      responseType: 'arraybuffer',
-    })
-    const buffer = Buffer.from(response.data, 'binary')
-    const result = await getAverageColor(buffer)
+    try {
+      const response = await axios.get(image_url, {
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+      const result = await getAverageColor(buffer)
 
-    return {
-      additionalProps: { accentColor: result.rgb },
+      return {
+        additionalProps: { accentColor: result.rgb },
+      }
+    } catch (error) {
+      // If fail to load image or get color, don't prevent page render.
+      console.error(error)
     }
   })

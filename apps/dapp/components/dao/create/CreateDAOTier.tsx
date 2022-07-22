@@ -8,8 +8,8 @@ import {
   UseFormSetValue,
   useFieldArray,
 } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import {
   AddressInput,
   Button,
@@ -26,9 +26,10 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { NEW_DAO_CW20_DECIMALS, NewDAO, NewDAOStructure } from '@/atoms'
+
 import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
-import { NEW_DAO_CW20_DECIMALS, NewDAO, NewDAOStructure } from '@/atoms'
 
 interface CreateDAOTierProps {
   newDAO: NewDAO

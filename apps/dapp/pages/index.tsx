@@ -1,9 +1,9 @@
 import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
 import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTranslation } from '@dao-dao/i18n'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
@@ -31,15 +31,17 @@ const Home: NextPage = () => {
   const [daos, setDaos] = useState<string | undefined>(undefined)
   const [proposals, setProposals] = useState<string | undefined>(undefined)
 
-  fetch('https://dao-stats.withoutdoing.com/mainnet/balances.json')
-    .then((response) => response.json())
-    .then((data) => setTVL(data[data.length - 1].value))
-  fetch('https://dao-stats.withoutdoing.com/mainnet/count.json')
-    .then((response) => response.json())
-    .then((data) => setDaos(data[data.length - 1].value))
-  fetch('https://dao-stats.withoutdoing.com/mainnet/proposals.json')
-    .then((response) => response.json())
-    .then((data) => setProposals(data[data.length - 1].value))
+  useEffect(() => {
+    fetch('https://dao-stats.withoutdoing.com/mainnet/balances.json')
+      .then((response) => response.json())
+      .then((data) => setTVL(data[data.length - 1].value))
+    fetch('https://dao-stats.withoutdoing.com/mainnet/count.json')
+      .then((response) => response.json())
+      .then((data) => setDaos(data[data.length - 1].value))
+    fetch('https://dao-stats.withoutdoing.com/mainnet/proposals.json')
+      .then((response) => response.json())
+      .then((data) => setProposals(data[data.length - 1].value))
+  }, [])
 
   return (
     <SuspenseLoader fallback={<LoadingScreen />}>
