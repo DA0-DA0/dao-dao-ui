@@ -10,7 +10,7 @@ import { useVotingModule } from '@dao-dao/state'
 import {
   Breadcrumbs,
   GradientHero,
-  HeartButton,
+  PinToggle,
   MobileMenuTab,
   SuspenseLoader,
   useThemeContext,
@@ -155,7 +155,7 @@ const InnerDAOHome: FC = () => {
                     </p>
                   </div>
                 )}
-                <HeartButton
+                <PinToggle
                   onPin={() => {
                     if (pinned) {
                       setUnpinned(coreAddress)

@@ -1,5 +1,5 @@
-import { HeartIcon as HeartIconOutline } from '@heroicons/react/outline'
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/solid'
+import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/outline'
+import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, ReactNode, useState } from 'react'
@@ -156,18 +156,18 @@ export const ContractCard: FC<ContractCardProps> = ({
           )}
         </div>
       </ContractCardBase>
-      <button
-        className="absolute top-[18px] right-[18px] text-brand"
-        onClick={onPin ? (_) => onPin() : undefined}
-      >
-        {pinned !== undefined ? (
-          pinned ? (
-            <HeartIconSolid className="w-[18px] h-[18px]" />
+      {onPin !== undefined && pinned !== undefined && (
+        <button
+          className="absolute top-[18px] right-[18px] text-brand"
+          onClick={() => onPin()}
+        >
+          {pinned ? (
+            <BookmarkIconSolid className="w-[18px] h-[18px]" />
           ) : (
-            <HeartIconOutline className="w-[18px] h-[18px]" />
-          )
-        ) : undefined}
-      </button>
+            <BookmarkIconOutline className="w-[18px] h-[18px]" />
+          )}
+        </button>
+      )}
     </div>
   )
 }
