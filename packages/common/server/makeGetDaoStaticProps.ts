@@ -24,6 +24,7 @@ import {
   cosmWasmClientRouter,
   fetchProposalModules,
   parseCoreVersion,
+  processError,
   validateContractAddress,
 } from '@dao-dao/utils'
 
@@ -208,6 +209,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         }
       }
 
+      // Report to Sentry.
+      processError(error)
+
       // Throw error to trigger 500.
       throw error
     }
@@ -288,11 +292,12 @@ export const makeGetDaoProposalStaticProps = ({
         // If ProposalModuleAdapterError, treat as 404 below.
         // Otherwise display 500.
         if (!(error instanceof ProposalModuleAdapterError)) {
+          // Report to Sentry.
+          processError(error)
+
           console.error(error)
           // Throw error to trigger 500.
-          throw new Error(
-            'An unexpected error occurred. Please try again later.'
-          )
+          throw new Error(t('error.unexpectedError'))
         }
       }
 

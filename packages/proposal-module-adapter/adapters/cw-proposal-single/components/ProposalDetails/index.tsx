@@ -21,9 +21,9 @@ import {
   Trans,
 } from '@dao-dao/ui'
 import {
-  cleanChainError,
   decodeMessages,
   decodedMessagesString,
+  processError,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
@@ -192,9 +192,7 @@ export const ProposalDetails = ({
         onVoteSuccess()
       } catch (err) {
         console.error(err)
-        toast.error(
-          cleanChainError(err instanceof Error ? err.message : `${err}`)
-        )
+        toast.error(processError(err))
       } finally {
         setLoading(false)
       }
@@ -215,9 +213,7 @@ export const ProposalDetails = ({
       onExecuteSuccess()
     } catch (err) {
       console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
+      toast.error(processError(err))
     } finally {
       setLoading(false)
     }
@@ -236,9 +232,7 @@ export const ProposalDetails = ({
       onCloseSuccess()
     } catch (err) {
       console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
+      toast.error(processError(err))
     } finally {
       setLoading(false)
     }
