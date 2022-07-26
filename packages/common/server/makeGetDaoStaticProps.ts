@@ -69,8 +69,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       return { notFound: true }
     }
 
-    // Run before any `t` call since i18n is not loaded globally on the
-    // server before this is awaited.
+    // Load server translations and get T function for use in getProps.
     const { i18nProps, serverT } = await serverSideTranslationsWithServerT(
       context.locale,
       ['translation']
