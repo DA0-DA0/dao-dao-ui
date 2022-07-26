@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, PinToggle, Logo } from '@dao-dao/ui'
+import { CopyToClipboardMobile, Logo, PinToggle } from '@dao-dao/ui'
 import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 export interface MobileHeaderProps {

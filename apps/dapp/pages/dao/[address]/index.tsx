@@ -10,8 +10,8 @@ import { useVotingModule } from '@dao-dao/state'
 import {
   Breadcrumbs,
   GradientHero,
-  PinToggle,
   MobileMenuTab,
+  PinToggle,
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
