@@ -15,4 +15,17 @@ Sentry.init({
 
   // Only send errors to Sentry if production environment.
   enabled: process.env.NODE_ENV === 'production',
+
+  // Common browser errors we do not care about.
+  ignoreErrors: [
+    'Non-Error promise rejection captured with value: Timeout',
+    'TypeError: NetworkError when attempting to fetch resource.',
+    'Error: ResizeObserver loop limit exceeded',
+    'TypeError: Failed to fetch',
+    'TypeError: NetworkError when attempting to fetch resource.',
+    'TypeError: The Internet connection appears to be offline.',
+    'TypeError: The request timed out.',
+    'TypeError: cancelled',
+    'TypeError: Cancelled',
+  ],
 })
