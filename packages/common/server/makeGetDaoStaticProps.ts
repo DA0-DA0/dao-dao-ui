@@ -1,10 +1,8 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-// eslint-disable-next-line regex/invalid
-import { StringMap, TFunctionKeys, TOptions } from 'i18next'
 import type { GetStaticProps, Redirect } from 'next'
-import { i18n } from 'next-i18next'
+import { TFunction } from 'next-i18next'
 
-import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
   CommonProposalInfo,
   CwProposalSingleAdapter,
@@ -31,19 +29,6 @@ import {
 
 import { DaoPageWrapperProps } from '../components'
 
-// Swap order of arguments and use error fallback string if client null.
-// It shouldn't be null as long as we only call this on the server once the
-// translations have been loaded by awaiting `serverSideTranslations`.
-const serverT = (
-  key: TFunctionKeys | TFunctionKeys[],
-  options?: string | TOptions<StringMap> | undefined,
-  defaultValue?: string | undefined
-) =>
-  // Ok to use here as long as it's used after `serverSideTranslations`.
-  // eslint-disable-next-line regex/invalid
-  i18n?.t(key, defaultValue, options) ??
-  'internal error: translations not loaded'
-
 interface GetDaoStaticPropsMakerProps {
   leadingTitle?: string
   followingTitle?: string
@@ -58,7 +43,7 @@ interface GetDaoStaticPropsMakerOptions {
   coreAddress?: string
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
-    t: typeof serverT
+    t: TFunction
     cwClient: CosmWasmClient
     coreClient: CwCoreV0_1_0QueryClient
     config: ConfigResponse
@@ -86,9 +71,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
     // Run before any `t` call since i18n is not loaded globally on the
     // server before this is awaited.
-    const i18nProps = await serverSideTranslations(context.locale, [
-      'translation',
-    ])
+    const { i18nProps, serverT } = await serverSideTranslationsWithServerT(
+      context.locale,
+      ['translation']
+    )
 
     const coreAddress = _coreAddress ?? context.params?.address
     // If invalid address, display not found.
