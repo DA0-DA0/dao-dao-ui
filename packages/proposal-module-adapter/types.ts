@@ -112,6 +112,7 @@ export interface CommonProposalListInfo {
 export interface CommonProposalInfo {
   id: number
   title: string
+  description: string
 }
 
 export interface BaseProposalVotesProps {

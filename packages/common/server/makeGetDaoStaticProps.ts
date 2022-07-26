@@ -20,6 +20,7 @@ import {
   CHAIN_RPC_ENDPOINT,
   CI,
   LEGACY_URL_PREFIX,
+  MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   ProposalModule,
   cosmWasmClientRouter,
   fetchProposalModules,
@@ -299,9 +300,11 @@ export const makeGetDaoProposalStaticProps = ({
       return {
         url: getProposalUrlPrefix(params) + proposalId,
         followingTitle: proposalInfo
-          ? `${t('title.proposal')} ${proposalId}`
+          ? proposalInfo.title
           : t('error.proposalNotFound'),
-        overrideDescription: proposalInfo ? proposalInfo.title : undefined,
+        overrideDescription: proposalInfo
+          ? proposalInfo.description.slice(MAX_META_CHARS_PROPOSAL_DESCRIPTION)
+          : undefined,
         additionalProps: {
           // If proposal does not exist, pass undefined to indicate 404.
           proposalId: proposalInfo ? proposalId : undefined,

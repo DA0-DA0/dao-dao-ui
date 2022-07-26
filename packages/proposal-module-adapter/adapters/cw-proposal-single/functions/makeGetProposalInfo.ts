@@ -40,6 +40,7 @@ export const makeGetProposalInfo =
       proposalResponse && {
         id: proposalResponse.id,
         title: proposalResponse.proposal.title,
+        description: proposalResponse.proposal.description,
       }
     )
   }
