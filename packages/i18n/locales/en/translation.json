@@ -302,7 +302,7 @@
     "yes": "Yes",
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",
     "youAreMember": "You are a member.",
-    "youCanAddMoreProposalModules": "You can add different types of proposal modules, allowing proposals to use multiple choice or ranked choice decision methods.",
+    "youCanAddMoreProposalModules": "The type of proposal being created. For example: single choice or multiple choice.",
     "yourBalance": "Your balance",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },

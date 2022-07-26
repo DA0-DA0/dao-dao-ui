@@ -115,20 +115,22 @@ const InnerProposalCreate = () => {
             </select>
           ) : (
             <Tooltip label={t('info.youCanAddMoreProposalModules')}>
-              <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
-                <span>
-                  {t(
-                    `proposalModuleLabel.${
-                      selectedProposalModule.contractName
-                        .split(':')
-                        .slice(-1)[0]
-                    }`
-                  )}{' '}
-                  {t('title.proposals', { count: 1 })}
-                </span>
+              <div>
+                <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
+                  <span>
+                    {t(
+                      `proposalModuleLabel.${
+                        selectedProposalModule.contractName
+                          .split(':')
+                          .slice(-1)[0]
+                      }`
+                    )}{' '}
+                    {t('title.proposals', { count: 1 })}
+                  </span>
 
-                <InformationCircleIcon className="shrink-0 w-4 h-4 text-disabled cursor-help" />
-              </InputThemedText>
+                  <InformationCircleIcon className="shrink-0 w-4 h-4 text-disabled cursor-help" />
+                </InputThemedText>
+              </div>
             </Tooltip>
           )}
 
