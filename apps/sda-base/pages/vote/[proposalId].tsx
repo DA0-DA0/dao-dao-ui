@@ -29,8 +29,8 @@ import {
   CHAIN_RPC_ENDPOINT,
   CI,
   VotingModuleType,
-  cleanChainError,
   cosmWasmClientRouter,
+  processError,
 } from '@dao-dao/utils'
 
 import {
@@ -119,9 +119,7 @@ const InnerProposal: FC = () => {
         toast.success('Vote successfully cast.')
       } catch (err) {
         console.error(err)
-        toast.error(
-          cleanChainError(err instanceof Error ? err.message : `${err}`)
-        )
+        toast.error(processError(err))
       }
 
       setLoading(false)
@@ -145,9 +143,7 @@ const InnerProposal: FC = () => {
       )
     } catch (err) {
       console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
+      toast.error(processError(err))
     }
 
     setLoading(false)
@@ -173,9 +169,7 @@ const InnerProposal: FC = () => {
       toast.success(t('success.proposalClosed'))
     } catch (err) {
       console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
+      toast.error(processError(err))
     }
 
     setLoading(false)

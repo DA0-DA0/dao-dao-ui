@@ -35,8 +35,8 @@ import {
   CWPROPOSALSINGLE_CODE_ID,
   STAKECW20_CODE_ID,
   V1_FACTORY_CONTRACT_ADDRESS,
-  cleanChainError,
   convertDenomToMicroDenomWithDecimals,
+  processError,
   validateCw20StakedBalanceVotingInstantiateMsg,
   validateCw4VotingInstantiateMsg,
   validateCwProposalSingleInstantiateMsg,
@@ -195,9 +195,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
             }
           } catch (err) {
             console.error(err)
-            toast.error(
-              cleanChainError(err instanceof Error ? err.message : `${err}`)
-            )
+            toast.error(processError(err))
 
             setCreating(false)
           }
