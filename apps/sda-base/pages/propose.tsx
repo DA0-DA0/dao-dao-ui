@@ -18,7 +18,7 @@ import {
   useWalletBalance,
 } from '@dao-dao/state'
 import { CopyToClipboard, SuspenseLoader } from '@dao-dao/ui'
-import { cleanChainError, expirationExpired } from '@dao-dao/utils'
+import { expirationExpired, processError } from '@dao-dao/utils'
 
 import {
   Loader,
@@ -104,8 +104,8 @@ const InnerProposalCreate = () => {
         } catch (err) {
           console.error(err)
           toast.error(
-            `Failed to increase allowance to pay proposal deposit: (${cleanChainError(
-              err instanceof Error ? err.message : `${err}`
+            `Failed to increase allowance to pay proposal deposit: (${processError(
+              err
             )})`
           )
           return
@@ -129,9 +129,7 @@ const InnerProposalCreate = () => {
         // Don't stop loading indicator since we are navigating.
       } catch (err) {
         console.error(err)
-        toast.error(
-          cleanChainError(err instanceof Error ? err.message : `${err}`)
-        )
+        toast.error(processError(err))
         setLoading(false)
       }
     },

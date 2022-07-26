@@ -23,7 +23,7 @@ import {
   StakingMode,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { VotingModuleType, cleanChainError } from '@dao-dao/utils'
+import { VotingModuleType, processError } from '@dao-dao/utils'
 
 import {
   DAOPageWrapper,
@@ -119,9 +119,7 @@ const InnerProposal: FC = () => {
         toast.success(t('success.voteCast'))
       } catch (err) {
         console.error(err)
-        toast.error(
-          cleanChainError(err instanceof Error ? err.message : `${err}`)
-        )
+        toast.error(processError(err))
       }
 
       setLoading(false)
@@ -151,9 +149,7 @@ const InnerProposal: FC = () => {
       toast.success(t('success.proposalExecuted'))
     } catch (err) {
       console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
+      toast.error(processError(err))
     }
 
     setLoading(false)
@@ -173,9 +169,7 @@ const InnerProposal: FC = () => {
       toast.success(t('success.proposalClosed'))
     } catch (err) {
       console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
+      toast.error(processError(err))
     }
 
     setLoading(false)
