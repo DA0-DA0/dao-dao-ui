@@ -1,16 +1,13 @@
-name: CI
+name: Upload Source Maps to Sentry
 
 on:
   push:
     branches:
       - main
       - development
-  pull_request:
-    branches:
-      - main
-      - development
 
 env:
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   NEXT_PUBLIC_CHAIN_ID: uni-3
   NEXT_PUBLIC_CHAIN_NAME: NEXT_PUBLIC_CHAIN_NAME
   NEXT_PUBLIC_CHAIN_BECH32_PREFIX: NEXT_PUBLIC_CHAIN_BECH32_PREFIX

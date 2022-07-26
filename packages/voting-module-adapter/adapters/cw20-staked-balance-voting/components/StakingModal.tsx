@@ -18,9 +18,9 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
-  cleanChainError,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  processError,
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -157,9 +157,7 @@ const InnerStakingModal = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(
-            cleanChainError(err instanceof Error ? err.message : `${err}`)
-          )
+          toast.error(processError(err))
         } finally {
           setStakingLoading(false)
         }
@@ -230,9 +228,7 @@ const InnerStakingModal = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(
-            cleanChainError(err instanceof Error ? err.message : `${err}`)
-          )
+          toast.error(processError(err))
         } finally {
           setStakingLoading(false)
         }
@@ -272,9 +268,7 @@ const InnerStakingModal = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(
-            cleanChainError(err instanceof Error ? err.message : `${err}`)
-          )
+          toast.error(processError(err))
         } finally {
           setStakingLoading(false)
         }

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { Button, CosmosMessageDisplay, Logo } from '@dao-dao/ui'
-import { parseEncodedMessage } from '@dao-dao/utils'
+import { parseEncodedMessage, processError } from '@dao-dao/utils'
 
 import { NewDAOStructure } from '@/atoms'
 import {
@@ -67,7 +67,7 @@ const CreateDAOReviewPage: NextPage = () => {
       setPreviewJson(JSON.stringify(msg, undefined, 2))
     } catch (err) {
       console.error(err)
-      setPreviewError(err instanceof Error ? err.message : `${err}`)
+      setPreviewError(processError(err))
     }
   }, [makeCreateDAOMsg, previewError, previewJson, watchedNewDAO])
 
