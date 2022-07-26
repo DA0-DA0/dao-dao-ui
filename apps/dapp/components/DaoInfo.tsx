@@ -76,7 +76,7 @@ const DaoInfoVotingProposalVotingConfigurations = () => {
 
   return (
     <>
-      <ul className="flex flex-col gap-2 mt-3 list-none">
+      <ul className="flex flex-col gap-2 mt-3 text-xs list-none">
         {components.length > 1 ? (
           <select
             className="py-2 px-3 mb-2 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition"
@@ -97,7 +97,7 @@ const DaoInfoVotingProposalVotingConfigurations = () => {
             ))}
           </select>
         ) : (
-          <p className="mb-2">
+          <p>
             {t(
               `proposalModuleLabel.${
                 proposalModules[selectedIndex].contractName
