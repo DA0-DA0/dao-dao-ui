@@ -63,8 +63,7 @@ export const processError = (
 // To add a new error:
 // 1. Add a value to this enum.
 // 2. Add matching parameters in commonErrorPatterns below.
-// 3. Set if the error should be sent to Sentry or not in captureCommonErrorMap
-//    below.
+// 3. If it should be sent to Sentry, add an entry to captureCommonErrorMap.
 export enum CommonError {
   RequestRejected = 'Wallet rejected transaction.',
   InvalidAddress = 'Invalid address.',
@@ -145,21 +144,6 @@ const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
 // Whether or not to send the error to Sentry. Some errors we want to clean up
 // for the user but still investigate (e.g. InvalidJSONResponse), so let's send
 // them to Sentry even if we recognize them.
-const captureCommonErrorMap: Record<CommonError, boolean> = {
-  [CommonError.RequestRejected]: false,
-  [CommonError.InvalidAddress]: false,
-  [CommonError.InsufficientFees]: false,
-  [CommonError.InsufficientFunds]: false,
-  [CommonError.GetClientFailed]: false,
-  [CommonError.Network]: false,
-  [CommonError.Unauthorized]: false,
-  [CommonError.InsufficientForProposalDeposit]: false,
-  [CommonError.PendingTransaction]: false,
-  [CommonError.NotFound]: false,
-  [CommonError.TextEncodingDecodingError]: false,
-  [CommonError.TxnSentTimeout]: false,
+const captureCommonErrorMap: Partial<Record<CommonError, boolean>> = {
   [CommonError.InvalidJSONResponse]: true,
-  [CommonError.NodeFailure]: false,
-  [CommonError.BlockHeightTooLow]: false,
-  [CommonError.TxPageOutOfRange]: false,
 }
