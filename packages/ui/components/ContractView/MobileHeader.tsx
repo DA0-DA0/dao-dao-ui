@@ -83,7 +83,6 @@ export const MobileHeaderLoader = ({
     <div className="relative">
       <Loader fill={false} size={72} />
 
-<<<<<<< HEAD
       <div
         className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
         style={{
@@ -97,30 +96,7 @@ export const MobileHeaderLoader = ({
       <div className="flex flex-row justify-between">
         <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
         <div className="flex gap-5">
-          <HeartButton onPin={() => null} pinned={false} />
-=======
-  return (
-    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
-      <div className="relative">
-        <div className="animate-spin-medium">
-          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
-        </div>
-        <div
-          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
-          style={{
-            width: '32px',
-            height: '32px',
-            backgroundImage: 'url(/daotoken.jpg)',
-          }}
-        ></div>
-      </div>
-      <div className="flex flex-col flex-1 gap-3">
-        <div className="flex flex-row justify-between">
-          <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
-          <div className="flex gap-5">
-            <PinToggle onPin={() => null} pinned={false} />
-          </div>
->>>>>>> development
+          <PinToggle onPin={() => null} pinned={false} />
         </div>
       </div>
       <CopyToClipboardMobile value={contractAddress} />
