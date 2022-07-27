@@ -175,28 +175,35 @@ export const useCreateDAOForm = (pageIndex: number) => {
         if (connected) {
           setCreating(true)
           try {
-            const address = await createDAOWithFactory(
-              instantiateWithFactory,
-              values
+            const address = await toast.promise(
+              createDAOWithFactory(instantiateWithFactory, values).then(
+                // TODO: Figure out better solution for detecting block.
+                (address) =>
+                  // New wallet balances will not appear until the next block.
+                  new Promise<string>((resolve) =>
+                    setTimeout(() => resolve(address), 6500)
+                  )
+              ),
+              {
+                loading: t('info.creatingDao'),
+                success: t('success.daoCreatedPleaseWait'),
+                error: (err) => processError(err),
+              }
             )
-            if (address) {
-              // TODO: Figure out better solution for detecting block.
-              // New wallet balances will not appear until the next block.
-              await new Promise((resolve) => setTimeout(resolve, 6500))
 
-              refreshBalances()
+            if (address) {
               setPinned(address)
 
+              await refreshBalances()
+
               router.push(`/dao/${address}`)
-              toast.success(t('success.daoCreatedPleaseWait'))
               // Don't stop creating loading on success since we're
               // navigating, and it's weird when loading stops and
               // nothing happens for a sec.
             }
           } catch (err) {
+            // toast.promise above will handle displaying the error
             console.error(err)
-            toast.error(processError(err))
-
             setCreating(false)
           }
         } else {

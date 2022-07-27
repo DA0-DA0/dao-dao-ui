@@ -1,16 +1,18 @@
 import { XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, cloneElement } from 'react'
+import { FC, ReactNode, cloneElement } from 'react'
 import { Toast, ToastBar, toast as hotToast } from 'react-hot-toast'
 
 export interface ToastCardProps {
   toast: Toast
   containerClassName?: string
+  preMessage?: ReactNode
 }
 
 export const ToastCard: FC<ToastCardProps> = ({
   toast,
   containerClassName,
+  preMessage,
 }) => (
   <ToastBar toast={toast}>
     {({ message }) => (
@@ -20,6 +22,8 @@ export const ToastCard: FC<ToastCardProps> = ({
           containerClassName
         )}
       >
+        {preMessage}
+
         <p className="grow break-words">
           {!message || typeof message === 'string'
             ? message

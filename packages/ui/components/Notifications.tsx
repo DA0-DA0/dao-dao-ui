@@ -1,6 +1,6 @@
 import { Toaster } from 'react-hot-toast'
 
-import { ErrorToast, SuccessToast } from '@dao-dao/ui'
+import { ErrorToast, LoadingToast, SuccessToast } from '@dao-dao/ui'
 
 export const Notifications = () => (
   <Toaster
@@ -8,6 +8,10 @@ export const Notifications = () => (
     reverseOrder={false}
     toastOptions={{
       duration: 6000,
+      // Show for entire duration of promise.
+      loading: {
+        duration: Infinity,
+      },
       style: {
         borderRadius: '0',
         background: 'none',
@@ -17,7 +21,13 @@ export const Notifications = () => (
     }}
   >
     {(t) =>
-      t.type === 'error' ? <ErrorToast toast={t} /> : <SuccessToast toast={t} />
+      t.type === 'error' ? (
+        <ErrorToast toast={t} />
+      ) : t.type === 'loading' ? (
+        <LoadingToast toast={t} />
+      ) : (
+        <SuccessToast toast={t} />
+      )
     }
   </Toaster>
 )

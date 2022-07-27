@@ -212,6 +212,7 @@
     "considerReturningHome": "Consider returning home.",
     "copyWalletAddressTooltip": "Copy wallet address",
     "couldHaveMoreVotingPower": "You could have more voting power.",
+    "creatingDao": "Creating DAO...",
     "daoAddress": "DAO",
     "daoPaused": "The DAO is paused. Governance will resume in {{duration}}.",
     "daodaoBetaV": "dao dao <1>beta</1> v{{version}}",
