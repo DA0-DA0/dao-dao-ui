@@ -1,8 +1,9 @@
-import { HeartIcon, PlusIcon } from '@heroicons/react/outline'
+import { PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { PinOutline } from '@dao-dao/icons'
 import { Button, SuspenseLoader } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
@@ -20,8 +21,8 @@ export const PinnedDAOsList: FC = () => {
       <div>
         <div className="flex gap-4 justify-between items-center mb-4 primary-text">
           <div className="flex gap-1 items-center">
-            <HeartIcon className="inline w-4" />
-            <p>{t('info.favorited')}</p>
+            <PinOutline className="inline w-4" />
+            <p>{t('info.pinned')}</p>
           </div>
           <Link href="/dao/create" passHref>
             <Button size="sm">

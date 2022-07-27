@@ -1,16 +1,15 @@
-import { HeartIcon as HeartOutline } from '@heroicons/react/outline'
-import { HeartIcon as HeartSolid } from '@heroicons/react/solid'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { PinOutline, PinSolid } from '@dao-dao/icons'
 
 import { useThemeContext } from '../../theme'
 
-export interface HeartButtonProps {
+export interface PinToggleProps {
   pinned: boolean
   onPin: () => void
 }
 
-export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
+export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
   const { t } = useTranslation()
   const { accentColor } = useThemeContext()
 
@@ -21,15 +20,15 @@ export const HeartButton: FC<HeartButtonProps> = ({ pinned, onPin }) => {
       style={accentColor ? { color: accentColor } : {}}
     >
       {pinned ? (
-        <HeartSolid
-          className="inline mr-1 w-[20px] text-brand"
+        <PinSolid
+          className="inline mr-1 w-4 h-4 text-brand"
           style={accentColor ? { color: accentColor } : {}}
         />
       ) : (
-        <HeartOutline className="inline mr-1 w-[20px]" />
+        <PinOutline className="inline mr-1 w-4 h-4" />
       )}
       <span className="hidden md:block">
-        {pinned ? t('info.favorited') : t('info.favorite')}
+        {pinned ? t('info.pinned') : t('info.pin')}
       </span>
     </button>
   )

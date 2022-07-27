@@ -1,11 +1,9 @@
-import { HeartIcon as HeartIconOutline } from '@heroicons/react/outline'
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Dao, Pencil, Votes } from '@dao-dao/icons'
+import { Dao, Pencil, PinOutline, PinSolid, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'
 import {
   CARD_IMAGES_ENABLED,
@@ -156,18 +154,18 @@ export const ContractCard: FC<ContractCardProps> = ({
           )}
         </div>
       </ContractCardBase>
-      <button
-        className="absolute top-[18px] right-[18px] text-brand"
-        onClick={onPin ? (_) => onPin() : undefined}
-      >
-        {pinned !== undefined ? (
-          pinned ? (
-            <HeartIconSolid className="w-[18px] h-[18px]" />
+      {onPin !== undefined && pinned !== undefined && (
+        <button
+          className="absolute top-[18px] right-[18px] text-brand"
+          onClick={() => onPin()}
+        >
+          {pinned ? (
+            <PinSolid className="w-4 h-4" />
           ) : (
-            <HeartIconOutline className="w-[18px] h-[18px]" />
-          )
-        ) : undefined}
-      </button>
+            <PinOutline className="w-4 h-4" />
+          )}
+        </button>
+      )}
     </div>
   )
 }
