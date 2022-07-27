@@ -272,6 +272,7 @@
     "productVersion": "DAO DAO v{{versionNumber}}",
     "proposalAllAbstainClarification": "When all abstain, a proposal will fail",
     "proposalDepositWillBeRefunded": "Proposal deposit will be refunded once closed.",
+    "proposalModuleCreationTooltip": "The voting system for this proposal. For example: single choice, multiple choice, etc.",
     "proposalQuorumTooltip": "This proportion of voting power must vote on a proposal for it to pass.",
     "proposalThresholdTooltip": "A proposal must attain this proportion of 'Yes' votes to pass.",
     "proposalsCreated_one": "{{count}} proposal created",
@@ -303,7 +304,6 @@
     "yes": "Yes",
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",
     "youAreMember": "You are a member.",
-    "youCanAddMoreProposalModules": "The type of proposal being created. For example: single choice or multiple choice.",
     "yourBalance": "Your balance",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },

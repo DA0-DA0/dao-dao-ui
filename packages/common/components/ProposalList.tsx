@@ -22,7 +22,8 @@ import {
 
 import { useDaoInfoContext } from './DaoPageWrapper'
 
-const PROP_LOAD_LIMIT = 10
+// Max = 30
+const PROP_LOAD_LIMIT = 30
 
 export interface ProposalListProps {
   proposalCreateUrl: string
@@ -31,7 +32,6 @@ export interface ProposalListProps {
   Loader?: ComponentType<LoaderProps>
 }
 
-// TODO(noah/proposal-module-adapter): Separate Open and History like ProposalsContent.tsx_back
 export const ProposalList = (props: ProposalListProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()

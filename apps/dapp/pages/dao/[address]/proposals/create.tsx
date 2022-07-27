@@ -114,7 +114,7 @@ const InnerProposalCreate = () => {
               ))}
             </select>
           ) : (
-            <Tooltip label={t('info.youCanAddMoreProposalModules')}>
+            <Tooltip label={t('info.proposalModuleCreationTooltip')}>
               <div>
                 <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
                   <span>

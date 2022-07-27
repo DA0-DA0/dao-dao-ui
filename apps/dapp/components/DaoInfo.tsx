@@ -22,9 +22,7 @@ export const DaoInfo = ({ hideTreasury }: DaoInfoProps) => {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-10 sm:justify-around">
       <div className="mb-4 md:mb-0">
-        <h2 className="mb-4 md:mb-6 primary-text">
-          {t('title.votingConfiguration')}
-        </h2>
+        <h2 className="mb-4 primary-text">{t('title.votingConfiguration')}</h2>
         <ul className="flex flex-col gap-2 mt-3 list-none md:ml-2">
           <SuspenseLoader fallback={<Loader />}>
             <DaoInfoVotingConfiguration />

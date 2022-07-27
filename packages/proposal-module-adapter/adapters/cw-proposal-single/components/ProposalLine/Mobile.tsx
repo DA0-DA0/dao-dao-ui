@@ -11,7 +11,6 @@ import { BaseProposalLineProps } from '../../../../types'
 import { useProposalExpirationString } from '../../hooks'
 import { ProposalStatus } from '../ProposalStatus'
 
-// TODO(noah/proposal-module-adapter): Add wallet vote if available.
 export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
   const { t } = useTranslation()
   const {
