@@ -81,7 +81,7 @@ export const MobileHeaderLoader = ({
 }: MobileHeaderLoaderProps) => (
   <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
     <div className="relative">
-      <Loader fill={false} size={72} />
+      <Loader size={72} />
 
       <div
         className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
