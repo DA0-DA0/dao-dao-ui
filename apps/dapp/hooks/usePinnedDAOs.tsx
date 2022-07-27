@@ -10,7 +10,7 @@ import {
 // There are three important pieces of state:
 
 // pinnedAddresses is straightforward: it's just a list of cw-core
-// addresses that have been pinned/favorited.
+// addresses that have been pinned.
 
 // pinnedProposalIDsMarkedDone is a map of cw-core address to a list of
 // proposal IDs, which contains the IDs of proposals that have been marked

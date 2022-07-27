@@ -2,7 +2,7 @@ import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, HeartButton } from '@dao-dao/ui'
+import { CopyToClipboardMobile, PinToggle } from '@dao-dao/ui'
 
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Logo as DefaultLogo, LogoProps } from '../Logo'
@@ -61,7 +61,7 @@ export const MobileHeader = ({
                 <MemberCheck fill="currentColor" width="16px" />
               </div>
             )}
-            <HeartButton onPin={onPin} pinned={pinned} />
+            <PinToggle onPin={onPin} pinned={pinned} />
           </div>
         </div>
         <CopyToClipboardMobile value={contractAddress} />
@@ -83,6 +83,7 @@ export const MobileHeaderLoader = ({
     <div className="relative">
       <Loader fill={false} size={72} />
 
+<<<<<<< HEAD
       <div
         className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
         style={{
@@ -97,6 +98,29 @@ export const MobileHeaderLoader = ({
         <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
         <div className="flex gap-5">
           <HeartButton onPin={() => null} pinned={false} />
+=======
+  return (
+    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
+      <div className="relative">
+        <div className="animate-spin-medium">
+          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
+        </div>
+        <div
+          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
+          style={{
+            width: '32px',
+            height: '32px',
+            backgroundImage: 'url(/daotoken.jpg)',
+          }}
+        ></div>
+      </div>
+      <div className="flex flex-col flex-1 gap-3">
+        <div className="flex flex-row justify-between">
+          <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
+          <div className="flex gap-5">
+            <PinToggle onPin={() => null} pinned={false} />
+          </div>
+>>>>>>> development
         </div>
       </div>
       <CopyToClipboardMobile value={contractAddress} />
