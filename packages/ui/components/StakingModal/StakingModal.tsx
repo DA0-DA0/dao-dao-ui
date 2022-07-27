@@ -70,7 +70,7 @@ export interface StakingModalProps {
   onAction: (mode: StakingMode, amount: number) => void
 }
 
-export const StakingModal: FC<StakingModalProps> = ({
+export const StakingModal = ({
   mode,
   amount,
   setAmount,
@@ -89,7 +89,7 @@ export const StakingModal: FC<StakingModalProps> = ({
   loading,
   error,
   onAction,
-}) => {
+}: StakingModalProps) => {
   const { t } = useTranslation()
   const stakingModeTitle = useStakingModeTitle()
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens

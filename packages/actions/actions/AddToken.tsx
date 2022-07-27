@@ -3,9 +3,12 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
-import { AddTokenComponent as StatelessAddTokenComponent } from '../components'
+import {
+  AddTokenIcon,
+  AddTokenComponent as StatelessAddTokenComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -24,7 +27,7 @@ const useDefaults: UseDefaults<AddTokenData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { getFieldName, errors } = props
+  const { getFieldName, errors, Loader } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
@@ -69,6 +72,7 @@ const Component: ActionComponent = (props) => {
           tokenInfoLoadable.state === 'hasValue'
             ? tokenInfoLoadable.contents
             : undefined,
+        Loader,
       }}
     />
   )
@@ -120,14 +124,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
 
 export const addTokenAction: Action<AddTokenData> = {
   key: ActionKey.AddToken,
-  label: '🔘 Add Treasury Token',
+  Icon: AddTokenIcon,
+  label: 'Add Treasury Token',
   description: "Add a token to your DAO's treasury.",
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

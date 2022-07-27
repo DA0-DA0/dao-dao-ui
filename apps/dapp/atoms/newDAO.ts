@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-import { Duration } from '@dao-dao/state/clients/cw-core'
+import { Duration } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
 
 export enum DurationUnits {
@@ -52,7 +52,8 @@ export enum ThresholdType {
   AbsoluteCount,
 }
 export type ThresholdValue = 'majority' | number
-export const convertThresholdValueToPercentageThreshold = (
+
+export const convertThresholdValueToCwProposalSinglePercentageThreshold = (
   value: ThresholdValue
 ): PercentageThreshold =>
   value === 'majority'

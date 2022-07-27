@@ -6,15 +6,18 @@ import { appWithTranslation, useTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { useRegisterAdaptersOnMount } from '@dao-dao/common'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 
-import { HomepageLayout, SidebarLayout } from '@/components'
+import { AppLayout, HomepageLayout } from '@/components'
 
-const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
+const InnerApp = ({ Component, pageProps }: AppProps) => {
+  useRegisterAdaptersOnMount()
+
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -26,7 +29,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
   const theme = isHomepage ? Theme.Dark : _theme
-  const Layout = isHomepage ? HomepageLayout : SidebarLayout
+  const Layout = isHomepage ? HomepageLayout : AppLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -60,7 +63,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   )
 }
 
-const dApp: FC<AppProps> = (props) => (
+const dApp = (props: AppProps) => (
   <>
     <Head>
       <meta

@@ -7,7 +7,7 @@ import {
 } from '@dao-dao/utils'
 
 import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
-import { cw20BalancesInfoSelector } from './clients/cw-core'
+import { cw20BalancesInfoSelector } from './clients/cw-core/0.1.0'
 import { poolsListSelector } from './pools'
 
 export const tokenUSDCPriceSelector = selectorFamily<

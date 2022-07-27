@@ -3,21 +3,14 @@ import type { NextPage } from 'next'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { Pie } from '@dao-dao/icons'
-import { useGovernanceTokenInfo, useVotingModule } from '@dao-dao/state'
-import {
-  MultisigMemberList,
-  MultisigMemberListLoader,
-  StakingMode,
-  SuspenseLoader,
-  TooltipIcon,
-} from '@dao-dao/ui'
-import { VotingModuleType } from '@dao-dao/utils'
+import { StakingMode, SuspenseLoader, TooltipIcon } from '@dao-dao/ui'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {
   BalanceCardLoader,
-  ClaimsList,
   Loader,
   PageWrapper,
   PageWrapperProps,
@@ -26,49 +19,24 @@ import {
   StakedBalanceCard,
   UnstakedBalanceCard,
 } from '@/components'
-import { makeGetStaticProps } from '@/server/makeGetStaticProps'
-import { DAO_ADDRESS } from '@/util'
-
-const InnerMembers = () => {
-  const { connected, address: walletAddress } = useWallet()
-  const { cw4VotingMembers, walletVotingWeight, totalVotingWeight } =
-    useVotingModule(DAO_ADDRESS, {
-      fetchCw4VotingMembers: true,
-    })
-
-  if (!cw4VotingMembers || totalVotingWeight === undefined) {
-    throw new Error('Failed to load page data.')
-  }
-
-  return (
-    <>
-      <div className="space-y-8">
-        {!connected && <ConnectWalletButton className="!w-auto" />}
-
-        <SuspenseLoader fallback={<MultisigMemberListLoader loader={Loader} />}>
-          <MultisigMemberList
-            members={cw4VotingMembers}
-            totalWeight={totalVotingWeight}
-            walletAddress={walletAddress}
-            walletWeight={walletVotingWeight}
-          />
-        </SuspenseLoader>
-      </div>
-    </>
-  )
-}
+import { DAO_ADDRESS, DEFAULT_IMAGE_URL } from '@/util'
 
 const InnerStake = () => {
   const { t } = useTranslation()
+  const { imageUrl } = useDaoInfoContext()
   const { connected } = useWallet()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
+  const {
+    hooks: { useGovernanceTokenInfo },
+    components: { StakingModal, ClaimsPendingList },
+  } = useVotingModuleAdapter()
+
+  const governanceTokenInfo = useGovernanceTokenInfo?.().governanceTokenInfo
+  if (!governanceTokenInfo || !StakingModal || !ClaimsPendingList) {
+    throw new Error(t('error.loadingData'))
+  }
 
   // Set to default mode to display, and undefined to hide.
   const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
-
-  if (!governanceTokenInfo) {
-    throw new Error('Failed to load page data.')
-  }
 
   return (
     <>
@@ -137,21 +105,19 @@ const InnerStake = () => {
                 </>
               }
             >
-              <ClaimsList
+              <ClaimsPendingList
+                fallbackImageUrl={imageUrl ?? DEFAULT_IMAGE_URL}
                 showClaim={() => setShowStakingMode(StakingMode.Claim)}
               />
             </SuspenseLoader>
           </>
         ) : (
-          <ConnectWalletButton className="!w-auto" />
+          <ConnectWalletButton />
         )}
       </div>
 
       {showStakingMode !== undefined && (
         <StakingModal
-          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
-          coreAddress={DAO_ADDRESS}
-          loader={<Loader />}
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
@@ -165,15 +131,12 @@ const MembersOrStakePage: NextPage<PageWrapperProps> = ({
   ...props
 }) => (
   <PageWrapper {...props}>
-    {props?.daoInfo?.votingModuleType === VotingModuleType.Cw4Voting ? (
-      <InnerMembers />
-    ) : props?.daoInfo?.votingModuleType ===
-      VotingModuleType.Cw20StakedBalanceVoting ? (
-      <InnerStake />
-    ) : null}
+    <InnerStake />
   </PageWrapper>
 )
 
 export default MembersOrStakePage
 
-export const getStaticProps = makeGetStaticProps()
+export const getStaticProps = makeGetDaoStaticProps({
+  coreAddress: DAO_ADDRESS,
+})

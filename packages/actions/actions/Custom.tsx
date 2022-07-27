@@ -1,9 +1,9 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage } from '@dao-dao/utils'
 
-import { CustomComponent as Component } from '../components'
+import { CustomComponent as Component, CustomIcon } from '../components'
 import {
   Action,
   ActionKey,
@@ -52,14 +52,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CustomData> = (
 
 export const customAction: Action<CustomData> = {
   key: ActionKey.Custom,
-  label: '🤖 Custom',
+  Icon: CustomIcon,
+  label: 'Custom',
   description: 'Perform any custom action a wallet can.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

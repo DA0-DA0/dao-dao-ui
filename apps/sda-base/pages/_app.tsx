@@ -5,10 +5,10 @@ import '@fontsource/jetbrains-mono/latin.css'
 import { appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { WalletProvider } from '@dao-dao/common'
+import { useRegisterAdaptersOnMount } from '@dao-dao/common'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import {
@@ -20,7 +20,9 @@ import {
 
 import { Footer } from '@/components'
 
-const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
+const InnerApp = ({ Component, pageProps }: AppProps) => {
+  useRegisterAdaptersOnMount()
+
   const { t } = useTranslation()
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
@@ -59,7 +61,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   )
 }
 
-const SDA: FC<AppProps> = (props) => (
+const SDA = (props: AppProps) => (
   <>
     <DefaultSeo
       additionalLinkTags={[
@@ -111,9 +113,7 @@ const SDA: FC<AppProps> = (props) => (
     />
 
     <RecoilRoot>
-      <WalletProvider>
-        <InnerApp {...props} />
-      </WalletProvider>
+      <InnerApp {...props} />
     </RecoilRoot>
   </>
 )

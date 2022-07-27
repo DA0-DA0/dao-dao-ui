@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import {
   Cw20BaseSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   addressTVLSelector,
   nativeBalancesSelector,
 } from '@dao-dao/state'
@@ -14,16 +15,14 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
-
 export const TreasuryBalances: FC = () => {
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   const nativeBalances =
     useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
 
   const cw20s = useRecoilValue(
-    CwCoreSelectors.cw20BalancesInfoSelector({ address: coreAddress })
+    CwCoreV0_1_0Selectors.cw20BalancesInfoSelector({ address: coreAddress })
   )
 
   const cw20MarketingInfo = useRecoilValue(

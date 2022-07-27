@@ -4,21 +4,22 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { useProposalModuleAdapterIfAvailable } from '@dao-dao/proposal-module-adapter/react/context'
 import {
   nativeBalancesSelector,
   transactionEventsSelector,
-  useProposalInfo,
 } from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   NATIVE_DECIMALS,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { InstantiateComponent as StatelessInstantiateComponent } from '../components'
+import {
+  InstantiateIcon,
+  InstantiateComponent as StatelessInstantiateComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -107,13 +108,14 @@ const Component: ActionComponent = (props) => {
   const nativeBalances =
     useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
 
-  const { proposalResponse, txHash } = useProposalInfo(
-    props.coreAddress,
-    props.proposalId
-  )
+  const {
+    hooks: { useProposalExecutionTxHash },
+  } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
+  const executionTxHash = useProposalExecutionTxHash?.()
+
   const txEvents = useRecoilValue(
-    proposalResponse?.proposal?.status === Status.Executed && txHash
-      ? transactionEventsSelector(txHash)
+    executionTxHash
+      ? transactionEventsSelector(executionTxHash)
       : constSelector(undefined)
   )
 
@@ -193,14 +195,11 @@ const Component: ActionComponent = (props) => {
 
 export const instantiateAction: Action<InstantiateData> = {
   key: ActionKey.Instantiate,
-  label: '👶 Instantiate Smart Contract',
+  Icon: InstantiateIcon,
+  label: 'Instantiate Smart Contract',
   description: 'Instantiate a smart contract.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

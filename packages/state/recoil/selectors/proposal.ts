@@ -1,8 +1,9 @@
 import { selectorFamily } from 'recoil'
 
-import { Status } from '../../clients/cw-proposal-single'
+import { ProposalModule, fetchProposalModules } from '@dao-dao/utils'
+
 import { cosmWasmClientSelector } from './chain'
-import { proposalSelector } from './clients/cw-proposal-single'
+import { cwCoreVersionSelector } from './contract'
 
 export const proposalExecutionTXHashSelector = selectorFamily<
   string | undefined,
@@ -13,12 +14,6 @@ export const proposalExecutionTXHashSelector = selectorFamily<
     ({ contractAddress, proposalId }) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      const proposal = get(
-        proposalSelector({ contractAddress, params: [{ proposalId }] })
-      )
-
-      // No TX Hash if proposal not yet executed.
-      if (!client || proposal?.proposal.status !== Status.Executed) return
 
       const events = await client.searchTx({
         tags: [
@@ -33,5 +28,23 @@ export const proposalExecutionTXHashSelector = selectorFamily<
       }
 
       return events?.[0]?.hash
+    },
+})
+
+export const cwCoreProposalModulesSelector = selectorFamily<
+  ProposalModule[] | undefined,
+  string
+>({
+  key: 'cwCoreProposalModules',
+  get:
+    (coreAddress) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      const coreVersion = get(cwCoreVersionSelector(coreAddress))
+      if (!coreVersion) {
+        return
+      }
+
+      return await fetchProposalModules(client, coreAddress, coreVersion)
     },
 })

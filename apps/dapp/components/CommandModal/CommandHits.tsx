@@ -36,7 +36,7 @@ const HitView = ({
             }}
           ></div>
         ) : (
-          <Logo alt={hit.name} height={24} width={24} />
+          <Logo size={24} />
         )
       ) : (
         <div className="flex justify-center items-center w-[24px] h-[24px] text-lg">

@@ -1,7 +1,4 @@
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
-
-import { secondsToWdhms } from './time'
 
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
@@ -41,7 +38,7 @@ export function convertToFixedDecimals(amount: number | string): string {
 
 export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
   if (!('at_time' in exp)) {
-    return undefined
+    return
   }
 
   const end = Number(exp['at_time'])
@@ -53,30 +50,11 @@ export const expirationAtTimeToSecondsFromNow = (exp: Expiration) => {
 
 export const zeroPad = (num: number, target: number) => {
   const s = num.toString()
-  if (s.length > target) {
+  if (s.length >= target) {
     return s
   }
   return '0'.repeat(target - s.length) + s
 }
 
-export const getProposalEnd = (exp: Expiration, status: `${Status}`) => {
-  if (status !== Status.Open) {
-    return 'Completed'
-  }
-  if (exp && 'at_time' in exp) {
-    const secondsFromNow = expirationAtTimeToSecondsFromNow(exp)
-    // Type check, but should never happen.
-    if (secondsFromNow === undefined) {
-      return ''
-    }
-
-    if (secondsFromNow <= 0) {
-      return 'Completed'
-    } else {
-      return secondsToWdhms(secondsFromNow)
-    }
-  }
-  // Not much we can say about proposals that expire at a block
-  // height / never.
-  return ''
-}
+export const spacePad = (number: string, target: number) =>
+  number.length >= length ? number : ' '.repeat(target - number.length) + number

@@ -1,8 +1,9 @@
-import { FunctionComponent } from 'react'
+import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
-import { VotingModuleType } from '@dao-dao/utils'
+import { LoaderProps, LogoProps } from '@dao-dao/ui'
+import { ProposalModule } from '@dao-dao/utils'
 
 export enum ActionKey {
   Spend = 'spend',
@@ -37,25 +38,32 @@ export interface FormProposalData {
 }
 
 // A component which will render an action's input form.
-export type ActionComponentProps<T = undefined> = {
+export type ActionComponentProps<T = undefined, D = any> = {
   coreAddress: string
-  proposalId?: number
+  proposalModule: ProposalModule
   getFieldName: (field: string) => string
   onRemove?: () => void
   errors?: FieldErrors
   readOnly?: boolean
   allActionsWithData: ActionKeyAndData[]
+  data: D
   index: number
+  Loader: ComponentType<LoaderProps>
+  Logo: ComponentType<LogoProps>
 } & (T extends undefined ? {} : { options: T })
 
-export type ActionComponent<T = undefined> = FunctionComponent<
-  ActionComponentProps<T>
+export type ActionComponent<T = undefined, D = any> = FunctionComponent<
+  ActionComponentProps<T, D>
 >
 
-export type UseDefaults<D extends {} = any> = (coreAddress: string) => D
+export type UseDefaults<D extends {} = any> = (
+  coreAddress: string,
+  proposalModule: ProposalModule
+) => D
 
 export type UseTransformToCosmos<D extends {} = any> = (
-  coreAddress: string
+  coreAddress: string,
+  proposalModule: ProposalModule
 ) => (data: D) => CosmosMsgFor_Empty | undefined
 
 export interface DecodeCosmosMsgNoMatch {
@@ -68,12 +76,14 @@ export interface DecodeCosmosMsgMatch<D extends {} = any> {
 }
 export type UseDecodedCosmosMsg<D extends {} = any> = (
   msg: Record<string, any>,
-  coreAddress: string
+  coreAddress: string,
+  proposalModule: ProposalModule
 ) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
 
 // Defines a new action.
 export interface Action<O extends {} = any, D extends {} = any> {
   key: ActionKey
+  Icon: ComponentType
   label: string
   description: string
   Component: ActionComponent<O>
@@ -83,6 +93,4 @@ export interface Action<O extends {} = any, D extends {} = any> {
   useTransformToCosmos: UseTransformToCosmos<D>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<D>
-  // Voting module types that this action supports.
-  votingModuleTypes: VotingModuleType[]
 }

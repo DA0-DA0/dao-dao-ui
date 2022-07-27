@@ -6,7 +6,6 @@ import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   StakeType,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeDistributeMessage,
@@ -16,6 +15,7 @@ import {
 
 import {
   ActionCardLoader,
+  StakeIcon,
   StakeComponent as StatelessStakeComponent,
   stakeActions,
 } from '../components'
@@ -138,21 +138,18 @@ const InnerStakeComponent: ActionComponent = (props) => {
 }
 
 const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader />}>
+  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
     <InnerStakeComponent {...props} />
   </SuspenseLoader>
 )
 
 export const stakeAction: Action<StakeData> = {
   key: ActionKey.Stake,
-  label: '📤 Staking',
+  Icon: StakeIcon,
+  label: 'Stake',
   description: 'Manage native token staking.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

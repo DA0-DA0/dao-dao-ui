@@ -6,13 +6,15 @@ import { useRecoilValue } from 'recoil'
 import { nativeBalancesSelector } from '@dao-dao/state'
 import {
   NATIVE_DECIMALS,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { ExecuteComponent as StatelessExecuteComponent } from '../components'
+import {
+  ExecuteIcon,
+  ExecuteComponent as StatelessExecuteComponent,
+} from '../components'
 import {
   Action,
   ActionComponent,
@@ -105,14 +107,11 @@ const Component: ActionComponent = (props) => {
 
 export const executeAction: Action<ExecuteData> = {
   key: ActionKey.Execute,
-  label: '⚔️ Execute Smart Contract',
+  Icon: ExecuteIcon,
+  label: 'Execute Smart Contract',
   description: 'Execute a message on a smart contract.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

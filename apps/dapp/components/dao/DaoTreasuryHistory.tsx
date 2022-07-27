@@ -4,20 +4,18 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import {
   TreasuryTransaction,
   treasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { CopyToClipboard, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { CopyToClipboard, Loader, SuspenseLoader, Trans } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-
-import { useDAOInfoContext } from '../DAOPageWrapper'
-import { Loader } from '../Loader'
 
 interface DaoTreasuryHistoryProps {
   shortTitle?: boolean
@@ -46,7 +44,7 @@ export const InnerDaoTreasuryHistory = ({
   shortTitle,
 }: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
   return transactions?.length ? (
@@ -78,7 +76,7 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
     events,
   },
 }) => {
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   const transferEvent = events.find(({ type }) => type === 'transfer')
   if (!transferEvent) {

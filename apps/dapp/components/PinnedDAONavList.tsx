@@ -4,10 +4,9 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { CwCoreSelectors } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
+import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { Logo } from '@dao-dao/ui'
-import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 import { pinnedAddressesAtom } from '@/atoms'
 import { NavListItem } from '@/components'
@@ -18,7 +17,7 @@ export const PinnedDAONavList: FC = () => {
   const daoConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((a) =>
-        CwCoreSelectors.configSelector({ contractAddress: a })
+        CwCoreV0_1_0Selectors.configSelector({ contractAddress: a })
       )
     )
   )
@@ -58,7 +57,7 @@ export const MobilePinnedDAONavList: FC = () => {
   const daoConfigs = useRecoilValue(
     waitForAll(
       pinnedAddresses.map((a) =>
-        CwCoreSelectors.configSelector({ contractAddress: a })
+        CwCoreV0_1_0Selectors.configSelector({ contractAddress: a })
       )
     )
   )
@@ -83,7 +82,7 @@ export const MobilePinnedDAONavList: FC = () => {
                 'radial-gradient(#FF990033, #FFCC001A, transparent 80%)',
             }}
           >
-            {!!config.image_url && HEADER_IMAGES_ENABLED ? (
+            {!!config.image_url ? (
               <div
                 aria-label={t('info.daosLogo')}
                 className="w-[50px] h-[50px] bg-center bg-cover rounded-full"
@@ -93,7 +92,7 @@ export const MobilePinnedDAONavList: FC = () => {
                 }}
               ></div>
             ) : (
-              <Logo alt={t('info.daodaoLogo')} height={50} width={50} />
+              <Logo size={50} />
             )}
             <h2 className="text-center text-dark break-words line-clamp-2 button-text">
               {config.name}

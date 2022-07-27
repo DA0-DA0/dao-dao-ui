@@ -1,57 +1,22 @@
-import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { FunctionComponent, PropsWithChildren } from 'react'
+import { SdaDaoPageWrapper, SdaDaoPageWrapperProps } from '@dao-dao/common'
 
-import { SuspenseLoader } from '@dao-dao/ui'
+import { Header } from './Header'
+import { Loader, PageLoader } from './Loader'
+import { Logo } from './Logo'
 
-import { DAOInfo, DAOInfoContext, DefaultDAOInfo, Header, Loader } from '.'
+export type PageWrapperProps = Omit<
+  SdaDaoPageWrapperProps,
+  'Header' | 'Loader' | 'Logo' | 'PageLoader'
+>
 
-export type PageWrapperProps = PropsWithChildren<{
-  url?: string
-  title: string
-  description: string
-  daoInfo?: DAOInfo
-}>
-
-export const PageWrapper: FunctionComponent<PageWrapperProps> = ({
-  url,
-  title,
-  description,
-  daoInfo,
-  children,
-}) => {
-  const { isFallback, isReady } = useRouter()
-
-  // If not on a fallback page, DAO info must be loaded.
-  if (!isFallback && !daoInfo) {
-    throw new Error('DAO info failed to load.')
-  }
-
-  return (
-    <>
-      <NextSeo
-        description={description}
-        openGraph={{
-          ...(!!url && { url }),
-          type: 'website',
-          title,
-          description,
-          ...(!!daoInfo?.imageUrl && { images: [{ url: daoInfo.imageUrl }] }),
-        }}
-        title={title}
-      />
-
-      <DAOInfoContext.Provider value={daoInfo || DefaultDAOInfo}>
-        <Header />
-
-        {/* Suspend children so SEO stays intact while page loads. */}
-        <SuspenseLoader
-          fallback={<Loader fillScreen size={64} />}
-          forceFallback={isFallback || !isReady}
-        >
-          <div className="p-4 mx-auto max-w-page sm:p-8">{children}</div>
-        </SuspenseLoader>
-      </DAOInfoContext.Provider>
-    </>
-  )
-}
+export const PageWrapper = ({ children, ...props }: PageWrapperProps) => (
+  <SdaDaoPageWrapper
+    Header={Header}
+    Loader={Loader}
+    Logo={Logo}
+    PageLoader={PageLoader}
+    {...props}
+  >
+    {children}
+  </SdaDaoPageWrapper>
+)
