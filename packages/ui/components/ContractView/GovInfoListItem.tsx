@@ -18,7 +18,7 @@ export const GovInfoListItem: FC<GovInfoListItemProps> = ({
       {icon} {text}:
     </span>
     <div className={loading ? 'animate-pulse bg-dark' : ''}>
-      {value ?? '...'}
+      {value || '...'}
     </div>
   </li>
 )

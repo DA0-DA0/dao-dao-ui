@@ -2,11 +2,9 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
+import { VotingModuleType } from '@dao-dao/utils'
 
-import {
-  UpdateAdminComponent as StatelessUpdateAdminComponent,
-  UpdateAdminIcon,
-} from '../components'
+import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components'
 import {
   Action,
   ActionComponent,
@@ -75,11 +73,14 @@ const Component: ActionComponent = (props) => {
 
 export const updateAdminAction: Action<UpdateAdminData> = {
   key: ActionKey.UpdateAdmin,
-  Icon: UpdateAdminIcon,
-  label: 'Update Contract Admin',
+  label: '🍄 Update Contract Admin',
   description: 'Update the CosmWasm level admin of a smart contract.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
 }

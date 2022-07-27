@@ -43,7 +43,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
 
   return (
     <ActionCard
-      Icon={RemoveTokenIcon}
+      emoji={<Emoji label={t('emoji.token')} symbol="⭕️" />}
       onRemove={onRemove}
       title={t('title.removeTreasuryToken')}
     >
@@ -89,9 +89,4 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
       <TokenInfoDisplay {...options} />
     </ActionCard>
   )
-}
-
-export const RemoveTokenIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.token')} symbol="⭕️" />
 }

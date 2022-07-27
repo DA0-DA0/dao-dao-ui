@@ -2,53 +2,52 @@ import axios from 'axios'
 import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  DaoPageWrapper,
-  DaoPageWrapperProps,
-  useDaoInfoContext,
-} from '@dao-dao/common'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { MemberCheck } from '@dao-dao/icons'
 import { useVotingModule } from '@dao-dao/state'
 import {
   Breadcrumbs,
   GradientHero,
   MobileMenuTab,
-  PageLoader,
   PinToggle,
   SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
-import { SITE_URL } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+import { VotingModuleType } from '@dao-dao/utils'
 
 import {
   ContractHeader,
-  DaoInfo,
-  DaoMobileHeader,
+  Cw20StakedBalanceVotingPowerDisplay,
+  Cw4VotingMemberList,
+  DAOMobileHeader,
+  DAOPageWrapper,
+  DAOPageWrapperProps,
+  DaoContractInfo,
+  DaoHorizontalInfoDisplay,
   DaoProposals,
-  DaoThinInfo,
   DaoTreasury,
   DaoTreasuryHistory,
+  PageLoader,
   SmallScreenNav,
+  useDAOInfoContext,
 } from '@/components'
 import { usePinnedDAOs } from '@/hooks'
+import { makeGetDAOStaticProps } from '@/server/makeGetDAOStaticProps'
+import { useAddToken } from '@/util'
 
 enum MobileMenuTabSelection {
   Proposal,
-  Membership,
+  Members,
+  Staking,
   Treasury,
   Info,
 }
 
-const InnerMobileDaoHome = () => {
+const InnerMobileDaoHome: FC = () => {
   const { t } = useTranslation()
-  const {
-    components: { Membership },
-  } = useVotingModuleAdapter()
+  const { votingModuleType } = useDAOInfoContext()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
 
@@ -56,7 +55,7 @@ const InnerMobileDaoHome = () => {
     <div className="flex flex-col gap-2">
       <GradientHero>
         <SmallScreenNav />
-        <DaoMobileHeader />
+        <DAOMobileHeader />
       </GradientHero>
       <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
         <MobileMenuTab
@@ -65,10 +64,21 @@ const InnerMobileDaoHome = () => {
           selected={tab === MobileMenuTabSelection.Proposal}
           text={t('title.proposals')}
         />
-        <Membership.MobileTab
-          onClick={makeTabSetter(MobileMenuTabSelection.Membership)}
-          selected={tab === MobileMenuTabSelection.Membership}
-        />
+        {votingModuleType === VotingModuleType.Cw4Voting ? (
+          <MobileMenuTab
+            icon="👥"
+            onClick={makeTabSetter(MobileMenuTabSelection.Members)}
+            selected={tab === MobileMenuTabSelection.Members}
+            text={t('title.members')}
+          />
+        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
+          <MobileMenuTab
+            icon="💵"
+            onClick={makeTabSetter(MobileMenuTabSelection.Staking)}
+            selected={tab === MobileMenuTabSelection.Staking}
+            text={t('title.staking')}
+          />
+        ) : null}
         <MobileMenuTab
           icon="🏛"
           onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
@@ -84,31 +94,44 @@ const InnerMobileDaoHome = () => {
       </div>
       <div className="py-5 px-6">
         {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
-        {tab === MobileMenuTabSelection.Membership && <Membership.Mobile />}
+        {tab === MobileMenuTabSelection.Members && (
+          <Cw4VotingMemberList primaryText />
+        )}
+        {tab === MobileMenuTabSelection.Staking && (
+          <Cw20StakedBalanceVotingPowerDisplay primaryText />
+        )}
         {tab === MobileMenuTabSelection.Treasury && (
           <div className="space-y-8">
             <DaoTreasury />
             <DaoTreasuryHistory shortTitle />
           </div>
         )}
-        {tab === MobileMenuTabSelection.Info && <DaoInfo hideTreasury />}
+        {tab === MobileMenuTabSelection.Info && (
+          <DaoContractInfo hideTreasury />
+        )}
       </div>
     </div>
   )
 }
 
-const InnerDAOHome = () => {
+const InnerDAOHome: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
+  const addToken = useAddToken()
 
-  const { coreAddress, name } = useDaoInfoContext()
-  const {
-    components: { Membership },
-  } = useVotingModuleAdapter()
-  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+  const { votingModuleType, coreAddress, governanceTokenAddress, name } =
+    useDAOInfoContext()
+  const { isMember } = useVotingModule(coreAddress)
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)
+
+  const shouldAddToken = router.query.add_token
+  useEffect(() => {
+    if (shouldAddToken && governanceTokenAddress) {
+      addToken?.(governanceTokenAddress)
+    }
+  }, [shouldAddToken, governanceTokenAddress, addToken])
 
   return (
     <div className="flex flex-col items-stretch lg:grid lg:grid-cols-6">
@@ -138,6 +161,8 @@ const InnerDAOHome = () => {
                       setUnpinned(coreAddress)
                     } else {
                       setPinned(coreAddress)
+                      governanceTokenAddress &&
+                        addToken?.(governanceTokenAddress)
                     }
                   }}
                   pinned={pinned}
@@ -148,13 +173,18 @@ const InnerDAOHome = () => {
             <ContractHeader />
 
             <div className="mt-2">
-              <DaoThinInfo />
+              <DaoHorizontalInfoDisplay />
             </div>
             <div className="block mt-4 lg:hidden">
-              <Membership.Desktop />
+              {votingModuleType === VotingModuleType.Cw4Voting ? (
+                <Cw4VotingMemberList />
+              ) : votingModuleType ===
+                VotingModuleType.Cw20StakedBalanceVoting ? (
+                <Cw20StakedBalanceVotingPowerDisplay />
+              ) : null}
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
-              <DaoInfo />
+              <DaoContractInfo />
             </div>
           </div>
         </GradientHero>
@@ -164,13 +194,17 @@ const InnerDAOHome = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <Membership.Desktop />
+        {votingModuleType === VotingModuleType.Cw4Voting ? (
+          <Cw4VotingMemberList />
+        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting ? (
+          <Cw20StakedBalanceVotingPowerDisplay />
+        ) : null}
       </div>
     </div>
   )
 }
 
-interface DaoHomePageProps extends DaoPageWrapperProps {
+interface DaoHomePageProps extends DAOPageWrapperProps {
   accentColor?: string
 }
 
@@ -205,7 +239,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
   }, [accentColor, setAccentColor, isReady, isFallback])
 
   return (
-    <DaoPageWrapper {...props}>
+    <DAOPageWrapper {...props}>
       <SuspenseLoader fallback={<PageLoader />}>
         <div className="block md:hidden">
           <InnerMobileDaoHome />
@@ -214,7 +248,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
           <InnerDAOHome />
         </div>
       </SuspenseLoader>
-    </DaoPageWrapper>
+    </DAOPageWrapper>
   )
 }
 
@@ -227,28 +261,23 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDaoStaticProps({
-    getProps: async ({ coreAddress, config: { image_url } }) => {
-      const url = `${SITE_URL}/dao/${coreAddress}`
+  makeGetDAOStaticProps(async ({ config: { image_url } }) => {
+    if (!image_url) {
+      return
+    }
 
-      if (!image_url) {
-        return { url }
+    try {
+      const response = await axios.get(image_url, {
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+      const result = await getAverageColor(buffer)
+
+      return {
+        additionalProps: { accentColor: result.rgb },
       }
-
-      try {
-        const response = await axios.get(image_url, {
-          responseType: 'arraybuffer',
-        })
-        const buffer = Buffer.from(response.data, 'binary')
-        const result = await getAverageColor(buffer)
-
-        return {
-          url,
-          additionalProps: { accentColor: result.rgb },
-        }
-      } catch (error) {
-        // If fail to load image or get color, don't prevent page render.
-        console.error(error)
-      }
-    },
+    } catch (error) {
+      // If fail to load image or get color, don't prevent page render.
+      console.error(error)
+    }
   })

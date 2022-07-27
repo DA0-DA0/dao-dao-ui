@@ -7,14 +7,13 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw20BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { Cw20BaseSelectors, CwCoreSelectors } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
 
 import {
   ActionCardLoader,
-  RemoveTokenIcon,
   RemoveTokenComponent as StatelessRemoveTokenComponent,
 } from '../components'
 import {
@@ -35,7 +34,7 @@ const useDefaults: UseDefaults<RemoveTokenData> = () => ({
 })
 
 const InnerComponent: ActionComponent = (props) => {
-  const { getFieldName, errors, Loader } = props
+  const { getFieldName, errors } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
@@ -51,7 +50,7 @@ const InnerComponent: ActionComponent = (props) => {
 
   const existingTokenAddresses =
     useRecoilValue(
-      CwCoreV0_1_0Selectors.allCw20TokenListSelector({
+      CwCoreSelectors.allCw20TokenListSelector({
         contractAddress: props.coreAddress,
       })
     ) ?? []
@@ -115,14 +114,13 @@ const InnerComponent: ActionComponent = (props) => {
           tokenInfoLoadable.state === 'hasValue'
             ? tokenInfoLoadable.contents
             : undefined,
-        Loader,
       }}
     />
   )
 }
 
 const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
+  <SuspenseLoader fallback={<ActionCardLoader />}>
     <InnerComponent {...props} />
   </SuspenseLoader>
 )
@@ -173,11 +171,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveTokenData> = (
 
 export const removeTokenAction: Action<RemoveTokenData> = {
   key: ActionKey.RemoveToken,
-  Icon: RemoveTokenIcon,
-  label: 'Remove Treasury Token',
+  label: '⭕️ Remove Treasury Token',
   description: "Remove a token from your DAO's treasury.",
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
 }

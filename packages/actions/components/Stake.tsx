@@ -128,7 +128,11 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   ])
 
   return (
-    <ActionCard Icon={StakeIcon} onRemove={onRemove} title={t('title.stake')}>
+    <ActionCard
+      emoji={<Emoji label={t('emoji.box')} symbol="📤" />}
+      onRemove={onRemove}
+      title={t('title.stake')}
+    >
       <div className="flex flex-row gap-4 mt-2">
         <SelectInput
           defaultValue={stakeActions[0].type}
@@ -236,9 +240,4 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const StakeIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.box')} symbol="📤" />
 }

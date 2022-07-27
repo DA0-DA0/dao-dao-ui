@@ -43,7 +43,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   return (
     <ActionCard
-      Icon={ExecuteIcon}
+      emoji={<Emoji label={t('emoji.swords')} symbol="⚔️" />}
       onRemove={onRemove}
       title={t('title.executeSmartContract')}
     >
@@ -130,9 +130,4 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       </div>
     </ActionCard>
   )
-}
-
-export const ExecuteIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.swords')} symbol="⚔️" />
 }

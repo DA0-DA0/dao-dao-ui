@@ -8,26 +8,25 @@ export const pinnedAddressesAtom = atom<string[]>({
   effects: [localStorageEffect('pinnedAddresses')],
 })
 
-// When marking a proposal as done, either by voting on it or manually pressing
-// the done button in the open list, add to this list so it gets ignored when
-// fetching the open proposals. Map DAO core address to list of done proposal
-// IDs by proposal module address.
-export const pinnedProposalsMarkedDoneAtom = atom<
-  Record<string, Record<string, number[] | undefined> | undefined>
+// When marking a proposal as done, either by voting on it or manually
+// pressing the done button in the open list, add to this list so it gets
+// ignored when fetching the open proposals.
+// Map DAO core address to list of done proposal IDs.
+export const pinnedProposalIDsMarkedDoneAtom = atom<
+  Record<string, number[] | undefined>
 >({
-  key: 'pinnedProposalsMarkedDone',
+  key: 'pinnedProposalIDsMarkedDone',
   default: {},
-  effects: [localStorageEffect('pinnedProposalsMarkedDone')],
+  effects: [localStorageEffect('pinnedProposalIDsMarkedDone')],
 })
 
-// Map DAO core address to most recent proposal ID by proposal module address to
-// NOT display on the homepage, for caching purposes. No need to load all
-// proposals every time once all proposals before a certain point are marked
-// done.
-export const pinnedLatestProposalsMarkedDoneAtom = atom<
-  Record<string, Record<string, number | undefined> | undefined>
+// Map DAO core address to most recent proposal ID to NOT display on the
+// homepage, for caching purposes. No need to load all proposals every time
+// once all proposals before a certain point are marked done.
+export const pinnedLatestProposalIDsMarkedDoneAtom = atom<
+  Record<string, number | undefined>
 >({
-  key: 'pinnedLatestProposalsMarkedDone',
+  key: 'pinnedLatestProposalIDsMarkedDone',
   default: {},
-  effects: [localStorageEffect('pinnedLatestProposalsMarkedDone')],
+  effects: [localStorageEffect('pinnedLatestProposalIDsMarkedDone')],
 })

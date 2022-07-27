@@ -1,12 +1,11 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
+import { FC } from 'react'
 
-export interface ErrorPageProps {
+interface ErrorPageProps {
   title: string
-  children: ReactNode
 }
 
-export const ErrorPage = ({ title, children }: ErrorPageProps) => (
+export const ErrorPage: FC<ErrorPageProps> = ({ title, children }) => (
   <div className="p-6 mx-auto max-w-prose text-center break-words">
     <h1 className={clsx('header-text', { 'mb-3': !!children })}>{title}</h1>
 

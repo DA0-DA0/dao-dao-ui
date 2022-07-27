@@ -1,12 +1,8 @@
-import { ComponentType } from 'react'
+import { FC, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Member } from '@dao-dao/state/clients/cw4-voting'
-import {
-  Loader as DefaultLoader,
-  LoaderProps,
-  VoteBalanceCard,
-} from '@dao-dao/ui'
+import { VoteBalanceCard } from '@dao-dao/ui'
 
 export interface MultisigMembersListProps {
   walletAddress?: string
@@ -16,13 +12,13 @@ export interface MultisigMembersListProps {
   primaryText?: boolean
 }
 
-export const MultisigMemberList = ({
+export const MultisigMemberList: FC<MultisigMembersListProps> = ({
   walletAddress,
   walletWeight,
   members,
   totalWeight,
   primaryText,
-}: MultisigMembersListProps) => {
+}) => {
   const { t } = useTranslation()
 
   return (
@@ -65,13 +61,13 @@ export const MultisigMemberList = ({
 
 interface MultisigMembersListLoaderProps
   extends Pick<MultisigMembersListProps, 'primaryText'> {
-  Loader?: ComponentType<LoaderProps>
+  loader: ReactNode
 }
 
-export const MultisigMemberListLoader = ({
+export const MultisigMemberListLoader: FC<MultisigMembersListLoaderProps> = ({
   primaryText,
-  Loader = DefaultLoader,
-}: MultisigMembersListLoaderProps) => {
+  loader,
+}) => {
   const { t } = useTranslation()
 
   return (
@@ -81,7 +77,7 @@ export const MultisigMemberListLoader = ({
           {t('title.yourVotingPower')}
         </h2>
 
-        <Loader />
+        {loader}
       </div>
 
       <div className="space-y-3">
@@ -89,7 +85,7 @@ export const MultisigMemberListLoader = ({
           {t('title.memberVotingPowers')}
         </h2>
 
-        <Loader />
+        {loader}
       </div>
     </div>
   )

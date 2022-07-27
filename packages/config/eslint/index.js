@@ -135,7 +135,7 @@ const eslintConfig = {
                 ignore: 'import\\.js',
               },
               message:
-                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV0_1_0Selectors.',
+                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreSelectors.',
             },
             {
               regex: '(?:\\.\\.\\/)+(atoms|components|hooks|util)',

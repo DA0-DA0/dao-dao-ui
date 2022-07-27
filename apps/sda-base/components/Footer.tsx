@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Logo as DaoDaoLogo } from '@dao-dao/ui'
+import { DAODAOLogo } from '@/components'
 
 export const Footer = () => {
   const { t } = useTranslation()
@@ -13,7 +13,7 @@ export const Footer = () => {
       target="_blank"
     >
       <div className="cursor-pointer">
-        <DaoDaoLogo size={32} />
+        <DAODAOLogo height={32} width={32} />
       </div>
       <p className="mt-4 font-studiofeixen">{t('info.poweredByDAODAO')}</p>
     </a>

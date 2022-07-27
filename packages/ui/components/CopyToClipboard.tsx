@@ -1,10 +1,11 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Copy } from '@dao-dao/icons'
-import { Button } from '@dao-dao/ui'
+import { Button, useThemeContext } from '@dao-dao/ui'
 
 const concatAddressImpl = (
   address: string,
@@ -60,6 +61,34 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
           ? concatAddressImpl(value, takeStartEnd.start, takeStartEnd.end)
           : concatAddress(value, takeN)}
       </span>
+    </button>
+  )
+}
+
+export const CopyToClipboardAccent: FC<CopyToClipboardProps> = ({
+  value,
+  success = 'Copied to clipboard!',
+  loading,
+}) => {
+  const { accentColor } = useThemeContext()
+
+  return (
+    <button
+      className={clsx(
+        'text-sm text-brand underline hover:no-underline transition',
+        loading && 'rounded-sm animate-pulse'
+      )}
+      onClick={() => {
+        navigator.clipboard.writeText(value)
+        toast.success(success)
+      }}
+      style={
+        loading
+          ? { backgroundColor: accentColor, color: accentColor }
+          : { color: accentColor }
+      }
+    >
+      {concatAddressImpl(value, 12, 7)}
     </button>
   )
 }

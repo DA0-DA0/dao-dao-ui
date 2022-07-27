@@ -1,9 +1,10 @@
-import { ComponentType } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Loader as DefaultLoader, LoaderProps } from '../Loader'
-import { Logo as DefaultLogo, LogoProps } from '../Logo'
-import { MarkdownPreview } from '../MarkdownPreview'
+import { MarkdownPreview } from '@dao-dao/ui'
+import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
+
+import { Logo } from '../Logo'
 import { EstablishedDate, EstablishedDateLoader } from './EstablishedDate'
 
 export interface ContractHeaderProps {
@@ -11,21 +12,19 @@ export interface ContractHeaderProps {
   description: string
   established: Date | undefined
   imgUrl?: string
-  Logo?: ComponentType<LogoProps>
 }
 
-export const ContractHeader = ({
+export const ContractHeader: FC<ContractHeaderProps> = ({
   name,
   description,
   established,
   imgUrl,
-  Logo = DefaultLogo,
-}: ContractHeaderProps) => {
+}) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-col items-center mt-2">
-      {imgUrl ? (
+      {imgUrl && HEADER_IMAGES_ENABLED ? (
         <div
           aria-label={t('info.daosLogo')}
           className="w-[95px] h-[95px] bg-center bg-cover rounded-full"
@@ -35,7 +34,7 @@ export const ContractHeader = ({
           }}
         ></div>
       ) : (
-        <Logo size={85} />
+        <Logo alt={t('info.daodaoLogo')} height={85} width={85} />
       )}
       <div className="flex flex-col items-center">
         <h1 className="inline mt-5 header-text">{name}</h1>
@@ -51,18 +50,14 @@ export const ContractHeader = ({
   )
 }
 
-export interface ContractHeaderLoaderProps {
-  Loader?: ComponentType<LoaderProps>
-}
-
-export const ContractHeaderLoader = ({
-  Loader = DefaultLoader,
-}: ContractHeaderLoaderProps) => {
+export const ContractHeaderLoader: FC = () => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-col items-center mt-2">
-      <Loader fill={false} size={85} />
+      <div className="animate-spin-medium">
+        <Logo alt={t('info.daodaoLogo')} height={85} width={85} />
+      </div>
 
       <div className="flex flex-col items-center">
         <h1 className="inline invisible mt-5 header-text">{t('info.name')}</h1>

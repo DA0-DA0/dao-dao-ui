@@ -8,11 +8,11 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Loader, Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
-import { usePlatform } from '@dao-dao/utils'
+import { Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
 
 import { commandModalVisibleAtom } from '@/atoms'
-import { PinnedDAONavList } from '@/components'
+import { Loader, PinnedDAONavList } from '@/components'
 import ThemeToggle from 'components/ThemeToggle'
 
 interface NavProps {
@@ -31,7 +31,7 @@ export const Nav = ({ onMenuClick }: NavProps) => {
           <div className="flex justify-between items-center lg:justify-start">
             <Link href="/home">
               <a>
-                <Logo size={28} />
+                <Logo alt={`${SITE_TITLE} Logo`} height={28} width={28} />
               </a>
             </Link>
             <div className="cursor-pointer lg:hidden" onClick={onMenuClick}>
@@ -49,7 +49,7 @@ export const Nav = ({ onMenuClick }: NavProps) => {
           </button>
 
           <div className="my-4 w-full">
-            <ConnectWalletButton className="w-full" />
+            <ConnectWalletButton />
           </div>
           <div className="ml-1 text-sm">
             <div className="mt-6">

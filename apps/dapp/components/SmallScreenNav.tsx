@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 
+import { Loader } from './Loader'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
 
 interface SmallScreenNavProps {
@@ -36,7 +37,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       <div className="flex gap-6 justify-between items-center">
         <Link href="/home" passHref>
           <a>
-            <Logo size={28} />
+            <Logo height={28} width={28} />
           </a>
         </Link>
         <ConnectWalletButton mobile />

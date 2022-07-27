@@ -1,13 +1,12 @@
 import clsx from 'clsx'
 import {
   ComponentPropsWithoutRef,
-  ComponentType,
   ForwardedRef,
   ReactNode,
   forwardRef,
 } from 'react'
 
-import { Logo as DefaultLogo, LogoProps } from '../Logo'
+import { Logo } from '../Logo'
 
 export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: ReactNode
@@ -18,7 +17,6 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   loading?: boolean
   contentContainerClassName?: string
   active?: boolean
-  Logo?: ComponentType<LogoProps>
 }
 
 function ButtonComponent(
@@ -32,7 +30,6 @@ function ButtonComponent(
     contentContainerClassName,
     type = 'button',
     active,
-    Logo = DefaultLogo,
     ...rest
   }: ButtonProps,
   ref?: ForwardedRef<any>
@@ -71,7 +68,7 @@ function ButtonComponent(
             invisible: !loading,
           })}
         >
-          <Logo invert size={20} />
+          <Logo height={20} invert width={20} />
         </div>
       </div>
       <div

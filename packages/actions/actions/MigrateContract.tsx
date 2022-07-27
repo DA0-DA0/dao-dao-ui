@@ -2,11 +2,9 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
+import { VotingModuleType } from '@dao-dao/utils'
 
-import {
-  MigrateContractIcon,
-  MigrateContractComponent as StatelessMigrateContractComponent,
-} from '../components'
+import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components'
 import {
   Action,
   ActionComponent,
@@ -79,11 +77,14 @@ const Component: ActionComponent = (props) => {
 
 export const migrateAction: Action<MigrateData> = {
   key: ActionKey.Migrate,
-  Icon: MigrateContractIcon,
-  label: 'Migrate Smart Contract',
+  label: '🐋 Migrate Smart Contract',
   description: 'Migrate a CosmWasm contract to a new code ID.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
 }

@@ -1,16 +1,18 @@
-import { Children, ReactNode } from 'react'
+import { Children, FC, ReactNode } from 'react'
 
 export interface HorizontalInfoProps {
-  children?: ReactNode
+  children: ReactNode
 }
 
-export const HorizontalInfoSection = ({ children }: HorizontalInfoProps) => (
+export const HorizontalInfoSection: FC<HorizontalInfoProps> = ({
+  children,
+}) => (
   <div className="flex flex-row gap-1 items-center caption-text">
     {children}
   </div>
 )
 
-export const HorizontalInfo = ({ children }: HorizontalInfoProps) => {
+export const HorizontalInfo: FC<HorizontalInfoProps> = ({ children }) => {
   const childList = Children.toArray(children)
   return (
     <div className="py-[20px] w-full border-y border-inactive">

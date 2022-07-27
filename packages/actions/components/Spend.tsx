@@ -136,7 +136,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   )
 
   return (
-    <ActionCard Icon={SpendIcon} onRemove={onRemove} title={t('title.spend')}>
+    <ActionCard
+      emoji={<Emoji label={t('emoji.money')} symbol="💵" />}
+      onRemove={onRemove}
+      title={t('title.spend')}
+    >
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
           <NumberInput
@@ -210,9 +214,4 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const SpendIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.money')} symbol="💵" />
 }

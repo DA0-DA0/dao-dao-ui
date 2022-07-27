@@ -1,34 +1,29 @@
 import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
-import { ComponentType, useEffect, useState } from 'react'
+import { FC, FunctionComponent, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { LoaderProps, LogoProps, SuspenseLoader } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
+import { SuspenseLoader } from '@dao-dao/ui'
 
 import { ActionAndData, ActionCardLoader } from '..'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   coreAddress: string
-  proposalModule: ProposalModule
+  proposalId: number
   actionData: ActionAndData[]
-  Loader: ComponentType<LoaderProps>
-  Logo: ComponentType<LogoProps>
 }
 
-export const ActionsRenderer = (props: ActionsRendererProps) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
+export const ActionsRenderer: FC<ActionsRendererProps> = (props) => (
+  <SuspenseLoader fallback={<ActionCardLoader />}>
     <InnerActionsRenderer {...props} />
   </SuspenseLoader>
 )
 
-const InnerActionsRenderer = ({
+const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
   coreAddress,
-  proposalModule,
+  proposalId,
   actionData,
-  Loader,
-  Logo,
-}: ActionsRendererProps) => {
+}) => {
   const formMethods = useForm({
     defaultValues: actionData.reduce(
       (acc, { data }, index) => ({
@@ -53,8 +48,6 @@ const InnerActionsRenderer = ({
         {actionData.map(({ action: { Component } }, index) => (
           <div key={index} className="group relative" id={`A${index + 1}`}>
             <Component
-              Loader={Loader}
-              Logo={Logo}
               allActionsWithData={actionData.map(
                 ({ action: { key }, data }) => ({
                   key,
@@ -62,10 +55,9 @@ const InnerActionsRenderer = ({
                 })
               )}
               coreAddress={coreAddress}
-              data={actionData[index].data}
               getFieldName={(field: string) => `${index}.${field}`}
               index={index}
-              proposalModule={proposalModule}
+              proposalId={proposalId}
               readOnly
             />
 

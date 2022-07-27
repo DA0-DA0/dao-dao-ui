@@ -16,13 +16,16 @@ export const CustomComponent: ActionComponent = ({
   onRemove,
   errors,
   readOnly,
-  Loader,
 }) => {
   const { t } = useTranslation()
   const { control } = useFormContext()
 
   return (
-    <ActionCard Icon={CustomIcon} onRemove={onRemove} title={t('title.custom')}>
+    <ActionCard
+      emoji={<Emoji label={t('emoji.robot')} symbol="🤖" />}
+      onRemove={onRemove}
+      title={t('title.custom')}
+    >
       <CodeMirrorInput
         control={control}
         error={errors?.message}
@@ -53,7 +56,7 @@ export const CustomComponent: ActionComponent = ({
           <p className="flex gap-1 items-center text-sm text-error">
             <XIcon className="inline w-5" />{' '}
             {errors.message.message === INVALID_COSMOS_MSG ? (
-              <Trans Loader={Loader} i18nKey="error.invalidCosmosMessage">
+              <Trans i18nKey="error.invalidCosmosMessage">
                 Invalid{' '}
                 <a
                   className="inline underline link"
@@ -76,9 +79,4 @@ export const CustomComponent: ActionComponent = ({
       </div>
     </ActionCard>
   )
-}
-
-export const CustomIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.robot')} symbol="🤖" />
 }

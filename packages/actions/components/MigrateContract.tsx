@@ -32,19 +32,18 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   readOnly,
   coreAddress,
   options: { onContractChange, contractAdmin },
-  Loader,
 }) => {
   const { register, control } = useFormContext()
   const { t } = useTranslation()
 
   return (
     <ActionCard
-      Icon={MigrateContractIcon}
+      emoji={<Emoji label={t('emoji.whale')} symbol="🐋" />}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
       <p className="mb-4 max-w-prose secondary-text">
-        <Trans key={'form.migrateDescription'} Loader={Loader}>
+        <Trans key={'form.migrateDescription'}>
           This will{' '}
           <a
             className="underline"
@@ -98,9 +97,4 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const MigrateContractIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.whale')} symbol="🐋" />
 }

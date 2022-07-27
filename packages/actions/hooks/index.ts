@@ -1,1 +1,1 @@
-export * from './useActions'
+export * from './useActionsForVotingModuleType'

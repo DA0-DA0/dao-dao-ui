@@ -1,16 +1,12 @@
-import { ComponentType, ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 
-import { LogoNoBorder, LogoProps } from './Logo'
+import { LogoNoBorder } from './Logo'
 
 export interface GradientWrapperProps {
-  Logo?: ComponentType<LogoProps>
   children: ReactNode
 }
 
-export const GradientWrapper = ({
-  Logo = LogoNoBorder,
-  children,
-}: GradientWrapperProps) => (
+export const GradientWrapper: FC<GradientWrapperProps> = ({ children }) => (
   <div className="flex overflow-x-hidden relative flex-col items-center">
     {typeof CSS.supports !== 'undefined' &&
       // eslint-disable-next-line i18next/no-literal-string
@@ -19,7 +15,7 @@ export const GradientWrapper = ({
           className="absolute top-0 left-1/2 -z-20 mt-[60px] -ml-[250px] text-[#06090B]"
           style={{ transform: 'rotate(270)' }}
         >
-          <Logo size={500} />
+          <LogoNoBorder height={500} width={500} />
         </div>
       )}
     <div

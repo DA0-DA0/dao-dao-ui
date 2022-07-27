@@ -1,32 +1,16 @@
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  Cw20StakedBalanceVotingSelectors,
   CwRewardsSelectors,
   StakeCw20Selectors,
-  useVotingModule,
+  useStakingInfo,
 } from '@dao-dao/state'
 import { JUNO_BLOCKS_PER_YEAR } from '@dao-dao/utils'
 
 import { DAO_ADDRESS, REWARDS_ADDRESS } from '@/util'
 
 export const useApr = () => {
-  const { t } = useTranslation()
-  const { votingModuleAddress } = useVotingModule(DAO_ADDRESS)
-  if (!votingModuleAddress) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  // Assumes DAO is using cw20-staked-balance-voting.
-  const stakingContractAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
-      contractAddress: votingModuleAddress,
-    })
-  )
-  if (!stakingContractAddress) {
-    throw new Error(t('error.loadingData'))
-  }
+  const { stakingContractAddress } = useStakingInfo(DAO_ADDRESS)
 
   // rate * blocks_per_year / total_value_staked
   const rate = useRecoilValue(
@@ -35,9 +19,11 @@ export const useApr = () => {
       : constSelector(undefined)
   )
   const totalValueStaked = useRecoilValue(
-    StakeCw20Selectors.totalValueSelector({
-      contractAddress: stakingContractAddress,
-    })
+    stakingContractAddress
+      ? StakeCw20Selectors.totalValueSelector({
+          contractAddress: stakingContractAddress,
+        })
+      : constSelector(undefined)
   )
   const apr =
     totalValueStaked && rate

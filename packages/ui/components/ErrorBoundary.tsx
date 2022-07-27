@@ -2,7 +2,6 @@ import { Component, ErrorInfo, ReactNode } from 'react'
 import { WithTranslationProps, withTranslation } from 'react-i18next'
 
 import { ErrorPage } from '@dao-dao/ui'
-import { VERCEL_ENV } from '@dao-dao/utils'
 
 interface ErrorBoundaryProps extends WithTranslationProps {
   children: ReactNode
@@ -41,11 +40,6 @@ class ErrorBoundaryInner extends Component<
     return this.state.hasError ? (
       <ErrorPage title={title}>
         <p>{this.props.i18n?.t('error.checkInternetOrTryAgain')}</p>
-        {VERCEL_ENV === 'preview' && (
-          <pre className="mt-8 text-xs text-mono">
-            {this.state.error?.message}
-          </pre>
-        )}
       </ErrorPage>
     ) : (
       children

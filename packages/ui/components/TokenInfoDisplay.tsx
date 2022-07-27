@@ -1,20 +1,18 @@
-import { ComponentType } from 'react'
+import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
-import { Loader as DefaultLoader, InputLabel, LoaderProps } from '@dao-dao/ui'
+import { InputLabel, Loader } from '@dao-dao/ui'
 
 export interface TokenInfoDisplayProps {
   loadingTokenInfo?: boolean
   tokenInfo?: TokenInfoResponse
-  Loader?: ComponentType<LoaderProps>
 }
 
-export const TokenInfoDisplay = ({
+export const TokenInfoDisplay: FunctionComponent<TokenInfoDisplayProps> = ({
   loadingTokenInfo,
   tokenInfo,
-  Loader = DefaultLoader,
-}: TokenInfoDisplayProps) => {
+}) => {
   const { t } = useTranslation()
 
   return loadingTokenInfo ? (

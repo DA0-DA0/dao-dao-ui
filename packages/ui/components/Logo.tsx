@@ -1,24 +1,25 @@
-import clsx from 'clsx'
-import { useTranslation } from 'react-i18next'
-
-export interface LogoProps {
-  size?: number | string
-  className?: string
+export function Logo({
+  width = 28,
+  height = 28,
+  alt = '',
+  invert = false,
+  className = '',
+}: {
+  width?: number | string
+  height?: number | string
+  alt?: string
   invert?: boolean
-}
-
-export const Logo = ({ size = 28, invert, className }: LogoProps) => {
-  const { t } = useTranslation()
+  className?: string
+}) {
   const fill = invert ? '--white' : '--black'
-
   return (
     <svg
-      aria-label={t('info.daodaoLogo')}
+      aria-label={alt}
       className={className}
       fill="none"
-      height={size}
+      height={height}
       viewBox={`0 0 28 28`}
-      width={size}
+      width={width}
       xmlns="http://www.w3.org/2000/svg"
     >
       <circle
@@ -44,17 +45,25 @@ export const Logo = ({ size = 28, invert, className }: LogoProps) => {
   )
 }
 
-export const LogoNoBorder = ({ size = 28, className }: LogoProps) => {
-  const { t } = useTranslation()
-
+export function LogoNoBorder({
+  width = 28,
+  height = 28,
+  alt = '',
+  className,
+}: {
+  width?: number | string
+  height?: number | string
+  alt?: string
+  className?: string
+}) {
   return (
     <svg
-      aria-label={t('info.daodaoLogo')}
+      aria-label={alt}
       className={className}
       fill="none"
-      height={size}
+      height={height}
       viewBox={`0 0 28 28`}
-      width={size}
+      width={width}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -64,35 +73,5 @@ export const LogoNoBorder = ({ size = 28, className }: LogoProps) => {
         style={{ fill: 'rgb(var(--black))' }}
       />
     </svg>
-  )
-}
-
-interface LogoFromImageProps extends LogoProps {
-  src: string
-  rounded?: boolean
-}
-
-export const LogoFromImage = ({
-  size = 28,
-  className,
-  src,
-  rounded = false,
-}: LogoFromImageProps) => {
-  const { t } = useTranslation()
-
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      alt={t('info.logo')}
-      className={clsx(
-        {
-          'overflow-hidden rounded-full': rounded,
-        },
-        className
-      )}
-      height={size}
-      src={src}
-      width={size}
-    />
   )
 }

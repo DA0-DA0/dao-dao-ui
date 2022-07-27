@@ -4,13 +4,14 @@ import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwCoreV0_1_0Selectors,
+  CwCoreSelectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
+  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeBankMessage,
@@ -20,7 +21,6 @@ import {
 
 import {
   ActionCardLoader,
-  SpendIcon,
   SpendComponent as StatelessSpendComponent,
 } from '../components'
 import {
@@ -52,7 +52,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   coreAddress: string
 ) => {
   const cw20Addresses = useRecoilValue(
-    CwCoreV0_1_0Selectors.allCw20TokenListSelector({
+    CwCoreSelectors.allCw20TokenListSelector({
       contractAddress: coreAddress,
     })
   )
@@ -189,7 +189,7 @@ const InnerSpendComponent: ActionComponent = (props) => {
 
   const cw20AddressesAndBalances =
     useRecoilValue(
-      CwCoreV0_1_0Selectors.allCw20BalancesSelector({
+      CwCoreSelectors.allCw20BalancesSelector({
         contractAddress: props.coreAddress,
       })
     ) ?? []
@@ -229,18 +229,21 @@ const InnerSpendComponent: ActionComponent = (props) => {
 }
 
 const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
+  <SuspenseLoader fallback={<ActionCardLoader />}>
     <InnerSpendComponent {...props} />
   </SuspenseLoader>
 )
 
 export const spendAction: Action<SpendData> = {
   key: ActionKey.Spend,
-  Icon: SpendIcon,
-  label: 'Spend',
+  label: '💵 Spend',
   description: 'Spend native or cw20 tokens from the treasury.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
+  votingModuleTypes: [
+    VotingModuleType.Cw20StakedBalanceVoting,
+    VotingModuleType.Cw4Voting,
+  ],
 }

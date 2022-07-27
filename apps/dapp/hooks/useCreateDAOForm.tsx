@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
-import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Cw20Coin,
@@ -48,7 +48,7 @@ import {
   NewDAO,
   NewDAOStructure,
   convertDurationWithUnitsToDuration,
-  convertThresholdValueToCwProposalSinglePercentageThreshold,
+  convertThresholdValueToPercentageThreshold,
   generateDefaultNewDAO,
   newDAOAtom,
 } from '@/atoms'
@@ -175,35 +175,28 @@ export const useCreateDAOForm = (pageIndex: number) => {
         if (connected) {
           setCreating(true)
           try {
-            const address = await toast.promise(
-              createDAOWithFactory(instantiateWithFactory, values).then(
-                // TODO: Figure out better solution for detecting block.
-                (address) =>
-                  // New wallet balances will not appear until the next block.
-                  new Promise<string>((resolve) =>
-                    setTimeout(() => resolve(address), 6500)
-                  )
-              ),
-              {
-                loading: t('info.creatingDao'),
-                success: t('success.daoCreatedPleaseWait'),
-                error: (err) => processError(err),
-              }
+            const address = await createDAOWithFactory(
+              instantiateWithFactory,
+              values
             )
-
             if (address) {
+              // TODO: Figure out better solution for detecting block.
+              // New wallet balances will not appear until the next block.
+              await new Promise((resolve) => setTimeout(resolve, 6500))
+
+              refreshBalances()
               setPinned(address)
 
-              await refreshBalances()
-
               router.push(`/dao/${address}`)
+              toast.success(t('success.daoCreatedPleaseWait'))
               // Don't stop creating loading on success since we're
               // navigating, and it's weird when loading stops and
               // nothing happens for a sec.
             }
           } catch (err) {
-            // toast.promise above will handle displaying the error
             console.error(err)
+            toast.error(processError(err))
+
             setCreating(false)
           }
         } else {
@@ -551,22 +544,15 @@ const useMakeCreateDAOMsg = () => {
           threshold: quorumEnabled
             ? {
                 threshold_quorum: {
-                  quorum:
-                    convertThresholdValueToCwProposalSinglePercentageThreshold(
-                      quorum
-                    ),
+                  quorum: convertThresholdValueToPercentageThreshold(quorum),
                   threshold:
-                    convertThresholdValueToCwProposalSinglePercentageThreshold(
-                      threshold
-                    ),
+                    convertThresholdValueToPercentageThreshold(threshold),
                 },
               }
             : {
                 absolute_percentage: {
                   percentage:
-                    convertThresholdValueToCwProposalSinglePercentageThreshold(
-                      threshold
-                    ),
+                    convertThresholdValueToPercentageThreshold(threshold),
                 },
               },
         }

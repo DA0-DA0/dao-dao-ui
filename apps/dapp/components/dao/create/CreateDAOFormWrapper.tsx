@@ -5,7 +5,6 @@ import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { Button, SubmitButton } from '@dao-dao/ui'
-import { SITE_URL } from '@dao-dao/utils'
 
 import {
   CreateDAOSubmitLabel,
@@ -57,7 +56,6 @@ export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
           title: t('title.createADAO'),
           // TODO: different description?
           description: t('title.createADAO'),
-          url: SITE_URL + currentPage.href,
         }}
         title={t('title.createADAO')}
       />

@@ -92,7 +92,7 @@ const CreateDAOReviewPage: NextPage = () => {
                     src={watchedNewDAO.imageUrl}
                   />
                 ) : (
-                  <Logo size="100%" />
+                  <Logo alt={t('info.daodaoLogo')} height="100%" width="100%" />
                 )}
               </div>
             </div>

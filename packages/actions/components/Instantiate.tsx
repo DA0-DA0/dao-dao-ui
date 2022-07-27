@@ -54,7 +54,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   return (
     <ActionCard
-      Icon={InstantiateIcon}
+      emoji={<Emoji label={t('emoji.baby')} symbol="👶" />}
       onRemove={onRemove}
       title={t('title.instantiateSmartContract')}
     >
@@ -179,9 +179,4 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       </div>
     </ActionCard>
   )
-}
-
-export const InstantiateIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.baby')} symbol="👶" />
 }

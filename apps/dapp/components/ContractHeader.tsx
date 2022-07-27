@@ -1,6 +1,6 @@
+import { FC } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { contractInstantiateTimeSelector } from '@dao-dao/state'
 import {
   ContractHeaderLoader,
@@ -8,8 +8,10 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 
-const ContractHeaderInternal = () => {
-  const { coreAddress, name, description, imageUrl } = useDaoInfoContext()
+import { useDAOInfoContext } from './DAOPageWrapper'
+
+const ContractHeaderInternal: FC = () => {
+  const { coreAddress, name, description, imageUrl } = useDAOInfoContext()
   const establishedDate = useRecoilValueLoadable(
     contractInstantiateTimeSelector(coreAddress)
   )
@@ -27,7 +29,7 @@ const ContractHeaderInternal = () => {
   )
 }
 
-export const ContractHeader = () => (
+export const ContractHeader: FC = () => (
   <SuspenseLoader fallback={<ContractHeaderLoader />}>
     <ContractHeaderInternal />
   </SuspenseLoader>

@@ -7,11 +7,11 @@ import {
   useWallet,
 } from '@noahsaso/cosmodal'
 import { isMobile } from '@walletconnect/browser-utils'
-import { ComponentType, PropsWithChildren, ReactNode, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Loader as DefaultLoader, LoaderProps } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/ui'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
@@ -22,20 +22,24 @@ import {
   WC_ICON_PATH,
 } from '@dao-dao/utils'
 
+const InnerWalletProvider: FC = ({ children }) => {
+  const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
+  const { signingCosmWasmClient } = useWallet()
+
+  // Save client in recoil atom so it can be used by selectors.
+  useEffect(() => {
+    setSigningCosmWasmClient(signingCosmWasmClient)
+  }, [setSigningCosmWasmClient, signingCosmWasmClient])
+
+  return <>{children}</>
+}
+
 // Assert environment variable CHAIN_ID is a valid chain.
 if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
   throw new Error(`CHAIN_ID constant (${CHAIN_ID}) is an invalid chain ID.`)
 }
 
-export interface WalletProviderProps {
-  children: ReactNode
-  Loader?: ComponentType<LoaderProps>
-}
-
-export const WalletProvider = ({
-  Loader = DefaultLoader,
-  children,
-}: WalletProviderProps) => (
+export const WalletProvider: FC = ({ children }) => (
   <WalletManagerProvider
     // Use environment variables to determine RPC/REST nodes.
     chainInfoOverrides={[
@@ -97,15 +101,3 @@ export const WalletProvider = ({
     <InnerWalletProvider>{children}</InnerWalletProvider>
   </WalletManagerProvider>
 )
-
-const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
-  const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
-  const { signingCosmWasmClient } = useWallet()
-
-  // Save client in recoil atom so it can be used by selectors.
-  useEffect(() => {
-    setSigningCosmWasmClient(signingCosmWasmClient)
-  }, [setSigningCosmWasmClient, signingCosmWasmClient])
-
-  return <>{children}</>
-}

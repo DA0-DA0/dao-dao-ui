@@ -12,8 +12,6 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/actions',
   '@dao-dao/common',
   '@dao-dao/i18n',
-  '@dao-dao/voting-module-adapter',
-  '@dao-dao/proposal-module-adapter',
 ])
 
 const { withSentryConfig } = require('@sentry/nextjs')
@@ -54,7 +52,7 @@ let config = {
       permanent: false,
     },
     // Redirect legacy multisigs (legacy DAOs redirected in
-    // makeGetDaoStaticProps function).
+    // makeGetDAOStaticProps function).
     {
       source: '/multisig/:slug*',
       destination:

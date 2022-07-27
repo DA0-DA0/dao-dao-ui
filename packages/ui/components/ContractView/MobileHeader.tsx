@@ -1,11 +1,9 @@
-import { ComponentType } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, PinToggle } from '@dao-dao/ui'
-
-import { Loader as DefaultLoader, LoaderProps } from '../Loader'
-import { Logo as DefaultLogo, LogoProps } from '../Logo'
+import { CopyToClipboardMobile, Logo, PinToggle } from '@dao-dao/ui'
+import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
 
 export interface MobileHeaderProps {
   imageUrl?: string
@@ -14,24 +12,22 @@ export interface MobileHeaderProps {
   pinned: boolean
   onPin: () => void
   contractAddress: string
-  Logo?: ComponentType<LogoProps>
 }
 
-export const MobileHeader = ({
+export const MobileHeader: FC<MobileHeaderProps> = ({
   imageUrl,
   name,
   member,
   pinned,
   onPin,
   contractAddress,
-  Logo = DefaultLogo,
-}: MobileHeaderProps) => {
+}) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
-        {imageUrl ? (
+        {imageUrl && HEADER_IMAGES_ENABLED ? (
           <div
             aria-label={t('info.daosLogo')}
             className="w-[72px] h-[72px] bg-center bg-cover rounded-full"
@@ -41,7 +37,7 @@ export const MobileHeader = ({
             }}
           ></div>
         ) : (
-          <Logo size={72} />
+          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
         )}
         <div
           className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
@@ -70,36 +66,35 @@ export const MobileHeader = ({
   )
 }
 
-export interface MobileHeaderLoaderProps {
-  contractAddress: string
-  Loader?: ComponentType<LoaderProps>
-}
-
-export const MobileHeaderLoader = ({
+export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
   contractAddress,
-  Loader = DefaultLoader,
-}: MobileHeaderLoaderProps) => (
-  <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
-    <div className="relative">
-      <Loader size={72} />
+}) => {
+  const { t } = useTranslation()
 
-      <div
-        className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
-        style={{
-          width: '32px',
-          height: '32px',
-          backgroundImage: 'url(/daotoken.jpg)',
-        }}
-      ></div>
-    </div>
-    <div className="flex flex-col flex-1 gap-3">
-      <div className="flex flex-row justify-between">
-        <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
-        <div className="flex gap-5">
-          <PinToggle onPin={() => null} pinned={false} />
+  return (
+    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
+      <div className="relative">
+        <div className="animate-spin-medium">
+          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
         </div>
+        <div
+          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
+          style={{
+            width: '32px',
+            height: '32px',
+            backgroundImage: 'url(/daotoken.jpg)',
+          }}
+        ></div>
       </div>
-      <CopyToClipboardMobile value={contractAddress} />
+      <div className="flex flex-col flex-1 gap-3">
+        <div className="flex flex-row justify-between">
+          <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
+          <div className="flex gap-5">
+            <PinToggle onPin={() => null} pinned={false} />
+          </div>
+        </div>
+        <CopyToClipboardMobile value={contractAddress} />
+      </div>
     </div>
-  </div>
-)
+  )
+}
