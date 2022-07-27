@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import type { GetStaticProps, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
+import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
@@ -20,6 +21,7 @@ import {
   CHAIN_RPC_ENDPOINT,
   CI,
   LEGACY_URL_PREFIX,
+  MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   ProposalModule,
   cosmWasmClientRouter,
   fetchProposalModules,
@@ -304,9 +306,11 @@ export const makeGetDaoProposalStaticProps = ({
       return {
         url: getProposalUrlPrefix(params) + proposalId,
         followingTitle: proposalInfo
-          ? `${t('title.proposal')} ${proposalId}`
+          ? proposalInfo.title
           : t('error.proposalNotFound'),
-        overrideDescription: proposalInfo ? proposalInfo.title : undefined,
+        overrideDescription: removeMarkdown(
+          proposalInfo?.description ?? ''
+        ).slice(0, MAX_META_CHARS_PROPOSAL_DESCRIPTION),
         additionalProps: {
           // If proposal does not exist, pass undefined to indicate 404.
           proposalId: proposalInfo ? proposalId : undefined,

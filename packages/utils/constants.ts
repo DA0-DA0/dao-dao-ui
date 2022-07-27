@@ -90,3 +90,8 @@ export const CWPROPOSALMULTIPLE_CONTRACT_NAME = process.env
 export const JUNO_BLOCKS_PER_YEAR = 5086451
 
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV as string
+
+export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = parseInt(
+  process.env.NEXT_PUBLIC_MAX_META_CHARS_PROPOSAL_DESCRIPTION || '200',
+  10
+)
