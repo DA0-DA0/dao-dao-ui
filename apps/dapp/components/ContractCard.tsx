@@ -1,11 +1,9 @@
-import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/outline'
-import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { FC, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Dao, Pencil, Votes } from '@dao-dao/icons'
+import { Dao, Pencil, PinOutline, PinSolid, Votes } from '@dao-dao/icons'
 import { Logo } from '@dao-dao/ui'
 import {
   CARD_IMAGES_ENABLED,
@@ -162,9 +160,9 @@ export const ContractCard: FC<ContractCardProps> = ({
           onClick={() => onPin()}
         >
           {pinned ? (
-            <BookmarkIconSolid className="w-[18px] h-[18px]" />
+            <PinSolid className="w-4 h-4" />
           ) : (
-            <BookmarkIconOutline className="w-[18px] h-[18px]" />
+            <PinOutline className="w-4 h-4" />
           )}
         </button>
       )}

@@ -1,6 +1,6 @@
-import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/outline'
-import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/solid'
 import { useTranslation } from 'react-i18next'
+
+import { PinOutline, PinSolid } from '@dao-dao/icons'
 
 import { useThemeContext } from '../../theme'
 
@@ -20,12 +20,12 @@ export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
       style={accentColor ? { color: accentColor } : {}}
     >
       {pinned ? (
-        <BookmarkIconSolid
-          className="inline mr-1 w-[20px] text-brand"
+        <PinSolid
+          className="inline mr-1 w-4 h-4 text-brand"
           style={accentColor ? { color: accentColor } : {}}
         />
       ) : (
-        <BookmarkIconOutline className="inline mr-1 w-[20px]" />
+        <PinOutline className="inline mr-1 w-4 h-4" />
       )}
       <span className="hidden md:block">
         {pinned ? t('info.pinned') : t('info.pin')}
