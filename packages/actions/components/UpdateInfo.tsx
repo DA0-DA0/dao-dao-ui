@@ -22,7 +22,7 @@ export type UpdateInfoData = ConfigResponse
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ getFieldName, errors, onRemove, readOnly, data, Logo }) => {
+> = ({ fieldNamePrefix, errors, onRemove, readOnly, data, Logo }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
@@ -38,7 +38,7 @@ export const UpdateInfoComponent: ActionComponent<
             <>
               <ImageSelector
                 error={errors?.name}
-                fieldName={getFieldName('image_url')}
+                fieldName={fieldNamePrefix + 'image_url'}
                 register={register}
                 validation={[validateUrl]}
                 watch={watch}
@@ -62,7 +62,7 @@ export const UpdateInfoComponent: ActionComponent<
             <TextInput
               disabled={readOnly}
               error={errors?.name}
-              fieldName={getFieldName('name')}
+              fieldName={fieldNamePrefix + 'name'}
               placeholder={t('form.name')}
               register={register}
               validation={[validateRequired]}
@@ -73,7 +73,7 @@ export const UpdateInfoComponent: ActionComponent<
             <TextAreaInput
               disabled={readOnly}
               error={errors?.description}
-              fieldName={getFieldName('description')}
+              fieldName={fieldNamePrefix + 'description'}
               placeholder={t('form.description')}
               register={register}
               validation={[validateRequired]}
@@ -92,7 +92,7 @@ export const UpdateInfoComponent: ActionComponent<
                 </p>
               </div>
               <FormSwitch
-                fieldName={getFieldName('automatically_add_cw20s')}
+                fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
                 readOnly={readOnly}
                 setValue={setValue}
                 sizing="sm"
@@ -110,7 +110,7 @@ export const UpdateInfoComponent: ActionComponent<
                 </p>
               </div>
               <FormSwitch
-                fieldName={getFieldName('automatically_add_cw721s')}
+                fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
                 readOnly={readOnly}
                 setValue={setValue}
                 sizing="sm"

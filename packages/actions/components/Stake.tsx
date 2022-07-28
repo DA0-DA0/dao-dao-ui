@@ -49,7 +49,7 @@ interface StakeOptions {
 }
 
 export const StakeComponent: ActionComponent<StakeOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -58,9 +58,9 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   const { t } = useTranslation()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
 
-  const stakeType = watch(getFieldName('stakeType'))
-  const amount = watch(getFieldName('amount'))
-  const denom = watch(getFieldName('denom'))
+  const stakeType = watch(fieldNamePrefix + 'stakeType')
+  const amount = watch(fieldNamePrefix + 'amount')
+  const denom = watch(fieldNamePrefix + 'denom')
 
   const validatePossibleSpend = useCallback(
     (denom: string, amount: string): string | boolean => {
@@ -105,15 +105,15 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   // denom was changed.
   useEffect(() => {
     if (!amount || !denom) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
       return
     }
 
     const validation = validatePossibleSpend(denom, amount)
     if (validation === true) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
     } else if (typeof validation === 'string') {
-      setError(getFieldName('_error'), {
+      setError(fieldNamePrefix + '_error', {
         type: 'custom',
         message: validation,
       })
@@ -122,7 +122,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
     setError,
     clearErrors,
     validatePossibleSpend,
-    getFieldName,
+    fieldNamePrefix,
     amount,
     denom,
   ])
@@ -134,7 +134,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           defaultValue={stakeActions[0].type}
           disabled={readOnly}
           error={errors?.stakeType}
-          fieldName={getFieldName('stakeType')}
+          fieldName={fieldNamePrefix + 'stakeType'}
           register={register}
         >
           {stakeActions.map(({ name, type }, idx) => (
@@ -150,16 +150,16 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
               containerClassName="grow"
               disabled={readOnly}
               error={errors?.amount}
-              fieldName={getFieldName('amount')}
+              fieldName={fieldNamePrefix + 'amount'}
               onPlusMinus={[
                 () =>
                   setValue(
-                    getFieldName('amount'),
+                    fieldNamePrefix + 'amount',
                     Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
                   ),
                 () =>
                   setValue(
-                    getFieldName('amount'),
+                    fieldNamePrefix + 'amount',
                     Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
                   ),
               ]}
@@ -171,7 +171,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
             <SelectInput
               disabled={readOnly}
               error={errors?.denom}
-              fieldName={getFieldName('denom')}
+              fieldName={fieldNamePrefix + 'denom'}
               register={register}
             >
               {nativeBalances.length !== 0 ? (
@@ -201,7 +201,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
             <AddressInput
               disabled={readOnly}
               error={errors?.fromValidator}
-              fieldName={getFieldName('fromValidator')}
+              fieldName={fieldNamePrefix + 'fromValidator'}
               register={register}
               validation={[validateValidatorAddress]}
             />
@@ -222,7 +222,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
         <AddressInput
           disabled={readOnly}
           error={errors?.validator}
-          fieldName={getFieldName('validator')}
+          fieldName={fieldNamePrefix + 'validator'}
           register={register}
           validation={[validateRequired, validateValidatorAddress]}
         />

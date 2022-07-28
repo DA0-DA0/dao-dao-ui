@@ -439,9 +439,7 @@ export const CreateProposalForm = ({
                     coreAddress={coreAddress}
                     data={actionData.data}
                     errors={errors.actionData?.[index]?.data || {}}
-                    getFieldName={(fieldName) =>
-                      `actionData.${index}.data.${fieldName}`
-                    }
+                    fieldNamePrefix={`actionData.${index}.data.`}
                     index={index}
                     onRemove={() => remove(index)}
                     proposalModule={proposalModule}

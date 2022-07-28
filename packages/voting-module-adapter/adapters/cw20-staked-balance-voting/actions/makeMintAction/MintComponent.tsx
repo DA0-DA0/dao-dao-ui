@@ -15,7 +15,7 @@ export interface MintOptions {
 }
 
 export const MintComponent: ActionComponent<MintOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -23,7 +23,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
-  const amount = watch(getFieldName('amount'))
+  const amount = watch(fieldNamePrefix + 'amount')
 
   return (
     <ActionCard Icon={MintIcon} onRemove={onRemove} title={t('title.mint')}>
@@ -33,16 +33,16 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             <NumberInput
               disabled={readOnly}
               error={errors?.amount}
-              fieldName={getFieldName('amount')}
+              fieldName={fieldNamePrefix + 'amount'}
               onPlusMinus={[
                 () =>
                   setValue(
-                    getFieldName('amount'),
+                    fieldNamePrefix + 'amount',
                     (Number(amount) + 1).toString()
                   ),
                 () =>
                   setValue(
-                    getFieldName('amount'),
+                    fieldNamePrefix + 'amount',
                     (Number(amount) - 1).toString()
                   ),
               ]}
@@ -65,7 +65,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             containerClassName="grow"
             disabled={readOnly}
             error={errors?.to}
-            fieldName={getFieldName('to')}
+            fieldName={fieldNamePrefix + 'to'}
             register={register}
             validation={[validateRequired, validateAddress]}
           />

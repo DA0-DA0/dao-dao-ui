@@ -26,7 +26,7 @@ export interface UpdateProposalConfigOptions {
 export const UpdateProposalConfigComponent: ActionComponent<
   UpdateProposalConfigOptions
 > = ({
-  getFieldName,
+  fieldNamePrefix,
   errors,
   onRemove,
   readOnly,
@@ -36,13 +36,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const depositRequired = watch(getFieldName('depositRequired'))
-  const thresholdType = watch(getFieldName('thresholdType'))
-  const quorumType = watch(getFieldName('quorumType'))
-  const proposalDuration = watch(getFieldName('proposalDuration'))
-  const proposalDurationUnits = watch(getFieldName('proposalDurationUnits'))
-  const thresholdPercentage = watch(getFieldName('thresholdPercentage'))
-  const quorumPercentage = watch(getFieldName('quorumPercentage'))
+  const depositRequired = watch(fieldNamePrefix + 'depositRequired')
+  const thresholdType = watch(fieldNamePrefix + 'thresholdType')
+  const quorumType = watch(fieldNamePrefix + 'quorumType')
+  const proposalDuration = watch(fieldNamePrefix + 'proposalDuration')
+  const proposalDurationUnits = watch(fieldNamePrefix + 'proposalDurationUnits')
+  const thresholdPercentage = watch(fieldNamePrefix + 'thresholdPercentage')
+  const quorumPercentage = watch(fieldNamePrefix + 'quorumPercentage')
 
   const percentageThresholdSelected = thresholdType === '%'
   const percentageQuorumSelected = quorumType === '%'
@@ -82,7 +82,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               </p>
             </div>
             <FormSwitch
-              fieldName={getFieldName('depositRequired')}
+              fieldName={fieldNamePrefix + 'depositRequired'}
               readOnly={readOnly}
               setValue={setValue}
               sizing="sm"
@@ -101,7 +101,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </p>
           </div>
           <FormSwitch
-            fieldName={getFieldName('onlyMembersExecute')}
+            fieldName={fieldNamePrefix + 'onlyMembersExecute'}
             readOnly={readOnly}
             setValue={setValue}
             sizing="sm"
@@ -131,7 +131,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={readOnly}
                 error={errors?.depositInfo?.deposit}
-                fieldName={getFieldName('depositInfo.deposit')}
+                fieldName={fieldNamePrefix + 'depositInfo.deposit'}
                 register={register}
                 step={0.000001}
                 validation={[validateRequired, validatePositive]}
@@ -149,7 +149,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 </p>
               </div>
               <FormSwitch
-                fieldName={getFieldName('depositInfo.refundFailedProposals')}
+                fieldName={
+                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
+                }
                 readOnly={readOnly}
                 setValue={setValue}
                 sizing="sm"
@@ -175,16 +177,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={readOnly}
                 error={errors?.thresholdPercentage}
-                fieldName={getFieldName('thresholdPercentage')}
+                fieldName={fieldNamePrefix + 'thresholdPercentage'}
                 onPlusMinus={[
                   () =>
                     setValue(
-                      getFieldName('thresholdPercentage'),
+                      fieldNamePrefix + 'thresholdPercentage',
                       Math.max(thresholdPercentage + 1, 1)
                     ),
                   () =>
                     setValue(
-                      getFieldName('thresholdPercentage'),
+                      fieldNamePrefix + 'thresholdPercentage',
                       Math.max(thresholdPercentage - 1, 1)
                     ),
                 ]}
@@ -197,7 +199,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           )}
           <SelectInput
             disabled={readOnly}
-            fieldName={getFieldName('thresholdType')}
+            fieldName={fieldNamePrefix + 'thresholdType'}
             register={register}
           >
             <option value="majority">{t('info.majority')}</option>
@@ -219,16 +221,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <NumberInput
                 disabled={readOnly}
                 error={errors?.quorumPercentage}
-                fieldName={getFieldName('quorumPercentage')}
+                fieldName={fieldNamePrefix + 'quorumPercentage'}
                 onPlusMinus={[
                   () =>
                     setValue(
-                      getFieldName('quorumPercentage'),
+                      fieldNamePrefix + 'quorumPercentage',
                       Math.max(quorumPercentage + 1, 1)
                     ),
                   () =>
                     setValue(
-                      getFieldName('quorumPercentage'),
+                      fieldNamePrefix + 'quorumPercentage',
                       Math.max(quorumPercentage - 1, 1)
                     ),
                 ]}
@@ -241,7 +243,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           )}
           <SelectInput
             disabled={readOnly}
-            fieldName={getFieldName('quorumType')}
+            fieldName={fieldNamePrefix + 'quorumType'}
             register={register}
           >
             <option value="majority">{t('info.majority')}</option>
@@ -264,16 +266,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
             <NumberInput
               disabled={readOnly}
               error={errors?.proposalDuration}
-              fieldName={getFieldName('proposalDuration')}
+              fieldName={fieldNamePrefix + 'proposalDuration'}
               onPlusMinus={[
                 () =>
                   setValue(
-                    getFieldName('proposalDuration'),
+                    fieldNamePrefix + 'proposalDuration',
                     Math.max(proposalDuration + 1, 1)
                   ),
                 () =>
                   setValue(
-                    getFieldName('proposalDuration'),
+                    fieldNamePrefix + 'proposalDuration',
                     Math.max(proposalDuration - 1, 1)
                   ),
               ]}
@@ -295,7 +297,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
           <SelectInput
             disabled={readOnly}
-            fieldName={getFieldName('proposalDurationUnits')}
+            fieldName={fieldNamePrefix + 'proposalDurationUnits'}
             register={register}
           >
             <option value="weeks">
@@ -326,7 +328,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
         <div className="flex grow justify-center items-center">
           <FormSwitch
-            fieldName={getFieldName('allowRevoting')}
+            fieldName={fieldNamePrefix + 'allowRevoting'}
             readOnly={readOnly}
             setValue={setValue}
             watch={watch}

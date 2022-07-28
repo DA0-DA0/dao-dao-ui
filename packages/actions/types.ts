@@ -41,7 +41,7 @@ export interface FormProposalData {
 export type ActionComponentProps<T = undefined, D = any> = {
   coreAddress: string
   proposalModule: ProposalModule
-  getFieldName: (field: string) => string
+  fieldNamePrefix: string
   onRemove?: () => void
   errors?: FieldErrors
   readOnly?: boolean

@@ -36,7 +36,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 ) => {
   const { t } = useTranslation()
   const {
-    getFieldName,
+    fieldNamePrefix,
     onRemove,
     errors,
     readOnly,
@@ -49,7 +49,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: getFieldName('funds'),
+    name: fieldNamePrefix + 'funds',
   })
 
   return (
@@ -74,7 +74,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           <NumberInput
             disabled={readOnly}
             error={errors?.codeId}
-            fieldName={getFieldName('codeId')}
+            fieldName={fieldNamePrefix + 'codeId'}
             register={register}
             sizing="sm"
             step={1}
@@ -88,7 +88,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           <TextInput
             disabled={readOnly}
             error={errors?.label}
-            fieldName={getFieldName('label')}
+            fieldName={fieldNamePrefix + 'label'}
             register={register}
             validation={[validateRequired]}
           />
@@ -100,7 +100,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        fieldName={getFieldName('message')}
+        fieldName={fieldNamePrefix + 'message'}
         readOnly={readOnly}
         validation={[
           (v: string) => {
@@ -143,9 +143,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
             key={id}
             {...props}
             errors={errors?.funds?.[index]}
-            getFieldName={(field: string) =>
-              getFieldName(`funds.${index}.${field}`)
-            }
+            fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
             onRemove={() => removeCoin(index)}
           />
         ))}
@@ -170,7 +168,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <TextInput
           disabled={readOnly}
           error={errors?.admin}
-          fieldName={getFieldName('admin')}
+          fieldName={fieldNamePrefix + 'admin'}
           placeholder={readOnly ? t('info.none') : 'juno...'}
           register={register}
           validation={[(v: string) => validateContractAddress(v, false)]}

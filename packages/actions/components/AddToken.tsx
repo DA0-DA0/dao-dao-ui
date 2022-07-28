@@ -17,7 +17,7 @@ import {
 import { ActionCard, ActionComponent } from '..'
 
 export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -37,7 +37,7 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
         <AddressInput
           disabled={readOnly}
           error={errors?.address}
-          fieldName={getFieldName('address')}
+          fieldName={fieldNamePrefix + 'address'}
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />

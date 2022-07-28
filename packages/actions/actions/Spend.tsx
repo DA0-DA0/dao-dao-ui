@@ -184,38 +184,41 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 }
 
 const InnerSpendComponent: ActionComponent = (props) => {
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+  const nativeBalances = useRecoilValue(
+    nativeBalancesSelector(props.coreAddress)
+  )
+  const cw20AddressesAndBalances = useRecoilValue(
+    CwCoreV0_1_0Selectors.allCw20BalancesSelector({
+      contractAddress: props.coreAddress,
+    })
+  )
 
-  const cw20AddressesAndBalances =
-    useRecoilValue(
-      CwCoreV0_1_0Selectors.allCw20BalancesSelector({
-        contractAddress: props.coreAddress,
-      })
-    ) ?? []
-  const cw20Infos =
-    useRecoilValue(
-      waitForAll(
-        cw20AddressesAndBalances.map(({ addr }) =>
-          Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: addr,
-            params: [],
-          })
-        )
-      )
-    ) ?? []
-  const cw20Balances = cw20AddressesAndBalances
-    .map(({ addr, balance }, idx) => ({
-      address: addr,
-      balance,
-      info: cw20Infos[idx],
-    }))
-    // If undefined token info response, ignore the token.
-    .filter(({ info }) => !!info) as {
-    address: string
-    balance: string
-    info: TokenInfoResponse
-  }[]
+  const cw20Infos = useRecoilValue(
+    waitForAll(
+      cw20AddressesAndBalances?.map(({ addr }) =>
+        Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: addr,
+          params: [],
+        })
+      ) ?? []
+    )
+  )
+  const cw20Balances = useMemo(
+    () =>
+      (cw20AddressesAndBalances
+        ?.map(({ addr, balance }, idx) => ({
+          address: addr,
+          balance,
+          info: cw20Infos[idx],
+        }))
+        // If undefined token info response, ignore the token.
+        .filter(({ info }) => !!info) ?? []) as {
+        address: string
+        balance: string
+        info: TokenInfoResponse
+      }[],
+    [cw20AddressesAndBalances, cw20Infos]
+  )
 
   return (
     <StatelessSpendComponent

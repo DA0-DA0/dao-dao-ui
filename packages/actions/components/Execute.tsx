@@ -30,7 +30,7 @@ export interface ExecuteOptions {
 
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   const { t } = useTranslation()
-  const { getFieldName, onRemove, errors, readOnly } = props
+  const { fieldNamePrefix, onRemove, errors, readOnly } = props
   const { register, control } = useFormContext()
   const {
     fields: coins,
@@ -38,7 +38,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: getFieldName('funds'),
+    name: fieldNamePrefix + 'funds',
   })
 
   return (
@@ -52,7 +52,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         <TextInput
           disabled={readOnly}
           error={errors?.address}
-          fieldName={getFieldName('address')}
+          fieldName={fieldNamePrefix + 'address'}
           placeholder="juno..."
           register={register}
           validation={[validateRequired, validateContractAddress]}
@@ -64,7 +64,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        fieldName={getFieldName('message')}
+        fieldName={fieldNamePrefix + 'message'}
         readOnly={readOnly}
         validation={[
           (v: string) => {
@@ -107,9 +107,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
             key={id}
             {...props}
             errors={errors?.funds?.[index]}
-            getFieldName={(field: string) =>
-              getFieldName(`funds.${index}.${field}`)
-            }
+            fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
             onRemove={() => removeCoin(index)}
           />
         ))}
