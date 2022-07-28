@@ -5,8 +5,6 @@ export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE as string
 export const NATIVE_DECIMALS = 6
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
 
-export const GAS_PRICE = process.env.NEXT_PUBLIC_GAS_PRICE as string
-
 export const STATUS_COLORS: { [key: string]: string } = {
   open: '#00BAFF',
   draft: '#00F',
@@ -23,8 +21,6 @@ export const REWARDS_ADDRESS = process.env.NEXT_PUBLIC_REWARDS_ADDRESS as string
 export const TOKEN_SWAP_ADDRESS = process.env
   .NEXT_PUBLIC_TOKEN_SWAP_ADDRESS as string
 export const USDC_SWAP_ADDRESS = process.env.NEXT_PUBLIC_USDC_SWAP_ADDRESS
-export const OLD_PROPOSALS_ADDRESS = process.env
-  .NEXT_PUBLIC_OLD_PROPOSALS_ADDRESS as string | undefined
 
 export const VOTE_EXTERNAL_URL = process.env
   .NEXT_PUBLIC_VOTE_EXTERNAL_URL as string
