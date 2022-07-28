@@ -1,12 +1,15 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { Action } from '@dao-dao/actions'
-import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
+import {
+  CheckedDepositInfo,
+  Duration,
+} from '@dao-dao/state/clients/cw-proposal-single'
 import {
   MarketingInfoResponse,
   TokenInfoResponse,
 } from '@dao-dao/state/clients/cw20-base'
-import { Claim, GetConfigResponse } from '@dao-dao/state/clients/stake-cw20'
+import { Claim } from '@dao-dao/state/clients/stake-cw20'
 import { HeroStatProps, LoaderProps, LogoProps, StakingMode } from '@dao-dao/ui'
 
 export interface MembershipPageInfo {
@@ -76,7 +79,7 @@ export interface UseStakingInfoOptions {
 
 export interface UseStakingInfoResponse {
   stakingContractAddress?: string
-  stakingContractConfig?: GetConfigResponse
+  unstakingDuration?: Duration
   refreshStakingContractBalances: () => void
   refreshTotals: () => void
   /// Optional

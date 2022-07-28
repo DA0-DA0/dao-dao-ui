@@ -15,7 +15,7 @@ export function nativeTokenLabel(denom: string): string {
 }
 
 export function nativeTokenLogoURI(denom: string): string | undefined {
-  if (denom === 'ujuno' || denom == 'ujunox') {
+  if (denom === 'ujuno' || denom === 'ujunox') {
     return '/juno-symbol.png'
   }
 

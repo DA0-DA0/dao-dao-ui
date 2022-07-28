@@ -1,11 +1,21 @@
 import { useWallet } from '@noahsaso/cosmodal'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  Cw20BaseSelectors,
-  Cw20StakedBalanceVotingSelectors,
+  CwNativeStakedBalanceVotingSelectors,
+  nativeDenomBalanceSelector,
   tokenUSDCPriceSelector,
 } from '@dao-dao/state'
+import {
+  MarketingInfoResponse,
+  TokenInfoResponse,
+} from '@dao-dao/state/clients/cw20-base'
+import {
+  nativeTokenDecimals,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
+} from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -18,58 +28,59 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchPriceWithSwapAddress,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
+  const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
-  const stakingContractAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+  const denom = useRecoilValue(
+    CwNativeStakedBalanceVotingSelectors.getConfigSelector({
       contractAddress: votingModuleAddress,
+      params: [],
     })
-  )
+  )?.denom
 
-  const governanceTokenAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.tokenContractSelector({
-      contractAddress: votingModuleAddress,
-    })
-  )
-  const governanceTokenInfo = useRecoilValue(
-    governanceTokenAddress
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: governanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
-  const governanceTokenMarketingInfo = useRecoilValue(
-    governanceTokenAddress
-      ? Cw20BaseSelectors.marketingInfoSelector({
-          contractAddress: governanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
+  const decimals = denom && nativeTokenDecimals(denom)
+
+  if (!denom || !decimals) {
+    throw new Error(t('error.loadingData'))
+  }
+
+  const governanceTokenInfo: TokenInfoResponse = {
+    decimals,
+    name: nativeTokenLabel(denom),
+    symbol: nativeTokenLabel(denom),
+    total_supply: '',
+  }
+
+  const tokenUri = nativeTokenLogoURI(denom)
+  const governanceTokenMarketingInfo: MarketingInfoResponse = {
+    description: null,
+    logo: tokenUri ? { url: tokenUri } : null,
+    marketing: null,
+    project: null,
+  }
 
   /// Optional
 
   // Wallet balance
   const walletBalance = useRecoilValue(
-    fetchWalletBalance && governanceTokenAddress && walletAddress
-      ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: governanceTokenAddress,
-          params: [{ address: walletAddress }],
+    fetchWalletBalance && walletAddress
+      ? nativeDenomBalanceSelector({
+          walletAddress,
+          denom,
         })
       : constSelector(undefined)
-  )?.balance
+  )?.amount
 
   // Treasury balance
   const treasuryBalance = useRecoilValue(
-    fetchTreasuryBalance && governanceTokenAddress
-      ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: governanceTokenAddress,
-          params: [{ address: coreAddress }],
+    fetchTreasuryBalance
+      ? nativeDenomBalanceSelector({
+          walletAddress: coreAddress,
+          denom,
         })
       : constSelector(undefined)
-  )?.balance
+  )?.amount
 
   // Price info
   const price = useRecoilValue(
@@ -82,8 +93,7 @@ export const useGovernanceTokenInfo = ({
   )
 
   return {
-    stakingContractAddress,
-    governanceTokenAddress,
+    governanceTokenAddress: denom,
     governanceTokenInfo,
     governanceTokenMarketingInfo,
     /// Optional

@@ -1,11 +1,10 @@
 import { ArrowUpIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import { Dollar, Staked } from '@dao-dao/icons'
+import { Dollar } from '@dao-dao/icons'
 import { HeroStat, HeroStatLink } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
-  formatPercentOf100,
   humanReadableDuration,
 } from '@dao-dao/utils'
 
@@ -23,8 +22,7 @@ export interface InnerVoteHeroStatsProps
   extends Pick<BaseVoteHeroStatsProps, 'additionalStats'> {
   data?: {
     denom: string
-    totalSupply: number
-    stakedPercent: number
+    totalStaked: number
     unstakingDuration: string
   }
 }
@@ -39,13 +37,8 @@ export const InnerVoteHeroStats = ({
     <div className="flex flex-wrap gap-x-8 gap-y-4 justify-center items-center py-8 px-6 w-full">
       <HeroStat
         Icon={Dollar}
-        title={t('title.totalSupply') + ':'}
-        value={data && `${data.totalSupply.toLocaleString()} $${data.denom}`}
-      />
-      <HeroStat
-        Icon={Staked}
         title={t('title.staked') + ':'}
-        value={data && formatPercentOf100(data.stakedPercent)}
+        value={data && `${data.totalStaked.toLocaleString()} $${data.denom}`}
       />
       <HeroStat
         Icon={ArrowUpIcon}
@@ -81,12 +74,10 @@ const InnerVoteHeroStatsContent = (props: InnerVoteHeroStatsContentProps) => {
     <InnerVoteHeroStats
       data={{
         denom: governanceTokenInfo.symbol,
-        totalSupply: convertMicroDenomToDenomWithDecimals(
-          governanceTokenInfo.total_supply,
+        totalStaked: convertMicroDenomToDenomWithDecimals(
+          totalStakedValue,
           governanceTokenInfo.decimals
         ),
-        stakedPercent:
-          (totalStakedValue / Number(governanceTokenInfo.total_supply)) * 100,
         unstakingDuration: unstakingDuration
           ? humanReadableDuration(unstakingDuration)
           : 'None',

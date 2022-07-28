@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
@@ -84,6 +85,23 @@ export const nativeBalanceSelector = selectorFamily({
       get(refreshWalletBalancesIdAtom(address))
 
       return await client.getBalance(address, NATIVE_DENOM)
+    },
+})
+
+export const nativeDenomBalanceSelector = selectorFamily<
+  Coin | undefined,
+  { walletAddress: string; denom: string }
+>({
+  key: 'nativeDenomBalance',
+  get:
+    ({ walletAddress, denom }) =>
+    async ({ get }) => {
+      const client = get(stargateClientSelector)
+      if (!client) return
+
+      get(refreshWalletBalancesIdAtom(walletAddress))
+
+      return await client.getBalance(walletAddress, denom)
     },
 })
 

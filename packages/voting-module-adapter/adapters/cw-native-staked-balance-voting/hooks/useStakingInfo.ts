@@ -1,10 +1,10 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
-  Cw20StakedBalanceVotingSelectors,
-  StakeCw20Selectors,
+  CwNativeStakedBalanceVotingSelectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
@@ -19,26 +19,22 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
+  const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
-  const stakingContractAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+  const config = useRecoilValue(
+    CwNativeStakedBalanceVotingSelectors.getConfigSelector({
       contractAddress: votingModuleAddress,
+      params: [],
     })
   )
-
-  const unstakingDuration =
-    useRecoilValue(
-      stakingContractAddress
-        ? StakeCw20Selectors.getConfigSelector({
-            contractAddress: stakingContractAddress,
-          })
-        : constSelector(undefined)
-    )?.unstaking_duration ?? undefined
+  if (!config) {
+    throw new Error(t('error.loadingData'))
+  }
 
   const setRefreshStakingContractBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(stakingContractAddress ?? '')
+    refreshWalletBalancesIdAtom(config.denom)
   )
   const refreshStakingContractBalances = useCallback(
     () => setRefreshStakingContractBalancesId((id) => id + 1),
@@ -65,9 +61,9 @@ export const useStakingInfo = ({
   const refreshClaims = () => _setClaimsId((id) => id + 1)
 
   const claims = useRecoilValue(
-    fetchClaims && walletAddress && stakingContractAddress
-      ? StakeCw20Selectors.claimsSelector({
-          contractAddress: stakingContractAddress,
+    fetchClaims && walletAddress
+      ? CwNativeStakedBalanceVotingSelectors.claimsSelector({
+          contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
@@ -86,26 +82,26 @@ export const useStakingInfo = ({
 
   // Total staked value
   const totalStakedValue = useRecoilValue(
-    fetchTotalStakedValue && stakingContractAddress
-      ? StakeCw20Selectors.totalValueSelector({
-          contractAddress: stakingContractAddress,
+    fetchTotalStakedValue
+      ? CwNativeStakedBalanceVotingSelectors.totalPowerAtHeightSelector({
+          contractAddress: votingModuleAddress,
+          params: [{}],
         })
       : constSelector(undefined)
-  )?.total
+  )?.power
 
   // Wallet staked value
   const walletStakedValue = useRecoilValue(
-    fetchWalletStakedValue && stakingContractAddress && walletAddress
-      ? StakeCw20Selectors.stakedValueSelector({
-          contractAddress: stakingContractAddress,
+    fetchWalletStakedValue && walletAddress
+      ? CwNativeStakedBalanceVotingSelectors.votingPowerAtHeightSelector({
+          contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
-  )?.value
+  )?.power
 
   return {
-    stakingContractAddress,
-    unstakingDuration,
+    unstakingDuration: config.unstaking_duration ?? undefined,
     refreshStakingContractBalances,
     refreshTotals,
     /// Optional

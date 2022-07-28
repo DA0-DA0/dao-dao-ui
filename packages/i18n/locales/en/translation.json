@@ -199,6 +199,7 @@
     "advancedQuorumDisabledConfigWarning": "This is an advanced feature. If you disable quorum and set your threshold too high, you will need significant participation to pass proposals. A quorum allows a subset of members to pass proposals and can help prevent locking your DAO.",
     "advancedVotingConfigWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.",
     "amountProposalDeposit": "{{amount}} ${{tokenSymbol}} proposal deposit",
+    "amountTotalStaked": "{{amount}} ${{tokenSymbol}} total staked",
     "amountTotalSupply": "{{amount}} ${{tokenSymbol}} total supply",
     "autoCompoundStakingRewardsTooltip": "This will automatically compound as staking rewards are distributed.",
     "available": "Available",

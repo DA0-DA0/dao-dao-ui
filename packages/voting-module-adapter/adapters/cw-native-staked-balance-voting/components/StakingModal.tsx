@@ -1,14 +1,13 @@
+import { coins } from '@cosmjs/stargate'
 import { useWallet } from '@noahsaso/cosmodal'
 import { PropsWithChildren, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import {
-  Cw20BaseHooks,
-  StakeCw20Hooks,
-  StakeCw20Selectors,
+  CwNativeStakedBalanceVotingHooks,
   stakingLoadingAtom,
   useWalletBalance,
 } from '@dao-dao/state'
@@ -19,9 +18,9 @@ import {
   SuspenseLoader,
 } from '@dao-dao/ui'
 import {
+  cleanChainError,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  processError,
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -42,6 +41,7 @@ const InnerStakingModal = ({
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
+  const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
   const [amount, setAmount] = useState(0)
@@ -54,67 +54,40 @@ const InnerStakingModal = ({
     fetchWalletBalance: true,
   })
   const {
-    stakingContractAddress,
     unstakingDuration,
     refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
     walletStakedValue,
+    totalStakedValue,
     refreshClaims,
   } = useStakingInfo({
     fetchClaims: true,
     fetchWalletStakedValue: true,
+    fetchTotalStakedValue: true,
   })
 
-  const totalStakedBalance = useRecoilValue(
-    stakingContractAddress
-      ? StakeCw20Selectors.totalStakedAtHeightSelector({
-          contractAddress: stakingContractAddress,
-          params: [{}],
-        })
-      : constSelector(undefined)
-  )
-
-  const walletStakedBalance = useRecoilValue(
-    stakingContractAddress && walletAddress
-      ? StakeCw20Selectors.stakedBalanceAtHeightSelector({
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
-
-  const totalValue = useRecoilValue(
-    stakingContractAddress
-      ? StakeCw20Selectors.totalValueSelector({
-          contractAddress: stakingContractAddress,
-        })
-      : constSelector(undefined)
-  )
-
   if (
+    !governanceTokenAddress ||
     !governanceTokenInfo ||
-    !stakingContractAddress ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
     walletStakedValue === undefined ||
-    totalStakedBalance === undefined ||
-    walletStakedBalance === undefined ||
-    totalValue === undefined
+    totalStakedValue === undefined
   ) {
     throw new Error(t('error.loadingData'))
   }
 
-  const doStake = Cw20BaseHooks.useSend({
-    contractAddress: governanceTokenAddress ?? '',
+  const doStake = CwNativeStakedBalanceVotingHooks.useStake({
+    contractAddress: votingModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const doUnstake = StakeCw20Hooks.useUnstake({
-    contractAddress: stakingContractAddress ?? '',
+  const doUnstake = CwNativeStakedBalanceVotingHooks.useUnstake({
+    contractAddress: votingModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const doClaim = StakeCw20Hooks.useClaim({
-    contractAddress: stakingContractAddress ?? '',
+  const doClaim = CwNativeStakedBalanceVotingHooks.useClaim({
+    contractAddress: votingModuleAddress ?? '',
     sender: walletAddress ?? '',
   })
 
@@ -130,14 +103,17 @@ const InnerStakingModal = ({
         setStakingLoading(true)
 
         try {
-          await doStake({
-            amount: convertDenomToMicroDenomWithDecimals(
-              amount,
-              governanceTokenInfo.decimals
-            ),
-            contract: stakingContractAddress,
-            msg: btoa('{"stake": {}}'),
-          })
+          await doStake(
+            'auto',
+            undefined,
+            coins(
+              convertDenomToMicroDenomWithDecimals(
+                amount,
+                governanceTokenInfo.decimals
+              ),
+              governanceTokenAddress
+            )
+          )
 
           // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
@@ -158,7 +134,9 @@ const InnerStakingModal = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(processError(err))
+          toast.error(
+            cleanChainError(err instanceof Error ? err.message : `${err}`)
+          )
         } finally {
           setStakingLoading(false)
         }
@@ -168,43 +146,10 @@ const InnerStakingModal = ({
       case StakingMode.Unstake: {
         setStakingLoading(true)
 
-        // In the UI we display staked value as `amount_staked +
-        // rewards` and is the value used to compute voting power. When we actually
-        // process an unstake call, the contract expects this value in terms of
-        // amount_staked.
-        //
-        // value = amount_staked * total_value / staked_total
-        //
-        // => amount_staked = staked_total * value / total_value
-        let amountToUnstake =
-          (Number(totalStakedBalance.total) * amount) / Number(totalValue.total)
-
-        // We have limited precision and on the contract side division rounds
-        // down, so division and multiplication don't commute. Handle the common
-        // case here where someone is attempting to unstake all of their funds.
-        if (
-          Math.abs(
-            Number(walletStakedBalance.balance) -
-              Number(
-                convertDenomToMicroDenomWithDecimals(
-                  amountToUnstake,
-                  governanceTokenInfo.decimals
-                )
-              )
-          ) <= 1
-        ) {
-          amountToUnstake = Number(
-            convertMicroDenomToDenomWithDecimals(
-              walletStakedBalance.balance,
-              governanceTokenInfo.decimals
-            )
-          )
-        }
-
         try {
           await doUnstake({
             amount: convertDenomToMicroDenomWithDecimals(
-              amountToUnstake,
+              amount,
               governanceTokenInfo.decimals
             ),
           })
@@ -229,7 +174,9 @@ const InnerStakingModal = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(processError(err))
+          toast.error(
+            cleanChainError(err instanceof Error ? err.message : `${err}`)
+          )
         } finally {
           setStakingLoading(false)
         }
@@ -269,7 +216,9 @@ const InnerStakingModal = ({
           onClose()
         } catch (err) {
           console.error(err)
-          toast.error(processError(err))
+          toast.error(
+            cleanChainError(err instanceof Error ? err.message : `${err}`)
+          )
         } finally {
           setStakingLoading(false)
         }
