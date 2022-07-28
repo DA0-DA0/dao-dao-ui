@@ -29,7 +29,7 @@ env:
   NEXT_PUBLIC_SEARCH_API_KEY: NEXT_PUBLIC_SEARCH_API_KEY
 jobs:
   ci:
-    name: Lint & Test
+    name: Lint, Build, & Upload
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
