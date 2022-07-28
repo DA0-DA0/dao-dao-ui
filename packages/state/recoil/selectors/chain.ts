@@ -56,7 +56,6 @@ export const nativeBalancesSelector = selectorFamily({
     (address: string) =>
     async ({ get }) => {
       const client = get(stargateClientSelector)
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(address))
 

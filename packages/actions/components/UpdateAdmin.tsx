@@ -18,7 +18,7 @@ export interface UpdateAdminOptions {
 }
 
 export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -43,7 +43,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
           <AddressInput
             disabled={readOnly}
             error={errors?.contract}
-            fieldName={getFieldName('contract')}
+            fieldName={fieldNamePrefix + 'contract'}
             onChange={(e) => onContractChange(e.target.value)}
             register={register}
             validation={[validateRequired, validateContractAddress]}
@@ -55,7 +55,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
           <AddressInput
             disabled={readOnly}
             error={errors?.newAdmin}
-            fieldName={getFieldName('newAdmin')}
+            fieldName={fieldNamePrefix + 'newAdmin'}
             register={register}
             validation={[validateRequired, validateAddress]}
           />

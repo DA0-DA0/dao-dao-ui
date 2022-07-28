@@ -120,7 +120,7 @@ const Component: ActionComponent = (props) => {
   )
 
   const { watch } = useFormContext()
-  const codeId: number = watch(props.getFieldName('codeId'))
+  const codeId: number = watch(props.fieldNamePrefix + 'codeId')
   // This gets all instantiation actions that instantiate the same codeId
   // and all addresses actually instantiated in the transaction on-chain.
   // If these two lists are not the same length, then another instantiation

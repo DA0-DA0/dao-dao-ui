@@ -26,7 +26,7 @@ type RemoveTokenOptions = TokenInfoDisplayProps & {
 }
 
 export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -35,7 +35,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
-  const tokenAddress = watch(getFieldName('address'))
+  const tokenAddress = watch(fieldNamePrefix + 'address')
 
   const validateIsTreasuryToken = (v: string) =>
     existingTokens.some(({ address }) => address === v) ||
@@ -58,7 +58,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
                   'text-secondary bg-transparent': address !== tokenAddress,
                 })}
                 disabled={readOnly}
-                onClick={() => setValue(getFieldName('address'), address)}
+                onClick={() => setValue(fieldNamePrefix + 'address', address)}
                 size="sm"
                 type="button"
                 variant="secondary"
@@ -75,7 +75,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
         <AddressInput
           disabled={readOnly}
           error={errors?.address}
-          fieldName={getFieldName('address')}
+          fieldName={fieldNamePrefix + 'address'}
           register={register}
           validation={[
             validateRequired,

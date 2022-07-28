@@ -12,7 +12,7 @@ import { ActionCard, ActionComponent } from '..'
 const INVALID_COSMOS_MSG = 'INVALID_COSMOS_MSG'
 
 export const CustomComponent: ActionComponent = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -26,7 +26,7 @@ export const CustomComponent: ActionComponent = ({
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        fieldName={getFieldName('message')}
+        fieldName={fieldNamePrefix + 'message'}
         readOnly={readOnly}
         validation={[
           (v: string) => {

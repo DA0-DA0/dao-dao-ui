@@ -27,11 +27,11 @@ const useDefaults: UseDefaults<AddTokenData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { getFieldName, errors, Loader } = props
+  const { fieldNamePrefix, errors, Loader } = props
 
   const { watch, setError, clearErrors } = useFormContext()
 
-  const tokenAddress = watch(getFieldName('address'))
+  const tokenAddress = watch(fieldNamePrefix + 'address')
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress
       ? Cw20BaseSelectors.tokenInfoSelector({
@@ -44,13 +44,13 @@ const Component: ActionComponent = (props) => {
   useEffect(() => {
     if (tokenInfoLoadable.state !== 'hasError') {
       if (errors?.address) {
-        clearErrors(getFieldName('address'))
+        clearErrors(fieldNamePrefix + 'address')
       }
       return
     }
 
     if (!errors?.address) {
-      setError(getFieldName('address'), {
+      setError(fieldNamePrefix + 'address', {
         type: 'manual',
         message: 'Failed to get token info.',
       })
@@ -60,7 +60,7 @@ const Component: ActionComponent = (props) => {
     errors?.address,
     setError,
     clearErrors,
-    getFieldName,
+    fieldNamePrefix,
   ])
 
   return (

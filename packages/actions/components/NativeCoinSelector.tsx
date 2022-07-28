@@ -24,7 +24,7 @@ export interface NativeCoinSelectorProps
 
 export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   onRemove,
-  getFieldName,
+  fieldNamePrefix,
   errors,
   readOnly,
   options: { nativeBalances },
@@ -33,8 +33,8 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   const { t } = useTranslation()
   const { register, setValue, watch, setError, clearErrors } = useFormContext()
 
-  const watchAmount = watch(getFieldName('amount'))
-  const watchDenom = watch(getFieldName('denom'))
+  const watchAmount = watch(fieldNamePrefix + 'amount')
+  const watchDenom = watch(fieldNamePrefix + 'denom')
 
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
@@ -77,15 +77,15 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   // denom was changed.
   useEffect(() => {
     if (!watchAmount || !watchDenom) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
       return
     }
 
     const validation = validatePossibleSpend(watchDenom, watchAmount)
     if (validation === true) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
     } else if (typeof validation === 'string') {
-      setError(getFieldName('_error'), {
+      setError(fieldNamePrefix + '_error', {
         type: 'custom',
         message: validation,
       })
@@ -94,7 +94,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
     setError,
     clearErrors,
     validatePossibleSpend,
-    getFieldName,
+    fieldNamePrefix,
     watchAmount,
     watchDenom,
   ])
@@ -105,16 +105,16 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
         <NumberInput
           disabled={readOnly}
           error={errors?.amount}
-          fieldName={getFieldName('amount')}
+          fieldName={fieldNamePrefix + 'amount'}
           onPlusMinus={[
             () =>
               setValue(
-                getFieldName('amount'),
+                fieldNamePrefix + 'amount',
                 Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
               ),
             () =>
               setValue(
-                getFieldName('amount'),
+                fieldNamePrefix + 'amount',
                 Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
               ),
           ]}
@@ -128,7 +128,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           defaultValue={NATIVE_DENOM}
           disabled={readOnly}
           error={errors?.denom}
-          fieldName={getFieldName('denom')}
+          fieldName={fieldNamePrefix + 'denom'}
           register={register}
         >
           {nativeBalances.map(({ denom }) => (

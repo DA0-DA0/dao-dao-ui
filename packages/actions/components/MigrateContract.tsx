@@ -26,7 +26,7 @@ export interface MigrateOptions {
 }
 
 export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -63,7 +63,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           <AddressInput
             disabled={readOnly}
             error={errors?.contract_addr}
-            fieldName={getFieldName('contract')}
+            fieldName={fieldNamePrefix + 'contract'}
             onChange={(v) => onContractChange(v.target.value)}
             register={register}
             validation={[validateRequired, validateContractAddress]}
@@ -75,7 +75,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           <NumberInput
             disabled={readOnly}
             error={errors?.code_id}
-            fieldName={getFieldName('codeId')}
+            fieldName={fieldNamePrefix + 'codeId'}
             register={register}
             validation={[validateRequired, validatePositive]}
           />
@@ -90,7 +90,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <CodeMirrorInput
           control={control}
           error={errors?.msg}
-          fieldName={getFieldName('msg')}
+          fieldName={fieldNamePrefix + 'msg'}
           readOnly={readOnly}
           validation={[validateJSON]}
         />

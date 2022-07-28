@@ -28,7 +28,7 @@ export interface ManageMembersOptions {
 }
 
 export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
@@ -43,7 +43,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
     remove: toAddRemove,
   } = useFieldArray({
     control,
-    name: getFieldName('toAdd') as 'toAdd',
+    name: (fieldNamePrefix + 'toAdd') as 'toAdd',
   })
   const {
     fields: toRemoveFields,
@@ -51,7 +51,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
     remove: toRemoveRemove,
   } = useFieldArray({
     control,
-    name: getFieldName('toRemove') as 'toRemove',
+    name: (fieldNamePrefix + 'toRemove') as 'toRemove',
   })
 
   return (
@@ -63,12 +63,10 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       <InputLabel className="mt-2" name={t('form.membersToAddOrUpdate')} />
       <div className="flex flex-col gap-2 items-stretch">
         {toAddFields.map(({ id, weight }, index) => {
-          const addrFieldName = getFieldName(
-            `toAdd.${index}.addr`
-          ) as `toAdd.${number}.addr`
-          const weightFieldName = getFieldName(
-            `toAdd.${index}.weight`
-          ) as `toAdd.${number}.weight`
+          const addrFieldName = (fieldNamePrefix +
+            `toAdd.${index}.addr`) as `toAdd.${number}.addr`
+          const weightFieldName = (fieldNamePrefix +
+            `toAdd.${index}.weight`) as `toAdd.${number}.weight`
 
           return (
             <div key={id} className="flex flex-row gap-4 items-center">
@@ -142,9 +140,8 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                 disabled={readOnly}
                 error={errors?.toRemove?.[index]?.addr}
                 fieldName={
-                  getFieldName(
-                    `toRemove.${index}.addr`
-                  ) as `toRemove.${number}.addr`
+                  (fieldNamePrefix +
+                    `toRemove.${index}.addr`) as `toRemove.${number}.addr`
                 }
                 register={register}
                 validation={[

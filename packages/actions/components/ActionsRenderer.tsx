@@ -63,7 +63,7 @@ const InnerActionsRenderer = ({
               )}
               coreAddress={coreAddress}
               data={actionData[index].data}
-              getFieldName={(field: string) => `${index}.${field}`}
+              fieldNamePrefix={`${index}.`}
               index={index}
               proposalModule={proposalModule}
               readOnly
