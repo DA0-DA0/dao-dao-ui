@@ -16,7 +16,7 @@ import {
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
-  fetchPriceWithSwapAddress,
+  fetchUSDCPrice,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
@@ -73,9 +73,9 @@ export const useGovernanceTokenInfo = ({
 
   // Price info
   const price = useRecoilValue(
-    fetchPriceWithSwapAddress && governanceTokenInfo
+    fetchUSDCPrice && governanceTokenInfo
       ? tokenUSDCPriceSelector({
-          denom: fetchPriceWithSwapAddress,
+          denom: governanceTokenAddress,
           tokenDecimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
