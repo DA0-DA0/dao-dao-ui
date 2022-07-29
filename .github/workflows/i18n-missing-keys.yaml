@@ -21,7 +21,7 @@ jobs:
       - name: Lint
         id: lint
         run: |
-          output="$(yarn i18n lint-missing-keys 2>&1)"
+          output="$(yarn i18n lint-missing-keys)"
           echo "LINT_OUTPUT<<EOF" >> $GITHUB_ENV
           echo "$output" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV

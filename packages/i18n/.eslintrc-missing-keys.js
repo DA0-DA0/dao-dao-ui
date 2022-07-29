@@ -9,7 +9,7 @@ const eslintConfig = {
       plugins: ['i18n-json'],
       rules: {
         'i18n-json/identical-keys': [
-          'error',
+          'warn',
           {
             filePath: path.resolve('./locales/en/translation.json'),
           },
