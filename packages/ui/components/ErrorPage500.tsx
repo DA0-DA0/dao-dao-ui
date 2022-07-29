@@ -26,7 +26,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
         </Link>
       </p>
 
-      <pre className="mt-6 text-error whitespace-pre-wrap">{error}</pre>
+      <pre className="mt-6 text-xs text-error whitespace-pre-wrap">{error}</pre>
     </ErrorPage>
   )
 }
