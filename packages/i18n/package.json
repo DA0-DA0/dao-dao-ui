@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "scripts": {
     "format": "eslint . --fix",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint-missing-keys": "eslint . -c .eslintrc-missing-keys.js"
   },
   "devDependencies": {
     "@dao-dao/config": "*",

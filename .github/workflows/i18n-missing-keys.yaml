@@ -1,0 +1,52 @@
+name: i18n Missing Keys
+
+on:
+  push:
+    branches:
+      - development
+      - noah/lint-missing-i18n
+
+jobs:
+  detect:
+    name: Detect Missing i18n Keys
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn install
+      # Run linter and store output.
+      - id: lint
+        run: |
+          output="$(yarn i18n lint-missing-keys)"
+          echo "::set-output name=output::$output"
+      # Attempt to find existing comment.
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: 778
+          comment-author: 'github-actions[bot]'
+          body-includes: ':yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:'
+      # Create comment if does not exist.
+      - name: Create comment
+        if: steps.fc.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: 778
+          body: |
+            :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
+
+            ${{ steps.lint.outputs.output }}
+      # Update comment if exists.
+      - name: Update comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
+
+            ${{ steps.lint.outputs.output }}
