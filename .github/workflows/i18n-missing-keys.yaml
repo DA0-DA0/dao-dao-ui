@@ -18,10 +18,10 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       # Run linter and store output.
-      - id: lint
+      - name: Lint
+        id: lint
         run: |
-          cd packages/i18n
-          output="$(yarn lint-missing-keys)"
+          output="$(yarn i18n lint-missing-keys 2>&1)"
           echo "::set-output name=output::$output"
       # Attempt to find existing comment.
       - name: Find Comment
