@@ -32,7 +32,7 @@ jobs:
         with:
           issue-number: 778
           comment-author: 'github-actions[bot]'
-          body-includes: ':yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:'
+          body-includes: 'Auto-generated Missing i18n Keys'
       # Create comment if does not exist.
       - name: Create comment
         if: steps.fc.outputs.comment-id == ''
@@ -40,7 +40,7 @@ jobs:
         with:
           issue-number: 778
           body: |
-            # :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
+            # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
 
             ```diff
             ${{ env.LINT_OUTPUT }}
@@ -52,7 +52,7 @@ jobs:
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: |
-            # :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
+            # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
 
             ```diff
             ${{ env.LINT_OUTPUT }}
