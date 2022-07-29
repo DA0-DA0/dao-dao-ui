@@ -12,10 +12,7 @@ import {
   registerAdapters as registerProposalModuleAdapters,
 } from '@dao-dao/proposal-module-adapter'
 import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
-import {
-  ConfigResponse,
-  InfoResponse,
-} from '@dao-dao/state/clients/cw-core/0.1.0'
+import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
@@ -104,16 +101,24 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const coreInfo = (await coreClient.info()).info
       const coreVersion = parseCoreVersion(coreInfo.version)
       if (!coreVersion) {
-        throw new Error('Failed to determine core version.')
+        throw new Error(serverT('error.failedParsingCoreVersion'))
       }
 
       const votingModuleAddress = await coreClient.votingModule()
-      // All info queries are the same for DAO DAO contracts.
+      // All info queries are the same for DAO DAO contracts. If not a valid DAO
+      // DAO contract, this will fail.
       const {
-        info: { contract: votingModuleContractName },
-      }: InfoResponse = await cwClient.queryContractSmart(votingModuleAddress, {
-        info: {},
-      })
+        info: { contract: votingModuleContractName } = {},
+      }: { info?: { contract?: string } } = await cwClient.queryContractSmart(
+        votingModuleAddress,
+        {
+          info: {},
+        }
+      )
+
+      if (!votingModuleContractName) {
+        throw new Error(serverT('error.unsupportedVotingModule'))
+      }
 
       const proposalModules = await fetchProposalModules(
         cwClient,
@@ -211,11 +216,16 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         }
       }
 
-      // Report to Sentry.
-      processError(error)
-
-      // Throw error to trigger 500.
-      throw error
+      // Return error in props to trigger client-side 500 error.
+      return {
+        props: {
+          ...i18nProps,
+          title: serverT('title.500'),
+          description: '',
+          // Report to Sentry.
+          error: processError(error),
+        },
+      }
     }
   }
 

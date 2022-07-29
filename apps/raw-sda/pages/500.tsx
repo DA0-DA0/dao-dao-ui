@@ -24,7 +24,9 @@ const Custom500: NextPage = () => {
           <p>
             {t('error.internalServerError')}{' '}
             <Link href="/">
-              <a className="link">{t('info.considerReturningHome')}</a>
+              <a className="underline hover:no-underline">
+                {t('info.considerReturningHome')}
+              </a>
             </Link>
           </p>
         </ErrorPage>

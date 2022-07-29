@@ -52,7 +52,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ErrorBoundary title={t('error.unexpectedError')}>
+      <ErrorBoundary>
         <Layout>
           <Component {...pageProps} />
         </Layout>

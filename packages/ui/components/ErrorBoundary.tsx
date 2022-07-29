@@ -1,17 +1,18 @@
+/* eslint-disable i18next/no-literal-string */
+import Link from 'next/link'
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { WithTranslationProps, withTranslation } from 'react-i18next'
 
 import { ErrorPage } from '@dao-dao/ui'
-import { VERCEL_ENV } from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 interface ErrorBoundaryProps extends WithTranslationProps {
   children: ReactNode
-  title?: string
 }
 
 interface ErrorBoundaryState {
   hasError: boolean
-  error?: Error
+  error?: string
 }
 
 // React does not have functional Error Boundaries yet
@@ -25,7 +26,7 @@ class ErrorBoundaryInner extends Component<
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true, error }
+    return { hasError: true, error: processError(error) }
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -33,22 +34,32 @@ class ErrorBoundaryInner extends Component<
   }
 
   render() {
-    const {
-      title = this.props.i18n?.t('error.unexpectedError') ?? '',
-      children,
-    } = this.props
-
     return this.state.hasError ? (
-      <ErrorPage title={title}>
-        <p>{this.props.i18n?.t('error.checkInternetOrTryAgain')}</p>
-        {VERCEL_ENV === 'preview' && (
-          <pre className="mt-8 text-xs text-mono">
-            {this.state.error?.message}
+      <ErrorPage
+        title={
+          this.props.i18n?.t?.('error.unexpectedError') ??
+          'An unexpected error occurred.'
+        }
+      >
+        <p>
+          {this.props.i18n?.t?.('error.checkInternetOrTryAgain') ??
+            'Check your internet connection or try again later.'}{' '}
+          <Link href="/home">
+            <a className="underline hover:no-underline">
+              {this.props.i18n?.t?.('info.considerReturningHome') ??
+                'Consider returning home.'}
+            </a>
+          </Link>
+        </p>
+
+        {!!this.state.error && (
+          <pre className="mt-6 text-xs text-error whitespace-pre-wrap">
+            {this.state.error}
           </pre>
         )}
       </ErrorPage>
     ) : (
-      children
+      this.props.children
     )
   }
 }
