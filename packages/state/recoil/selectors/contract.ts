@@ -15,7 +15,6 @@ export const contractInstantiateTimeSelector = selectorFamily<
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
 
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
@@ -33,13 +32,10 @@ export const contractAdminSelector = selectorFamily<string | undefined, string>(
       (address: string) =>
       async ({ get }) => {
         const client = get(cosmWasmClientSelector)
-        if (!client) {
-          return undefined
-        }
 
         try {
           const contract = await client.getContract(address)
-          return contract.admin || ''
+          return contract.admin
         } catch (_) {
           return undefined
         }
@@ -65,9 +61,6 @@ export const treasuryTransactionsSelector = selectorFamily({
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) {
-        return undefined
-      }
 
       const txs = await client.searchTx({
         sentFromOrTo: address,

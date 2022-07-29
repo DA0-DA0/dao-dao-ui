@@ -21,7 +21,7 @@ type QueryClientParams = {
 }
 
 export const queryClient = selectorFamily<
-  Cw4GroupQueryClient | undefined,
+  Cw4GroupQueryClient,
   QueryClientParams
 >({
   key: 'cw4GroupQueryClient',
@@ -29,12 +29,11 @@ export const queryClient = selectorFamily<
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
       return new Cw4GroupQueryClient(client, contractAddress)
     },
 })
 export const adminSelector = selectorFamily<
-  AdminResponse | undefined,
+  AdminResponse,
   QueryClientParams & {
     params: Parameters<Cw4GroupQueryClient['admin']>
   }
@@ -44,12 +43,11 @@ export const adminSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.admin(...params)
     },
 })
 export const totalWeightSelector = selectorFamily<
-  TotalWeightResponse | undefined,
+  TotalWeightResponse,
   QueryClientParams & {
     params: Parameters<Cw4GroupQueryClient['totalWeight']>
   }
@@ -59,13 +57,12 @@ export const totalWeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.totalWeight(...params)
     },
 })
 
 export const listMembersSelector = selectorFamily<
-  ListMembersResponse | undefined,
+  ListMembersResponse,
   QueryClientParams & {
     params: Parameters<Cw4GroupQueryClient['listMembers']>
   }
@@ -75,14 +72,13 @@ export const listMembersSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.listMembers(...params)
     },
 })
 
 const LIST_MEMBERS_LIMIT = 10
 export const listAllMembersSelector = selectorFamily<
-  ListMembersResponse | undefined,
+  ListMembersResponse,
   QueryClientParams
 >({
   key: 'cw4GroupListAllMembers',
@@ -113,7 +109,7 @@ export const listAllMembersSelector = selectorFamily<
 })
 
 export const memberSelector = selectorFamily<
-  MemberResponse | undefined,
+  MemberResponse,
   QueryClientParams & {
     params: Parameters<Cw4GroupQueryClient['member']>
   }
@@ -123,12 +119,11 @@ export const memberSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.member(...params)
     },
 })
 export const hooksSelector = selectorFamily<
-  HooksResponse | undefined,
+  HooksResponse,
   QueryClientParams & {
     params: Parameters<Cw4GroupQueryClient['hooks']>
   }
@@ -138,7 +133,6 @@ export const hooksSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.hooks(...params)
     },
 })

@@ -22,13 +22,12 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
+const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'cw20BaseQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
       return new QueryClient(client, contractAddress)
     },
 })
@@ -54,7 +53,7 @@ export const executeClient = selectorFamily<
 })
 
 export const balanceSelector = selectorFamily<
-  BalanceResponse | undefined,
+  BalanceResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['balance']>
   }
@@ -64,7 +63,6 @@ export const balanceSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].address))
 
@@ -73,7 +71,7 @@ export const balanceSelector = selectorFamily<
 })
 
 export const tokenInfoSelector = selectorFamily<
-  TokenInfoResponse | undefined,
+  TokenInfoResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['tokenInfo']>
   }
@@ -83,13 +81,12 @@ export const tokenInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.tokenInfo(...params)
     },
 })
 
 export const minterSelector = selectorFamily<
-  MinterResponse | undefined,
+  MinterResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['minter']>
   }
@@ -99,13 +96,12 @@ export const minterSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.minter(...params)
     },
 })
 
 export const allowanceSelector = selectorFamily<
-  AllowanceResponse | undefined,
+  AllowanceResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['allowance']>
   }
@@ -115,7 +111,6 @@ export const allowanceSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].owner))
 
@@ -124,7 +119,7 @@ export const allowanceSelector = selectorFamily<
 })
 
 export const allAllowancesSelector = selectorFamily<
-  AllAllowancesResponse | undefined,
+  AllAllowancesResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['allAllowances']>
   }
@@ -134,7 +129,6 @@ export const allAllowancesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].owner))
 
@@ -143,7 +137,7 @@ export const allAllowancesSelector = selectorFamily<
 })
 
 export const allAccountsSelector = selectorFamily<
-  AllAccountsResponse | undefined,
+  AllAccountsResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['allAccounts']>
   }
@@ -153,13 +147,12 @@ export const allAccountsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.allAccounts(...params)
     },
 })
 
 export const marketingInfoSelector = selectorFamily<
-  MarketingInfoResponse | undefined,
+  MarketingInfoResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['marketingInfo']>
   }
@@ -169,13 +162,12 @@ export const marketingInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.marketingInfo(...params)
     },
 })
 
 export const downloadLogoSelector = selectorFamily<
-  DownloadLogoResponse | undefined,
+  DownloadLogoResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['downloadLogo']>
   }
@@ -185,7 +177,6 @@ export const downloadLogoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.downloadLogo(...params)
     },
 })

@@ -26,7 +26,7 @@ type QueryClientParams = {
 }
 
 const queryClient = selectorFamily<
-  CwProposalMultipleQueryClient | undefined,
+  CwProposalMultipleQueryClient,
   QueryClientParams
 >({
   key: 'cwProposalMultipleQueryClient',
@@ -34,8 +34,6 @@ const queryClient = selectorFamily<
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
-
       return new CwProposalMultipleQueryClient(client, contractAddress)
     },
 })
@@ -62,7 +60,7 @@ export const executeClient = selectorFamily<
 })
 
 export const configSelector = selectorFamily<
-  ConfigResponse | undefined,
+  ConfigResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['config']>
   }
@@ -72,12 +70,11 @@ export const configSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.config(...params)
     },
 })
 export const proposalSelector = selectorFamily<
-  ProposalResponse | undefined,
+  ProposalResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['proposal']>
   }
@@ -87,7 +84,6 @@ export const proposalSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(
         refreshProposalIdAtom({
@@ -100,7 +96,7 @@ export const proposalSelector = selectorFamily<
     },
 })
 export const listProposalsSelector = selectorFamily<
-  ListProposalsResponse | undefined,
+  ListProposalsResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['listProposals']>
   }
@@ -110,7 +106,6 @@ export const listProposalsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshProposalsIdAtom)
 
@@ -119,7 +114,7 @@ export const listProposalsSelector = selectorFamily<
 })
 
 export const listAllProposalsSelector = selectorFamily<
-  ListProposalsResponse | undefined,
+  ListProposalsResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['listProposals']>
   }
@@ -129,7 +124,6 @@ export const listAllProposalsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshProposalsIdAtom)
 
@@ -159,7 +153,7 @@ export const listAllProposalsSelector = selectorFamily<
 })
 
 export const reverseProposalsSelector = selectorFamily<
-  ReverseProposalsResponse | undefined,
+  ReverseProposalsResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['reverseProposals']>
   }
@@ -169,7 +163,6 @@ export const reverseProposalsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshProposalsIdAtom)
 
@@ -177,7 +170,7 @@ export const reverseProposalsSelector = selectorFamily<
     },
 })
 export const proposalCountSelector = selectorFamily<
-  ProposalCountResponse | undefined,
+  ProposalCountResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['proposalCount']>
   }
@@ -187,7 +180,6 @@ export const proposalCountSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshProposalsIdAtom)
 
@@ -195,7 +187,7 @@ export const proposalCountSelector = selectorFamily<
     },
 })
 export const getVoteSelector = selectorFamily<
-  GetVoteResponse | undefined,
+  GetVoteResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['getVote']>
   }
@@ -205,7 +197,6 @@ export const getVoteSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(
         refreshProposalIdAtom({
@@ -218,7 +209,7 @@ export const getVoteSelector = selectorFamily<
     },
 })
 export const listVotesSelector = selectorFamily<
-  ListVotesResponse | undefined,
+  ListVotesResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['listVotes']>
   }
@@ -228,7 +219,6 @@ export const listVotesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(
         refreshProposalIdAtom({
@@ -241,7 +231,7 @@ export const listVotesSelector = selectorFamily<
     },
 })
 export const proposalHooksSelector = selectorFamily<
-  ProposalHooksResponse | undefined,
+  ProposalHooksResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['proposalHooks']>
   }
@@ -251,12 +241,11 @@ export const proposalHooksSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.proposalHooks(...params)
     },
 })
 export const voteHooksSelector = selectorFamily<
-  VoteHooksResponse | undefined,
+  VoteHooksResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['voteHooks']>
   }
@@ -266,12 +255,11 @@ export const voteHooksSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.voteHooks(...params)
     },
 })
 export const infoSelector = selectorFamily<
-  InfoResponse | undefined,
+  InfoResponse,
   QueryClientParams & {
     params: Parameters<CwProposalMultipleQueryClient['info']>
   }
@@ -281,7 +269,6 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.info(...params)
     },
 })

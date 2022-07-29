@@ -35,14 +35,12 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
+const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'cwCoreV0_2_0QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
-
       return new QueryClient(client, contractAddress)
     },
 })
@@ -68,38 +66,32 @@ export const executeClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export const adminSelector = selectorFamily<
-  AdminResponse | undefined,
-  QueryClientParams
->({
+export const adminSelector = selectorFamily<AdminResponse, QueryClientParams>({
   key: 'cwCoreV0_2_0Admin',
   get:
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.admin()
     },
 })
 
-export const configSelector = selectorFamily<
-  ConfigResponse | undefined,
-  QueryClientParams
->({
-  key: 'cwCoreV0_2_0Config',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-      if (!client) return
+export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
+  {
+    key: 'cwCoreV0_2_0Config',
+    get:
+      (queryClientParams) =>
+      async ({ get }) => {
+        const client = get(queryClient(queryClientParams))
 
-      return await client.config()
-    },
-})
+        return await client.config()
+      },
+  }
+)
 
 export const votingModuleSelector = selectorFamily<
-  VotingModuleResponse | undefined,
+  VotingModuleResponse,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0VotingModule',
@@ -107,14 +99,13 @@ export const votingModuleSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.votingModule()
     },
 })
 
 export const pauseInfoSelector = selectorFamily<
-  PauseInfoResponse | undefined,
+  PauseInfoResponse,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0PauseInfo',
@@ -122,14 +113,13 @@ export const pauseInfoSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.pauseInfo()
     },
 })
 
 export const proposalModulesSelector = selectorFamily<
-  ProposalModulesResponse | undefined,
+  ProposalModulesResponse,
   QueryClientParams & { params: Parameters<QueryClient['proposalModules']> }
 >({
   key: 'cwCoreV0_2_0ProposalModules',
@@ -137,14 +127,13 @@ export const proposalModulesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.proposalModules(...params)
     },
 })
 
 export const dumpStateSelector = selectorFamily<
-  DumpStateResponse | undefined,
+  DumpStateResponse,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0DumpState',
@@ -152,14 +141,13 @@ export const dumpStateSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.dumpState()
     },
 })
 
 export const getItemSelector = selectorFamily<
-  GetItemResponse | undefined,
+  GetItemResponse,
   QueryClientParams & { params: Parameters<QueryClient['getItem']> }
 >({
   key: 'cwCoreV0_2_0GetItem',
@@ -167,14 +155,13 @@ export const getItemSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.getItem(...params)
     },
 })
 
 export const listItemsSelector = selectorFamily<
-  ListItemsResponse | undefined,
+  ListItemsResponse,
   QueryClientParams & { params: Parameters<QueryClient['listItems']> }
 >({
   key: 'cwCoreV0_2_0ListItems',
@@ -182,14 +169,13 @@ export const listItemsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.listItems(...params)
     },
 })
 
 export const cw20TokenListSelector = selectorFamily<
-  Cw20TokenListResponse | undefined,
+  Cw20TokenListResponse,
   QueryClientParams & { params: Parameters<QueryClient['cw20TokenList']> }
 >({
   key: 'cwCoreV0_2_0Cw20TokenList',
@@ -197,7 +183,6 @@ export const cw20TokenListSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.cw20TokenList(...params)
     },
@@ -205,7 +190,7 @@ export const cw20TokenListSelector = selectorFamily<
 
 const CW20_TOKEN_LIST_LIMIT = 10
 export const allCw20TokenListSelector = selectorFamily<
-  Cw20TokenListResponse | undefined,
+  Cw20TokenListResponse,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0AllCw20TokenList',
@@ -277,7 +262,7 @@ export const allCw20TokenListSelector = selectorFamily<
 })
 
 export const cw721TokenListSelector = selectorFamily<
-  Cw721TokenListResponse | undefined,
+  Cw721TokenListResponse,
   QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
 >({
   key: 'cwCoreV0_2_0Cw721TokenList',
@@ -285,14 +270,13 @@ export const cw721TokenListSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.cw721TokenList(...params)
     },
 })
 
 export const cw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse | undefined,
+  Cw20BalancesResponse,
   QueryClientParams & { params: Parameters<QueryClient['cw20Balances']> }
 >({
   key: 'cwCoreV0_2_0Cw20Balances',
@@ -300,7 +284,6 @@ export const cw20BalancesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
 
@@ -310,7 +293,7 @@ export const cw20BalancesSelector = selectorFamily<
 
 const CW20_BALANCES_LIMIT = 10
 export const allCw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse | undefined,
+  Cw20BalancesResponse,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0AllCw20Balances',
@@ -428,7 +411,7 @@ export const cw20BalancesInfoSelector = selectorFamily<
 })
 
 export const votingPowerAtHeightSelector = selectorFamily<
-  VotingPowerAtHeightResponse | undefined,
+  VotingPowerAtHeightResponse,
   QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
 >({
   key: 'cwCoreV0_2_0VotingPowerAtHeight',
@@ -436,7 +419,6 @@ export const votingPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].address))
 
@@ -445,7 +427,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
 })
 
 export const totalPowerAtHeightSelector = selectorFamily<
-  TotalPowerAtHeightResponse | undefined,
+  TotalPowerAtHeightResponse,
   QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
 >({
   key: 'cwCoreV0_2_0TotalPowerAtHeight',
@@ -453,7 +435,6 @@ export const totalPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(undefined))
 
@@ -461,16 +442,12 @@ export const totalPowerAtHeightSelector = selectorFamily<
     },
 })
 
-export const infoSelector = selectorFamily<
-  InfoResponse | undefined,
-  QueryClientParams
->({
+export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
   key: 'cwCoreV0_2_0Info',
   get:
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.info()
     },
