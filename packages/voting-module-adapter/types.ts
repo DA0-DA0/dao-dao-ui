@@ -122,7 +122,7 @@ export interface IVotingModuleAdapter {
     DaoTreasuryFooter: ComponentType
     DaoInfoAdditionalAddresses: ComponentType
     DaoInfoVotingConfiguration: ComponentType
-    ProposalModuleAddresses: ComponentType
+    ProposalCreationAdditionalAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
 

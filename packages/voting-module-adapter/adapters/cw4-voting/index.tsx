@@ -9,7 +9,7 @@ import {
   DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
-  ProposalModuleAddresses,
+  ProposalCreationAdditionalAddresses,
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
@@ -51,7 +51,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
       DaoTreasuryFooter,
       DaoInfoAdditionalAddresses,
       DaoInfoVotingConfiguration,
-      ProposalModuleAddresses,
+      ProposalCreationAdditionalAddresses,
       VoteHeroStats,
       SdaMembershipPage,
     },
