@@ -395,11 +395,11 @@ export const allCw20BalancesSelector = selectorFamily<
 
 export const cw20BalancesInfoSelector = selectorFamily<
   { symbol: string; denom: string; amount: string; decimals: number }[],
-  { address: string }
+  string
 >({
-  key: 'cw20BalancesInfo',
+  key: 'cwCoreV0_1_0Cw20BalancesInfo',
   get:
-    ({ address }) =>
+    (address) =>
     async ({ get }) => {
       const cw20List =
         get(allCw20BalancesSelector({ contractAddress: address })) ?? []

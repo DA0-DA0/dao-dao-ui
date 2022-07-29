@@ -22,7 +22,7 @@ export const TreasuryBalances: FC = () => {
     useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
 
   const cw20s = useRecoilValue(
-    CwCoreV0_1_0Selectors.cw20BalancesInfoSelector({ address: coreAddress })
+    CwCoreV0_1_0Selectors.cw20BalancesInfoSelector(coreAddress)
   )
 
   const cw20MarketingInfo = useRecoilValue(
