@@ -16,13 +16,7 @@ export interface ActionsRendererProps {
   Logo: ComponentType<LogoProps>
 }
 
-export const ActionsRenderer = (props: ActionsRendererProps) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerActionsRenderer {...props} />
-  </SuspenseLoader>
-)
-
-const InnerActionsRenderer = ({
+export const ActionsRenderer = ({
   coreAddress,
   proposalModule,
   actionData,
@@ -52,22 +46,24 @@ const InnerActionsRenderer = ({
       <form>
         {actionData.map(({ action: { Component } }, index) => (
           <div key={index} className="group relative" id={`A${index + 1}`}>
-            <Component
-              Loader={Loader}
-              Logo={Logo}
-              allActionsWithData={actionData.map(
-                ({ action: { key }, data }) => ({
-                  key,
-                  data,
-                })
-              )}
-              coreAddress={coreAddress}
-              data={actionData[index].data}
-              fieldNamePrefix={`${index}.`}
-              index={index}
-              proposalModule={proposalModule}
-              readOnly
-            />
+            <SuspenseLoader fallback={<ActionCardLoader Loader={Loader} />}>
+              <Component
+                Loader={Loader}
+                Logo={Logo}
+                allActionsWithData={actionData.map(
+                  ({ action: { key }, data }) => ({
+                    key,
+                    data,
+                  })
+                )}
+                coreAddress={coreAddress}
+                data={actionData[index].data}
+                fieldNamePrefix={`${index}.`}
+                index={index}
+                proposalModule={proposalModule}
+                readOnly
+              />
+            </SuspenseLoader>
 
             <button
               className="absolute top-1 -right-5 opacity-0 group-hover:opacity-100 transition-opacity"

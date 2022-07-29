@@ -10,11 +10,9 @@ import {
 
 import { Cw721BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { ContractInfoResponse } from '@dao-dao/state/clients/cw721-base'
-import { SuspenseLoader } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
   RemoveCw721Icon,
   RemoveCw721Component as StatelessRemoveCw721Component,
 } from '../components'
@@ -35,7 +33,7 @@ const useDefaults: UseDefaults<RemoveCw721Data> = () => ({
   address: '',
 })
 
-const InnerComponent: ActionComponent = (props) => {
+const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { fieldNamePrefix, Loader } = props
 
@@ -121,12 +119,6 @@ const InnerComponent: ActionComponent = (props) => {
     />
   )
 }
-
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerComponent {...props} />
-  </SuspenseLoader>
-)
 
 const useTransformToCosmos: UseTransformToCosmos<RemoveCw721Data> = (
   coreAddress: string

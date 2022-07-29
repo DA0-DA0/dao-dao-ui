@@ -10,11 +10,9 @@ import {
 
 import { Cw20BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { SuspenseLoader } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
   RemoveCw20Icon,
   RemoveCw20Component as StatelessRemoveCw20Component,
 } from '../components'
@@ -35,7 +33,7 @@ const useDefaults: UseDefaults<RemoveCw20Data> = () => ({
   address: '',
 })
 
-const InnerComponent: ActionComponent = (props) => {
+const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { fieldNamePrefix, Loader } = props
 
@@ -121,12 +119,6 @@ const InnerComponent: ActionComponent = (props) => {
     />
   )
 }
-
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerComponent {...props} />
-  </SuspenseLoader>
-)
 
 const useTransformToCosmos: UseTransformToCosmos<RemoveCw20Data> = (
   coreAddress: string

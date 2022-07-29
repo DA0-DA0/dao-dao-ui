@@ -72,7 +72,7 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
         </>
       )}
 
-      <div className="flex flex-col gap-2 mb-3">
+      <div className="flex flex-col gap-1">
         <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
           disabled={readOnly}
