@@ -4,13 +4,10 @@ import { CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 import { VotingModuleAdapter } from '../../types'
 import {
   ClaimsPendingList,
-  DaoInfoAdditionalAddresses,
   DaoInfoVotingConfiguration,
   DaoThinInfoContent,
-  DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
-  ProposalCreationAdditionalAddresses,
   ProposalDetailsVotingPowerWidget,
   SdaMembershipPage,
   StakingModal,
@@ -53,10 +50,10 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
         Mobile: (props) => <Membership {...props} primaryText />,
       },
       DaoThinInfoContent,
-      DaoTreasuryFooter,
-      DaoInfoAdditionalAddresses,
+      DaoTreasuryFooter: () => null,
+      DaoInfoAdditionalAddresses: () => null,
       DaoInfoVotingConfiguration,
-      ProposalCreationAdditionalAddresses,
+      ProposalCreationAdditionalAddresses: () => null,
       VoteHeroStats,
       SdaMembershipPage,
 
