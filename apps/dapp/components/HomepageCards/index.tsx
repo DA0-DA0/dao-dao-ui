@@ -23,15 +23,12 @@ export const HomepageCards: FC = () => {
           </div>
         </div>
         <div
-          className="flex relative flex-col grow gap-8 py-14 px-12 bg-card rounded"
+          className="relative grow bg-card rounded"
           style={{
             backgroundImage:
               'linear-gradient(270.19deg, #8F74FA -29.85%, #413B6B 16.35%, #333051 34.43%, #262738 56.36%, #191D20 99.87%)',
           }}
         >
-          <div className="flex justify-center items-center p-2 w-fit h-fit bg-primary rounded">
-            <EmojiHappyIcon className="w-3" />
-          </div>
           <div className="hidden absolute top-0 right-0 bottom-0 my-6 w-full md:block">
             <Image
               alt=""
@@ -45,14 +42,16 @@ export const HomepageCards: FC = () => {
             />
           </div>
 
-          <h3 className="header-text">{t('splash.easyToUse')}</h3>
-          <div className="flex flex-col gap-3 max-w-xs">
-            <p className="max-w-sm body-text">
-              {t('splash.anyoneCanParticipate')}
-            </p>
-            <p className="max-w-sm body-text">
-              {t('splash.easyToUseExplanation')}
-            </p>
+          <div className="flex flex-col gap-8 py-14 px-12 max-w-sm backdrop-blur-[1.4px] xl:max-w-full">
+            <div className="flex justify-center items-center p-2 w-fit h-fit bg-primary rounded">
+              <EmojiHappyIcon className="w-3" />
+            </div>
+
+            <h3 className="header-text">{t('splash.easyToUse')}</h3>
+            <div className="flex flex-col gap-3 max-w-xs body-text">
+              <p>{t('splash.anyoneCanParticipate')}</p>
+              <p>{t('splash.easyToUseExplanation')}</p>
+            </div>
           </div>
         </div>
       </div>
