@@ -8,7 +8,7 @@ on:
 
 jobs:
   detect:
-    name: Detect Missing i18n Keys
+    name: Detect
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +20,8 @@ jobs:
       # Run linter and store output.
       - id: lint
         run: |
-          output="$(yarn i18n lint-missing-keys)"
+          cd packages/i18n
+          output="$(yarn lint-missing-keys)"
           echo "::set-output name=output::$output"
       # Attempt to find existing comment.
       - name: Find Comment
