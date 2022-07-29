@@ -65,18 +65,17 @@ const InnerPinnedProposalsList: FC = () => {
   // Get hooks for all proposal modules to list proposals. Should stay constant.
   const useListAllProposalInfosHooks = useMemo(
     () =>
-      pinnedProposalModules.flatMap(
-        (proposalModules, coreIndex) =>
-          proposalModules?.map((proposalModule) => ({
-            useListAllProposalInfos: matchAndLoadCommon(proposalModule, {
-              coreAddress: initialPinnedAddresses[coreIndex],
-              Logo,
-              Loader,
-            }).hooks.useListAllProposalInfos,
+      pinnedProposalModules.flatMap((proposalModules, coreIndex) =>
+        proposalModules.map((proposalModule) => ({
+          useListAllProposalInfos: matchAndLoadCommon(proposalModule, {
             coreAddress: initialPinnedAddresses[coreIndex],
-            coreIndex,
-            proposalModule,
-          })) ?? []
+            Logo,
+            Loader,
+          }).hooks.useListAllProposalInfos,
+          coreAddress: initialPinnedAddresses[coreIndex],
+          coreIndex,
+          proposalModule,
+        }))
       ),
     [initialPinnedAddresses, pinnedProposalModules]
   )

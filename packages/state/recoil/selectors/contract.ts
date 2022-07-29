@@ -91,10 +91,7 @@ export const treasuryTransactionsSelector = selectorFamily({
     },
 })
 
-export const cwCoreVersionSelector = selectorFamily<
-  CwCoreVersion | undefined,
-  string
->({
+export const cwCoreVersionSelector = selectorFamily<CwCoreVersion, string>({
   key: 'cwCoreVersion',
   get:
     (coreAddress) =>
@@ -104,6 +101,12 @@ export const cwCoreVersionSelector = selectorFamily<
       ).info
 
       const coreVersion = parseCoreVersion(coreInfo.version)
+      if (!coreVersion) {
+        throw new Error(
+          `Failed parsing cw-core (${coreAddress}) version "${coreInfo.version}".`
+        )
+      }
+
       return coreVersion
     },
 })

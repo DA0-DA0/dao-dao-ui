@@ -23,7 +23,7 @@ export const DaoThinInfoContent = ({
     fetchMembership: true,
   })
 
-  if (!governanceTokenInfo || totalVotingWeight === undefined) {
+  if (totalVotingWeight === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

@@ -384,8 +384,9 @@ export const cw20BalancesInfoSelector = selectorFamily<
   get:
     ({ address }) =>
     async ({ get }) => {
-      const cw20List =
-        get(allCw20BalancesSelector({ contractAddress: address })) ?? []
+      const cw20List = get(
+        allCw20BalancesSelector({ contractAddress: address })
+      )
 
       const cw20Info = get(
         waitForAll(

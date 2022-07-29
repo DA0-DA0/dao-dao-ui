@@ -10,10 +10,6 @@ export const DaoInfoVotingConfiguration = () => {
   const { t } = useTranslation()
   const { stakingContractConfig } = useStakingInfo()
 
-  if (!stakingContractConfig) {
-    throw new Error(t('error.loadingData'))
-  }
-
   return (
     <GovInfoListItem
       icon={<ChartPieIcon className="inline w-4" />}

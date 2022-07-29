@@ -80,25 +80,24 @@ export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
         setVotesLoading(true)
         try {
           const startAfter = votes[votes.length - 1].voter
-          const newVotes: VoteInfo[] =
-            (
-              await snapshot.getPromise(
-                CwProposalSingleSelectors.listVotesSelector({
-                  contractAddress: proposalModuleAddress,
-                  params: [
-                    {
-                      proposalId: proposalNumber,
-                      startAfter,
-                      limit: VOTE_LIMIT,
-                    },
-                  ],
-                })
-              )
-            ).votes.map(({ vote, voter, power }) => ({
-              vote,
-              voter,
-              weight: (Number(power) / totalPower) * 100,
-            })) ?? []
+          const newVotes: VoteInfo[] = (
+            await snapshot.getPromise(
+              CwProposalSingleSelectors.listVotesSelector({
+                contractAddress: proposalModuleAddress,
+                params: [
+                  {
+                    proposalId: proposalNumber,
+                    startAfter,
+                    limit: VOTE_LIMIT,
+                  },
+                ],
+              })
+            )
+          ).votes.map(({ vote, voter, power }) => ({
+            vote,
+            voter,
+            weight: (Number(power) / totalPower) * 100,
+          }))
 
           setCanLoadMore(newVotes.length === 30)
           setVotes((votes) => [...votes, ...newVotes])

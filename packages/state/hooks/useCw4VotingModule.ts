@@ -12,8 +12,8 @@ interface UseCw4VotingModuleOptions {
 }
 
 interface UseCw4VotingModuleResponse {
-  votingModuleAddress: string | undefined
-  cw4GroupAddress: string | undefined
+  votingModuleAddress: string
+  cw4GroupAddress: string
   members: Member[] | undefined
 }
 

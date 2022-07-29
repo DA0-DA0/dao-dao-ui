@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -12,11 +11,7 @@ import { JUNO_BLOCKS_PER_YEAR } from '@dao-dao/utils'
 import { DAO_ADDRESS, REWARDS_ADDRESS } from '@/util'
 
 export const useApr = () => {
-  const { t } = useTranslation()
   const { votingModuleAddress } = useVotingModule(DAO_ADDRESS)
-  if (!votingModuleAddress) {
-    throw new Error(t('error.loadingData'))
-  }
 
   // Assumes DAO is using cw20-staked-balance-voting.
   const stakingContractAddress = useRecoilValue(

@@ -88,7 +88,6 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
   }
 
   if (
-    !governanceTokenInfo ||
     blockHeight === undefined ||
     unstakedGovTokenBalance === undefined ||
     walletStakedValue === undefined ||
@@ -98,7 +97,7 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
   }
 
   const tokenImageUrl =
-    !!governanceTokenMarketingInfo?.logo &&
+    !!governanceTokenMarketingInfo.logo &&
     governanceTokenMarketingInfo.logo !== 'embedded' &&
     'url' in governanceTokenMarketingInfo.logo
       ? governanceTokenMarketingInfo.logo.url

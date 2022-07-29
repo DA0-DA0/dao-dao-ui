@@ -28,11 +28,7 @@ const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
 const useTransformToCosmos: UseTransformToCosmos<ManageMembersData> = (
   coreAddress: string
 ) => {
-  const { t } = useTranslation()
   const { cw4GroupAddress } = useCw4VotingModule(coreAddress)
-  if (!cw4GroupAddress) {
-    throw new Error(t('error.loadingData'))
-  }
 
   return useCallback(
     ({ toAdd, toRemove }) =>
@@ -57,11 +53,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
   msg: Record<string, any>,
   coreAddress: string
 ) => {
-  const { t } = useTranslation()
   const { cw4GroupAddress } = useCw4VotingModule(coreAddress)
-  if (!cw4GroupAddress) {
-    throw new Error(t('error.loadingData'))
-  }
 
   return useMemo(() => {
     if (

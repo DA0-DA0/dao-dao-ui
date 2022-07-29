@@ -10,9 +10,6 @@ export const ProposalModuleAddresses = () => {
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { cw4GroupAddress } = useCw4VotingModule(coreAddress)
-  if (!cw4GroupAddress) {
-    throw new Error(t('error.loadingData'))
-  }
 
   return (
     <>

@@ -121,13 +121,12 @@ export const listAllProposalsSelector = selectorFamily<
       let { startAfter } = params[0]
 
       while (true) {
-        const proposals =
-          get(
-            listProposalsSelector({
-              ...queryClientParams,
-              params: [{ startAfter, limit }],
-            })
-          )?.proposals ?? []
+        const { proposals } = get(
+          listProposalsSelector({
+            ...queryClientParams,
+            params: [{ startAfter, limit }],
+          })
+        )
 
         allProposals.push(...proposals)
 

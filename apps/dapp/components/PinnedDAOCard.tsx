@@ -34,7 +34,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
 
-  if (totalVotingWeight === undefined || !proposalModules) {
+  if (totalVotingWeight === undefined) {
     throw new Error(t('error.loadingData'))
   }
 
