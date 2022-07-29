@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
+import { ContractInfoResponse } from '@dao-dao/state/clients/cw721-base'
 import {
   AddressInput,
   Button,
@@ -18,16 +18,16 @@ import { ActionCard, ActionComponent } from '..'
 
 interface Token {
   address: string
-  info: TokenInfoResponse
+  info: ContractInfoResponse
 }
 
-interface RemoveCw20Options {
+interface RemoveCw721Options {
   additionalAddressError?: string
   existingTokens: Token[]
   formattedJsonDisplayProps: FormattedJSONDisplayProps
 }
 
-export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
+export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
   fieldNamePrefix,
   onRemove,
   errors,
@@ -45,9 +45,9 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
 
   return (
     <ActionCard
-      Icon={RemoveCw20Icon}
+      Icon={RemoveCw721Icon}
       onRemove={onRemove}
-      title={t('title.removeCw20FromTreasury')}
+      title={t('title.removeCw721FromTreasury')}
     >
       {existingTokens.length > 0 && (
         <>
@@ -99,7 +99,7 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
   )
 }
 
-export const RemoveCw20Icon = () => {
+export const RemoveCw721Icon = () => {
   const { t } = useTranslation()
   return <Emoji label={t('emoji.token')} symbol="⭕️" />
 }

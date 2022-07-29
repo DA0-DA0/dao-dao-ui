@@ -11,6 +11,8 @@ export enum ActionKey {
   Stake = 'stake',
   AddCw20 = 'addCw20',
   RemoveCw20 = 'removeCw20',
+  AddCw721 = 'addCw721',
+  RemoveCw721 = 'removeCw721',
   ManageMembers = 'manageMembers',
   UpdateInfo = 'updateInfo',
   UpdateProposalConfig = 'updateProposalConfig',
