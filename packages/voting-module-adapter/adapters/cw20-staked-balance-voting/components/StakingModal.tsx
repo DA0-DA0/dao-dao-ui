@@ -1,6 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { PropsWithChildren, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
@@ -38,6 +39,7 @@ const InnerStakingModal = ({
   onClose,
   deposit,
 }: BaseStakingModalProps) => {
+  const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
 
@@ -92,7 +94,7 @@ const InnerStakingModal = ({
     walletStakedValue === undefined ||
     walletStakedBalance === undefined
   ) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   const doStake = Cw20BaseHooks.useSend({

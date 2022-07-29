@@ -95,7 +95,7 @@ export const listAllMembersSelector = selectorFamily<
             params: [{ startAfter, limit: LIST_MEMBERS_LIMIT }],
           })
         )
-        if (!response?.members.length) break
+        if (!response.members.length) break
 
         members.push(...response.members)
         startAfter = response.members[response.members.length - 1].addr

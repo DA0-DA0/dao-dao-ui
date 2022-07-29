@@ -14,20 +14,13 @@ export const ClaimsPendingList = ({
   const { connected } = useWalletManager()
   const { governanceTokenInfo, governanceTokenMarketingInfo } =
     useGovernanceTokenInfo()
-  const {
-    stakingContractConfig,
-    blockHeight,
-    claims,
-    refreshClaims,
-    sumClaimsAvailable,
-  } = useStakingInfo({
-    fetchClaims: true,
-  })
+  const { blockHeight, claims, refreshClaims, sumClaimsAvailable } =
+    useStakingInfo({
+      fetchClaims: true,
+    })
 
   if (
-    !governanceTokenInfo ||
-    !stakingContractConfig ||
-    !blockHeight ||
+    blockHeight === undefined ||
     !refreshClaims ||
     (connected && (!claims || sumClaimsAvailable === undefined))
   ) {
@@ -35,7 +28,7 @@ export const ClaimsPendingList = ({
   }
 
   const tokenImageUrl =
-    !!governanceTokenMarketingInfo?.logo &&
+    !!governanceTokenMarketingInfo.logo &&
     governanceTokenMarketingInfo.logo !== 'embedded' &&
     'url' in governanceTokenMarketingInfo.logo
       ? governanceTokenMarketingInfo.logo.url

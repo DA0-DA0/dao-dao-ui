@@ -37,7 +37,7 @@ export const TreasuryBalances: FC = () => {
   )
 
   const cw20Tokens = cw20s.map((info, idx) => {
-    const logoInfo = cw20MarketingInfo[idx]?.logo
+    const logoInfo = cw20MarketingInfo[idx].logo
 
     return {
       ...info,

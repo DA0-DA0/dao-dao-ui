@@ -233,7 +233,7 @@ export const allCw20TokenListSelector = selectorFamily<
             params: [{ startAt, limit: CW20_TOKEN_LIST_LIMIT }],
           })
         )
-        if (!response?.length) break
+        if (!response.length) break
 
         // Don't double-add last token since we set startAt to it for
         // the next query.
@@ -303,34 +303,32 @@ export const allCw20BalancesSelector = selectorFamily<
       //! Check if has governance token, and add to list if necessary.
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
       // All `info` queries are the same, so just use cw-core's info query.
-      const votingModuleInfo = votingModuleAddress
-        ? get(infoSelector({ contractAddress: votingModuleAddress }))
-        : undefined
+      const votingModuleInfo = get(
+        infoSelector({ contractAddress: votingModuleAddress })
+      )
 
       let hasGovernanceToken
       try {
         hasGovernanceToken =
-          !!votingModuleInfo &&
           matchAdapter(votingModuleInfo.info.contract)?.id ===
-            Cw20StakedBalanceVotingAdapter.id
+          Cw20StakedBalanceVotingAdapter.id
       } catch {
         hasGovernanceToken = false
       }
-      const governanceTokenAddress =
-        votingModuleAddress && hasGovernanceToken
-          ? get(
-              Cw20StakedBalanceVotingSelectors.tokenContractSelector({
-                contractAddress: votingModuleAddress,
-              })
-            )
-          : undefined
+      const governanceTokenAddress = hasGovernanceToken
+        ? get(
+            Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+              contractAddress: votingModuleAddress,
+            })
+          )
+        : undefined
       const governanceTokenBalance = governanceTokenAddress
         ? get(
             Cw20BaseSelectors.balanceSelector({
               contractAddress: governanceTokenAddress,
               params: [{ address: queryClientParams.contractAddress }],
             })
-          )?.balance
+          ).balance
         : undefined
 
       //! Get all balances.
@@ -344,7 +342,7 @@ export const allCw20BalancesSelector = selectorFamily<
             params: [{ startAt, limit: CW20_BALANCES_LIMIT }],
           })
         )
-        if (!response?.length) break
+        if (!response.length) break
 
         // Don't double-add last balance since we set startAt to it for
         // the next query.

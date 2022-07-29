@@ -73,11 +73,7 @@ const InnerVoteHeroStatsContent = (props: InnerVoteHeroStatsContentProps) => {
     fetchTotalStakedValue: true,
   })
 
-  if (
-    !governanceTokenInfo ||
-    !stakingContractConfig ||
-    totalStakedValue === undefined
-  ) {
+  if (totalStakedValue === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

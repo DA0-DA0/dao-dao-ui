@@ -276,7 +276,7 @@ export const CreateProposalForm = ({
         // data have loaded.
         (requiredProposalDeposit && !allowanceResponse)
       ) {
-        throw new Error('Failed to load required info to create a proposal.')
+        throw new Error(t('error.loadingData'))
       }
 
       setLoading(true)
@@ -331,11 +331,12 @@ export const CreateProposalForm = ({
     },
     [
       connected,
-      proposalModuleAddress,
       requiredProposalDeposit,
       allowanceResponse,
+      t,
       blockHeight,
       increaseAllowance,
+      proposalModuleAddress,
       refreshBalances,
       createProposal,
       onCreateSuccess,
