@@ -123,8 +123,6 @@ export const listAllProposalsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
       get(refreshProposalsIdAtom)
 
       const allProposals: ListProposalsResponse['proposals'] = []
