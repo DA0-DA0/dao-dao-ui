@@ -1,9 +1,8 @@
 import clsx from 'clsx'
-import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Logo } from '@dao-dao/ui'
+import { Loader, Logo } from '@dao-dao/ui'
 
 import { DaoHit, Hit, HitType } from '.'
 
@@ -11,16 +10,18 @@ const HitView = ({
   hit,
   selected,
   onClick,
+  loading,
 }: {
   hit: Hit
   selected: boolean
   onClick: () => void
+  loading: boolean
 }) => {
   const { t } = useTranslation()
   return (
     <div
       className={clsx(
-        'flex gap-2 items-center py-2 px-1 font-medium text-tertiary hover:text-primary align-middle hover:bg-primary rounded-md cursor-pointer',
+        'flex flex-row gap-2 items-center py-2 px-1 font-medium text-tertiary hover:text-primary align-middle hover:bg-primary rounded-md cursor-pointer',
         selected && 'text-primary bg-primary'
       )}
       onClick={onClick}
@@ -44,6 +45,12 @@ const HitView = ({
         </div>
       )}
       <div>{hit.name}</div>
+
+      {loading && (
+        <div className="flex flex-row grow justify-end items-center pr-2">
+          <Loader fill={false} size={20} />
+        </div>
+      )}
     </div>
   )
 }
@@ -60,12 +67,13 @@ export const CommandHits = ({
   sectionData,
   hits,
   onChoice,
+  navigatingFromHit,
 }: {
   sectionData: HitSectionData
   hits: Hit[]
   onChoice: (hit: Hit) => void
+  navigatingFromHit: Hit | undefined
 }) => {
-  const router = useRouter()
   const { sections, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
   const listRef = useRef<HTMLDivElement>(null)
@@ -77,18 +85,16 @@ export const CommandHits = ({
       switch (event.key) {
         case 'ArrowUp':
           setSelection((selection) => Math.max(selection - 1, 0))
-          router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'ArrowDown':
           setSelection((selection) => Math.min(selection + 1, hits.length - 1))
-          router.prefetch(`/dao/${hits[selection].id}`)
           break
         case 'Enter':
           onChoice(hits[selection])
           break
       }
     },
-    [hits, selection, router, onChoice]
+    [onChoice, hits, selection]
   )
 
   useEffect(() => {
@@ -130,6 +136,16 @@ export const CommandHits = ({
       className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4"
       ref={listRef}
     >
+      {/* If hit we're currently navigating to is no longer part of the hits to render, just display the top with the loader. */}
+      {navigatingFromHit && !hits.includes(navigatingFromHit) && (
+        <HitView
+          hit={navigatingFromHit}
+          loading
+          onClick={() => null}
+          selected={false}
+        />
+      )}
+
       {sections.map((sectionIndex, i) => (
         <>
           <div className="py-1 font-medium text-gray-400">
@@ -142,6 +158,7 @@ export const CommandHits = ({
             <HitView
               key={hit.id}
               hit={hit}
+              loading={navigatingFromHit === hit}
               onClick={() => onChoice(hit)}
               selected={
                 (i === 0 ? index : sections[i - 1] + index) === selection
