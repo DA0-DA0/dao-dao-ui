@@ -90,6 +90,7 @@
     "createProposalSubmitInvalid": "Correct the errors above before previewing or publishing.",
     "daoIsPaused": "You cannot create a proposal when the DAO is paused.",
     "daoNotFound": "DAO not found.",
+    "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid CW20 contract address.",
     "fieldRequired": "This field is required.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
@@ -109,7 +110,8 @@
     "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
     "pageNotFound": "We couldn't find that page.",
     "proposalNotFound": "Proposal not found.",
-    "unexpectedError": "An unexpected error occurred."
+    "unexpectedError": "An unexpected error occurred.",
+    "unsupportedVotingModule": "This DAO uses an unsupported voting module."
   },
   "form": {
     "admin": "Admin",
