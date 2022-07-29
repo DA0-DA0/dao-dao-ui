@@ -22,7 +22,9 @@ jobs:
         id: lint
         run: |
           output="$(yarn i18n lint-missing-keys 2>&1)"
-          echo "::set-output name=output::$output"
+          echo "LINT_OUTPUT<<EOF" >> $GITHUB_ENV
+          echo "$output" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       # Attempt to find existing comment.
       - name: Find Comment
         uses: peter-evans/find-comment@v2
@@ -40,7 +42,7 @@ jobs:
           body: |
             :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
 
-            ${{ steps.lint.outputs.output }}
+            ${{ env.LINT_OUTPUT }}
       # Update comment if exists.
       - name: Update comment
         if: steps.fc.outputs.comment-id != ''
@@ -50,4 +52,4 @@ jobs:
           body: |
             :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
 
-            ${{ steps.lint.outputs.output }}
+            ${{ env.LINT_OUTPUT }}
