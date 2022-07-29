@@ -40,9 +40,11 @@ jobs:
         with:
           issue-number: 778
           body: |
-            :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
+            # :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
 
+            ```diff
             ${{ env.LINT_OUTPUT }}
+            ```
       # Update comment if exists.
       - name: Update comment
         if: steps.fc.outputs.comment-id != ''
@@ -50,6 +52,8 @@ jobs:
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: |
-            :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
+            # :yin_yang: Auto-generated Missing i18n Keys Linter :yin_yang:
 
+            ```diff
             ${{ env.LINT_OUTPUT }}
+            ```
