@@ -10,6 +10,7 @@ import {
   CwCoreV0_1_0Selectors,
   CwProposalSingleHooks,
   CwProposalSingleSelectors,
+  useVotingModule,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -45,6 +46,7 @@ export const ProposalDetails = ({
   const { t } = useTranslation()
   const { coreAddress, proposalModule, proposalNumber, Loader, Logo } =
     useProposalModuleAdapterOptions()
+  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
@@ -302,16 +304,18 @@ export const ProposalDetails = ({
         </div>
       )}
 
-      {proposal.status === Status.Passed && (
-        <>
-          <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
-          <ExecuteProposal
-            loading={loading}
-            messages={proposal.msgs.length}
-            onExecute={onExecute}
-          />
-        </>
-      )}
+      {proposal.status === Status.Passed &&
+        // Show if anyone can execute OR if the wallet is a member.
+        (!config.only_members_execute || isMember) && (
+          <>
+            <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
+            <ExecuteProposal
+              loading={loading}
+              messages={proposal.msgs.length}
+              onExecute={onExecute}
+            />
+          </>
+        )}
       {proposal.status === Status.Rejected && (
         <>
           <p className="mt-6 mb-4 link-text">{t('title.status')}</p>
