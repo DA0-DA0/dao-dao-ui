@@ -66,7 +66,6 @@ const InnerActionsRenderer = ({
               fieldNamePrefix={`${index}.`}
               index={index}
               proposalModule={proposalModule}
-              readOnly
             />
 
             <button

@@ -21,7 +21,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   coreAddress,
   options: { onContractChange, contractAdmin },
 }) => {
@@ -41,7 +41,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         <div className="flex flex-col grow gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.contract}
             fieldName={fieldNamePrefix + 'contract'}
             onChange={(e) => onContractChange(e.target.value)}
@@ -53,7 +53,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         <div className="flex flex-col grow gap-1">
           <InputLabel name={t('form.admin')} />
           <AddressInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.newAdmin}
             fieldName={fieldNamePrefix + 'newAdmin'}
             register={register}

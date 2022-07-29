@@ -29,7 +29,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { existingTokens, ...options },
 }) => {
   const { t } = useTranslation()
@@ -57,7 +57,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
                 className={clsx('text-center', {
                   'text-secondary bg-transparent': address !== tokenAddress,
                 })}
-                disabled={readOnly}
+                disabled={!isCreating}
                 onClick={() => setValue(fieldNamePrefix + 'address', address)}
                 size="sm"
                 type="button"
@@ -73,7 +73,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
       <div className="flex flex-col gap-2 mb-3">
         <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
           register={register}

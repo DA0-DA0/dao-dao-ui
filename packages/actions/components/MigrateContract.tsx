@@ -29,7 +29,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   coreAddress,
   options: { onContractChange, contractAdmin },
   Loader,
@@ -61,7 +61,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <div className="flex flex-col grow gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.contract_addr}
             fieldName={fieldNamePrefix + 'contract'}
             onChange={(v) => onContractChange(v.target.value)}
@@ -73,7 +73,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.codeID')} />
           <NumberInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.code_id}
             fieldName={fieldNamePrefix + 'codeId'}
             register={register}
@@ -91,7 +91,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           control={control}
           error={errors?.msg}
           fieldName={fieldNamePrefix + 'msg'}
-          readOnly={readOnly}
+          readOnly={!isCreating}
           validation={[validateJSON]}
         />
         <InputErrorMessage error={errors?.msg} />
