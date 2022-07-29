@@ -55,10 +55,10 @@ export interface UseGovernanceTokenInfoOptions {
 }
 
 export interface UseGovernanceTokenInfoResponse {
-  stakingContractAddress?: string
-  governanceTokenAddress?: string
-  governanceTokenInfo?: TokenInfoResponse
-  governanceTokenMarketingInfo?: MarketingInfoResponse
+  stakingContractAddress: string
+  governanceTokenAddress: string
+  governanceTokenInfo: TokenInfoResponse
+  governanceTokenMarketingInfo: MarketingInfoResponse
   /// Optional
   // Wallet balance
   walletBalance?: number
@@ -75,8 +75,8 @@ export interface UseStakingInfoOptions {
 }
 
 export interface UseStakingInfoResponse {
-  stakingContractAddress?: string
-  stakingContractConfig?: GetConfigResponse
+  stakingContractAddress: string
+  stakingContractConfig: GetConfigResponse
   refreshStakingContractBalances: () => void
   refreshTotals: () => void
   /// Optional

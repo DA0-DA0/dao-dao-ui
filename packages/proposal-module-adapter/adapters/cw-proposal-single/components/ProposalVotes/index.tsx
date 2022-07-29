@@ -1,5 +1,5 @@
 import { DownloadIcon } from '@heroicons/react/outline'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
@@ -22,7 +22,7 @@ export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -31,15 +31,11 @@ export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const totalPower = Number(proposal.total_power)
 
-  const initalVotes: VoteInfo[] | undefined = useRecoilValue(
+  const _initialVotes = useRecoilValue(
     CwProposalSingleSelectors.listVotesSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -49,13 +45,18 @@ export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
         },
       ],
     })
-  )?.votes.map(({ vote, voter, power }) => ({
-    vote,
-    voter,
-    weight: (Number(power) / totalPower) * 100,
-  }))
+  ).votes
+  const initialVotes: VoteInfo[] = useMemo(
+    () =>
+      _initialVotes.map(({ vote, voter, power }) => ({
+        vote,
+        voter,
+        weight: (Number(power) / totalPower) * 100,
+      })),
+    [_initialVotes, totalPower]
+  )
 
-  const [votes, setVotes] = useState<VoteInfo[]>(initalVotes ?? [])
+  const [votes, setVotes] = useState<VoteInfo[]>(initialVotes)
   const [votesLoading, setVotesLoading] = useState(false)
   // If we get as many votes back as we ask for, there may be more.
   const [canLoadMore, setCanLoadMore] = useState(votes.length === VOTE_LIMIT)
@@ -68,7 +69,7 @@ export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
     })
   )
   useEffect(() => {
-    setVotes(initalVotes ?? [])
+    setVotes(initialVotes)
     // Don't update every time initialVotes changes. Only refresh ID.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshProposalId])
@@ -93,7 +94,7 @@ export const ProposalVotes = ({ className }: BaseProposalVotesProps) => {
                   ],
                 })
               )
-            )?.votes.map(({ vote, voter, power }) => ({
+            ).votes.map(({ vote, voter, power }) => ({
               vote,
               voter,
               weight: (Number(power) / totalPower) * 100,

@@ -101,10 +101,7 @@ export const cwCoreVersionSelector = selectorFamily<
     async ({ get }) => {
       const coreInfo = get(
         CwCoreV0_1_0Selectors.infoSelector({ contractAddress: coreAddress })
-      )?.info
-      if (!coreInfo) {
-        return
-      }
+      ).info
 
       const coreVersion = parseCoreVersion(coreInfo.version)
       return coreVersion

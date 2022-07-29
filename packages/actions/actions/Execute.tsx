@@ -92,8 +92,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
   )
 
 const Component: ActionComponent = (props) => {
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+  const nativeBalances = useRecoilValue(
+    nativeBalancesSelector(props.coreAddress)
+  )
 
   return (
     <StatelessExecuteComponent

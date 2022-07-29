@@ -47,7 +47,7 @@ export const InnerDaoTreasuryHistory = ({
   const { coreAddress } = useDaoInfoContext()
   const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
-  return transactions?.length ? (
+  return transactions.length ? (
     <div className="space-y-4">
       <h2 className="primary-text">
         {shortTitle ? t('title.history') : t('title.treasuryHistory')}

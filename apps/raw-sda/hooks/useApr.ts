@@ -24,9 +24,6 @@ export const useApr = () => {
       contractAddress: votingModuleAddress,
     })
   )
-  if (!stakingContractAddress) {
-    throw new Error(t('error.loadingData'))
-  }
 
   // rate * blocks_per_year / total_value_staked
   const rate = useRecoilValue(
@@ -39,10 +36,9 @@ export const useApr = () => {
       contractAddress: stakingContractAddress,
     })
   )
-  const apr =
-    totalValueStaked && rate
-      ? (Number(rate) * JUNO_BLOCKS_PER_YEAR) / Number(totalValueStaked.total)
-      : undefined
+  const apr = rate
+    ? (Number(rate) * JUNO_BLOCKS_PER_YEAR) / Number(totalValueStaked.total)
+    : undefined
 
   return apr
 }

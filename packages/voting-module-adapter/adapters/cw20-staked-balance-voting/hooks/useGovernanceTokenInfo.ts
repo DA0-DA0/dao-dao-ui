@@ -24,42 +24,34 @@ export const useGovernanceTokenInfo = ({
   const { votingModuleAddress } = useVotingModule(coreAddress)
 
   const stakingContractAddress = useRecoilValue(
-    votingModuleAddress
-      ? Cw20StakedBalanceVotingSelectors.stakingContractSelector({
-          contractAddress: votingModuleAddress,
-        })
-      : constSelector(undefined)
+    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+      contractAddress: votingModuleAddress,
+    })
   )
 
   const governanceTokenAddress = useRecoilValue(
-    votingModuleAddress
-      ? Cw20StakedBalanceVotingSelectors.tokenContractSelector({
-          contractAddress: votingModuleAddress,
-        })
-      : constSelector(undefined)
+    Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+      contractAddress: votingModuleAddress,
+    })
   )
   const governanceTokenInfo = useRecoilValue(
-    governanceTokenAddress
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: governanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
+    Cw20BaseSelectors.tokenInfoSelector({
+      contractAddress: governanceTokenAddress,
+      params: [],
+    })
   )
   const governanceTokenMarketingInfo = useRecoilValue(
-    governanceTokenAddress
-      ? Cw20BaseSelectors.marketingInfoSelector({
-          contractAddress: governanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
+    Cw20BaseSelectors.marketingInfoSelector({
+      contractAddress: governanceTokenAddress,
+      params: [],
+    })
   )
 
   /// Optional
 
   // Wallet balance
   const walletBalance = useRecoilValue(
-    fetchWalletBalance && governanceTokenAddress && walletAddress
+    fetchWalletBalance && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: governanceTokenAddress,
           params: [{ address: walletAddress }],
@@ -69,7 +61,7 @@ export const useGovernanceTokenInfo = ({
 
   // Treasury balance
   const treasuryBalance = useRecoilValue(
-    fetchTreasuryBalance && governanceTokenAddress
+    fetchTreasuryBalance
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: governanceTokenAddress,
           params: [{ address: coreAddress }],
@@ -79,7 +71,7 @@ export const useGovernanceTokenInfo = ({
 
   // Price info
   const price = useRecoilValue(
-    fetchPriceWithSwapAddress && governanceTokenInfo
+    fetchPriceWithSwapAddress
       ? tokenUSDCPriceSelector({
           denom: fetchPriceWithSwapAddress,
           tokenDecimals: governanceTokenInfo.decimals,

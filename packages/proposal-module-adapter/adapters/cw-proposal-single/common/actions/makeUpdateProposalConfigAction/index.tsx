@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -48,16 +47,11 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
   _,
   { address: proposalModuleAddress }
 ) => {
-  const { t } = useTranslation()
-
   const proposalModuleConfig = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-  if (!proposalModuleConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const proposalDepositTokenInfo = useRecoilValue(
     proposalModuleConfig.deposit_info?.token
@@ -173,16 +167,11 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   _,
   { address: proposalModuleAddress }
 ) => {
-  const { t } = useTranslation()
-
   const proposalModuleConfig = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-  if (!proposalModuleConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const {
     hooks: { useGovernanceTokenInfo },

@@ -25,7 +25,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const config = useRecoilValue(
     CwCoreV0_1_0Selectors.configSelector({ contractAddress: address })
   )
-  const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
+  const nativeBalance = useRecoilValue(nativeBalanceSelector(address)).amount
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {
     fetchMembership: true,
   })
@@ -34,12 +34,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
 
-  if (
-    !config ||
-    nativeBalance === undefined ||
-    totalVotingWeight === undefined ||
-    !proposalModules
-  ) {
+  if (totalVotingWeight === undefined || !proposalModules) {
     throw new Error(t('error.loadingData'))
   }
 

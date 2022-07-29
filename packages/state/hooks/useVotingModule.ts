@@ -13,7 +13,7 @@ interface UseVotingModuleOptions {
 
 interface UseVotingModuleResponse {
   isMember: boolean | undefined
-  votingModuleAddress: string | undefined
+  votingModuleAddress: string
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
 }
@@ -28,7 +28,7 @@ export const useVotingModule = (
   )
 
   const _walletVotingWeight = useRecoilValue(
-    fetchMembership && votingModuleAddress && walletAddress
+    fetchMembership && walletAddress
       ? votingPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
@@ -36,7 +36,7 @@ export const useVotingModule = (
       : constSelector(undefined)
   )?.power
   const _totalVotingWeight = useRecoilValue(
-    fetchMembership && votingModuleAddress
+    fetchMembership
       ? totalPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{}],

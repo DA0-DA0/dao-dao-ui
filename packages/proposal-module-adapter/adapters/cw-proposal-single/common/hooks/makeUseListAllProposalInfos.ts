@@ -22,24 +22,24 @@ export const makeUseListAllProposalInfos =
           },
         ],
       })
-    )?.proposals
+    ).proposals
 
     const timestamps = useRecoilValue(
       waitForAll(
-        proposalResponses?.map(({ proposal: { start_height } }) =>
+        proposalResponses.map(({ proposal: { start_height } }) =>
           blockHeightTimestampSelector(start_height)
-        ) ?? []
+        )
       )
     )
 
     const proposalInfos = useMemo(
       () =>
-        proposalResponses?.map(({ id, proposal: { status } }, index) => ({
+        proposalResponses.map(({ id, proposal: { status } }, index) => ({
           id: `${prefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
           isOpen: status === Status.Open,
-        })) ?? [],
+        })),
       [proposalResponses, timestamps]
     )
 

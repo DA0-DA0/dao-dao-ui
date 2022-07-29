@@ -24,17 +24,11 @@ const InnerProposalModuleInfo = ({
   proposalModuleAddress,
   ...props
 }: ProposalModuleInfo) => {
-  const { t } = useTranslation()
-
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-
-  if (!config) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const processTQ = useProcessTQ()
   const { threshold, quorum } = processTQ(config.threshold)

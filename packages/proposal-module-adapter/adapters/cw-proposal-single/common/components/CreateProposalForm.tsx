@@ -104,10 +104,6 @@ export const CreateProposalForm = ({
 
   const blockHeight = useRecoilValue(blockHeightSelector)
 
-  if (!config || blockHeight === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
-
   const requiredProposalDeposit = Number(config.deposit_info?.deposit ?? '0')
 
   const allowanceResponse = useRecoilValue(
@@ -149,7 +145,7 @@ export const CreateProposalForm = ({
   const pauseInfo = useRecoilValue(
     CwCoreV0_1_0Selectors.pauseInfoSelector({ contractAddress: coreAddress })
   )
-  const isPaused = pauseInfo && 'Paused' in pauseInfo
+  const isPaused = 'Paused' in pauseInfo
 
   const formMethods = useForm<FormProposalData>({
     mode: 'onChange',
