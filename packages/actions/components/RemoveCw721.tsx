@@ -101,5 +101,5 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
 
 export const RemoveCw721Icon = () => {
   const { t } = useTranslation()
-  return <Emoji label={t('emoji.token')} symbol="⭕️" />
+  return <Emoji label={t('emoji.x')} symbol="❌" />
 }

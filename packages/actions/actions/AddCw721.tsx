@@ -118,8 +118,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
 export const addCw721Action: Action<AddCw721Data> = {
   key: ActionKey.AddCw721,
   Icon: AddCw721Icon,
-  label: 'Add NFT (CW721) to Treasury',
-  description: "Add a NFT (CW721) to your DAO's treasury.",
+  label: 'Display NFT Collection in Treasury',
+  description:
+    'Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',
   Component,
   useDefaults,
   useTransformToCosmos,

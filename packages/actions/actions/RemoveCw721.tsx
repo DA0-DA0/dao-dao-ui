@@ -168,8 +168,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw721Data> = (
 export const removeCw721Action: Action<RemoveCw721Data> = {
   key: ActionKey.RemoveCw721,
   Icon: RemoveCw721Icon,
-  label: 'Remove NFT (CW721) from Treasury',
-  description: "Remove a NFT (CW721) from your DAO's treasury.",
+  label: 'Remove NFT Collection from Treasury',
+  description:
+    'Stop displaying the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',
   Component,
   useDefaults,
   useTransformToCosmos,

@@ -167,8 +167,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
 export const removeCw20Action: Action<RemoveCw20Data> = {
   key: ActionKey.RemoveCw20,
   Icon: RemoveCw20Icon,
-  label: 'Remove CW20 Token from Treasury',
-  description: "Remove a CW20 token from your DAO's treasury.",
+  label: 'Remove Token Balance from Treasury',
+  description:
+    "Stop displaying the DAO's balance of a CW20 token in the treasury view.",
   Component,
   useDefaults,
   useTransformToCosmos,

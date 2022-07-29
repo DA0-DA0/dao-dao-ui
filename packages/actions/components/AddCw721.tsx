@@ -66,5 +66,5 @@ export const AddCw721Component: ActionComponent<AddCw721Options> = ({
 
 export const AddCw721Icon = () => {
   const { t } = useTranslation()
-  return <Emoji label={t('emoji.token')} symbol="🔘" />
+  return <Emoji label={t('emoji.image')} symbol="🖼" />
 }

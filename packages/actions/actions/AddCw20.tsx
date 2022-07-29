@@ -118,8 +118,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw20Data> = (
 export const addCw20Action: Action<AddCw20Data> = {
   key: ActionKey.AddCw20,
   Icon: AddCw20Icon,
-  label: 'Add CW20 Token to Treasury',
-  description: "Add a CW20 token to your DAO's treasury.",
+  label: 'Display Token Balance in Treasury',
+  description:
+    "Display the DAO's balance of a CW20 token in the treasury view.",
   Component,
   useDefaults,
   useTransformToCosmos,
