@@ -7,10 +7,10 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
   Button,
+  FormattedJSONDisplay,
+  FormattedJSONDisplayProps,
   InputErrorMessage,
   InputLabel,
-  TokenInfoDisplay,
-  TokenInfoDisplayProps,
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
@@ -21,16 +21,22 @@ interface Token {
   info: TokenInfoResponse
 }
 
-type RemoveTokenOptions = TokenInfoDisplayProps & {
+interface RemoveCw20Options {
+  additionalAddressError?: string
   existingTokens: Token[]
+  formattedJsonDisplayProps: FormattedJSONDisplayProps
 }
 
-export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
+export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
   fieldNamePrefix,
   onRemove,
   errors,
   readOnly,
-  options: { existingTokens, ...options },
+  options: {
+    additionalAddressError,
+    existingTokens,
+    formattedJsonDisplayProps,
+  },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
@@ -43,9 +49,9 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
 
   return (
     <ActionCard
-      Icon={RemoveTokenIcon}
+      Icon={RemoveCw20Icon}
       onRemove={onRemove}
-      title={t('title.removeTreasuryToken')}
+      title={t('title.removeCw20FromTreasury')}
     >
       {existingTokens.length > 0 && (
         <>
@@ -81,17 +87,24 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
             validateRequired,
             validateContractAddress,
             validateIsTreasuryToken,
+            // Invalidate field if additional error is present.
+            () => additionalAddressError || true,
           ]}
         />
-        <InputErrorMessage error={errors?.address} />
+        <InputErrorMessage
+          error={
+            errors?.address ||
+            (additionalAddressError && { message: additionalAddressError })
+          }
+        />
       </div>
 
-      <TokenInfoDisplay {...options} />
+      <FormattedJSONDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
 }
 
-export const RemoveTokenIcon = () => {
+export const RemoveCw20Icon = () => {
   const { t } = useTranslation()
   return <Emoji label={t('emoji.token')} symbol="⭕️" />
 }

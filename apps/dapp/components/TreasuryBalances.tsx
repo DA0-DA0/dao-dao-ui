@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
@@ -15,11 +15,10 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-export const TreasuryBalances: FC = () => {
+export const TreasuryBalances = () => {
   const { coreAddress } = useDaoInfoContext()
 
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
+  const nativeBalances = useRecoilValue(nativeBalancesSelector(coreAddress))
 
   const cw20s = useRecoilValue(
     CwCoreV0_1_0Selectors.cw20BalancesInfoSelector(coreAddress)
@@ -36,25 +35,33 @@ export const TreasuryBalances: FC = () => {
     )
   )
 
-  const cw20Tokens = cw20s.map((info, idx) => {
-    const logoInfo = cw20MarketingInfo[idx]?.logo
+  const cw20Tokens = useMemo(
+    () =>
+      cw20s.map((info, idx) => {
+        const logoInfo = cw20MarketingInfo[idx]?.logo
 
-    return {
-      ...info,
-      imageUrl:
-        !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
-          ? logoInfo.url
-          : undefined,
-    }
-  })
+        return {
+          ...info,
+          imageUrl:
+            !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+              ? logoInfo.url
+              : undefined,
+        }
+      }),
+    [cw20MarketingInfo, cw20s]
+  )
 
-  const nativeTokens = nativeBalances.length
-    ? nativeBalances.map(({ denom, amount }) => ({
-        denom: denom,
-        amount,
-        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
-      }))
-    : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }]
+  const nativeTokens = useMemo(
+    () =>
+      nativeBalances.length
+        ? nativeBalances.map(({ denom, amount }) => ({
+            denom: denom,
+            amount,
+            decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
+          }))
+        : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }],
+    [nativeBalances]
+  )
 
   const usdcValue = useRecoilValue(addressTVLSelector({ address: coreAddress }))
 

@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
-  AddTokenIcon,
-  AddTokenComponent as StatelessAddTokenComponent,
+  AddCw20Icon,
+  AddCw20Component as StatelessAddCw20Component,
 } from '../components'
 import {
   Action,
@@ -18,18 +19,19 @@ import {
   UseTransformToCosmos,
 } from '../types'
 
-interface AddTokenData {
+interface AddCw20Data {
   address: string
 }
 
-const useDefaults: UseDefaults<AddTokenData> = () => ({
+const useDefaults: UseDefaults<AddCw20Data> = () => ({
   address: '',
 })
 
 const Component: ActionComponent = (props) => {
-  const { fieldNamePrefix, errors, Loader } = props
+  const { t } = useTranslation()
+  const { fieldNamePrefix, Loader } = props
 
-  const { watch, setError, clearErrors } = useFormContext()
+  const { watch } = useFormContext()
 
   const tokenAddress = watch(fieldNamePrefix + 'address')
   const tokenInfoLoadable = useRecoilValueLoadable(
@@ -41,48 +43,39 @@ const Component: ActionComponent = (props) => {
       : constSelector(undefined)
   )
 
+  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
   useEffect(() => {
     if (tokenInfoLoadable.state !== 'hasError') {
-      if (errors?.address) {
-        clearErrors(fieldNamePrefix + 'address')
+      if (additionalAddressError) {
+        setAdditionalAddressError(undefined)
       }
       return
     }
 
-    if (!errors?.address) {
-      setError(fieldNamePrefix + 'address', {
-        type: 'manual',
-        message: 'Failed to get token info.',
-      })
+    if (!additionalAddressError) {
+      setAdditionalAddressError(t('error.notCw20Address'))
     }
-  }, [
-    tokenInfoLoadable.state,
-    errors?.address,
-    setError,
-    clearErrors,
-    fieldNamePrefix,
-  ])
+  }, [tokenInfoLoadable.state, t, additionalAddressError])
 
   return (
-    <StatelessAddTokenComponent
+    <StatelessAddCw20Component
       {...props}
       options={{
-        loadingTokenInfo: tokenInfoLoadable.state === 'loading',
-        tokenInfo:
-          tokenInfoLoadable.state === 'hasValue'
-            ? tokenInfoLoadable.contents
-            : undefined,
-        Loader,
+        additionalAddressError,
+        formattedJsonDisplayProps: {
+          jsonLoadable: tokenInfoLoadable,
+          Loader,
+        },
       }}
     />
   )
 }
 
-const useTransformToCosmos: UseTransformToCosmos<AddTokenData> = (
+const useTransformToCosmos: UseTransformToCosmos<AddCw20Data> = (
   coreAddress: string
 ) =>
   useCallback(
-    (data: AddTokenData) =>
+    (data: AddCw20Data) =>
       makeWasmMessage({
         wasm: {
           execute: {
@@ -100,7 +93,7 @@ const useTransformToCosmos: UseTransformToCosmos<AddTokenData> = (
     [coreAddress]
   )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw20Data> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -122,11 +115,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddTokenData> = (
     [msg]
   )
 
-export const addTokenAction: Action<AddTokenData> = {
-  key: ActionKey.AddToken,
-  Icon: AddTokenIcon,
-  label: 'Add Treasury Token',
-  description: "Add a token to your DAO's treasury.",
+export const addCw20Action: Action<AddCw20Data> = {
+  key: ActionKey.AddCw20,
+  Icon: AddCw20Icon,
+  label: 'Add CW20 Token to Treasury',
+  description: "Add a CW20 token to your DAO's treasury.",
   Component,
   useDefaults,
   useTransformToCosmos,

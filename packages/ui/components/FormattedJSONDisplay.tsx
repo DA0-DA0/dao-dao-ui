@@ -1,29 +1,29 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Loadable } from 'recoil'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import { Loader as DefaultLoader, InputLabel, LoaderProps } from '@dao-dao/ui'
 
-export interface TokenInfoDisplayProps {
-  loadingTokenInfo?: boolean
-  tokenInfo?: TokenInfoResponse
+export interface FormattedJSONDisplayProps {
+  jsonLoadable: Loadable<any>
   Loader?: ComponentType<LoaderProps>
 }
 
-export const TokenInfoDisplay = ({
-  loadingTokenInfo,
-  tokenInfo,
+// Displays nothing if the loadable errored or loaded undefined data.
+export const FormattedJSONDisplay = ({
+  jsonLoadable,
   Loader = DefaultLoader,
-}: TokenInfoDisplayProps) => {
+}: FormattedJSONDisplayProps) => {
   const { t } = useTranslation()
 
-  return loadingTokenInfo ? (
+  return jsonLoadable.state === 'loading' ? (
     <Loader />
-  ) : tokenInfo ? (
+  ) : jsonLoadable.state === 'hasValue' &&
+    jsonLoadable.contents !== undefined ? (
     <div className="space-y-2">
       <InputLabel name={t('form.tokenInfo')} />
       <pre className="overflow-auto p-2 text-secondary rounded-lg border border-secondary">
-        {JSON.stringify(tokenInfo, null, 2)}
+        {JSON.stringify(jsonLoadable.contents, null, 2)}
       </pre>
     </div>
   ) : null
