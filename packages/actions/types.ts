@@ -54,7 +54,7 @@ export type ActionComponentProps<T = undefined, D = any> = {
       errors: FieldErrors
     }
   | {
-      isCreating?: false
+      isCreating: false
       onRemove?: undefined
       errors?: undefined
     }
