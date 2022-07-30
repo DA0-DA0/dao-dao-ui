@@ -1,8 +1,10 @@
+import { LcdClient } from '@cosmjs/launchpad'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import {
+  CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   NATIVE_DENOM,
   cosmWasmClientRouter,
@@ -19,6 +21,11 @@ export const stargateClientSelector = selector({
 export const cosmWasmClientSelector = selector({
   key: 'cosmWasmClient',
   get: () => cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
+})
+
+export const lcdClientSelector = selector({
+  key: 'lcdClient',
+  get: () => new LcdClient(CHAIN_REST_ENDPOINT),
 })
 
 export const blockHeightSelector = selector({
@@ -102,6 +109,23 @@ export const nativeDenomBalanceSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(walletAddress))
 
       return await client.getBalance(walletAddress, denom)
+    },
+})
+
+export const nativeSupplySelector = selectorFamily({
+  key: 'nativeSupply',
+  get:
+    (denom: string) =>
+    async ({ get }) => {
+      const client = get(lcdClientSelector)
+
+      const {
+        amount: { amount },
+      }: {
+        amount: Coin
+      } = await client.get('/cosmos/bank/v1beta1/supply/' + denom)
+
+      return amount
     },
 })
 

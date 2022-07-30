@@ -5,6 +5,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   CwNativeStakedBalanceVotingSelectors,
   nativeDenomBalanceSelector,
+  nativeSupplySelector,
   tokenUSDCPriceSelector,
 } from '@dao-dao/state'
 import {
@@ -45,11 +46,12 @@ export const useGovernanceTokenInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
+  const supply = useRecoilValue(nativeSupplySelector(denom))
   const governanceTokenInfo: TokenInfoResponse = {
     decimals,
     name: nativeTokenLabel(denom),
     symbol: nativeTokenLabel(denom),
-    total_supply: '',
+    total_supply: supply,
   }
 
   const tokenUri = nativeTokenLogoURI(denom)
