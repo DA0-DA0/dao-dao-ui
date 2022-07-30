@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dao, Votes } from '@dao-dao/icons'
@@ -14,7 +13,7 @@ interface FeaturedCardProps {
   className?: string
 }
 
-export const FeaturedCard: FC<FeaturedCardProps> = ({
+export const FeaturedCard = ({
   className,
   image,
   name,
@@ -22,13 +21,13 @@ export const FeaturedCard: FC<FeaturedCardProps> = ({
   TVL,
   href,
   description,
-}) => {
+}: FeaturedCardProps) => {
   const { t } = useTranslation()
 
   return (
     <a
       className={clsx(
-        'flex relative flex-col items-center p-6 w-[260px] h-[320px] bg-card rounded-lg hover:outline-1 hover:outline-brand hover:outline',
+        'flex relative flex-col items-center p-6 w-full h-[320px] bg-card rounded-lg hover:outline-1 hover:outline-brand hover:outline',
         className
       )}
       href={href}
