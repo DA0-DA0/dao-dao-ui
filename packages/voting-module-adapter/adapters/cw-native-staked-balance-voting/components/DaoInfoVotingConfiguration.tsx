@@ -1,4 +1,4 @@
-import { ChartPieIcon } from '@heroicons/react/outline'
+import { ClockIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
 import { GovInfoListItem } from '@dao-dao/ui'
@@ -12,7 +12,7 @@ export const DaoInfoVotingConfiguration = () => {
 
   return (
     <GovInfoListItem
-      icon={<ChartPieIcon className="inline w-4" />}
+      icon={<ClockIcon className="inline w-4" />}
       text={t('title.unstakingPeriod')}
       value={
         unstakingDuration ? humanReadableDuration(unstakingDuration) : 'None'
