@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - development
-      - noah/lint-missing-i18n
 
 jobs:
   detect:
