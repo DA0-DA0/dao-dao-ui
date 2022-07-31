@@ -55,8 +55,8 @@ export const ContractCard = ({
               selected && 'outline-1 outline-brand outline'
             )}
           >
-            <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
-            <div className="flex flex-col items-center max-w-full">
+            <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%]"></div>
+            <div className="flex flex-col items-center self-stretch">
               <div
                 className={clsx({ 'animate-spin-medium': _loading || loading })}
               >
