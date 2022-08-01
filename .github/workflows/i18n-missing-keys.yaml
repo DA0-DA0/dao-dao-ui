@@ -41,6 +41,8 @@ jobs:
           body: |
             # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
 
+            Updated at ${{ github.event.repository.updated_at }}
+
             ```diff
             ${{ env.LINT_OUTPUT }}
             ```
@@ -53,6 +55,8 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: |
             # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
+
+            Updated at ${{ github.event.repository.updated_at }}
 
             ```diff
             ${{ env.LINT_OUTPUT }}
