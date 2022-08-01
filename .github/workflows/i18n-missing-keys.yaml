@@ -41,7 +41,7 @@ jobs:
           body: |
             # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
 
-            Updated at ${{ github.event.repository.updated_at }}
+            Updated at ${{ github.event.head_commit.timestamp }} (HEAD -> ${{ github.event.head_commit.id }})
 
             ```diff
             ${{ env.LINT_OUTPUT }}
@@ -56,7 +56,7 @@ jobs:
           body: |
             # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
 
-            Updated at ${{ github.event.repository.updated_at }}
+            Updated at ${{ github.event.head_commit.timestamp }} (HEAD -> ${{ github.event.head_commit.id }})
 
             ```diff
             ${{ env.LINT_OUTPUT }}
