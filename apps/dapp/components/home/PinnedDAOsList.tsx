@@ -9,6 +9,7 @@ import { Button, SuspenseLoader } from '@dao-dao/ui'
 import { usePinnedDAOs } from '@/hooks'
 
 import { PinnedDAOCard } from '../PinnedDAOCard'
+import { DaoCardContainer } from './DaoCardContainer'
 
 export const PinnedDAOsList: FC = () => {
   const { t } = useTranslation()
@@ -18,7 +19,7 @@ export const PinnedDAOsList: FC = () => {
     // Don't render on server since pinnedAddresses come from localStorage,
     // and we don't want a hydration error.
     <SuspenseLoader fallback={null}>
-      <div>
+      <div className="max-w-6xl">
         <div className="flex gap-4 justify-between items-center mb-4 primary-text">
           <div className="flex gap-1 items-center">
             <PinOutline className="inline w-4" />
@@ -31,11 +32,11 @@ export const PinnedDAOsList: FC = () => {
           </Link>
         </div>
 
-        <div className="flex flex-wrap gap-4 justify-center max-w-6xl md:justify-start">
+        <DaoCardContainer>
           {pinnedAddresses.map((address) => (
             <PinnedDAOCard key={address} address={address} />
           ))}
-        </div>
+        </DaoCardContainer>
       </div>
     </SuspenseLoader>
   ) : null
