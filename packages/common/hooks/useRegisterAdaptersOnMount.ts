@@ -9,6 +9,7 @@ import {
   Cw20StakedBalanceVotingAdapter,
   Cw4VotingAdapter,
   CwNativeStakedBalanceVotingAdapter,
+  HowlVotingAdapter,
   registerAdapters as registerVotingModuleAdapters,
 } from '@dao-dao/voting-module-adapter'
 
@@ -26,6 +27,7 @@ export const useRegisterAdaptersOnMount = () => {
       Cw4VotingAdapter,
       Cw20StakedBalanceVotingAdapter,
       CwNativeStakedBalanceVotingAdapter,
+      HowlVotingAdapter,
     ])
 
     // Register proposal module adapters.
