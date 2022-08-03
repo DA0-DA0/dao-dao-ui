@@ -14,8 +14,8 @@ import {
 import { validateRequired } from '@dao-dao/utils'
 
 import {
-  DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT,
   NewDAOStructure,
 } from '@/atoms'
 import {
@@ -51,7 +51,7 @@ const CreateDAOPage: NextPage = () => {
       ) {
         setValue(
           'advancedVotingConfig.allowRevoting',
-          structure === NewDAOStructure.GovernanceToken
+          structure !== NewDAOStructure.Membership
         )
       }
 
@@ -60,9 +60,9 @@ const CreateDAOPage: NextPage = () => {
       if (tiersAreUntouched) {
         setValue(
           'tiers.0.weight',
-          structure === NewDAOStructure.GovernanceToken
-            ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-            : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
+          structure === NewDAOStructure.Membership
+            ? DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
+            : DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT
         )
       }
     },

@@ -88,7 +88,13 @@ const DaoInfoVotingProposalVotingConfigurations = () => {
                 {t(
                   `proposalModuleLabel.${
                     proposalModule.contractName.split(':').slice(-1)[0]
-                  }`
+                  }`,
+                  {
+                    // If no translation, just display the contract name.
+                    defaultValue: proposalModule.contractName
+                      .split(':')
+                      .slice(-1)[0],
+                  }
                 )}{' '}
                 {t('title.proposals')}
               </option>

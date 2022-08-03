@@ -4,7 +4,6 @@ import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { useApr } from '@/hooks'
-import { TOKEN_SWAP_ADDRESS } from '@/util'
 
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
@@ -21,7 +20,7 @@ export const StakeHeader = () => {
     price: governanceTokenPrice,
   } = useGovernanceTokenInfo?.({
     fetchTreasuryBalance: true,
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
+    fetchUSDCPrice: true,
   }) ?? {}
 
   const { totalStakedValue } =

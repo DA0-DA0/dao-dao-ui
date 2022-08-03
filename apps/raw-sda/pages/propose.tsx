@@ -29,7 +29,7 @@ const InnerProposalCreate = () => {
 
   const { isMember } = useVotingModule(DAO_ADDRESS, { fetchMembership: true })
   const {
-    components: { ProposalModuleAddresses },
+    components: { ProposalCreationAdditionalAddresses },
   } = useVotingModuleAdapter()
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
@@ -130,7 +130,7 @@ const InnerProposalCreate = () => {
             <CopyToClipboard value={DAO_ADDRESS} />
           </div>
 
-          <ProposalModuleAddresses />
+          <ProposalCreationAdditionalAddresses />
         </div>
 
         {selectedProposalModuleCommon && (

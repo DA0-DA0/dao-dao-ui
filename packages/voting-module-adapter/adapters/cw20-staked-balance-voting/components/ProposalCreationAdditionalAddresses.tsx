@@ -4,7 +4,7 @@ import { CopyToClipboard } from '@dao-dao/ui'
 
 import { useGovernanceTokenInfo } from '../hooks'
 
-export const ProposalModuleAddresses = () => {
+export const ProposalCreationAdditionalAddresses = () => {
   const { t } = useTranslation()
 
   const { stakingContractAddress, governanceTokenAddress } =

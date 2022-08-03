@@ -1,6 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { PropsWithChildren, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
@@ -38,6 +39,7 @@ const InnerStakingModal = ({
   onClose,
   deposit,
 }: BaseStakingModalProps) => {
+  const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletBalance()
 
@@ -53,7 +55,7 @@ const InnerStakingModal = ({
   })
   const {
     stakingContractAddress,
-    stakingContractConfig,
+    unstakingDuration,
     refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
@@ -93,7 +95,6 @@ const InnerStakingModal = ({
   if (
     !governanceTokenInfo ||
     !stakingContractAddress ||
-    !stakingContractConfig ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
     walletStakedValue === undefined ||
@@ -101,7 +102,7 @@ const InnerStakingModal = ({
     walletStakedBalance === undefined ||
     totalValue === undefined
   ) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   const doStake = Cw20BaseHooks.useSend({
@@ -119,7 +120,7 @@ const InnerStakingModal = ({
 
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
-      toast.error('Connect your wallet before doing that.')
+      toast.error(t('error.connectWalletToContinue'))
     }
 
     setStakingLoading(true)
@@ -317,7 +318,7 @@ const InnerStakingModal = ({
         walletStakedValue,
         governanceTokenInfo.decimals
       )}
-      unstakingDuration={stakingContractConfig.unstaking_duration ?? null}
+      unstakingDuration={unstakingDuration ?? null}
     />
   )
 }
