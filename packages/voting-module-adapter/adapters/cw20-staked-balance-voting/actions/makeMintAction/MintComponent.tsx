@@ -18,7 +18,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { govTokenSymbol },
 }) => {
   const { t } = useTranslation()
@@ -31,7 +31,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         <div className="flex flex-row gap-2 items-center">
           <div>
             <NumberInput
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.amount}
               fieldName={fieldNamePrefix + 'amount'}
               onPlusMinus={[
@@ -63,7 +63,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         <div className="grow">
           <AddressInput
             containerClassName="grow"
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.to}
             fieldName={fieldNamePrefix + 'to'}
             register={register}

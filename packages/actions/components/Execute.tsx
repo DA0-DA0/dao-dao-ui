@@ -20,7 +20,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent, NativeCoinSelector } from '..'
+import {
+  ActionCard,
+  ActionComponent,
+  NativeCoinSelector,
+  NativeCoinSelectorProps,
+} from '..'
 
 export interface ExecuteOptions {
   nativeBalances: readonly Coin[]
@@ -30,7 +35,7 @@ export interface ExecuteOptions {
 
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   const { t } = useTranslation()
-  const { fieldNamePrefix, onRemove, errors, readOnly } = props
+  const { fieldNamePrefix, onRemove, errors, isCreating } = props
   const { register, control } = useFormContext()
   const {
     fields: coins,
@@ -50,7 +55,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       <div className="flex flex-col gap-1 items-stretch">
         <InputLabel name={t('form.smartContractAddress')} />
         <TextInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
           placeholder="juno..."
@@ -65,7 +70,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         control={control}
         error={errors?.message}
         fieldName={fieldNamePrefix + 'message'}
-        readOnly={readOnly}
+        readOnly={!isCreating}
         validation={[
           (v: string) => {
             let msg
@@ -105,18 +110,22 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}
-            {...props}
+            {...({
+              ...props,
+              onRemove: props.isCreating
+                ? () => removeCoin(index)
+                : props.onRemove,
+            } as NativeCoinSelectorProps)}
             errors={errors?.funds?.[index]}
             fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
-            onRemove={() => removeCoin(index)}
           />
         ))}
-        {readOnly && coins.length === 0 && (
+        {!isCreating && coins.length === 0 && (
           <p className="mt-1 mb-2 text-xs italic text-tertiary">
             {t('info.none')}
           </p>
         )}
-        {!readOnly && (
+        {isCreating && (
           <Button
             className="self-start"
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}

@@ -42,15 +42,24 @@ export type ActionComponentProps<T = undefined, D = any> = {
   coreAddress: string
   proposalModule: ProposalModule
   fieldNamePrefix: string
-  onRemove?: () => void
-  errors?: FieldErrors
-  readOnly?: boolean
   allActionsWithData: ActionKeyAndData[]
-  data: D
   index: number
+  data: D
   Loader: ComponentType<LoaderProps>
   Logo: ComponentType<LogoProps>
-} & (T extends undefined ? {} : { options: T })
+} & (
+  | {
+      isCreating: true
+      onRemove: () => void
+      errors: FieldErrors
+    }
+  | {
+      isCreating: false
+      onRemove?: undefined
+      errors?: undefined
+    }
+) &
+  (T extends undefined ? {} : { options: T })
 
 export type ActionComponent<T = undefined, D = any> = FunctionComponent<
   ActionComponentProps<T, D>
