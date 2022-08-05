@@ -4,9 +4,9 @@ import { Wallet } from '@dao-dao/icons'
 
 import { VotingModuleAdapter } from '../../types'
 
-export const HowlVotingAdapter: VotingModuleAdapter = {
-  id: 'howl-voting',
-  matcher: (contractName: string) => contractName.includes('howl-voting'),
+export const DefaultVotingAdapter: VotingModuleAdapter = {
+  id: 'default',
+  matcher: () => true,
 
   load: () => ({
     // Fields
@@ -39,7 +39,7 @@ export const HowlVotingAdapter: VotingModuleAdapter = {
       DaoTreasuryFooter: () => null,
       DaoInfoAdditionalAddresses: () => null,
       DaoInfoVotingConfiguration: () => null,
-      ProposalModuleAddresses: () => null,
+      ProposalCreationAdditionalAddresses: () => null,
       VoteHeroStats: () => null,
       SdaMembershipPage: () => null,
     },
