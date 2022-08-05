@@ -82,6 +82,11 @@ export const CommandHits = ({
 
   const handleKeyPress = useCallback(
     (event) => {
+      // Do nothing if no hits.
+      if (hits.length === 0) {
+        return
+      }
+
       switch (event.key) {
         case 'ArrowUp':
           setSelection((selection) => Math.max(selection - 1, 0))
