@@ -99,7 +99,12 @@ const CreateDAOPage: NextPage = () => {
                 error={errors.name}
                 fieldName="name"
                 register={register}
-                validation={[validateRequired]}
+                validation={[
+                  validateRequired,
+                  (value) =>
+                    (value.length >= 3 && value.length <= 50) ||
+                    t('error.nameIncorrectLength'),
+                ]}
               />
               <InputErrorMessage error={errors.name} />
             </div>
