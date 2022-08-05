@@ -223,7 +223,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           title: serverT('title.500'),
           description: '',
           // Report to Sentry.
-          error: processError(error),
+          error: processError(error, { forceCapture: true }),
         },
       }
     }
