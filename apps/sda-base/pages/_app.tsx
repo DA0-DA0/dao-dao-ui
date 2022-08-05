@@ -2,7 +2,7 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { appWithTranslation, useTranslation } from 'next-i18next'
+import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
@@ -23,7 +23,6 @@ import { Footer } from '@/components'
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   useRegisterAdaptersOnMount()
 
-  const { t } = useTranslation()
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)

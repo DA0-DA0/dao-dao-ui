@@ -2,7 +2,7 @@ import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { appWithTranslation, useTranslation } from 'next-i18next'
+import { appWithTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -18,7 +18,6 @@ import { AppLayout, HomepageLayout } from '@/components'
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   useRegisterAdaptersOnMount()
 
-  const { t } = useTranslation()
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
