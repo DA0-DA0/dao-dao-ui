@@ -103,7 +103,10 @@ const CreateDAOPage: NextPage = () => {
                   validateRequired,
                   (value) =>
                     (value.length >= 3 && value.length <= 50) ||
-                    t('error.nameIncorrectLength'),
+                    t('error.nameIncorrectLength', {
+                      minLength: 3,
+                      maxLength: 50,
+                    }),
                 ]}
               />
               <InputErrorMessage error={errors.name} />
