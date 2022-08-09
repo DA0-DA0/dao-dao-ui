@@ -18,6 +18,14 @@ const tailwindConfig = {
             transform: 'scale(1)',
           },
         },
+        spin: {
+          from: {
+            transform: 'rotate(0deg)',
+          },
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
       },
       animation: {
         fadein: 'fadein 0.12s',

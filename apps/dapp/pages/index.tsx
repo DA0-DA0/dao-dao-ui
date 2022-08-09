@@ -75,15 +75,30 @@ const Home: NextPage = () => {
             </div>
           </div>
         </nav>
-        <h1 className="mt-16 text-center md:mt-[33vh] hero-text">
-          {t('splash.shortTagline')}
-        </h1>
-        <p className="px-4 my-10 mx-auto max-w-lg text-lg text-center text-secondary">
-          {t('splash.longTagline')}
-        </p>
-        <div className="mx-auto">
-          <EnterAppButton />
+
+        <div className="flex flex-row justify-center items-center pt-12 w-full h-fit">
+          <div className="flex flex-col max-w-lg">
+            <h1 className="text-6xl hero-text">{t('splash.shortTagline')}</h1>
+            <p className="py-4 max-w-md text-2xl font-medium text-secondary">
+              {t('splash.longTagline')}
+            </p>
+            <div>
+              <EnterAppButton />
+            </div>
+          </div>
+          {typeof CSS.supports !== 'undefined' &&
+            // eslint-disable-next-line i18next/no-literal-string
+            CSS.supports('backdrop-filter', 'blur(5px)') && (
+              <div
+                className="hidden -z-20 -ml-14 animate-[spin_24s_linear_infinite] lg:block"
+                style={{ transform: 'rotate(270)' }}
+              >
+                {/* baoskee was here */}
+                <Logo size={420.69} />
+              </div>
+            )}
         </div>
+
         <div className="my-12 mx-auto md:my-20">
           <AnouncementCard />
         </div>
