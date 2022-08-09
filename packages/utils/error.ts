@@ -5,11 +5,13 @@ import * as Sentry from '@sentry/nextjs'
 export const processError = (
   error: Error | any,
   {
+    tags,
     extra,
     transform,
     overrideCapture,
     forceCapture,
   }: {
+    tags?: Record<string, string | number>
     extra?: Record<string, string | number>
     transform?: Partial<Record<CommonError, string>>
     overrideCapture?: Partial<Record<CommonError, boolean>>
@@ -49,7 +51,7 @@ export const processError = (
       ((overrideCapture && overrideCapture[recognizedError]) ??
         captureCommonErrorMap[recognizedError])
     if (shouldCapture) {
-      Sentry.captureException(error, { extra })
+      Sentry.captureException(error, { extra, tags })
     }
 
     return ((transform && transform[recognizedError]) ||
@@ -57,7 +59,7 @@ export const processError = (
   }
 
   // Send to Sentry since we were not expecting it.
-  Sentry.captureException(error, { extra })
+  Sentry.captureException(error, { extra, tags })
 
   // If no recognized error, return error message by default.
   return message
