@@ -110,8 +110,7 @@
     "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
     "pageNotFound": "We couldn't find that page.",
     "proposalNotFound": "Proposal not found.",
-    "unexpectedError": "An unexpected error occurred.",
-    "unsupportedVotingModule": "This DAO uses an unsupported voting module."
+    "unexpectedError": "An unexpected error occurred."
   },
   "form": {
     "admin": "Admin",
@@ -303,6 +302,8 @@
     "verifyingGovernanceToken": "Verifying CW20 token...",
     "voteAgain": "Vote again?",
     "votedOnProposal": "You voted <0/> on this proposal.",
+    "votingModuleAdapterCreationDiscord": "To create a voting module adapter for this UI, please join the <2><0>DAO DAO Discord</0><1/></2> and ask for help.",
+    "votingModuleNotYetSupported": "This DAO uses a voting module not yet supported by this UI. Functionality may be limited as a result.",
     "walletConnectMobileLimitations": "Please feel free to explore the UI. Due to current limitations in WalletConnect, you will not be able to connect your mobile wallet to the {{chain}} chain.",
     "yes": "Yes",
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",

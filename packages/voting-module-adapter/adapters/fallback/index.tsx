@@ -3,9 +3,11 @@ import { useMemo } from 'react'
 import { Wallet } from '@dao-dao/icons'
 
 import { VotingModuleAdapter } from '../../types'
+import { MembershipMobileTab } from './MembershipMobileTab'
+import { MembershipPlaceholder } from './MembershipPlaceholder'
 
-export const DefaultVotingAdapter: VotingModuleAdapter = {
-  id: 'default',
+export const FallbackVotingAdapter: VotingModuleAdapter = {
+  id: 'fallback',
   matcher: () => true,
 
   load: () => ({
@@ -31,9 +33,9 @@ export const DefaultVotingAdapter: VotingModuleAdapter = {
     // Components
     components: {
       Membership: {
-        Desktop: () => null,
-        MobileTab: () => null,
-        Mobile: () => null,
+        Desktop: MembershipPlaceholder,
+        MobileTab: MembershipMobileTab,
+        Mobile: MembershipPlaceholder,
       },
       DaoThinInfoContent: () => null,
       DaoTreasuryFooter: () => null,
