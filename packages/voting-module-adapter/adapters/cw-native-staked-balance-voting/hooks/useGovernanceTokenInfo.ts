@@ -95,6 +95,7 @@ export const useGovernanceTokenInfo = ({
   )
 
   return {
+    stakingContractAddress: '',
     governanceTokenAddress: denom,
     governanceTokenInfo,
     governanceTokenMarketingInfo,

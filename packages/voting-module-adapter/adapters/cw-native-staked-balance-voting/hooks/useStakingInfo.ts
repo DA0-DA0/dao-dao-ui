@@ -101,6 +101,7 @@ export const useStakingInfo = ({
   )?.power
 
   return {
+    stakingContractAddress: '',
     unstakingDuration: config.unstaking_duration ?? undefined,
     refreshStakingContractBalances,
     refreshTotals,
