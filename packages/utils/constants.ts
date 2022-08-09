@@ -91,6 +91,16 @@ export const JUNO_BLOCKS_PER_YEAR = 5086451
 
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV as string
 
+// DAO Name min/max defined in cw-core.
+export const MIN_DAO_NAME_LENGTH = parseInt(
+  process.env.NEXT_PUBLIC_MIN_DAO_NAME_LENGTH || '3',
+  10
+)
+export const MAX_DAO_NAME_LENGTH = parseInt(
+  process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
+  10
+)
+
 export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = parseInt(
   process.env.NEXT_PUBLIC_MAX_META_CHARS_PROPOSAL_DESCRIPTION || '200',
   10

@@ -11,7 +11,11 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/ui'
-import { validateRequired } from '@dao-dao/utils'
+import {
+  MAX_DAO_NAME_LENGTH,
+  MIN_DAO_NAME_LENGTH,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import {
   DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
@@ -99,7 +103,16 @@ const CreateDAOPage: NextPage = () => {
                 error={errors.name}
                 fieldName="name"
                 register={register}
-                validation={[validateRequired]}
+                validation={[
+                  validateRequired,
+                  (value) =>
+                    (value.length >= MIN_DAO_NAME_LENGTH &&
+                      value.length <= MAX_DAO_NAME_LENGTH) ||
+                    t('error.nameIncorrectLength', {
+                      minLength: MIN_DAO_NAME_LENGTH,
+                      maxLength: MAX_DAO_NAME_LENGTH,
+                    }),
+                ]}
               />
               <InputErrorMessage error={errors.name} />
             </div>

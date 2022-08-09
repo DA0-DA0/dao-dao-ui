@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Loader, Logo } from '@dao-dao/ui'
@@ -82,6 +82,11 @@ export const CommandHits = ({
 
   const handleKeyPress = useCallback(
     (event) => {
+      // Do nothing if no hits.
+      if (hits.length === 0) {
+        return
+      }
+
       switch (event.key) {
         case 'ArrowUp':
           setSelection((selection) => Math.max(selection - 1, 0))
@@ -147,7 +152,7 @@ export const CommandHits = ({
       )}
 
       {sections.map((sectionIndex, i) => (
-        <>
+        <Fragment key={`${sectionIndex}_${i}`}>
           <div className="py-1 font-medium text-gray-400">
             {sectionNames[i]}
           </div>
@@ -165,7 +170,7 @@ export const CommandHits = ({
               }
             />
           ))}
-        </>
+        </Fragment>
       ))}
     </div>
   )
