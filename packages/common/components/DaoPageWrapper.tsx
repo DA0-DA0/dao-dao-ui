@@ -11,6 +11,7 @@ import {
   Loader as DefaultLoader,
   Logo as DefaultLogo,
   PageLoader as DefaultPageLoader,
+  ErrorPage500,
   LoaderProps,
   LogoProps,
   SuspenseLoader,
@@ -48,6 +49,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   title: string
   description: string
   info?: DaoInfo
+  error?: string
   Logo?: ComponentType<LogoProps>
   Loader?: ComponentType<LoaderProps>
   PageLoader?: ComponentType<LoaderProps>
@@ -62,6 +64,7 @@ export const DaoPageWrapper = ({
   title,
   description,
   info,
+  error,
   children,
   Logo = DefaultLogo,
   Loader = DefaultLoader,
@@ -102,6 +105,8 @@ export const DaoPageWrapper = ({
             {children}
           </VotingModuleAdapterProvider>
         </DaoInfoContext.Provider>
+      ) : error ? (
+        <ErrorPage500 error={error} />
       ) : (
         <DaoNotFound />
       )}

@@ -31,7 +31,7 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: {
     additionalAddressError,
     existingTokens,
@@ -59,7 +59,7 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
                 className={clsx('text-center', {
                   'text-secondary bg-transparent': address !== tokenAddress,
                 })}
-                disabled={readOnly}
+                disabled={!isCreating}
                 onClick={() => setValue(fieldNamePrefix + 'address', address)}
                 size="sm"
                 type="button"
@@ -75,7 +75,7 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
           register={register}

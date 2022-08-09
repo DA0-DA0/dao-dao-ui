@@ -91,6 +91,7 @@
     "createProposalSubmitInvalid": "Correct the errors above before previewing or publishing.",
     "daoIsPaused": "You cannot create a proposal when the DAO is paused.",
     "daoNotFound": "DAO not found.",
+    "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid CW20 contract address.",
     "fieldRequired": "This field is required.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
@@ -101,8 +102,6 @@
     "invalidExecuteMessage": "Invalid execute message",
     "loadingData": "Failed to load data.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
-    "noCw20Tokens": "There are no CW20 tokens in the DAO's treasury.",
-    "noCw721Tokens": "There are no NFTs (CW721s) in the DAO's treasury.",
     "noGovTokenAddr": "You didn't provide an address for your governance token.",
     "noGovTokenInfo": "You didn't give enough information about your governance token.",
     "noMembers": "You haven't added any members to your DAO",
@@ -114,7 +113,8 @@
     "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
     "pageNotFound": "We couldn't find that page.",
     "proposalNotFound": "Proposal not found.",
-    "unexpectedError": "An unexpected error occurred."
+    "unexpectedError": "An unexpected error occurred.",
+    "unsupportedVotingModule": "This DAO uses an unsupported voting module."
   },
   "form": {
     "admin": "Admin",
@@ -204,6 +204,7 @@
     "advancedQuorumDisabledConfigWarning": "This is an advanced feature. If you disable quorum and set your threshold too high, you will need significant participation to pass proposals. A quorum allows a subset of members to pass proposals and can help prevent locking your DAO.",
     "advancedVotingConfigWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.",
     "amountProposalDeposit": "{{amount}} ${{tokenSymbol}} proposal deposit",
+    "amountTotalStaked": "{{amount}} ${{tokenSymbol}} total staked",
     "amountTotalSupply": "{{amount}} ${{tokenSymbol}} total supply",
     "autoCompoundStakingRewardsTooltip": "This will automatically compound as staking rewards are distributed.",
     "available": "Available",

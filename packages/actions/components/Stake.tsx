@@ -52,7 +52,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { nativeBalances },
 }) => {
   const { t } = useTranslation()
@@ -132,7 +132,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       <div className="flex flex-row gap-4 mt-2">
         <SelectInput
           defaultValue={stakeActions[0].type}
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.stakeType}
           fieldName={fieldNamePrefix + 'stakeType'}
           register={register}
@@ -148,7 +148,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           <>
             <NumberInput
               containerClassName="grow"
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.amount}
               fieldName={fieldNamePrefix + 'amount'}
               onPlusMinus={[
@@ -169,7 +169,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
             />
 
             <SelectInput
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.denom}
               fieldName={fieldNamePrefix + 'denom'}
               register={register}
@@ -199,7 +199,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           <h3 className="mt-2 mb-1">{t('form.fromValidator')}</h3>
           <div className="form-control">
             <AddressInput
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.fromValidator}
               fieldName={fieldNamePrefix + 'fromValidator'}
               register={register}
@@ -220,7 +220,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       </h3>
       <div className="form-control">
         <AddressInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.validator}
           fieldName={fieldNamePrefix + 'validator'}
           register={register}

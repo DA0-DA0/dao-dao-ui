@@ -9,8 +9,6 @@ import {
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { TOKEN_SWAP_ADDRESS } from '@/util'
-
 import { Button } from '../Button'
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
@@ -33,7 +31,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
     price,
   } = useGovernanceTokenInfo?.({
     fetchWalletBalance: true,
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
+    fetchUSDCPrice: true,
   }) ?? {}
 
   if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
@@ -91,7 +89,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   const { connected } = useWalletManager()
   const { governanceTokenInfo, price } =
     useGovernanceTokenInfo?.({
-      fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
+      fetchUSDCPrice: true,
     }) ?? {}
   const { totalStakedValue, walletStakedValue } =
     useStakingInfo?.({

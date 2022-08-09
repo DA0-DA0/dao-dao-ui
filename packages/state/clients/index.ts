@@ -22,4 +22,8 @@ export {
   Cw20StakedBalanceVotingClient,
   Cw20StakedBalanceVotingQueryClient,
 } from './cw20-staked-balance-voting'
+export {
+  CwNativeStakedBalanceVotingClient,
+  CwNativeStakedBalanceVotingQueryClient,
+} from './cw-native-staked-balance-voting'
 export { StakeCw20Client, StakeCw20QueryClient } from './stake-cw20'

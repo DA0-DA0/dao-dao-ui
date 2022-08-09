@@ -8,10 +8,12 @@ export const processError = (
     extra,
     transform,
     overrideCapture,
+    forceCapture,
   }: {
     extra?: Record<string, string | number>
     transform?: Partial<Record<CommonError, string>>
     overrideCapture?: Partial<Record<CommonError, boolean>>
+    forceCapture?: boolean
   } = {}
 ): string => {
   // Convert to error type.
@@ -43,8 +45,9 @@ export const processError = (
   if (recognizedError) {
     // Sent to Sentry if we want to capture this recognized error.
     const shouldCapture =
-      (overrideCapture && overrideCapture[recognizedError]) ??
-      captureCommonErrorMap[recognizedError]
+      forceCapture ||
+      ((overrideCapture && overrideCapture[recognizedError]) ??
+        captureCommonErrorMap[recognizedError])
     if (shouldCapture) {
       Sentry.captureException(error, { extra })
     }

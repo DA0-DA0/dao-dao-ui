@@ -1,20 +1,17 @@
 import {
-  FC,
-  RefObject,
   UIEventHandler,
   createRef,
+  useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react'
 
+import { useIsVisible } from '@/hooks'
 import { featuredDaos } from '@/util'
 
-import { FeaturedCard } from './FeaturedCard'
+import { FeaturedCard } from '../FeaturedCard'
 
-export { FeaturedCard }
-
-export const FeaturedDaos: FC = () => {
+export const FeaturedDaos = () => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 
@@ -27,20 +24,8 @@ export const FeaturedDaos: FC = () => {
   const mirrorVisible = useIsVisible(mirrorRef)
   const componentIsVisible = scrollVisible || mirrorVisible
 
-  const getClonesWidth = () => {
-    const clones = document.getElementsByClassName('is-clone')
-    const clonesArray = Array.from(clones)
-    const width = clonesArray.reduce(
-      (accum, { clientWidth }) => accum + clientWidth,
-      0
-    )
-    // We use 16 pixels of padding between each element so we need to
-    // add that information when considering the width.
-    return width + 16 * clonesArray.length
-  }
-
-  const handleScroll: UIEventHandler<HTMLDivElement> = useMemo(
-    () => (e) => {
+  const handleScroll: UIEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
       const container = e.currentTarget
       const scrollPos = container.scrollLeft
       const scrollWidth = container.scrollWidth
@@ -70,7 +55,15 @@ export const FeaturedDaos: FC = () => {
 
   // Set the width of the clones once this component mounts.
   useEffect(() => {
-    setClonesWidth(getClonesWidth())
+    const clones = document.getElementsByClassName('is-clone')
+    const clonesArray = Array.from(clones)
+    const width = clonesArray.reduce(
+      (accum, { clientWidth }) => accum + clientWidth,
+      0
+    )
+    // We use 16 pixels of padding between each element so we need to
+    // add that information when considering the width.
+    setClonesWidth(width + 16 * clonesArray.length)
   }, [])
 
   useEffect(() => {
@@ -93,37 +86,17 @@ export const FeaturedDaos: FC = () => {
       >
         <div className="flex flex-row gap-[16px] py-1 w-max">
           {featuredDaos.map((props) => (
-            <FeaturedCard {...props} key={props.name} />
+            <FeaturedCard {...props} key={props.name} className="!w-[260px]" />
           ))}
           {featuredDaos.map((props) => (
-            <FeaturedCard {...props} key={props.name} className="is-clone" />
+            <FeaturedCard
+              {...props}
+              key={props.name}
+              className="!w-[260px] is-clone"
+            />
           ))}
         </div>
       </div>
     </>
   )
-}
-
-const useIsVisible = (ref: RefObject<Element>) => {
-  const [isVisible, setState] = useState(false)
-
-  useEffect(() => {
-    // Copy element into useEffect so that we're sure to unobserve the same one we started with.
-    const element = ref
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setState(entry.isIntersecting)
-      },
-      { rootMargin: '0px' }
-    )
-
-    element.current && observer.observe(element.current)
-
-    return () => {
-      if (element.current) observer.unobserve(element.current)
-    }
-  }, [ref])
-
-  return isVisible
 }

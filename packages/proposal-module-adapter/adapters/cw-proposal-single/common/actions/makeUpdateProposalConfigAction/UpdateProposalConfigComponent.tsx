@@ -29,7 +29,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   onRemove,
-  readOnly,
+  isCreating,
   options: { governanceTokenSymbol },
   Loader,
 }) => {
@@ -83,7 +83,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </div>
             <FormSwitch
               fieldName={fieldNamePrefix + 'depositRequired'}
-              readOnly={readOnly}
+              readOnly={!isCreating}
               setValue={setValue}
               sizing="sm"
               watch={watch}
@@ -102,7 +102,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
           <FormSwitch
             fieldName={fieldNamePrefix + 'onlyMembersExecute'}
-            readOnly={readOnly}
+            readOnly={!isCreating}
             setValue={setValue}
             sizing="sm"
             watch={watch}
@@ -129,7 +129,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 }`}
               />
               <NumberInput
-                disabled={readOnly}
+                disabled={!isCreating}
                 error={errors?.depositInfo?.deposit}
                 fieldName={fieldNamePrefix + 'depositInfo.deposit'}
                 register={register}
@@ -152,7 +152,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 fieldName={
                   fieldNamePrefix + 'depositInfo.refundFailedProposals'
                 }
-                readOnly={readOnly}
+                readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}
@@ -175,7 +175,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           {percentageThresholdSelected && (
             <div className="flex flex-col gap-1">
               <NumberInput
-                disabled={readOnly}
+                disabled={!isCreating}
                 error={errors?.thresholdPercentage}
                 fieldName={fieldNamePrefix + 'thresholdPercentage'}
                 onPlusMinus={[
@@ -198,7 +198,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </div>
           )}
           <SelectInput
-            disabled={readOnly}
+            disabled={!isCreating}
             fieldName={fieldNamePrefix + 'thresholdType'}
             register={register}
           >
@@ -219,7 +219,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           {percentageQuorumSelected && (
             <div className="flex flex-col gap-1">
               <NumberInput
-                disabled={readOnly}
+                disabled={!isCreating}
                 error={errors?.quorumPercentage}
                 fieldName={fieldNamePrefix + 'quorumPercentage'}
                 onPlusMinus={[
@@ -242,7 +242,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </div>
           )}
           <SelectInput
-            disabled={readOnly}
+            disabled={!isCreating}
             fieldName={fieldNamePrefix + 'quorumType'}
             register={register}
           >
@@ -264,7 +264,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex flex-row flex-wrap grow gap-2 justify-center">
           <div className="flex flex-col gap-1">
             <NumberInput
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.proposalDuration}
               fieldName={fieldNamePrefix + 'proposalDuration'}
               onPlusMinus={[
@@ -296,7 +296,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>
           <SelectInput
-            disabled={readOnly}
+            disabled={!isCreating}
             fieldName={fieldNamePrefix + 'proposalDurationUnits'}
             register={register}
           >
@@ -329,7 +329,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex grow justify-center items-center">
           <FormSwitch
             fieldName={fieldNamePrefix + 'allowRevoting'}
-            readOnly={readOnly}
+            readOnly={!isCreating}
             setValue={setValue}
             watch={watch}
           />

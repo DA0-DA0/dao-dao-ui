@@ -1,0 +1,63 @@
+name: i18n Missing Keys
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  detect:
+    name: Detect
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn install
+      # Run linter and store output.
+      - name: Lint
+        id: lint
+        run: |
+          output="$(yarn i18n lint-missing-keys)"
+          echo "LINT_OUTPUT<<EOF" >> $GITHUB_ENV
+          echo "$output" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      # Attempt to find existing comment.
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: 778
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Auto-generated Missing i18n Keys'
+      # Create comment if does not exist.
+      - name: Create comment
+        if: steps.fc.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: 778
+          body: |
+            # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
+
+            Updated at ${{ github.event.head_commit.timestamp }} (HEAD -> ${{ github.event.head_commit.id }})
+
+            ```diff
+            ${{ env.LINT_OUTPUT }}
+            ```
+      # Update comment if exists.
+      - name: Update comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          edit-mode: replace
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            # :yin_yang: Auto-generated Missing i18n Keys :yin_yang:
+
+            Updated at ${{ github.event.head_commit.timestamp }} (HEAD -> ${{ github.event.head_commit.id }})
+
+            ```diff
+            ${{ env.LINT_OUTPUT }}
+            ```

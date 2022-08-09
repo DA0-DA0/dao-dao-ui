@@ -15,7 +15,7 @@ export const CustomComponent: ActionComponent = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   Loader,
 }) => {
   const { t } = useTranslation()
@@ -27,7 +27,7 @@ export const CustomComponent: ActionComponent = ({
         control={control}
         error={errors?.message}
         fieldName={fieldNamePrefix + 'message'}
-        readOnly={readOnly}
+        readOnly={!isCreating}
         validation={[
           (v: string) => {
             let msg

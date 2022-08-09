@@ -25,7 +25,7 @@ export const AddCw20Component: ActionComponent<AddCw20Options> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { additionalAddressError, formattedJsonDisplayProps },
 }) => {
   const { t } = useTranslation()
@@ -40,7 +40,7 @@ export const AddCw20Component: ActionComponent<AddCw20Options> = ({
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
           register={register}

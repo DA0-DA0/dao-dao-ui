@@ -18,13 +18,12 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
+const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'cw20StakedBalanceVotingQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
 
       return new QueryClient(client, contractAddress)
     },
@@ -127,7 +126,7 @@ export const infoSelector = selectorFamily<
 })
 
 export const tokenContractSelector = selectorFamily<
-  TokenContractResponse | undefined,
+  TokenContractResponse,
   QueryClientParams
 >({
   key: 'cw20StakedBalanceVotingTokenContract',
@@ -135,7 +134,6 @@ export const tokenContractSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.tokenContract()
     },
