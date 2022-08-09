@@ -56,8 +56,10 @@ export const processError = (
       recognizedError) as string
   }
 
-  // If we did not recognize the error and it's a Cosmos SDK error, extract the
-  // error from the last line (since the first n-1 lines are golang stacktrace).
+  // If we did not recognize the error and it's a Cosmos SDK error with a
+  // stacktrace, extract the error from the last line (since the first n-1 lines
+  // are golang stacktrace). This is a common string displayed in Cosmos SDK
+  // stacktraces.
   if (
     message.includes('github.com/cosmos/cosmos-sdk/baseapp.gRPCErrorToSDKError')
   ) {
