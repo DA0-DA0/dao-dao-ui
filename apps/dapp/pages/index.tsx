@@ -77,7 +77,7 @@ const Home: NextPage = () => {
         </nav>
 
         <div className="flex flex-row justify-center items-center pt-12 w-full h-fit">
-          <div className="flex flex-col max-w-lg">
+          <div className="flex flex-col max-w-lg px-4">
             <h1 className="text-6xl hero-text">{t('splash.shortTagline')}</h1>
             <p className="py-4 max-w-md text-2xl font-medium text-secondary">
               {t('splash.longTagline')}
