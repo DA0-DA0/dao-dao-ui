@@ -12,7 +12,7 @@ export const MembershipPlaceholder = () => {
 
       <p>
         <Trans i18nKey="info.votingModuleAdapterCreationDiscord">
-          To create a voting module adapter for this UI, please join the{' '}
+          Want to help us support this voting module? Join the{' '}
           <a
             className="inline-flex flex-row gap-1 items-center hover:opacity-70 transition text-secondary"
             href="https://discord.gg/sAaGuyW3D2"
@@ -22,7 +22,7 @@ export const MembershipPlaceholder = () => {
             DAO DAO Discord
             <Discord className="inline" fill="currentColor" />
           </a>{' '}
-          and ask for help.
+          and post in #dao-help.
         </Trans>
       </p>
     </div>
