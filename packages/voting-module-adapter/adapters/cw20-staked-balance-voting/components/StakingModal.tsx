@@ -55,7 +55,7 @@ const InnerStakingModal = ({
   })
   const {
     stakingContractAddress,
-    stakingContractConfig,
+    unstakingDuration,
     refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
@@ -112,7 +112,7 @@ const InnerStakingModal = ({
 
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
-      toast.error('Connect your wallet before doing that.')
+      toast.error(t('error.connectWalletToContinue'))
     }
 
     setStakingLoading(true)
@@ -310,7 +310,7 @@ const InnerStakingModal = ({
         walletStakedValue,
         governanceTokenInfo.decimals
       )}
-      unstakingDuration={stakingContractConfig.unstaking_duration ?? null}
+      unstakingDuration={unstakingDuration ?? null}
     />
   )
 }

@@ -23,7 +23,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent, NativeCoinSelector } from '..'
+import {
+  ActionCard,
+  ActionComponent,
+  NativeCoinSelector,
+  NativeCoinSelectorProps,
+} from '..'
 
 export interface InstantiateOptions {
   nativeBalances: readonly Coin[]
@@ -39,7 +44,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
     fieldNamePrefix,
     onRemove,
     errors,
-    readOnly,
+    isCreating,
     options: { instantiatedAddress },
   } = props
   const { register, control } = useFormContext()
@@ -72,7 +77,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <div className="flex flex-col gap-1 items-stretch">
           <InputLabel name={t('form.codeID')} />
           <NumberInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.codeId}
             fieldName={fieldNamePrefix + 'codeId'}
             register={register}
@@ -86,7 +91,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <div className="flex flex-col grow gap-1 items-stretch">
           <InputLabel name={t('form.contractLabel')} />
           <TextInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.label}
             fieldName={fieldNamePrefix + 'label'}
             register={register}
@@ -101,7 +106,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         control={control}
         error={errors?.message}
         fieldName={fieldNamePrefix + 'message'}
-        readOnly={readOnly}
+        readOnly={!isCreating}
         validation={[
           (v: string) => {
             let msg
@@ -141,18 +146,22 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}
-            {...props}
+            {...({
+              ...props,
+              onRemove: props.isCreating
+                ? () => removeCoin(index)
+                : props.onRemove,
+            } as NativeCoinSelectorProps)}
             errors={errors?.funds?.[index]}
             fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
-            onRemove={() => removeCoin(index)}
           />
         ))}
-        {readOnly && coins.length === 0 && (
+        {!isCreating && coins.length === 0 && (
           <p className="mt-1 mb-2 text-xs italic text-tertiary">
             {t('info.none')}
           </p>
         )}
-        {!readOnly && (
+        {isCreating && (
           <Button
             className="self-start mb-2"
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
@@ -166,10 +175,10 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       <div className="flex flex-col gap-1 items-stretch">
         <InputLabel name={`${t('form.admin')} (${t('form.optional')})`} />
         <TextInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.admin}
           fieldName={fieldNamePrefix + 'admin'}
-          placeholder={readOnly ? t('info.none') : 'juno...'}
+          placeholder={!isCreating ? t('info.none') : 'juno...'}
           register={register}
           validation={[(v: string) => validateContractAddress(v, false)]}
         />

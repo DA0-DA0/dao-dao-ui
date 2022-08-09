@@ -17,8 +17,9 @@ import {
 
 import { ActionComponent } from '..'
 
-export interface NativeCoinSelectorProps
-  extends ComponentProps<ActionComponent<{ nativeBalances: readonly Coin[] }>> {
+export type NativeCoinSelectorProps = ComponentProps<
+  ActionComponent<{ nativeBalances: readonly Coin[] }>
+> & {
   className?: string
 }
 
@@ -26,7 +27,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   onRemove,
   fieldNamePrefix,
   errors,
-  readOnly,
+  isCreating,
   options: { nativeBalances },
   className,
 }) => {
@@ -103,7 +104,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
     <div className={className}>
       <div className="flex flex-row gap-2 items-stretch">
         <NumberInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.amount}
           fieldName={fieldNamePrefix + 'amount'}
           onPlusMinus={[
@@ -126,7 +127,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
 
         <SelectInput
           defaultValue={NATIVE_DENOM}
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.denom}
           fieldName={fieldNamePrefix + 'denom'}
           register={register}
@@ -138,7 +139,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           ))}
         </SelectInput>
 
-        {!readOnly && (
+        {isCreating && (
           <button onClick={onRemove} type="button">
             <XIcon className="w-4 h-4 text-error" />
           </button>

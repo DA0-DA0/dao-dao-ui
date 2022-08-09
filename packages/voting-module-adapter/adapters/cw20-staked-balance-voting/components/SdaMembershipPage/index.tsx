@@ -16,8 +16,6 @@ export const SdaMembershipPage = ({
   const { t } = useTranslation()
   const { imageUrl } = useDaoInfoContext()
 
-  // Set to default mode to display, and undefined to hide.
-
   return (
     <div className="space-y-8">
       <div className="flex relative flex-col items-center mt-16 rounded-b-lg border-t lg:mt-32 bg-primary border-inactive">

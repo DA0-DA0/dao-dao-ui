@@ -22,7 +22,7 @@ export type UpdateInfoData = ConfigResponse
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ fieldNamePrefix, errors, onRemove, readOnly, data, Logo }) => {
+> = ({ fieldNamePrefix, errors, onRemove, isCreating, data, Logo }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
@@ -34,7 +34,7 @@ export const UpdateInfoComponent: ActionComponent<
     >
       <div className="flex flex-row flex-wrap gap-6 justify-center items-center">
         <div className="flex flex-col gap-4 pl-2">
-          {!readOnly ? (
+          {isCreating ? (
             <>
               <ImageSelector
                 error={errors?.name}
@@ -60,7 +60,7 @@ export const UpdateInfoComponent: ActionComponent<
         <div className="flex flex-col grow gap-3">
           <div>
             <TextInput
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.name}
               fieldName={fieldNamePrefix + 'name'}
               placeholder={t('form.name')}
@@ -71,7 +71,7 @@ export const UpdateInfoComponent: ActionComponent<
           </div>
           <div>
             <TextAreaInput
-              disabled={readOnly}
+              disabled={!isCreating}
               error={errors?.description}
               fieldName={fieldNamePrefix + 'description'}
               placeholder={t('form.description')}
@@ -93,7 +93,7 @@ export const UpdateInfoComponent: ActionComponent<
               </div>
               <FormSwitch
                 fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
-                readOnly={readOnly}
+                readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}
@@ -111,7 +111,7 @@ export const UpdateInfoComponent: ActionComponent<
               </div>
               <FormSwitch
                 fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
-                readOnly={readOnly}
+                readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
                 watch={watch}

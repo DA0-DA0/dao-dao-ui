@@ -20,7 +20,7 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options,
 }) => {
   const { t } = useTranslation()
@@ -35,7 +35,7 @@ export const AddTokenComponent: ActionComponent<TokenInfoDisplayProps> = ({
       <div className="flex flex-col gap-2">
         <InputLabel name={t('form.governanceTokenAddress')} />
         <AddressInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
           register={register}

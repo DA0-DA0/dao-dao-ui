@@ -37,7 +37,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { nativeBalances, cw20Balances },
 }) => {
   const { t } = useTranslation()
@@ -140,7 +140,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
           <NumberInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.amount}
             fieldName={fieldNamePrefix + 'amount'}
             onPlusMinus={[
@@ -169,7 +169,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
           <SelectInput
             defaultValue={NATIVE_DENOM}
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.denom}
             fieldName={fieldNamePrefix + 'denom'}
             register={register}
@@ -193,7 +193,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         <div className="grow">
           <AddressInput
             containerClassName="grow"
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.to}
             fieldName={fieldNamePrefix + 'to'}
             register={register}

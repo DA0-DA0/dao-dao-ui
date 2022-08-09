@@ -33,8 +33,8 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
@@ -506,10 +506,9 @@ const CreateDAOVotingPage: NextPage = () => {
                     appendTier({
                       name: '',
                       weight:
-                        getValues('structure') ===
-                        NewDAOStructure.GovernanceToken
-                          ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-                          : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
+                        getValues('structure') === NewDAOStructure.Membership
+                          ? DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
+                          : DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT,
                       members: [
                         {
                           address: '',

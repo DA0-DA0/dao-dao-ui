@@ -1,31 +1,26 @@
-import type { GetStaticProps, NextPage } from 'next'
+/* eslint-disable i18next/no-literal-string */
+import type { NextPage } from 'next'
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
 
-import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ErrorPage, SuspenseLoader } from '@dao-dao/ui'
 
-const Custom500: NextPage = () => {
-  const { t } = useTranslation()
+// _error cannot load `getServerSideProps`, so we cannot load translations for a
+// 500 internal server error.
+// See https://nextjs.org/docs/advanced-features/custom-error-page#caveats
 
-  return (
-    <SuspenseLoader fallback={null}>
-      <ErrorPage title={t('title.500')}>
-        <p>
-          {t('error.internalServerError')}{' '}
-          <Link href="/">
-            <a className="link">{t('info.considerReturningHome')}</a>
-          </Link>
-        </p>
-      </ErrorPage>
-    </SuspenseLoader>
-  )
-}
+const Custom500: NextPage = () => (
+  <SuspenseLoader fallback={null}>
+    <ErrorPage title="500 - Internal Server Error">
+      <p>
+        An internal server error occured on this page.{' '}
+        <Link href="/home">
+          <a className="underline hover:no-underline">
+            Consider returning home.
+          </a>
+        </Link>
+      </p>
+    </ErrorPage>
+  </SuspenseLoader>
+)
 
 export default Custom500
-
-export const getStaticProps: GetStaticProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(locale, ['translation'])),
-  },
-})

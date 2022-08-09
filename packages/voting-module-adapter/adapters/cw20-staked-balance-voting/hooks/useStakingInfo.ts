@@ -8,7 +8,6 @@ import {
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
-  useVotingModule,
 } from '@dao-dao/state'
 import { claimAvailable } from '@dao-dao/utils'
 
@@ -21,8 +20,7 @@ export const useStakingInfo = ({
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { address: walletAddress } = useWallet()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { votingModuleAddress } = useVotingModule(coreAddress)
+  const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
     Cw20StakedBalanceVotingSelectors.stakingContractSelector({
@@ -30,11 +28,12 @@ export const useStakingInfo = ({
     })
   )
 
-  const stakingContractConfig = useRecoilValue(
-    StakeCw20Selectors.getConfigSelector({
-      contractAddress: stakingContractAddress,
-    })
-  )
+  const unstakingDuration =
+    useRecoilValue(
+      StakeCw20Selectors.getConfigSelector({
+        contractAddress: stakingContractAddress,
+      })
+    ).unstaking_duration ?? undefined
 
   const setRefreshStakingContractBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(stakingContractAddress)
@@ -104,7 +103,7 @@ export const useStakingInfo = ({
 
   return {
     stakingContractAddress,
-    stakingContractConfig,
+    unstakingDuration,
     refreshStakingContractBalances,
     refreshTotals,
     /// Optional

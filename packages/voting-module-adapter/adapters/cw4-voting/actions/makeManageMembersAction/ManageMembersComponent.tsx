@@ -31,7 +31,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
   fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { currentMembers },
 }) => {
   const { t } = useTranslation()
@@ -73,7 +73,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
               <div className="flex flex-row gap-2 items-center">
                 <div>
                   <NumberInput
-                    disabled={readOnly}
+                    disabled={!isCreating}
                     error={errors?.toAdd?.[index]?.weight}
                     fieldName={weightFieldName}
                     onPlusMinus={[
@@ -92,7 +92,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
               <p className="font-mono text-2xl secondary-text">&#10142;</p>
               <div className="grow">
                 <AddressInput
-                  disabled={readOnly}
+                  disabled={!isCreating}
                   error={errors?.toAdd?.[index]?.addr}
                   fieldName={addrFieldName}
                   register={register}
@@ -107,7 +107,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                 <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
               </div>
 
-              {!readOnly && (
+              {isCreating && (
                 <button onClick={() => toAddRemove(index)} type="button">
                   <XIcon className="w-4 text-error" />
                 </button>
@@ -115,10 +115,10 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
             </div>
           )
         })}
-        {readOnly && toAddFields.length === 0 && (
+        {!isCreating && toAddFields.length === 0 && (
           <p className="text-xs italic text-tertiary">{t('info.none')}</p>
         )}
-        {!readOnly && (
+        {isCreating && (
           <Button
             className="self-start"
             onClick={() => toAddAppend({ weight: 1, addr: '' })}
@@ -137,7 +137,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
           <div key={id} className="flex flex-row gap-4 items-center">
             <div className="grow">
               <AddressInput
-                disabled={readOnly}
+                disabled={!isCreating}
                 error={errors?.toRemove?.[index]?.addr}
                 fieldName={
                   (fieldNamePrefix +
@@ -158,17 +158,17 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
               <InputErrorMessage error={errors?.toRemove?.[index]?.addr} />
             </div>
 
-            {!readOnly && (
+            {isCreating && (
               <button onClick={() => toRemoveRemove(index)} type="button">
                 <XIcon className="w-4 text-error" />
               </button>
             )}
           </div>
         ))}
-        {readOnly && toRemoveFields.length === 0 && (
+        {!isCreating && toRemoveFields.length === 0 && (
           <p className="text-xs italic text-tertiary">{t('info.none')}</p>
         )}
-        {!readOnly && (
+        {isCreating && (
           <Button
             className="self-start"
             onClick={() => toRemoveAppend({ addr: '' })}

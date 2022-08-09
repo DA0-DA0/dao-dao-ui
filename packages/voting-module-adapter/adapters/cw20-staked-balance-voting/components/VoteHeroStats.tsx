@@ -69,7 +69,7 @@ interface InnerVoteHeroStatsContentProps
 const InnerVoteHeroStatsContent = (props: InnerVoteHeroStatsContentProps) => {
   const { t } = useTranslation()
   const { governanceTokenInfo } = useGovernanceTokenInfo()
-  const { stakingContractConfig, totalStakedValue } = useStakingInfo({
+  const { unstakingDuration, totalStakedValue } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
 
@@ -87,8 +87,8 @@ const InnerVoteHeroStatsContent = (props: InnerVoteHeroStatsContentProps) => {
         ),
         stakedPercent:
           (totalStakedValue / Number(governanceTokenInfo.total_supply)) * 100,
-        unstakingDuration: stakingContractConfig.unstaking_duration
-          ? humanReadableDuration(stakingContractConfig.unstaking_duration)
+        unstakingDuration: unstakingDuration
+          ? humanReadableDuration(unstakingDuration)
           : 'None',
       }}
       {...props}

@@ -3,13 +3,10 @@ import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
-  DaoInfoAdditionalAddresses,
-  DaoInfoVotingConfiguration,
   DaoThinInfoContent,
-  DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
-  ProposalModuleAddresses,
+  ProposalCreationAdditionalAddresses,
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
@@ -48,10 +45,10 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
         Mobile: () => <Membership primaryText />,
       },
       DaoThinInfoContent,
-      DaoTreasuryFooter,
-      DaoInfoAdditionalAddresses,
-      DaoInfoVotingConfiguration,
-      ProposalModuleAddresses,
+      DaoTreasuryFooter: () => null,
+      DaoInfoAdditionalAddresses: () => null,
+      DaoInfoVotingConfiguration: () => null,
+      ProposalCreationAdditionalAddresses,
       VoteHeroStats,
       SdaMembershipPage,
     },
