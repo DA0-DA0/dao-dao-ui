@@ -3,7 +3,7 @@ export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 export const SITE_URL =
   // On local dev or production vercel, use manually set domain.
   !VERCEL_ENV || VERCEL_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_SITE_URL
+    ? (process.env.NEXT_PUBLIC_SITE_URL as string)
     : // Use vercel deployment URL if on preview or development vercel build.
       `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 
