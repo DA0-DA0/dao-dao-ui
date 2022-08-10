@@ -19,7 +19,7 @@ type QueryClientParams = {
 }
 
 export const queryClient = selectorFamily<
-  CwNativeStakedBalanceVotingQueryClient | undefined,
+  CwNativeStakedBalanceVotingQueryClient,
   QueryClientParams
 >({
   key: 'cwNativeStakedBalanceVotingQueryClient',
@@ -27,7 +27,6 @@ export const queryClient = selectorFamily<
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
       return new CwNativeStakedBalanceVotingQueryClient(client, contractAddress)
     },
 })
@@ -57,7 +56,7 @@ export const executeClient = selectorFamily<
 })
 
 export const daoSelector = selectorFamily<
-  DaoResponse | undefined,
+  DaoResponse,
   QueryClientParams & {
     params: Parameters<CwNativeStakedBalanceVotingQueryClient['dao']>
   }
@@ -67,12 +66,11 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.dao(...params)
     },
 })
 export const getConfigSelector = selectorFamily<
-  GetConfigResponse | undefined,
+  GetConfigResponse,
   QueryClientParams & {
     params: Parameters<CwNativeStakedBalanceVotingQueryClient['getConfig']>
   }
@@ -82,12 +80,11 @@ export const getConfigSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.getConfig(...params)
     },
 })
 export const claimsSelector = selectorFamily<
-  ClaimsResponse | undefined,
+  ClaimsResponse,
   QueryClientParams & {
     params: Parameters<CwNativeStakedBalanceVotingQueryClient['claims']>
   }
@@ -97,12 +94,11 @@ export const claimsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.claims(...params)
     },
 })
 export const votingPowerAtHeightSelector = selectorFamily<
-  VotingPowerAtHeightResponse | undefined,
+  VotingPowerAtHeightResponse,
   QueryClientParams & {
     params: Parameters<
       CwNativeStakedBalanceVotingQueryClient['votingPowerAtHeight']
@@ -114,13 +110,12 @@ export const votingPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.votingPowerAtHeight(...params)
     },
 })
 export const totalPowerAtHeightSelector = selectorFamily<
-  TotalPowerAtHeightResponse | undefined,
+  TotalPowerAtHeightResponse,
   QueryClientParams & {
     params: Parameters<
       CwNativeStakedBalanceVotingQueryClient['totalPowerAtHeight']
@@ -132,13 +127,12 @@ export const totalPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalPowerAtHeight(...params)
     },
 })
 export const infoSelector = selectorFamily<
-  InfoResponse | undefined,
+  InfoResponse,
   QueryClientParams & {
     params: Parameters<CwNativeStakedBalanceVotingQueryClient['info']>
   }
@@ -148,7 +142,6 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.info(...params)
     },
 })

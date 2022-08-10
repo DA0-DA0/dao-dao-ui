@@ -33,16 +33,15 @@ export const useGovernanceTokenInfo = ({
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
-  const denom = useRecoilValue(
+  const { denom } = useRecoilValue(
     CwNativeStakedBalanceVotingSelectors.getConfigSelector({
       contractAddress: votingModuleAddress,
       params: [],
     })
-  )?.denom
+  )
 
-  const decimals = denom && nativeTokenDecimals(denom)
-
-  if (!denom || !decimals) {
+  const decimals = nativeTokenDecimals(denom)
+  if (decimals === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

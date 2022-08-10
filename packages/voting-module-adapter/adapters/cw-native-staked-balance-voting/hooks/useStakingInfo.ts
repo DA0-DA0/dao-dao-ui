@@ -1,6 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
@@ -19,7 +18,6 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
-  const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
@@ -29,9 +27,6 @@ export const useStakingInfo = ({
       params: [],
     })
   )
-  if (!config) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const setRefreshStakingContractBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(config.denom)
