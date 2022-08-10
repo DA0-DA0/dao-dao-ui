@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 // _error cannot load `getServerSideProps`, so we cannot load translations for a
 // 500 internal server error. See
 // https://nextjs.org/docs/advanced-features/custom-error-page#caveats
