@@ -35,7 +35,13 @@ export const TreasuryBalances = () => {
     )
   )
 
-  const cw20Tokens = useMemo(
+  const cw20Tokens: {
+    imageUrl: string | undefined
+    symbol: string
+    denom: string
+    amount: string
+    decimals: number
+  }[] = useMemo(
     () =>
       cw20s.map((info, idx) => {
         const logoInfo = cw20MarketingInfo[idx]?.logo
@@ -51,11 +57,15 @@ export const TreasuryBalances = () => {
     [cw20MarketingInfo, cw20s]
   )
 
-  const nativeTokens = useMemo(
+  const nativeTokens: {
+    denom: string
+    amount: string
+    decimals: number
+  }[] = useMemo(
     () =>
       nativeBalances.length
         ? nativeBalances.map(({ denom, amount }) => ({
-            denom: denom,
+            denom,
             amount,
             decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
           }))
