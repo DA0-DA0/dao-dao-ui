@@ -20,7 +20,7 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
   matcher: (contractName: string) =>
     contractName.includes(CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME),
 
-  load: () => ({
+  load: ({ t }) => ({
     // Fields
     fields: {
       membershipPageInfo: {
@@ -31,7 +31,7 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
             width={mobile ? 16 : 14}
           />
         ),
-        label: 'Stake',
+        label: t('title.stake'),
       },
     },
 

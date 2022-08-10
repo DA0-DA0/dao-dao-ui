@@ -188,7 +188,7 @@ export const cw20TokenListSelector = selectorFamily<
     },
 })
 
-const CW20_TOKEN_LIST_LIMIT = 10
+const CW20_TOKEN_LIST_LIMIT = 30
 export const allCw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams
@@ -272,6 +272,44 @@ export const cw721TokenListSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
 
       return await client.cw721TokenList(...params)
+    },
+})
+
+const CW721_TOKEN_LIST_LIMIT = 30
+export const allCw721TokenListSelector = selectorFamily<
+  Cw721TokenListResponse | undefined,
+  QueryClientParams
+>({
+  key: 'cwCoreV0_1_0AllCw721TokenList',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      let startAt: string | undefined
+
+      const tokenList: Cw721TokenListResponse = []
+      while (true) {
+        const response = await get(
+          cw721TokenListSelector({
+            ...queryClientParams,
+            params: [{ startAt, limit: CW721_TOKEN_LIST_LIMIT }],
+          })
+        )
+        if (!response?.length) break
+
+        // Don't double-add last token since we set startAt to it for
+        // the next query.
+        tokenList.push(...response.slice(0, -1))
+        startAt = response[response.length - 1]
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < CW721_TOKEN_LIST_LIMIT) {
+          // Add last token to the list since we ignored it.
+          tokenList.push(response[response.length - 1])
+          break
+        }
+      }
+
+      return tokenList
     },
 })
 
@@ -376,11 +414,11 @@ export const allCw20BalancesSelector = selectorFamily<
 
 export const cw20BalancesInfoSelector = selectorFamily<
   { symbol: string; denom: string; amount: string; decimals: number }[],
-  { address: string }
+  string
 >({
-  key: 'cw20BalancesInfo',
+  key: 'cwCoreV0_1_0Cw20BalancesInfo',
   get:
-    ({ address }) =>
+    (address) =>
     async ({ get }) => {
       const cw20List = get(
         allCw20BalancesSelector({ contractAddress: address })

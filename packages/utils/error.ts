@@ -5,11 +5,13 @@ import * as Sentry from '@sentry/nextjs'
 export const processError = (
   error: Error | any,
   {
+    tags,
     extra,
     transform,
     overrideCapture,
     forceCapture,
   }: {
+    tags?: Record<string, string | number>
     extra?: Record<string, string | number>
     transform?: Partial<Record<CommonError, string>>
     overrideCapture?: Partial<Record<CommonError, boolean>>
@@ -21,7 +23,7 @@ export const processError = (
     error = new Error(`${error}`)
   }
 
-  const { message } = error
+  const { message } = error as Error
   let recognizedError
 
   // Attempt to recognize error.
@@ -49,18 +51,28 @@ export const processError = (
       ((overrideCapture && overrideCapture[recognizedError]) ??
         captureCommonErrorMap[recognizedError])
     if (shouldCapture) {
-      Sentry.captureException(error, { extra })
+      Sentry.captureException(error, { extra, tags })
     }
 
     return ((transform && transform[recognizedError]) ||
       recognizedError) as string
   }
 
+  // If we did not recognize the error and it's a Cosmos SDK error with a
+  // stacktrace, extract the error from the last line (since the first n-1 lines
+  // are golang stacktrace). This is a common string displayed in Cosmos SDK
+  // stacktraces.
+  if (
+    message.includes('github.com/cosmos/cosmos-sdk/baseapp.gRPCErrorToSDKError')
+  ) {
+    error = new Error(message.split('\n').slice(-1)[0])
+  }
+
   // Send to Sentry since we were not expecting it.
-  Sentry.captureException(error, { extra })
+  Sentry.captureException(error, { extra, tags })
 
   // If no recognized error, return error message by default.
-  return message
+  return error.message
 }
 
 // To add a new error:

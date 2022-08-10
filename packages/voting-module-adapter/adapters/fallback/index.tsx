@@ -1,21 +1,14 @@
+import { useMemo } from 'react'
+
 import { Wallet } from '@dao-dao/icons'
-import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
-import {
-  DaoThinInfoContent,
-  Membership,
-  MembershipMobileTab,
-  ProposalCreationAdditionalAddresses,
-  SdaMembershipPage,
-  VoteHeroStats,
-} from './components'
-import { useActions } from './hooks'
+import { MembershipMobileTab } from './MembershipMobileTab'
+import { MembershipPlaceholder } from './MembershipPlaceholder'
 
-export const Cw4VotingAdapter: VotingModuleAdapter = {
-  id: CW4VOTING_CONTRACT_NAME,
-  matcher: (contractName: string) =>
-    contractName.includes(CW4VOTING_CONTRACT_NAME),
+export const FallbackVotingAdapter: VotingModuleAdapter = {
+  id: 'fallback',
+  matcher: () => true,
 
   load: ({ t }) => ({
     // Fields
@@ -34,23 +27,23 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
 
     // Hooks
     hooks: {
-      useActions,
+      useActions: () => useMemo(() => [], []),
     },
 
     // Components
     components: {
       Membership: {
-        Desktop: () => <Membership />,
+        Desktop: MembershipPlaceholder,
         MobileTab: MembershipMobileTab,
-        Mobile: () => <Membership primaryText />,
+        Mobile: MembershipPlaceholder,
       },
-      DaoThinInfoContent,
+      DaoThinInfoContent: () => null,
       DaoTreasuryFooter: () => null,
       DaoInfoAdditionalAddresses: () => null,
       DaoInfoVotingConfiguration: () => null,
-      ProposalCreationAdditionalAddresses,
-      VoteHeroStats,
-      SdaMembershipPage,
+      ProposalCreationAdditionalAddresses: () => null,
+      VoteHeroStats: () => null,
+      SdaMembershipPage: () => null,
     },
   }),
 }

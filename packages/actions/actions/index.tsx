@@ -1,10 +1,10 @@
 import { Action } from '../types'
-import { addTokenAction } from './AddToken'
+import { addCw20Action } from './AddCw20'
 import { customAction } from './Custom'
 import { executeAction } from './Execute'
 import { instantiateAction } from './Instantiate'
 import { migrateAction } from './MigrateContract'
-import { removeTokenAction } from './RemoveToken'
+import { removeCw20Action } from './RemoveCw20'
 import { spendAction } from './Spend'
 import { stakeAction } from './Stake'
 import { updateAdminAction } from './UpdateAdmin'
@@ -14,8 +14,11 @@ export const commonActions: Action[] = [
   spendAction,
   stakeAction,
   updateInfoAction,
-  addTokenAction,
-  removeTokenAction,
+  addCw20Action,
+  removeCw20Action,
+  // TODO: Add back in once CW721s are displayed.
+  // addCw721Action,
+  // removeCw721Action,
   instantiateAction,
   executeAction,
   migrateAction,

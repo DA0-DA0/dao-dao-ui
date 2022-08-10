@@ -7,7 +7,6 @@ import {
   CwCoreV0_1_0Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
@@ -18,7 +17,6 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
   SpendIcon,
   SpendComponent as StatelessSpendComponent,
 } from '../components'
@@ -182,7 +180,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   }, [msg, spentTokenDecimals, isTransfer])
 }
 
-const InnerSpendComponent: ActionComponent = (props) => {
+const Component: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
     nativeBalancesSelector(props.coreAddress)
   )
@@ -222,12 +220,6 @@ const InnerSpendComponent: ActionComponent = (props) => {
     />
   )
 }
-
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerSpendComponent {...props} />
-  </SuspenseLoader>
-)
 
 export const spendAction: Action<SpendData> = {
   key: ActionKey.Spend,
