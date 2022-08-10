@@ -316,19 +316,23 @@ export const UpdateProposalConfigComponent: ActionComponent<
             register={register}
           >
             <option value="weeks">
-              {t('unit.weeks', { count: proposalDuration })}
+              {t('unit.weeks', { count: proposalDuration }).toLocaleLowerCase()}
             </option>
             <option value="days">
-              {t('unit.days', { count: proposalDuration })}
+              {t('unit.days', { count: proposalDuration }).toLocaleLowerCase()}
             </option>
             <option value="hours">
-              {t('unit.hours', { count: proposalDuration })}
+              {t('unit.hours', { count: proposalDuration }).toLocaleLowerCase()}
             </option>
             <option value="minutes">
-              {t('unit.minutes', { count: proposalDuration })}
+              {t('unit.minutes', {
+                count: proposalDuration,
+              }).toLocaleLowerCase()}
             </option>
             <option value="seconds">
-              {t('unit.seconds', { count: proposalDuration })}
+              {t('unit.seconds', {
+                count: proposalDuration,
+              }).toLocaleLowerCase()}
             </option>
           </SelectInput>
         </div>
