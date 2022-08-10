@@ -78,7 +78,9 @@ const InnerProposal = () => {
   const onExecuteSuccess = useCallback(async () => {
     refreshProposalAndAll()
     toast.success(t('success.proposalExecuted'))
-  }, [refreshProposalAndAll, t])
+    // Manually revalidate DAO static props.
+    await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalId}`)
+  }, [coreAddress, proposalId, refreshProposalAndAll, t])
 
   const onCloseSuccess = useCallback(async () => {
     refreshProposalAndAll()

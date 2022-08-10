@@ -191,7 +191,7 @@ export const ProposalDetails = ({
           vote,
         })
 
-        onVoteSuccess()
+        await onVoteSuccess()
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -212,7 +212,7 @@ export const ProposalDetails = ({
         proposalId: proposalNumber,
       })
 
-      onExecuteSuccess()
+      await onExecuteSuccess()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -231,7 +231,7 @@ export const ProposalDetails = ({
         proposalId: proposalNumber,
       })
 
-      onCloseSuccess()
+      await onCloseSuccess()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))

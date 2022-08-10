@@ -17,6 +17,7 @@ import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   ProposalModule,
@@ -186,9 +187,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           },
           ...additionalProps,
         },
-        // Regenerate the page at most once per 5 mins. Serves cached copy and
-        // refreshes in background.
-        revalidate: 60 * 5,
+        // Regenerate the page at most once per `revalidate` seconds. Serves
+        // cached copy and refreshes in background.
+        revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
       }
     } catch (error) {
       // Redirect.

@@ -13,7 +13,11 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/ui'
-import { validateRequired, validateUrl } from '@dao-dao/utils'
+import {
+  DAO_STATIC_PROPS_CACHE_SECONDS,
+  validateRequired,
+  validateUrl,
+} from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
 
@@ -118,6 +122,13 @@ export const UpdateInfoComponent: ActionComponent<
               />
             </div>
           </div>
+          {!isCreating && (
+            <p className="text-xs italic text-right text-tertiary">
+              {t('info.daoInfoWillRefresh', {
+                minutes: DAO_STATIC_PROPS_CACHE_SECONDS / 60,
+              })}
+            </p>
+          )}
         </div>
       </div>
     </ActionCard>
