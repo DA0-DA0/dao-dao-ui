@@ -46,7 +46,7 @@ const InnerProposal: FC = () => {
     components: { ProposalDetailsVotingPowerWidget },
   } = useVotingModuleAdapter()
   const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
+    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()

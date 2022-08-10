@@ -1,4 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
+import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
 import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
@@ -11,6 +12,8 @@ import {
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const SdaMembershipPage = () => {
+  const { t } = useTranslation()
+
   const { coreAddress, Loader } = useVotingModuleAdapterOptions()
   const { connected, address: walletAddress } = useWallet()
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(
@@ -22,7 +25,7 @@ export const SdaMembershipPage = () => {
   const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
 
   if (!members || totalVotingWeight === undefined) {
-    throw new Error('Failed to load page data.')
+    throw new Error(t('error.loadingData'))
   }
 
   return (

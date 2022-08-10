@@ -28,7 +28,7 @@ export const ProposalInfoCard = ({
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -37,16 +37,12 @@ export const ProposalInfoCard = ({
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const executionTxHash = useProposalExecutionTxHash()
 
   const walletVotingPowerWhenProposalCreated = useRecoilValue(
-    walletAddress && proposal
+    walletAddress
       ? CwCoreV0_1_0Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           params: [

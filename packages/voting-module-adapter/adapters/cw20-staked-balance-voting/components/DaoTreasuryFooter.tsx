@@ -11,9 +11,6 @@ export const DaoTreasuryFooter = () => {
 
   const addToken = useAddToken()
   const { governanceTokenAddress } = useGovernanceTokenInfo()
-  if (!governanceTokenAddress) {
-    throw new Error(t('error.loadingData'))
-  }
 
   return addToken ? (
     <Button

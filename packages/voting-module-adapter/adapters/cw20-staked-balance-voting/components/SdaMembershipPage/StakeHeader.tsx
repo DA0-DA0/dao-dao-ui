@@ -23,11 +23,7 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
     fetchTotalStakedValue: true,
   })
 
-  if (
-    !governanceTokenInfo ||
-    totalStakedValue === undefined ||
-    treasuryBalance === undefined
-  ) {
+  if (totalStakedValue === undefined || treasuryBalance === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

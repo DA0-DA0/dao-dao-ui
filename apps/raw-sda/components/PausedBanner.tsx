@@ -40,9 +40,7 @@ export const PausedBanner: FC<PausedBannerProps> = ({}) => {
   const blockHeight = useRecoilValue(blockHeightSelector)
 
   const expiration =
-    pauseInfo && 'Paused' in pauseInfo
-      ? pauseInfo?.Paused.expiration
-      : undefined
+    'Paused' in pauseInfo ? pauseInfo.Paused.expiration : undefined
 
   const [remaining, setRemaining] = useState(
     remainingTime(expiration, blockHeight as number)

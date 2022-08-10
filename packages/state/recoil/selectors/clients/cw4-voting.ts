@@ -21,16 +21,12 @@ import { cosmWasmClientSelector } from '../chain'
 type QueryClientParams = {
   contractAddress: string
 }
-export const queryClient = selectorFamily<
-  QueryClient | undefined,
-  QueryClientParams
->({
+export const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'cw4VotingQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
       return new QueryClient(client, contractAddress)
     },
 })
@@ -56,7 +52,7 @@ export const executeClient = selectorFamily<
 })
 
 export const groupContractSelector = selectorFamily<
-  GroupContractResponse | undefined,
+  GroupContractResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['groupContract']>
   }
@@ -66,12 +62,11 @@ export const groupContractSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.groupContract(...params)
     },
 })
 export const daoSelector = selectorFamily<
-  DaoResponse | undefined,
+  DaoResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['dao']>
   }
@@ -81,12 +76,11 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.dao(...params)
     },
 })
 export const votingPowerAtHeightSelector = selectorFamily<
-  VotingPowerAtHeightResponse | undefined,
+  VotingPowerAtHeightResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['votingPowerAtHeight']>
   }
@@ -96,12 +90,11 @@ export const votingPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.votingPowerAtHeight(...params)
     },
 })
 export const totalPowerAtHeightSelector = selectorFamily<
-  TotalPowerAtHeightResponse | undefined,
+  TotalPowerAtHeightResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['totalPowerAtHeight']>
   }
@@ -111,12 +104,11 @@ export const totalPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.totalPowerAtHeight(...params)
     },
 })
 export const infoSelector = selectorFamily<
-  InfoResponse | undefined,
+  InfoResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['info']>
   }
@@ -126,7 +118,6 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.info(...params)
     },
 })

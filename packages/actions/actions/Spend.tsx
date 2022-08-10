@@ -7,7 +7,6 @@ import {
   CwCoreV0_1_0Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
@@ -56,16 +55,16 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   )
   const cw20Infos = useRecoilValue(
     waitForAll(
-      (cw20Addresses ?? []).map((contractAddress) =>
+      cw20Addresses.map((contractAddress) =>
         Cw20BaseSelectors.tokenInfoSelector({ contractAddress, params: [] })
       )
     )
   )
   const cw20Tokens = useMemo(
     () =>
-      (cw20Addresses ?? []).map((address, idx) => ({
+      cw20Addresses.map((address, idx) => ({
         address,
-        info: cw20Infos?.[idx],
+        info: cw20Infos[idx],
       })),
     [cw20Addresses, cw20Infos]
   )
@@ -193,28 +192,21 @@ const Component: ActionComponent = (props) => {
 
   const cw20Infos = useRecoilValue(
     waitForAll(
-      cw20AddressesAndBalances?.map(({ addr }) =>
+      cw20AddressesAndBalances.map(({ addr }) =>
         Cw20BaseSelectors.tokenInfoSelector({
           contractAddress: addr,
           params: [],
         })
-      ) ?? []
+      )
     )
   )
   const cw20Balances = useMemo(
     () =>
-      (cw20AddressesAndBalances
-        ?.map(({ addr, balance }, idx) => ({
-          address: addr,
-          balance,
-          info: cw20Infos[idx],
-        }))
-        // If undefined token info response, ignore the token.
-        .filter(({ info }) => !!info) ?? []) as {
-        address: string
-        balance: string
-        info: TokenInfoResponse
-      }[],
+      cw20AddressesAndBalances.map(({ addr, balance }, idx) => ({
+        address: addr,
+        balance,
+        info: cw20Infos[idx],
+      })),
     [cw20AddressesAndBalances, cw20Infos]
   )
 

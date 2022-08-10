@@ -44,7 +44,7 @@ export const TreasuryBalances = () => {
   }[] = useMemo(
     () =>
       cw20s.map((info, idx) => {
-        const logoInfo = cw20MarketingInfo[idx]?.logo
+        const logoInfo = cw20MarketingInfo[idx].logo
 
         return {
           ...info,

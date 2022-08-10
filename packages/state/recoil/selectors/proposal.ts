@@ -32,7 +32,7 @@ export const proposalExecutionTXHashSelector = selectorFamily<
 })
 
 export const cwCoreProposalModulesSelector = selectorFamily<
-  ProposalModule[] | undefined,
+  ProposalModule[],
   string
 >({
   key: 'cwCoreProposalModules',
@@ -41,9 +41,6 @@ export const cwCoreProposalModulesSelector = selectorFamily<
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
       const coreVersion = get(cwCoreVersionSelector(coreAddress))
-      if (!coreVersion) {
-        return
-      }
 
       return await fetchProposalModules(client, coreAddress, coreVersion)
     },

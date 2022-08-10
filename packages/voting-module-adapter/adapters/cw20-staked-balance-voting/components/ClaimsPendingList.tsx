@@ -20,8 +20,7 @@ export const ClaimsPendingList = ({
     })
 
   if (
-    !governanceTokenInfo ||
-    !blockHeight ||
+    blockHeight === undefined ||
     !refreshClaims ||
     (connected && (!claims || sumClaimsAvailable === undefined))
   ) {
@@ -29,7 +28,7 @@ export const ClaimsPendingList = ({
   }
 
   const tokenImageUrl =
-    !!governanceTokenMarketingInfo?.logo &&
+    !!governanceTokenMarketingInfo.logo &&
     governanceTokenMarketingInfo.logo !== 'embedded' &&
     'url' in governanceTokenMarketingInfo.logo
       ? governanceTokenMarketingInfo.logo.url

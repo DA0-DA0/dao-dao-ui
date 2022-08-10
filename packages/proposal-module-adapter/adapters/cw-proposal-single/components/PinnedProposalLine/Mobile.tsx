@@ -23,7 +23,7 @@ export const PinnedProposalLineMobile = ({
     coreAddress,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -32,17 +32,13 @@ export const PinnedProposalLineMobile = ({
         },
       ],
     })
-  )?.proposal
+  )
 
   const daoConfig = useRecoilValue(
     CwCoreV0_1_0Selectors.configSelector({
       contractAddress: coreAddress,
     })
   )
-
-  if (!proposal || !daoConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const expirationString = useProposalExpirationString()
 

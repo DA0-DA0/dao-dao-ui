@@ -31,17 +31,12 @@ const InnerClaimsPendingList = () => {
   const { governanceTokenInfo, governanceTokenMarketingInfo } =
     useGovernanceTokenInfo()
 
-  if (
-    blockHeight === undefined ||
-    !claimsPending ||
-    !refreshClaims ||
-    !governanceTokenInfo
-  ) {
+  if (blockHeight === undefined || !claimsPending || !refreshClaims) {
     throw new Error(t('error.loadingData'))
   }
 
   const tokenImageUrl =
-    !!governanceTokenMarketingInfo?.logo &&
+    !!governanceTokenMarketingInfo.logo &&
     governanceTokenMarketingInfo.logo !== 'embedded' &&
     'url' in governanceTokenMarketingInfo.logo
       ? governanceTokenMarketingInfo.logo.url

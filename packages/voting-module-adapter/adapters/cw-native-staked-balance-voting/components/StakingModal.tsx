@@ -68,8 +68,6 @@ const InnerStakingModal = ({
   })
 
   if (
-    !governanceTokenAddress ||
-    !governanceTokenInfo ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
     walletStakedValue === undefined ||
@@ -79,15 +77,15 @@ const InnerStakingModal = ({
   }
 
   const doStake = CwNativeStakedBalanceVotingHooks.useStake({
-    contractAddress: votingModuleAddress ?? '',
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
   const doUnstake = CwNativeStakedBalanceVotingHooks.useUnstake({
-    contractAddress: votingModuleAddress ?? '',
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
   const doClaim = CwNativeStakedBalanceVotingHooks.useClaim({
-    contractAddress: votingModuleAddress ?? '',
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
 

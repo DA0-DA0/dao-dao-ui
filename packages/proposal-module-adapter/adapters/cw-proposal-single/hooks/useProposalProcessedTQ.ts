@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { CwProposalSingleSelectors } from '@dao-dao/state'
@@ -9,13 +8,12 @@ import { useProposalModuleAdapterOptions } from '../../../react'
 import { useProcessTQ } from '../common'
 
 export const useProposalProcessedTQ = (): ProcessedThresholdQuorum => {
-  const { t } = useTranslation()
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -24,11 +22,7 @@ export const useProposalProcessedTQ = (): ProcessedThresholdQuorum => {
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const processTQ = useProcessTQ()
 

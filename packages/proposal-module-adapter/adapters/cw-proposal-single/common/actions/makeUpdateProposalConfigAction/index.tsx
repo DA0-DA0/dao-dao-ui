@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -48,16 +47,11 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
   _,
   { address: proposalModuleAddress }
 ) => {
-  const { t } = useTranslation()
-
   const proposalModuleConfig = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-  if (!proposalModuleConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const proposalDepositTokenInfo = useRecoilValue(
     proposalModuleConfig.deposit_info?.token
@@ -75,7 +69,7 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
         deposit: convertMicroDenomToDenomWithDecimals(
           Number(proposalModuleConfig.deposit_info.deposit),
           // A deposit being configured implies that a token will be present.
-          proposalDepositTokenInfo?.decimals!
+          proposalDepositTokenInfo!.decimals
         ),
         refundFailedProposals:
           proposalModuleConfig.deposit_info.refund_failed_proposals,
@@ -173,22 +167,17 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   _,
   { address: proposalModuleAddress }
 ) => {
-  const { t } = useTranslation()
-
   const proposalModuleConfig = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-  if (!proposalModuleConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const {
     hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
+    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
   return useCallback(
     (data: UpdateProposalConfigData) =>
@@ -244,7 +233,7 @@ const Component: ActionComponent = (props) => {
     hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.symbol
+    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
 
   return (
     <UpdateProposalConfigComponent
@@ -261,7 +250,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
     hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
+    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
   return useMemo(() => {
     if (

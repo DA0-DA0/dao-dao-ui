@@ -16,7 +16,7 @@ import {
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
-  fetchUSDCPrice,
+  fetchUSDCPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
@@ -33,27 +33,23 @@ export const useGovernanceTokenInfo = ({
     })
   )
   const governanceTokenInfo = useRecoilValue(
-    governanceTokenAddress
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: governanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
+    Cw20BaseSelectors.tokenInfoSelector({
+      contractAddress: governanceTokenAddress,
+      params: [],
+    })
   )
   const governanceTokenMarketingInfo = useRecoilValue(
-    governanceTokenAddress
-      ? Cw20BaseSelectors.marketingInfoSelector({
-          contractAddress: governanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
+    Cw20BaseSelectors.marketingInfoSelector({
+      contractAddress: governanceTokenAddress,
+      params: [],
+    })
   )
 
   /// Optional
 
   // Wallet balance
   const walletBalance = useRecoilValue(
-    fetchWalletBalance && governanceTokenAddress && walletAddress
+    fetchWalletBalance && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: governanceTokenAddress,
           params: [{ address: walletAddress }],
@@ -63,7 +59,7 @@ export const useGovernanceTokenInfo = ({
 
   // Treasury balance
   const treasuryBalance = useRecoilValue(
-    fetchTreasuryBalance && governanceTokenAddress
+    fetchTreasuryBalance
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: governanceTokenAddress,
           params: [{ address: coreAddress }],
@@ -73,7 +69,7 @@ export const useGovernanceTokenInfo = ({
 
   // Price info
   const price = useRecoilValue(
-    fetchUSDCPrice && governanceTokenInfo
+    fetchUSDCPrice
       ? tokenUSDCPriceSelector({
           denom: governanceTokenAddress,
           tokenDecimals: governanceTokenInfo.decimals,
