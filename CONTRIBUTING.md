@@ -4,7 +4,12 @@ Thank you for investing your time in contributing to our project!
 
 Read our [Code of Conduct](./CODE_OF_CONDUCT.md) to keep our community approachable and respectable.
 
-All contributions will fall under our [our open-source license agreement](./LICENSE.md)
+Contributions will fall under varying open-source license agreements depending
+on package. Most of our packages use [BSD 3-Clause Clear
+License](https://choosealicense.com/licenses/bsd-3-clause-clear), while our
+main `dapp` uses [GNU Affero General Public License v3.0
+](https://choosealicense.com/licenses/agpl-3.0). `LICENSE.md` files exist in
+each package describing the license that applies to them.
 
 In this guide you will get an overview of the contribution workflow from opening an issue, creating a PR, reviewing, and merging the PR.
 
