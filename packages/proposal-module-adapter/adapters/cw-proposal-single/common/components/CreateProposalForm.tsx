@@ -15,6 +15,7 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   Action,
+  ActionCardLoader,
   ActionKey,
   FormProposalData,
   UseDefaults,
@@ -42,6 +43,7 @@ import {
   LoaderProps,
   LogoProps,
   MarkdownPreview,
+  SuspenseLoader,
   TextAreaInput,
   TextInput,
   Tooltip,
@@ -432,19 +434,23 @@ export const CreateProposalForm = ({
 
               return (
                 <li key={index}>
-                  <Component
-                    Loader={Loader}
-                    Logo={Logo}
-                    allActionsWithData={proposalActionData}
-                    coreAddress={coreAddress}
-                    data={actionData.data}
-                    errors={errors.actionData?.[index]?.data || {}}
-                    fieldNamePrefix={`actionData.${index}.data.`}
-                    index={index}
-                    isCreating
-                    onRemove={() => remove(index)}
-                    proposalModule={proposalModule}
-                  />
+                  <SuspenseLoader
+                    fallback={<ActionCardLoader Loader={Loader} />}
+                  >
+                    <Component
+                      Loader={Loader}
+                      Logo={Logo}
+                      allActionsWithData={proposalActionData}
+                      coreAddress={coreAddress}
+                      data={actionData.data}
+                      errors={errors.actionData?.[index]?.data || {}}
+                      fieldNamePrefix={`actionData.${index}.data.`}
+                      index={index}
+                      isCreating
+                      onRemove={() => remove(index)}
+                      proposalModule={proposalModule}
+                    />
+                  </SuspenseLoader>
                 </li>
               )
             })}

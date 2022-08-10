@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Action,
-  ActionCardLoader,
   ActionComponent,
   ActionKey,
   UseDecodedCosmosMsg,
@@ -11,7 +10,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/actions'
 import { useCw4VotingModule } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
@@ -90,7 +88,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
   }, [cw4GroupAddress, msg])
 }
 
-const InnerManageMembersComponent: ActionComponent = (props) => {
+const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { members } = useCw4VotingModule(props.coreAddress, {
     fetchMembers: true,
@@ -108,12 +106,6 @@ const InnerManageMembersComponent: ActionComponent = (props) => {
     />
   )
 }
-
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerManageMembersComponent {...props} />
-  </SuspenseLoader>
-)
 
 export const makeManageMembersAction = (): Action<ManageMembersData> => ({
   key: ActionKey.ManageMembers,

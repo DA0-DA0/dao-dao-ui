@@ -11,6 +11,7 @@ import { PlaceholderToken } from '@dao-dao/icons'
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   Button,
+  FormattedJSONDisplay,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
@@ -19,7 +20,6 @@ import {
   RadioInput,
   Switch,
   TextInput,
-  TokenInfoDisplay,
 } from '@dao-dao/ui'
 import {
   CHAIN_BECH32_PREFIX,
@@ -461,14 +461,8 @@ const CreateDAOVotingPage: NextPage = () => {
                     }
                   />
 
-                  <TokenInfoDisplay
-                    loadingTokenInfo={
-                      existingGovernanceTokenInfoLoadable.state === 'loading'
-                    }
-                    tokenInfo={
-                      watchedNewDAO.governanceTokenOptions
-                        .existingGovernanceTokenInfo
-                    }
+                  <FormattedJSONDisplay
+                    jsonLoadable={existingGovernanceTokenInfoLoadable}
                   />
                 </div>
               )}

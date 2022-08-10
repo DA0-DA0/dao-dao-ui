@@ -3,14 +3,14 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import {
   AddressInput,
   Button,
+  FormattedJSONDisplay,
+  FormattedJSONDisplayProps,
   InputErrorMessage,
   InputLabel,
-  TokenInfoDisplay,
-  TokenInfoDisplayProps,
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
@@ -21,31 +21,33 @@ interface Token {
   info: TokenInfoResponse
 }
 
-type RemoveTokenOptions = TokenInfoDisplayProps & {
+interface RemoveCw20Options {
+  additionalAddressError?: string
   existingTokens: Token[]
+  formattedJsonDisplayProps: FormattedJSONDisplayProps
 }
 
-export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
+export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
   fieldNamePrefix,
   onRemove,
   errors,
   isCreating,
-  options: { existingTokens, ...options },
+  options: {
+    additionalAddressError,
+    existingTokens,
+    formattedJsonDisplayProps,
+  },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   const tokenAddress = watch(fieldNamePrefix + 'address')
 
-  const validateIsTreasuryToken = (v: string) =>
-    existingTokens.some(({ address }) => address === v) ||
-    'This token is not in the treasury.'
-
   return (
     <ActionCard
-      Icon={RemoveTokenIcon}
+      Icon={RemoveCw20Icon}
       onRemove={onRemove}
-      title={t('title.removeTreasuryToken')}
+      title={t('title.removeCw20FromTreasury')}
     >
       {existingTokens.length > 0 && (
         <>
@@ -70,7 +72,7 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
         </>
       )}
 
-      <div className="flex flex-col gap-2 mb-3">
+      <div className="flex flex-col gap-1">
         <InputLabel name={t('form.tokenAddress')} />
         <AddressInput
           disabled={!isCreating}
@@ -80,18 +82,24 @@ export const RemoveTokenComponent: ActionComponent<RemoveTokenOptions> = ({
           validation={[
             validateRequired,
             validateContractAddress,
-            validateIsTreasuryToken,
+            // Invalidate field if additional error is present.
+            () => additionalAddressError || true,
           ]}
         />
-        <InputErrorMessage error={errors?.address} />
+        <InputErrorMessage
+          error={
+            errors?.address ||
+            (additionalAddressError && { message: additionalAddressError })
+          }
+        />
       </div>
 
-      <TokenInfoDisplay {...options} />
+      <FormattedJSONDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
 }
 
-export const RemoveTokenIcon = () => {
+export const RemoveCw20Icon = () => {
   const { t } = useTranslation()
-  return <Emoji label={t('emoji.token')} symbol="⭕️" />
+  return <Emoji label={t('emoji.x')} symbol="❌" />
 }
