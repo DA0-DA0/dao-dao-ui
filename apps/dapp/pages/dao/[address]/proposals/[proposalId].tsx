@@ -31,6 +31,7 @@ import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { SmallScreenNav } from '@/components'
+import { usePinnedDAOs } from '@/hooks'
 
 const InnerProposal = () => {
   const { t } = useTranslation()
@@ -50,7 +51,8 @@ const InnerProposal = () => {
   const {
     hooks: { useActions: useProposalModuleActions },
   } = useProposalModuleAdapterCommon()
-  const { proposalId } = useProposalModuleAdapterOptions()
+  const { proposalId, proposalModule, proposalNumber } =
+    useProposalModuleAdapterOptions()
 
   const {
     hooks: { useGovernanceTokenInfo, useActions: useVotingModuleActions },
@@ -69,11 +71,22 @@ const InnerProposal = () => {
   )
 
   const { refreshProposalAndAll } = useProposalRefreshers()
+  const { markPinnedProposalDone } = usePinnedDAOs()
 
   const onVoteSuccess = useCallback(async () => {
     refreshProposalAndAll()
     toast.success(t('success.voteCast'))
-  }, [refreshProposalAndAll, t])
+
+    // Mark pinned proposal as done when voted on.
+    markPinnedProposalDone(coreAddress, proposalModule.address, proposalNumber)
+  }, [
+    coreAddress,
+    markPinnedProposalDone,
+    proposalModule.address,
+    proposalNumber,
+    refreshProposalAndAll,
+    t,
+  ])
 
   const onExecuteSuccess = useCallback(async () => {
     refreshProposalAndAll()
