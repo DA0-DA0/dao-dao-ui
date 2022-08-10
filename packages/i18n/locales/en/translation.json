@@ -316,7 +316,7 @@
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },
   "meta": {
-    "description": "Create and deploy IBC-native interchain DAOs.",
+    "description": "DAOs for everyone.",
     "title": "DAO DAO"
   },
   "proposalModuleLabel": {
