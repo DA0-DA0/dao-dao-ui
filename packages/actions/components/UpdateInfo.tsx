@@ -123,7 +123,7 @@ export const UpdateInfoComponent: ActionComponent<
             </div>
           </div>
           {!isCreating && (
-            <p className="text-xs italic text-right text-tertiary">
+            <p className="text-xs italic text-tertiary">
               {t('info.daoInfoWillRefresh', {
                 minutes: DAO_STATIC_PROPS_CACHE_SECONDS / 60,
               })}
