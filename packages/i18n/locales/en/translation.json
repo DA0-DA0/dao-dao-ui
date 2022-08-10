@@ -315,6 +315,10 @@
     "yourBalance": "Your balance",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },
+  "meta": {
+    "description": "Create and deploy IBC-native interchain DAOs.",
+    "title": "DAO DAO"
+  },
   "proposalModuleLabel": {
     "cw-govmod-single": "Single Choice"
   },
