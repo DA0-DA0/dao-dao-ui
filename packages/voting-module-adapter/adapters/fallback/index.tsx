@@ -10,7 +10,7 @@ export const FallbackVotingAdapter: VotingModuleAdapter = {
   id: 'fallback',
   matcher: () => true,
 
-  load: () => ({
+  load: ({ t }) => ({
     // Fields
     fields: {
       membershipPageInfo: {
@@ -21,7 +21,7 @@ export const FallbackVotingAdapter: VotingModuleAdapter = {
             width={mobile ? 16 : 14}
           />
         ),
-        label: 'Members',
+        label: t('title.members'),
       },
     },
 

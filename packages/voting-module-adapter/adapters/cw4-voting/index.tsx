@@ -17,7 +17,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
   matcher: (contractName: string) =>
     contractName.includes(CW4VOTING_CONTRACT_NAME),
 
-  load: () => ({
+  load: ({ t }) => ({
     // Fields
     fields: {
       membershipPageInfo: {
@@ -28,7 +28,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
             width={mobile ? 16 : 14}
           />
         ),
-        label: 'Members',
+        label: t('title.members'),
       },
     },
 

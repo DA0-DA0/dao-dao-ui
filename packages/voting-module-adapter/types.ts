@@ -1,3 +1,4 @@
+import { TFunction } from 'next-i18next'
 import { ComponentType, ReactNode } from 'react'
 
 import { Action } from '@dao-dao/actions'
@@ -143,6 +144,7 @@ export interface IVotingModuleAdapterOptions {
   coreAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>
+  t: TFunction
 }
 
 export interface IVotingModuleAdapterContext {

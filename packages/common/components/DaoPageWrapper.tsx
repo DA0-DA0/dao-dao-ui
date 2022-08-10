@@ -5,6 +5,7 @@ import {
   createContext,
   useContext,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   DaoNotFound,
@@ -66,9 +67,8 @@ export const DaoPageWrapper = ({
   info,
   error,
   children,
-  Logo = DefaultLogo,
-  Loader = DefaultLoader,
   PageLoader = DefaultPageLoader,
+  ...innerProps
 }: DaoPageWrapperProps) => (
   <>
     <NextSeo
@@ -85,19 +85,9 @@ export const DaoPageWrapper = ({
 
     <SuspenseLoader fallback={<PageLoader />}>
       {info ? (
-        <DaoInfoContext.Provider value={info}>
-          <VotingModuleAdapterProvider
-            contractName={info.votingModuleContractName}
-            options={{
-              votingModuleAddress: info.votingModuleAddress,
-              coreAddress: info.coreAddress,
-              Logo,
-              Loader,
-            }}
-          >
-            {children}
-          </VotingModuleAdapterProvider>
-        </DaoInfoContext.Provider>
+        <InnerDaoPageWrapper info={info} {...innerProps}>
+          {children}
+        </InnerDaoPageWrapper>
       ) : error ? (
         <ErrorPage500 error={error} />
       ) : (
@@ -106,6 +96,37 @@ export const DaoPageWrapper = ({
     </SuspenseLoader>
   </>
 )
+
+interface InnerDaoPageWrapperProps
+  extends Pick<DaoPageWrapperProps, 'Logo' | 'Loader' | 'children'> {
+  info: DaoInfo
+}
+
+const InnerDaoPageWrapper = ({
+  info,
+  children,
+  Logo = DefaultLogo,
+  Loader = DefaultLoader,
+}: InnerDaoPageWrapperProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <DaoInfoContext.Provider value={info}>
+      <VotingModuleAdapterProvider
+        contractName={info.votingModuleContractName}
+        options={{
+          votingModuleAddress: info.votingModuleAddress,
+          coreAddress: info.coreAddress,
+          Logo,
+          Loader,
+          t,
+        }}
+      >
+        {children}
+      </VotingModuleAdapterProvider>
+    </DaoInfoContext.Provider>
+  )
+}
 
 export interface SdaDaoPageWrapperProps extends DaoPageWrapperProps {
   Header: ComponentType
