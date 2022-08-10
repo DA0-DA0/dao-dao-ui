@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 // This file configures the initialization of Sentry on the browser.
 // The config you add here will be used whenever a page is visited.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/

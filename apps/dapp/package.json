@@ -93,6 +93,7 @@
     "babel-loader": "^8.2.3",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
+    "eslint-plugin-header": "^3.1.1",
     "jest": "^27.3.0",
     "next-transpile-modules": "^9.0.0",
     "postcss": "^8.4.5",
