@@ -40,8 +40,8 @@ const CustomErrorComponent = ({
 
   return (
     <ErrorPage
-      title={`${statusCode ?? 500}: ${
-        statusCodes[statusCode ?? 500] ?? 'Error'
+      title={`${statusCode ?? 'Unknown status'}: ${
+        (statusCode && statusCodes[statusCode]) || 'Unknown error'
       }`}
     >
       <p>
