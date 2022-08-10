@@ -19,25 +19,23 @@ export const PinnedDAOsList: FC = () => {
     // Don't render on server since pinnedAddresses come from localStorage,
     // and we don't want a hydration error.
     <SuspenseLoader fallback={null}>
-      <div className="max-w-6xl">
-        <div className="flex gap-4 justify-between items-center mb-4 primary-text">
-          <div className="flex gap-1 items-center">
-            <PinOutline className="inline w-4" />
-            <p>{t('info.pinned')}</p>
-          </div>
-          <Link href="/dao/create" passHref>
-            <Button size="sm">
-              <PlusIcon className="w-4 h-4" /> {t('button.create')}
-            </Button>
-          </Link>
+      <div className="flex gap-4 justify-between items-center mb-4 primary-text">
+        <div className="flex gap-1 items-center">
+          <PinOutline className="inline w-4" />
+          <p>{t('info.pinned')}</p>
         </div>
-
-        <DaoCardContainer>
-          {pinnedAddresses.map((address) => (
-            <PinnedDAOCard key={address} address={address} />
-          ))}
-        </DaoCardContainer>
+        <Link href="/dao/create" passHref>
+          <Button size="sm">
+            <PlusIcon className="w-4 h-4" /> {t('button.create')}
+          </Button>
+        </Link>
       </div>
+
+      <DaoCardContainer>
+        {pinnedAddresses.map((address) => (
+          <PinnedDAOCard key={address} address={address} />
+        ))}
+      </DaoCardContainer>
     </SuspenseLoader>
   ) : null
 }
