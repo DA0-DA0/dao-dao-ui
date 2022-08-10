@@ -188,7 +188,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         },
         // Regenerate the page at most once per 5 mins. Serves cached copy and
         // refreshes in background.
-        revalidate: 1,
+        revalidate: 60 * 5,
       }
     } catch (error) {
       // Redirect.
