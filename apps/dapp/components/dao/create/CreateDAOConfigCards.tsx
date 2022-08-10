@@ -250,7 +250,10 @@ export const CreateDAOVotingDurationCard: FC<
     >
       {readOnly ? (
         <InputThemedText>
-          {votingDuration.value} {votingDuration.units}
+          {votingDuration.value}{' '}
+          {t(`unit.${votingDuration.units}`, {
+            count: votingDuration.value,
+          }).toLocaleLowerCase()}
         </InputThemedText>
       ) : (
         <>
@@ -294,8 +297,9 @@ export const CreateDAOVotingDurationCard: FC<
           >
             {DurationUnitsValues.map((type, idx) => (
               <option key={idx} value={type}>
-                {/* TODO: i18n */}
-                {type}
+                {t(`unit.${type}`, {
+                  count: votingDuration.value,
+                }).toLocaleLowerCase()}
               </option>
             ))}
           </SelectInput>
@@ -440,7 +444,10 @@ export const CreateDAOUnstakingDurationCard: FC<
     >
       {readOnly ? (
         <InputThemedText>
-          {unregisterDuration.value} {unregisterDuration.units}
+          {unregisterDuration.value}{' '}
+          {t(`unit.${unregisterDuration.units}`, {
+            count: unregisterDuration.value,
+          }).toLocaleLowerCase()}
         </InputThemedText>
       ) : (
         <>
@@ -475,7 +482,9 @@ export const CreateDAOUnstakingDurationCard: FC<
           >
             {DurationUnitsValues.map((type, idx) => (
               <option key={idx} value={type}>
-                {type}
+                {t(`unit.${type}`, {
+                  count: unregisterDuration.value,
+                }).toLocaleLowerCase()}
               </option>
             ))}
           </SelectInput>
