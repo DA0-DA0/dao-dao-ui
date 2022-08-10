@@ -3,14 +3,12 @@ import { useCallback, useMemo } from 'react'
 
 import {
   Action,
-  ActionCardLoader,
   ActionComponent,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/actions'
-import { SuspenseLoader } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -99,7 +97,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
   }, [governanceTokenAddress, governanceTokenInfo.decimals, msg])
 }
 
-const InnerMintComponent: ActionComponent = (props) => {
+const Component: ActionComponent = (props) => {
   const { governanceTokenInfo } = useGovernanceTokenInfo()
 
   return (
@@ -111,12 +109,6 @@ const InnerMintComponent: ActionComponent = (props) => {
     />
   )
 }
-
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerMintComponent {...props} />
-  </SuspenseLoader>
-)
 
 export const makeMintAction = (): Action<MintData> => ({
   key: ActionKey.Mint,

@@ -103,7 +103,7 @@ export const addressTVLSelector = selectorFamily<number, { address: string }>({
     ({ address }) =>
     async ({ get }) => {
       const nativeBalances = get(nativeBalanceSelector(address))
-      const cw20Balances = get(cw20BalancesInfoSelector({ address }))
+      const cw20Balances = get(cw20BalancesInfoSelector(address))
 
       let balances = cw20Balances
         ? cw20Balances.map(({ amount, denom }) => ({ amount, denom }))
