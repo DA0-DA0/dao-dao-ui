@@ -48,8 +48,12 @@ const InnerProposalCreate = () => {
   )
 
   const onCreateSuccess = useCallback(
-    (proposalId: string) => {
+    async (proposalId: string) => {
       refreshProposals()
+      // Manually revalidate DAO static props (and proposal page, in case it
+      // cached a 404 from a previous visit attempt) and navigate to new
+      // proposal page.
+      await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalId}`)
       router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
     },
     [coreAddress, refreshProposals, router]

@@ -15,6 +15,8 @@ export const processError = (
     extra?: Record<string, string | number>
     transform?: Partial<Record<CommonError, string>>
     overrideCapture?: Partial<Record<CommonError, boolean>>
+    // If set to true, will capture error. If set to false, will not capture
+    // error. If undefined, will use capture map.
     forceCapture?: boolean
   } = {}
 ): string => {
@@ -45,12 +47,13 @@ export const processError = (
   // If recognized error, try to find it in the map, or else return the
   // recognized error.
   if (recognizedError) {
-    // Sent to Sentry if we want to capture this recognized error.
-    const shouldCapture =
-      forceCapture ||
-      ((overrideCapture && overrideCapture[recognizedError]) ??
+    // Send to Sentry if we want to capture this recognized error.
+    if (
+      forceCapture !== false &&
+      ((forceCapture === true ||
+        (overrideCapture && overrideCapture[recognizedError])) ??
         captureCommonErrorMap[recognizedError])
-    if (shouldCapture) {
+    ) {
       Sentry.captureException(error, { extra, tags })
     }
 
@@ -68,10 +71,11 @@ export const processError = (
     error = new Error(message.split('\n').slice(-1)[0])
   }
 
-  // Send to Sentry since we were not expecting it.
-  Sentry.captureException(error, { extra, tags })
+  if (forceCapture !== false) {
+    // Send to Sentry since we were not expecting it.
+    Sentry.captureException(error, { extra, tags })
+  }
 
-  // If no recognized error, return error message by default.
   return error.message
 }
 
