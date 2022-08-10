@@ -1,9 +1,9 @@
+// _error cannot load `getServerSideProps`, so we cannot load translations for a
+// 500 internal server error. See
+// https://nextjs.org/docs/advanced-features/custom-error-page#caveats
+/* eslint-disable i18next/no-literal-string */
+
 /**
- * NOTE: This requires `@sentry/nextjs` version 7.3.0 or higher.
- *
- * NOTE: If using this with `next` version 12.2.0 or lower, uncomment the
- * penultimate line in `CustomErrorComponent`.
- *
  * This page is loaded by Nextjs:
  *  - on the server, when data-fetching methods throw or reject
  *  - on the client, when `getInitialProps` throws or rejects
@@ -17,23 +17,77 @@
  */
 
 import * as Sentry from '@sentry/nextjs'
+import { NextPageContext } from 'next'
 import NextErrorComponent from 'next/error'
+import Link from 'next/link'
+import { useEffect } from 'react'
 
-const CustomErrorComponent = (props) => {
-  // If you're using a Nextjs version prior to 12.2.1, uncomment this to
-  // compensate for https://github.com/vercel/next.js/issues/8592
-  // Sentry.captureUnderscoreErrorException(props);
+import { ErrorPage } from '@dao-dao/ui'
+import { processError } from '@dao-dao/utils'
 
-  return <NextErrorComponent statusCode={props.statusCode} />
+interface CustomErrorComponentProps {
+  statusCode?: number
+  error?: string
 }
 
-CustomErrorComponent.getInitialProps = async (contextData) => {
-  // In case this is running in a serverless function, await this in order to
-  // give Sentry time to send the error before the lambda exits
-  await Sentry.captureUnderscoreErrorException(contextData)
+const CustomErrorComponent = ({
+  statusCode,
+  error,
+}: CustomErrorComponentProps) => {
+  useEffect(() => {
+    error && console.error(error)
+  }, [error])
 
-  // This will contain the status code of the response
-  return NextErrorComponent.getInitialProps(contextData)
+  return (
+    <ErrorPage
+      title={`${statusCode ?? 500}: ${
+        statusCodes[statusCode ?? 500] ?? 'Error'
+      }`}
+    >
+      <p>
+        An error occured on this page.{' '}
+        <Link href="/home">
+          <a className="underline hover:no-underline">
+            Consider returning home.
+          </a>
+        </Link>
+      </p>
+
+      {error && (
+        <pre className="mt-6 text-xs text-error whitespace-pre-wrap">
+          {error}
+        </pre>
+      )}
+    </ErrorPage>
+  )
+}
+
+CustomErrorComponent.getInitialProps = async (
+  context: NextPageContext
+): Promise<CustomErrorComponentProps> => {
+  // In case this is running in a serverless function, await this in order to
+  // give Sentry time to send the error before the lambda exits.
+  await Sentry.captureUnderscoreErrorException({
+    res: context.res,
+    err: context.err,
+  })
+
+  // This will contain the status code of the response.
+  return {
+    ...(await NextErrorComponent.getInitialProps(context)),
+    // If error present, process with error recognizer without sending to
+    // Sentry, since we already capture it above.
+    ...(context.err && {
+      error: processError(context.err, { forceCapture: false }),
+    }),
+  }
 }
 
 export default CustomErrorComponent
+
+const statusCodes: { [code: number]: string } = {
+  400: 'Bad Request',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  500: 'Internal Server Error',
+}
