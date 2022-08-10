@@ -23,7 +23,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
   matcher: (contractName: string) =>
     contractName.includes(CW20STAKEDBALANCEVOTING_CONTRACT_NAME),
 
-  load: () => ({
+  load: ({ t }) => ({
     // Fields
     fields: {
       membershipPageInfo: {
@@ -34,7 +34,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
             width={mobile ? 16 : 14}
           />
         ),
-        label: 'Stake',
+        label: t('title.stake'),
       },
     },
 

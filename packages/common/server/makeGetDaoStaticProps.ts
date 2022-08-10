@@ -105,19 +105,35 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
 
       const votingModuleAddress = await coreClient.votingModule()
-      // All info queries are the same for DAO DAO contracts. If not a valid DAO
-      // DAO contract, this will fail.
-      const {
-        info: { contract: votingModuleContractName } = {},
-      }: { info?: { contract?: string } } = await cwClient.queryContractSmart(
-        votingModuleAddress,
-        {
-          info: {},
-        }
-      )
+      // If no contract name, will display fallback voting module adapter.
+      let votingModuleContractName = 'fallback'
+      try {
+        // All info queries are the same for DAO DAO contracts. If not a valid
+        // DAO DAO contract, this may fail.
+        const infoResponse = await cwClient.queryContractSmart(
+          votingModuleAddress,
+          {
+            info: {},
+          }
+        )
 
-      if (!votingModuleContractName) {
-        throw new Error(serverT('error.unsupportedVotingModule'))
+        // Manually verify structure of info response, in case a different info
+        // query exists for this contract.
+        if (
+          'info' in infoResponse &&
+          'contract' in infoResponse.info &&
+          typeof infoResponse.info.contract === 'string'
+        ) {
+          votingModuleContractName = infoResponse.info.contract
+        }
+      } catch (err) {
+        // Report to Sentry and console.
+        console.error(
+          processError(err, {
+            tags: { coreAddress, votingModuleAddress },
+            forceCapture: true,
+          })
+        )
       }
 
       const proposalModules = await fetchProposalModules(
