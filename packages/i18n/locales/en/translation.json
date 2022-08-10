@@ -219,7 +219,7 @@
     "couldHaveMoreVotingPower": "You could have more voting power.",
     "creatingDao": "Creating DAO...",
     "daoAddress": "DAO",
-    "daoInfoWillRefresh": "DAO information may take up to {{minutes}} minutes to update on all pages.",
+    "daoInfoWillRefresh": "DAO information may take up to {{minutes}} minutes to update on all pages once proposal is executed.",
     "daoPaused": "The DAO is paused. Governance will resume in {{duration}}.",
     "daodaoBetaV": "dao dao <1>beta</1> v{{version}}",
     "daodaoLogo": "DAO DAO Logo",
