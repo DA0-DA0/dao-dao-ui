@@ -8,7 +8,6 @@ const prettierConfig = {
   trailingComma: 'es5',
   useTabs: false,
   bracketSpacing: true,
-  bracketSameLine: false,
   arrowParens: 'always',
   printWidth: 80,
 }
