@@ -86,7 +86,9 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
   const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  // Get max proposal deposit that needs the governance token.
+  // Of all the proposal modules this DAO uses, find the highest proposal
+  // deposit that uses the governance token. When staking, we'll suggest that
+  // the user reserve that amount for proposals.
   const maxGovernanceTokenProposalDeposit = useMemo(
     () =>
       Math.max(

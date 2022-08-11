@@ -77,6 +77,7 @@ const InnerMobileDaoHome = () => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useDepositInfo?.()
     )
+    // Filter undefined (falsey) deposit infos
     .filter(Boolean) as CheckedDepositInfo[]
 
   return (
