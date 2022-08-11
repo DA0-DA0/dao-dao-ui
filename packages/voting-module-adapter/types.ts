@@ -36,7 +36,7 @@ export interface BaseVoteHeroStatsProps {
   additionalStats?: (HeroStatProps & { link?: boolean })[]
 }
 
-export interface BaseSdaMembershipPageProps {
+export interface BaseSdaMembershipPageProps extends BaseMembershipProps {
   defaultImageUrl: string
   Loader: ComponentType<{ size?: number | string }>
 }
