@@ -135,7 +135,7 @@ const typePercentageToPercentageThreshold = (
   if (t === 'majority') {
     return { majority: {} }
   } else {
-    if (p == undefined) {
+    if (p === undefined) {
       throw new Error(
         'internal erorr: an undefined percent was configured with a non-majority threshold.'
       )
