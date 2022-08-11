@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { StakingMode } from '@dao-dao/ui'
 
 import { BaseProposalDetailsVotingPowerWidgetProps } from '../../../types'
+import { useGovernanceTokenInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProposalDetailsVotingPowerWidget = ({
@@ -11,6 +12,8 @@ export const ProposalDetailsVotingPowerWidget = ({
 }: BaseProposalDetailsVotingPowerWidgetProps) => {
   const { t } = useTranslation()
   const [showStaking, setShowStaking] = useState(false)
+
+  const { governanceTokenAddress } = useGovernanceTokenInfo()
 
   return (
     <>
@@ -20,7 +23,11 @@ export const ProposalDetailsVotingPowerWidget = ({
 
       {showStaking && (
         <StakingModal
-          deposit={depositInfo?.deposit}
+          deposit={
+            depositInfo?.token === governanceTokenAddress
+              ? depositInfo.deposit
+              : undefined
+          }
           mode={StakingMode.Stake}
           onClose={() => setShowStaking(false)}
         />

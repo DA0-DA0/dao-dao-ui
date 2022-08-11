@@ -48,7 +48,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
     // Components
     components: {
       Membership: {
-        Desktop: () => <Membership />,
+        Desktop: (props) => <Membership {...props} />,
         MobileTab: MembershipMobileTab,
         Mobile: (props) => <Membership {...props} primaryText />,
       },

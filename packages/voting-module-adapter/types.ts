@@ -18,6 +18,10 @@ export interface MembershipPageInfo {
   label: string
 }
 
+export interface BaseMembershipProps {
+  proposalModuleDepositInfos: CheckedDepositInfo[]
+}
+
 export interface MembershipMobileTabProps {
   onClick: () => void
   selected: boolean
@@ -115,9 +119,9 @@ export interface IVotingModuleAdapter {
   // Components
   components: {
     Membership: {
-      Desktop: ComponentType
+      Desktop: ComponentType<BaseMembershipProps>
       MobileTab: ComponentType<MembershipMobileTabProps>
-      Mobile: ComponentType
+      Mobile: ComponentType<BaseMembershipProps>
     }
     DaoThinInfoContent: ComponentType<BaseDaoThinInfoContentProps>
     DaoTreasuryFooter: ComponentType
