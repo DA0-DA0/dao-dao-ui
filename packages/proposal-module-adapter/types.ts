@@ -2,6 +2,7 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 
 import { Action, FormProposalData } from '@dao-dao/actions'
+import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from '@dao-dao/voting-module-adapter'
@@ -18,6 +19,7 @@ export interface IProposalModuleAdapterCommon {
     ) => CommonProposalListInfo[]
     useProposalCount: () => number
     useActions: () => Action[]
+    useDepositInfo?: () => CheckedDepositInfo | undefined
   }
 
   // Components

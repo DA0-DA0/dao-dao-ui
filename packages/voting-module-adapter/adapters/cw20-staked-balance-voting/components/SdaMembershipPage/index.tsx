@@ -12,6 +12,7 @@ import { StakeHeader, StakeHeaderLoader } from './StakeHeader'
 export const SdaMembershipPage = ({
   defaultImageUrl,
   Loader,
+  proposalModuleDepositInfos,
 }: BaseSdaMembershipPageProps) => {
   const { t } = useTranslation()
   const { imageUrl } = useDaoInfoContext()
@@ -36,6 +37,7 @@ export const SdaMembershipPage = ({
             {...props}
           />
         )}
+        proposalModuleDepositInfos={proposalModuleDepositInfos}
         sdaMode
       />
     </div>

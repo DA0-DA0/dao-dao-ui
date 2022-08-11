@@ -44,7 +44,6 @@ const InnerStakingModal = ({
   const { refreshBalances } = useWalletBalance()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
-  const [amount, setAmount] = useState(0)
 
   const {
     governanceTokenAddress,
@@ -96,6 +95,19 @@ const InnerStakingModal = ({
   ) {
     throw new Error(t('error.loadingData'))
   }
+
+  // When staking, default to all unstaked balance (less proposal deposit if
+  // exists).
+  const [amount, setAmount] = useState(
+    mode === StakingMode.Stake
+      ? convertMicroDenomToDenomWithDecimals(
+          !!deposit && Number(deposit) > 0 && unstakedBalance > Number(deposit)
+            ? unstakedBalance - Number(deposit)
+            : unstakedBalance,
+          governanceTokenInfo.decimals
+        )
+      : 0
+  )
 
   const doStake = Cw20BaseHooks.useSend({
     contractAddress: governanceTokenAddress,

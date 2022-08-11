@@ -1,7 +1,7 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { ComponentType, FC, useState } from 'react'
+import { ComponentType, FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -19,11 +19,12 @@ import {
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
+import { BaseMembershipProps } from '../../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from '../StakingModal'
 import { ClaimsPendingList as DefaultClaimsPendingList } from './ClaimsPendingList'
 
-interface MembershipProps {
+interface MembershipProps extends BaseMembershipProps {
   primaryText?: boolean
   // If displayed in the SDA, we want to hide the title and claim card as
   // well as make the balance cards responsive. This is because it is laid
@@ -59,9 +60,11 @@ export const Membership = ({ primaryText, ...props }: MembershipProps) => {
 const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
   sdaMode,
   ClaimsPendingList = DefaultClaimsPendingList,
+  proposalModuleDepositInfos,
 }) => {
   const { t } = useTranslation()
   const {
+    governanceTokenAddress,
     governanceTokenInfo,
     governanceTokenMarketingInfo,
     walletBalance: unstakedGovTokenBalance,
@@ -82,6 +85,20 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
   // Set to a StakingMode to display modal.
   const [showStakingMode, setShowStakingMode] = useState<StakingMode>()
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
+
+  // Of all the proposal modules this DAO uses, find the highest proposal
+  // deposit that uses the governance token. When staking, we'll suggest that
+  // the user reserve that amount for proposals.
+  const maxGovernanceTokenProposalDeposit = useMemo(
+    () =>
+      Math.max(
+        0,
+        ...proposalModuleDepositInfos
+          .filter(({ token }) => token === governanceTokenAddress)
+          .map(({ deposit }) => Number(deposit))
+      ),
+    [proposalModuleDepositInfos, governanceTokenAddress]
+  )
 
   if (!connected) {
     return <ConnectWalletButton />
@@ -238,6 +255,11 @@ const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
 
       {showStakingMode !== undefined && (
         <StakingModal
+          deposit={
+            maxGovernanceTokenProposalDeposit
+              ? maxGovernanceTokenProposalDeposit.toString()
+              : undefined
+          }
           mode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
