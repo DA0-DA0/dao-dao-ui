@@ -12,7 +12,7 @@ export const localStorageEffect: <T>(key: string) => AtomEffect<T> =
     }
 
     const savedValue = localStorage.getItem(key)
-    if (savedValue != null) {
+    if (savedValue !== null) {
       const json = JSON.parse(savedValue)
       setSelf(json)
     }
