@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { ActionCard, ActionComponent } from '@dao-dao/actions'
 import {
   FormSwitch,
+  FormSwitchCard,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -43,6 +44,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const proposalDurationUnits = watch(fieldNamePrefix + 'proposalDurationUnits')
   const thresholdPercentage = watch(fieldNamePrefix + 'thresholdPercentage')
   const quorumPercentage = watch(fieldNamePrefix + 'quorumPercentage')
+  const quorumEnabled = watch(fieldNamePrefix + 'quorumEnabled')
 
   const percentageThresholdSelected = thresholdType === '%'
   const percentageQuorumSelected = quorumType === '%'
@@ -209,47 +211,60 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </div>
       <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border md:gap-1 border-default">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
-          <h3 className="primary-text">
-            <Emoji label={t('emoji.people')} symbol="👥" />{' '}
-            {t('form.quorumTitle')}
-          </h3>
+          <div className="flex flex-row gap-4 justify-between items-center">
+            <h3 className="primary-text">
+              <Emoji label={t('emoji.people')} symbol="👥" />{' '}
+              {t('form.quorumTitle')}
+            </h3>
+
+            <FormSwitchCard
+              fieldName={fieldNamePrefix + 'quorumEnabled'}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              watch={watch}
+            />
+          </div>
+
           <p className="secondary-text">{t('form.quorumDescription')}</p>
         </div>
-        <div className="flex flex-row flex-wrap grow gap-2 justify-center">
-          {percentageQuorumSelected && (
-            <div className="flex flex-col gap-1">
-              <NumberInput
-                disabled={!isCreating}
-                error={errors?.quorumPercentage}
-                fieldName={fieldNamePrefix + 'quorumPercentage'}
-                onPlusMinus={[
-                  () =>
-                    setValue(
-                      fieldNamePrefix + 'quorumPercentage',
-                      Math.max(quorumPercentage + 1, 1)
-                    ),
-                  () =>
-                    setValue(
-                      fieldNamePrefix + 'quorumPercentage',
-                      Math.max(quorumPercentage - 1, 1)
-                    ),
-                ]}
-                register={register}
-                sizing="sm"
-                validation={[validateRequired, validatePercent]}
-              />
-              <InputErrorMessage error={errors?.quorumPercentage} />
-            </div>
-          )}
-          <SelectInput
-            disabled={!isCreating}
-            fieldName={fieldNamePrefix + 'quorumType'}
-            register={register}
-          >
-            <option value="majority">{t('info.majority')}</option>
-            <option value="%">%</option>
-          </SelectInput>
-        </div>
+        {quorumEnabled && (
+          <div className="flex flex-row flex-wrap grow gap-2 justify-center">
+            {percentageQuorumSelected && (
+              <div className="flex flex-col gap-1">
+                <NumberInput
+                  disabled={!isCreating}
+                  error={errors?.quorumPercentage}
+                  fieldName={fieldNamePrefix + 'quorumPercentage'}
+                  onPlusMinus={[
+                    () =>
+                      setValue(
+                        fieldNamePrefix + 'quorumPercentage',
+                        Math.max(quorumPercentage + 1, 1)
+                      ),
+                    () =>
+                      setValue(
+                        fieldNamePrefix + 'quorumPercentage',
+                        Math.max(quorumPercentage - 1, 1)
+                      ),
+                  ]}
+                  register={register}
+                  sizing="sm"
+                  validation={[validateRequired, validatePercent]}
+                />
+                <InputErrorMessage error={errors?.quorumPercentage} />
+              </div>
+            )}
+            <SelectInput
+              disabled={!isCreating}
+              fieldName={fieldNamePrefix + 'quorumType'}
+              register={register}
+            >
+              <option value="majority">{t('info.majority')}</option>
+              <option value="%">%</option>
+            </SelectInput>
+          </div>
+        )}
       </div>
       <div className="flex flex-row flex-wrap gap-4 justify-between items-center p-3 rounded-lg border md:gap-1 border-default">
         <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
@@ -301,19 +316,23 @@ export const UpdateProposalConfigComponent: ActionComponent<
             register={register}
           >
             <option value="weeks">
-              {t('unit.weeks', { count: proposalDuration })}
+              {t('unit.weeks', { count: proposalDuration }).toLocaleLowerCase()}
             </option>
             <option value="days">
-              {t('unit.days', { count: proposalDuration })}
+              {t('unit.days', { count: proposalDuration }).toLocaleLowerCase()}
             </option>
             <option value="hours">
-              {t('unit.hours', { count: proposalDuration })}
+              {t('unit.hours', { count: proposalDuration }).toLocaleLowerCase()}
             </option>
             <option value="minutes">
-              {t('unit.minutes', { count: proposalDuration })}
+              {t('unit.minutes', {
+                count: proposalDuration,
+              }).toLocaleLowerCase()}
             </option>
             <option value="seconds">
-              {t('unit.seconds', { count: proposalDuration })}
+              {t('unit.seconds', {
+                count: proposalDuration,
+              }).toLocaleLowerCase()}
             </option>
           </SelectInput>
         </div>
