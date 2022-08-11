@@ -1,8 +1,13 @@
-export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE as string
-export const SITE_DESCRIPTION = process.env
-  .NEXT_PUBLIC_SITE_DESCRIPTION as string
+export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
+
+export const SITE_URL =
+  // On local dev or production vercel, use manually set domain.
+  !VERCEL_ENV || VERCEL_ENV === 'production'
+    ? (process.env.NEXT_PUBLIC_SITE_URL as string)
+    : // Use vercel deployment URL if on preview or development vercel build.
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+
 export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL as string
 export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
@@ -88,8 +93,6 @@ export const CWPROPOSALMULTIPLE_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CWPROPOSALMULTIPLE_CONTRACT_NAME as string
 
 export const JUNO_BLOCKS_PER_YEAR = 5086451
-
-export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV as string
 
 // DAO Name min/max defined in cw-core.
 export const MIN_DAO_NAME_LENGTH = parseInt(

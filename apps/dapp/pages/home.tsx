@@ -16,7 +16,7 @@ const HomePage: NextPage = () => (
   <>
     <SmallScreenNav />
 
-    <div className="p-4 space-y-6 md:p-6">
+    <div className="p-4 space-y-6 max-w-6xl md:p-6">
       <PinnedProposalsList />
       <PinnedDAOsList />
       <FeaturedDAOsList />

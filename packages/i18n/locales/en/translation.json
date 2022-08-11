@@ -315,6 +315,10 @@
     "yourBalance": "Your balance",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },
+  "meta": {
+    "description": "DAOs for everyone.",
+    "title": "DAO DAO"
+  },
   "proposalModuleLabel": {
     "cw-govmod-single": "Single Choice"
   },
@@ -448,6 +452,7 @@
     "hours": "Hours",
     "hours_one": "Hour",
     "hours_other": "Hours",
+    "minutes": "Minutes",
     "minutes_one": "Minute",
     "minutes_other": "Minutes",
     "seconds": "Seconds",
