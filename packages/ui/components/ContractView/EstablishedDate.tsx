@@ -7,7 +7,6 @@ export interface EstablishedDateProps {
 
 export const EstablishedDate: FC<EstablishedDateProps> = ({ date }) => {
   const { t } = useTranslation()
-  // TODO use i18n for formatting
   const formattedDate = date.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'long',
