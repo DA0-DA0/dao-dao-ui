@@ -4,7 +4,7 @@ const path = require('path')
 const config = {
   i18n: {
     // Add your language ISO 639-1 code here.
-    locales: ['en', 'it', 'pl', 'uk', 'zh'],,
+    locales: ['en', 'it', 'pl', 'uk', 'zh'],
     defaultLocale: 'en',
   },
   localePath: path.resolve('../../packages/i18n/locales'),
