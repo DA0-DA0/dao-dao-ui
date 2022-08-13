@@ -18,20 +18,18 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
+const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'cw20StakedBalanceVotingQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
-
       return new QueryClient(client, contractAddress)
     },
 })
 
 export const stakingContractSelector = selectorFamily<
-  StakingContractResponse | undefined,
+  StakingContractResponse,
   QueryClientParams
 >({
   key: 'cw20StakedBalanceVotingStakingContract',
@@ -39,29 +37,24 @@ export const stakingContractSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.stakingContract()
     },
 })
 
-export const daoSelector = selectorFamily<
-  DaoResponse | undefined,
-  QueryClientParams
->({
+export const daoSelector = selectorFamily<DaoResponse, QueryClientParams>({
   key: 'cw20StakedBalanceVotingDao',
   get:
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.dao()
     },
 })
 
 export const activeThresholdSelector = selectorFamily<
-  ActiveThresholdResponse | undefined,
+  ActiveThresholdResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['activeThreshold']>
   }
@@ -71,14 +64,13 @@ export const activeThresholdSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.activeThreshold(...params)
     },
 })
 
 export const votingPowerAtHeightSelector = selectorFamily<
-  VotingPowerAtHeightResponse | undefined,
+  VotingPowerAtHeightResponse,
   QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
 >({
   key: 'cw20StakedBalanceVotingVotingPowerAtHeight',
@@ -86,7 +78,6 @@ export const votingPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].address))
 
@@ -95,7 +86,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
 })
 
 export const totalPowerAtHeightSelector = selectorFamily<
-  TotalPowerAtHeightResponse | undefined,
+  TotalPowerAtHeightResponse,
   QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
 >({
   key: 'cw20StakedBalanceVotingTotalPowerAtHeight',
@@ -103,7 +94,6 @@ export const totalPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(undefined))
 
@@ -111,23 +101,19 @@ export const totalPowerAtHeightSelector = selectorFamily<
     },
 })
 
-export const infoSelector = selectorFamily<
-  InfoResponse | undefined,
-  QueryClientParams
->({
+export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
   key: 'cw20StakedBalanceVotingInfo',
   get:
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.info()
     },
 })
 
 export const tokenContractSelector = selectorFamily<
-  TokenContractResponse | undefined,
+  TokenContractResponse,
   QueryClientParams
 >({
   key: 'cw20StakedBalanceVotingTokenContract',
@@ -135,14 +121,13 @@ export const tokenContractSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.tokenContract()
     },
 })
 
 export const isActiveSelector = selectorFamily<
-  IsActiveResponse | undefined,
+  IsActiveResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['isActive']>
   }
@@ -152,7 +137,6 @@ export const isActiveSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.isActive(...params)
     },

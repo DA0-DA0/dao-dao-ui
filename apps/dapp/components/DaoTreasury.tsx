@@ -1,35 +1,28 @@
-import { PlusSmIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo } from '@dao-dao/state'
-import { Button, Loader, SuspenseLoader } from '@dao-dao/ui'
+import { Loader, SuspenseLoader } from '@dao-dao/ui'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { TreasuryBalances, useDAOInfoContext } from '@/components'
-import { useAddToken } from '@/util'
+import { TreasuryBalances } from '@/components'
 
-export const DaoTreasury: FC = () => {
+export const DaoTreasury = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
-  const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
-  const addToken = useAddToken()
+  const {
+    components: { DaoTreasuryFooter },
+  } = useVotingModuleAdapter()
 
   return (
     <div>
       <h2 className="primary-text">{t('title.treasury')}</h2>
+
       <SuspenseLoader fallback={<Loader />}>
         <TreasuryBalances />
       </SuspenseLoader>
 
-      {governanceTokenAddress && !!addToken && (
-        <Button
-          className="mt-4"
-          onClick={() => addToken(governanceTokenAddress)}
-          variant="secondary"
-        >
-          {t('button.addToKeplr')} <PlusSmIcon className="w-4 h-4" />
-        </Button>
-      )}
+      <DaoTreasuryFooter />
     </div>
   )
 }

@@ -18,6 +18,7 @@ const eslintConfig = {
     'no-unused-vars': ['off'],
     'react/jsx-sort-props': ['warn', { reservedFirst: ['key'] }],
     'tailwindcss/classnames-order': ['warn'],
+    eqeqeq: ['error'],
   },
   overrides: [
     {
@@ -135,7 +136,7 @@ const eslintConfig = {
                 ignore: 'import\\.js',
               },
               message:
-                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreSelectors.',
+                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV0_1_0Selectors.',
             },
             {
               regex: '(?:\\.\\.\\/)+(atoms|components|hooks|util)',

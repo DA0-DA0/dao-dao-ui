@@ -2,7 +2,7 @@ export * from './hooks'
 export * from './validation'
 
 export * from './claims'
-export * from './cleanChainError'
+export * from './error'
 export * from './client'
 export * from './constants'
 export * from './contracts'

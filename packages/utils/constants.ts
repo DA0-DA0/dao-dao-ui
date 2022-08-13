@@ -1,22 +1,19 @@
-export const CARD_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_CARD_ENABLED === 'true'
+export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
-export const HEADER_IMAGES_ENABLED =
-  process.env.NEXT_PUBLIC_IMAGES_HEADER_ENABLED === 'true'
+export const SITE_URL =
+  // On local dev or production vercel, use manually set domain.
+  !VERCEL_ENV || VERCEL_ENV === 'production'
+    ? (process.env.NEXT_PUBLIC_SITE_URL as string)
+    : // Use vercel deployment URL if on preview or development vercel build.
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 
-export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE as string
-export const SITE_DESCRIPTION = process.env
-  .NEXT_PUBLIC_SITE_DESCRIPTION as string
 export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL as string
 export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
 
 export const NATIVE_DECIMALS = 6
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
-
-export const GAS_PRICE = process.env.NEXT_PUBLIC_GAS_PRICE as string
 
 export const STATUS_COLORS: { [key: string]: string } = {
   open: '#00BAFF',
@@ -88,5 +85,31 @@ export const CW4VOTING_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CW4VOTING_CONTRACT_NAME as string
 export const CW20STAKEDBALANCEVOTING_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CONTRACT_NAME as string
+export const CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME as string
+export const CWPROPOSALSINGLE_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWPROPOSALSINGLE_CONTRACT_NAME as string
+export const CWPROPOSALMULTIPLE_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWPROPOSALMULTIPLE_CONTRACT_NAME as string
 
 export const JUNO_BLOCKS_PER_YEAR = 5086451
+
+// DAO Name min/max defined in cw-core.
+export const MIN_DAO_NAME_LENGTH = parseInt(
+  process.env.NEXT_PUBLIC_MIN_DAO_NAME_LENGTH || '3',
+  10
+)
+export const MAX_DAO_NAME_LENGTH = parseInt(
+  process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
+  10
+)
+
+export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = parseInt(
+  process.env.NEXT_PUBLIC_MAX_META_CHARS_PROPOSAL_DESCRIPTION || '200',
+  10
+)
+
+export const DAO_STATIC_PROPS_CACHE_SECONDS = parseInt(
+  process.env.NEXT_PUBLIC_DAO_STATIC_PROPS_CACHE_SECONDS || '300',
+  10
+)

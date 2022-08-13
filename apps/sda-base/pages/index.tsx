@@ -3,9 +3,10 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ConnectWalletButton } from '@dao-dao/common'
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 
 import { PageWrapper, PageWrapperProps } from '@/components'
-import { makeGetStaticProps } from '@/server/makeGetStaticProps'
+import { DAO_ADDRESS } from '@/util'
 
 const InnerHome = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -16,7 +17,7 @@ const InnerHome = () => {
       {/* eslint-disable-next-line i18next/no-literal-string */}
       <p className="text-xl">Welcome to the DAO!</p>
 
-      <ConnectWalletButton className="!w-auto" />
+      <ConnectWalletButton />
     </div>
   )
 }
@@ -29,4 +30,6 @@ const Home: NextPage<PageWrapperProps> = ({ children: _, ...props }) => (
 
 export default Home
 
-export const getStaticProps = makeGetStaticProps()
+export const getStaticProps = makeGetDaoStaticProps({
+  coreAddress: DAO_ADDRESS,
+})

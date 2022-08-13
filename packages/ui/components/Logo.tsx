@@ -1,25 +1,24 @@
-export function Logo({
-  width = 28,
-  height = 28,
-  alt = '',
-  invert = false,
-  className = '',
-}: {
-  width?: number | string
-  height?: number | string
-  alt?: string
-  invert?: boolean
+import clsx from 'clsx'
+import { useTranslation } from 'react-i18next'
+
+export interface LogoProps {
+  size?: number | string
   className?: string
-}) {
+  invert?: boolean
+}
+
+export const Logo = ({ size = 28, invert, className }: LogoProps) => {
+  const { t } = useTranslation()
   const fill = invert ? '--white' : '--black'
+
   return (
     <svg
-      aria-label={alt}
+      aria-label={t('info.daodaoLogo')}
       className={className}
       fill="none"
-      height={height}
+      height={size}
       viewBox={`0 0 28 28`}
-      width={width}
+      width={size}
       xmlns="http://www.w3.org/2000/svg"
     >
       <circle
@@ -45,25 +44,17 @@ export function Logo({
   )
 }
 
-export function LogoNoBorder({
-  width = 28,
-  height = 28,
-  alt = '',
-  className,
-}: {
-  width?: number | string
-  height?: number | string
-  alt?: string
-  className?: string
-}) {
+export const LogoNoBorder = ({ size = 28, className }: LogoProps) => {
+  const { t } = useTranslation()
+
   return (
     <svg
-      aria-label={alt}
+      aria-label={t('info.daodaoLogo')}
       className={className}
       fill="none"
-      height={height}
+      height={size}
       viewBox={`0 0 28 28`}
-      width={width}
+      width={size}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -73,5 +64,35 @@ export function LogoNoBorder({
         style={{ fill: 'rgb(var(--black))' }}
       />
     </svg>
+  )
+}
+
+interface LogoFromImageProps extends LogoProps {
+  src: string
+  rounded?: boolean
+}
+
+export const LogoFromImage = ({
+  size = 28,
+  className,
+  src,
+  rounded = false,
+}: LogoFromImageProps) => {
+  const { t } = useTranslation()
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      alt={t('info.logo')}
+      className={clsx(
+        {
+          'overflow-hidden rounded-full': rounded,
+        },
+        className
+      )}
+      height={size}
+      src={src}
+      width={size}
+    />
   )
 }

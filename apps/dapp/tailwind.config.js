@@ -1,8 +1,11 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 /** @type {import("tailwindcss/tailwind-config").TailwindConfig} */
 const tailwindConfig = {
   content: [
     './{components,pages,services}/**/*.{js,jsx,ts,tsx}',
-    '../../packages/{ui,state,actions,common}/**/*.{js,jsx,ts,tsx}',
+    '../../packages/**/*.{js,jsx,ts,tsx}',
   ],
   presets: [require('@dao-dao/ui/tailwind/config')],
   theme: {

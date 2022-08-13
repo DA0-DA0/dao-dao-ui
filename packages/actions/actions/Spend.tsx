@@ -4,14 +4,11 @@ import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
-  VotingModuleType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeBankMessage,
@@ -20,7 +17,7 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
+  SpendIcon,
   SpendComponent as StatelessSpendComponent,
 } from '../components'
 import {
@@ -52,22 +49,22 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
   coreAddress: string
 ) => {
   const cw20Addresses = useRecoilValue(
-    CwCoreSelectors.allCw20TokenListSelector({
+    CwCoreV0_1_0Selectors.allCw20TokenListSelector({
       contractAddress: coreAddress,
     })
   )
   const cw20Infos = useRecoilValue(
     waitForAll(
-      (cw20Addresses ?? []).map((contractAddress) =>
+      cw20Addresses.map((contractAddress) =>
         Cw20BaseSelectors.tokenInfoSelector({ contractAddress, params: [] })
       )
     )
   )
   const cw20Tokens = useMemo(
     () =>
-      (cw20Addresses ?? []).map((address, idx) => ({
+      cw20Addresses.map((address, idx) => ({
         address,
-        info: cw20Infos?.[idx],
+        info: cw20Infos[idx],
       })),
     [cw20Addresses, cw20Infos]
   )
@@ -183,39 +180,35 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   }, [msg, spentTokenDecimals, isTransfer])
 }
 
-const InnerSpendComponent: ActionComponent = (props) => {
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(props.coreAddress)) ?? []
+const Component: ActionComponent = (props) => {
+  const nativeBalances = useRecoilValue(
+    nativeBalancesSelector(props.coreAddress)
+  )
+  const cw20AddressesAndBalances = useRecoilValue(
+    CwCoreV0_1_0Selectors.allCw20BalancesSelector({
+      contractAddress: props.coreAddress,
+    })
+  )
 
-  const cw20AddressesAndBalances =
-    useRecoilValue(
-      CwCoreSelectors.allCw20BalancesSelector({
-        contractAddress: props.coreAddress,
-      })
-    ) ?? []
-  const cw20Infos =
-    useRecoilValue(
-      waitForAll(
-        cw20AddressesAndBalances.map(({ addr }) =>
-          Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: addr,
-            params: [],
-          })
-        )
+  const cw20Infos = useRecoilValue(
+    waitForAll(
+      cw20AddressesAndBalances.map(({ addr }) =>
+        Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: addr,
+          params: [],
+        })
       )
-    ) ?? []
-  const cw20Balances = cw20AddressesAndBalances
-    .map(({ addr, balance }, idx) => ({
-      address: addr,
-      balance,
-      info: cw20Infos[idx],
-    }))
-    // If undefined token info response, ignore the token.
-    .filter(({ info }) => !!info) as {
-    address: string
-    balance: string
-    info: TokenInfoResponse
-  }[]
+    )
+  )
+  const cw20Balances = useMemo(
+    () =>
+      cw20AddressesAndBalances.map(({ addr, balance }, idx) => ({
+        address: addr,
+        balance,
+        info: cw20Infos[idx],
+      })),
+    [cw20AddressesAndBalances, cw20Infos]
+  )
 
   return (
     <StatelessSpendComponent
@@ -228,22 +221,13 @@ const InnerSpendComponent: ActionComponent = (props) => {
   )
 }
 
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader />}>
-    <InnerSpendComponent {...props} />
-  </SuspenseLoader>
-)
-
 export const spendAction: Action<SpendData> = {
   key: ActionKey.Spend,
-  label: '💵 Spend',
+  Icon: SpendIcon,
+  label: 'Spend',
   description: 'Spend native or cw20 tokens from the treasury.',
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

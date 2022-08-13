@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
@@ -6,11 +9,10 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton } from '@dao-dao/common'
-import { Logo, SuspenseLoader } from '@dao-dao/ui'
+import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
 
 import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 
-import { Loader } from './Loader'
 import { MobilePinnedDAONavList } from './PinnedDAONavList'
 
 interface SmallScreenNavProps {
@@ -37,7 +39,7 @@ export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
       <div className="flex gap-6 justify-between items-center">
         <Link href="/home" passHref>
           <a>
-            <Logo height={28} width={28} />
+            <Logo size={28} />
           </a>
         </Link>
         <ConnectWalletButton mobile />

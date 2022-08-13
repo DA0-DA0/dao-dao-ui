@@ -1,6 +1,9 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { atom } from 'recoil'
 
-import { Duration } from '@dao-dao/state/clients/cw-core'
+import { Duration } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { PercentageThreshold } from '@dao-dao/state/clients/cw-proposal-single'
 
 export enum DurationUnits {
@@ -52,7 +55,8 @@ export enum ThresholdType {
   AbsoluteCount,
 }
 export type ThresholdValue = 'majority' | number
-export const convertThresholdValueToPercentageThreshold = (
+
+export const convertThresholdValueToCwProposalSinglePercentageThreshold = (
   value: ThresholdValue
 ): PercentageThreshold =>
   value === 'majority'
@@ -62,6 +66,7 @@ export const convertThresholdValueToPercentageThreshold = (
 export enum NewDAOStructure {
   Membership,
   GovernanceToken,
+  NativeToken,
 }
 
 export enum GovernanceTokenType {
@@ -127,8 +132,8 @@ export interface NewDAOTierMember {
 export const DEFAULT_NEW_DAO_THRESHOLD_PERCENT: ThresholdValue = 75
 // Default weight when adding a new tier for a membership-based DAO.
 export const DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT = 1
-// Default weight when adding a new tier for a governance token-based DAO.
-export const DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT = 10
+// Default weight when adding a new tier for a token-based DAO.
+export const DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT = 10
 
 export const generateDefaultNewDAO = (structure: NewDAOStructure): NewDAO => ({
   structure,
@@ -140,7 +145,7 @@ export const generateDefaultNewDAO = (structure: NewDAOStructure): NewDAO => ({
       weight:
         structure === NewDAOStructure.Membership
           ? DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
-          : DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
+          : DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT,
       members: [
         {
           address: '',
@@ -171,7 +176,7 @@ export const generateDefaultNewDAO = (structure: NewDAOStructure): NewDAO => ({
   },
   showAdvancedVotingConfig: false,
   advancedVotingConfig: {
-    allowRevoting: structure === NewDAOStructure.GovernanceToken,
+    allowRevoting: structure !== NewDAOStructure.Membership,
     thresholdQuorum: {
       threshold: 'majority',
       quorumEnabled: true,

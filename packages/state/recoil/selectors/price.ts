@@ -7,7 +7,7 @@ import {
 } from '@dao-dao/utils'
 
 import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
-import { cw20BalancesInfoSelector } from './clients/cw-core'
+import { cw20BalancesInfoSelector } from './clients/cw-core/0.1.0'
 import { poolsListSelector } from './pools'
 
 export const tokenUSDCPriceSelector = selectorFamily<
@@ -103,7 +103,7 @@ export const addressTVLSelector = selectorFamily<number, { address: string }>({
     ({ address }) =>
     async ({ get }) => {
       const nativeBalances = get(nativeBalanceSelector(address))
-      const cw20Balances = get(cw20BalancesInfoSelector({ address }))
+      const cw20Balances = get(cw20BalancesInfoSelector(address))
 
       let balances = cw20Balances
         ? cw20Balances.map(({ amount, denom }) => ({ amount, denom }))

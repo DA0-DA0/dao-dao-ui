@@ -1,23 +1,24 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { parseCoins } from '@cosmjs/stargate'
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import {
   TreasuryTransaction,
   treasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { CopyToClipboard, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { CopyToClipboard, Loader, SuspenseLoader, Trans } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-
-import { useDAOInfoContext } from '../DAOPageWrapper'
-import { Loader } from '../Loader'
 
 interface DaoTreasuryHistoryProps {
   shortTitle?: boolean
@@ -46,10 +47,10 @@ export const InnerDaoTreasuryHistory = ({
   shortTitle,
 }: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
-  return transactions?.length ? (
+  return transactions.length ? (
     <div className="space-y-4">
       <h2 className="primary-text">
         {shortTitle ? t('title.history') : t('title.treasuryHistory')}
@@ -78,7 +79,7 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
     events,
   },
 }) => {
-  const { coreAddress } = useDAOInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   const transferEvent = events.find(({ type }) => type === 'transfer')
   if (!transferEvent) {

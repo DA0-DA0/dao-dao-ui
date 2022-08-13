@@ -1,21 +1,28 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import '@dao-dao/ui/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
-import { appWithTranslation, useTranslation } from 'next-i18next'
+import { appWithTranslation } from 'next-i18next'
+import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
-import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { useRegisterAdaptersOnMount } from '@dao-dao/common'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
+import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
-import { HomepageLayout, SidebarLayout } from '@/components'
+import { AppLayout, HomepageLayout } from '@/components'
 
-const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
-  const { t } = useTranslation()
+const InnerApp = ({ Component, pageProps }: AppProps) => {
+  useRegisterAdaptersOnMount()
+
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -26,7 +33,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
   const theme = isHomepage ? Theme.Dark : _theme
-  const Layout = isHomepage ? HomepageLayout : SidebarLayout
+  const Layout = isHomepage ? HomepageLayout : AppLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -49,7 +56,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ErrorBoundary title={t('error.unexpectedError')}>
+      <ErrorBoundary>
         <Layout>
           <Component {...pageProps} />
         </Layout>
@@ -60,19 +67,74 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
   )
 }
 
-const dApp: FC<AppProps> = (props) => (
-  <>
-    <Head>
-      <meta
-        content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-        name="viewport"
+const DApp = (props: AppProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <DefaultSeo
+        additionalLinkTags={[
+          {
+            href: '/apple-touch-icon.png',
+            rel: 'apple-touch-icon',
+            sizes: '180x180',
+            type: 'image/png',
+          },
+          {
+            href: '/favicon-32x32.png',
+            rel: 'icon',
+            sizes: '32x32',
+            type: 'image/png',
+          },
+          {
+            href: '/favicon-16x16.png',
+            rel: 'icon',
+            sizes: '16x16',
+            type: 'image/png',
+          },
+          {
+            href: '/site.webmanifest',
+            rel: 'manifest',
+          },
+          {
+            href: '/yin_yang.png',
+            rel: 'icon',
+          },
+        ]}
+        additionalMetaTags={[
+          {
+            name: 'viewport',
+            content:
+              'width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
+          },
+          {
+            name: 'msapplication-TileColor',
+            content: '#da532c',
+          },
+          {
+            name: 'theme-color',
+            content: '#111213',
+          },
+        ]}
+        description={t('meta.description')}
+        openGraph={{
+          url: SITE_URL,
+          type: 'website',
+          title: t('meta.title'),
+          description: t('meta.description'),
+          images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
+        }}
+        title={t('meta.title')}
+        twitter={{
+          cardType: 'summary_large_image',
+        }}
       />
-    </Head>
 
-    <RecoilRoot>
-      <InnerApp {...props} />
-    </RecoilRoot>
-  </>
-)
+      <RecoilRoot>
+        <InnerApp {...props} />
+      </RecoilRoot>
+    </>
+  )
+}
 
-export default appWithTranslation(dApp)
+export default appWithTranslation(DApp)

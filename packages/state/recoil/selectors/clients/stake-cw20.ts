@@ -22,14 +22,12 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient | undefined, QueryClientParams>({
+const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'stakeCw20QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
-
       return new QueryClient(client, contractAddress)
     },
 })
@@ -56,7 +54,7 @@ export const executeClient = selectorFamily<
 })
 
 export const stakedBalanceAtHeightSelector = selectorFamily<
-  StakedBalanceAtHeightResponse | undefined,
+  StakedBalanceAtHeightResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['stakedBalanceAtHeight']>
   }
@@ -66,7 +64,6 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].address))
 
@@ -75,7 +72,7 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
 })
 
 export const totalStakedAtHeightSelector = selectorFamily<
-  TotalStakedAtHeightResponse | undefined,
+  TotalStakedAtHeightResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['totalStakedAtHeight']>
   }
@@ -85,7 +82,6 @@ export const totalStakedAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(undefined))
 
@@ -94,7 +90,7 @@ export const totalStakedAtHeightSelector = selectorFamily<
 })
 
 export const stakedValueSelector = selectorFamily<
-  StakedValueResponse | undefined,
+  StakedValueResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['stakedValue']>
   }
@@ -104,7 +100,6 @@ export const stakedValueSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(params[0].address))
 
@@ -113,7 +108,7 @@ export const stakedValueSelector = selectorFamily<
 })
 
 export const totalValueSelector = selectorFamily<
-  TotalValueResponse | undefined,
+  TotalValueResponse,
   QueryClientParams
 >({
   key: 'stakeCw20TotalValue',
@@ -121,7 +116,6 @@ export const totalValueSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(undefined))
 
@@ -130,7 +124,7 @@ export const totalValueSelector = selectorFamily<
 })
 
 export const getConfigSelector = selectorFamily<
-  GetConfigResponse | undefined,
+  GetConfigResponse,
   QueryClientParams
 >({
   key: 'stakeCw20GetConfig',
@@ -138,14 +132,13 @@ export const getConfigSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.getConfig()
     },
 })
 
 export const claimsSelector = selectorFamily<
-  ClaimsResponse | undefined,
+  ClaimsResponse,
   QueryClientParams & {
     params: Parameters<QueryClient['claims']>
   }
@@ -155,7 +148,6 @@ export const claimsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       get(refreshClaimsIdAtom(params[0].address))
 
@@ -164,7 +156,7 @@ export const claimsSelector = selectorFamily<
 })
 
 export const getHooksSelector = selectorFamily<
-  GetHooksResponse | undefined,
+  GetHooksResponse,
   QueryClientParams
 >({
   key: 'stakeCw20GetHooks',
@@ -172,7 +164,6 @@ export const getHooksSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
 
       return await client.getHooks()
     },

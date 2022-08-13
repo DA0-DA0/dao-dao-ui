@@ -23,7 +23,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent, NativeCoinSelector } from '..'
+import {
+  ActionCard,
+  ActionComponent,
+  NativeCoinSelector,
+  NativeCoinSelectorProps,
+} from '..'
 
 export interface InstantiateOptions {
   nativeBalances: readonly Coin[]
@@ -36,10 +41,10 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 ) => {
   const { t } = useTranslation()
   const {
-    getFieldName,
+    fieldNamePrefix,
     onRemove,
     errors,
-    readOnly,
+    isCreating,
     options: { instantiatedAddress },
   } = props
   const { register, control } = useFormContext()
@@ -49,12 +54,12 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: getFieldName('funds'),
+    name: fieldNamePrefix + 'funds',
   })
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.baby')} symbol="👶" />}
+      Icon={InstantiateIcon}
       onRemove={onRemove}
       title={t('title.instantiateSmartContract')}
     >
@@ -72,9 +77,9 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <div className="flex flex-col gap-1 items-stretch">
           <InputLabel name={t('form.codeID')} />
           <NumberInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.codeId}
-            fieldName={getFieldName('codeId')}
+            fieldName={fieldNamePrefix + 'codeId'}
             register={register}
             sizing="sm"
             step={1}
@@ -86,9 +91,9 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         <div className="flex flex-col grow gap-1 items-stretch">
           <InputLabel name={t('form.contractLabel')} />
           <TextInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.label}
-            fieldName={getFieldName('label')}
+            fieldName={fieldNamePrefix + 'label'}
             register={register}
             validation={[validateRequired]}
           />
@@ -100,8 +105,8 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        fieldName={getFieldName('message')}
-        readOnly={readOnly}
+        fieldName={fieldNamePrefix + 'message'}
+        readOnly={!isCreating}
         validation={[
           (v: string) => {
             let msg
@@ -141,20 +146,22 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}
-            {...props}
+            {...({
+              ...props,
+              onRemove: props.isCreating
+                ? () => removeCoin(index)
+                : props.onRemove,
+            } as NativeCoinSelectorProps)}
             errors={errors?.funds?.[index]}
-            getFieldName={(field: string) =>
-              getFieldName(`funds.${index}.${field}`)
-            }
-            onRemove={() => removeCoin(index)}
+            fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
           />
         ))}
-        {readOnly && coins.length === 0 && (
+        {!isCreating && coins.length === 0 && (
           <p className="mt-1 mb-2 text-xs italic text-tertiary">
             {t('info.none')}
           </p>
         )}
-        {!readOnly && (
+        {isCreating && (
           <Button
             className="self-start mb-2"
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
@@ -168,10 +175,10 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       <div className="flex flex-col gap-1 items-stretch">
         <InputLabel name={`${t('form.admin')} (${t('form.optional')})`} />
         <TextInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.admin}
-          fieldName={getFieldName('admin')}
-          placeholder={readOnly ? t('info.none') : 'juno...'}
+          fieldName={fieldNamePrefix + 'admin'}
+          placeholder={!isCreating ? t('info.none') : 'juno...'}
           register={register}
           validation={[(v: string) => validateContractAddress(v, false)]}
         />
@@ -179,4 +186,9 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       </div>
     </ActionCard>
   )
+}
+
+export const InstantiateIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.baby')} symbol="👶" />
 }

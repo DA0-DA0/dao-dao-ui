@@ -2,15 +2,14 @@ import { useWalletManager } from '@noahsaso/cosmodal'
 import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useGovernanceTokenInfo, useStakingInfo } from '@dao-dao/state'
-import { Button, Trans } from '@dao-dao/ui'
+import { Trans } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
 } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { DAO_ADDRESS, TOKEN_SWAP_ADDRESS } from '@/util'
-
+import { Button } from '../Button'
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
 
@@ -22,15 +21,18 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
   const { t } = useTranslation()
+  const {
+    hooks: { useGovernanceTokenInfo },
+  } = useVotingModuleAdapter()
   const { connected } = useWalletManager()
   const {
     governanceTokenInfo,
     walletBalance: _unstakedBalance,
     price,
-  } = useGovernanceTokenInfo(DAO_ADDRESS, {
+  } = useGovernanceTokenInfo?.({
     fetchWalletBalance: true,
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
-  })
+    fetchUSDCPrice: true,
+  }) ?? {}
 
   if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
     return <BalanceCardLoader />
@@ -81,14 +83,19 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
   setShowStakingMode,
 }) => {
   const { t } = useTranslation()
+  const {
+    hooks: { useGovernanceTokenInfo, useStakingInfo },
+  } = useVotingModuleAdapter()
   const { connected } = useWalletManager()
-  const { governanceTokenInfo, price } = useGovernanceTokenInfo(DAO_ADDRESS, {
-    fetchPriceWithSwapAddress: TOKEN_SWAP_ADDRESS,
-  })
-  const { totalStakedValue, walletStakedValue } = useStakingInfo(DAO_ADDRESS, {
-    fetchTotalStakedValue: true,
-    fetchWalletStakedValue: true,
-  })
+  const { governanceTokenInfo, price } =
+    useGovernanceTokenInfo?.({
+      fetchUSDCPrice: true,
+    }) ?? {}
+  const { totalStakedValue, walletStakedValue } =
+    useStakingInfo?.({
+      fetchTotalStakedValue: true,
+      fetchWalletStakedValue: true,
+    }) ?? {}
 
   if (
     !governanceTokenInfo ||
@@ -117,7 +124,7 @@ export const StakedBalanceCard: FunctionComponent<CardProps> = ({
         </div>
 
         <p className="text-base text-secondary">
-          <Trans i18nKey="info.percentOfAllVotingPower">
+          <Trans Loader={Loader} i18nKey="info.percentOfAllVotingPower">
             {{
               percent: formatPercentOf100(
                 totalStakedValue === 0

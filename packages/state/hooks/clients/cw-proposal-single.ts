@@ -11,6 +11,9 @@ import {
 } from '../../recoil/selectors/clients/cw-proposal-single'
 import { FunctionKeyOf } from '../../types'
 
+// This hook wrapper lets us easily make hooks out of all execution functions on
+// the contract clients, without having to fetch the `executeClient` selector as
+// a loadable and add `useCallback` hooks in all the components.
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: ExecuteClientParams) => {

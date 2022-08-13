@@ -34,17 +34,17 @@ interface SpendOptions {
 }
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   options: { nativeBalances, cw20Balances },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
 
-  const spendAmount = watch(getFieldName('amount'))
-  const spendDenom = watch(getFieldName('denom'))
+  const spendAmount = watch(fieldNamePrefix + 'amount')
+  const spendDenom = watch(fieldNamePrefix + 'denom')
 
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
@@ -106,15 +106,15 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   // denom was changed.
   useEffect(() => {
     if (!spendDenom || !spendAmount) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
       return
     }
 
     const validation = validatePossibleSpend(spendDenom, spendAmount)
     if (validation === true) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
     } else if (typeof validation === 'string') {
-      setError(getFieldName('_error'), {
+      setError(fieldNamePrefix + '_error', {
         type: 'custom',
         message: validation,
       })
@@ -125,7 +125,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     setError,
     clearErrors,
     validatePossibleSpend,
-    getFieldName,
+    fieldNamePrefix,
   ])
 
   const amountDecimals = useMemo(
@@ -136,21 +136,17 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   )
 
   return (
-    <ActionCard
-      emoji={<Emoji label={t('emoji.money')} symbol="💵" />}
-      onRemove={onRemove}
-      title={t('title.spend')}
-    >
+    <ActionCard Icon={SpendIcon} onRemove={onRemove} title={t('title.spend')}>
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
           <NumberInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.amount}
-            fieldName={getFieldName('amount')}
+            fieldName={fieldNamePrefix + 'amount'}
             onPlusMinus={[
               () =>
                 setValue(
-                  getFieldName('amount'),
+                  fieldNamePrefix + 'amount',
                   Math.max(
                     Number(spendAmount) + 1,
                     1 / 10 ** amountDecimals
@@ -158,7 +154,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ),
               () =>
                 setValue(
-                  getFieldName('amount'),
+                  fieldNamePrefix + 'amount',
                   Math.max(
                     Number(spendAmount) - 1,
                     1 / 10 ** amountDecimals
@@ -173,9 +169,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
           <SelectInput
             defaultValue={NATIVE_DENOM}
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.denom}
-            fieldName={getFieldName('denom')}
+            fieldName={fieldNamePrefix + 'denom'}
             register={register}
           >
             {nativeBalances.map(({ denom }) => (
@@ -197,9 +193,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         <div className="grow">
           <AddressInput
             containerClassName="grow"
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.to}
-            fieldName={getFieldName('to')}
+            fieldName={fieldNamePrefix + 'to'}
             register={register}
             validation={[validateRequired, validateAddress]}
           />
@@ -214,4 +210,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       </div>
     </ActionCard>
   )
+}
+
+export const SpendIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.money')} symbol="💵" />
 }

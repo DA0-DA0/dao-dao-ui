@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { AtomEffect } from 'recoil'
 
 export const localStorageEffect: <T>(key: string) => AtomEffect<T> =
@@ -9,7 +12,7 @@ export const localStorageEffect: <T>(key: string) => AtomEffect<T> =
     }
 
     const savedValue = localStorage.getItem(key)
-    if (savedValue != null) {
+    if (savedValue !== null) {
       const json = JSON.parse(savedValue)
       setSelf(json)
     }

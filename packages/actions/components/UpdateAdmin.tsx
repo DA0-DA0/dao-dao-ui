@@ -18,10 +18,10 @@ export interface UpdateAdminOptions {
 }
 
 export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   coreAddress,
   options: { onContractChange, contractAdmin },
 }) => {
@@ -30,7 +30,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.whale')} symbol="🍄" />}
+      Icon={UpdateAdminIcon}
       onRemove={onRemove}
       title={t('title.updateContractAdmin')}
     >
@@ -41,9 +41,9 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         <div className="flex flex-col grow gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.contract}
-            fieldName={getFieldName('contract')}
+            fieldName={fieldNamePrefix + 'contract'}
             onChange={(e) => onContractChange(e.target.value)}
             register={register}
             validation={[validateRequired, validateContractAddress]}
@@ -53,9 +53,9 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         <div className="flex flex-col grow gap-1">
           <InputLabel name={t('form.admin')} />
           <AddressInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.newAdmin}
-            fieldName={getFieldName('newAdmin')}
+            fieldName={fieldNamePrefix + 'newAdmin'}
             register={register}
             validation={[validateRequired, validateAddress]}
           />
@@ -67,4 +67,9 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       </div>
     </ActionCard>
   )
+}
+
+export const UpdateAdminIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.mushroom')} symbol="🍄" />
 }

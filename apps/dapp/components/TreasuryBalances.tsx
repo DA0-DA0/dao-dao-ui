@@ -1,9 +1,13 @@
-import { FC } from 'react'
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
+import { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { useDaoInfoContext } from '@dao-dao/common'
 import {
   Cw20BaseSelectors,
-  CwCoreSelectors,
+  CwCoreV0_1_0Selectors,
   addressTVLSelector,
   nativeBalancesSelector,
 } from '@dao-dao/state'
@@ -14,16 +18,13 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { useDAOInfoContext } from './DAOPageWrapper'
+export const TreasuryBalances = () => {
+  const { coreAddress } = useDaoInfoContext()
 
-export const TreasuryBalances: FC = () => {
-  const { coreAddress } = useDAOInfoContext()
-
-  const nativeBalances =
-    useRecoilValue(nativeBalancesSelector(coreAddress)) ?? []
+  const nativeBalances = useRecoilValue(nativeBalancesSelector(coreAddress))
 
   const cw20s = useRecoilValue(
-    CwCoreSelectors.cw20BalancesInfoSelector({ address: coreAddress })
+    CwCoreV0_1_0Selectors.cw20BalancesInfoSelector(coreAddress)
   )
 
   const cw20MarketingInfo = useRecoilValue(
@@ -37,25 +38,43 @@ export const TreasuryBalances: FC = () => {
     )
   )
 
-  const cw20Tokens = cw20s.map((info, idx) => {
-    const logoInfo = cw20MarketingInfo[idx]?.logo
+  const cw20Tokens: {
+    imageUrl: string | undefined
+    symbol: string
+    denom: string
+    amount: string
+    decimals: number
+  }[] = useMemo(
+    () =>
+      cw20s.map((info, idx) => {
+        const logoInfo = cw20MarketingInfo[idx].logo
 
-    return {
-      ...info,
-      imageUrl:
-        !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
-          ? logoInfo.url
-          : undefined,
-    }
-  })
+        return {
+          ...info,
+          imageUrl:
+            !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+              ? logoInfo.url
+              : undefined,
+        }
+      }),
+    [cw20MarketingInfo, cw20s]
+  )
 
-  const nativeTokens = nativeBalances.length
-    ? nativeBalances.map(({ denom, amount }) => ({
-        denom: denom,
-        amount,
-        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
-      }))
-    : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }]
+  const nativeTokens: {
+    denom: string
+    amount: string
+    decimals: number
+  }[] = useMemo(
+    () =>
+      nativeBalances.length
+        ? nativeBalances.map(({ denom, amount }) => ({
+            denom,
+            amount,
+            decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
+          }))
+        : [{ denom: NATIVE_DENOM, amount: '0', decimals: NATIVE_DECIMALS }],
+    [nativeBalances]
+  )
 
   const usdcValue = useRecoilValue(addressTVLSelector({ address: coreAddress }))
 

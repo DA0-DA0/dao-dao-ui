@@ -1,7 +1,10 @@
 import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
+import { CwCoreVersion, parseCoreVersion } from '@dao-dao/utils'
+
 import { blockHeightTimestampSelector, cosmWasmClientSelector } from './chain'
+import { CwCoreV0_1_0Selectors } from './clients'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -12,7 +15,6 @@ export const contractInstantiateTimeSelector = selectorFamily<
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
 
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
@@ -30,13 +32,10 @@ export const contractAdminSelector = selectorFamily<string | undefined, string>(
       (address: string) =>
       async ({ get }) => {
         const client = get(cosmWasmClientSelector)
-        if (!client) {
-          return undefined
-        }
 
         try {
           const contract = await client.getContract(address)
-          return contract.admin || ''
+          return contract.admin
         } catch (_) {
           return undefined
         }
@@ -62,9 +61,6 @@ export const treasuryTransactionsSelector = selectorFamily({
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) {
-        return undefined
-      }
 
       const txs = await client.searchTx({
         sentFromOrTo: address,
@@ -92,5 +88,25 @@ export const treasuryTransactionsSelector = selectorFamily({
           }
         })
         .filter(Boolean) as TreasuryTransaction[]
+    },
+})
+
+export const cwCoreVersionSelector = selectorFamily<CwCoreVersion, string>({
+  key: 'cwCoreVersion',
+  get:
+    (coreAddress) =>
+    async ({ get }) => {
+      const coreInfo = get(
+        CwCoreV0_1_0Selectors.infoSelector({ contractAddress: coreAddress })
+      ).info
+
+      const coreVersion = parseCoreVersion(coreInfo.version)
+      if (!coreVersion) {
+        throw new Error(
+          `Failed parsing cw-core (${coreAddress}) version "${coreInfo.version}".`
+        )
+      }
+
+      return coreVersion
     },
 })

@@ -17,24 +17,25 @@ import {
 
 import { ActionComponent } from '..'
 
-export interface NativeCoinSelectorProps
-  extends ComponentProps<ActionComponent<{ nativeBalances: readonly Coin[] }>> {
+export type NativeCoinSelectorProps = ComponentProps<
+  ActionComponent<{ nativeBalances: readonly Coin[] }>
+> & {
   className?: string
 }
 
 export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   onRemove,
-  getFieldName,
+  fieldNamePrefix,
   errors,
-  readOnly,
+  isCreating,
   options: { nativeBalances },
   className,
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch, setError, clearErrors } = useFormContext()
 
-  const watchAmount = watch(getFieldName('amount'))
-  const watchDenom = watch(getFieldName('denom'))
+  const watchAmount = watch(fieldNamePrefix + 'amount')
+  const watchDenom = watch(fieldNamePrefix + 'denom')
 
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
@@ -77,15 +78,15 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
   // denom was changed.
   useEffect(() => {
     if (!watchAmount || !watchDenom) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
       return
     }
 
     const validation = validatePossibleSpend(watchDenom, watchAmount)
     if (validation === true) {
-      clearErrors(getFieldName('_error'))
+      clearErrors(fieldNamePrefix + '_error')
     } else if (typeof validation === 'string') {
-      setError(getFieldName('_error'), {
+      setError(fieldNamePrefix + '_error', {
         type: 'custom',
         message: validation,
       })
@@ -94,7 +95,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
     setError,
     clearErrors,
     validatePossibleSpend,
-    getFieldName,
+    fieldNamePrefix,
     watchAmount,
     watchDenom,
   ])
@@ -103,18 +104,18 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
     <div className={className}>
       <div className="flex flex-row gap-2 items-stretch">
         <NumberInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.amount}
-          fieldName={getFieldName('amount')}
+          fieldName={fieldNamePrefix + 'amount'}
           onPlusMinus={[
             () =>
               setValue(
-                getFieldName('amount'),
+                fieldNamePrefix + 'amount',
                 Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
               ),
             () =>
               setValue(
-                getFieldName('amount'),
+                fieldNamePrefix + 'amount',
                 Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
               ),
           ]}
@@ -126,9 +127,9 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
 
         <SelectInput
           defaultValue={NATIVE_DENOM}
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.denom}
-          fieldName={getFieldName('denom')}
+          fieldName={fieldNamePrefix + 'denom'}
           register={register}
         >
           {nativeBalances.map(({ denom }) => (
@@ -138,7 +139,7 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           ))}
         </SelectInput>
 
-        {!readOnly && (
+        {isCreating && (
           <button onClick={onRemove} type="button">
             <XIcon className="w-4 h-4 text-error" />
           </button>
