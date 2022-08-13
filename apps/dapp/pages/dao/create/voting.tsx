@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { GetStaticProps, NextPage } from 'next'
@@ -11,6 +14,7 @@ import { PlaceholderToken } from '@dao-dao/icons'
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   Button,
+  FormattedJSONDisplay,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
@@ -19,7 +23,6 @@ import {
   RadioInput,
   Switch,
   TextInput,
-  TokenInfoDisplay,
 } from '@dao-dao/ui'
 import {
   CHAIN_BECH32_PREFIX,
@@ -33,8 +36,8 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT,
   DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
+  DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT,
   GovernanceTokenType,
   NEW_DAO_CW20_DECIMALS,
   NewDAOStructure,
@@ -461,14 +464,8 @@ const CreateDAOVotingPage: NextPage = () => {
                     }
                   />
 
-                  <TokenInfoDisplay
-                    loadingTokenInfo={
-                      existingGovernanceTokenInfoLoadable.state === 'loading'
-                    }
-                    tokenInfo={
-                      watchedNewDAO.governanceTokenOptions
-                        .existingGovernanceTokenInfo
-                    }
+                  <FormattedJSONDisplay
+                    jsonLoadable={existingGovernanceTokenInfoLoadable}
                   />
                 </div>
               )}
@@ -506,10 +503,9 @@ const CreateDAOVotingPage: NextPage = () => {
                     appendTier({
                       name: '',
                       weight:
-                        getValues('structure') ===
-                        NewDAOStructure.GovernanceToken
-                          ? DEFAULT_NEW_DAO_GOV_TOKEN_INITIAL_TIER_WEIGHT
-                          : DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT,
+                        getValues('structure') === NewDAOStructure.Membership
+                          ? DEFAULT_NEW_DAO_MEMBERSHIP_INITIAL_TIER_WEIGHT
+                          : DEFAULT_NEW_DAO_TOKEN_INITIAL_TIER_WEIGHT,
                       members: [
                         {
                           address: '',

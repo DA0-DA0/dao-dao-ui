@@ -9,6 +9,8 @@
     "@dao-dao/state": "*",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
+    "@dao-dao/voting-module-adapter": "*",
+    "@dao-dao/proposal-module-adapter": "*",
     "@heroicons/react": "^1.0.6",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
@@ -25,7 +27,7 @@
     "typescript": "^4.5.3"
   },
   "peerDependencies": {
-    "@noahsaso/cosmodal": "0.6.0"
+    "@noahsaso/cosmodal": "0.6.1"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

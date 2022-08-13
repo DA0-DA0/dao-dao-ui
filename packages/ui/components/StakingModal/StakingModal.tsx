@@ -70,7 +70,7 @@ export interface StakingModalProps {
   onAction: (mode: StakingMode, amount: number) => void
 }
 
-export const StakingModal: FC<StakingModalProps> = ({
+export const StakingModal = ({
   mode,
   amount,
   setAmount,
@@ -89,7 +89,7 @@ export const StakingModal: FC<StakingModalProps> = ({
   loading,
   error,
   onAction,
-}) => {
+}: StakingModalProps) => {
   const { t } = useTranslation()
   const stakingModeTitle = useStakingModeTitle()
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
@@ -205,23 +205,25 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
             setAmount={setAmount}
             tokenDecimals={tokenDecimals}
           />
-          {!!proposalDeposit && max > proposalDeposit && (
-            <PercentButton
-              absoluteOffset={-proposalDeposit}
-              amount={amount}
-              className="mt-1"
-              label={t('button.stakeAllButProposalDeposit', {
-                proposalDeposit: proposalDeposit.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                }),
-                tokenSymbol,
-              })}
-              max={max}
-              percent={1}
-              setAmount={setAmount}
-              tokenDecimals={tokenDecimals}
-            />
-          )}
+          {mode === StakingMode.Stake &&
+            !!proposalDeposit &&
+            max > proposalDeposit && (
+              <PercentButton
+                absoluteOffset={-proposalDeposit}
+                amount={amount}
+                className="mt-1"
+                label={t('button.stakeAllButProposalDeposit', {
+                  proposalDeposit: proposalDeposit.toLocaleString(undefined, {
+                    maximumFractionDigits: tokenDecimals,
+                  }),
+                  tokenSymbol,
+                })}
+                max={max}
+                percent={1}
+                setAmount={setAmount}
+                tokenDecimals={tokenDecimals}
+              />
+            )}
         </div>
       </div>
 

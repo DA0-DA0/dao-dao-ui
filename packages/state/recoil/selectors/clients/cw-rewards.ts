@@ -8,7 +8,6 @@ export const rewardsRateSelector = selectorFamily<string, string>({
     (contractAddress: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
 
       const result = await client.queryContractSmart(contractAddress, {
         info: {},

@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
@@ -16,7 +19,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
-import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core'
+import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Cw20Coin,
@@ -35,8 +38,8 @@ import {
   CWPROPOSALSINGLE_CODE_ID,
   STAKECW20_CODE_ID,
   V1_FACTORY_CONTRACT_ADDRESS,
-  cleanChainError,
   convertDenomToMicroDenomWithDecimals,
+  processError,
   validateCw20StakedBalanceVotingInstantiateMsg,
   validateCw4VotingInstantiateMsg,
   validateCwProposalSingleInstantiateMsg,
@@ -48,7 +51,7 @@ import {
   NewDAO,
   NewDAOStructure,
   convertDurationWithUnitsToDuration,
-  convertThresholdValueToPercentageThreshold,
+  convertThresholdValueToCwProposalSinglePercentageThreshold,
   generateDefaultNewDAO,
   newDAOAtom,
 } from '@/atoms'
@@ -175,30 +178,35 @@ export const useCreateDAOForm = (pageIndex: number) => {
         if (connected) {
           setCreating(true)
           try {
-            const address = await createDAOWithFactory(
-              instantiateWithFactory,
-              values
+            const address = await toast.promise(
+              createDAOWithFactory(instantiateWithFactory, values).then(
+                // TODO: Figure out better solution for detecting block.
+                (address) =>
+                  // New wallet balances will not appear until the next block.
+                  new Promise<string>((resolve) =>
+                    setTimeout(() => resolve(address), 6500)
+                  )
+              ),
+              {
+                loading: t('info.creatingDao'),
+                success: t('success.daoCreatedPleaseWait'),
+                error: (err) => processError(err),
+              }
             )
-            if (address) {
-              // TODO: Figure out better solution for detecting block.
-              // New wallet balances will not appear until the next block.
-              await new Promise((resolve) => setTimeout(resolve, 6500))
 
-              refreshBalances()
+            if (address) {
               setPinned(address)
 
+              await refreshBalances()
+
               router.push(`/dao/${address}`)
-              toast.success(t('success.daoCreatedPleaseWait'))
               // Don't stop creating loading on success since we're
               // navigating, and it's weird when loading stops and
               // nothing happens for a sec.
             }
           } catch (err) {
+            // toast.promise above will handle displaying the error
             console.error(err)
-            toast.error(
-              cleanChainError(err instanceof Error ? err.message : `${err}`)
-            )
-
             setCreating(false)
           }
         } else {
@@ -546,15 +554,22 @@ const useMakeCreateDAOMsg = () => {
           threshold: quorumEnabled
             ? {
                 threshold_quorum: {
-                  quorum: convertThresholdValueToPercentageThreshold(quorum),
+                  quorum:
+                    convertThresholdValueToCwProposalSinglePercentageThreshold(
+                      quorum
+                    ),
                   threshold:
-                    convertThresholdValueToPercentageThreshold(threshold),
+                    convertThresholdValueToCwProposalSinglePercentageThreshold(
+                      threshold
+                    ),
                 },
               }
             : {
                 absolute_percentage: {
                   percentage:
-                    convertThresholdValueToPercentageThreshold(threshold),
+                    convertThresholdValueToCwProposalSinglePercentageThreshold(
+                      threshold
+                    ),
                 },
               },
         }

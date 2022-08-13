@@ -1,11 +1,14 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreSelectors } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core'
-import { VotingModuleType, makeWasmMessage } from '@dao-dao/utils'
+import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { makeWasmMessage } from '@dao-dao/utils'
 
-import { UpdateInfoComponent as Component } from '../components'
+import {
+  UpdateInfoComponent as Component,
+  UpdateInfoData,
+  UpdateInfoIcon,
+} from '../components'
 import {
   Action,
   ActionKey,
@@ -14,23 +17,11 @@ import {
   UseTransformToCosmos,
 } from '../types'
 
-type UpdateInfoData = ConfigResponse
-
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
   const config = useRecoilValue(
-    CwCoreSelectors.configSelector({ contractAddress: coreAddress })
-  ) ?? {
-    name: '',
-    description: '',
-    automatically_add_cw20s: true,
-    automatically_add_cw721s: true,
-  }
+    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
+  )
 
-  // We should really never hit the ?? case. The configSelector only
-  // returns undefined if the client can not be loaded. If the client
-  // can not be loaded, everything else will go terribly wrong before
-  // this breaks.
-  //
   // Need to deep copy as, for reasons beyond me, the object returned
   // from the selector is immutable which causes all sorts of trouble.
   return JSON.parse(JSON.stringify(config))
@@ -48,7 +39,11 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = (
             funds: [],
             msg: {
               update_config: {
-                config: data,
+                config: {
+                  ...data,
+                  // Replace empty string with null.
+                  image_url: data.image_url?.trim() || null,
+                },
               },
             },
           },
@@ -96,14 +91,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
 
 export const updateInfoAction: Action<UpdateInfoData> = {
   key: ActionKey.UpdateInfo,
-  label: 'ℹ️ Update Info',
+  Icon: UpdateInfoIcon,
+  label: 'Update Info',
   description: "Update your DAO's name, image, and description.",
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-  votingModuleTypes: [
-    VotingModuleType.Cw20StakedBalanceVoting,
-    VotingModuleType.Cw4Voting,
-  ],
 }

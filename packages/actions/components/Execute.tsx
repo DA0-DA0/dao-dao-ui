@@ -20,7 +20,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent, NativeCoinSelector } from '..'
+import {
+  ActionCard,
+  ActionComponent,
+  NativeCoinSelector,
+  NativeCoinSelectorProps,
+} from '..'
 
 export interface ExecuteOptions {
   nativeBalances: readonly Coin[]
@@ -30,7 +35,7 @@ export interface ExecuteOptions {
 
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   const { t } = useTranslation()
-  const { getFieldName, onRemove, errors, readOnly } = props
+  const { fieldNamePrefix, onRemove, errors, isCreating } = props
   const { register, control } = useFormContext()
   const {
     fields: coins,
@@ -38,21 +43,21 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: getFieldName('funds'),
+    name: fieldNamePrefix + 'funds',
   })
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.swords')} symbol="⚔️" />}
+      Icon={ExecuteIcon}
       onRemove={onRemove}
       title={t('title.executeSmartContract')}
     >
       <div className="flex flex-col gap-1 items-stretch">
         <InputLabel name={t('form.smartContractAddress')} />
         <TextInput
-          disabled={readOnly}
+          disabled={!isCreating}
           error={errors?.address}
-          fieldName={getFieldName('address')}
+          fieldName={fieldNamePrefix + 'address'}
           placeholder="juno..."
           register={register}
           validation={[validateRequired, validateContractAddress]}
@@ -64,8 +69,8 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        fieldName={getFieldName('message')}
-        readOnly={readOnly}
+        fieldName={fieldNamePrefix + 'message'}
+        readOnly={!isCreating}
         validation={[
           (v: string) => {
             let msg
@@ -105,20 +110,22 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}
-            {...props}
+            {...({
+              ...props,
+              onRemove: props.isCreating
+                ? () => removeCoin(index)
+                : props.onRemove,
+            } as NativeCoinSelectorProps)}
             errors={errors?.funds?.[index]}
-            getFieldName={(field: string) =>
-              getFieldName(`funds.${index}.${field}`)
-            }
-            onRemove={() => removeCoin(index)}
+            fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
           />
         ))}
-        {readOnly && coins.length === 0 && (
+        {!isCreating && coins.length === 0 && (
           <p className="mt-1 mb-2 text-xs italic text-tertiary">
             {t('info.none')}
           </p>
         )}
-        {!readOnly && (
+        {isCreating && (
           <Button
             className="self-start"
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
@@ -130,4 +137,9 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       </div>
     </ActionCard>
   )
+}
+
+export const ExecuteIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.swords')} symbol="⚔️" />
 }

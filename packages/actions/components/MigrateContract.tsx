@@ -26,24 +26,25 @@ export interface MigrateOptions {
 }
 
 export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
-  getFieldName,
+  fieldNamePrefix,
   onRemove,
   errors,
-  readOnly,
+  isCreating,
   coreAddress,
   options: { onContractChange, contractAdmin },
+  Loader,
 }) => {
   const { register, control } = useFormContext()
   const { t } = useTranslation()
 
   return (
     <ActionCard
-      emoji={<Emoji label={t('emoji.whale')} symbol="🐋" />}
+      Icon={MigrateContractIcon}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
       <p className="mb-4 max-w-prose secondary-text">
-        <Trans key={'form.migrateDescription'}>
+        <Trans key={'form.migrateDescription'} Loader={Loader}>
           This will{' '}
           <a
             className="underline"
@@ -60,9 +61,9 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <div className="flex flex-col grow gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.contract_addr}
-            fieldName={getFieldName('contract')}
+            fieldName={fieldNamePrefix + 'contract'}
             onChange={(v) => onContractChange(v.target.value)}
             register={register}
             validation={[validateRequired, validateContractAddress]}
@@ -72,9 +73,9 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.codeID')} />
           <NumberInput
-            disabled={readOnly}
+            disabled={!isCreating}
             error={errors?.code_id}
-            fieldName={getFieldName('codeId')}
+            fieldName={fieldNamePrefix + 'codeId'}
             register={register}
             validation={[validateRequired, validatePositive]}
           />
@@ -89,12 +90,17 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <CodeMirrorInput
           control={control}
           error={errors?.msg}
-          fieldName={getFieldName('msg')}
-          readOnly={readOnly}
+          fieldName={fieldNamePrefix + 'msg'}
+          readOnly={!isCreating}
           validation={[validateJSON]}
         />
         <InputErrorMessage error={errors?.msg} />
       </div>
     </ActionCard>
   )
+}
+
+export const MigrateContractIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.whale')} symbol="🐋" />
 }

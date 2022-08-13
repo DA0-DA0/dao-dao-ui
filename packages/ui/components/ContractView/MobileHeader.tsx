@@ -1,9 +1,11 @@
-import { FC } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MemberCheck } from '@dao-dao/icons'
-import { CopyToClipboardMobile, HeartButton, Logo } from '@dao-dao/ui'
-import { HEADER_IMAGES_ENABLED } from '@dao-dao/utils'
+import { CopyToClipboardMobile, PinToggle } from '@dao-dao/ui'
+
+import { Loader as DefaultLoader, LoaderProps } from '../Loader'
+import { Logo as DefaultLogo, LogoProps } from '../Logo'
 
 export interface MobileHeaderProps {
   imageUrl?: string
@@ -12,22 +14,24 @@ export interface MobileHeaderProps {
   pinned: boolean
   onPin: () => void
   contractAddress: string
+  Logo?: ComponentType<LogoProps>
 }
 
-export const MobileHeader: FC<MobileHeaderProps> = ({
+export const MobileHeader = ({
   imageUrl,
   name,
   member,
   pinned,
   onPin,
   contractAddress,
-}) => {
+  Logo = DefaultLogo,
+}: MobileHeaderProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
       <div className="relative">
-        {imageUrl && HEADER_IMAGES_ENABLED ? (
+        {imageUrl ? (
           <div
             aria-label={t('info.daosLogo')}
             className="w-[72px] h-[72px] bg-center bg-cover rounded-full"
@@ -37,7 +41,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
             }}
           ></div>
         ) : (
-          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
+          <Logo size={72} />
         )}
         <div
           className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
@@ -57,7 +61,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
                 <MemberCheck fill="currentColor" width="16px" />
               </div>
             )}
-            <HeartButton onPin={onPin} pinned={pinned} />
+            <PinToggle onPin={onPin} pinned={pinned} />
           </div>
         </div>
         <CopyToClipboardMobile value={contractAddress} />
@@ -66,35 +70,36 @@ export const MobileHeader: FC<MobileHeaderProps> = ({
   )
 }
 
-export const MobileHeaderLoader: FC<{ contractAddress: string }> = ({
+export interface MobileHeaderLoaderProps {
+  contractAddress: string
+  Loader?: ComponentType<LoaderProps>
+}
+
+export const MobileHeaderLoader = ({
   contractAddress,
-}) => {
-  const { t } = useTranslation()
+  Loader = DefaultLoader,
+}: MobileHeaderLoaderProps) => (
+  <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
+    <div className="relative">
+      <Loader size={72} />
 
-  return (
-    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
-      <div className="relative">
-        <div className="animate-spin-medium">
-          <Logo alt={t('info.daodaoLogo')} height={72} width={72} />
-        </div>
-        <div
-          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
-          style={{
-            width: '32px',
-            height: '32px',
-            backgroundImage: 'url(/daotoken.jpg)',
-          }}
-        ></div>
-      </div>
-      <div className="flex flex-col flex-1 gap-3">
-        <div className="flex flex-row justify-between">
-          <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
-          <div className="flex gap-5">
-            <HeartButton onPin={() => null} pinned={false} />
-          </div>
-        </div>
-        <CopyToClipboardMobile value={contractAddress} />
-      </div>
+      <div
+        className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
+        style={{
+          width: '32px',
+          height: '32px',
+          backgroundImage: 'url(/daotoken.jpg)',
+        }}
+      ></div>
     </div>
-  )
-}
+    <div className="flex flex-col flex-1 gap-3">
+      <div className="flex flex-row justify-between">
+        <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
+        <div className="flex gap-5">
+          <PinToggle onPin={() => null} pinned={false} />
+        </div>
+      </div>
+      <CopyToClipboardMobile value={contractAddress} />
+    </div>
+  </div>
+)

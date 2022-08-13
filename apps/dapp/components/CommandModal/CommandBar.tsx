@@ -1,19 +1,22 @@
-import { FC } from 'react'
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { useTranslation } from 'react-i18next'
 
 import { SearchBar } from '@dao-dao/ui'
 
 interface CommandBarProps {
-  currentRefinement: string
-  refine: (s: string) => void
+  input: string
+  setInput: (s: string) => void
+  // Triggered when backspace is pressed and the text field is empty.
   onEmptyBack: () => void
 }
 
-export const CommandBar: FC<CommandBarProps> = ({
-  currentRefinement,
-  refine,
+export const CommandBar = ({
+  input,
+  setInput,
   onEmptyBack,
-}) => {
+}: CommandBarProps) => {
   const { t } = useTranslation()
 
   return (
@@ -21,15 +24,16 @@ export const CommandBar: FC<CommandBarProps> = ({
       className="px-2"
       hideIcon
       onBlur={(ev) => ev.target.focus()}
-      onChange={(event) => refine(event.currentTarget.value)}
+      onChange={(event) => setInput(event.currentTarget.value)}
       onKeyDown={(ev) => {
-        if (ev.key == 'ArrowUp' || ev.key == 'ArrowDown')
+        if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
           return ev.preventDefault()
-        else if (currentRefinement == '' && ev.key == 'Backspace')
+        } else if (ev.key === 'Backspace' && !input.length) {
           return onEmptyBack()
+        }
       }}
       placeholder={t('commandBar.prompt')}
-      value={currentRefinement}
+      value={input}
     />
   )
 }

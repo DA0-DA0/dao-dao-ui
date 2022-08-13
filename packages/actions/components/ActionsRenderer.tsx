@@ -1,29 +1,28 @@
 import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
-import { FC, FunctionComponent, useEffect, useState } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { SuspenseLoader } from '@dao-dao/ui'
+import { LoaderProps, LogoProps, SuspenseLoader } from '@dao-dao/ui'
+import { ProposalModule } from '@dao-dao/utils'
 
 import { ActionAndData, ActionCardLoader } from '..'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   coreAddress: string
-  proposalId: number
+  proposalModule: ProposalModule
   actionData: ActionAndData[]
+  Loader: ComponentType<LoaderProps>
+  Logo: ComponentType<LogoProps>
 }
 
-export const ActionsRenderer: FC<ActionsRendererProps> = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader />}>
-    <InnerActionsRenderer {...props} />
-  </SuspenseLoader>
-)
-
-const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
+export const ActionsRenderer = ({
   coreAddress,
-  proposalId,
+  proposalModule,
   actionData,
-}) => {
+  Loader,
+  Logo,
+}: ActionsRendererProps) => {
   const formMethods = useForm({
     defaultValues: actionData.reduce(
       (acc, { data }, index) => ({
@@ -47,19 +46,24 @@ const InnerActionsRenderer: FunctionComponent<ActionsRendererProps> = ({
       <form>
         {actionData.map(({ action: { Component } }, index) => (
           <div key={index} className="group relative" id={`A${index + 1}`}>
-            <Component
-              allActionsWithData={actionData.map(
-                ({ action: { key }, data }) => ({
-                  key,
-                  data,
-                })
-              )}
-              coreAddress={coreAddress}
-              getFieldName={(field: string) => `${index}.${field}`}
-              index={index}
-              proposalId={proposalId}
-              readOnly
-            />
+            <SuspenseLoader fallback={<ActionCardLoader Loader={Loader} />}>
+              <Component
+                Loader={Loader}
+                Logo={Logo}
+                allActionsWithData={actionData.map(
+                  ({ action: { key }, data }) => ({
+                    key,
+                    data,
+                  })
+                )}
+                coreAddress={coreAddress}
+                data={actionData[index].data}
+                fieldNamePrefix={`${index}.`}
+                index={index}
+                isCreating={false}
+                proposalModule={proposalModule}
+              />
+            </SuspenseLoader>
 
             <button
               className="absolute top-1 -right-5 opacity-0 group-hover:opacity-100 transition-opacity"

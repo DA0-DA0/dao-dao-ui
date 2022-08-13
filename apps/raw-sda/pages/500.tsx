@@ -22,9 +22,11 @@ const Custom500: NextPage = () => {
       <SuspenseLoader fallback={null}>
         <ErrorPage title={t('title.500')}>
           <p>
-            {t('error.internalServerError')}{' '}
+            {t('error.errorOccurredOnPage')}{' '}
             <Link href="/">
-              <a className="link">{t('info.considerReturningHome')}</a>
+              <a className="underline hover:no-underline">
+                {t('info.considerReturningHome')}
+              </a>
             </Link>
           </p>
         </ErrorPage>

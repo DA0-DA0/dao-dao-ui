@@ -1,212 +1,81 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { FormProposalData } from '@dao-dao/actions'
-import { ConnectWalletButton, StakingModal } from '@dao-dao/common'
+import { FormProposalData, useActions } from '@dao-dao/actions'
 import {
-  CwCoreQueryClient,
-  CwProposalSingleHooks,
-  CwProposalSingleQueryClient,
-  useGovernanceTokenInfo,
-  useProposalInfo,
-  useProposalModule,
-} from '@dao-dao/state'
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+  ConnectWalletButton,
+  DaoProposalPageWrapperProps,
+} from '@dao-dao/common'
+import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
-  ErrorPage,
-  LinkText,
-  ProposalDetails,
-  ProposalInfoCard,
-  ProposalInfoVoteStatus,
-  StakingMode,
-  Trans,
-} from '@dao-dao/ui'
-import {
-  CHAIN_RPC_ENDPOINT,
-  CI,
-  VotingModuleType,
-  cleanChainError,
-  cosmWasmClientRouter,
-} from '@dao-dao/utils'
+  ProposalModuleAdapterProvider,
+  useProposalModuleAdapter,
+  useProposalModuleAdapterCommon,
+} from '@dao-dao/proposal-module-adapter'
+import { ErrorPage, LinkText, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { SITE_URL } from '@dao-dao/utils'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import {
-  Loader,
-  PageWrapper,
-  PageWrapperProps,
-  useDAOInfoContext,
-} from '@/components'
-import { makeGetStaticProps } from '@/server/makeGetStaticProps'
+import { Loader, Logo, PageLoader, PageWrapper } from '@/components'
 import { DAO_ADDRESS } from '@/util'
 
 const InnerProposal: FC = () => {
   const { t } = useTranslation()
   const router = useRouter()
-
-  const { votingModuleType } = useDAOInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
-  const [showStaking, setShowStaking] = useState(false)
-  const [loading, setLoading] = useState(false)
-
-  const proposalIdQuery = router.query.proposalId
-  const proposalId =
-    typeof proposalIdQuery === 'string' && !isNaN(Number(proposalIdQuery))
-      ? Number(proposalIdQuery)
-      : undefined
-
-  const { governanceTokenInfo } = useGovernanceTokenInfo(DAO_ADDRESS)
-  const { proposalModuleAddress, proposalModuleConfig } =
-    useProposalModule(DAO_ADDRESS)
+  const {
+    components: {
+      ProposalVotes,
+      ProposalVoteDecisionStatus,
+      ProposalInfoCard,
+      ProposalDetails,
+    },
+    hooks: { useProposalRefreshers },
+  } = useProposalModuleAdapter()
+  const {
+    hooks: { useActions: useProposalModuleActions },
+  } = useProposalModuleAdapterCommon()
 
   const {
-    proposalResponse,
-    voteResponse,
-    votingPowerAtHeight,
-    txHash,
-    refreshProposalAndAll,
-  } = useProposalInfo(DAO_ADDRESS, proposalId)
+    hooks: { useGovernanceTokenInfo, useActions: useVotingModuleActions },
+    components: { ProposalDetailsVotingPowerWidget },
+  } = useVotingModuleAdapter()
+  const voteConversionDecimals =
+    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
-  const castVote = CwProposalSingleHooks.useCastVote({
-    contractAddress: proposalModuleAddress ?? '',
-    sender: walletAddress ?? '',
-  })
-  const executeProposal = CwProposalSingleHooks.useExecute({
-    contractAddress: proposalModuleAddress ?? '',
-    sender: walletAddress ?? '',
-  })
-  const closeProposal = CwProposalSingleHooks.useClose({
-    contractAddress: proposalModuleAddress ?? '',
-    sender: walletAddress ?? '',
-  })
-
-  const denomConversionDecimals = useMemo(
-    () =>
-      votingModuleType === VotingModuleType.Cw4Voting
-        ? 0
-        : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-          governanceTokenInfo
-        ? governanceTokenInfo.decimals
-        : undefined,
-    [votingModuleType, governanceTokenInfo]
+  const votingModuleActions = useVotingModuleActions()
+  const proposalModuleActions = useProposalModuleActions()
+  const actions = useActions(
+    useMemo(
+      () => [...votingModuleActions, ...proposalModuleActions],
+      [proposalModuleActions, votingModuleActions]
+    )
   )
 
-  if (
-    !proposalResponse ||
-    !proposalModuleConfig ||
-    denomConversionDecimals === undefined ||
-    proposalId === undefined
-  ) {
-    throw new Error('Failed to load page data.')
-  }
+  const { refreshProposalAndAll } = useProposalRefreshers()
 
-  const onVote = useCallback(
-    async (vote: Vote) => {
-      if (!connected || proposalId === undefined) return
+  const onVoteSuccess = useCallback(async () => {
+    refreshProposalAndAll()
+    toast.success(t('success.voteCast'))
+  }, [refreshProposalAndAll, t])
 
-      setLoading(true)
+  const onExecuteSuccess = useCallback(async () => {
+    refreshProposalAndAll()
+    toast.success(t('success.proposalExecuted'))
+  }, [refreshProposalAndAll, t])
 
-      try {
-        await castVote({
-          proposalId,
-          vote,
-        })
+  const onCloseSuccess = useCallback(async () => {
+    refreshProposalAndAll()
+    toast.success(t('success.proposalClosed'))
+  }, [refreshProposalAndAll, t])
 
-        refreshProposalAndAll()
-        toast.success('Vote successfully cast.')
-      } catch (err) {
-        console.error(err)
-        toast.error(
-          cleanChainError(err instanceof Error ? err.message : `${err}`)
-        )
-      }
-
-      setLoading(false)
-    },
-    [castVote, connected, proposalId, setLoading, refreshProposalAndAll]
-  )
-
-  const onExecute = useCallback(async () => {
-    if (!connected || proposalId === undefined) return
-
-    setLoading(true)
-
-    try {
-      const response = await executeProposal({
-        proposalId,
-      })
-
-      refreshProposalAndAll()
-      toast.success(
-        `Executed successfully. Transaction hash (${response.transactionHash}) can be found in the proposal details.`
-      )
-    } catch (err) {
-      console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
-    }
-
-    setLoading(false)
-  }, [
-    executeProposal,
-    connected,
-    proposalId,
-    setLoading,
-    refreshProposalAndAll,
-  ])
-
-  const onClose = useCallback(async () => {
-    if (!connected || proposalId === undefined) return
-
-    setLoading(true)
-
-    try {
-      await closeProposal({
-        proposalId,
-      })
-
-      refreshProposalAndAll()
-      toast.success(t('success.proposalClosed'))
-    } catch (err) {
-      console.error(err)
-      toast.error(
-        cleanChainError(err instanceof Error ? err.message : `${err}`)
-      )
-    }
-
-    setLoading(false)
-  }, [connected, proposalId, closeProposal, refreshProposalAndAll, t])
-
-  const onDuplicate = useCallback(
-    (actionData) => {
-      const duplicateFormData: FormProposalData = {
-        title: proposalResponse.proposal.title,
-        description: proposalResponse.proposal.description,
-        actionData: actionData.map(({ action: { key }, data }) => ({
-          key,
-          data,
-        })),
-      }
-
-      router.push(
-        `/propose?prefill=${encodeURIComponent(
-          JSON.stringify(duplicateFormData)
-        )}`
-      )
-    },
-    [
-      proposalResponse.proposal.description,
-      proposalResponse.proposal.title,
-      router,
-    ]
-  )
-
-  const memberWhenProposalCreated =
-    !!votingPowerAtHeight && Number(votingPowerAtHeight.power) > 0
+  const duplicate = (data: FormProposalData) =>
+    router.push(`/propose?prefill=${encodeURIComponent(JSON.stringify(data))}`)
 
   return (
     <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">
@@ -214,45 +83,20 @@ const InnerProposal: FC = () => {
         <div className="mb-6 lg:hidden">
           <ProposalInfoCard
             connected={connected}
-            memberWhenProposalCreated={memberWhenProposalCreated}
-            proposalExecutionTXHash={txHash}
-            proposalResponse={proposalResponse}
-            walletVote={voteResponse?.vote?.vote ?? undefined}
+            walletAddress={walletAddress}
           />
         </div>
 
         <ProposalDetails
-          allowRevoting={proposalModuleConfig.allow_revoting}
-          connectWalletButton={<ConnectWalletButton className="!w-auto" />}
+          ConnectWalletButton={ConnectWalletButton}
+          VotingPowerWidget={ProposalDetailsVotingPowerWidget}
+          actions={actions}
           connected={connected}
-          coreAddress={DAO_ADDRESS}
-          loading={loading}
-          onClose={onClose}
-          onDuplicate={onDuplicate}
-          onExecute={onExecute}
-          onVote={onVote}
-          proposal={proposalResponse.proposal}
-          proposalId={proposalId}
-          setShowStaking={setShowStaking}
-          showStaking={showStaking}
-          stakingModal={
-            <StakingModal
-              connectWalletButton={<ConnectWalletButton className="!w-auto" />}
-              coreAddress={DAO_ADDRESS}
-              loader={Loader}
-              mode={StakingMode.Stake}
-              onClose={() => setShowStaking(false)}
-            />
-          }
-          votingModuleType={votingModuleType}
-          walletVote={voteResponse?.vote?.vote ?? undefined}
-          walletWeightPercent={
-            votingPowerAtHeight
-              ? (Number(votingPowerAtHeight.power) /
-                  Number(proposalResponse.proposal.total_power)) *
-                100
-              : 0
-          }
+          duplicate={duplicate}
+          onCloseSuccess={onCloseSuccess}
+          onExecuteSuccess={onExecuteSuccess}
+          onVoteSuccess={onVoteSuccess}
+          walletAddress={walletAddress}
         />
 
         <div className="pb-6 mt-6 lg:hidden">
@@ -260,39 +104,23 @@ const InnerProposal: FC = () => {
             {t('title.voteStatus')}
           </h3>
 
-          <ProposalInfoVoteStatus
-            denomConversionDecimals={denomConversionDecimals}
-            maxVotingSeconds={
-              'time' in proposalModuleConfig.max_voting_period
-                ? proposalModuleConfig.max_voting_period.time
-                : undefined
-            }
-            proposal={proposalResponse.proposal}
+          <ProposalVoteDecisionStatus
+            voteConversionDecimals={voteConversionDecimals}
           />
         </div>
+
+        <ProposalVotes className="mt-8 max-w-3xl" />
       </div>
 
       <div className="hidden min-h-screen lg:block bg-base-200">
         <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
-        <ProposalInfoCard
-          connected={connected}
-          memberWhenProposalCreated={memberWhenProposalCreated}
-          proposalExecutionTXHash={txHash}
-          proposalResponse={proposalResponse}
-          walletVote={voteResponse?.vote?.vote ?? undefined}
-        />
+        <ProposalInfoCard connected={connected} walletAddress={walletAddress} />
 
         <h3 className="mt-8 mb-6 text-base font-medium">
           {t('title.voteStatus')}
         </h3>
-        <ProposalInfoVoteStatus
-          denomConversionDecimals={denomConversionDecimals}
-          maxVotingSeconds={
-            'time' in proposalModuleConfig.max_voting_period
-              ? proposalModuleConfig.max_voting_period.time
-              : undefined
-          }
-          proposal={proposalResponse.proposal}
+        <ProposalVoteDecisionStatus
+          voteConversionDecimals={voteConversionDecimals}
         />
       </div>
     </div>
@@ -305,7 +133,7 @@ const ProposalNotFound = () => {
   return (
     <ErrorPage title={t('error.proposalNotFound')}>
       <p>
-        <Trans i18nKey="error.couldntFindProposal">
+        <Trans Loader={Loader} i18nKey="error.couldntFindProposal">
           We couldn&apos;t find a proposal with that ID. See all proposals on
           the{' '}
           <LinkText aProps={{ className: 'underline link-text' }} href="/vote">
@@ -318,19 +146,28 @@ const ProposalNotFound = () => {
   )
 }
 
-interface ProposalPageProps extends PageWrapperProps {
-  exists: boolean
-}
-
-const ProposalPage: NextPage<ProposalPageProps> = ({
+const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
   <PageWrapper {...props}>
-    {/* Need optional chaining due to static path generation.
-     *  Fallback page renders without any props on the server.
-     */}
-    {props?.exists ? <InnerProposal /> : <ProposalNotFound />}
+    <SuspenseLoader fallback={<PageLoader />}>
+      {props.proposalId && props.info ? (
+        <ProposalModuleAdapterProvider
+          initialOptions={{
+            coreAddress: DAO_ADDRESS,
+            Logo,
+            Loader,
+          }}
+          proposalId={props.proposalId}
+          proposalModules={props.info.proposalModules}
+        >
+          <InnerProposal />
+        </ProposalModuleAdapterProvider>
+      ) : (
+        <ProposalNotFound />
+      )}
+    </SuspenseLoader>
   </PageWrapper>
 )
 
@@ -340,84 +177,10 @@ export default ProposalPage
 // generated.
 export const getStaticPaths: GetStaticPaths = () => ({
   paths: [],
-  // Need to block until i18n translations are ready, since i18n depends
-  // on server side translations being loaded.
-  fallback: 'blocking',
+  fallback: true,
 })
 
-export const getStaticProps: GetStaticProps<ProposalPageProps> = async (
-  ...props
-) => {
-  // Don't query chain if running in CI.
-  if (CI) {
-    return { notFound: true }
-  }
-
-  const proposalIdQuery = props[0].params?.proposalId
-  if (typeof proposalIdQuery !== 'string' || isNaN(Number(proposalIdQuery))) {
-    const staticProps = await makeGetStaticProps((t) => ({
-      followingTitle: t('error.proposalNotFound'),
-    }))(...props)
-
-    return 'props' in staticProps
-      ? {
-          ...staticProps,
-          props: {
-            ...staticProps.props,
-            exists: false,
-          },
-        }
-      : staticProps
-  }
-
-  const proposalId = Number(proposalIdQuery)
-
-  try {
-    // Verify proposal exists.
-    const rpcClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-    // Get proposal module address.
-    const daoClient = new CwCoreQueryClient(rpcClient, DAO_ADDRESS)
-    const proposalAddress = (await daoClient.proposalModules({}))[0]
-    // Get proposal.
-    const proposalClient = new CwProposalSingleQueryClient(
-      rpcClient,
-      proposalAddress
-    )
-
-    let exists = false
-    try {
-      exists = !!(await proposalClient.proposal({ proposalId })).proposal
-    } catch (err) {
-      // If proposal doesn't exist, handle 404 manually on frontend.
-      // Rethrow all other errors.
-      if (
-        !(err instanceof Error) ||
-        !err.message.includes('Proposal not found')
-      ) {
-        throw err
-      }
-
-      console.error(err)
-    }
-
-    const staticProps = await makeGetStaticProps((t) => ({
-      followingTitle: exists
-        ? `${t('title.proposal')} #${proposalId}`
-        : t('error.proposalNotFound'),
-    }))(...props)
-
-    return 'props' in staticProps
-      ? {
-          ...staticProps,
-          props: {
-            ...staticProps.props,
-            exists,
-          },
-        }
-      : staticProps
-  } catch (error) {
-    console.error(error)
-    // Throw error to trigger 500.
-    throw new Error('An unexpected error occurred. Please try again later.')
-  }
-}
+export const getStaticProps = makeGetDaoProposalStaticProps({
+  coreAddress: DAO_ADDRESS,
+  getProposalUrlPrefix: () => `${SITE_URL}/vote/`,
+})

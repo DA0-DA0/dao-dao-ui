@@ -1,16 +1,24 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
+  Cw20StakedBalanceVotingSelectors,
   CwRewardsSelectors,
   StakeCw20Selectors,
-  useStakingInfo,
+  useVotingModule,
 } from '@dao-dao/state'
 import { JUNO_BLOCKS_PER_YEAR } from '@dao-dao/utils'
 
 import { DAO_ADDRESS, REWARDS_ADDRESS } from '@/util'
 
 export const useApr = () => {
-  const { stakingContractAddress } = useStakingInfo(DAO_ADDRESS)
+  const { votingModuleAddress } = useVotingModule(DAO_ADDRESS)
+
+  // Assumes DAO is using cw20-staked-balance-voting.
+  const stakingContractAddress = useRecoilValue(
+    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+      contractAddress: votingModuleAddress,
+    })
+  )
 
   // rate * blocks_per_year / total_value_staked
   const rate = useRecoilValue(
@@ -19,16 +27,13 @@ export const useApr = () => {
       : constSelector(undefined)
   )
   const totalValueStaked = useRecoilValue(
-    stakingContractAddress
-      ? StakeCw20Selectors.totalValueSelector({
-          contractAddress: stakingContractAddress,
-        })
-      : constSelector(undefined)
+    StakeCw20Selectors.totalValueSelector({
+      contractAddress: stakingContractAddress,
+    })
   )
-  const apr =
-    totalValueStaked && rate
-      ? (Number(rate) * JUNO_BLOCKS_PER_YEAR) / Number(totalValueStaked.total)
-      : undefined
+  const apr = rate
+    ? (Number(rate) * JUNO_BLOCKS_PER_YEAR) / Number(totalValueStaked.total)
+    : undefined
 
   return apr
 }
