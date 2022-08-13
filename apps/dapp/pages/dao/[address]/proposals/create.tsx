@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
@@ -48,8 +51,12 @@ const InnerProposalCreate = () => {
   )
 
   const onCreateSuccess = useCallback(
-    (proposalId: string) => {
+    async (proposalId: string) => {
       refreshProposals()
+      // Manually revalidate DAO static props (and proposal page, in case it
+      // cached a 404 from a previous visit attempt) and navigate to new
+      // proposal page.
+      await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalId}`)
       router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
     },
     [coreAddress, refreshProposals, router]

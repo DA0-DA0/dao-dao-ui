@@ -32,8 +32,6 @@ export const blockHeightSelector = selector({
   key: 'blockHeight',
   get: async ({ get }) => {
     const client = get(cosmWasmClientSelector)
-    if (!client) return
-
     return await client.getHeight()
   },
 })
@@ -47,7 +45,6 @@ export const blockHeightTimestampSelector = selectorFamily<
     (blockHeight) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
 
       try {
         const block = await client.getBlock(blockHeight)
@@ -86,7 +83,6 @@ export const nativeBalanceSelector = selectorFamily({
     (address: string) =>
     async ({ get }) => {
       const client = get(stargateClientSelector)
-      if (!client) return
 
       get(refreshWalletBalancesIdAtom(address))
 
@@ -137,7 +133,6 @@ export const transactionEventsSelector = selectorFamily<
     (hash: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      if (!client) return
 
       const tx = await client.getTx(hash)
       return tx?.rawLog ? JSON5.parse(tx.rawLog)[0].events : undefined

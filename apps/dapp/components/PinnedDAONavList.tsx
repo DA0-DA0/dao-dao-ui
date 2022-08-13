@@ -1,11 +1,13 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { LibraryIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { Logo } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms'
@@ -13,6 +15,7 @@ import { NavListItem } from '@/components'
 
 export const PinnedDAONavList: FC = () => {
   const { t } = useTranslation()
+
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const daoConfigs = useRecoilValue(
     waitForAll(
@@ -21,15 +24,15 @@ export const PinnedDAONavList: FC = () => {
       )
     )
   )
-  const daosWithAddresses = daoConfigs
-    .map((config, idx) => ({
-      config,
-      address: pinnedAddresses[idx],
-    }))
-    .filter((o) => o.config) as {
-    config: ConfigResponse
-    address: string
-  }[]
+
+  const daosWithAddresses = useMemo(
+    () =>
+      daoConfigs.map((config, idx) => ({
+        config,
+        address: pinnedAddresses[idx],
+      })),
+    [pinnedAddresses, daoConfigs]
+  )
 
   return (
     <ul className="ml-2 list-none">
@@ -53,6 +56,7 @@ export const PinnedDAONavList: FC = () => {
 
 export const MobilePinnedDAONavList: FC = () => {
   const { t } = useTranslation()
+
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
   const daoConfigs = useRecoilValue(
     waitForAll(
@@ -61,15 +65,15 @@ export const MobilePinnedDAONavList: FC = () => {
       )
     )
   )
-  const daosWithAddresses = daoConfigs
-    .map((config, idx) => ({
-      config,
-      address: pinnedAddresses[idx],
-    }))
-    .filter((o) => o.config) as {
-    config: ConfigResponse
-    address: string
-  }[]
+
+  const daosWithAddresses = useMemo(
+    () =>
+      daoConfigs.map((config, idx) => ({
+        config,
+        address: pinnedAddresses[idx],
+      })),
+    [pinnedAddresses, daoConfigs]
+  )
 
   return (
     <ul className="flex overflow-auto gap-1 list-none no-scrollbar">

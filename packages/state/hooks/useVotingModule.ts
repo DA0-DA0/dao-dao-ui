@@ -9,7 +9,7 @@ interface UseVotingModuleOptions {
 
 interface UseVotingModuleResponse {
   isMember: boolean | undefined
-  votingModuleAddress: string | undefined
+  votingModuleAddress: string
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
 }

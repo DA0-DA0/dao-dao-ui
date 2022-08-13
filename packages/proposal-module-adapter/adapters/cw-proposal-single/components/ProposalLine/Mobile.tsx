@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { CwProposalSingleSelectors } from '@dao-dao/state'
@@ -12,13 +11,12 @@ import { useProposalExpirationString } from '../../hooks'
 import { ProposalStatus } from '../ProposalStatus'
 
 export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
-  const { t } = useTranslation()
   const {
     proposalModule: { address: proposalModuleAddress, prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -27,11 +25,7 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const expirationString = useProposalExpirationString()
 

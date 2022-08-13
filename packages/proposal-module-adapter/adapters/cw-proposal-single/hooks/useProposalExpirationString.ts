@@ -18,7 +18,7 @@ export const useProposalExpirationString = () => {
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -27,11 +27,7 @@ export const useProposalExpirationString = () => {
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const proposalEndString = useMemo(() => {
     if (proposal.status !== Status.Open) {

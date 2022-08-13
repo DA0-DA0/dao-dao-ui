@@ -6,17 +6,13 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { useRegisterAdaptersOnMount } from '@dao-dao/common'
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
 import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
-import {
-  SITE_DESCRIPTION,
-  SITE_IMAGE,
-  SITE_TITLE,
-  SITE_URL,
-} from '@dao-dao/utils'
+import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 import { Footer } from '@/components'
 
@@ -60,61 +56,65 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-const SDA = (props: AppProps) => (
-  <>
-    <DefaultSeo
-      additionalLinkTags={[
-        {
-          href: '/apple-touch-icon.png',
-          rel: 'apple-touch-icon',
-          sizes: '180x180',
-          type: 'image/png',
-        },
-        {
-          href: '/favicon-32x32.png',
-          rel: 'icon',
-          sizes: '32x32',
-          type: 'image/png',
-        },
-        {
-          href: '/favicon-16x16.png',
-          rel: 'icon',
-          sizes: '16x16',
-          type: 'image/png',
-        },
-        {
-          href: '/site.webmanifest',
-          rel: 'manifest',
-        },
-      ]}
-      additionalMetaTags={[
-        {
-          name: 'msapplication-TileColor',
-          content: '#da532c',
-        },
-        {
-          name: 'theme-color',
-          content: '#ffffff',
-        },
-      ]}
-      description={SITE_DESCRIPTION}
-      openGraph={{
-        url: SITE_URL,
-        type: 'website',
-        title: SITE_TITLE,
-        description: SITE_DESCRIPTION,
-        images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
-      }}
-      title={SITE_TITLE}
-      twitter={{
-        cardType: 'summary_large_image',
-      }}
-    />
+const SDA = (props: AppProps) => {
+  const { t } = useTranslation()
 
-    <RecoilRoot>
-      <InnerApp {...props} />
-    </RecoilRoot>
-  </>
-)
+  return (
+    <>
+      <DefaultSeo
+        additionalLinkTags={[
+          {
+            href: '/apple-touch-icon.png',
+            rel: 'apple-touch-icon',
+            sizes: '180x180',
+            type: 'image/png',
+          },
+          {
+            href: '/favicon-32x32.png',
+            rel: 'icon',
+            sizes: '32x32',
+            type: 'image/png',
+          },
+          {
+            href: '/favicon-16x16.png',
+            rel: 'icon',
+            sizes: '16x16',
+            type: 'image/png',
+          },
+          {
+            href: '/site.webmanifest',
+            rel: 'manifest',
+          },
+        ]}
+        additionalMetaTags={[
+          {
+            name: 'msapplication-TileColor',
+            content: '#da532c',
+          },
+          {
+            name: 'theme-color',
+            content: '#ffffff',
+          },
+        ]}
+        description={t('meta.description')}
+        openGraph={{
+          url: SITE_URL,
+          type: 'website',
+          title: t('meta.title'),
+          description: t('meta.description'),
+          images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
+        }}
+        title={t('meta.title')}
+        twitter={{
+          cardType: 'summary_large_image',
+        }}
+      />
+
+      <RecoilRoot>
+        <InnerApp {...props} />
+      </RecoilRoot>
+    </>
+  )
+}
 
 export default appWithTranslation(SDA)

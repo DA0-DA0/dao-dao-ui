@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -25,7 +28,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const config = useRecoilValue(
     CwCoreV0_1_0Selectors.configSelector({ contractAddress: address })
   )
-  const nativeBalance = useRecoilValue(nativeBalanceSelector(address))?.amount
+  const nativeBalance = useRecoilValue(nativeBalanceSelector(address)).amount
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {
     fetchMembership: true,
   })
@@ -34,12 +37,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(address)
 
-  if (
-    !config ||
-    nativeBalance === undefined ||
-    totalVotingWeight === undefined ||
-    !proposalModules
-  ) {
+  if (totalVotingWeight === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

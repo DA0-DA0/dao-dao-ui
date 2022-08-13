@@ -30,15 +30,13 @@ export const useStakingInfo = ({
 
   const unstakingDuration =
     useRecoilValue(
-      stakingContractAddress
-        ? StakeCw20Selectors.getConfigSelector({
-            contractAddress: stakingContractAddress,
-          })
-        : constSelector(undefined)
-    )?.unstaking_duration ?? undefined
+      StakeCw20Selectors.getConfigSelector({
+        contractAddress: stakingContractAddress,
+      })
+    ).unstaking_duration ?? undefined
 
   const setRefreshStakingContractBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(stakingContractAddress ?? '')
+    refreshWalletBalancesIdAtom(stakingContractAddress)
   )
   const refreshStakingContractBalances = useCallback(
     () => setRefreshStakingContractBalancesId((id) => id + 1),
@@ -65,7 +63,7 @@ export const useStakingInfo = ({
   const refreshClaims = () => _setClaimsId((id) => id + 1)
 
   const claims = useRecoilValue(
-    fetchClaims && walletAddress && stakingContractAddress
+    fetchClaims && walletAddress
       ? StakeCw20Selectors.claimsSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
@@ -86,7 +84,7 @@ export const useStakingInfo = ({
 
   // Total staked value
   const totalStakedValue = useRecoilValue(
-    fetchTotalStakedValue && stakingContractAddress
+    fetchTotalStakedValue
       ? StakeCw20Selectors.totalValueSelector({
           contractAddress: stakingContractAddress,
         })
@@ -95,7 +93,7 @@ export const useStakingInfo = ({
 
   // Wallet staked value
   const walletStakedValue = useRecoilValue(
-    fetchWalletStakedValue && stakingContractAddress && walletAddress
+    fetchWalletStakedValue && walletAddress
       ? StakeCw20Selectors.stakedValueSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],

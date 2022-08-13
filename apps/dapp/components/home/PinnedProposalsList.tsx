@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { DocumentTextIcon } from '@heroicons/react/outline'
 import groupBy from 'lodash.groupby'
 import isEqual from 'lodash.isequal'
@@ -65,18 +68,17 @@ const InnerPinnedProposalsList: FC = () => {
   // Get hooks for all proposal modules to list proposals. Should stay constant.
   const useListAllProposalInfosHooks = useMemo(
     () =>
-      pinnedProposalModules.flatMap(
-        (proposalModules, coreIndex) =>
-          proposalModules?.map((proposalModule) => ({
-            useListAllProposalInfos: matchAndLoadCommon(proposalModule, {
-              coreAddress: initialPinnedAddresses[coreIndex],
-              Logo,
-              Loader,
-            }).hooks.useListAllProposalInfos,
+      pinnedProposalModules.flatMap((proposalModules, coreIndex) =>
+        proposalModules.map((proposalModule) => ({
+          useListAllProposalInfos: matchAndLoadCommon(proposalModule, {
             coreAddress: initialPinnedAddresses[coreIndex],
-            coreIndex,
-            proposalModule,
-          })) ?? []
+            Logo,
+            Loader,
+          }).hooks.useListAllProposalInfos,
+          coreAddress: initialPinnedAddresses[coreIndex],
+          coreIndex,
+          proposalModule,
+        }))
       ),
     [initialPinnedAddresses, pinnedProposalModules]
   )

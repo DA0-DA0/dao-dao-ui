@@ -1,4 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
+import { useTranslation } from 'react-i18next'
 
 import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
 import {
@@ -31,6 +32,7 @@ export const Membership = (props: MembershipProps) => {
 }
 
 const InnerMembership = ({ primaryText }: MembershipProps) => {
+  const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const { coreAddress } = useVotingModuleAdapterOptions()
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(
@@ -42,7 +44,7 @@ const InnerMembership = ({ primaryText }: MembershipProps) => {
   const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
 
   if (totalVotingWeight === undefined || !members) {
-    throw new Error('Failed to load data.')
+    throw new Error(t('error.loadingData'))
   }
 
   return (

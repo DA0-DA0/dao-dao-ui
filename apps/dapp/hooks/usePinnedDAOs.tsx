@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { useCallback } from 'react'
 import { useRecoilState } from 'recoil'
 
@@ -40,7 +43,6 @@ import {
 // and #5 will be the first one loaded next time without having to manually
 // filter out 2 and 4 like before, while keeping the localStorage size down.
 
-// TODO: Reimplement auto-marking as done on vote success.
 export const usePinnedDAOs = () => {
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)

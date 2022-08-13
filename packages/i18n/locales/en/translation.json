@@ -91,11 +91,11 @@
     "createProposalSubmitInvalid": "Correct the errors above before previewing or publishing.",
     "daoIsPaused": "You cannot create a proposal when the DAO is paused.",
     "daoNotFound": "DAO not found.",
+    "errorOccurredOnPage": "An error occured on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid CW20 contract address.",
     "fieldRequired": "This field is required.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
-    "internalServerError": "An internal server error occured on this page.",
     "invalidAddress": "Invalid address.",
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
     "invalidDuplicateFound": "Invalid. Duplicate found in other list.",
@@ -219,6 +219,7 @@
     "couldHaveMoreVotingPower": "You could have more voting power.",
     "creatingDao": "Creating DAO...",
     "daoAddress": "DAO",
+    "daoInfoWillRefresh": "DAO information may take up to {{minutes}} minutes to update on all pages once proposal is executed.",
     "daoPaused": "The DAO is paused. Governance will resume in {{duration}}.",
     "daodaoBetaV": "dao dao <1>beta</1> v{{version}}",
     "daodaoLogo": "DAO DAO Logo",
@@ -314,6 +315,10 @@
     "yourBalance": "Your balance",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },
+  "meta": {
+    "description": "DAOs for everyone.",
+    "title": "DAO DAO"
+  },
   "proposalModuleLabel": {
     "cw-govmod-single": "Single Choice"
   },
@@ -346,8 +351,8 @@
     "voteCast": "Vote successfully cast."
   },
   "title": {
-    "404": "404 - Page Not Found",
-    "500": "500 - Internal Server Error",
+    "404": "404: Not Found",
+    "500": "500: Internal Server Error",
     "actions_one": "Action",
     "actions_other": "Actions",
     "addCw20ToTreasury": "Display Token Balance in Treasury",
@@ -447,6 +452,7 @@
     "hours": "Hours",
     "hours_one": "Hour",
     "hours_other": "Hours",
+    "minutes": "Minutes",
     "minutes_one": "Minute",
     "minutes_other": "Minutes",
     "seconds": "Seconds",

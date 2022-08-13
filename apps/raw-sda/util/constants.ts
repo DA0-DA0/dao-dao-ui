@@ -1,7 +1,5 @@
 export const CW20_CODE_ID = parseInt(process.env.NEXT_PUBLIC_CW20_CODE_ID!, 10)
 
-export const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE as string
-
 export const NATIVE_DECIMALS = 6
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
 

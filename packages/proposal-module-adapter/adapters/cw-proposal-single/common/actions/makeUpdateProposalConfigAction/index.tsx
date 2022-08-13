@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -11,6 +10,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/actions'
 import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
+import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -35,6 +35,7 @@ export interface UpdateProposalConfigData {
   thresholdType: '%' | 'majority'
   thresholdPercentage?: number
 
+  quorumEnabled: boolean
   quorumType: '%' | 'majority'
   quorumPercentage?: number
 
@@ -44,20 +45,63 @@ export interface UpdateProposalConfigData {
   allowRevoting: boolean
 }
 
+const thresholdToTQData = (
+  source: Threshold
+): Pick<
+  UpdateProposalConfigData,
+  | 'thresholdType'
+  | 'thresholdPercentage'
+  | 'quorumEnabled'
+  | 'quorumType'
+  | 'quorumPercentage'
+> => {
+  let thresholdType: UpdateProposalConfigData['thresholdType'] = 'majority'
+  let thresholdPercentage: UpdateProposalConfigData['thresholdPercentage'] =
+    undefined
+  let quorumEnabled: boolean = true
+  let quorumType: UpdateProposalConfigData['quorumType'] = '%'
+  let quorumPercentage: UpdateProposalConfigData['quorumPercentage'] = 20
+
+  if ('threshold_quorum' in source) {
+    const { threshold, quorum } = source.threshold_quorum
+
+    thresholdType = 'majority' in threshold ? 'majority' : '%'
+    thresholdPercentage =
+      'majority' in threshold ? undefined : Number(threshold.percent) * 100
+
+    quorumType = 'majority' in quorum ? 'majority' : '%'
+    quorumPercentage =
+      'majority' in quorum ? undefined : Number(quorum.percent) * 100
+
+    quorumEnabled = true
+  } else if ('absolute_percentage' in source) {
+    const { percentage } = source.absolute_percentage
+
+    thresholdType = 'majority' in percentage ? 'majority' : '%'
+    thresholdPercentage =
+      'majority' in percentage ? undefined : Number(percentage.percent) * 100
+
+    quorumEnabled = false
+  }
+
+  return {
+    thresholdType,
+    thresholdPercentage,
+    quorumEnabled,
+    quorumType,
+    quorumPercentage,
+  }
+}
+
 const useDefaults: UseDefaults<UpdateProposalConfigData> = (
   _,
   { address: proposalModuleAddress }
 ) => {
-  const { t } = useTranslation()
-
   const proposalModuleConfig = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-  if (!proposalModuleConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const proposalDepositTokenInfo = useRecoilValue(
     proposalModuleConfig.deposit_info?.token
@@ -75,7 +119,7 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
         deposit: convertMicroDenomToDenomWithDecimals(
           Number(proposalModuleConfig.deposit_info.deposit),
           // A deposit being configured implies that a token will be present.
-          proposalDepositTokenInfo?.decimals!
+          proposalDepositTokenInfo!.decimals
         ),
         refundFailedProposals:
           proposalModuleConfig.deposit_info.refund_failed_proposals,
@@ -92,45 +136,14 @@ const useDefaults: UseDefaults<UpdateProposalConfigData> = (
 
   const allowRevoting = proposalModuleConfig.allow_revoting
 
-  if ('threshold_quorum' in proposalModuleConfig.threshold) {
-    const threshold = proposalModuleConfig.threshold.threshold_quorum
-
-    const thresholdType = 'majority' in threshold.threshold ? 'majority' : '%'
-    const thresholdPercentage =
-      'majority' in threshold.threshold
-        ? undefined
-        : Number(threshold.threshold.percent) * 100
-
-    const quorumType = 'majority' in threshold.quorum ? 'majority' : '%'
-    const quorumPercentage =
-      'majority' in threshold.quorum
-        ? undefined
-        : Number(threshold.quorum.percent) * 100
-
-    return {
-      onlyMembersExecute,
-      depositRequired,
-      depositInfo,
-      thresholdType,
-      thresholdPercentage,
-      quorumType,
-      quorumPercentage,
-      proposalDuration,
-      proposalDurationUnits,
-      allowRevoting,
-    }
-  } else {
-    return {
-      onlyMembersExecute,
-      depositRequired,
-      depositInfo,
-      thresholdType: 'majority',
-      quorumType: '%',
-      quorumPercentage: 20,
-      proposalDuration,
-      proposalDurationUnits,
-      allowRevoting,
-    }
+  return {
+    onlyMembersExecute,
+    depositRequired,
+    depositInfo,
+    proposalDuration,
+    proposalDurationUnits,
+    allowRevoting,
+    ...thresholdToTQData(proposalModuleConfig.threshold),
   }
 }
 
@@ -141,7 +154,7 @@ const typePercentageToPercentageThreshold = (
   if (t === 'majority') {
     return { majority: {} }
   } else {
-    if (p == undefined) {
+    if (p === undefined) {
       throw new Error(
         'internal erorr: an undefined percent was configured with a non-majority threshold.'
       )
@@ -173,22 +186,17 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
   _,
   { address: proposalModuleAddress }
 ) => {
-  const { t } = useTranslation()
-
   const proposalModuleConfig = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
       contractAddress: proposalModuleAddress,
     })
   )
-  if (!proposalModuleConfig) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const {
     hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
+    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
   return useCallback(
     (data: UpdateProposalConfigData) =>
@@ -199,18 +207,27 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
             funds: [],
             msg: {
               update_config: {
-                threshold: {
-                  threshold_quorum: {
-                    quorum: typePercentageToPercentageThreshold(
-                      data.quorumType,
-                      data.quorumPercentage
-                    ),
-                    threshold: typePercentageToPercentageThreshold(
-                      data.thresholdType,
-                      data.thresholdPercentage
-                    ),
-                  },
-                },
+                threshold: data.quorumEnabled
+                  ? {
+                      threshold_quorum: {
+                        quorum: typePercentageToPercentageThreshold(
+                          data.quorumType,
+                          data.quorumPercentage
+                        ),
+                        threshold: typePercentageToPercentageThreshold(
+                          data.thresholdType,
+                          data.thresholdPercentage
+                        ),
+                      },
+                    }
+                  : {
+                      absolute_percentage: {
+                        percentage: typePercentageToPercentageThreshold(
+                          data.thresholdType,
+                          data.thresholdPercentage
+                        ),
+                      },
+                    },
                 max_voting_period: maxVotingInfoToCosmos(
                   data.proposalDurationUnits,
                   data.proposalDuration
@@ -244,7 +261,7 @@ const Component: ActionComponent = (props) => {
     hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.symbol
+    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
 
   return (
     <UpdateProposalConfigComponent
@@ -261,7 +278,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
     hooks: { useGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo?.decimals ?? 0
+    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
   return useMemo(() => {
     if (
@@ -269,7 +286,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
       'execute' in msg.wasm &&
       'update_config' in msg.wasm.execute.msg &&
       'threshold' in msg.wasm.execute.msg.update_config &&
-      'threshold_quorum' in msg.wasm.execute.msg.update_config.threshold &&
+      ('threshold_quorum' in msg.wasm.execute.msg.update_config.threshold ||
+        'absolute_percentage' in
+          msg.wasm.execute.msg.update_config.threshold) &&
       'max_voting_period' in msg.wasm.execute.msg.update_config &&
       'only_members_execute' in msg.wasm.execute.msg.update_config &&
       'allow_revoting' in msg.wasm.execute.msg.update_config &&
@@ -295,24 +314,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
       const proposalDuration = config.max_voting_period.time
       const proposalDurationUnits = 'seconds'
 
-      if (!('threshold_quorum' in config.threshold)) {
-        return { match: false }
-      }
-
-      const threshold = config.threshold.threshold_quorum
-
-      const thresholdType = 'majority' in threshold.threshold ? 'majority' : '%'
-      const thresholdPercentage =
-        'majority' in threshold.threshold
-          ? undefined
-          : Number(threshold.threshold.percent) * 100
-
-      const quorumType = 'majority' in threshold.quorum ? 'majority' : '%'
-      const quorumPercentage =
-        'majority' in threshold.quorum
-          ? undefined
-          : Number(threshold.quorum.percent) * 100
-
       const allowRevoting = !!config.allow_revoting
 
       return {
@@ -320,13 +321,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
           onlyMembersExecute,
           depositRequired,
           depositInfo,
-          thresholdType,
-          thresholdPercentage,
-          quorumType,
-          quorumPercentage,
           proposalDuration,
           proposalDurationUnits,
           allowRevoting,
+          ...thresholdToTQData(config.threshold),
         },
         match: true,
       }

@@ -17,6 +17,7 @@ import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   ProposalModule,
@@ -105,6 +106,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
 
       const votingModuleAddress = await coreClient.votingModule()
+
       // If no contract name, will display fallback voting module adapter.
       let votingModuleContractName = 'fallback'
       try {
@@ -175,7 +177,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               .join(' | '),
           description: overrideDescription ?? config.description,
           info: {
-            coreAddress: coreAddress,
+            coreAddress,
             votingModuleAddress,
             votingModuleContractName,
             proposalModules,
@@ -185,9 +187,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           },
           ...additionalProps,
         },
-        // Regenerate the page at most once per second.
-        // Should serve cached copy and update after a refresh.
-        revalidate: 1,
+        // Regenerate the page at most once per `revalidate` seconds. Serves
+        // cached copy and refreshes in background.
+        revalidate: DAO_STATIC_PROPS_CACHE_SECONDS,
       }
     } catch (error) {
       // Redirect.
@@ -197,8 +199,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         }
       }
 
-      // Redirect legacy DAOs (legacy multisigs redirected in
-      // next.config.js redirects list).
+      // Redirect legacy DAOs (legacy multisigs redirected in next.config.js
+      // redirects list).
       if (
         error instanceof Error &&
         error.message.includes(
@@ -217,9 +219,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       if (
         error instanceof Error &&
-        (error.message.includes('not found') ||
-          error.message.includes('Error parsing into type') ||
-          error.message.includes('unknown variant') ||
+        (error.message.includes('contract: not found') ||
+          error.message.includes(
+            'Error parsing into type cw_core::msg::QueryMsg'
+          ) ||
           error.message.includes('decoding bech32 failed'))
       ) {
         // Excluding `info` will render DAONotFound.
@@ -229,6 +232,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             title: 'DAO not found',
             description: '',
           },
+          // Regenerate the page at most once per second. Serves cached copy and
+          // refreshes in background.
+          revalidate: 1,
         }
       }
 
@@ -241,6 +247,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           // Report to Sentry.
           error: processError(error, { forceCapture: true }),
         },
+        // Regenerate the page at most once per second. Serves cached copy and
+        // refreshes in background.
+        revalidate: 1,
       }
     }
   }

@@ -53,7 +53,7 @@ export const ProposalDetails = ({
       contractAddress: proposalModule.address,
     })
   )
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModule.address,
       params: [
@@ -62,11 +62,7 @@ export const ProposalDetails = ({
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal || !config) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const walletVote = useRecoilValue(
     walletAddress
@@ -79,7 +75,7 @@ export const ProposalDetails = ({
 
   const walletVotingPowerWhenProposalCreated = Number(
     useRecoilValue(
-      walletAddress && proposal
+      walletAddress
         ? CwCoreV0_1_0Selectors.votingPowerAtHeightSelector({
             contractAddress: coreAddress,
             params: [
@@ -191,7 +187,7 @@ export const ProposalDetails = ({
           vote,
         })
 
-        onVoteSuccess()
+        await onVoteSuccess()
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -212,7 +208,7 @@ export const ProposalDetails = ({
         proposalId: proposalNumber,
       })
 
-      onExecuteSuccess()
+      await onExecuteSuccess()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -231,7 +227,7 @@ export const ProposalDetails = ({
         proposalId: proposalNumber,
       })
 
-      onCloseSuccess()
+      await onCloseSuccess()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))

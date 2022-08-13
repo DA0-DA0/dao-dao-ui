@@ -23,7 +23,7 @@ export const Breadcrumbs: FC<BreadcrumbsProps> = ({ crumbs, className }) => (
         <Link href={link}>
           <a className="mx-2 hover:opacity-80 transition">{name}</a>
         </Link>
-        {idx != crumbs.length - 1 && '/'}
+        {idx !== crumbs.length - 1 && '/'}
       </li>
     ))}
   </ul>

@@ -7,6 +7,9 @@ const prettierConfig = {
   tabWidth: 2,
   trailingComma: 'es5',
   useTabs: false,
+  bracketSpacing: true,
+  arrowParens: 'always',
+  printWidth: 80,
 }
 
 module.exports = prettierConfig

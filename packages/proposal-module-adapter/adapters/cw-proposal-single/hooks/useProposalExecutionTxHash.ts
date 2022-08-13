@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -10,13 +9,12 @@ import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { useProposalModuleAdapterOptions } from '../../../react'
 
 export const useProposalExecutionTxHash = () => {
-  const { t } = useTranslation()
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -25,11 +23,7 @@ export const useProposalExecutionTxHash = () => {
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const executionTxHash = useRecoilValue(
     proposal.status === Status.Executed

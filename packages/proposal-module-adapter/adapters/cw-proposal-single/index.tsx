@@ -5,6 +5,7 @@ import {
   CreateProposalForm,
   DaoInfoVotingConfiguration,
   ProposalModuleInfo,
+  makeUseDepositInfo,
   makeUseListAllProposalInfos,
   makeUseProposalCount,
   makeUseReverseProposalInfos,
@@ -40,6 +41,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       useListAllProposalInfos: makeUseListAllProposalInfos(proposalModule),
       useProposalCount: makeUseProposalCount(proposalModule),
       useActions,
+      useDepositInfo: makeUseDepositInfo(proposalModule),
     },
 
     // Components

@@ -18,6 +18,10 @@ export interface MembershipPageInfo {
   label: string
 }
 
+export interface BaseMembershipProps {
+  proposalModuleDepositInfos: CheckedDepositInfo[]
+}
+
 export interface MembershipMobileTabProps {
   onClick: () => void
   selected: boolean
@@ -32,7 +36,7 @@ export interface BaseVoteHeroStatsProps {
   additionalStats?: (HeroStatProps & { link?: boolean })[]
 }
 
-export interface BaseSdaMembershipPageProps {
+export interface BaseSdaMembershipPageProps extends BaseMembershipProps {
   defaultImageUrl: string
   Loader: ComponentType<{ size?: number | string }>
 }
@@ -59,10 +63,10 @@ export interface UseGovernanceTokenInfoOptions {
 }
 
 export interface UseGovernanceTokenInfoResponse {
-  stakingContractAddress?: string
-  governanceTokenAddress?: string
-  governanceTokenInfo?: TokenInfoResponse
-  governanceTokenMarketingInfo?: MarketingInfoResponse
+  stakingContractAddress: string
+  governanceTokenAddress: string
+  governanceTokenInfo: TokenInfoResponse
+  governanceTokenMarketingInfo: MarketingInfoResponse
   /// Optional
   // Wallet balance
   walletBalance?: number
@@ -79,7 +83,7 @@ export interface UseStakingInfoOptions {
 }
 
 export interface UseStakingInfoResponse {
-  stakingContractAddress?: string
+  stakingContractAddress: string
   unstakingDuration?: Duration
   refreshStakingContractBalances: () => void
   refreshTotals: () => void
@@ -115,9 +119,9 @@ export interface IVotingModuleAdapter {
   // Components
   components: {
     Membership: {
-      Desktop: ComponentType
+      Desktop: ComponentType<BaseMembershipProps>
       MobileTab: ComponentType<MembershipMobileTabProps>
-      Mobile: ComponentType
+      Mobile: ComponentType<BaseMembershipProps>
     }
     DaoThinInfoContent: ComponentType<BaseDaoThinInfoContentProps>
     DaoTreasuryFooter: ComponentType

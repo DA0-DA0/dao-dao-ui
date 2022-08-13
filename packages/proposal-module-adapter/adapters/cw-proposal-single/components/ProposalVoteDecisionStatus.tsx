@@ -32,7 +32,7 @@ export const ProposalVoteDecisionStatus = ({
       contractAddress: proposalModuleAddress,
     })
   )
-  const proposal = useRecoilValue(
+  const { proposal } = useRecoilValue(
     CwProposalSingleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       params: [
@@ -41,11 +41,7 @@ export const ProposalVoteDecisionStatus = ({
         },
       ],
     })
-  )?.proposal
-
-  if (!proposal || !config) {
-    throw new Error(t('error.loadingData'))
-  }
+  )
 
   const yesVotes = Number(
     convertMicroDenomToDenomWithDecimals(

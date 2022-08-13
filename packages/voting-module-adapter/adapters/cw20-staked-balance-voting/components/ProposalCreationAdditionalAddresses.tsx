@@ -10,10 +10,6 @@ export const ProposalCreationAdditionalAddresses = () => {
   const { stakingContractAddress, governanceTokenAddress } =
     useGovernanceTokenInfo()
 
-  if (!stakingContractAddress || !governanceTokenAddress) {
-    throw new Error(t('error.loadingData'))
-  }
-
   return (
     <>
       <p className="font-mono text-sm text-tertiary">

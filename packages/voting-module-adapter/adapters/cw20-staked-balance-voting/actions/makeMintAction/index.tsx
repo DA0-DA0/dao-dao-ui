@@ -40,10 +40,6 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
 
-  if (!governanceTokenAddress || !governanceTokenInfo) {
-    throw new Error('Failed to load data.')
-  }
-
   return useCallback(
     (data: MintData) => {
       const amount = convertDenomToMicroDenomWithDecimals(
@@ -64,10 +60,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
 ) => {
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
-
-  if (!governanceTokenAddress || !governanceTokenInfo) {
-    throw new Error('Failed to load data.')
-  }
 
   return useMemo(() => {
     if (
@@ -104,7 +96,7 @@ const Component: ActionComponent = (props) => {
     <StatelessMintComponent
       {...props}
       options={{
-        govTokenSymbol: governanceTokenInfo?.symbol ?? 'gov tokens',
+        govTokenSymbol: governanceTokenInfo.symbol ?? 'gov tokens',
       }}
     />
   )

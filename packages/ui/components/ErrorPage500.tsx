@@ -18,7 +18,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
   return (
     <ErrorPage title={t('title.500')}>
       <p>
-        {t('error.internalServerError')}{' '}
+        {t('error.errorOccurredOnPage')}{' '}
         <Link href="/home">
           <a className="underline hover:no-underline">
             {t('info.considerReturningHome')}

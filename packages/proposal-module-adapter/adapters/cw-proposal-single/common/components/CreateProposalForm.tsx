@@ -106,10 +106,6 @@ export const CreateProposalForm = ({
 
   const blockHeight = useRecoilValue(blockHeightSelector)
 
-  if (!config || blockHeight === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
-
   const requiredProposalDeposit = Number(config.deposit_info?.deposit ?? '0')
 
   const allowanceResponse = useRecoilValue(
@@ -151,7 +147,7 @@ export const CreateProposalForm = ({
   const pauseInfo = useRecoilValue(
     CwCoreV0_1_0Selectors.pauseInfoSelector({ contractAddress: coreAddress })
   )
-  const isPaused = pauseInfo && 'Paused' in pauseInfo
+  const isPaused = 'Paused' in pauseInfo
 
   const formMethods = useForm<FormProposalData>({
     mode: 'onChange',
@@ -282,7 +278,7 @@ export const CreateProposalForm = ({
         // data have loaded.
         (requiredProposalDeposit && !allowanceResponse)
       ) {
-        throw new Error('Failed to load required info to create a proposal.')
+        throw new Error(t('error.loadingData'))
       }
 
       setLoading(true)
@@ -337,11 +333,12 @@ export const CreateProposalForm = ({
     },
     [
       connected,
-      proposalModuleAddress,
       requiredProposalDeposit,
       allowanceResponse,
+      t,
       blockHeight,
       increaseAllowance,
+      proposalModuleAddress,
       refreshBalances,
       createProposal,
       onCreateSuccess,

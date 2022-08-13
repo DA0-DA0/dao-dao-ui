@@ -1,8 +1,11 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import axios from 'axios'
 import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -12,10 +15,14 @@ import {
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { MemberCheck } from '@dao-dao/icons'
+import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { useVotingModule } from '@dao-dao/state'
+import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Breadcrumbs,
   GradientHero,
+  Loader,
+  Logo,
   MobileMenuTab,
   PageLoader,
   PinToggle,
@@ -46,11 +53,32 @@ enum MobileMenuTabSelection {
 
 const InnerMobileDaoHome = () => {
   const { t } = useTranslation()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
   const {
     components: { Membership },
   } = useVotingModuleAdapter()
   const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
   const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
+
+  const useDepositInfoHooks = useMemo(
+    () =>
+      proposalModules.map(
+        (proposalModule) =>
+          matchAndLoadCommon(proposalModule, {
+            coreAddress,
+            Loader,
+            Logo,
+          }).hooks.useDepositInfo
+      ),
+    [coreAddress, proposalModules]
+  )
+  const proposalModuleDepositInfos = useDepositInfoHooks
+    .map((useDepositInfo) =>
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useDepositInfo?.()
+    )
+    // Filter undefined (falsey) deposit infos
+    .filter(Boolean) as CheckedDepositInfo[]
 
   return (
     <div className="flex flex-col gap-2">
@@ -84,7 +112,11 @@ const InnerMobileDaoHome = () => {
       </div>
       <div className="py-5 px-6">
         {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
-        {tab === MobileMenuTabSelection.Membership && <Membership.Mobile />}
+        {tab === MobileMenuTabSelection.Membership && (
+          <Membership.Mobile
+            proposalModuleDepositInfos={proposalModuleDepositInfos}
+          />
+        )}
         {tab === MobileMenuTabSelection.Treasury && (
           <div className="space-y-8">
             <DaoTreasury />
@@ -101,11 +133,30 @@ const InnerDAOHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const { coreAddress, name } = useDaoInfoContext()
+  const { coreAddress, name, proposalModules } = useDaoInfoContext()
   const {
     components: { Membership },
   } = useVotingModuleAdapter()
   const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+
+  const useDepositInfoHooks = useMemo(
+    () =>
+      proposalModules.map(
+        (proposalModule) =>
+          matchAndLoadCommon(proposalModule, {
+            coreAddress,
+            Loader,
+            Logo,
+          }).hooks.useDepositInfo
+      ),
+    [coreAddress, proposalModules]
+  )
+  const proposalModuleDepositInfos = useDepositInfoHooks
+    .map((useDepositInfo) =>
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useDepositInfo?.()
+    )
+    .filter(Boolean) as CheckedDepositInfo[]
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
   const pinned = isPinned(coreAddress)
@@ -151,7 +202,9 @@ const InnerDAOHome = () => {
               <DaoThinInfo />
             </div>
             <div className="block mt-4 lg:hidden">
-              <Membership.Desktop />
+              <Membership.Desktop
+                proposalModuleDepositInfos={proposalModuleDepositInfos}
+              />
             </div>
             <div className="pt-[22px] pb-[28px] border-b border-inactive">
               <DaoInfo />
@@ -164,7 +217,9 @@ const InnerDAOHome = () => {
         </div>
       </div>
       <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <Membership.Desktop />
+        <Membership.Desktop
+          proposalModuleDepositInfos={proposalModuleDepositInfos}
+        />
       </div>
     </div>
   )

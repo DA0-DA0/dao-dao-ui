@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
@@ -44,7 +47,7 @@ export const TreasuryBalances = () => {
   }[] = useMemo(
     () =>
       cw20s.map((info, idx) => {
-        const logoInfo = cw20MarketingInfo[idx]?.logo
+        const logoInfo = cw20MarketingInfo[idx].logo
 
         return {
           ...info,

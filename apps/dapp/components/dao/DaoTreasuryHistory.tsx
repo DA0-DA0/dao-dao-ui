@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { parseCoins } from '@cosmjs/stargate'
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
@@ -47,7 +50,7 @@ export const InnerDaoTreasuryHistory = ({
   const { coreAddress } = useDaoInfoContext()
   const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
-  return transactions?.length ? (
+  return transactions.length ? (
     <div className="space-y-4">
       <h2 className="primary-text">
         {shortTitle ? t('title.history') : t('title.treasuryHistory')}

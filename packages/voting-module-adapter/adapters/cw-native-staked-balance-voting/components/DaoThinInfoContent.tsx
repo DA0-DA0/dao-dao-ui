@@ -17,7 +17,7 @@ export const DaoThinInfoContent = ({
     fetchTotalStakedValue: true,
   })
 
-  if (!governanceTokenInfo || totalStakedValue === undefined) {
+  if (totalStakedValue === undefined) {
     throw new Error(t('error.loadingData'))
   }
 

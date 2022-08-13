@@ -5,7 +5,6 @@ import { Pie } from '@dao-dao/icons'
 import { SuspenseLoader } from '@dao-dao/ui'
 
 import { BaseSdaMembershipPageProps } from '../../../../types'
-import { useGovernanceTokenInfo } from '../../hooks'
 import { ClaimsPendingList } from '../ClaimsPendingList'
 import { Membership } from '../Membership'
 import { StakeHeader, StakeHeaderLoader } from './StakeHeader'
@@ -13,14 +12,10 @@ import { StakeHeader, StakeHeaderLoader } from './StakeHeader'
 export const SdaMembershipPage = ({
   defaultImageUrl,
   Loader,
+  proposalModuleDepositInfos,
 }: BaseSdaMembershipPageProps) => {
   const { t } = useTranslation()
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
   const { imageUrl } = useDaoInfoContext()
-
-  if (!governanceTokenInfo) {
-    throw new Error(t('error.loadingData'))
-  }
 
   return (
     <div className="space-y-8">
@@ -42,6 +37,7 @@ export const SdaMembershipPage = ({
             {...props}
           />
         )}
+        proposalModuleDepositInfos={proposalModuleDepositInfos}
         sdaMode
       />
     </div>

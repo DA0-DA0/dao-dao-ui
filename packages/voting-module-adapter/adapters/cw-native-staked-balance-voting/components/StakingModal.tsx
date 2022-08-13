@@ -44,7 +44,6 @@ const InnerStakingModal = ({
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
-  const [amount, setAmount] = useState(0)
 
   const {
     governanceTokenAddress,
@@ -68,8 +67,6 @@ const InnerStakingModal = ({
   })
 
   if (
-    !governanceTokenAddress ||
-    !governanceTokenInfo ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
     walletStakedValue === undefined ||
@@ -78,16 +75,29 @@ const InnerStakingModal = ({
     throw new Error(t('error.loadingData'))
   }
 
+  // When staking, default to all unstaked balance (less proposal deposit if
+  // exists).
+  const [amount, setAmount] = useState(
+    mode === StakingMode.Stake
+      ? convertMicroDenomToDenomWithDecimals(
+          !!deposit && Number(deposit) > 0 && unstakedBalance > Number(deposit)
+            ? unstakedBalance - Number(deposit)
+            : unstakedBalance,
+          governanceTokenInfo.decimals
+        )
+      : 0
+  )
+
   const doStake = CwNativeStakedBalanceVotingHooks.useStake({
-    contractAddress: votingModuleAddress ?? '',
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
   const doUnstake = CwNativeStakedBalanceVotingHooks.useUnstake({
-    contractAddress: votingModuleAddress ?? '',
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
   const doClaim = CwNativeStakedBalanceVotingHooks.useClaim({
-    contractAddress: votingModuleAddress ?? '',
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
 

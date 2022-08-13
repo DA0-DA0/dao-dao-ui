@@ -1,12 +1,14 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import { useWalletManager } from '@noahsaso/cosmodal'
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { WalletProvider } from '@dao-dao/common'
 import { mountedInBrowserAtom } from '@dao-dao/state'
-import { SITE_TITLE, usePlatform } from '@dao-dao/utils'
+import { usePlatform } from '@dao-dao/utils'
 
 import {
   betaWarningAcceptedAtom,
@@ -73,12 +75,6 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   return (
     <>
-      <Head>
-        <title>{SITE_TITLE}</title>
-        <link href="/daodao-dark.svg" rel="icon" type="image/svg+xml" />
-        <link href="/yin_yang.png" rel="icon" />
-      </Head>
-
       {installWarningVisible && (
         <InstallKeplr onClose={() => setInstallWarningVisible(false)} />
       )}

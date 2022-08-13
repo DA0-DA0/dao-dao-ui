@@ -44,7 +44,6 @@ const InnerStakingModal = ({
   const { refreshBalances } = useWalletBalance()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
-  const [amount, setAmount] = useState(0)
 
   const {
     governanceTokenAddress,
@@ -67,16 +66,14 @@ const InnerStakingModal = ({
   })
 
   const totalStakedBalance = useRecoilValue(
-    stakingContractAddress
-      ? StakeCw20Selectors.totalStakedAtHeightSelector({
-          contractAddress: stakingContractAddress,
-          params: [{}],
-        })
-      : constSelector(undefined)
+    StakeCw20Selectors.totalStakedAtHeightSelector({
+      contractAddress: stakingContractAddress,
+      params: [{}],
+    })
   )
 
   const walletStakedBalance = useRecoilValue(
-    stakingContractAddress && walletAddress
+    walletAddress
       ? StakeCw20Selectors.stakedBalanceAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
@@ -85,36 +82,43 @@ const InnerStakingModal = ({
   )
 
   const totalValue = useRecoilValue(
-    stakingContractAddress
-      ? StakeCw20Selectors.totalValueSelector({
-          contractAddress: stakingContractAddress,
-        })
-      : constSelector(undefined)
+    StakeCw20Selectors.totalValueSelector({
+      contractAddress: stakingContractAddress,
+    })
   )
 
   if (
-    !governanceTokenInfo ||
-    !stakingContractAddress ||
     sumClaimsAvailable === undefined ||
     unstakedBalance === undefined ||
     walletStakedValue === undefined ||
-    totalStakedBalance === undefined ||
-    walletStakedBalance === undefined ||
-    totalValue === undefined
+    walletStakedBalance === undefined
   ) {
     throw new Error(t('error.loadingData'))
   }
 
+  // When staking, default to all unstaked balance (less proposal deposit if
+  // exists).
+  const [amount, setAmount] = useState(
+    mode === StakingMode.Stake
+      ? convertMicroDenomToDenomWithDecimals(
+          !!deposit && Number(deposit) > 0 && unstakedBalance > Number(deposit)
+            ? unstakedBalance - Number(deposit)
+            : unstakedBalance,
+          governanceTokenInfo.decimals
+        )
+      : 0
+  )
+
   const doStake = Cw20BaseHooks.useSend({
-    contractAddress: governanceTokenAddress ?? '',
+    contractAddress: governanceTokenAddress,
     sender: walletAddress ?? '',
   })
   const doUnstake = StakeCw20Hooks.useUnstake({
-    contractAddress: stakingContractAddress ?? '',
+    contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })
   const doClaim = StakeCw20Hooks.useClaim({
-    contractAddress: stakingContractAddress ?? '',
+    contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })
 

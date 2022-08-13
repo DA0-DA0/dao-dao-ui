@@ -1,3 +1,6 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
@@ -18,7 +21,7 @@ export const NavListItem: FC<NavListItemProps> = ({
   return (
     <li
       className={
-        currentUrl == href ? 'underline' : 'transition-all hover:underline'
+        currentUrl === href ? 'underline' : 'transition-all hover:underline'
       }
     >
       <div className="flex flex-row gap-2 items-center mt-1 cursor-pointer">
