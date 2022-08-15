@@ -15,9 +15,8 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
   register: UseFormRegister<FieldValues>
   validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
   error?: FieldError
-  defaultValue?: string
-  step?: string | number
-  onPlusMinus?: [() => void, () => void]
+  onMinus?: () => void
+  onPlus?: () => void
   containerClassName?: string
   sizing?: 'sm' | 'md' | 'auto'
   required?: boolean
@@ -38,9 +37,8 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   register,
   error,
   validation,
-  defaultValue,
-  step,
-  onPlusMinus,
+  onMinus,
+  onPlus,
   disabled,
   sizing,
   className,
@@ -54,73 +52,59 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
     {}
   )
 
-  const sharedProps = {
-    defaultValue,
-    disabled,
-    step,
-    type: 'number',
-    ...props,
-    ...register(fieldName, {
-      required: required && 'Required',
-      validate,
-      ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
-    }),
-  }
-
-  const _containerClassName = clsx(
-    'py-2 px-3 bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
-    {
-      'ring-1 ring-error': error,
-      'w-28': sizing === 'sm',
-      'w-40': sizing === 'md',
-      'w-28 md:w-32 lg:w-40': sizing === 'auto',
-    },
-    containerClassName
-  )
-
-  if (onPlusMinus) {
-    return (
-      <div
-        className={clsx(
-          'flex flex-row gap-1 items-center text-sm',
-          _containerClassName
-        )}
-      >
+  return (
+    <div
+      className={clsx(
+        'flex flex-row gap-1 items-center text-sm',
+        'py-2 px-3 bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+        {
+          'ring-1 ring-error': error,
+          'w-28': sizing === 'sm',
+          'w-40': sizing === 'md',
+          'w-28 md:w-32 lg:w-40': sizing === 'auto',
+        },
+        containerClassName
+      )}
+    >
+      {onPlus && (
         <button
           className={clsx('transition secondary-text', {
             'hover:body-text': !disabled,
           })}
           disabled={disabled}
-          onClick={() => onPlusMinus[0]()}
+          onClick={onPlus}
           type="button"
         >
           <PlusIcon className="w-4" />
         </button>
+      )}
+      {onMinus && (
         <button
           className={clsx('transition secondary-text', {
             'hover:body-text': !disabled,
           })}
           disabled={disabled}
-          onClick={() => onPlusMinus[1]()}
+          onClick={onMinus}
           type="button"
         >
           <MinusIcon className="w-4" />
         </button>
-        <input
-          className={clsx(
-            'w-full text-right bg-transparent border-none outline-none ring-none body-text',
-            className
-          )}
-          {...sharedProps}
-        />
-      </div>
-    )
-  }
+      )}
 
-  return (
-    <input
-      className={clsx('body-text', _containerClassName)}
-      {...sharedProps}
-    />
+      <input
+        className={clsx(
+          'w-full text-right bg-transparent border-none outline-none ring-none body-text',
+          className
+        )}
+        disabled={disabled}
+        type="number"
+        {...props}
+        {...register(fieldName, {
+          required: required && 'Required',
+          validate,
+          ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
+        })}
+      />
+    </div>
   )
 }

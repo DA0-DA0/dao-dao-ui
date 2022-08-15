@@ -107,18 +107,18 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={fieldNamePrefix + 'amount'}
-          onPlusMinus={[
-            () =>
-              setValue(
-                fieldNamePrefix + 'amount',
-                Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
-              ),
-            () =>
-              setValue(
-                fieldNamePrefix + 'amount',
-                Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
-              ),
-          ]}
+          onMinus={() =>
+            setValue(
+              fieldNamePrefix + 'amount',
+              Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
+            )
+          }
+          onPlus={() =>
+            setValue(
+              fieldNamePrefix + 'amount',
+              Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
+            )
+          }
           register={register}
           sizing="auto"
           step={1 / 10 ** NATIVE_DECIMALS}

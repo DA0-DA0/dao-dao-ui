@@ -142,28 +142,28 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                 containerClassName="grow"
                 error={errors.tiers?.[tierIndex]?.weight}
                 fieldName={`tiers.${tierIndex}.weight`}
-                onPlusMinus={[
-                  () =>
-                    setValue(
-                      `tiers.${tierIndex}.weight`,
-                      Math.max(
-                        (newDAO.tiers?.[tierIndex]?.weight ?? 0) + 1,
-                        governanceTokenEnabled
-                          ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
-                          : 1
-                      )
-                    ),
-                  () =>
-                    setValue(
-                      `tiers.${tierIndex}.weight`,
-                      Math.max(
-                        (newDAO.tiers?.[tierIndex]?.weight ?? 0) - 1,
-                        governanceTokenEnabled
-                          ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
-                          : 1
-                      )
-                    ),
-                ]}
+                onMinus={() =>
+                  setValue(
+                    `tiers.${tierIndex}.weight`,
+                    Math.max(
+                      (newDAO.tiers?.[tierIndex]?.weight ?? 0) - 1,
+                      governanceTokenEnabled
+                        ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
+                        : 1
+                    )
+                  )
+                }
+                onPlus={() =>
+                  setValue(
+                    `tiers.${tierIndex}.weight`,
+                    Math.max(
+                      (newDAO.tiers?.[tierIndex]?.weight ?? 0) + 1,
+                      governanceTokenEnabled
+                        ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
+                        : 1
+                    )
+                  )
+                }
                 register={register}
                 step={
                   governanceTokenEnabled ? 1 / 10 ** NEW_DAO_CW20_DECIMALS : 1

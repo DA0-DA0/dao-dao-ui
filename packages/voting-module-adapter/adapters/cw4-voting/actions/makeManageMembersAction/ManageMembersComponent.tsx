@@ -76,10 +76,10 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                     disabled={!isCreating}
                     error={errors?.toAdd?.[index]?.weight}
                     fieldName={weightFieldName}
-                    onPlusMinus={[
-                      () => setValue(weightFieldName, Math.max(weight - 1, 0)),
-                      () => setValue(weightFieldName, weight + 1),
-                    ]}
+                    onMinus={() =>
+                      setValue(weightFieldName, Math.max(weight - 1, 0))
+                    }
+                    onPlus={() => setValue(weightFieldName, weight + 1)}
                     placeholder={t('form.votingWeightPlaceholder')}
                     register={register}
                     sizing="md"
