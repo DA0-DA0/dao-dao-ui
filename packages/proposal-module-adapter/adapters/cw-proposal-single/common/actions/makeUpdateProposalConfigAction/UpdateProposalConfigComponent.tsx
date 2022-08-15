@@ -180,18 +180,18 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.thresholdPercentage}
                 fieldName={fieldNamePrefix + 'thresholdPercentage'}
-                onPlusMinus={[
-                  () =>
-                    setValue(
-                      fieldNamePrefix + 'thresholdPercentage',
-                      Math.max(thresholdPercentage + 1, 1)
-                    ),
-                  () =>
-                    setValue(
-                      fieldNamePrefix + 'thresholdPercentage',
-                      Math.max(thresholdPercentage - 1, 1)
-                    ),
-                ]}
+                onMinus={() =>
+                  setValue(
+                    fieldNamePrefix + 'thresholdPercentage',
+                    Math.max(thresholdPercentage - 1, 1)
+                  )
+                }
+                onPlus={() =>
+                  setValue(
+                    fieldNamePrefix + 'thresholdPercentage',
+                    Math.max(thresholdPercentage + 1, 1)
+                  )
+                }
                 register={register}
                 sizing="sm"
                 validation={[validateRequired, validatePercent]}
@@ -236,18 +236,18 @@ export const UpdateProposalConfigComponent: ActionComponent<
                   disabled={!isCreating}
                   error={errors?.quorumPercentage}
                   fieldName={fieldNamePrefix + 'quorumPercentage'}
-                  onPlusMinus={[
-                    () =>
-                      setValue(
-                        fieldNamePrefix + 'quorumPercentage',
-                        Math.max(quorumPercentage + 1, 1)
-                      ),
-                    () =>
-                      setValue(
-                        fieldNamePrefix + 'quorumPercentage',
-                        Math.max(quorumPercentage - 1, 1)
-                      ),
-                  ]}
+                  onMinus={() =>
+                    setValue(
+                      fieldNamePrefix + 'quorumPercentage',
+                      Math.max(quorumPercentage - 1, 1)
+                    )
+                  }
+                  onPlus={() =>
+                    setValue(
+                      fieldNamePrefix + 'quorumPercentage',
+                      Math.max(quorumPercentage + 1, 1)
+                    )
+                  }
                   register={register}
                   sizing="sm"
                   validation={[validateRequired, validatePercent]}
@@ -282,18 +282,18 @@ export const UpdateProposalConfigComponent: ActionComponent<
               disabled={!isCreating}
               error={errors?.proposalDuration}
               fieldName={fieldNamePrefix + 'proposalDuration'}
-              onPlusMinus={[
-                () =>
-                  setValue(
-                    fieldNamePrefix + 'proposalDuration',
-                    Math.max(proposalDuration + 1, 1)
-                  ),
-                () =>
-                  setValue(
-                    fieldNamePrefix + 'proposalDuration',
-                    Math.max(proposalDuration - 1, 1)
-                  ),
-              ]}
+              onMinus={() =>
+                setValue(
+                  fieldNamePrefix + 'proposalDuration',
+                  Math.max(proposalDuration - 1, 1)
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  fieldNamePrefix + 'proposalDuration',
+                  Math.max(proposalDuration + 1, 1)
+                )
+              }
               register={register}
               sizing="sm"
               step={1}

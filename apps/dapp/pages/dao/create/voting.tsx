@@ -305,24 +305,24 @@ const CreateDAOVotingPage: NextPage = () => {
                           errors.governanceTokenOptions?.newInfo?.initialSupply
                         }
                         fieldName="governanceTokenOptions.newInfo.initialSupply"
-                        onPlusMinus={[
-                          () =>
-                            setValue(
-                              'governanceTokenOptions.newInfo.initialSupply',
-                              Math.max(
-                                govTokenInitialSupply + 1,
-                                1 / 10 ** NEW_DAO_CW20_DECIMALS
-                              )
-                            ),
-                          () =>
-                            setValue(
-                              'governanceTokenOptions.newInfo.initialSupply',
-                              Math.max(
-                                govTokenInitialSupply - 1,
-                                1 / 10 ** NEW_DAO_CW20_DECIMALS
-                              )
-                            ),
-                        ]}
+                        onMinus={() =>
+                          setValue(
+                            'governanceTokenOptions.newInfo.initialSupply',
+                            Math.max(
+                              govTokenInitialSupply - 1,
+                              1 / 10 ** NEW_DAO_CW20_DECIMALS
+                            )
+                          )
+                        }
+                        onPlus={() =>
+                          setValue(
+                            'governanceTokenOptions.newInfo.initialSupply',
+                            Math.max(
+                              govTokenInitialSupply + 1,
+                              1 / 10 ** NEW_DAO_CW20_DECIMALS
+                            )
+                          )
+                        }
                         register={register}
                         step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
                         validation={[validatePositive, validateRequired]}
@@ -368,24 +368,24 @@ const CreateDAOVotingPage: NextPage = () => {
                             ?.initialTreasuryPercent
                         }
                         fieldName="governanceTokenOptions.newInfo.initialTreasuryPercent"
-                        onPlusMinus={[
-                          () =>
-                            setValue(
-                              'governanceTokenOptions.newInfo.initialTreasuryPercent',
-                              Math.min(
-                                Math.max(govTokenTreasuryPercent + 1, 0),
-                                100
-                              )
-                            ),
-                          () =>
-                            setValue(
-                              'governanceTokenOptions.newInfo.initialTreasuryPercent',
-                              Math.min(
-                                Math.max(govTokenTreasuryPercent - 1, 0),
-                                100
-                              )
-                            ),
-                        ]}
+                        onMinus={() =>
+                          setValue(
+                            'governanceTokenOptions.newInfo.initialTreasuryPercent',
+                            Math.min(
+                              Math.max(govTokenTreasuryPercent - 1, 0),
+                              100
+                            )
+                          )
+                        }
+                        onPlus={() =>
+                          setValue(
+                            'governanceTokenOptions.newInfo.initialTreasuryPercent',
+                            Math.min(
+                              Math.max(govTokenTreasuryPercent + 1, 0),
+                              100
+                            )
+                          )
+                        }
                         register={register}
                         step={0.001}
                         validation={[

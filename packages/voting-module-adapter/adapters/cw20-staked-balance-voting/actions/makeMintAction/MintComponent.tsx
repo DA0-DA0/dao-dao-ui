@@ -34,18 +34,18 @@ export const MintComponent: ActionComponent<MintOptions> = ({
               disabled={!isCreating}
               error={errors?.amount}
               fieldName={fieldNamePrefix + 'amount'}
-              onPlusMinus={[
-                () =>
-                  setValue(
-                    fieldNamePrefix + 'amount',
-                    (Number(amount) + 1).toString()
-                  ),
-                () =>
-                  setValue(
-                    fieldNamePrefix + 'amount',
-                    (Number(amount) - 1).toString()
-                  ),
-              ]}
+              onMinus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  (Number(amount) - 1).toString()
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  (Number(amount) + 1).toString()
+                )
+              }
               register={register}
               sizing="auto"
               validation={[validateRequired, validatePositive]}

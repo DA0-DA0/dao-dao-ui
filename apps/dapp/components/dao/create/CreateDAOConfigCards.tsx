@@ -78,18 +78,18 @@ export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
             <NumberInput
               error={errors?.advancedVotingConfig?.thresholdQuorum?.threshold}
               fieldName="advancedVotingConfig.thresholdQuorum.threshold"
-              onPlusMinus={[
-                () =>
-                  setValue(
-                    'advancedVotingConfig.thresholdQuorum.threshold',
-                    Math.max(threshold + 1, 1)
-                  ),
-                () =>
-                  setValue(
-                    'advancedVotingConfig.thresholdQuorum.threshold',
-                    Math.max(threshold - 1, 1)
-                  ),
-              ]}
+              onMinus={() =>
+                setValue(
+                  'advancedVotingConfig.thresholdQuorum.threshold',
+                  Math.max(threshold - 1, 1)
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  'advancedVotingConfig.thresholdQuorum.threshold',
+                  Math.max(threshold + 1, 1)
+                )
+              }
               // Override numeric value setter since the select below
               // attempts to set 'majority', but registering the field
               // with the numeric setter causes validation issues.
@@ -187,18 +187,18 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
                   disabled={readOnly}
                   error={errors?.advancedVotingConfig?.thresholdQuorum?.quorum}
                   fieldName="advancedVotingConfig.thresholdQuorum.quorum"
-                  onPlusMinus={[
-                    () =>
-                      setValue(
-                        'advancedVotingConfig.thresholdQuorum.quorum',
-                        Math.max(quorum + 1, 0)
-                      ),
-                    () =>
-                      setValue(
-                        'advancedVotingConfig.thresholdQuorum.quorum',
-                        Math.max(quorum - 1, 0)
-                      ),
-                  ]}
+                  onMinus={() =>
+                    setValue(
+                      'advancedVotingConfig.thresholdQuorum.quorum',
+                      Math.max(quorum - 1, 0)
+                    )
+                  }
+                  onPlus={() =>
+                    setValue(
+                      'advancedVotingConfig.thresholdQuorum.quorum',
+                      Math.max(quorum + 1, 0)
+                    )
+                  }
                   register={register}
                   // Override numeric value setter since the select below
                   // attempts to set 'majority', but registering the field
@@ -264,18 +264,18 @@ export const CreateDAOVotingDurationCard: FC<
             disabled={readOnly}
             error={errors?.votingDuration?.value}
             fieldName="votingDuration.value"
-            onPlusMinus={[
-              () =>
-                setValue(
-                  'votingDuration.value',
-                  Math.max(votingDuration.value + 1, 1)
-                ),
-              () =>
-                setValue(
-                  'votingDuration.value',
-                  Math.max(votingDuration.value - 1, 1)
-                ),
-            ]}
+            onMinus={() =>
+              setValue(
+                'votingDuration.value',
+                Math.max(votingDuration.value - 1, 1)
+              )
+            }
+            onPlus={() =>
+              setValue(
+                'votingDuration.value',
+                Math.max(votingDuration.value + 1, 1)
+              )
+            }
             register={register}
             sizing="sm"
             step={1}
@@ -350,18 +350,18 @@ export const CreateDAOProposalDepositCard: FC<
             disabled={readOnly}
             error={errors?.governanceTokenOptions?.proposalDeposit?.value}
             fieldName="governanceTokenOptions.proposalDeposit.value"
-            onPlusMinus={[
-              () =>
-                setValue(
-                  'governanceTokenOptions.proposalDeposit.value',
-                  Math.max(value + 1, 0)
-                ),
-              () =>
-                setValue(
-                  'governanceTokenOptions.proposalDeposit.value',
-                  Math.max(value - 1, 0)
-                ),
-            ]}
+            onMinus={() =>
+              setValue(
+                'governanceTokenOptions.proposalDeposit.value',
+                Math.max(value - 1, 0)
+              )
+            }
+            onPlus={() =>
+              setValue(
+                'governanceTokenOptions.proposalDeposit.value',
+                Math.max(value + 1, 0)
+              )
+            }
             register={register}
             sizing="sm"
             step={1}
@@ -458,18 +458,18 @@ export const CreateDAOUnstakingDurationCard: FC<
             disabled={readOnly}
             error={errors?.governanceTokenOptions?.unregisterDuration?.value}
             fieldName="governanceTokenOptions.unregisterDuration.value"
-            onPlusMinus={[
-              () =>
-                setValue(
-                  'governanceTokenOptions.unregisterDuration.value',
-                  Math.max(unregisterDuration.value + 1, 0)
-                ),
-              () =>
-                setValue(
-                  'governanceTokenOptions.unregisterDuration.value',
-                  Math.max(unregisterDuration.value - 1, 0)
-                ),
-            ]}
+            onMinus={() =>
+              setValue(
+                'governanceTokenOptions.unregisterDuration.value',
+                Math.max(unregisterDuration.value - 1, 0)
+              )
+            }
+            onPlus={() =>
+              setValue(
+                'governanceTokenOptions.unregisterDuration.value',
+                Math.max(unregisterDuration.value + 1, 0)
+              )
+            }
             register={register}
             sizing="sm"
             step={1}
