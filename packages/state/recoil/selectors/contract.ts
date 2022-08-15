@@ -72,22 +72,33 @@ export const treasuryTransactionsSelector = selectorFamily({
         )
       )
 
-      return txs
-        .map((tx, index) => {
-          let events
-          try {
-            events = JSON.parse(tx.rawLog)[0].events
-          } catch {
-            return
-          }
+      return (
+        txs
+          .map((tx, index) => {
+            let events
+            try {
+              events = JSON.parse(tx.rawLog)[0].events
+            } catch {
+              return
+            }
 
-          return {
-            tx,
-            timestamp: txDates[index],
-            events,
-          }
-        })
-        .filter(Boolean) as TreasuryTransaction[]
+            return {
+              tx,
+              timestamp: txDates[index],
+              events,
+            }
+          })
+          .filter(Boolean) as TreasuryTransaction[]
+      ).sort((a, b) =>
+        // Sort descending by timestamp, putting undefined timestamps last.
+        b.timestamp && a.timestamp
+          ? b.timestamp.getTime() - a.timestamp.getTime()
+          : !a.timestamp
+          ? 1
+          : !b.timestamp
+          ? -1
+          : 0
+      )
     },
 })
 
