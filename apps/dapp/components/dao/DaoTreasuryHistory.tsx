@@ -69,14 +69,18 @@ export const InnerDaoTreasuryHistory = ({
       NATIVE_DECIMALS
     )
 
-    return transactions
-      .filter(({ denomLabel }) => denomLabel === NATIVE_DENOM_LABEL)
-      .map(({ amount, outgoing }) => {
-        let currentTotal = runningTotal
-        runningTotal -= (outgoing ? -1 : 1) * amount
-        return currentTotal
-      })
-      .reverse()
+    return (
+      transactions
+        .filter(({ denomLabel }) => denomLabel === NATIVE_DENOM_LABEL)
+        .map(({ amount, outgoing }) => {
+          let currentTotal = runningTotal
+          runningTotal -= (outgoing ? -1 : 1) * amount
+          return currentTotal
+        })
+        // Reverse since transactions are descending, but we want the graph to
+        // display ascending balance.
+        .reverse()
+    )
   }, [nativeBalance, transactions])
 
   return transactions.length ? (
