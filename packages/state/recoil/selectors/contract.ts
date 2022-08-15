@@ -10,7 +10,10 @@ import {
   parseCoreVersion,
 } from '@dao-dao/utils'
 
-import { blockHeightTimestampSelector, cosmWasmClientSelector } from './chain'
+import {
+  blockHeightTimestampSafeSelector,
+  cosmWasmClientSelector,
+} from './chain'
 import { CwCoreV0_1_0Selectors } from './clients'
 
 export const contractInstantiateTimeSelector = selectorFamily<
@@ -28,7 +31,7 @@ export const contractInstantiateTimeSelector = selectorFamily<
       })
       if (events.length === 0) return
 
-      return get(blockHeightTimestampSelector(events[0].height))
+      return get(blockHeightTimestampSafeSelector(events[0].height))
     },
 })
 
@@ -50,7 +53,13 @@ export const contractAdminSelector = selectorFamily<string | undefined, string>(
   }
 )
 
-export interface TreasuryTransaction {
+type TreasuryTransactionsParams = {
+  address: string
+  minHeight?: number
+  maxHeight?: number
+}
+
+interface TreasuryTransaction {
   tx: IndexedTx
   timestamp: Date | undefined
   events: {
@@ -62,20 +71,29 @@ export interface TreasuryTransaction {
   }[]
 }
 
-export const treasuryTransactionsSelector = selectorFamily({
+export const treasuryTransactionsSelector = selectorFamily<
+  TreasuryTransaction[],
+  TreasuryTransactionsParams
+>({
   key: 'treasuryTransactions',
   get:
-    (address: string) =>
+    ({ address, minHeight, maxHeight }) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
 
-      const txs = await client.searchTx({
-        sentFromOrTo: address,
-      })
+      const txs = await client.searchTx(
+        {
+          sentFromOrTo: address,
+        },
+        {
+          minHeight,
+          maxHeight,
+        }
+      )
 
       const txDates = get(
         waitForAll(
-          txs.map(({ height }) => blockHeightTimestampSelector(height))
+          txs.map(({ height }) => blockHeightTimestampSafeSelector(height))
         )
       )
 
@@ -104,7 +122,7 @@ export const treasuryTransactionsSelector = selectorFamily({
           ? 1
           : !b.timestamp
           ? -1
-          : 0
+          : b.tx.height - a.tx.height
       )
     },
 })
@@ -122,13 +140,13 @@ export interface TransformedTreasuryTransaction {
 
 export const transformedTreasuryTransactionsSelector = selectorFamily<
   TransformedTreasuryTransaction[],
-  string
+  TreasuryTransactionsParams
 >({
   key: 'transformedTreasuryTransactions',
   get:
-    (address: string) =>
+    (params) =>
     async ({ get }) => {
-      const txs = get(treasuryTransactionsSelector(address))
+      const txs = get(treasuryTransactionsSelector(params))
 
       return txs
         .map(({ tx: { hash, height }, timestamp, events }) => {
@@ -180,7 +198,7 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             recipient,
             amount: amountValue,
             denomLabel,
-            outgoing: sender === address,
+            outgoing: sender === params.address,
           }
         })
         .filter(Boolean) as TransformedTreasuryTransaction[]

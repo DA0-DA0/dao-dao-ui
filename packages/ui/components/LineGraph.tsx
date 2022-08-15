@@ -4,19 +4,21 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  Title,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 
 import { useNamedThemeColor, useThemeContext } from '../theme'
 
-ChartJS.register(LinearScale, LineElement, CategoryScale, PointElement)
+ChartJS.register(LinearScale, LineElement, CategoryScale, PointElement, Title)
 
 export interface LineGraphProps {
-  yLabel: string
+  title: string
+  yTitle: string
   yValues: number[]
 }
 
-export const LineGraph = ({ yLabel, yValues }: LineGraphProps) => {
+export const LineGraph = ({ title, yTitle, yValues }: LineGraphProps) => {
   const { accentColor } = useThemeContext()
   const darkRgb = `rgba(${useNamedThemeColor('dark')}, 0.2)`
 
@@ -40,6 +42,12 @@ export const LineGraph = ({ yLabel, yValues }: LineGraphProps) => {
             radius: 0,
           },
         },
+        plugins: {
+          title: {
+            display: true,
+            text: title,
+          },
+        },
         scales: {
           x: {
             display: false,
@@ -47,7 +55,7 @@ export const LineGraph = ({ yLabel, yValues }: LineGraphProps) => {
           y: {
             display: true,
             title: {
-              text: yLabel,
+              text: yTitle,
               display: true,
               color: darkRgb,
             },

@@ -1,23 +1,30 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ExternalLinkIcon } from '@heroicons/react/outline'
-import { FC, useMemo } from 'react'
+import {
+  ArrowNarrowLeftIcon,
+  ArrowNarrowRightIcon,
+  ExternalLinkIcon,
+} from '@heroicons/react/outline'
+import { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
+import { useRecoilCallback, useRecoilValue } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 import {
   TransformedTreasuryTransaction,
+  blockHeightSelector,
+  blockHeightTimestampSafeSelector,
+  blockHeightTimestampSelector,
   nativeBalanceSelector,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
 import {
+  Button,
   CopyToClipboard,
   LineGraph,
   Loader,
   SuspenseLoader,
-  Trans,
 } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
@@ -25,6 +32,7 @@ import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
+  processError,
 } from '@dao-dao/utils'
 
 interface DaoTreasuryHistoryProps {
@@ -51,6 +59,9 @@ export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
 }
 
 const NATIVE_DENOM_LABEL = nativeTokenLabel(NATIVE_DENOM)
+// Load roughly 3 days at a time (assuming 1 block per 6 seconds, which is not
+// accurate but close enough).
+const BLOCK_HEIGHT_INTERVAL = (60 * 60 * 24 * 3) / 6
 
 export const InnerDaoTreasuryHistory = ({
   shortTitle,
@@ -58,11 +69,80 @@ export const InnerDaoTreasuryHistory = ({
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
 
-  const transactions = useRecoilValue(
-    transformedTreasuryTransactionsSelector(coreAddress)
+  // Initialization.
+  const latestBlockHeight = useRecoilValue(blockHeightSelector)
+  const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
+  const initialLowestHeightLoadedTimestamp = useRecoilValue(
+    blockHeightTimestampSafeSelector(initialMinHeight)
   )
-  const nativeBalance = useRecoilValue(nativeBalanceSelector(coreAddress))
+  const initialTransactions = useRecoilValue(
+    transformedTreasuryTransactionsSelector({
+      address: coreAddress,
+      minHeight: initialMinHeight,
+      maxHeight: latestBlockHeight,
+    })
+  )
 
+  // Paginated data.
+  const [loading, setLoading] = useState(false)
+  const [lowestHeightLoaded, setLowestHeightLoaded] = useState(initialMinHeight)
+  const [lowestHeightLoadedTimestamp, setLowestHeightLoadedTimestamp] =
+    useState(initialLowestHeightLoadedTimestamp)
+  const [transactions, setTransactions] = useState(initialTransactions)
+  const [canLoadMore, setCanLoadMore] = useState(true)
+
+  // Pagination loader.
+  const loadMoreTransactions = useRecoilCallback(
+    ({ snapshot }) =>
+      async (maxHeight: number) => {
+        const minHeight = maxHeight - BLOCK_HEIGHT_INTERVAL
+
+        setLoading(true)
+        try {
+          const newTransactions = await snapshot.getPromise(
+            transformedTreasuryTransactionsSelector({
+              address: coreAddress,
+              minHeight,
+              maxHeight,
+            })
+          )
+
+          const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
+            blockHeightTimestampSelector(minHeight)
+          )
+
+          setLowestHeightLoaded(minHeight)
+          setLowestHeightLoadedTimestamp(newLowestHeightLoadedTimestamp)
+
+          // If no transactions found, try to load more.
+          if (!newTransactions.length) {
+            return await loadMoreTransactions(minHeight)
+          }
+
+          setTransactions((transactions) => [
+            ...transactions,
+            ...newTransactions,
+          ])
+        } catch (err) {
+          console.error(
+            processError(err, { tags: { coreAddress, minHeight, maxHeight } })
+          )
+          // If errored, assume we cannot load any more below this height.
+          setCanLoadMore(false)
+        } finally {
+          setLoading(false)
+        }
+      },
+    [
+      coreAddress,
+      setLoading,
+      setTransactions,
+      setLowestHeightLoaded,
+      setLowestHeightLoadedTimestamp,
+    ]
+  )
+
+  const nativeBalance = useRecoilValue(nativeBalanceSelector(coreAddress))
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(
       nativeBalance.amount,
@@ -83,26 +163,60 @@ export const InnerDaoTreasuryHistory = ({
     )
   }, [nativeBalance, transactions])
 
-  return transactions.length ? (
-    <div className="space-y-4">
+  return (
+    <div className="flex flex-col gap-y-4">
       <h2 className="primary-text">
         {shortTitle ? t('title.history') : t('title.treasuryHistory')}
       </h2>
 
-      <div>
-        <LineGraph yLabel={NATIVE_DENOM_LABEL} yValues={lineGraphValues} />
-      </div>
+      {transactions.length ? (
+        <>
+          <div className="max-w-lg">
+            <LineGraph
+              title={t('title.nativeBalanceOverTime', {
+                denomLabel: NATIVE_DENOM_LABEL,
+              }).toLocaleUpperCase()}
+              yTitle={NATIVE_DENOM_LABEL}
+              yValues={lineGraphValues}
+            />
+          </div>
 
-      <div className="md:px-4">
-        {transactions.map((transaction) => (
-          <TransactionRenderer
-            key={transaction.hash}
-            transaction={transaction}
-          />
-        ))}
+          <div className="md:px-4">
+            {transactions.map((transaction) => (
+              <TransactionRenderer
+                key={transaction.hash}
+                transaction={transaction}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="text-secondary">{t('info.nothingFound')}</p>
+      )}
+
+      <div className="flex flex-row gap-4 justify-between items-center">
+        {lowestHeightLoadedTimestamp && (
+          <p className="italic caption-text">
+            {t('info.historySinceDate', {
+              date: lowestHeightLoadedTimestamp.toLocaleString(),
+            })}
+          </p>
+        )}
+
+        {canLoadMore ? (
+          <Button
+            loading={loading}
+            onClick={() => loadMoreTransactions(lowestHeightLoaded)}
+            size="sm"
+          >
+            {t('button.loadMore')}
+          </Button>
+        ) : (
+          <p className="caption-text">{t('info.availableHistoryLoaded')}</p>
+        )}
       </div>
     </div>
-  ) : null
+  )
 }
 
 interface TransactionRendererProps {
@@ -122,26 +236,21 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
   },
 }) => (
   <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
-    <div className="flex flex-row flex-wrap gap-x-1 items-center text-sm leading-6">
+    <div className="flex flex-row flex-wrap gap-x-4 items-center text-sm leading-6">
+      <CopyToClipboard value={outgoing ? recipient : sender} />
+      {/* Outgoing transactions are received by the address above, so point to the left. */}
       {outgoing ? (
-        <Trans i18nKey="info.treasurySent">
-          <p className="font-extrabold">
-            <CopyToClipboard value={recipient} />
-          </p>
-          <p>was sent</p>
-          <p className="font-bold">{{ amount: `${amount} $${denomLabel}` }}</p>
-          <p className="pr-1">from the treasury.</p>
-        </Trans>
+        <ArrowNarrowLeftIcon className="w-4 h-4" />
       ) : (
-        <Trans i18nKey="info.treasuryReceived">
-          <p className="font-extrabold">
-            <CopyToClipboard value={sender} />
-          </p>
-          <p>sent</p>
-          <p className="font-bold">{{ amount: `${amount} $${denomLabel}` }}</p>
-          <p className="pr-1">to the treasury.</p>
-        </Trans>
+        <ArrowNarrowRightIcon className="w-4 h-4" />
       )}
+      <p>
+        {amount} ${denomLabel}
+      </p>
+    </div>
+
+    <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+      {timestamp?.toLocaleString() ?? `${height} block`}
 
       <a
         className="text-tertiary"
@@ -151,10 +260,6 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
       >
         <ExternalLinkIcon className="w-4" />
       </a>
-    </div>
-
-    <p className="font-mono text-xs leading-6 text-right">
-      {timestamp?.toLocaleString() ?? `${height} block`}
     </p>
   </div>
 )
