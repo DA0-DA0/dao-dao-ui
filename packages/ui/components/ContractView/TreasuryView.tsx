@@ -8,7 +8,8 @@ import {
   nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
-import { BalanceIcon } from './BalanceIcon'
+import { TooltipIcon } from '../TooltipIcon'
+import { BalanceIcon, UnknownAssetBalanceIcon } from './BalanceIcon'
 import { BalanceListItem } from './BalanceListItem'
 
 export interface TreasuryBalancesProps {
@@ -44,6 +45,25 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
       {nativeTokens.map(({ denom, amount, decimals }) => {
         const symbol = nativeTokenLabel(denom)
         const icon = nativeTokenLogoURI(denom)
+        if (symbol.startsWith('IBC')) {
+          // We're dealing with an IBC token we don't know about. Instead
+          // of showing a long hash, hide that in a tooltip.
+          return (
+            <BalanceListItem key={symbol}>
+              <UnknownAssetBalanceIcon />
+              {convertMicroDenomToDenomWithDecimals(
+                amount,
+                decimals
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: decimals,
+              })}{' '}
+              <span className="flex flex-row gap-1">
+                <p>Unknown Asset</p>
+                <TooltipIcon label={symbol} />
+              </span>
+            </BalanceListItem>
+          )
+        }
         return (
           <BalanceListItem key={symbol}>
             <BalanceIcon iconURI={icon} />
