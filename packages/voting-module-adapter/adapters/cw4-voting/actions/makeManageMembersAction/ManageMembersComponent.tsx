@@ -35,7 +35,8 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
   options: { currentMembers },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, control } = useFormContext<ManageMembersData>()
+  const { register, setValue, watch, control } =
+    useFormContext<ManageMembersData>()
 
   const {
     fields: toAddFields,
@@ -62,7 +63,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
     >
       <InputLabel className="mt-2" name={t('form.membersToAddOrUpdate')} />
       <div className="flex flex-col gap-2 items-stretch">
-        {toAddFields.map(({ id, weight }, index) => {
+        {toAddFields.map(({ id }, index) => {
           const addrFieldName = (fieldNamePrefix +
             `toAdd.${index}.addr`) as `toAdd.${number}.addr`
           const weightFieldName = (fieldNamePrefix +
@@ -77,9 +78,14 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                     error={errors?.toAdd?.[index]?.weight}
                     fieldName={weightFieldName}
                     onMinus={() =>
-                      setValue(weightFieldName, Math.max(weight - 1, 0))
+                      setValue(
+                        weightFieldName,
+                        Math.max(watch(weightFieldName) - 1, 0)
+                      )
                     }
-                    onPlus={() => setValue(weightFieldName, weight + 1)}
+                    onPlus={() =>
+                      setValue(weightFieldName, watch(weightFieldName) + 1)
+                    }
                     placeholder={t('form.votingWeightPlaceholder')}
                     register={register}
                     sizing="md"
@@ -121,7 +127,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
         {isCreating && (
           <Button
             className="self-start"
-            onClick={() => toAddAppend({ weight: 1, addr: '' })}
+            onClick={() => toAddAppend({ weight: NaN, addr: '' })}
             size="sm"
             variant="secondary"
           >
