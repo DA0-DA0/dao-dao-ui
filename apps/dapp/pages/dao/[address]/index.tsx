@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  SuspenseLoader,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
@@ -26,7 +27,6 @@ import {
   MobileMenuTab,
   PageLoader,
   PinToggle,
-  SuspenseLoader,
   useThemeContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'

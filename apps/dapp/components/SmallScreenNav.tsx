@@ -8,8 +8,8 @@ import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
-import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
+import { Loader, Logo } from '@dao-dao/ui'
 
 import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 

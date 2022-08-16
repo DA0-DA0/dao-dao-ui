@@ -2,7 +2,7 @@ import { useWalletManager } from '@noahsaso/cosmodal'
 import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Trans } from '@dao-dao/ui'
+import { Trans } from '@dao-dao/common'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,

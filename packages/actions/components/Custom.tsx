@@ -4,7 +4,8 @@ import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { CodeMirrorInput, Trans } from '@dao-dao/ui'
+import { Trans } from '@dao-dao/common'
+import { CodeMirrorInput } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'

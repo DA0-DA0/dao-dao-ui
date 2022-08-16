@@ -5,14 +5,9 @@ import { ComponentType, FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import { stakingLoadingAtom } from '@dao-dao/state'
-import {
-  BalanceCard,
-  BalanceIcon,
-  StakingMode,
-  SuspenseLoader,
-} from '@dao-dao/ui'
+import { BalanceCard, BalanceIcon, StakingMode } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,

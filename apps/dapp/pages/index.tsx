@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
@@ -15,7 +16,6 @@ import {
   Logo,
   PageLoader,
   RotatableLogo,
-  SuspenseLoader,
 } from '@dao-dao/ui'
 
 import {

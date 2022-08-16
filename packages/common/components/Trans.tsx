@@ -8,7 +8,8 @@
 import { ComponentProps, ComponentType } from 'react'
 import { Trans as OriginalTrans } from 'react-i18next'
 
-import { Loader as DefaultLoader, LoaderProps } from '.'
+import { Loader as DefaultLoader, LoaderProps } from '@dao-dao/ui'
+
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface TransProps extends ComponentProps<typeof OriginalTrans> {

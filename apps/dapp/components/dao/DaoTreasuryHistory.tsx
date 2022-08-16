@@ -7,12 +7,12 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader, Trans, useDaoInfoContext } from '@dao-dao/common'
 import {
   TreasuryTransaction,
   treasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { CopyToClipboard, Loader, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { CopyToClipboard, Loader } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
