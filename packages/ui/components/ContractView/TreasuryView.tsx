@@ -58,7 +58,7 @@ export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
                 maximumFractionDigits: decimals,
               })}{' '}
               <span className="flex flex-row gap-1">
-                <p>Unknown Asset</p>
+                <p>{t('info.unknownAsset')}</p>
                 <TooltipIcon label={symbol} />
               </span>
             </BalanceListItem>
