@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Button } from './Button'
+import { Button } from 'components/Button/Button'
 
 export default {
-  title: 'DAO DAO UI / Button',
+  title: 'DAO DAO UI / Button / Button',
   component: Button,
 } as ComponentMeta<typeof Button>
 
