@@ -1,5 +1,9 @@
 {
   "extends": "@dao-dao/tsconfig/react-library.json",
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["build", "dist", "node_modules"]
+  "exclude": ["build", "dist", "node_modules"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "commonjs"
+  }
 }

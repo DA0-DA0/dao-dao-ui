@@ -1,8 +1,5 @@
-const path = require('path')
-
 module.exports = {
-  // @todo replace with ['../src/**/*.stories.@(js|jsx|ts|tsx)'] once we switch to a mono-repo
-  stories: ['../**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../**/*.stories.@(ts|tsx)'],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -17,15 +14,33 @@ module.exports = {
     },
   ],
   framework: '@storybook/react',
-  // webpackFinal: async (config) => {
-  //   // @todo resolve path for '@components' should be '../src' once we switch to a mono-repo
-  //   config.resolve.alias = {
-  //     ...config.resolve.alias,
-  //     'util/constants': path.resolve(__dirname, '../util/constants'),
-  //     'contexts/theme': path.resolve(__dirname, '../contexts/theme'),
-  //     styles: path.resolve(__dirname, '../styles'),
-  //     '@components': path.resolve(__dirname, '../components'),
-  //   }
+  // webpackFinal: (config) => {
+  //   config.module.rules.push({
+  //     test: /\.tsx?$/,
+  //     exclude: /node_modules/,
+  //     use: [
+  //       {
+  //         loader: require.resolve('babel-loader'),
+  //         options: {
+  //           presets: [
+  //             require('@babel/preset-typescript').default,
+  //             [require('@babel/preset-react').default, { runtime: 'automatic' }],
+  //             require('@babel/preset-env').default,
+  //           ],
+  //         },
+  //       },
+  //     ],
+  //   })
+
+  //   config.resolve.extensions.push('.ts', '.tsx')
+
+  //   config.module.rules.push({
+  //     test: /\.mjs$/,
+  //     include: /node_modules/,
+  //     type: 'javascript/auto',
+  //   })
+
+  //   config.resolve.extensions.push('.mjs')
 
   //   return config
   // },
