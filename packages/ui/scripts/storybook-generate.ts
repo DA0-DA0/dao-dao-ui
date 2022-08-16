@@ -6,7 +6,7 @@ import { Project, SourceFile, SyntaxKind } from 'ts-morph'
 const TEMPLATE = `
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { COMPONENT } from './FILE'
+import { COMPONENT } from 'FILE'
 
 export default {
   title: 'DAO DAO UI / TITLE',
@@ -28,16 +28,18 @@ project.addSourceFilesAtPaths('components/**/*.{ts,tsx}')
 
 const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
   const baseName = sourceFile.getBaseNameWithoutExtension()
-  // Ignore index files or story files.
-  if (baseName === 'index' || baseName.endsWith('.stories')) {
+  // Ignore index files.
+  if (baseName === 'index') {
     return
   }
 
   const extension = sourceFile.getExtension()
 
-  let titlePrefix = sourceFile
+  const pathFromComponents = sourceFile
     .getDirectoryPath()
     .split('packages/ui/components')[1]
+
+  let titlePrefix = pathFromComponents
     // Remove leading slash. Root directory path ends with split
     // string above, so we have to manually remove the slash while allowing
     // for it not to exist.
@@ -82,45 +84,53 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
         .map((fn) => fn.getName()!)
     )
 
-  if (componentNames.length === 1) {
-    const storyFileName = baseName + '.stories' + extension
-    const storyFilePath = path.resolve(
-      sourceFile.getDirectoryPath(),
-      storyFileName
-    )
+  const storyDirectory = sourceFile
+    .getDirectoryPath()
+    .replace('packages/ui/components', 'packages/ui/stories')
 
+  const generate = async (output: string, componentName: string) => {
     // If stories already exist, ignore.
-    if (fs.existsSync(storyFilePath)) {
+    if (fs.existsSync(output)) {
       return
     }
 
-    const componentName = componentNames[0]
-    const data = TEMPLATE.replace(/FILE/g, baseName)
+    const data = TEMPLATE.replace(
+      /FILE/g,
+      'components' + pathFromComponents + '/' + baseName
+    )
       .replace(/COMPONENT/g, componentName)
       .replace(/TITLE/g, titlePrefix + componentName)
       .trimStart()
 
-    await fs.promises.writeFile(storyFilePath, data)
+    await fs.promises.writeFile(output, data)
+  }
+
+  if (componentNames.length === 1) {
+    // Make directory if nonexistent.
+    if (!fs.existsSync(storyDirectory)) {
+      await fs.promises.mkdir(storyDirectory)
+    }
+
+    const storyFilePath = path.resolve(
+      storyDirectory,
+      baseName + '.stories' + extension
+    )
+
+    await generate(storyFilePath, componentNames[0])
   } else {
     for (const componentName of componentNames) {
-      const storyFileName =
-        baseName + '.' + componentName + '.stories' + extension
-      const storyFilePath = path.resolve(
-        sourceFile.getDirectoryPath(),
-        storyFileName
-      )
-
-      // If stories already exist, ignore.
-      if (fs.existsSync(storyFilePath)) {
-        continue
+      // Make directory if nonexistent.
+      const storyFileDirectory = path.resolve(storyDirectory, baseName)
+      if (!fs.existsSync(storyFileDirectory)) {
+        await fs.promises.mkdir(storyFileDirectory)
       }
 
-      const data = TEMPLATE.replace(/FILE/g, baseName)
-        .replace(/COMPONENT/g, componentName)
-        .replace(/TITLE/g, titlePrefix + componentName)
-        .trimStart()
+      const storyFilePath = path.resolve(
+        storyFileDirectory,
+        componentName + '.stories' + extension
+      )
 
-      await fs.promises.writeFile(storyFilePath, data)
+      await generate(storyFilePath, componentName)
     }
   }
 }
