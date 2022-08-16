@@ -13,6 +13,7 @@
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/utils": "*",
     "@heroicons/react": "^1.0.5",
+    "@storybook/addon-postcss": "^2.0.0",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
     "codemirror": "^5.65.0",
@@ -38,6 +39,7 @@
     "@types/tailwindcss": "^3.0.10",
     "babel-loader": "^8.2.3",
     "eslint": "^8.18.0",
+    "postcss": "^8.4.16",
     "storybook-addon-designs": "^6.2.1",
     "typescript": "^4.5.3"
   },
