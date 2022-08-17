@@ -3,7 +3,6 @@
 
 import { parseCoins } from '@cosmjs/stargate'
 import { ExternalLinkIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -72,13 +71,13 @@ interface TransactionRendererProps {
   transaction: TreasuryTransaction
 }
 
-const TransactionRenderer: FC<TransactionRendererProps> = ({
+const TransactionRenderer = ({
   transaction: {
     tx: { hash, height },
     timestamp,
     events,
   },
-}) => {
+}: TransactionRendererProps) => {
   const { coreAddress } = useDaoInfoContext()
 
   const transferEvent = events.find(({ type }) => type === 'transfer')

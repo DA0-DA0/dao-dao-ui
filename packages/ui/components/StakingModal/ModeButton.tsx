@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 export interface ModeButtonProps {
   onClick: () => void
@@ -6,11 +6,7 @@ export interface ModeButtonProps {
   children: ReactNode
 }
 
-export const ModeButton: FC<ModeButtonProps> = ({
-  onClick,
-  active,
-  children,
-}) => (
+export const ModeButton = ({ onClick, active, children }: ModeButtonProps) => (
   <button
     className={`rounded py-2 px-4  transition ${
       active

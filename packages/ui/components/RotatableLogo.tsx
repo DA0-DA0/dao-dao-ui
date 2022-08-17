@@ -1,4 +1,4 @@
-import { ComponentType, FC, useState } from 'react'
+import { ComponentType, useState } from 'react'
 
 import { Logo as DefaultLogo, LogoProps } from '@dao-dao/ui'
 
@@ -7,11 +7,11 @@ export interface RotatableLogoProps extends LogoProps {
   initialRotation: number
 }
 
-export const RotatableLogo: FC<RotatableLogoProps> = ({
+export const RotatableLogo = ({
   Logo = DefaultLogo,
   initialRotation,
   ...props
-}) => {
+}: RotatableLogoProps) => {
   const [rotation, setRotation] = useState(initialRotation)
 
   return (

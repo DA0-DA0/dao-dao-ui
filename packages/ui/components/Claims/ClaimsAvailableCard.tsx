@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
@@ -13,12 +12,12 @@ export interface ClaimsAvailableCardProps {
   loading: boolean
 }
 
-export const ClaimsAvailableCard: FC<ClaimsAvailableCardProps> = ({
+export const ClaimsAvailableCard = ({
   available,
   tokenInfo,
   onClaim,
   loading,
-}) => {
+}: ClaimsAvailableCardProps) => {
   const { t } = useTranslation()
 
   return (

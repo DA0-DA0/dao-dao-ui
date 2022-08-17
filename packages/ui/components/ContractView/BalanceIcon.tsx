@@ -1,12 +1,10 @@
-import { FC } from 'react'
-
 import { useThemeContext } from '../../theme'
 
 export interface BalanceIconProps {
   iconURI?: string
 }
 
-export const BalanceIcon: FC<BalanceIconProps> = ({ iconURI }) => {
+export const BalanceIcon = ({ iconURI }: BalanceIconProps) => {
   const { accentColor } = useThemeContext()
 
   return (

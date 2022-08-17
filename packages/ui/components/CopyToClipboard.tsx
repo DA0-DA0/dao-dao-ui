@@ -1,5 +1,5 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -30,12 +30,12 @@ interface CopyToClipboardProps {
   loading?: boolean
 }
 
-export const CopyToClipboard: FC<CopyToClipboardProps> = ({
+export const CopyToClipboard = ({
   value,
   success = 'Copied to clipboard!',
   takeN,
   takeStartEnd,
-}) => {
+}: CopyToClipboardProps) => {
   const [copied, setCopied] = useState(false)
 
   return (
@@ -64,11 +64,11 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
   )
 }
 
-export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
+export const CopyToClipboardMobile = ({
   value,
   success = 'Copied to clipboard',
   takeN = 7,
-}) => {
+}: CopyToClipboardProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 

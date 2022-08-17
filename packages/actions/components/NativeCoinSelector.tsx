@@ -1,6 +1,6 @@
 import { Coin } from '@cosmjs/stargate'
 import { XIcon } from '@heroicons/react/solid'
-import { ComponentProps, FC, useCallback, useEffect } from 'react'
+import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -23,14 +23,14 @@ export type NativeCoinSelectorProps = ComponentProps<
   className?: string
 }
 
-export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
+export const NativeCoinSelector = ({
   onRemove,
   fieldNamePrefix,
   errors,
   isCreating,
   options: { nativeBalances },
   className,
-}) => {
+}: NativeCoinSelectorProps) => {
   const { t } = useTranslation()
   const { register, setValue, watch, setError, clearErrors } = useFormContext()
 

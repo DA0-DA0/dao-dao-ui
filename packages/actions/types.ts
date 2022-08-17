@@ -1,4 +1,4 @@
-import { ComponentType, FunctionComponent } from 'react'
+import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
@@ -63,7 +63,7 @@ export type ActionComponentProps<T = undefined, D = any> = {
 ) &
   (T extends undefined ? {} : { options: T })
 
-export type ActionComponent<T = undefined, D = any> = FunctionComponent<
+export type ActionComponent<T = undefined, D = any> = ComponentType<
   ActionComponentProps<T, D>
 >
 

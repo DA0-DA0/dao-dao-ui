@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 
 import { Button } from '../Button'
 
@@ -10,7 +9,7 @@ export interface PercentSelectorProps {
   setAmount: (newAmount: number) => void
 }
 
-export const PercentSelector: FC<PercentSelectorProps> = (props) => (
+export const PercentSelector = (props: PercentSelectorProps) => (
   <div className="grid grid-cols-5 gap-1">
     <PercentButton label="10%" percent={0.1} {...props} />
     <PercentButton label="25%" percent={0.25} {...props} />
@@ -31,7 +30,7 @@ export interface PercentButtonProps {
   absoluteOffset?: number
 }
 
-export const PercentButton: FC<PercentButtonProps> = ({
+export const PercentButton = ({
   label,
   max,
   percent,
@@ -40,7 +39,7 @@ export const PercentButton: FC<PercentButtonProps> = ({
   tokenDecimals,
   className,
   absoluteOffset,
-}) => (
+}: PercentButtonProps) => (
   <Button
     active={
       (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===

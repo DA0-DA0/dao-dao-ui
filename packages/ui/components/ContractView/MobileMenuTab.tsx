@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 
 export interface MobileMenuTabProps {
   icon: string
@@ -8,12 +7,12 @@ export interface MobileMenuTabProps {
   selected: boolean
 }
 
-export const MobileMenuTab: FC<MobileMenuTabProps> = ({
+export const MobileMenuTab = ({
   icon,
   text,
   onClick,
   selected,
-}) => (
+}: MobileMenuTabProps) => (
   <button
     className={clsx(
       'flex flex-col flex-1 gap-3 items-center p-5 min-w-[100px] rounded transition',

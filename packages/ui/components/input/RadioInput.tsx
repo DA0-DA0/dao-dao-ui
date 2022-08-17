@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 import {
   Path,
   PathValue,
@@ -54,13 +53,13 @@ export interface RadioButtonProps {
   className?: string
 }
 
-export const RadioButton: FC<RadioButtonProps> = ({
+export const RadioButton = ({
   selected,
   onClick,
   label,
   background,
   className,
-}) => (
+}: RadioButtonProps) => (
   <div
     className={clsx(
       'flex flex-row gap-3 items-center transition',

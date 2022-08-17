@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Button } from '../Button'
 import { LogoNoBorder } from '../Logo'
@@ -13,7 +13,7 @@ export interface BalanceCardProps {
   opaque?: boolean
 }
 
-export const BalanceCard: FC<BalanceCardProps> = ({
+export const BalanceCard = ({
   title,
   icon,
   buttonLabel,
@@ -21,7 +21,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
   onClick,
   opaque,
   children,
-}) => (
+}: BalanceCardProps) => (
   <div
     className={clsx('p-5 w-full rounded-lg', {
       'border border-default': !opaque,

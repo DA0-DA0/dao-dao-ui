@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { NextSeo } from 'next-seo'
-import { ComponentPropsWithoutRef, FC, ReactNode } from 'react'
+import { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -30,14 +30,14 @@ interface CreateDAOFormWrapperProps
   creating: boolean
 }
 
-export const CreateDAOFormWrapper: FC<CreateDAOFormWrapperProps> = ({
+export const CreateDAOFormWrapper = ({
   children,
   containerClassName,
   currentPageIndex,
   currentPage,
   creating,
   ...props
-}) => {
+}: CreateDAOFormWrapperProps) => {
   const { t } = useTranslation()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const createDAOFormPages = useCreateDAOFormPages()
