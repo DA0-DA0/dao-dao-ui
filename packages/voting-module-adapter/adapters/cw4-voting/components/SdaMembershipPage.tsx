@@ -1,13 +1,9 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useTranslation } from 'react-i18next'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
-import {
-  MultisigMemberList,
-  MultisigMemberListLoader,
-  SuspenseLoader,
-} from '@dao-dao/ui'
+import { MultisigMemberList, MultisigMemberListLoader } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 

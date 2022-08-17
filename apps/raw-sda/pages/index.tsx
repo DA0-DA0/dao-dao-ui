@@ -3,10 +3,14 @@ import type { NextPage } from 'next'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
+import {
+  ConnectWalletButton,
+  SuspenseLoader,
+  useDaoInfoContext,
+} from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { Pie } from '@dao-dao/icons'
-import { StakingMode, SuspenseLoader, TooltipIcon } from '@dao-dao/ui'
+import { StakingMode, TooltipIcon } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import {

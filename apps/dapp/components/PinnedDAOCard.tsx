@@ -5,6 +5,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   CwCoreV0_1_0Selectors,
@@ -12,7 +13,7 @@ import {
   nativeBalanceSelector,
   useVotingModule,
 } from '@dao-dao/state'
-import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { Loader, Logo } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { usePinnedDAOs } from '@/hooks'

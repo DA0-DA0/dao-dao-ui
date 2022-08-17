@@ -10,8 +10,8 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
-import { Loader, Logo, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { ConnectWalletButton, SuspenseLoader, Trans } from '@dao-dao/common'
+import { Loader, Logo } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
 import { commandModalVisibleAtom } from '@/atoms'

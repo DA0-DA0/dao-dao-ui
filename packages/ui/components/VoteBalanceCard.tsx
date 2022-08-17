@@ -1,7 +1,9 @@
-import { BalanceIcon, CopyToClipboard } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-interface VoteBalanceCardProps {
+import { BalanceIcon } from './ContractView'
+import { CopyToClipboard } from './CopyToClipboard'
+
+export interface VoteBalanceCardProps {
   weight: number
   title: string
   weightTotal: number

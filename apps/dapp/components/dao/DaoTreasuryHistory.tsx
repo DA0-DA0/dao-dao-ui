@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import {
   TransformedTreasuryTransaction,
   blockHeightSelector,
@@ -19,13 +19,7 @@ import {
   nativeBalanceSelector,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
-import {
-  Button,
-  CopyToClipboard,
-  LineGraph,
-  Loader,
-  SuspenseLoader,
-} from '@dao-dao/ui'
+import { Button, CopyToClipboard, LineGraph, Loader } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   NATIVE_DECIMALS,

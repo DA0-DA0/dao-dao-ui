@@ -1,4 +1,4 @@
-import { SuspenseLoader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/common'
 
 import { VoteHeroContent, VoteHeroContentLoader } from './VoteHeroContent'
 

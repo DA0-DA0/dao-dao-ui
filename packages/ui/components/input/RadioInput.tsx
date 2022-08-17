@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import {
+  FieldValues,
   Path,
   PathValue,
   UnpackNestedValue,
@@ -8,26 +9,26 @@ import {
 } from 'react-hook-form'
 
 export interface RadioInputProps<
-  FieldValues,
-  FieldName extends Path<FieldValues>
+  FV extends FieldValues,
+  FieldName extends Path<FV>
 > {
   options: {
     label: string
-    value: UnpackNestedValue<PathValue<FieldValues, FieldName>>
+    value: UnpackNestedValue<PathValue<FV, FieldName>>
   }[]
   fieldName: FieldName
-  watch: UseFormWatch<FieldValues>
-  setValue: UseFormSetValue<FieldValues>
+  watch: UseFormWatch<FV>
+  setValue: UseFormSetValue<FV>
   className?: string
 }
 
-export const RadioInput = <FieldValues, FieldName extends Path<FieldValues>>({
+export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   options,
   fieldName,
   watch,
   setValue,
   className,
-}: RadioInputProps<FieldValues, FieldName>) => (
+}: RadioInputProps<FV, FieldName>) => (
   <div className={clsx('flex flex-row gap-2 items-stretch', className)}>
     {options.map(({ label: optionLabel, value }, index) => {
       const selected = value === watch(fieldName)

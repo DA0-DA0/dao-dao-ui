@@ -5,7 +5,7 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   NATIVE_DENOM,
   StakeType,

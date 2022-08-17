@@ -9,6 +9,8 @@ import { FormProposalData, useActions } from '@dao-dao/actions'
 import {
   ConnectWalletButton,
   DaoProposalPageWrapperProps,
+  SuspenseLoader,
+  Trans,
 } from '@dao-dao/common'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
@@ -16,7 +18,7 @@ import {
   useProposalModuleAdapter,
   useProposalModuleAdapterCommon,
 } from '@dao-dao/proposal-module-adapter'
-import { ErrorPage, LinkText, SuspenseLoader, Trans } from '@dao-dao/ui'
+import { ErrorPage, LinkText } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
