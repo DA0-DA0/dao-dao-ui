@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
-import { ChangeEvent, FC } from 'react'
+import { ChangeEvent } from 'react'
 
 export interface AmountSelectorProps {
   setAmount: (newValue: number) => void
@@ -7,11 +7,11 @@ export interface AmountSelectorProps {
   max: number
 }
 
-export const AmountSelector: FC<AmountSelectorProps> = ({
+export const AmountSelector = ({
   setAmount,
   amount,
   max,
-}) => (
+}: AmountSelectorProps) => (
   <div className="relative">
     <button
       className={`absolute top-0 left-0 flex h-[56px] w-[51px] items-center justify-center rounded-l bg-primary ${

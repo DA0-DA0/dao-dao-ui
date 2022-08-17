@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { ChevronRightIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Modal } from '@dao-dao/ui'
@@ -11,9 +10,7 @@ interface NoKeplrAccountModalProps {
   onClose: () => void
 }
 
-export const NoKeplrAccountModal: FC<NoKeplrAccountModalProps> = ({
-  onClose,
-}) => {
+export const NoKeplrAccountModal = ({ onClose }: NoKeplrAccountModalProps) => {
   const { t } = useTranslation()
   const grafs = t('info.configureWalletModalExplanation').split('\n')
 

@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import Link from 'next/link'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowUpRight } from '@dao-dao/icons'
@@ -12,7 +11,7 @@ interface EnterAppButtonProps {
   small?: boolean
 }
 
-export const EnterAppButton: FC<EnterAppButtonProps> = ({ small }) => {
+export const EnterAppButton = ({ small }: EnterAppButtonProps) => {
   const { t } = useTranslation()
 
   return (

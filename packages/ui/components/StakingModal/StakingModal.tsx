@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -170,7 +170,7 @@ interface StakeUnstakeModesBodyProps {
   proposalDeposit?: number
 }
 
-const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
+const StakeUnstakeModesBody = ({
   amount,
   setAmount,
   mode,
@@ -179,7 +179,7 @@ const StakeUnstakeModesBody: FC<StakeUnstakeModesBodyProps> = ({
   tokenDecimals,
   unstakingDuration,
   proposalDeposit,
-}) => {
+}: StakeUnstakeModesBodyProps) => {
   const { t } = useTranslation()
 
   return (
@@ -248,11 +248,11 @@ interface ClaimModeBodyProps {
   tokenSymbol: string
 }
 
-const ClaimModeBody: FC<ClaimModeBodyProps> = ({
+const ClaimModeBody = ({
   amount,
   tokenSymbol,
   tokenDecimals,
-}) => {
+}: ClaimModeBodyProps) => {
   const { t } = useTranslation()
 
   return (
@@ -276,10 +276,10 @@ interface UnstakingDurationDisplayProps {
   mode: StakingMode
 }
 
-const UnstakingDurationDisplay: FC<UnstakingDurationDisplayProps> = ({
+const UnstakingDurationDisplay = ({
   unstakingDuration,
   mode,
-}) => {
+}: UnstakingDurationDisplayProps) => {
   const { t } = useTranslation()
 
   return (

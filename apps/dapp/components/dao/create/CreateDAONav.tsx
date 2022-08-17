@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import clsx from 'clsx'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -15,7 +14,7 @@ interface CreateDAONavProps {
   currentPageIndex: number
 }
 
-export const CreateDAONav: FC<CreateDAONavProps> = ({ currentPageIndex }) => {
+export const CreateDAONav = ({ currentPageIndex }: CreateDAONavProps) => {
   const { t } = useTranslation()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const createDAOFormPages = useCreateDAOFormPages()

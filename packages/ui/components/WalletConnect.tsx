@@ -1,6 +1,6 @@
 import { CheckCircleIcon, LogoutIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Copy, Wallet } from '@dao-dao/icons'
@@ -20,7 +20,7 @@ export interface WalletConnectProps extends Partial<ButtonProps> {
   className?: string
 }
 
-export const WalletConnect: FC<WalletConnectProps> = ({
+export const WalletConnect = ({
   connected,
   walletAddress,
   walletName,
@@ -30,7 +30,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({
   onDisconnect,
   className,
   ...buttonProps
-}) => {
+}: WalletConnectProps) => {
   const { t } = useTranslation()
 
   return connected ? (
@@ -72,7 +72,7 @@ interface CopyButtonProps {
   text: string
 }
 
-const CopyButton: FC<CopyButtonProps> = ({ text }) => {
+const CopyButton = ({ text }: CopyButtonProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
@@ -100,7 +100,7 @@ interface DisconnectButtonProps {
   onClick: () => void
 }
 
-const DisconnectButton: FC<DisconnectButtonProps> = ({ onClick }) => {
+const DisconnectButton = ({ onClick }: DisconnectButtonProps) => {
   const { t } = useTranslation()
 
   return (

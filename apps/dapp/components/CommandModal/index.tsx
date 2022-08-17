@@ -4,7 +4,7 @@
 import Fuse from 'fuse.js'
 import { MeiliSearch } from 'meilisearch'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -29,7 +29,7 @@ type CommandState =
   | { type: CommandStateType.NavigateDao }
   | { type: CommandStateType.DaoChosen; id: string; name: string }
 
-const SearchNavElem: FC<{ name: string }> = ({ name }) => (
+const SearchNavElem = ({ name }: { name: string }) => (
   <div
     className={'p-2 w-fit font-medium bg-secondary rounded-md animate-fadein'}
   >
@@ -149,7 +149,7 @@ const searchClient = new MeiliSearch({
 const index = searchClient.index(SEARCH_INDEX)
 
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
-export const CommandModal: FC<CommandModalProps> = ({ onClose }) => {
+export const CommandModal = ({ onClose }: CommandModalProps) => {
   const router = useRouter()
   const { t } = useTranslation()
   const [commandState, setCommandState] = useState<CommandState>({
