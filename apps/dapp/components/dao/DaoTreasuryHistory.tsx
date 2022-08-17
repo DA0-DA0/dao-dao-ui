@@ -6,7 +6,7 @@ import {
   ArrowNarrowRightIcon,
   ExternalLinkIcon,
 } from '@heroicons/react/outline'
-import { FC, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
@@ -223,7 +223,7 @@ interface TransactionRendererProps {
   transaction: TransformedTreasuryTransaction
 }
 
-const TransactionRenderer: FC<TransactionRendererProps> = ({
+const TransactionRenderer = ({
   transaction: {
     hash,
     height,
@@ -234,7 +234,7 @@ const TransactionRenderer: FC<TransactionRendererProps> = ({
     denomLabel,
     outgoing,
   },
-}) => (
+}: TransactionRendererProps) => (
   <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
     <div className="flex flex-row flex-wrap gap-x-4 items-center text-sm leading-6">
       <CopyToClipboard value={outgoing ? recipient : sender} />

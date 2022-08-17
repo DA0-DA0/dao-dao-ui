@@ -143,24 +143,24 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             disabled={!isCreating}
             error={errors?.amount}
             fieldName={fieldNamePrefix + 'amount'}
-            onPlusMinus={[
-              () =>
-                setValue(
-                  fieldNamePrefix + 'amount',
-                  Math.max(
-                    Number(spendAmount) + 1,
-                    1 / 10 ** amountDecimals
-                  ).toString()
-                ),
-              () =>
-                setValue(
-                  fieldNamePrefix + 'amount',
-                  Math.max(
-                    Number(spendAmount) - 1,
-                    1 / 10 ** amountDecimals
-                  ).toString()
-                ),
-            ]}
+            onMinus={() =>
+              setValue(
+                fieldNamePrefix + 'amount',
+                Math.max(
+                  Number(spendAmount) - 1,
+                  1 / 10 ** amountDecimals
+                ).toString()
+              )
+            }
+            onPlus={() =>
+              setValue(
+                fieldNamePrefix + 'amount',
+                Math.max(
+                  Number(spendAmount) + 1,
+                  1 / 10 ** amountDecimals
+                ).toString()
+              )
+            }
             register={register}
             sizing="auto"
             step={1 / 10 ** amountDecimals}

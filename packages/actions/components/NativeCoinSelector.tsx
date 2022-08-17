@@ -1,6 +1,6 @@
 import { Coin } from '@cosmjs/stargate'
 import { XIcon } from '@heroicons/react/solid'
-import { ComponentProps, FC, useCallback, useEffect } from 'react'
+import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -23,14 +23,14 @@ export type NativeCoinSelectorProps = ComponentProps<
   className?: string
 }
 
-export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
+export const NativeCoinSelector = ({
   onRemove,
   fieldNamePrefix,
   errors,
   isCreating,
   options: { nativeBalances },
   className,
-}) => {
+}: NativeCoinSelectorProps) => {
   const { t } = useTranslation()
   const { register, setValue, watch, setError, clearErrors } = useFormContext()
 
@@ -107,18 +107,18 @@ export const NativeCoinSelector: FC<NativeCoinSelectorProps> = ({
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={fieldNamePrefix + 'amount'}
-          onPlusMinus={[
-            () =>
-              setValue(
-                fieldNamePrefix + 'amount',
-                Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
-              ),
-            () =>
-              setValue(
-                fieldNamePrefix + 'amount',
-                Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
-              ),
-          ]}
+          onMinus={() =>
+            setValue(
+              fieldNamePrefix + 'amount',
+              Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
+            )
+          }
+          onPlus={() =>
+            setValue(
+              fieldNamePrefix + 'amount',
+              Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
+            )
+          }
           register={register}
           sizing="auto"
           step={1 / 10 ** NATIVE_DECIMALS}

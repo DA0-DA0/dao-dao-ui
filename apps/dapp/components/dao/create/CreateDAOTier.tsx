@@ -3,7 +3,6 @@
 
 import { TrashIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC } from 'react'
 import {
   Control,
   FormState,
@@ -48,11 +47,12 @@ interface CreateDAOTierProps {
   remove?: () => void
 }
 
-export const CreateDAOTier: FC<CreateDAOTierProps> = ({
+export const CreateDAOTier = ({
   // Don't pass along to member.
   remove,
+
   ...props
-}) => {
+}: CreateDAOTierProps) => {
   const { t } = useTranslation()
   const {
     newDAO,
@@ -142,28 +142,28 @@ export const CreateDAOTier: FC<CreateDAOTierProps> = ({
                 containerClassName="grow"
                 error={errors.tiers?.[tierIndex]?.weight}
                 fieldName={`tiers.${tierIndex}.weight`}
-                onPlusMinus={[
-                  () =>
-                    setValue(
-                      `tiers.${tierIndex}.weight`,
-                      Math.max(
-                        (newDAO.tiers?.[tierIndex]?.weight ?? 0) + 1,
-                        governanceTokenEnabled
-                          ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
-                          : 1
-                      )
-                    ),
-                  () =>
-                    setValue(
-                      `tiers.${tierIndex}.weight`,
-                      Math.max(
-                        (newDAO.tiers?.[tierIndex]?.weight ?? 0) - 1,
-                        governanceTokenEnabled
-                          ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
-                          : 1
-                      )
-                    ),
-                ]}
+                onMinus={() =>
+                  setValue(
+                    `tiers.${tierIndex}.weight`,
+                    Math.max(
+                      (newDAO.tiers?.[tierIndex]?.weight ?? 0) - 1,
+                      governanceTokenEnabled
+                        ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
+                        : 1
+                    )
+                  )
+                }
+                onPlus={() =>
+                  setValue(
+                    `tiers.${tierIndex}.weight`,
+                    Math.max(
+                      (newDAO.tiers?.[tierIndex]?.weight ?? 0) + 1,
+                      governanceTokenEnabled
+                        ? 1 / 10 ** NEW_DAO_CW20_DECIMALS
+                        : 1
+                    )
+                  )
+                }
                 register={register}
                 step={
                   governanceTokenEnabled ? 1 / 10 ** NEW_DAO_CW20_DECIMALS : 1
@@ -220,7 +220,7 @@ interface CreateDAOTierMemberProps extends CreateDAOTierProps {
   memberIndex: number
 }
 
-const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
+const CreateDAOTierMember = ({
   newDAO,
   tierIndex,
   memberIndex,
@@ -228,7 +228,7 @@ const CreateDAOTierMember: FC<CreateDAOTierMemberProps> = ({
   errors,
   remove,
   showColorDotOnMember,
-}) => {
+}: CreateDAOTierMemberProps) => {
   const { t } = useTranslation()
 
   const tier = newDAO.tiers?.[tierIndex]

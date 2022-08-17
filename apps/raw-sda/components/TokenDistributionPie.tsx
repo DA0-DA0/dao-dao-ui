@@ -1,5 +1,4 @@
 import { ArcElement, Chart as ChartJS } from 'chart.js'
-import { FunctionComponent } from 'react'
 import { Pie } from 'react-chartjs-2'
 
 ChartJS.register(ArcElement)
@@ -10,7 +9,7 @@ interface AllocationSection {
   color: string
 }
 
-export const TokenDistributionPie: FunctionComponent = () => {
+export const TokenDistributionPie = () => {
   const allocationSections = [
     {
       name: 'Fairdrop',
@@ -73,9 +72,7 @@ interface LegendItemProps {
   data: AllocationSection
 }
 
-const LegendItem: FunctionComponent<LegendItemProps> = ({
-  data: { name, percent, color },
-}) => {
+const LegendItem = ({ data: { name, percent, color } }: LegendItemProps) => {
   return (
     <div
       key={name}

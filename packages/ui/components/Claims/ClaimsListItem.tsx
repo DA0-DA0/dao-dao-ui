@@ -1,5 +1,5 @@
 import { CheckIcon } from '@heroicons/react/outline'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -39,13 +39,13 @@ export interface ClaimsListItemProps {
   iconURI?: string
 }
 
-export const ClaimsListItem: FC<ClaimsListItemProps> = ({
+export const ClaimsListItem = ({
   claim,
   blockHeight,
   tokenInfo,
   onClaimAvailable,
   iconURI,
-}) => {
+}: ClaimsListItemProps) => {
   const { t } = useTranslation()
   const available = claimAvailable(claim, blockHeight)
   const initialDurationRemaining = claimDurationRemaining(claim, blockHeight)

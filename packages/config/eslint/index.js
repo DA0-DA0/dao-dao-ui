@@ -103,38 +103,22 @@ const eslintConfig = {
             {
               regex: '\\@\\/\\.\\.\\/\\.\\.\\/packages',
               replacement: '@dao-dao',
-              files: {
-                // Don't replace in this file since the pattern appears above.
-                ignore: 'import\\.js',
-              },
               message:
                 'Import from @dao-dao/* instead of a relative path (i.e. replace "@/../../packages" with "@dao-dao").',
             },
             {
               regex: '\\@dao\\-dao\\/ui\\/(components|theme)[^\'"]*',
               replacement: '@dao-dao/ui',
-              files: {
-                // Don't replace in this file since the pattern appears above.
-                ignore: 'import\\.js',
-              },
               message:
                 'Import from root @dao-dao/ui instead of a direct path. Ensure the export has been added to its sibling index.',
             },
             {
               regex: '\\@dao\\-dao\\/state\\/hooks\\/clients[^\'"]*',
-              files: {
-                // Don't replace in this file since the pattern appears above.
-                ignore: 'import\\.js',
-              },
               message:
                 'Import from root @dao-dao/state using a grouped export, such as CwCoreHooks, instead of a direct path.',
             },
             {
               regex: '\\@dao\\-dao\\/state\\/recoil\\/selectors[^\'"]*',
-              files: {
-                // Don't replace in this file since the pattern appears above.
-                ignore: 'import\\.js',
-              },
               message:
                 'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV0_1_0Selectors.',
             },
@@ -175,6 +159,11 @@ const eslintConfig = {
               },
               message:
                 '`animate-spin` is too fast. Use `animate-spin-medium` for a chiller vibe.',
+            },
+            {
+              regex: '\\b(FC|FunctionComponent)\\b',
+              message:
+                "Using React's FunctionComponent is discouraged. Type the props explicitly: `export const Component = (props: ComponentProps) => { ... }`",
             },
           ],
         ],

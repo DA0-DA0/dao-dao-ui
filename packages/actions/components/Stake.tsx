@@ -151,18 +151,18 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
               disabled={!isCreating}
               error={errors?.amount}
               fieldName={fieldNamePrefix + 'amount'}
-              onPlusMinus={[
-                () =>
-                  setValue(
-                    fieldNamePrefix + 'amount',
-                    Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
-                  ),
-                () =>
-                  setValue(
-                    fieldNamePrefix + 'amount',
-                    Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
-                  ),
-              ]}
+              onMinus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
+                )
+              }
               register={register}
               step={1 / 10 ** NATIVE_DECIMALS}
               validation={[validateRequired, validatePositive]}
