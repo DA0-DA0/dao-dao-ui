@@ -39,9 +39,9 @@ interface HomePageProps {
 const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
   const { t } = useTranslation()
 
-  const [tvl, setTVL] = useState<string | undefined>(undefined)
-  const [daos, setDaos] = useState<string | undefined>(undefined)
-  const [proposals, setProposals] = useState<string | undefined>(undefined)
+  const [tvl, setTVL] = useState<number>()
+  const [daos, setDaos] = useState<number>()
+  const [proposals, setProposals] = useState<number>()
 
   useEffect(() => {
     fetch('https://dao-stats.withoutdoing.com/mainnet/balances.json')
@@ -106,7 +106,13 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
         <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
           <StatsCard>
             <h3 className="header-text">
-              {tvl ? '$' + tvl.toLocaleString() : t('info.loading')}
+              {tvl
+                ? '$' +
+                  tvl.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.usdcTotalValue')}</p>
           </StatsCard>
