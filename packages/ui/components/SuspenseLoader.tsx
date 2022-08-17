@@ -1,10 +1,5 @@
 import { useRouter } from 'next/router'
-import {
-  ComponentType,
-  FunctionComponent,
-  Suspense,
-  SuspenseProps,
-} from 'react'
+import { ComponentType, Suspense, SuspenseProps } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'
@@ -15,13 +10,13 @@ export interface SuspenseLoaderProps extends SuspenseProps {
   forceFallback?: boolean
 }
 
-export const SuspenseLoader: FunctionComponent<SuspenseLoaderProps> = ({
+export const SuspenseLoader = ({
   ErrorBoundaryComponent = ErrorBoundary,
   forceFallback,
   fallback,
   children,
   ...props
-}) => {
+}: SuspenseLoaderProps) => {
   const { isFallback, isReady } = useRouter()
 
   // Prevent loading on the server since Next.js cannot intuitively

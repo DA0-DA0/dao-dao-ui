@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from 'chart.js'
 import clsx from 'clsx'
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Bar, Pie } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
@@ -53,9 +53,7 @@ interface DistributionProps {
   newDAO: NewDAO
 }
 
-export const VotingPowerPieDistribution: FC<DistributionProps> = ({
-  newDAO,
-}) => {
+export const VotingPowerPieDistribution = ({ newDAO }: DistributionProps) => {
   const { t } = useTranslation()
   const { onlyOneTier, entries } = useVotingPowerDistributionData(newDAO, true)
 
@@ -178,7 +176,7 @@ export const useVotingPowerDistributionData = (
   ])
 }
 
-const PieChart: FC<DataProps> = ({ data }) => (
+const PieChart = ({ data }: DataProps) => (
   <Pie
     className="justify-self-center !w-32 !h-32 md:!w-48 md:!h-48"
     data={{
@@ -198,7 +196,7 @@ const PieChart: FC<DataProps> = ({ data }) => (
   />
 )
 
-export const VotingPowerChart: FC<DataProps> = ({ data }) => {
+export const VotingPowerChart = ({ data }: DataProps) => {
   const { t } = useTranslation()
   const darkRgb = useNamedThemeColor('dark')
 
@@ -250,7 +248,7 @@ export const VotingPowerChart: FC<DataProps> = ({ data }) => {
   )
 }
 
-const Legend: FC<DataProps> = ({ data }) => (
+const Legend = ({ data }: DataProps) => (
   <div className="flex flex-col gap-1 md:gap-2">
     {data.map((allocation) => (
       <LegendItem key={allocation.name} data={allocation} />
@@ -262,9 +260,9 @@ interface LegendItemProps {
   data: Entry
 }
 
-const LegendItem: FC<LegendItemProps> = ({
+const LegendItem = ({
   data: { name, value: percent, color },
-}) => (
+}: LegendItemProps) => (
   <div
     key={name}
     className={clsx('grid gap-5 items-center', {

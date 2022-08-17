@@ -4,7 +4,7 @@
 import { DocumentTextIcon } from '@heroicons/react/outline'
 import groupBy from 'lodash.groupby'
 import isEqual from 'lodash.isequal'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
@@ -20,7 +20,7 @@ import {
 
 import { usePinnedDAOs } from '@/hooks'
 
-export const PinnedProposalsList: FC = () => {
+export const PinnedProposalsList = () => {
   const { t } = useTranslation()
 
   return (
@@ -41,7 +41,7 @@ export const PinnedProposalsList: FC = () => {
   )
 }
 
-const InnerPinnedProposalsList: FC = () => {
+const InnerPinnedProposalsList = () => {
   const { t } = useTranslation()
   const {
     pinnedAddresses: _pinnedAddresses,

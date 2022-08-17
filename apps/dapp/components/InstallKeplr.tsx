@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { ChevronRightIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Modal } from '@dao-dao/ui'
@@ -11,7 +10,7 @@ interface InstallKeplrProps {
   onClose: () => void
 }
 
-export const InstallKeplr: FC<InstallKeplrProps> = ({ onClose }) => {
+export const InstallKeplr = ({ onClose }: InstallKeplrProps) => {
   const { t } = useTranslation()
   const grafs = t('info.keplrModalWalletExplanation').split('\n')
 

@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { Toast } from 'react-hot-toast'
 
 import { Loader } from '../Loader'
@@ -9,7 +8,7 @@ export interface LoadingToastProps {
   toast: Toast
 }
 
-export const LoadingToast: FC<LoadingToastProps> = (props) => (
+export const LoadingToast = (props: LoadingToastProps) => (
   <ToastCard
     containerClassName="text-light text-sm bg-dark"
     preMessage={

@@ -1,7 +1,7 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import { LinkIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { FC, createElement, useEffect, useState } from 'react'
+import { createElement, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { HeadingComponent } from 'react-markdown/lib/ast-to-react'
 
@@ -10,10 +10,10 @@ export interface MarkdownPreviewProps {
   className?: string
 }
 
-export const MarkdownPreview: FC<MarkdownPreviewProps> = ({
+export const MarkdownPreview = ({
   markdown,
   className,
-}) => (
+}: MarkdownPreviewProps) => (
   <ReactMarkdown
     className={clsx('break-words prose prose-sm dark:prose-invert', className)}
     components={{
