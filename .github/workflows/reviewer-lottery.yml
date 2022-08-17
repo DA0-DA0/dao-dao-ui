@@ -1,0 +1,13 @@
+name: Request Review from noah
+on:
+  pull_request_target:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: uesteibar/reviewer-lottery@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

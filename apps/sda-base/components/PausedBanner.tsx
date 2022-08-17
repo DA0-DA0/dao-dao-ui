@@ -1,5 +1,5 @@
 import { PauseIcon } from '@heroicons/react/outline'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -32,7 +32,7 @@ export const remainingTime = (
   return { time: 0 }
 }
 
-export const PausedBanner: FC<PausedBannerProps> = ({}) => {
+export const PausedBanner = ({}: PausedBannerProps) => {
   const { t } = useTranslation()
   const pauseInfo = useRecoilValue(
     CwCoreV0_1_0Selectors.pauseInfoSelector({ contractAddress: DAO_ADDRESS })

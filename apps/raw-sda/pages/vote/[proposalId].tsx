@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -25,7 +25,7 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { Loader, Logo, PageLoader, PageWrapper } from '@/components'
 import { DAO_ADDRESS } from '@/util'
 
-const InnerProposal: FC = () => {
+const InnerProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { address: walletAddress, connected } = useWallet()

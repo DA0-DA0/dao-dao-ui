@@ -1,9 +1,19 @@
+import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { CwCoreVersion, parseCoreVersion } from '@dao-dao/utils'
+import {
+  CwCoreVersion,
+  convertMicroDenomToDenomWithDecimals,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+  parseCoreVersion,
+} from '@dao-dao/utils'
 
-import { blockHeightTimestampSelector, cosmWasmClientSelector } from './chain'
+import {
+  blockHeightTimestampSafeSelector,
+  cosmWasmClientSelector,
+} from './chain'
 import { CwCoreV0_1_0Selectors } from './clients'
 
 export const contractInstantiateTimeSelector = selectorFamily<
@@ -21,7 +31,7 @@ export const contractInstantiateTimeSelector = selectorFamily<
       })
       if (events.length === 0) return
 
-      return get(blockHeightTimestampSelector(events[0].height))
+      return get(blockHeightTimestampSafeSelector(events[0].height))
     },
 })
 
@@ -43,7 +53,13 @@ export const contractAdminSelector = selectorFamily<string | undefined, string>(
   }
 )
 
-export interface TreasuryTransaction {
+type TreasuryTransactionsParams = {
+  address: string
+  minHeight?: number
+  maxHeight?: number
+}
+
+interface TreasuryTransaction {
   tx: IndexedTx
   timestamp: Date | undefined
   events: {
@@ -55,20 +71,29 @@ export interface TreasuryTransaction {
   }[]
 }
 
-export const treasuryTransactionsSelector = selectorFamily({
+export const treasuryTransactionsSelector = selectorFamily<
+  TreasuryTransaction[],
+  TreasuryTransactionsParams
+>({
   key: 'treasuryTransactions',
   get:
-    (address: string) =>
+    ({ address, minHeight, maxHeight }) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
 
-      const txs = await client.searchTx({
-        sentFromOrTo: address,
-      })
+      const txs = await client.searchTx(
+        {
+          sentFromOrTo: address,
+        },
+        {
+          minHeight,
+          maxHeight,
+        }
+      )
 
       const txDates = get(
         waitForAll(
-          txs.map(({ height }) => blockHeightTimestampSelector(height))
+          txs.map(({ height }) => blockHeightTimestampSafeSelector(height))
         )
       )
 
@@ -97,8 +122,86 @@ export const treasuryTransactionsSelector = selectorFamily({
           ? 1
           : !b.timestamp
           ? -1
-          : 0
+          : b.tx.height - a.tx.height
       )
+    },
+})
+
+export interface TransformedTreasuryTransaction {
+  hash: string
+  height: number
+  timestamp: Date | undefined
+  sender: string
+  recipient: string
+  amount: number
+  denomLabel: string
+  outgoing: boolean
+}
+
+export const transformedTreasuryTransactionsSelector = selectorFamily<
+  TransformedTreasuryTransaction[],
+  TreasuryTransactionsParams
+>({
+  key: 'transformedTreasuryTransactions',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const txs = get(treasuryTransactionsSelector(params))
+
+      return txs
+        .map(({ tx: { hash, height }, timestamp, events }) => {
+          const transferEvent = events.find(({ type }) => type === 'transfer')
+          if (!transferEvent) {
+            return
+          }
+
+          let sender = transferEvent.attributes.find(
+            ({ key }) => key === 'sender'
+          )?.value
+          let recipient = transferEvent.attributes.find(
+            ({ key }) => key === 'recipient'
+          )?.value
+          const amount = transferEvent.attributes.find(
+            ({ key }) => key === 'amount'
+          )?.value
+
+          if (!sender || !recipient || !amount) {
+            return
+          }
+
+          const coin = parseCoins(amount)[0]
+          if (!coin) {
+            return
+          }
+
+          const tokenDecimals = nativeTokenDecimals(coin.denom)
+          const tokenLabel = nativeTokenLabel(coin.denom)
+
+          // Only convert value and denom at the same time. If decimals are
+          // found but label is not for some reason (which should never happen)
+          // or vice versa, display value in non-converted decimals with
+          // non-converted denom.
+          const amountValue =
+            tokenDecimals !== undefined && tokenLabel !== undefined
+              ? convertMicroDenomToDenomWithDecimals(coin.amount, tokenDecimals)
+              : Number(coin.amount)
+          const denomLabel =
+            tokenDecimals !== undefined && tokenLabel !== undefined
+              ? tokenLabel
+              : coin.denom
+
+          return {
+            hash,
+            height,
+            timestamp,
+            sender,
+            recipient,
+            amount: amountValue,
+            denomLabel,
+            outgoing: sender === params.address,
+          }
+        })
+        .filter(Boolean) as TransformedTreasuryTransaction[]
     },
 })
 

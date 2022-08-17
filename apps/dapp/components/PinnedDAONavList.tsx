@@ -3,7 +3,7 @@
 
 import { LibraryIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
@@ -13,7 +13,7 @@ import { Logo } from '@dao-dao/ui'
 import { pinnedAddressesAtom } from '@/atoms'
 import { NavListItem } from '@/components'
 
-export const PinnedDAONavList: FC = () => {
+export const PinnedDAONavList = () => {
   const { t } = useTranslation()
 
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
@@ -54,7 +54,7 @@ export const PinnedDAONavList: FC = () => {
   )
 }
 
-export const MobilePinnedDAONavList: FC = () => {
+export const MobilePinnedDAONavList = () => {
   const { t } = useTranslation()
 
   const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)

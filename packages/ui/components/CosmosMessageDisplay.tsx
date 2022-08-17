@@ -2,7 +2,6 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-ocean.css'
 import 'codemirror/theme/material.css'
 
-import { FC } from 'react'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
 import { useThemeContext } from '../theme'
@@ -16,9 +15,7 @@ export interface CosmosMessageDisplayProps {
   value: string
 }
 
-export const CosmosMessageDisplay: FC<CosmosMessageDisplayProps> = ({
-  value,
-}) => {
+export const CosmosMessageDisplay = ({ value }: CosmosMessageDisplayProps) => {
   const themeCtx = useThemeContext()
   const editorTheme = themeCtx.theme !== 'dark' ? 'default' : 'material-ocean'
   return (

@@ -1,7 +1,7 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { ComponentType, FC, useMemo, useState } from 'react'
+import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -52,11 +52,11 @@ export const Membership = ({ primaryText, ...props }: MembershipProps) => {
   )
 }
 
-const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
+const InnerMembership = ({
   sdaMode,
   ClaimsPendingList = DefaultClaimsPendingList,
   proposalModuleDepositInfos,
-}) => {
+}: Omit<MembershipProps, 'primaryText'>) => {
   const { t } = useTranslation()
   const {
     governanceTokenAddress,

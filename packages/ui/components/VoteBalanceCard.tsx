@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { BalanceIcon } from './ContractView'
@@ -12,12 +10,12 @@ export interface VoteBalanceCardProps {
   addrTitle?: boolean
 }
 
-export const VoteBalanceCard: FC<VoteBalanceCardProps> = ({
+export const VoteBalanceCard = ({
   weight,
   title,
   weightTotal,
   addrTitle,
-}) => (
+}: VoteBalanceCardProps) => (
   <div className="py-4 px-6 w-full rounded-lg border border-default">
     {addrTitle ? (
       <CopyToClipboard value={title} />

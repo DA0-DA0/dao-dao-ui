@@ -36,7 +36,18 @@ export const blockHeightSelector = selector({
   },
 })
 
-export const blockHeightTimestampSelector = selectorFamily<
+export const blockHeightTimestampSelector = selectorFamily<Date, number>({
+  key: 'blockHeightTimestamp',
+  get:
+    (blockHeight) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      const block = await client.getBlock(blockHeight)
+      return new Date(Date.parse(block.header.time))
+    },
+})
+
+export const blockHeightTimestampSafeSelector = selectorFamily<
   Date | undefined,
   number
 >({
@@ -45,7 +56,6 @@ export const blockHeightTimestampSelector = selectorFamily<
     (blockHeight) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-
       try {
         const block = await client.getBlock(blockHeight)
         return new Date(Date.parse(block.header.time))

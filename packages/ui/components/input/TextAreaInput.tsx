@@ -31,7 +31,7 @@ export const TextAreaInput = <
   className,
   required,
   ...rest
-}: TextAreaInputProps<FieldValues, FieldName>) => {
+}: TextAreaInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}

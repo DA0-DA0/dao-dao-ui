@@ -3,14 +3,13 @@
 
 import { EmojiHappyIcon, HandIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Discord, Github, Twitter } from '@dao-dao/icons'
 
 import { HomepageCardVote } from './HomepageCardVote'
 
-export const HomepageCards: FC = () => {
+export const HomepageCards = () => {
   const { t } = useTranslation()
 
   return (

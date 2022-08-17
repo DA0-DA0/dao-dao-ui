@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '../Button'
@@ -12,12 +12,12 @@ export interface ActionButtonProps {
   onClick: () => void
 }
 
-export const ActionButton: FC<ActionButtonProps> = ({
+export const ActionButton = ({
   error,
   mode,
   loading,
   onClick,
-}) => {
+}: ActionButtonProps) => {
   const stakingModeButtonLabel = useStakingModeButtonLabel()
   return (
     <Tooltip label={error}>

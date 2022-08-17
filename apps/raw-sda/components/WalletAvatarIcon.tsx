@@ -1,12 +1,10 @@
-import { FunctionComponent, SVGProps, useMemo } from 'react'
+import { SVGProps, useMemo } from 'react'
 
 // Ensure radialGradient ID is unique on the page or else only one icon
 // will render.
 let id = 0
 
-export const WalletAvatarIcon: FunctionComponent<SVGProps<SVGSVGElement>> = (
-  props
-) => {
+export const WalletAvatarIcon = (props: SVGProps<SVGSVGElement>) => {
   const currId = useMemo(() => ++id, [])
 
   return (

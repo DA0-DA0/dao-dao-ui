@@ -1,12 +1,10 @@
-import { FC } from 'react'
-
 import { useThemeContext } from '../../theme'
 
 export interface BalanceIconProps {
   iconURI?: string
 }
 
-export const BalanceIcon: FC<BalanceIconProps> = ({ iconURI }) => {
+export const BalanceIcon = ({ iconURI }: BalanceIconProps) => {
   const { accentColor } = useThemeContext()
 
   return (
@@ -19,3 +17,9 @@ export const BalanceIcon: FC<BalanceIconProps> = ({ iconURI }) => {
     ></div>
   )
 }
+
+export const UnknownAssetBalanceIcon = () => (
+  <div className="flex justify-center items-center w-4 h-4 text-black bg-disabled rounded-full">
+    ?
+  </div>
+)

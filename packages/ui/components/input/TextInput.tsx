@@ -37,7 +37,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   className,
   required,
   ...rest
-}: TextInputProps<FieldValues, FieldName>) => {
+}: TextInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}

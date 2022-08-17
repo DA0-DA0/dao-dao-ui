@@ -9,12 +9,16 @@ import { SuspenseLoader } from '@dao-dao/common'
 import { Button } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
-import { featuredDaos } from '@/util'
 
 import { FeaturedCard } from '../FeaturedCard'
+import { FeaturedDao } from '../splash'
 import { DaoCardContainer } from './DaoCardContainer'
 
-export const FeaturedDAOsList = () => {
+export interface FeaturedDAOsListProps {
+  featuredDaos: FeaturedDao[]
+}
+
+export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
   const { t } = useTranslation()
   const { pinnedAddresses } = usePinnedDAOs()
 
