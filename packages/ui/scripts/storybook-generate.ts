@@ -91,13 +91,14 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     )
     .map((declaration) => ({
       name: declaration.getName(),
-      requiredProps: declaration
-        .getInitializerIfKind(SyntaxKind.ArrowFunction)!
-        .getParameters()[0]
-        .getType()
-        .getProperties()
-        .filter((p) => !p.isOptional())
-        .map((p) => p.getName()),
+      requiredProps:
+        declaration
+          .getInitializerIfKind(SyntaxKind.ArrowFunction)!
+          .getParameters()[0]
+          ?.getType()
+          .getProperties()
+          .filter((p) => !p.isOptional())
+          .map((p) => p.getName()) ?? [],
     }))
 
   // export function Component(props) { ... }
