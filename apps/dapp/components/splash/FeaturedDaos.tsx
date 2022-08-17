@@ -2,6 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import {
+  FC,
   UIEventHandler,
   createRef,
   useCallback,
@@ -10,11 +11,20 @@ import {
 } from 'react'
 
 import { useIsVisible } from '@/hooks'
-import { featuredDaos } from '@/util'
 
 import { FeaturedCard } from '../FeaturedCard'
 
-export const FeaturedDaos = () => {
+export interface FeaturedDao {
+  name: string
+  description: string
+  href: string
+  TVL: string
+  image: string
+}
+
+export const FeaturedDaos: FC<{ featuredDaos: FeaturedDao[] }> = ({
+  featuredDaos,
+}) => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 
