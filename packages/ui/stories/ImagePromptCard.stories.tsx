@@ -7,12 +7,14 @@ export default {
   component: ImagePromptCard,
 } as ComponentMeta<typeof ImagePromptCard>
 
-const Template: ComponentStory<typeof ImagePromptCard> = (args) => <ImagePromptCard {...args} />
+const Template: ComponentStory<typeof ImagePromptCard> = (args) => (
+  <ImagePromptCard {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "title": null, // TODO: Fill in default value.
-  "description": null, // TODO: Fill in default value.
-  "backgroundUrl": null, // TODO: Fill in default value.
-  "href": null // TODO: Fill in default value.
+  title: null, // TODO: Fill in default value.
+  description: null, // TODO: Fill in default value.
+  backgroundUrl: null, // TODO: Fill in default value.
+  href: null, // TODO: Fill in default value.
 }

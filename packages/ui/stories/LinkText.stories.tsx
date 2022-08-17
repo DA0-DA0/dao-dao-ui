@@ -7,10 +7,12 @@ export default {
   component: LinkText,
 } as ComponentMeta<typeof LinkText>
 
-const Template: ComponentStory<typeof LinkText> = (args) => <LinkText {...args} />
+const Template: ComponentStory<typeof LinkText> = (args) => (
+  <LinkText {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "aProps": null, // TODO: Fill in default value.
-  "href": null // TODO: Fill in default value.
+  aProps: null, // TODO: Fill in default value.
+  href: null, // TODO: Fill in default value.
 }

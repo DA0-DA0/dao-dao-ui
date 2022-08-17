@@ -7,11 +7,13 @@ export default {
   component: ExecuteProposal,
 } as ComponentMeta<typeof ExecuteProposal>
 
-const Template: ComponentStory<typeof ExecuteProposal> = (args) => <ExecuteProposal {...args} />
+const Template: ComponentStory<typeof ExecuteProposal> = (args) => (
+  <ExecuteProposal {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "onExecute": null, // TODO: Fill in default value.
-  "messages": null, // TODO: Fill in default value.
-  "loading": null // TODO: Fill in default value.
+  onExecute: null, // TODO: Fill in default value.
+  messages: null, // TODO: Fill in default value.
+  loading: null, // TODO: Fill in default value.
 }

@@ -11,5 +11,5 @@ const Template: ComponentStory<typeof NavItem> = (args) => <NavItem {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  "item": null // TODO: Fill in default value.
+  item: null, // TODO: Fill in default value.
 }

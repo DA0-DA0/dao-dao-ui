@@ -7,10 +7,12 @@ export default {
   component: AddressInput,
 } as ComponentMeta<typeof AddressInput>
 
-const Template: ComponentStory<typeof AddressInput> = (args) => <AddressInput {...args} />
+const Template: ComponentStory<typeof AddressInput> = (args) => (
+  <AddressInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null, // TODO: Fill in default value.
-  "register": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  register: null, // TODO: Fill in default value.
 }

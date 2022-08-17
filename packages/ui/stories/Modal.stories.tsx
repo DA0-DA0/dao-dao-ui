@@ -11,6 +11,6 @@ const Template: ComponentStory<typeof Modal> = (args) => <Modal {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  "children": null, // TODO: Fill in default value.
-  "onClose": null // TODO: Fill in default value.
+  children: null, // TODO: Fill in default value.
+  onClose: null, // TODO: Fill in default value.
 }

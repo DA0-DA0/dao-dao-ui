@@ -7,9 +7,11 @@ export default {
   component: RotatableLogo,
 } as ComponentMeta<typeof RotatableLogo>
 
-const Template: ComponentStory<typeof RotatableLogo> = (args) => <RotatableLogo {...args} />
+const Template: ComponentStory<typeof RotatableLogo> = (args) => (
+  <RotatableLogo {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "initialRotation": null // TODO: Fill in default value.
+  initialRotation: null, // TODO: Fill in default value.
 }

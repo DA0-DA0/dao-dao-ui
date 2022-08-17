@@ -7,10 +7,12 @@ export default {
   component: GovInfoListItem,
 } as ComponentMeta<typeof GovInfoListItem>
 
-const Template: ComponentStory<typeof GovInfoListItem> = (args) => <GovInfoListItem {...args} />
+const Template: ComponentStory<typeof GovInfoListItem> = (args) => (
+  <GovInfoListItem {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "icon": null, // TODO: Fill in default value.
-  "text": null // TODO: Fill in default value.
+  icon: null, // TODO: Fill in default value.
+  text: null, // TODO: Fill in default value.
 }

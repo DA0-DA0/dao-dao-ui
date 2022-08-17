@@ -7,10 +7,12 @@ export default {
   component: MultisigMemberList,
 } as ComponentMeta<typeof MultisigMemberList>
 
-const Template: ComponentStory<typeof MultisigMemberList> = (args) => <MultisigMemberList {...args} />
+const Template: ComponentStory<typeof MultisigMemberList> = (args) => (
+  <MultisigMemberList {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "members": null, // TODO: Fill in default value.
-  "totalWeight": null // TODO: Fill in default value.
+  members: null, // TODO: Fill in default value.
+  totalWeight: null, // TODO: Fill in default value.
 }

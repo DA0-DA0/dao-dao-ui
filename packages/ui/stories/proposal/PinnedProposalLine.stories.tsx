@@ -7,13 +7,15 @@ export default {
   component: PinnedProposalLine,
 } as ComponentMeta<typeof PinnedProposalLine>
 
-const Template: ComponentStory<typeof PinnedProposalLine> = (args) => <PinnedProposalLine {...args} />
+const Template: ComponentStory<typeof PinnedProposalLine> = (args) => (
+  <PinnedProposalLine {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "coreAddress": null, // TODO: Fill in default value.
-  "proposalModules": null, // TODO: Fill in default value.
-  "proposalId": null, // TODO: Fill in default value.
-  "proposalViewUrl": null, // TODO: Fill in default value.
-  "markDone": null // TODO: Fill in default value.
+  coreAddress: null, // TODO: Fill in default value.
+  proposalModules: null, // TODO: Fill in default value.
+  proposalId: null, // TODO: Fill in default value.
+  proposalViewUrl: null, // TODO: Fill in default value.
+  markDone: null, // TODO: Fill in default value.
 }

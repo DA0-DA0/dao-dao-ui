@@ -7,7 +7,9 @@ export default {
   component: LogoNoBorder,
 } as ComponentMeta<typeof LogoNoBorder>
 
-const Template: ComponentStory<typeof LogoNoBorder> = (args) => <LogoNoBorder {...args} />
+const Template: ComponentStory<typeof LogoNoBorder> = (args) => (
+  <LogoNoBorder {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

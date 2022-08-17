@@ -7,11 +7,13 @@ export default {
   component: AmountSelector,
 } as ComponentMeta<typeof AmountSelector>
 
-const Template: ComponentStory<typeof AmountSelector> = (args) => <AmountSelector {...args} />
+const Template: ComponentStory<typeof AmountSelector> = (args) => (
+  <AmountSelector {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "setAmount": null, // TODO: Fill in default value.
-  "amount": null, // TODO: Fill in default value.
-  "max": null // TODO: Fill in default value.
+  setAmount: null, // TODO: Fill in default value.
+  amount: null, // TODO: Fill in default value.
+  max: null, // TODO: Fill in default value.
 }

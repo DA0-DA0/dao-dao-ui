@@ -7,9 +7,11 @@ export default {
   component: GradientWrapper,
 } as ComponentMeta<typeof GradientWrapper>
 
-const Template: ComponentStory<typeof GradientWrapper> = (args) => <GradientWrapper {...args} />
+const Template: ComponentStory<typeof GradientWrapper> = (args) => (
+  <GradientWrapper {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "children": null // TODO: Fill in default value.
+  children: null, // TODO: Fill in default value.
 }

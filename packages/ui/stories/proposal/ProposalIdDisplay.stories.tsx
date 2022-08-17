@@ -7,10 +7,12 @@ export default {
   component: ProposalIdDisplay,
 } as ComponentMeta<typeof ProposalIdDisplay>
 
-const Template: ComponentStory<typeof ProposalIdDisplay> = (args) => <ProposalIdDisplay {...args} />
+const Template: ComponentStory<typeof ProposalIdDisplay> = (args) => (
+  <ProposalIdDisplay {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "proposalPrefix": null, // TODO: Fill in default value.
-  "proposalNumber": null // TODO: Fill in default value.
+  proposalPrefix: null, // TODO: Fill in default value.
+  proposalNumber: null, // TODO: Fill in default value.
 }

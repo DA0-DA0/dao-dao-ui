@@ -7,7 +7,9 @@ export default {
   component: BalanceIcon,
 } as ComponentMeta<typeof BalanceIcon>
 
-const Template: ComponentStory<typeof BalanceIcon> = (args) => <BalanceIcon {...args} />
+const Template: ComponentStory<typeof BalanceIcon> = (args) => (
+  <BalanceIcon {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

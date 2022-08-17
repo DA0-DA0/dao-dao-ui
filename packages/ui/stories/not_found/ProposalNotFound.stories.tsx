@@ -7,9 +7,11 @@ export default {
   component: ProposalNotFound,
 } as ComponentMeta<typeof ProposalNotFound>
 
-const Template: ComponentStory<typeof ProposalNotFound> = (args) => <ProposalNotFound {...args} />
+const Template: ComponentStory<typeof ProposalNotFound> = (args) => (
+  <ProposalNotFound {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "homeHref": null // TODO: Fill in default value.
+  homeHref: null, // TODO: Fill in default value.
 }

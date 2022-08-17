@@ -11,5 +11,5 @@ const Template: ComponentStory<typeof Switch> = (args) => <Switch {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  "enabled": null // TODO: Fill in default value.
+  enabled: null, // TODO: Fill in default value.
 }

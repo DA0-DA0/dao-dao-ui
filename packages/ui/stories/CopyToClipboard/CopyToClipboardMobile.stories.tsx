@@ -7,9 +7,11 @@ export default {
   component: CopyToClipboardMobile,
 } as ComponentMeta<typeof CopyToClipboardMobile>
 
-const Template: ComponentStory<typeof CopyToClipboardMobile> = (args) => <CopyToClipboardMobile {...args} />
+const Template: ComponentStory<typeof CopyToClipboardMobile> = (args) => (
+  <CopyToClipboardMobile {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "value": null // TODO: Fill in default value.
+  value: null, // TODO: Fill in default value.
 }

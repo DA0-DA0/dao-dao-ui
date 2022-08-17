@@ -7,9 +7,11 @@ export default {
   component: Breadcrumbs,
 } as ComponentMeta<typeof Breadcrumbs>
 
-const Template: ComponentStory<typeof Breadcrumbs> = (args) => <Breadcrumbs {...args} />
+const Template: ComponentStory<typeof Breadcrumbs> = (args) => (
+  <Breadcrumbs {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "crumbs": null // TODO: Fill in default value.
+  crumbs: null, // TODO: Fill in default value.
 }

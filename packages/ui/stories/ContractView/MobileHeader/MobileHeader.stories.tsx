@@ -7,13 +7,15 @@ export default {
   component: MobileHeader,
 } as ComponentMeta<typeof MobileHeader>
 
-const Template: ComponentStory<typeof MobileHeader> = (args) => <MobileHeader {...args} />
+const Template: ComponentStory<typeof MobileHeader> = (args) => (
+  <MobileHeader {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "name": null, // TODO: Fill in default value.
-  "member": null, // TODO: Fill in default value.
-  "pinned": null, // TODO: Fill in default value.
-  "onPin": null, // TODO: Fill in default value.
-  "contractAddress": null // TODO: Fill in default value.
+  name: null, // TODO: Fill in default value.
+  member: null, // TODO: Fill in default value.
+  pinned: null, // TODO: Fill in default value.
+  onPin: null, // TODO: Fill in default value.
+  contractAddress: null, // TODO: Fill in default value.
 }

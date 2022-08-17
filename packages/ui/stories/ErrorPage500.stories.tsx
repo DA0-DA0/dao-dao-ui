@@ -7,9 +7,11 @@ export default {
   component: ErrorPage500,
 } as ComponentMeta<typeof ErrorPage500>
 
-const Template: ComponentStory<typeof ErrorPage500> = (args) => <ErrorPage500 {...args} />
+const Template: ComponentStory<typeof ErrorPage500> = (args) => (
+  <ErrorPage500 {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "error": null // TODO: Fill in default value.
+  error: null, // TODO: Fill in default value.
 }

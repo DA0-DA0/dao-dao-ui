@@ -7,7 +7,9 @@ export default {
   component: SelectInput,
 } as ComponentMeta<typeof SelectInput>
 
-const Template: ComponentStory<typeof SelectInput> = (args) => <SelectInput {...args} />
+const Template: ComponentStory<typeof SelectInput> = (args) => (
+  <SelectInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

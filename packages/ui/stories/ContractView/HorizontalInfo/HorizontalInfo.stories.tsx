@@ -7,7 +7,9 @@ export default {
   component: HorizontalInfo,
 } as ComponentMeta<typeof HorizontalInfo>
 
-const Template: ComponentStory<typeof HorizontalInfo> = (args) => <HorizontalInfo {...args} />
+const Template: ComponentStory<typeof HorizontalInfo> = (args) => (
+  <HorizontalInfo {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

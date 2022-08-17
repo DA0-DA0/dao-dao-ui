@@ -7,9 +7,11 @@ export default {
   component: CodeMirrorInput,
 } as ComponentMeta<typeof CodeMirrorInput>
 
-const Template: ComponentStory<typeof CodeMirrorInput> = (args) => <CodeMirrorInput {...args} />
+const Template: ComponentStory<typeof CodeMirrorInput> = (args) => (
+  <CodeMirrorInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
 }

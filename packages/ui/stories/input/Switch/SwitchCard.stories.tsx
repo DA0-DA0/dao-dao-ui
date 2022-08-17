@@ -7,9 +7,11 @@ export default {
   component: SwitchCard,
 } as ComponentMeta<typeof SwitchCard>
 
-const Template: ComponentStory<typeof SwitchCard> = (args) => <SwitchCard {...args} />
+const Template: ComponentStory<typeof SwitchCard> = (args) => (
+  <SwitchCard {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "enabled": null // TODO: Fill in default value.
+  enabled: null, // TODO: Fill in default value.
 }

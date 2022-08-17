@@ -7,7 +7,9 @@ export default {
   component: DaoNotFound,
 } as ComponentMeta<typeof DaoNotFound>
 
-const Template: ComponentStory<typeof DaoNotFound> = (args) => <DaoNotFound {...args} />
+const Template: ComponentStory<typeof DaoNotFound> = (args) => (
+  <DaoNotFound {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

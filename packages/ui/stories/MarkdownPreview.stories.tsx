@@ -7,9 +7,11 @@ export default {
   component: MarkdownPreview,
 } as ComponentMeta<typeof MarkdownPreview>
 
-const Template: ComponentStory<typeof MarkdownPreview> = (args) => <MarkdownPreview {...args} />
+const Template: ComponentStory<typeof MarkdownPreview> = (args) => (
+  <MarkdownPreview {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "markdown": null // TODO: Fill in default value.
+  markdown: null, // TODO: Fill in default value.
 }

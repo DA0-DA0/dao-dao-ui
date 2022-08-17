@@ -7,7 +7,9 @@ export default {
   component: EstablishedDateLoader,
 } as ComponentMeta<typeof EstablishedDateLoader>
 
-const Template: ComponentStory<typeof EstablishedDateLoader> = (args) => <EstablishedDateLoader {...args} />
+const Template: ComponentStory<typeof EstablishedDateLoader> = (args) => (
+  <EstablishedDateLoader {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

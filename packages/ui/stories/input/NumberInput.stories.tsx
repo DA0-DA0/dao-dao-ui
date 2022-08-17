@@ -7,10 +7,12 @@ export default {
   component: NumberInput,
 } as ComponentMeta<typeof NumberInput>
 
-const Template: ComponentStory<typeof NumberInput> = (args) => <NumberInput {...args} />
+const Template: ComponentStory<typeof NumberInput> = (args) => (
+  <NumberInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null, // TODO: Fill in default value.
-  "register": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  register: null, // TODO: Fill in default value.
 }

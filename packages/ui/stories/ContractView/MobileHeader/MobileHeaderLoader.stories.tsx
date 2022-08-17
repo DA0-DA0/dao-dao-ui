@@ -7,9 +7,11 @@ export default {
   component: MobileHeaderLoader,
 } as ComponentMeta<typeof MobileHeaderLoader>
 
-const Template: ComponentStory<typeof MobileHeaderLoader> = (args) => <MobileHeaderLoader {...args} />
+const Template: ComponentStory<typeof MobileHeaderLoader> = (args) => (
+  <MobileHeaderLoader {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "contractAddress": null // TODO: Fill in default value.
+  contractAddress: null, // TODO: Fill in default value.
 }

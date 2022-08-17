@@ -7,7 +7,9 @@ export default {
   component: InputThemedText,
 } as ComponentMeta<typeof InputThemedText>
 
-const Template: ComponentStory<typeof InputThemedText> = (args) => <InputThemedText {...args} />
+const Template: ComponentStory<typeof InputThemedText> = (args) => (
+  <InputThemedText {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

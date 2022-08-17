@@ -7,7 +7,9 @@ export default {
   component: TooltipIcon,
 } as ComponentMeta<typeof TooltipIcon>
 
-const Template: ComponentStory<typeof TooltipIcon> = (args) => <TooltipIcon {...args} />
+const Template: ComponentStory<typeof TooltipIcon> = (args) => (
+  <TooltipIcon {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

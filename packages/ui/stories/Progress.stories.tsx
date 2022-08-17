@@ -7,9 +7,11 @@ export default {
   component: Progress,
 } as ComponentMeta<typeof Progress>
 
-const Template: ComponentStory<typeof Progress> = (args) => <Progress {...args} />
+const Template: ComponentStory<typeof Progress> = (args) => (
+  <Progress {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "rows": null // TODO: Fill in default value.
+  rows: null, // TODO: Fill in default value.
 }

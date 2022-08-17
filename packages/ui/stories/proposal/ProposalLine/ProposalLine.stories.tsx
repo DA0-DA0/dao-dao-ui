@@ -7,12 +7,14 @@ export default {
   component: ProposalLine,
 } as ComponentMeta<typeof ProposalLine>
 
-const Template: ComponentStory<typeof ProposalLine> = (args) => <ProposalLine {...args} />
+const Template: ComponentStory<typeof ProposalLine> = (args) => (
+  <ProposalLine {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "coreAddress": null, // TODO: Fill in default value.
-  "proposalModules": null, // TODO: Fill in default value.
-  "proposalId": null, // TODO: Fill in default value.
-  "proposalViewUrl": null // TODO: Fill in default value.
+  coreAddress: null, // TODO: Fill in default value.
+  proposalModules: null, // TODO: Fill in default value.
+  proposalId: null, // TODO: Fill in default value.
+  proposalViewUrl: null, // TODO: Fill in default value.
 }

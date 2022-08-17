@@ -7,11 +7,13 @@ export default {
   component: CloseProposal,
 } as ComponentMeta<typeof CloseProposal>
 
-const Template: ComponentStory<typeof CloseProposal> = (args) => <CloseProposal {...args} />
+const Template: ComponentStory<typeof CloseProposal> = (args) => (
+  <CloseProposal {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "onClose": null, // TODO: Fill in default value.
-  "willRefundProposalDeposit": null, // TODO: Fill in default value.
-  "loading": null // TODO: Fill in default value.
+  onClose: null, // TODO: Fill in default value.
+  willRefundProposalDeposit: null, // TODO: Fill in default value.
+  loading: null, // TODO: Fill in default value.
 }

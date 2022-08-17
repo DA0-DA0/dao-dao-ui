@@ -7,9 +7,11 @@ export default {
   component: GradientHero,
 } as ComponentMeta<typeof GradientHero>
 
-const Template: ComponentStory<typeof GradientHero> = (args) => <GradientHero {...args} />
+const Template: ComponentStory<typeof GradientHero> = (args) => (
+  <GradientHero {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "children": null // TODO: Fill in default value.
+  children: null, // TODO: Fill in default value.
 }

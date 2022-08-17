@@ -7,12 +7,14 @@ export default {
   component: PercentSelector,
 } as ComponentMeta<typeof PercentSelector>
 
-const Template: ComponentStory<typeof PercentSelector> = (args) => <PercentSelector {...args} />
+const Template: ComponentStory<typeof PercentSelector> = (args) => (
+  <PercentSelector {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "max": null, // TODO: Fill in default value.
-  "amount": null, // TODO: Fill in default value.
-  "tokenDecimals": null, // TODO: Fill in default value.
-  "setAmount": null // TODO: Fill in default value.
+  max: null, // TODO: Fill in default value.
+  amount: null, // TODO: Fill in default value.
+  tokenDecimals: null, // TODO: Fill in default value.
+  setAmount: null, // TODO: Fill in default value.
 }

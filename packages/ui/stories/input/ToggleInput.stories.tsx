@@ -7,10 +7,12 @@ export default {
   component: ToggleInput,
 } as ComponentMeta<typeof ToggleInput>
 
-const Template: ComponentStory<typeof ToggleInput> = (args) => <ToggleInput {...args} />
+const Template: ComponentStory<typeof ToggleInput> = (args) => (
+  <ToggleInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null, // TODO: Fill in default value.
-  "register": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  register: null, // TODO: Fill in default value.
 }

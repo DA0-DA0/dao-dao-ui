@@ -7,9 +7,11 @@ export default {
   component: FormattedJSONDisplay,
 } as ComponentMeta<typeof FormattedJSONDisplay>
 
-const Template: ComponentStory<typeof FormattedJSONDisplay> = (args) => <FormattedJSONDisplay {...args} />
+const Template: ComponentStory<typeof FormattedJSONDisplay> = (args) => (
+  <FormattedJSONDisplay {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "jsonLoadable": null // TODO: Fill in default value.
+  jsonLoadable: null, // TODO: Fill in default value.
 }

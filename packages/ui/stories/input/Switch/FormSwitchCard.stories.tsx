@@ -7,11 +7,13 @@ export default {
   component: FormSwitchCard,
 } as ComponentMeta<typeof FormSwitchCard>
 
-const Template: ComponentStory<typeof FormSwitchCard> = (args) => <FormSwitchCard {...args} />
+const Template: ComponentStory<typeof FormSwitchCard> = (args) => (
+  <FormSwitchCard {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null, // TODO: Fill in default value.
-  "watch": null, // TODO: Fill in default value.
-  "setValue": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  watch: null, // TODO: Fill in default value.
+  setValue: null, // TODO: Fill in default value.
 }

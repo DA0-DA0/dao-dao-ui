@@ -7,12 +7,14 @@ export default {
   component: BalanceCard,
 } as ComponentMeta<typeof BalanceCard>
 
-const Template: ComponentStory<typeof BalanceCard> = (args) => <BalanceCard {...args} />
+const Template: ComponentStory<typeof BalanceCard> = (args) => (
+  <BalanceCard {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "title": null, // TODO: Fill in default value.
-  "buttonLabel": null, // TODO: Fill in default value.
-  "loading": null, // TODO: Fill in default value.
-  "onClick": null // TODO: Fill in default value.
+  title: null, // TODO: Fill in default value.
+  buttonLabel: null, // TODO: Fill in default value.
+  loading: null, // TODO: Fill in default value.
+  onClick: null, // TODO: Fill in default value.
 }

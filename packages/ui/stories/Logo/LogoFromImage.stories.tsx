@@ -7,9 +7,11 @@ export default {
   component: LogoFromImage,
 } as ComponentMeta<typeof LogoFromImage>
 
-const Template: ComponentStory<typeof LogoFromImage> = (args) => <LogoFromImage {...args} />
+const Template: ComponentStory<typeof LogoFromImage> = (args) => (
+  <LogoFromImage {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "src": null // TODO: Fill in default value.
+  src: null, // TODO: Fill in default value.
 }

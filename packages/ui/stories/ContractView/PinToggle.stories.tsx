@@ -7,10 +7,12 @@ export default {
   component: PinToggle,
 } as ComponentMeta<typeof PinToggle>
 
-const Template: ComponentStory<typeof PinToggle> = (args) => <PinToggle {...args} />
+const Template: ComponentStory<typeof PinToggle> = (args) => (
+  <PinToggle {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "pinned": null, // TODO: Fill in default value.
-  "onPin": null // TODO: Fill in default value.
+  pinned: null, // TODO: Fill in default value.
+  onPin: null, // TODO: Fill in default value.
 }

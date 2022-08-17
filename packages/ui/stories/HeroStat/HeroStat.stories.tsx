@@ -7,11 +7,13 @@ export default {
   component: HeroStat,
 } as ComponentMeta<typeof HeroStat>
 
-const Template: ComponentStory<typeof HeroStat> = (args) => <HeroStat {...args} />
+const Template: ComponentStory<typeof HeroStat> = (args) => (
+  <HeroStat {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "Icon": null, // TODO: Fill in default value.
-  "title": null, // TODO: Fill in default value.
-  "value": null // TODO: Fill in default value.
+  Icon: null, // TODO: Fill in default value.
+  title: null, // TODO: Fill in default value.
+  value: null, // TODO: Fill in default value.
 }

@@ -7,7 +7,9 @@ export default {
   component: MultisigMemberListLoader,
 } as ComponentMeta<typeof MultisigMemberListLoader>
 
-const Template: ComponentStory<typeof MultisigMemberListLoader> = (args) => <MultisigMemberListLoader {...args} />
+const Template: ComponentStory<typeof MultisigMemberListLoader> = (args) => (
+  <MultisigMemberListLoader {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

@@ -7,11 +7,13 @@ export default {
   component: VoteBalanceCard,
 } as ComponentMeta<typeof VoteBalanceCard>
 
-const Template: ComponentStory<typeof VoteBalanceCard> = (args) => <VoteBalanceCard {...args} />
+const Template: ComponentStory<typeof VoteBalanceCard> = (args) => (
+  <VoteBalanceCard {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "weight": null, // TODO: Fill in default value.
-  "title": null, // TODO: Fill in default value.
-  "weightTotal": null // TODO: Fill in default value.
+  weight: null, // TODO: Fill in default value.
+  title: null, // TODO: Fill in default value.
+  weightTotal: null, // TODO: Fill in default value.
 }

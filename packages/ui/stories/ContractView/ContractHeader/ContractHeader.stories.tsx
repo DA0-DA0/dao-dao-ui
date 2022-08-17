@@ -7,11 +7,13 @@ export default {
   component: ContractHeader,
 } as ComponentMeta<typeof ContractHeader>
 
-const Template: ComponentStory<typeof ContractHeader> = (args) => <ContractHeader {...args} />
+const Template: ComponentStory<typeof ContractHeader> = (args) => (
+  <ContractHeader {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "name": null, // TODO: Fill in default value.
-  "description": null, // TODO: Fill in default value.
-  "established": null // TODO: Fill in default value.
+  name: null, // TODO: Fill in default value.
+  description: null, // TODO: Fill in default value.
+  established: null, // TODO: Fill in default value.
 }

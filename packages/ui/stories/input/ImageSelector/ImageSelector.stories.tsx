@@ -7,11 +7,13 @@ export default {
   component: ImageSelector,
 } as ComponentMeta<typeof ImageSelector>
 
-const Template: ComponentStory<typeof ImageSelector> = (args) => <ImageSelector {...args} />
+const Template: ComponentStory<typeof ImageSelector> = (args) => (
+  <ImageSelector {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null, // TODO: Fill in default value.
-  "register": null, // TODO: Fill in default value.
-  "watch": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  register: null, // TODO: Fill in default value.
+  watch: null, // TODO: Fill in default value.
 }

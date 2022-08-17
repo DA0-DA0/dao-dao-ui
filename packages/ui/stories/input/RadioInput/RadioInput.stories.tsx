@@ -7,12 +7,14 @@ export default {
   component: RadioInput,
 } as ComponentMeta<typeof RadioInput>
 
-const Template: ComponentStory<typeof RadioInput> = (args) => <RadioInput {...args} />
+const Template: ComponentStory<typeof RadioInput> = (args) => (
+  <RadioInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "options": null, // TODO: Fill in default value.
-  "fieldName": null, // TODO: Fill in default value.
-  "watch": null, // TODO: Fill in default value.
-  "setValue": null // TODO: Fill in default value.
+  options: null, // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  watch: null, // TODO: Fill in default value.
+  setValue: null, // TODO: Fill in default value.
 }

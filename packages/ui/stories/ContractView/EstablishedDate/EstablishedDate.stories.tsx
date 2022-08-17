@@ -7,9 +7,11 @@ export default {
   component: EstablishedDate,
 } as ComponentMeta<typeof EstablishedDate>
 
-const Template: ComponentStory<typeof EstablishedDate> = (args) => <EstablishedDate {...args} />
+const Template: ComponentStory<typeof EstablishedDate> = (args) => (
+  <EstablishedDate {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "date": null // TODO: Fill in default value.
+  date: null, // TODO: Fill in default value.
 }

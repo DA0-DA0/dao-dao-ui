@@ -7,9 +7,11 @@ export default {
   component: CosmosMessageDisplay,
 } as ComponentMeta<typeof CosmosMessageDisplay>
 
-const Template: ComponentStory<typeof CosmosMessageDisplay> = (args) => <CosmosMessageDisplay {...args} />
+const Template: ComponentStory<typeof CosmosMessageDisplay> = (args) => (
+  <CosmosMessageDisplay {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "value": null // TODO: Fill in default value.
+  value: null, // TODO: Fill in default value.
 }

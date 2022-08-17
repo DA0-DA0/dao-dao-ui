@@ -7,12 +7,14 @@ export default {
   component: ImageSelectorModal,
 } as ComponentMeta<typeof ImageSelectorModal>
 
-const Template: ComponentStory<typeof ImageSelectorModal> = (args) => <ImageSelectorModal {...args} />
+const Template: ComponentStory<typeof ImageSelectorModal> = (args) => (
+  <ImageSelectorModal {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "fieldName": null, // TODO: Fill in default value.
-  "register": null, // TODO: Fill in default value.
-  "watch": null, // TODO: Fill in default value.
-  "onClose": null // TODO: Fill in default value.
+  fieldName: null, // TODO: Fill in default value.
+  register: null, // TODO: Fill in default value.
+  watch: null, // TODO: Fill in default value.
+  onClose: null, // TODO: Fill in default value.
 }

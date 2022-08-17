@@ -7,9 +7,11 @@ export default {
   component: InputLabel,
 } as ComponentMeta<typeof InputLabel>
 
-const Template: ComponentStory<typeof InputLabel> = (args) => <InputLabel {...args} />
+const Template: ComponentStory<typeof InputLabel> = (args) => (
+  <InputLabel {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "name": null // TODO: Fill in default value.
+  name: null, // TODO: Fill in default value.
 }

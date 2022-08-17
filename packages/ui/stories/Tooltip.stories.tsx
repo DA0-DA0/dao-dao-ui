@@ -11,6 +11,6 @@ const Template: ComponentStory<typeof Tooltip> = (args) => <Tooltip {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  "label": null, // TODO: Fill in default value.
-  "children": null // TODO: Fill in default value.
+  label: null, // TODO: Fill in default value.
+  children: null, // TODO: Fill in default value.
 }

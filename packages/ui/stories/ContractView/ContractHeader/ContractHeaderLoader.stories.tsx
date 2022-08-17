@@ -7,7 +7,9 @@ export default {
   component: ContractHeaderLoader,
 } as ComponentMeta<typeof ContractHeaderLoader>
 
-const Template: ComponentStory<typeof ContractHeaderLoader> = (args) => <ContractHeaderLoader {...args} />
+const Template: ComponentStory<typeof ContractHeaderLoader> = (args) => (
+  <ContractHeaderLoader {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

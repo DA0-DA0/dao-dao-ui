@@ -7,12 +7,14 @@ export default {
   component: MobileMenuTab,
 } as ComponentMeta<typeof MobileMenuTab>
 
-const Template: ComponentStory<typeof MobileMenuTab> = (args) => <MobileMenuTab {...args} />
+const Template: ComponentStory<typeof MobileMenuTab> = (args) => (
+  <MobileMenuTab {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "icon": null, // TODO: Fill in default value.
-  "text": null, // TODO: Fill in default value.
-  "onClick": null, // TODO: Fill in default value.
-  "selected": null // TODO: Fill in default value.
+  icon: null, // TODO: Fill in default value.
+  text: null, // TODO: Fill in default value.
+  onClick: null, // TODO: Fill in default value.
+  selected: null, // TODO: Fill in default value.
 }

@@ -7,12 +7,14 @@ export default {
   component: ActionButton,
 } as ComponentMeta<typeof ActionButton>
 
-const Template: ComponentStory<typeof ActionButton> = (args) => <ActionButton {...args} />
+const Template: ComponentStory<typeof ActionButton> = (args) => (
+  <ActionButton {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "error": null, // TODO: Fill in default value.
-  "loading": null, // TODO: Fill in default value.
-  "mode": null, // TODO: Fill in default value.
-  "onClick": null // TODO: Fill in default value.
+  error: null, // TODO: Fill in default value.
+  loading: null, // TODO: Fill in default value.
+  mode: null, // TODO: Fill in default value.
+  onClick: null, // TODO: Fill in default value.
 }

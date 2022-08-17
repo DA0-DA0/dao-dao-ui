@@ -7,7 +7,9 @@ export default {
   component: NoMobileWallet,
 } as ComponentMeta<typeof NoMobileWallet>
 
-const Template: ComponentStory<typeof NoMobileWallet> = (args) => <NoMobileWallet {...args} />
+const Template: ComponentStory<typeof NoMobileWallet> = (args) => (
+  <NoMobileWallet {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

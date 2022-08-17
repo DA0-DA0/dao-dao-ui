@@ -7,9 +7,11 @@ export default {
   component: RadioButton,
 } as ComponentMeta<typeof RadioButton>
 
-const Template: ComponentStory<typeof RadioButton> = (args) => <RadioButton {...args} />
+const Template: ComponentStory<typeof RadioButton> = (args) => (
+  <RadioButton {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "selected": null // TODO: Fill in default value.
+  selected: null, // TODO: Fill in default value.
 }

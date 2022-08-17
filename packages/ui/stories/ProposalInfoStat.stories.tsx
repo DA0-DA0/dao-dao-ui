@@ -7,10 +7,12 @@ export default {
   component: ProposalInfoStat,
 } as ComponentMeta<typeof ProposalInfoStat>
 
-const Template: ComponentStory<typeof ProposalInfoStat> = (args) => <ProposalInfoStat {...args} />
+const Template: ComponentStory<typeof ProposalInfoStat> = (args) => (
+  <ProposalInfoStat {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
-  "Icon": null, // TODO: Fill in default value.
-  "title": null // TODO: Fill in default value.
+  Icon: null, // TODO: Fill in default value.
+  title: null, // TODO: Fill in default value.
 }
