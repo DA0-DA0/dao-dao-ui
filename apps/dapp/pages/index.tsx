@@ -17,7 +17,7 @@ import {
   RotatableLogo,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { FEATURED_DAOS_URL } from '@dao-dao/utils'
+import { CI, FEATURED_DAOS_URL } from '@dao-dao/utils'
 
 import {
   AnouncementCard,
@@ -182,11 +182,15 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
 export default Home
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const resp = await fetch(FEATURED_DAOS_URL)
-  // These are returned as a timeseries in the form [{time, value}, ...].
-  const featuredDaosOverTime = await resp.json()
-  const featuredDaos =
-    featuredDaosOverTime[featuredDaosOverTime.length - 1].value
+  const featuredDaos: FeaturedDao[] = []
+  if (!CI) {
+    const resp = await fetch(FEATURED_DAOS_URL)
+    // These are returned as a timeseries in the form [{time, value}, ...].
+    const featuredDaosOverTime = await resp.json()
+    featuredDaos.push(
+      ...featuredDaosOverTime[featuredDaosOverTime.length - 1].value
+    )
+  }
 
   return {
     props: {
