@@ -3,7 +3,6 @@
 
 import { PlusIcon, SparklesIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, SuspenseLoader } from '@dao-dao/ui'
@@ -14,9 +13,11 @@ import { FeaturedCard } from '../FeaturedCard'
 import { FeaturedDao } from '../splash'
 import { DaoCardContainer } from './DaoCardContainer'
 
-export const FeaturedDAOsList: FC<{ featuredDaos: FeaturedDao[] }> = ({
-  featuredDaos,
-}) => {
+export interface FeaturedDAOsListProps {
+  featuredDaos: FeaturedDao[]
+}
+
+export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
   const { t } = useTranslation()
   const { pinnedAddresses } = usePinnedDAOs()
 

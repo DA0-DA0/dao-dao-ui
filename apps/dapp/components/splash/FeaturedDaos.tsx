@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import {
-  FC,
   UIEventHandler,
   createRef,
   useCallback,
@@ -22,9 +21,11 @@ export interface FeaturedDao {
   image: string
 }
 
-export const FeaturedDaos: FC<{ featuredDaos: FeaturedDao[] }> = ({
-  featuredDaos,
-}) => {
+export interface FeaturedDaosProps {
+  featuredDaos: FeaturedDao[]
+}
+
+export const FeaturedDaos = ({ featuredDaos }: FeaturedDaosProps) => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 

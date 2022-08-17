@@ -4,6 +4,7 @@
 import { GetStaticProps, NextPage } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { FEATURED_DAOS_URL } from '@dao-dao/utils'
 
 import {
   FeaturedDAOsList,
@@ -32,9 +33,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => (
 export default HomePage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const resp = await fetch(
-    'https://dao-stats.withoutdoing.com/mainnet/featured_daos.json'
-  )
+  const resp = await fetch(FEATURED_DAOS_URL)
   // These are returned as a timeseries in the form [{time, value}, ...].
   const featuredDaosOverTime = await resp.json()
   const featuredDaos =
