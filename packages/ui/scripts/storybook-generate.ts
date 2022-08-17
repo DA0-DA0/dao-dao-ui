@@ -1,3 +1,6 @@
+// `yarn storybook:generate` to generate all missing storybook files.
+// `yarn storybook:generate <glob>` to generate just the matching files.
+
 import fs from 'fs'
 import path from 'path'
 
