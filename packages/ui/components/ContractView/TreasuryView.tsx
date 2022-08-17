@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { CopyToClipboard } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -7,7 +8,7 @@ import {
   nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
-import { BalanceIcon } from './BalanceIcon'
+import { BalanceIcon, UnknownAssetBalanceIcon } from './BalanceIcon'
 import { BalanceListItem } from './BalanceListItem'
 
 export interface TreasuryBalancesProps {
@@ -43,6 +44,29 @@ export const TreasuryBalances = ({
       {nativeTokens.map(({ denom, amount, decimals }) => {
         const symbol = nativeTokenLabel(denom)
         const icon = nativeTokenLogoURI(denom)
+        if (symbol.startsWith('IBC')) {
+          // We're dealing with an IBC token we don't know about. Instead
+          // of showing a long hash, allow the user to copy it.
+          return (
+            <BalanceListItem key={symbol}>
+              <UnknownAssetBalanceIcon />
+              {convertMicroDenomToDenomWithDecimals(
+                amount,
+                decimals
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: decimals,
+              })}{' '}
+              <CopyToClipboard
+                className="gap-0 caption-text"
+                takeStartEnd={{
+                  start: 6,
+                  end: 4,
+                }}
+                value={symbol}
+              />
+            </BalanceListItem>
+          )
+        }
         return (
           <BalanceListItem key={symbol}>
             <BalanceIcon iconURI={icon} />

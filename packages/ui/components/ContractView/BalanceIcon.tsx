@@ -17,3 +17,9 @@ export const BalanceIcon = ({ iconURI }: BalanceIconProps) => {
     ></div>
   )
 }
+
+export const UnknownAssetBalanceIcon = () => (
+  <div className="flex justify-center items-center w-4 h-4 text-black bg-disabled rounded-full">
+    ?
+  </div>
+)
