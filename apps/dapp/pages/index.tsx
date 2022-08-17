@@ -17,16 +17,26 @@ import {
   PageLoader,
   RotatableLogo,
 } from '@dao-dao/ui'
+import {
+  CI,
+  FEATURED_DAOS_CACHE_SECONDS,
+  FEATURED_DAOS_URL,
+} from '@dao-dao/utils'
 
 import {
   AnouncementCard,
   EnterAppButton,
+  FeaturedDao,
   FeaturedDaos,
   HomepageCards,
   StatsCard,
 } from '@/components'
 
-const Home: NextPage = () => {
+interface HomePageProps {
+  featuredDaos: FeaturedDao[]
+}
+
+const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
   const { t } = useTranslation()
 
   const [tvl, setTVL] = useState<string | undefined>(undefined)
@@ -91,7 +101,7 @@ const Home: NextPage = () => {
           <AnouncementCard />
         </div>
 
-        <FeaturedDaos />
+        <FeaturedDaos featuredDaos={featuredDaos} />
 
         <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
           <StatsCard>
@@ -175,8 +185,22 @@ const Home: NextPage = () => {
 
 export default Home
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(locale, ['translation'])),
-  },
-})
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const featuredDaos: FeaturedDao[] = []
+  if (!CI) {
+    const resp = await fetch(FEATURED_DAOS_URL)
+    // These are returned as a timeseries in the form [{time, value}, ...].
+    const featuredDaosOverTime = await resp.json()
+    featuredDaos.push(
+      ...featuredDaosOverTime[featuredDaosOverTime.length - 1].value
+    )
+  }
+
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['translation'])),
+      featuredDaos,
+    },
+    revalidate: FEATURED_DAOS_CACHE_SECONDS,
+  }
+}
