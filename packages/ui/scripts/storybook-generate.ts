@@ -3,6 +3,11 @@ import path from 'path'
 
 import { Project, SourceFile, SyntaxKind } from 'ts-morph'
 
+interface ComponentWithRequiredProps {
+  name: string
+  requiredProps: string[]
+}
+
 const TEMPLATE = `
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
@@ -16,7 +21,7 @@ export default {
 const Template: ComponentStory<typeof COMPONENT> = (args) => <COMPONENT {...args} />
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = PROPS
 `
 
 const project = new Project({
@@ -49,46 +54,86 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     titlePrefix += ' / '
   }
 
-  const componentNames = sourceFile
+  // forwardRef'd components
+  // export const Component = forwardRef(...)
+  const componentForwardRefs: ComponentWithRequiredProps[] = sourceFile
     .getVariableDeclarations()
     .filter(
       (declaration) =>
         declaration.isExported() &&
-        // forwardRef'd components, like Button
-        (declaration
+        declaration
           .getVariableStatement()
           ?.getChildrenOfKind(SyntaxKind.VariableDeclarationList)[0]
           ?.getChildrenOfKind(SyntaxKind.SyntaxList)[0]
           ?.getChildrenOfKind(SyntaxKind.VariableDeclaration)[0]
           ?.getChildrenOfKind(SyntaxKind.CallExpression)[0]
           ?.getChildrenOfKind(SyntaxKind.Identifier)[0]
-          ?.getText() === 'forwardRef' ||
-          // Arrow functions, like most components.
-          declaration
-            .getInitializerIfKind(SyntaxKind.ArrowFunction)
-            ?.getReturnType()
-            .getText()
-            .includes('JSX.Element'))
+          ?.getText() === 'forwardRef'
     )
-    .flatMap((declaration) => declaration.getName())
-    .concat(
-      sourceFile
-        .getFunctions()
-        .filter(
-          (fn) =>
-            // Normal functions.
-            fn.isExported() &&
-            fn.getName() &&
-            fn.getReturnType().getText().includes('JSX.Element')
-        )
-        .map((fn) => fn.getName()!)
+    .flatMap((declaration) => ({
+      name: declaration.getName(),
+      // Not sure how to extract props from this statement.
+      requiredProps: [],
+    }))
+
+  // Arrow functions, like most components.
+  // export const Component = (props) => { ... }
+  const componentArrowFunctions: ComponentWithRequiredProps[] = sourceFile
+    .getVariableDeclarations()
+    .filter(
+      (declaration) =>
+        declaration.isExported() &&
+        declaration
+          .getInitializerIfKind(SyntaxKind.ArrowFunction)
+          ?.getReturnType()
+          .getText()
+          .includes('JSX.Element')
     )
+    .map((declaration) => ({
+      name: declaration.getName(),
+      requiredProps: declaration
+        .getInitializerIfKind(SyntaxKind.ArrowFunction)!
+        .getParameters()[0]
+        .getType()
+        .getProperties()
+        .filter((p) => !p.isOptional())
+        .map((p) => p.getName()),
+    }))
+
+  // export function Component(props) { ... }
+  const componentFunctions: ComponentWithRequiredProps[] = sourceFile
+    .getFunctions()
+    .filter(
+      (fn) =>
+        // Normal functions.
+        fn.isExported() &&
+        fn.getName() &&
+        fn.getReturnType().getText().includes('JSX.Element')
+    )
+    .map((fn) => ({
+      name: fn.getName()!,
+      requiredProps: fn
+        .getParameters()[0]
+        .getType()
+        .getProperties()
+        .filter((p) => !p.isOptional())
+        .map((p) => p.getName()),
+    }))
+
+  const components: ComponentWithRequiredProps[] = [
+    ...componentForwardRefs,
+    ...componentArrowFunctions,
+    ...componentFunctions,
+  ]
 
   const storyDirectory = sourceFile
     .getDirectoryPath()
     .replace('packages/ui/components', 'packages/ui/stories')
 
-  const generate = async (output: string, componentName: string) => {
+  const generate = async (
+    output: string,
+    component: ComponentWithRequiredProps
+  ) => {
     // If stories already exist, ignore.
     if (fs.existsSync(output)) {
       return
@@ -98,14 +143,33 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
       /FILE/g,
       'components' + pathFromComponents + '/' + baseName
     )
-      .replace(/COMPONENT/g, componentName)
-      .replace(/TITLE/g, titlePrefix + componentName)
+      .replace(/COMPONENT/g, component.name)
+      .replace(/TITLE/g, titlePrefix + component.name)
+      .replace(
+        /PROPS/g,
+        component.requiredProps.length
+          ? JSON.stringify(
+              component.requiredProps.reduce(
+                (acc, prop) => ({
+                  ...acc,
+                  [prop]: null,
+                }),
+                {}
+              ),
+              undefined,
+              2
+            ).replace(
+              /null(,|)?\n/g,
+              `null$1 \/\/ TODO: Fill in default value.\n`
+            )
+          : '{}'
+      )
       .trimStart()
 
     await fs.promises.writeFile(output, data)
   }
 
-  if (componentNames.length === 1) {
+  if (components.length === 1) {
     // Make directory if nonexistent.
     if (!fs.existsSync(storyDirectory)) {
       await fs.promises.mkdir(storyDirectory)
@@ -116,9 +180,9 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
       baseName + '.stories' + extension
     )
 
-    await generate(storyFilePath, componentNames[0])
+    await generate(storyFilePath, components[0])
   } else {
-    for (const componentName of componentNames) {
+    for (const component of components) {
       // Make directory if nonexistent.
       const storyFileDirectory = path.resolve(storyDirectory, baseName)
       if (!fs.existsSync(storyFileDirectory)) {
@@ -127,10 +191,10 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
 
       const storyFilePath = path.resolve(
         storyFileDirectory,
-        componentName + '.stories' + extension
+        component.name + '.stories' + extension
       )
 
-      await generate(storyFilePath, componentName)
+      await generate(storyFilePath, component)
     }
   }
 }
