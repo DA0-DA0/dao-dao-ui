@@ -44,7 +44,7 @@ export const TreasuryBalances = ({
       {nativeTokens.map(({ denom, amount, decimals }) => {
         const symbol = nativeTokenLabel(denom)
         const icon = nativeTokenLogoURI(denom)
-        if (symbol.startsWith('IBC')) {
+        if (symbol.toLowerCase().startsWith('ibc')) {
           // We're dealing with an IBC token we don't know about. Instead
           // of showing a long hash, allow the user to copy it.
           return (
