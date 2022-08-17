@@ -7,6 +7,7 @@ jobs:
   request:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: uesteibar/reviewer-lottery@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
