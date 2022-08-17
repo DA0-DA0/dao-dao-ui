@@ -26,7 +26,8 @@ module.exports = {
       },
     },
   ],
-  framework: '@storybook/react',
+  framework: '@storybook/react', 
+  staticDirs: ['../../../apps/dapp/public'],
   webpackFinal: async (config) => {
     config.resolve.plugins = [new tsconfigPathsPlugin()]
     return config
