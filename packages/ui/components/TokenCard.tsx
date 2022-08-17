@@ -1,5 +1,7 @@
-import SvgEdamameCrown from '@dao-dao/icons/dist/EdamameCrown'
 import { PlusIcon } from '@heroicons/react/outline'
+
+import { EdamameCrown } from '@dao-dao/icons'
+
 import { Tooltip } from './Tooltip'
 
 export interface TokenCardProps {
@@ -20,11 +22,11 @@ export const TokenCard = ({
   crown,
 }: TokenCardProps) => (
   <div className="rounded-lg border border-default">
-    <div className="border-b border-inactive p-5 flex flex-row justify-between">
+    <div className="flex flex-row justify-between p-5 border-b border-inactive">
       <div className="relative">
         <div className="flex flex-row gap-4">
           <div
-            className="w-10 h-10 rounded-full bg-center bg-fill"
+            className="w-10 h-10 bg-center rounded-full bg-fill"
             style={{
               backgroundImage: `url(${tokenImageUrl})`,
             }}
@@ -36,10 +38,10 @@ export const TokenCard = ({
         </div>
         {/* TODO: make an icon-secondary color and use it. */}
         {!!crown && (
-          <SvgEdamameCrown
-            className="stroke-current absolute -top-4 -left-[24px]"
-            width="32px"
+          <EdamameCrown
+            className="absolute -top-4 -left-[24px] stroke-current"
             height="32px"
+            width="32px"
           />
         )}{' '}
       </div>
@@ -48,16 +50,16 @@ export const TokenCard = ({
         */}
       <Tooltip label={onAddToken && 'Add token to wallet'}>
         <button
-          className="rounded-full h-min hover:bg-btn-secondary-pressed -mt-1 -mr-1 p-2 transition"
+          className="p-2 -mt-1 -mr-1 h-min hover:bg-btn-secondary-pressed rounded-full transition"
           onClick={onAddToken}
         >
           <PlusIcon className="w-4 h-4" />
         </button>
       </Tooltip>
     </div>
-    <div className="px-5 py-4 flex justify-between">
+    <div className="flex justify-between py-4 px-5">
       <p className="secondary-text">DAO Holding</p>
-      <p className="font-mono caption-text text-black">
+      <p className="font-mono text-black caption-text">
         {tokenBalance} ${tokenSymbol}
       </p>
     </div>
