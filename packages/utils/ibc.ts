@@ -10,9 +10,7 @@ export function nativeTokenLabel(denom: string): string {
 
   return (
     asset?.symbol ||
-    (denom.startsWith('u')
-      ? denom.substring(1).toUpperCase()
-      : denom.toLowerCase())
+    (denom.startsWith('u') ? denom.substring(1) : denom).toUpperCase()
   )
 }
 
