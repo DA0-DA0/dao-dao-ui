@@ -13,6 +13,6 @@ const Template: ComponentStory<typeof ProposalIdDisplay> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  proposalPrefix: null, // TODO: Fill in default value.
-  proposalNumber: null, // TODO: Fill in default value.
+  proposalPrefix: 'A',
+  proposalNumber: 7,
 }

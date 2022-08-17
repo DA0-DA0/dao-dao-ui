@@ -25,3 +25,5 @@ Default.args = {
     total_supply: '100000000',
   },
 }
+
+// TODO: Fix story.

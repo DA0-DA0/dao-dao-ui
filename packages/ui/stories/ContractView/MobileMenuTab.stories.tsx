@@ -13,8 +13,7 @@ const Template: ComponentStory<typeof MobileMenuTab> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  icon: null, // TODO: Fill in default value.
-  text: null, // TODO: Fill in default value.
-  onClick: null, // TODO: Fill in default value.
-  selected: null, // TODO: Fill in default value.
+  icon: '🗳',
+  text: 'Proposals',
+  selected: false,
 }

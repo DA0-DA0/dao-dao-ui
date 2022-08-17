@@ -13,6 +13,6 @@ const Template: ComponentStory<typeof LinkText> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  aProps: null, // TODO: Fill in default value.
-  href: null, // TODO: Fill in default value.
+  href: '#',
+  children: 'Click me',
 }

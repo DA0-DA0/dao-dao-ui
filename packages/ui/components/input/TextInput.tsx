@@ -3,16 +3,19 @@ import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
+  FieldValues,
   Path,
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
 
-interface TextInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
+export interface TextInputProps<
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+> extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
   fieldName: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  register: UseFormRegister<FV>
+  validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
 }
@@ -26,7 +29,7 @@ interface TextInputProps<FieldValues, FieldName extends Path<FieldValues>>
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export const TextInput = <FieldValues, FieldName extends Path<FieldValues>>({
+export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   fieldName,
   register,
   error,

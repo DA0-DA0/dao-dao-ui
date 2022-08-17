@@ -13,5 +13,6 @@ const Template: ComponentStory<typeof InputLabel> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  name: null, // TODO: Fill in default value.
+  name: 'Input name',
+  tooltip: 'I am a tooltip.',
 }

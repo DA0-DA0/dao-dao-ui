@@ -13,7 +13,9 @@ const Template: ComponentStory<typeof VoteBalanceCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  weight: null, // TODO: Fill in default value.
-  title: null, // TODO: Fill in default value.
-  weightTotal: null, // TODO: Fill in default value.
+  weight: 123,
+  title: 'junoabcdef...xyz',
+  weightTotal: 4321,
 }
+
+// TODO: Fix story.

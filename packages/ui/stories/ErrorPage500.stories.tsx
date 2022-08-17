@@ -13,5 +13,5 @@ const Template: ComponentStory<typeof ErrorPage500> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  error: null, // TODO: Fill in default value.
+  error: 'Error!!!!!',
 }

@@ -1,3 +1,4 @@
+import { LinkIcon } from '@heroicons/react/outline'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { HeroStatLink } from 'components/HeroStat'
@@ -13,7 +14,7 @@ const Template: ComponentStory<typeof HeroStatLink> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: null, // TODO: Fill in default value.
-  title: null, // TODO: Fill in default value.
-  value: null, // TODO: Fill in default value.
+  Icon: LinkIcon,
+  title: 'Title',
+  value: '#',
 }

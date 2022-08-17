@@ -13,8 +13,21 @@ const Template: ComponentStory<typeof ProposalLine> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  coreAddress: null, // TODO: Fill in default value.
-  proposalModules: null, // TODO: Fill in default value.
-  proposalId: null, // TODO: Fill in default value.
-  proposalViewUrl: null, // TODO: Fill in default value.
+  coreAddress: 'junoabcdefxyz',
+  proposalModules: [
+    {
+      contractName: 'crates.io:cw-proposal-single',
+      address: 'junoghijkluvw',
+      prefix: 'A',
+    },
+    {
+      contractName: 'crates.io:cw-proposal-multiple',
+      address: 'junomnopqrstu',
+      prefix: 'B',
+    },
+  ],
+  proposalId: 'B3',
+  proposalViewUrl: '#',
 }
+
+// TODO: Fix story.

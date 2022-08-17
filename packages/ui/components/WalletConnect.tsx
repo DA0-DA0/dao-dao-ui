@@ -11,9 +11,9 @@ import { Tooltip } from './Tooltip'
 
 export interface WalletConnectProps extends Partial<ButtonProps> {
   connected: boolean
-  walletAddress: string
-  walletName: string | undefined
-  walletBalance: number
+  walletAddress?: string
+  walletName?: string
+  walletBalance?: number
   walletBalanceDenom: string
   onConnect: () => void
   onDisconnect?: () => void
@@ -46,12 +46,12 @@ export const WalletConnect: FC<WalletConnectProps> = ({
           <span>{walletName}</span>
           <br />
           <span className="capitalize caption-text">
-            {walletBalance} {walletBalanceDenom.toUpperCase()}
+            {walletBalance ?? '...'} {walletBalanceDenom.toUpperCase()}
           </span>
         </div>
       </div>
       <div className="flex absolute top-1 right-2 gap-1 opacity-0 group-hover:opacity-100 transition">
-        <CopyButton text={walletAddress} />
+        <CopyButton text={walletAddress ?? ''} />
         {onDisconnect && <DisconnectButton onClick={onDisconnect} />}
       </div>
     </div>

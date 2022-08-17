@@ -13,5 +13,5 @@ const Template: ComponentStory<typeof MobileHeaderLoader> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  contractAddress: null, // TODO: Fill in default value.
+  contractAddress: 'junoabcdefxyz',
 }

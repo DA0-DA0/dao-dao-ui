@@ -13,5 +13,5 @@ const Template: ComponentStory<typeof BalanceListItem> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  children: null, // TODO: Fill in default value.
+  children: 'Content',
 }

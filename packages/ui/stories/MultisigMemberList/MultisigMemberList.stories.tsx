@@ -13,6 +13,21 @@ const Template: ComponentStory<typeof MultisigMemberList> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  members: null, // TODO: Fill in default value.
-  totalWeight: null, // TODO: Fill in default value.
+  members: [
+    {
+      addr: 'junoabcdefxyz',
+      weight: 6,
+    },
+    {
+      addr: 'junoghijkluvw',
+      weight: 2,
+    },
+    {
+      addr: 'junomnopqrstu',
+      weight: 1,
+    },
+  ],
+  totalWeight: 9,
 }
+
+// TODO: Fix story.

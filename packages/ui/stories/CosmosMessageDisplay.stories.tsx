@@ -13,5 +13,19 @@ const Template: ComponentStory<typeof CosmosMessageDisplay> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  value: null, // TODO: Fill in default value.
+  value: JSON.stringify(
+    {
+      send: {
+        amount: [
+          {
+            amount: '5000',
+            denom: 'ujuno',
+          },
+        ],
+        to_address: 'junoabcdef...xyz',
+      },
+    },
+    null,
+    2
+  ),
 }

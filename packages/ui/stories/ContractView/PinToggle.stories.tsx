@@ -11,8 +11,12 @@ const Template: ComponentStory<typeof PinToggle> = (args) => (
   <PinToggle {...args} />
 )
 
-export const Default = Template.bind({})
-Default.args = {
-  pinned: null, // TODO: Fill in default value.
-  onPin: null, // TODO: Fill in default value.
+export const On = Template.bind({})
+On.args = {
+  pinned: true,
+}
+
+export const Off = Template.bind({})
+Off.args = {
+  pinned: false,
 }

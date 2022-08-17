@@ -28,7 +28,7 @@ export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
     connected,
     connectedWallet: { name, address } = {},
   } = useWalletManager()
-  const { walletBalance = 0 } = useWalletBalance()
+  const { walletBalance } = useWalletBalance()
 
   if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {
     return <NoMobileWallet />

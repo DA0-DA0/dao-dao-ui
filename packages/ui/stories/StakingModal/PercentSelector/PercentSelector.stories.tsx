@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useState } from 'react'
 
 import { PercentSelector } from 'components/StakingModal/PercentSelector'
 
@@ -7,14 +8,14 @@ export default {
   component: PercentSelector,
 } as ComponentMeta<typeof PercentSelector>
 
-const Template: ComponentStory<typeof PercentSelector> = (args) => (
-  <PercentSelector {...args} />
-)
+const Template: ComponentStory<typeof PercentSelector> = (args) => {
+  const [amount, setAmount] = useState(50)
+
+  return <PercentSelector {...args} amount={amount} setAmount={setAmount} />
+}
 
 export const Default = Template.bind({})
 Default.args = {
-  max: null, // TODO: Fill in default value.
-  amount: null, // TODO: Fill in default value.
-  tokenDecimals: null, // TODO: Fill in default value.
-  setAmount: null, // TODO: Fill in default value.
+  max: 1234,
+  tokenDecimals: 6,
 }

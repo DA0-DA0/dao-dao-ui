@@ -1,3 +1,4 @@
+import { InformationCircleIcon } from '@heroicons/react/solid'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalInfoStat } from 'components/ProposalInfoStat'
@@ -13,6 +14,7 @@ const Template: ComponentStory<typeof ProposalInfoStat> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: null, // TODO: Fill in default value.
-  title: null, // TODO: Fill in default value.
+  Icon: InformationCircleIcon,
+  title: 'Title',
+  value: 'Value',
 }

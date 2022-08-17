@@ -13,3 +13,5 @@ const Template: ComponentStory<typeof NoMobileWallet> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {}
+
+// TODO: Fix story.

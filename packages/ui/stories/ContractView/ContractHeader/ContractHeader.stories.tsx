@@ -13,7 +13,8 @@ const Template: ComponentStory<typeof ContractHeader> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  name: null, // TODO: Fill in default value.
-  description: null, // TODO: Fill in default value.
-  established: null, // TODO: Fill in default value.
+  name: 'Moonphase',
+  imgUrl: 'https://moonphase.is/image.svg',
+  description: '# What is Moonphase?\nThe moon phase.',
+  established: new Date(),
 }

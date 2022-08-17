@@ -13,5 +13,10 @@ const Template: ComponentStory<typeof Breadcrumbs> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  crumbs: null, // TODO: Fill in default value.
+  crumbs: [
+    ['#', 'Home'],
+    ['#', 'DAO'],
+    ['#', 'Proposal #1'],
+  ],
+  className: '!flex',
 }

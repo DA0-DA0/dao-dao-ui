@@ -11,7 +11,14 @@ const Template: ComponentStory<typeof RadioButton> = (args) => (
   <RadioButton {...args} />
 )
 
-export const Default = Template.bind({})
-Default.args = {
-  selected: null, // TODO: Fill in default value.
+export const On = Template.bind({})
+On.args = {
+  selected: true,
+  label: 'An option',
+}
+
+export const Off = Template.bind({})
+Off.args = {
+  selected: false,
+  label: 'An option',
 }

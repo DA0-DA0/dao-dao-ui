@@ -12,4 +12,6 @@ const Template: ComponentStory<typeof BalanceIcon> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  iconURI: '/juno-symbol.png',
+}

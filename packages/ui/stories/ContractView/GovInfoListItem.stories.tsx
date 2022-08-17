@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { Votes } from '@dao-dao/icons'
+
 import { GovInfoListItem } from 'components/ContractView/GovInfoListItem'
 
 export default {
@@ -13,6 +15,7 @@ const Template: ComponentStory<typeof GovInfoListItem> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  icon: null, // TODO: Fill in default value.
-  text: null, // TODO: Fill in default value.
+  icon: <Votes fill="currentColor" width="1rem" />,
+  text: 'Passing threshold',
+  value: '75%',
 }

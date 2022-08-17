@@ -13,6 +13,6 @@ const Template: ComponentStory<typeof ErrorPage> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  title: null, // TODO: Fill in default value.
-  children: null, // TODO: Fill in default value.
+  title: 'Unknown error',
+  children: 'Content',
 }

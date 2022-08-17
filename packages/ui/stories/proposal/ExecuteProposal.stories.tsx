@@ -13,7 +13,6 @@ const Template: ComponentStory<typeof ExecuteProposal> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  onExecute: null, // TODO: Fill in default value.
-  messages: null, // TODO: Fill in default value.
-  loading: null, // TODO: Fill in default value.
+  messages: 2,
+  loading: false,
 }

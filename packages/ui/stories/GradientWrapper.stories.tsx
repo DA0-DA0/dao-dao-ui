@@ -13,5 +13,7 @@ const Template: ComponentStory<typeof GradientWrapper> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  children: null, // TODO: Fill in default value.
+  children: 'Some content',
 }
+
+// TODO: Fix story.

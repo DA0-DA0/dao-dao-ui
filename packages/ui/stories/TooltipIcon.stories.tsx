@@ -12,4 +12,6 @@ const Template: ComponentStory<typeof TooltipIcon> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  label: 'This is a tooltip.',
+}

@@ -13,7 +13,6 @@ const Template: ComponentStory<typeof CloseProposal> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  onClose: null, // TODO: Fill in default value.
-  willRefundProposalDeposit: null, // TODO: Fill in default value.
-  loading: null, // TODO: Fill in default value.
+  willRefundProposalDeposit: true,
+  loading: false,
 }

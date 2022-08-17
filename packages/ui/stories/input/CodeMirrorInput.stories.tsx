@@ -1,17 +1,21 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useFormContext } from 'react-hook-form'
 
 import { CodeMirrorInput } from 'components/input/CodeMirrorInput'
+import { ReactHookFormStoryDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / CodeMirrorInput',
   component: CodeMirrorInput,
+  decorators: [ReactHookFormStoryDecorator],
 } as ComponentMeta<typeof CodeMirrorInput>
 
-const Template: ComponentStory<typeof CodeMirrorInput> = (args) => (
-  <CodeMirrorInput {...args} />
-)
+const Template: ComponentStory<typeof CodeMirrorInput> = (args) => {
+  const { control } = useFormContext()
+  return <CodeMirrorInput {...args} control={control} />
+}
 
 export const Default = Template.bind({})
 Default.args = {
-  fieldName: null, // TODO: Fill in default value.
+  fieldName: 'fieldName' as any,
 }

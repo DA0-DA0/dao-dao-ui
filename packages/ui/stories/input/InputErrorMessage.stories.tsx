@@ -13,5 +13,8 @@ const Template: ComponentStory<typeof InputErrorMessage> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  error: null, // TODO: Fill in default value.
+  error: {
+    type: 'validate',
+    message: 'Validation error.',
+  },
 }

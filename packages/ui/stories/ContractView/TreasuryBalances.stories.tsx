@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { TreasuryBalances } from 'components/ContractView/TreasuryView'
+import { TreasuryBalances } from 'components/ContractView/TreasuryBalances'
 
 export default {
   title: 'DAO DAO UI / ContractView / TreasuryBalances',
@@ -13,7 +13,20 @@ const Template: ComponentStory<typeof TreasuryBalances> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  nativeTokens: null, // TODO: Fill in default value.
-  cw20Tokens: null, // TODO: Fill in default value.
-  usdcValue: null, // TODO: Fill in default value.
+  nativeTokens: [
+    {
+      denom: 'ujuno',
+      amount: '12345',
+      decimals: 6,
+    },
+  ],
+  cw20Tokens: [
+    {
+      symbol: 'TOKEN',
+      amount: '67890',
+      decimals: 6,
+      imageUrl: '/juno-symbol.png',
+    },
+  ],
+  usdcValue: 9876543.21,
 }

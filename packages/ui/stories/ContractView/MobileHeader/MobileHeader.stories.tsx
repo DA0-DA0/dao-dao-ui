@@ -13,9 +13,9 @@ const Template: ComponentStory<typeof MobileHeader> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  name: null, // TODO: Fill in default value.
-  member: null, // TODO: Fill in default value.
-  pinned: null, // TODO: Fill in default value.
-  onPin: null, // TODO: Fill in default value.
-  contractAddress: null, // TODO: Fill in default value.
+  contractAddress: 'junoabcdefxyz',
+  name: 'Moonphase',
+  member: true,
+  pinned: true,
+  imageUrl: 'https://moonphase.is/image.svg',
 }

@@ -2,8 +2,8 @@ import clsx from 'clsx'
 import { FC } from 'react'
 import { FieldError } from 'react-hook-form'
 
-interface InputErrorMessageProps {
-  error: FieldError | undefined
+export interface InputErrorMessageProps {
+  error?: FieldError
   className?: string
 }
 

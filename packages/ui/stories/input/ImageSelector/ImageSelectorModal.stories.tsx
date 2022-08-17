@@ -1,20 +1,21 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useFormContext } from 'react-hook-form'
 
 import { ImageSelectorModal } from 'components/input/ImageSelector'
+import { ReactHookFormStoryDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / ImageSelectorModal',
   component: ImageSelectorModal,
+  decorators: [ReactHookFormStoryDecorator],
 } as ComponentMeta<typeof ImageSelectorModal>
 
-const Template: ComponentStory<typeof ImageSelectorModal> = (args) => (
-  <ImageSelectorModal {...args} />
-)
+const Template: ComponentStory<typeof ImageSelectorModal> = (args) => {
+  const { watch, register } = useFormContext()
+  return <ImageSelectorModal {...args} register={register} watch={watch} />
+}
 
 export const Default = Template.bind({})
 Default.args = {
-  fieldName: null, // TODO: Fill in default value.
-  register: null, // TODO: Fill in default value.
-  watch: null, // TODO: Fill in default value.
-  onClose: null, // TODO: Fill in default value.
+  fieldName: 'moonphaseImageUrl' as any,
 }

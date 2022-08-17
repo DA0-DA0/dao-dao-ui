@@ -11,7 +11,16 @@ const Template: ComponentStory<typeof SwitchCard> = (args) => (
   <SwitchCard {...args} />
 )
 
-export const Default = Template.bind({})
-Default.args = {
-  enabled: null, // TODO: Fill in default value.
+export const On = Template.bind({})
+On.args = {
+  enabled: true,
+  onLabel: undefined,
+  offLabel: undefined,
+}
+
+export const Off = Template.bind({})
+Off.args = {
+  enabled: false,
+  onLabel: undefined,
+  offLabel: undefined,
 }

@@ -12,4 +12,6 @@ const Template: ComponentStory<typeof HorizontalInfoSection> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  children: 'Section content',
+}

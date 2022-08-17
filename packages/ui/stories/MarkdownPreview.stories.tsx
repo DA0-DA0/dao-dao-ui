@@ -11,7 +11,14 @@ const Template: ComponentStory<typeof MarkdownPreview> = (args) => (
   <MarkdownPreview {...args} />
 )
 
+const markdown = `# This is a title
+## A subtitle
+
+Some normal text.
+
+![moonphase](https://moonphase.is/image.svg)`
+
 export const Default = Template.bind({})
 Default.args = {
-  markdown: null, // TODO: Fill in default value.
+  markdown,
 }

@@ -12,4 +12,6 @@ const Template: ComponentStory<typeof InputThemedText> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  children: 'This is some text',
+}

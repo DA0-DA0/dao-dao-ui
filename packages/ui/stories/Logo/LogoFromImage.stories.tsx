@@ -13,5 +13,5 @@ const Template: ComponentStory<typeof LogoFromImage> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  src: null, // TODO: Fill in default value.
+  src: 'https://moonphase.is/image.svg',
 }

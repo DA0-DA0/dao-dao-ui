@@ -63,7 +63,7 @@ export const MultisigMemberList = ({
   )
 }
 
-interface MultisigMembersListLoaderProps
+export interface MultisigMembersListLoaderProps
   extends Pick<MultisigMembersListProps, 'primaryText'> {
   Loader?: ComponentType<LoaderProps>
 }

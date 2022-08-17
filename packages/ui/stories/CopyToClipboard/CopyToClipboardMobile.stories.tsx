@@ -13,5 +13,7 @@ const Template: ComponentStory<typeof CopyToClipboardMobile> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  value: null, // TODO: Fill in default value.
+  value: 'Click me to copy me',
 }
+
+// TODO: Fix story.

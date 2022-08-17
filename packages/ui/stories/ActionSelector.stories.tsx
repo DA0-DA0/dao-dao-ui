@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { useActions } from '@dao-dao/actions'
+
 import { ActionSelector } from 'components/ActionSelector'
 
 export default {
@@ -7,13 +9,13 @@ export default {
   component: ActionSelector,
 } as ComponentMeta<typeof ActionSelector>
 
-const Template: ComponentStory<typeof ActionSelector> = (args) => (
-  <ActionSelector {...args} />
-)
+const Template: ComponentStory<typeof ActionSelector> = (args) => {
+  const actions = useActions()
+
+  return <ActionSelector {...args} actions={actions} />
+}
 
 export const Default = Template.bind({})
-Default.args = {
-  actions: null, // TODO: Fill in default value.
-  onClose: null, // TODO: Fill in default value.
-  onSelectAction: null, // TODO: Fill in default value.
-}
+Default.args = {}
+
+// TODO: Fix story.

@@ -3,7 +3,7 @@ import { FC, ReactNode } from 'react'
 
 export interface TooltipProps {
   label: ReactNode | undefined
-  children: ReactNode
+  children: ReactNode | ReactNode[]
 }
 
 export const Tooltip: FC<TooltipProps> = ({ label, children }) =>

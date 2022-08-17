@@ -13,8 +13,10 @@ const Template: ComponentStory<typeof ImagePromptCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  title: null, // TODO: Fill in default value.
-  description: null, // TODO: Fill in default value.
-  backgroundUrl: null, // TODO: Fill in default value.
-  href: null, // TODO: Fill in default value.
+  title: 'Do a thing',
+  description: 'This lets you do a thing.',
+  backgroundUrl: '/pretty-image.jpg',
+  href: '#',
 }
+
+// TODO: Fix outline.

@@ -13,5 +13,7 @@ const Template: ComponentStory<typeof ProposalNotFound> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  homeHref: null, // TODO: Fill in default value.
+  homeHref: '#',
 }
+
+// TODO: Fix story.

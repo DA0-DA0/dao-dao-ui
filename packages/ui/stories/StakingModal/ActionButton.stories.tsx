@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { StakingMode } from 'components/StakingModal'
 import { ActionButton } from 'components/StakingModal/ActionButton'
 
 export default {
@@ -13,8 +14,6 @@ const Template: ComponentStory<typeof ActionButton> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  error: null, // TODO: Fill in default value.
-  loading: null, // TODO: Fill in default value.
-  mode: null, // TODO: Fill in default value.
-  onClick: null, // TODO: Fill in default value.
+  loading: false,
+  mode: StakingMode.Stake,
 }
