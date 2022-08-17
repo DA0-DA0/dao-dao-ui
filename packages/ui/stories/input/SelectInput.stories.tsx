@@ -3,12 +3,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { SelectInput } from 'components/input/SelectInput'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / SelectInput',
   component: SelectInput,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof SelectInput>
 
 const Template: ComponentStory<typeof SelectInput> = (args) => {

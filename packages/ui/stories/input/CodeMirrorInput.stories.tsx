@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { CodeMirrorInput } from 'components/input/CodeMirrorInput'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / CodeMirrorInput',
   component: CodeMirrorInput,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof CodeMirrorInput>
 
 const Template: ComponentStory<typeof CodeMirrorInput> = (args) => {

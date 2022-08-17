@@ -1,6 +1,6 @@
 import { action } from '@storybook/addon-actions'
-import { StoryFn } from '@storybook/react/types-7-0'
-import React, { FC, PropsWithChildren } from 'react'
+import { DecoratorFn } from '@storybook/react'
+import React, { PropsWithChildren } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 const StorybookFormProvider = ({ children }: PropsWithChildren<{}>) => {
@@ -24,7 +24,7 @@ const StorybookFormProvider = ({ children }: PropsWithChildren<{}>) => {
   )
 }
 
-export const ReactHookFormStoryDecorator = (Story: FC): ReturnType<StoryFn> => (
+export const ReactHookFormDecorator: DecoratorFn = (Story) => (
   <StorybookFormProvider>
     <Story />
   </StorybookFormProvider>

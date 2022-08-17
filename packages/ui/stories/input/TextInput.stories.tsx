@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { TextInput } from 'components/input/TextInput'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / TextInput',
   component: TextInput,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof TextInput>
 
 const Template: ComponentStory<typeof TextInput> = (args) => {

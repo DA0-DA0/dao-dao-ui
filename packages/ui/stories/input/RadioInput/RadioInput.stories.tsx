@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { RadioInput } from 'components/input/RadioInput'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / RadioInput',
   component: RadioInput,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof RadioInput>
 
 const Template: ComponentStory<typeof RadioInput> = (args) => {

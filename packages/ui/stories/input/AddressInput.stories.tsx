@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from 'components/input/AddressInput'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / AddressInput',
   component: AddressInput,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof AddressInput>
 
 const Template: ComponentStory<typeof AddressInput> = (args) => (

@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { FormSwitchCard } from 'components/input/Switch'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / FormSwitchCard',
   component: FormSwitchCard,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof FormSwitchCard>
 
 const Template: ComponentStory<typeof FormSwitchCard> = (args) => {

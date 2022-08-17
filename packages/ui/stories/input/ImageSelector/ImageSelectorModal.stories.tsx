@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { ImageSelectorModal } from 'components/input/ImageSelector'
-import { ReactHookFormStoryDecorator } from 'decorators'
+import { ReactHookFormDecorator } from 'decorators'
 
 export default {
   title: 'DAO DAO UI / input / ImageSelectorModal',
   component: ImageSelectorModal,
-  decorators: [ReactHookFormStoryDecorator],
+  decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ImageSelectorModal>
 
 const Template: ComponentStory<typeof ImageSelectorModal> = (args) => {
