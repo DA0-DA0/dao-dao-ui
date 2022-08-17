@@ -55,8 +55,10 @@ export const blockHeightTimestampSafeSelector = selectorFamily<
   get:
     (blockHeight) =>
     async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
       try {
-        return get(blockHeightTimestampSelector(blockHeight))
+        const block = await client.getBlock(blockHeight)
+        return new Date(Date.parse(block.header.time))
       } catch (error) {
         console.error(error)
       }
