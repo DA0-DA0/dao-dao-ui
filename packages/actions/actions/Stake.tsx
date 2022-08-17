@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { nativeBalancesSelector, nativeDelegatedBalanceSelector } from '@dao-dao/state'
+import {
+  nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
+} from '@dao-dao/state'
 import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,

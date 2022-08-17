@@ -128,21 +128,16 @@ export const nativeDelegatedBalanceSelector = selectorFamily({
       get(refreshWalletBalancesIdAtom(address))
 
       const balance = await client.getBalanceStaked(address)
-      console.log('nativeDelegatedBalance', balance);
-      
-      // // Add native denom if not present.
-      // if (!balances.some(({ denom }) => denom === NATIVE_DENOM)) {
-      //   balances.push({
-      //     amount: '0',
-      //     denom: NATIVE_DENOM,
-      //   })
-      // }
 
-      // TODO: :D
-      return {
-        amount: '10',
-        denom: NATIVE_DENOM,
+      // Only allow native denom
+      if (!balance || balance.denom !== NATIVE_DENOM) {
+        return {
+          amount: '0',
+          denom: NATIVE_DENOM,
+        }
       }
+
+      return balance
     },
 })
 
