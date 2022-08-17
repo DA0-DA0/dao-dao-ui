@@ -5,6 +5,7 @@ import { Button } from '../Button'
 import { LogoNoBorder } from '../Logo'
 
 export interface BalanceCardProps {
+  children: ReactNode | ReactNode[]
   title: ReactNode
   icon?: ReactNode
   buttonLabel: ReactNode

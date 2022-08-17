@@ -1,11 +1,12 @@
 import { XIcon } from '@heroicons/react/solid'
-import { ComponentType } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 import { LoaderProps } from '@dao-dao/ui'
 
 import { ActionComponentProps } from '..'
 
 interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
+  children: ReactNode | ReactNode[]
   Icon: ComponentType
   title: string
 }

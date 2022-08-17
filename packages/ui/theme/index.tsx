@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 export type UpdateThemeFn = (themeName: Theme) => void
 export type SetAccentColorFn = (accentColor: string | undefined) => void
@@ -38,7 +44,7 @@ export const ThemeProvider = ({
   updateTheme,
   accentColor,
   setAccentColor,
-}: IThemeContext) => (
+}: PropsWithChildren<IThemeContext>) => (
   <ThemeContext.Provider
     value={{
       ...DEFAULT_THEME,

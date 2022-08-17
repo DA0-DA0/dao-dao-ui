@@ -1,4 +1,5 @@
-import { ComponentType } from 'react'
+// eslint-disable-next-line regex/invalid
+import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
@@ -63,7 +64,8 @@ export type ActionComponentProps<T = undefined, D = any> = {
 ) &
   (T extends undefined ? {} : { options: T })
 
-export type ActionComponent<T = undefined, D = any> = ComponentType<
+// eslint-disable-next-line regex/invalid
+export type ActionComponent<T = undefined, D = any> = FunctionComponent<
   ActionComponentProps<T, D>
 >
 

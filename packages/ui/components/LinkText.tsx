@@ -1,7 +1,8 @@
 import Link, { LinkProps } from 'next/link'
-import { ComponentProps } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 
 export interface LinkTextProps extends LinkProps {
+  children: ReactNode | ReactNode[]
   aProps: ComponentProps<'a'>
 }
 

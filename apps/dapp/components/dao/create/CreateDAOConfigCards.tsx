@@ -323,10 +323,9 @@ export const CreateDAOProposalDepositCard = ({
       type,
       newInfo: { symbol: newSymbol },
       proposalDeposit: { value },
-      existingGovernanceTokenInfo: { symbol: existingSymbol } = {},
+      existingGovernanceTokenInfo,
     },
   },
-
   register,
   setValue,
   errors,
@@ -345,8 +344,9 @@ export const CreateDAOProposalDepositCard = ({
       {readOnly ? (
         <InputThemedText>
           {value} $
-          {(type === GovernanceTokenType.New ? newSymbol : existingSymbol) ||
-            t('info.tokens')}
+          {(type === GovernanceTokenType.New
+            ? newSymbol
+            : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
         </InputThemedText>
       ) : (
         <div className="flex flex-row gap-2 items-center">
@@ -374,8 +374,9 @@ export const CreateDAOProposalDepositCard = ({
 
           <p className="text-tertiary">
             $
-            {(type === GovernanceTokenType.New ? newSymbol : existingSymbol) ||
-              t('info.tokens')}
+            {(type === GovernanceTokenType.New
+              ? newSymbol
+              : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
           </p>
         </div>
       )}
