@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import {
   CwNativeStakedBalanceVotingHooks,
   stakingLoadingAtom,
@@ -15,7 +15,6 @@ import {
   Modal,
   StakingMode,
   StakingModal as StatelessStakingModal,
-  SuspenseLoader,
 } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,

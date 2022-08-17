@@ -20,7 +20,7 @@ const concatAddressImpl = (
 const concatAddress = (address: string, takeN = 7): string =>
   address && concatAddressImpl(address, takeN, takeN)
 
-interface CopyToClipboardProps {
+export interface CopyToClipboardProps {
   value: string
   success?: string
   takeN?: number

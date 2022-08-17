@@ -4,6 +4,7 @@ import { useState } from 'react'
 import {
   FieldError,
   FieldPathValue,
+  FieldValues,
   Path,
   PathValue,
   UseFormRegister,
@@ -30,20 +31,20 @@ export type StringFieldNames<FieldValues> = {
 }[Path<FieldValues>]
 
 export interface ImageSelectorModalProps<
-  FieldValues,
-  StringFieldName extends StringFieldNames<FieldValues>
+  FV extends FieldValues,
+  StringFieldName extends StringFieldNames<FV>
 > {
   fieldName: StringFieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
-  watch: UseFormWatch<FieldValues>
+  register: UseFormRegister<FV>
+  validation?: Validate<FieldPathValue<FV, StringFieldName>>[]
+  watch: UseFormWatch<FV>
   error?: FieldError
   onClose: () => void
 }
 
 export const ImageSelectorModal = <
-  FieldValues,
-  StringFieldName extends StringFieldNames<FieldValues>
+  FV extends FieldValues,
+  StringFieldName extends StringFieldNames<FV>
 >({
   fieldName,
   register,
@@ -51,7 +52,7 @@ export const ImageSelectorModal = <
   validation,
   watch,
   onClose,
-}: ImageSelectorModalProps<FieldValues, StringFieldName>) => {
+}: ImageSelectorModalProps<FV, StringFieldName>) => {
   const { t } = useTranslation()
   const imageUrl = watch(fieldName) ?? ''
 
@@ -98,13 +99,13 @@ export const ImageSelectorModal = <
 }
 
 export interface ImageSelectorProps<
-  FieldValues,
-  StringFieldName extends StringFieldNames<FieldValues>
+  FV extends FieldValues,
+  StringFieldName extends StringFieldNames<FV>
 > {
   fieldName: StringFieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, StringFieldName>>[]
-  watch: UseFormWatch<FieldValues>
+  register: UseFormRegister<FV>
+  validation?: Validate<FieldPathValue<FV, StringFieldName>>[]
+  watch: UseFormWatch<FV>
   disabled?: boolean
   error?: FieldError
   className?: string
@@ -112,8 +113,8 @@ export interface ImageSelectorProps<
 }
 
 export const ImageSelector = <
-  FieldValues,
-  StringFieldName extends StringFieldNames<FieldValues>
+  FV extends FieldValues,
+  StringFieldName extends StringFieldNames<FV>
 >({
   fieldName,
   register,
@@ -123,7 +124,7 @@ export const ImageSelector = <
   className,
   disabled,
   size,
-}: ImageSelectorProps<FieldValues, StringFieldName>) => {
+}: ImageSelectorProps<FV, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
   const imageUrl = watch(fieldName) ?? ''
 

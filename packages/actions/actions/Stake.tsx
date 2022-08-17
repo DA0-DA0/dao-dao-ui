@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { nativeBalancesSelector } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   StakeType,

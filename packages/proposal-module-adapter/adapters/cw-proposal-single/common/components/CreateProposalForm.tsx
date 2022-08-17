@@ -22,6 +22,7 @@ import {
   UseTransformToCosmos,
   useActions,
 } from '@dao-dao/actions'
+import { SuspenseLoader } from '@dao-dao/common'
 import { Airplane } from '@dao-dao/icons'
 import {
   Cw20BaseHooks,
@@ -43,7 +44,6 @@ import {
   LoaderProps,
   LogoProps,
   MarkdownPreview,
-  SuspenseLoader,
   TextAreaInput,
   TextInput,
   Tooltip,

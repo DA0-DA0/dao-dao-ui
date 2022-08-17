@@ -5,8 +5,9 @@ import { PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { PinOutline } from '@dao-dao/icons'
-import { Button, SuspenseLoader } from '@dao-dao/ui'
+import { Button } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
 

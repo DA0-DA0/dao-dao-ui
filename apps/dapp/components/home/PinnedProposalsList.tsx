@@ -8,15 +8,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { cwCoreProposalModulesSelector } from '@dao-dao/state'
-import {
-  Loader,
-  Logo,
-  PinnedProposalLine,
-  SuspenseLoader,
-  TooltipIcon,
-} from '@dao-dao/ui'
+import { Loader, Logo, PinnedProposalLine, TooltipIcon } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
 

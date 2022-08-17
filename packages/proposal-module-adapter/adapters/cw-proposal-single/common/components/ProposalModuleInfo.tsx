@@ -2,9 +2,10 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { Dollar, Pie } from '@dao-dao/icons'
 import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
-import { ProposalInfoStat, SuspenseLoader } from '@dao-dao/ui'
+import { ProposalInfoStat } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { BaseProposalModuleInfo } from '../../../../types'

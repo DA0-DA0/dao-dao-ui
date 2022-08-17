@@ -3,6 +3,7 @@ import { ChangeEventHandler, ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
+  FieldValues,
   Path,
   UseFormRegister,
   Validate,
@@ -12,20 +13,23 @@ import { useTranslation } from 'react-i18next'
 import { Wallet } from '@dao-dao/icons'
 
 export interface AddressInputProps<
-  FieldValues,
-  FieldName extends Path<FieldValues>
+  FV extends FieldValues,
+  FieldName extends Path<FV>
 > extends Omit<ComponentPropsWithoutRef<'input'>, 'required'> {
   fieldName: FieldName
-  register: UseFormRegister<FieldValues>
+  register: UseFormRegister<FV>
   onChange?: ChangeEventHandler<HTMLInputElement>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   disabled?: boolean
   required?: boolean
   containerClassName?: string
 }
 
-export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
+export const AddressInput = <
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+>({
   fieldName,
   register,
   error,
@@ -36,7 +40,7 @@ export const AddressInput = <FieldValues, FieldName extends Path<FieldValues>>({
   className,
   containerClassName,
   ...rest
-}: AddressInputProps<FieldValues, FieldName>) => {
+}: AddressInputProps<FV, FieldName>) => {
   const { t } = useTranslation()
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
