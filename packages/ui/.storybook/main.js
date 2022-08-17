@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const tsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 module.exports = {
@@ -23,5 +24,5 @@ module.exports = {
   webpackFinal: async (config) => {
     config.resolve.plugins = [new tsconfigPathsPlugin()]
     return config
-  }
+  },
 }
