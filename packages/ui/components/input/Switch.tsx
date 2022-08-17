@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { Path, PathValue, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-interface SwitchProps {
+export interface SwitchProps {
   enabled: boolean
   onClick?: () => void
   className?: string

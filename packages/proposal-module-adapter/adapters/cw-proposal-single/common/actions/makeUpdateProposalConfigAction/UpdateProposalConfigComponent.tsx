@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionCard, ActionComponent } from '@dao-dao/actions'
+import { Trans } from '@dao-dao/common'
 import {
   FormSwitch,
   FormSwitchCard,
@@ -12,7 +13,6 @@ import {
   NumberInput,
   SelectInput,
   Tooltip,
-  Trans,
 } from '@dao-dao/ui'
 import {
   validatePercent,

@@ -3,21 +3,27 @@ import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
+  FieldValues,
   Path,
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
 
-interface SelectInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends Omit<ComponentProps<'select'>, 'required'> {
+export interface SelectInputProps<
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+> extends Omit<ComponentProps<'select'>, 'required'> {
   fieldName?: FieldName
-  register?: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  register?: UseFormRegister<FV>
+  validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
 }
 
-export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
+export const SelectInput = <
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+>({
   fieldName,
   register,
   error,
@@ -25,7 +31,7 @@ export const SelectInput = <FieldValues, FieldName extends Path<FieldValues>>({
   children,
   required,
   ...props
-}: SelectInputProps<FieldValues, FieldName>) => {
+}: SelectInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}

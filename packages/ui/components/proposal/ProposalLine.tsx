@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ComponentType } from 'react'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
@@ -10,7 +11,6 @@ import { ProposalModule } from '@dao-dao/utils'
 
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Logo as DefaultLogo, LogoProps } from '../Logo'
-import { SuspenseLoader } from '../SuspenseLoader'
 
 export interface ProposalLineProps {
   coreAddress: string

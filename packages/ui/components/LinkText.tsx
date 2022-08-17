@@ -3,7 +3,7 @@ import { ComponentProps, ReactNode } from 'react'
 
 export interface LinkTextProps extends LinkProps {
   children: ReactNode | ReactNode[]
-  aProps: ComponentProps<'a'>
+  aProps?: ComponentProps<'a'>
 }
 
 export const LinkText = ({ children, aProps, ...props }: LinkTextProps) => (

@@ -17,10 +17,10 @@ import {
   LoaderProps,
   LogoProps,
   ProposalLine,
-  SuspenseLoader,
 } from '@dao-dao/ui'
 
 import { useDaoInfoContext } from './DaoPageWrapper'
+import { SuspenseLoader } from './SuspenseLoader'
 
 // Max = 30
 const PROP_LOAD_LIMIT = 30

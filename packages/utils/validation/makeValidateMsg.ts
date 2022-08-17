@@ -1,11 +1,12 @@
 import Ajv, { ErrorObject } from 'ajv'
 
 export class InstantiateValidationError extends Error {
-  constructor(
-    public errors: ErrorObject<string, Record<string, any>, unknown>[]
-  ) {
+  public errors: ErrorObject<string, Record<string, any>, unknown>[]
+
+  constructor(errors: ErrorObject<string, Record<string, any>, unknown>[]) {
     super('Invalid instantiation message.')
     this.name = 'InstantiateValidationError'
+    this.errors = errors
   }
 }
 
