@@ -1,4 +1,5 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +29,7 @@ export interface CopyToClipboardProps {
     end: number
   }
   loading?: boolean
+  className?: string
 }
 
 export const CopyToClipboard: FC<CopyToClipboardProps> = ({
@@ -35,12 +37,17 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
   success = 'Copied to clipboard!',
   takeN,
   takeStartEnd,
+  className = 'font-mono text-xs',
 }) => {
   const [copied, setCopied] = useState(false)
 
   return (
     <button
-      className="flex overflow-hidden flex-row gap-1 items-center font-mono text-xs"
+      className={clsx(
+        'flex overflow-hidden flex-row gap-1 items-center',
+        className
+      )}
+      title={value}
       onClick={() => {
         navigator.clipboard.writeText(value)
         setTimeout(() => setCopied(false), 2000)
