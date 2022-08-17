@@ -2,6 +2,6 @@ groups:
   - name: noah
     reviewers: 1
     # How many reviewers to assign when the PR author belongs to this group.
-    internal_reviewers: 0
+    # internal_reviewers: 0
     usernames:
       - NoahSaso
