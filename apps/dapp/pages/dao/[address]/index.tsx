@@ -27,6 +27,7 @@ import {
   PageLoader,
   PinToggle,
   SuspenseLoader,
+  useNamedThemeColor,
   useThemeContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
@@ -237,6 +238,7 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
   const { isReady, isFallback } = useRouter()
 
   const { setAccentColor, theme } = useThemeContext()
+  const brand = `rgb(${useNamedThemeColor('brand')})`
 
   // Only set the accent color if we have enough contrast.
   if (accentColor) {
@@ -246,10 +248,10 @@ const DaoHomePage: NextPage<DaoHomePageProps> = ({
       .map(Number)
     const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
     if (
-      (theme === 'dark' && brightness < 60) ||
-      (theme === 'light' && brightness > 255 - 80)
+      (theme === 'dark' && brightness < 100) ||
+      (theme === 'light' && brightness > 255 - 100)
     ) {
-      accentColor = undefined
+      accentColor = brand
     }
   }
 

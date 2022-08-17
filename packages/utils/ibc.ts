@@ -7,10 +7,12 @@ export function nativeTokenLabel(denom: string): string {
   const asset = denom.startsWith('ibc')
     ? ibcAssets.tokens.find(({ junoDenom }) => junoDenom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
-  // If no asset, assume it's already a microdenom.
+
   return (
     asset?.symbol ||
-    (denom.startsWith('u') ? denom.substring(1) : denom).toUpperCase()
+    (denom.startsWith('u')
+      ? denom.substring(1).toUpperCase()
+      : denom.toLowerCase())
   )
 }
 
