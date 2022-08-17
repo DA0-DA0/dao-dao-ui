@@ -46,6 +46,7 @@ export const stakeActions: { type: StakeType; name: string }[] = [
 
 interface StakeOptions {
   nativeBalances: readonly Coin[]
+  nativeDelegatedBalance: Coin
 }
 
 export const StakeComponent: ActionComponent<StakeOptions> = ({
@@ -53,7 +54,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances },
+  options: { nativeBalances, nativeDelegatedBalance },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
