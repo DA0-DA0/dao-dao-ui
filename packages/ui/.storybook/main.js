@@ -16,7 +16,7 @@ module.exports = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     'storybook-addon-designs',
-    // 'storybook-react-i18next',
+    'storybook-dark-mode',
     {
       name: '@storybook/addon-postcss',
       options: {
