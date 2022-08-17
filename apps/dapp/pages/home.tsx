@@ -4,7 +4,11 @@
 import { GetStaticProps, NextPage } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { CI, FEATURED_DAOS_URL } from '@dao-dao/utils'
+import {
+  CI,
+  FEATURED_DAOS_CACHE_SECONDS,
+  FEATURED_DAOS_URL,
+} from '@dao-dao/utils'
 
 import {
   FeaturedDAOsList,
@@ -48,5 +52,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       ...(await serverSideTranslations(locale, ['translation'])),
       featuredDaos,
     },
+    revalidate: FEATURED_DAOS_CACHE_SECONDS,
   }
 }

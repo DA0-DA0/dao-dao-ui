@@ -113,6 +113,15 @@ export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = parseInt(
 )
 
 export const DAO_STATIC_PROPS_CACHE_SECONDS = parseInt(
-  process.env.NEXT_PUBLIC_DAO_STATIC_PROPS_CACHE_SECONDS || '300',
+  process.env.NEXT_PUBLIC_DAO_STATIC_PROPS_CACHE_SECONDS ||
+    // 5 minutes
+    (60 * 5).toString(),
+  10
+)
+
+export const FEATURED_DAOS_CACHE_SECONDS = parseInt(
+  process.env.NEXT_PUBLIC_FEATURED_DAOS_CACHE_SECONDS ||
+    // 12 hours
+    (60 * 60 * 12).toString(),
   10
 )

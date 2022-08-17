@@ -66,7 +66,7 @@ export const FeaturedCard = ({
         <p className="text-sm">
           <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
           {/* eslint-disable-next-line i18next/no-literal-string */}
-          {Number(TVL).toLocaleString()} USDC TVL
+          {Number(TVL).toLocaleString()} $USDC TVL
         </p>
       </div>
     </a>

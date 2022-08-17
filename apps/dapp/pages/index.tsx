@@ -17,7 +17,11 @@ import {
   RotatableLogo,
   SuspenseLoader,
 } from '@dao-dao/ui'
-import { CI, FEATURED_DAOS_URL } from '@dao-dao/utils'
+import {
+  CI,
+  FEATURED_DAOS_CACHE_SECONDS,
+  FEATURED_DAOS_URL,
+} from '@dao-dao/utils'
 
 import {
   AnouncementCard,
@@ -197,5 +201,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       ...(await serverSideTranslations(locale, ['translation'])),
       featuredDaos,
     },
+    revalidate: FEATURED_DAOS_CACHE_SECONDS,
   }
 }
