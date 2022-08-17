@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { ChevronRightIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@dao-dao/ui'
@@ -11,7 +10,7 @@ interface BetaWarningModalProps {
   onAccept: () => void
 }
 
-export const BetaWarningModal: FC<BetaWarningModalProps> = ({ onAccept }) => {
+export const BetaWarningModal = ({ onAccept }: BetaWarningModalProps) => {
   const { t } = useTranslation()
 
   return (

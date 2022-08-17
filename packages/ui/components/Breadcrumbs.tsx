@@ -1,7 +1,6 @@
 import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { FC } from 'react'
 
 export interface BreadcrumbsProps {
   crumbs: Array<[string, string]>
@@ -9,7 +8,7 @@ export interface BreadcrumbsProps {
 }
 
 // Navigation breadcrumbs. We hide these on small screens prefering the nav bar.
-export const Breadcrumbs: FC<BreadcrumbsProps> = ({ crumbs, className }) => (
+export const Breadcrumbs = ({ crumbs, className }: BreadcrumbsProps) => (
   <ul className={clsx('hidden list-none lg:flex link-text', className)}>
     <li key="icon">
       <Link href={crumbs[crumbs.length - 2][0]}>

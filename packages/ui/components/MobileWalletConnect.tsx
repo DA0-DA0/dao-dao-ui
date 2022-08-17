@@ -4,26 +4,28 @@ import {
   XIcon,
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Wallet } from '@dao-dao/icons'
 import { Modal, WalletConnectProps } from '@dao-dao/ui'
 import { CHAIN_NAME } from '@dao-dao/utils'
 
-export const MobileWalletConnect: FC<WalletConnectProps> = ({
+export const MobileWalletConnect = ({
   connected,
   walletName,
   onConnect,
   onDisconnect,
   className,
+
   // Need to take but ignore these fields so that they don't get passed
   // along to the button and make React mad.
   walletAddress: _a,
+
   walletBalance: _b,
   walletBalanceDenom: _d,
   ...buttonProps
-}) => {
+}: WalletConnectProps) => {
   const { t } = useTranslation()
 
   return connected ? (
@@ -60,7 +62,7 @@ export const MobileWalletConnect: FC<WalletConnectProps> = ({
   )
 }
 
-export const NoMobileWallet: FC = () => {
+export const NoMobileWallet = () => {
   const { t } = useTranslation()
   const [showInfo, setShowInfo] = useState(false)
 

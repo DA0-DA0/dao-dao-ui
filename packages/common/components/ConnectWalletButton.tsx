@@ -1,7 +1,6 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
-import { FC } from 'react'
 
 import { useWalletBalance } from '@dao-dao/state'
 import {
@@ -16,11 +15,11 @@ export interface ConnectWalletButtonProps extends Partial<WalletConnectProps> {
   mobile?: boolean
 }
 
-export const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
+export const ConnectWalletButton = ({
   mobile,
   className,
   ...props
-}) => {
+}: ConnectWalletButtonProps) => {
   const {
     connect,
     disconnect,

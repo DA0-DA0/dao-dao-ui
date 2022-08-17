@@ -4,7 +4,7 @@
 import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -19,7 +19,7 @@ interface SmallScreenNavProps {
   className?: string
 }
 
-export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
+export const SmallScreenNav = ({ className }: SmallScreenNavProps) => {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)

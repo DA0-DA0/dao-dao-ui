@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboard } from '@dao-dao/ui'
@@ -27,11 +26,11 @@ export interface TreasuryBalancesProps {
   usdcValue: number
 }
 
-export const TreasuryBalances: FC<TreasuryBalancesProps> = ({
+export const TreasuryBalances = ({
   nativeTokens,
   cw20Tokens,
   usdcValue,
-}) => {
+}: TreasuryBalancesProps) => {
   const { t } = useTranslation()
   return (
     <ul className="flex flex-col gap-2 mt-6 list-none">

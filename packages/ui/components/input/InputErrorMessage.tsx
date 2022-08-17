@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 import { FieldError } from 'react-hook-form'
 
 export interface InputErrorMessageProps {
@@ -7,10 +6,10 @@ export interface InputErrorMessageProps {
   className?: string
 }
 
-export const InputErrorMessage: FC<InputErrorMessageProps> = ({
+export const InputErrorMessage = ({
   error,
   className,
-}) =>
+}: InputErrorMessageProps) =>
   error?.message ? (
     <span
       className={clsx(

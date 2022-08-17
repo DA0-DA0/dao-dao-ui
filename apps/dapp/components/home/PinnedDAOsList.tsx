@@ -3,7 +3,6 @@
 
 import { PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
@@ -15,7 +14,7 @@ import { usePinnedDAOs } from '@/hooks'
 import { PinnedDAOCard } from '../PinnedDAOCard'
 import { DaoCardContainer } from './DaoCardContainer'
 
-export const PinnedDAOsList: FC = () => {
+export const PinnedDAOsList = () => {
   const { t } = useTranslation()
   const { pinnedAddresses } = usePinnedDAOs()
 

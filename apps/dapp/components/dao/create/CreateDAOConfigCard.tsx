@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import clsx from 'clsx'
-import { ComponentProps, FC, ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import { FieldError } from 'react-hook-form'
 
 import { InputErrorMessage } from '@dao-dao/ui'
@@ -18,7 +18,7 @@ interface CreateDAOConfigCardProps extends ComponentProps<'div'> {
   childContainerClassName?: string
 }
 
-export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
+export const CreateDAOConfigCard = ({
   image,
   title,
   description,
@@ -26,7 +26,7 @@ export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
   error,
   childContainerClassName,
   ...props
-}) => (
+}: CreateDAOConfigCardProps) => (
   <CreateDAOConfigCardWrapper {...props}>
     <div className="flex flex-row gap-6 items-start">
       <p className="mt-4 text-[42px]">{image}</p>
@@ -50,9 +50,14 @@ export const CreateDAOConfigCard: FC<CreateDAOConfigCardProps> = ({
   </CreateDAOConfigCardWrapper>
 )
 
-export const CreateDAOConfigCardWrapper: FC<
-  ComponentProps<'div'> & { accentColor?: string }
-> = ({ children, className, accentColor, ...rest }) => (
+export const CreateDAOConfigCardWrapper = ({
+  children,
+  className,
+  accentColor,
+  ...rest
+}: ComponentProps<'div'> & {
+  accentColor?: string
+}) => (
   <div
     className={clsx(
       'flex relative flex-col items-stretch p-6 bg-disabled rounded-lg',

@@ -1,3 +1,4 @@
+// eslint-disable-next-line regex/invalid
 import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 
@@ -63,6 +64,7 @@ export type ActionComponentProps<T = undefined, D = any> = {
 ) &
   (T extends undefined ? {} : { options: T })
 
+// eslint-disable-next-line regex/invalid
 export type ActionComponent<T = undefined, D = any> = FunctionComponent<
   ActionComponentProps<T, D>
 >
