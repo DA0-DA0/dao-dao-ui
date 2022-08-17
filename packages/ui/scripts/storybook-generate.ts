@@ -8,24 +8,48 @@ import { Project, SourceFile, SyntaxKind } from 'ts-morph'
 
 interface ComponentWithRequiredProps {
   name: string
+  takesProps: boolean
   requiredProps: string[]
 }
 
-const TEMPLATE = `
+const generateTemplate = (
+  { name, takesProps, requiredProps }: ComponentWithRequiredProps,
+  file: string,
+  titlePrefix: string
+) =>
+  `
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { COMPONENT } from 'FILE'
+import { ${name} } from '${file}'
 
 export default {
-  title: 'DAO DAO UI / TITLE',
-  component: COMPONENT,
-} as ComponentMeta<typeof COMPONENT>
+  title: 'DAO DAO UI / ${titlePrefix + name}',
+  component: ${name},
+} as ComponentMeta<typeof ${name}>
 
-const Template: ComponentStory<typeof COMPONENT> = (args) => <COMPONENT {...args} />
+const Template: ComponentStory<typeof ${name}> = (${
+    takesProps ? '' : '_'
+  }args) => (
+  <${name} ${takesProps ? '{...args} ' : ''}/>
+)
 
 export const Default = Template.bind({})
-Default.args = PROPS
-`
+Default.args = ${
+    requiredProps.length
+      ? JSON.stringify(
+          requiredProps.reduce(
+            (acc, prop) => ({
+              ...acc,
+              [prop]: null,
+            }),
+            {}
+          ),
+          undefined,
+          2
+        ).replace(/null(,|)?\n/g, `null, \/\/ TODO: Fill in default value.\n`)
+      : '{}'
+  }
+`.trimStart()
 
 const project = new Project({
   tsConfigFilePath: path.resolve(__dirname, '../tsconfig.json'),
@@ -75,6 +99,8 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     )
     .flatMap((declaration) => ({
       name: declaration.getName(),
+      // Not sure how to check if this has props.
+      takesProps: true,
       // Not sure how to extract props from this statement.
       requiredProps: [],
     }))
@@ -94,6 +120,10 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     )
     .map((declaration) => ({
       name: declaration.getName(),
+      takesProps:
+        declaration
+          .getInitializerIfKind(SyntaxKind.ArrowFunction)!
+          .getParameters().length > 0,
       requiredProps:
         declaration
           .getInitializerIfKind(SyntaxKind.ArrowFunction)!
@@ -116,9 +146,10 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     )
     .map((fn) => ({
       name: fn.getName()!,
+      takesProps: fn.getParameters().length > 0,
       requiredProps: fn
         .getParameters()[0]
-        .getType()
+        ?.getType()
         .getProperties()
         .filter((p) => !p.isOptional())
         .map((p) => p.getName()),
@@ -143,32 +174,11 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
       return
     }
 
-    const data = TEMPLATE.replace(
-      /FILE/g,
-      'components' + pathFromComponents + '/' + baseName
+    const data = generateTemplate(
+      component,
+      'components' + pathFromComponents + '/' + baseName,
+      titlePrefix
     )
-      .replace(/COMPONENT/g, component.name)
-      .replace(/TITLE/g, titlePrefix + component.name)
-      .replace(
-        /PROPS/g,
-        component.requiredProps.length
-          ? JSON.stringify(
-              component.requiredProps.reduce(
-                (acc, prop) => ({
-                  ...acc,
-                  [prop]: null,
-                }),
-                {}
-              ),
-              undefined,
-              2
-            ).replace(
-              /null(,|)?\n/g,
-              `null$1 \/\/ TODO: Fill in default value.\n`
-            )
-          : '{}'
-      )
-      .trimStart()
 
     await fs.promises.writeFile(output, data)
   }
