@@ -9,12 +9,9 @@ import { Tooltip } from '@dao-dao/ui'
 
 import { getCardFallbackImage } from '@/util'
 
-interface FeaturedCardProps {
-  image: string
-  name: string
-  TVL: string
-  href: string
-  description: string
+import { FeaturedDao } from './splash'
+
+interface FeaturedCardProps extends FeaturedDao {
   className?: string
 }
 
@@ -64,30 +61,32 @@ export const FeaturedCard = ({
       </div>
 
       <div className="flex flex-col gap-1 mt-5 items-left">
-        <p className="text-sm">
-          <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
-          <Tooltip
-            label={
-              Number(TVL).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                // eslint-disable-next-line i18next/no-literal-string
-              }) + ' $USDC'
-            }
-          >
-            <span>
-              {Number(TVL).toLocaleString(undefined, {
-                // eslint-disable-next-line i18next/no-literal-string
-                notation: 'compact',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                // eslint-disable-next-line i18next/no-literal-string
-              })}{' '}
-              $USDC
-            </span>
-          </Tooltip>{' '}
-          <span className="caption-text">TVL</span>
-        </p>
+        {TVL >= 1000 && (
+          <p className="text-sm">
+            <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+            <Tooltip
+              label={
+                TVL.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  // eslint-disable-next-line i18next/no-literal-string
+                }) + ' $USDC'
+              }
+            >
+              <span>
+                {TVL.toLocaleString(undefined, {
+                  // eslint-disable-next-line i18next/no-literal-string
+                  notation: 'compact',
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  // eslint-disable-next-line i18next/no-literal-string
+                })}{' '}
+                $USDC
+              </span>
+            </Tooltip>{' '}
+            <span className="caption-text">TVL</span>
+          </p>
+        )}
       </div>
     </a>
   )
