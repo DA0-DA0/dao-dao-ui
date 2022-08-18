@@ -194,7 +194,7 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
-    "usdc": "{{val, currency(currency: USD)}} USDC"
+    "usdc": "{{val, number}} $USDC" 
   },
   "info": {
     "aboutToUnstake": "You are about to unstake governance tokens.",
@@ -216,6 +216,7 @@
     "connectWalletToViewVote": "Connect your wallet to view your vote.",
     "considerReturningHome": "Consider returning home.",
     "copyWalletAddressTooltip": "Copy wallet address",
+    "addTokenTooltip": "Add token to wallet",
     "couldHaveMoreVotingPower": "You could have more voting power.",
     "creatingDao": "Creating DAO...",
     "daoAddress": "DAO",
@@ -313,6 +314,7 @@
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",
     "youAreMember": "You are a member.",
     "yourBalance": "Your balance",
+    "daoBalance": "DAO holding",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },
   "meta": {

@@ -14,7 +14,8 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   tokenImageUrl: '/placeholders/3.svg',
-  tokenName: 'Juno Network',
   tokenSymbol: 'JUNO',
   tokenBalance: '5',
+  tokenBalanceUSDCEquivalent: '55.12',
+  tokenUSDCPrice: '5.12',
 }
