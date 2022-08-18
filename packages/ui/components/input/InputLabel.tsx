@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentProps, FC, ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 
 import { TooltipIcon } from '../TooltipIcon'
 
@@ -11,14 +11,14 @@ export interface InputLabelProps
   containerProps?: Omit<ComponentProps<'label'>, 'children'>
 }
 
-export const InputLabel: FC<InputLabelProps> = ({
+export const InputLabel = ({
   className,
   mono,
   name,
   tooltip,
   containerProps: { className: labelClassName, ...containerProps } = {},
   ...rest
-}) => (
+}: InputLabelProps) => (
   <label
     className={clsx('flex items-center space-x-1', labelClassName)}
     {...containerProps}

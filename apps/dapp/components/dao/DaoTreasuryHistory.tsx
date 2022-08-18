@@ -1,23 +1,32 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { parseCoins } from '@cosmjs/stargate'
-import { ExternalLinkIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
-
-import { SuspenseLoader, Trans, useDaoInfoContext } from '@dao-dao/common'
 import {
-  TreasuryTransaction,
-  treasuryTransactionsSelector,
+  ArrowNarrowLeftIcon,
+  ArrowNarrowRightIcon,
+  ExternalLinkIcon,
+} from '@heroicons/react/outline'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useRecoilCallback, useRecoilValue } from 'recoil'
+
+import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
+import {
+  TransformedTreasuryTransaction,
+  blockHeightSelector,
+  blockHeightTimestampSafeSelector,
+  blockHeightTimestampSelector,
+  nativeBalanceSelector,
+  transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { CopyToClipboard, Loader } from '@dao-dao/ui'
+import { Button, CopyToClipboard, LineGraph, Loader } from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
   nativeTokenLabel,
+  processError,
 } from '@dao-dao/utils'
 
 interface DaoTreasuryHistoryProps {
@@ -43,117 +52,208 @@ export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
   )
 }
 
+const NATIVE_DENOM_LABEL = nativeTokenLabel(NATIVE_DENOM)
+// Load roughly 3 days at a time (assuming 1 block per 6 seconds, which is not
+// accurate but close enough).
+const BLOCK_HEIGHT_INTERVAL = (60 * 60 * 24 * 3) / 6
+
 export const InnerDaoTreasuryHistory = ({
   shortTitle,
 }: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const transactions = useRecoilValue(treasuryTransactionsSelector(coreAddress))
 
-  return transactions.length ? (
-    <div className="space-y-4">
+  // Initialization.
+  const latestBlockHeight = useRecoilValue(blockHeightSelector)
+  const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
+  const initialLowestHeightLoadedTimestamp = useRecoilValue(
+    blockHeightTimestampSafeSelector(initialMinHeight)
+  )
+  const initialTransactions = useRecoilValue(
+    transformedTreasuryTransactionsSelector({
+      address: coreAddress,
+      minHeight: initialMinHeight,
+      maxHeight: latestBlockHeight,
+    })
+  )
+
+  // Paginated data.
+  const [loading, setLoading] = useState(false)
+  const [lowestHeightLoaded, setLowestHeightLoaded] = useState(initialMinHeight)
+  const [lowestHeightLoadedTimestamp, setLowestHeightLoadedTimestamp] =
+    useState(initialLowestHeightLoadedTimestamp)
+  const [transactions, setTransactions] = useState(initialTransactions)
+  const [canLoadMore, setCanLoadMore] = useState(true)
+
+  // Pagination loader.
+  const loadMoreTransactions = useRecoilCallback(
+    ({ snapshot }) =>
+      async (maxHeight: number) => {
+        const minHeight = maxHeight - BLOCK_HEIGHT_INTERVAL
+
+        setLoading(true)
+        try {
+          const newTransactions = await snapshot.getPromise(
+            transformedTreasuryTransactionsSelector({
+              address: coreAddress,
+              minHeight,
+              maxHeight,
+            })
+          )
+
+          const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
+            blockHeightTimestampSelector(minHeight)
+          )
+
+          setLowestHeightLoaded(minHeight)
+          setLowestHeightLoadedTimestamp(newLowestHeightLoadedTimestamp)
+
+          // If no transactions found, try to load more.
+          if (!newTransactions.length) {
+            return await loadMoreTransactions(minHeight)
+          }
+
+          setTransactions((transactions) => [
+            ...transactions,
+            ...newTransactions,
+          ])
+        } catch (err) {
+          console.error(
+            processError(err, { tags: { coreAddress, minHeight, maxHeight } })
+          )
+          // If errored, assume we cannot load any more below this height.
+          setCanLoadMore(false)
+        } finally {
+          setLoading(false)
+        }
+      },
+    [
+      coreAddress,
+      setLoading,
+      setTransactions,
+      setLowestHeightLoaded,
+      setLowestHeightLoadedTimestamp,
+    ]
+  )
+
+  const nativeBalance = useRecoilValue(nativeBalanceSelector(coreAddress))
+  const lineGraphValues = useMemo(() => {
+    let runningTotal = convertMicroDenomToDenomWithDecimals(
+      nativeBalance.amount,
+      NATIVE_DECIMALS
+    )
+
+    return (
+      transactions
+        .filter(({ denomLabel }) => denomLabel === NATIVE_DENOM_LABEL)
+        .map(({ amount, outgoing }) => {
+          let currentTotal = runningTotal
+          runningTotal -= (outgoing ? -1 : 1) * amount
+          return currentTotal
+        })
+        // Reverse since transactions are descending, but we want the graph to
+        // display ascending balance.
+        .reverse()
+    )
+  }, [nativeBalance, transactions])
+
+  return (
+    <div className="flex flex-col gap-y-4">
       <h2 className="primary-text">
         {shortTitle ? t('title.history') : t('title.treasuryHistory')}
       </h2>
 
-      <div className="md:px-4">
-        {transactions.map((transaction) => (
-          <TransactionRenderer
-            key={transaction.tx.hash}
-            transaction={transaction}
-          />
-        ))}
-      </div>
-    </div>
-  ) : null
-}
+      {transactions.length ? (
+        <>
+          <div className="max-w-lg">
+            <LineGraph
+              title={t('title.nativeBalanceOverTime', {
+                denomLabel: NATIVE_DENOM_LABEL,
+              }).toLocaleUpperCase()}
+              yTitle={NATIVE_DENOM_LABEL}
+              yValues={lineGraphValues}
+            />
+          </div>
 
-interface TransactionRendererProps {
-  transaction: TreasuryTransaction
-}
+          <div className="md:px-4">
+            {transactions.map((transaction) => (
+              <TransactionRenderer
+                key={transaction.hash}
+                transaction={transaction}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="text-secondary">{t('info.nothingFound')}</p>
+      )}
 
-const TransactionRenderer: FC<TransactionRendererProps> = ({
-  transaction: {
-    tx: { hash, height },
-    timestamp,
-    events,
-  },
-}) => {
-  const { coreAddress } = useDaoInfoContext()
-
-  const transferEvent = events.find(({ type }) => type === 'transfer')
-  if (!transferEvent) {
-    return null
-  }
-
-  let sender = transferEvent.attributes.find(
-    ({ key }) => key === 'sender'
-  )?.value
-  let recipient = transferEvent.attributes.find(
-    ({ key }) => key === 'recipient'
-  )?.value
-  const amount = transferEvent.attributes.find(
-    ({ key }) => key === 'amount'
-  )?.value
-
-  if (!sender || !recipient || !amount) {
-    return null
-  }
-
-  const coin = parseCoins(amount)[0]
-  if (!coin) {
-    return null
-  }
-
-  const coinDecimals = nativeTokenDecimals(coin.denom)
-  if (coinDecimals === undefined) {
-    return null
-  }
-
-  const readableAmount = `${convertMicroDenomToDenomWithDecimals(
-    coin.amount,
-    coinDecimals
-  )} $${nativeTokenLabel(coin.denom)}`
-
-  // Outgoing payment.
-  const spentFromDAO = sender === coreAddress
-
-  return (
-    <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
-      <div className="flex flex-row flex-wrap gap-x-1 items-center text-sm leading-6">
-        {spentFromDAO ? (
-          <Trans i18nKey="info.treasurySent">
-            <p className="font-extrabold">
-              <CopyToClipboard value={recipient} />
-            </p>
-            <p>was sent</p>
-            <p className="font-bold">{{ amount: readableAmount }}</p>
-            <p className="pr-1">from the treasury.</p>
-          </Trans>
-        ) : (
-          <Trans i18nKey="info.treasuryReceived">
-            <p className="font-extrabold">
-              <CopyToClipboard value={sender} />
-            </p>
-            <p>sent</p>
-            <p className="font-bold">{{ amount: readableAmount }}</p>
-            <p className="pr-1">to the treasury.</p>
-          </Trans>
+      <div className="flex flex-row gap-4 justify-between items-center">
+        {lowestHeightLoadedTimestamp && (
+          <p className="italic caption-text">
+            {t('info.historySinceDate', {
+              date: lowestHeightLoadedTimestamp.toLocaleString(),
+            })}
+          </p>
         )}
 
-        <a
-          className="text-tertiary"
-          href={CHAIN_TXN_URL_PREFIX + hash}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <ExternalLinkIcon className="w-4" />
-        </a>
+        {canLoadMore ? (
+          <Button
+            loading={loading}
+            onClick={() => loadMoreTransactions(lowestHeightLoaded)}
+            size="sm"
+          >
+            {t('button.loadMore')}
+          </Button>
+        ) : (
+          <p className="caption-text">{t('info.availableHistoryLoaded')}</p>
+        )}
       </div>
-
-      <p className="font-mono text-xs leading-6 text-right">
-        {timestamp?.toLocaleString() ?? `${height} block`}
-      </p>
     </div>
   )
 }
+
+interface TransactionRendererProps {
+  transaction: TransformedTreasuryTransaction
+}
+
+const TransactionRenderer = ({
+  transaction: {
+    hash,
+    height,
+    timestamp,
+    sender,
+    recipient,
+    amount,
+    denomLabel,
+    outgoing,
+  },
+}: TransactionRendererProps) => (
+  <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
+    <div className="flex flex-row flex-wrap gap-x-4 items-center text-sm leading-6">
+      <CopyToClipboard value={outgoing ? recipient : sender} />
+      {/* Outgoing transactions are received by the address above, so point to the left. */}
+      {outgoing ? (
+        <ArrowNarrowLeftIcon className="w-4 h-4" />
+      ) : (
+        <ArrowNarrowRightIcon className="w-4 h-4" />
+      )}
+      <p>
+        {amount} ${denomLabel}
+      </p>
+    </div>
+
+    <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+      {timestamp?.toLocaleString() ?? `${height} block`}
+
+      <a
+        className="text-tertiary"
+        href={CHAIN_TXN_URL_PREFIX + hash}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <ExternalLinkIcon className="w-4" />
+      </a>
+    </p>
+  </div>
+)

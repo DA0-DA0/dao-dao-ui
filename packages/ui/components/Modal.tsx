@@ -1,6 +1,6 @@
 import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { FC, ReactNode, useCallback, useEffect } from 'react'
+import { ReactNode, useCallback, useEffect } from 'react'
 
 export interface ModalProps {
   children: ReactNode
@@ -10,13 +10,13 @@ export interface ModalProps {
   hideCloseButton?: boolean
 }
 
-export const Modal: FC<ModalProps> = ({
+export const Modal = ({
   children,
   onClose,
   backdropClassName,
   containerClassName,
   hideCloseButton,
-}) => {
+}: ModalProps) => {
   const handleKeyPress = useCallback(
     (event) => {
       if (event.key === 'Escape') {

@@ -1,7 +1,7 @@
 import { PlusIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import SvgEdamameCrown from '@dao-dao/icons/dist/EdamameCrown'
+import { EdamameCrown } from '@dao-dao/icons'
 
 import { IconButton } from './IconButton'
 import { Tooltip } from './Tooltip'
@@ -45,9 +45,8 @@ export const TokenCard = ({
               </p>
             </div>
           </div>
-          {/* TODO: make an icon-secondary color and use it. */}
           {!!crown && (
-            <SvgEdamameCrown
+            <EdamameCrown
               className="absolute -top-4 -left-[24px] stroke-current"
               height="32px"
               width="32px"

@@ -3,19 +3,15 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { FC } from 'react'
+import { ComponentType } from 'react'
 
 interface NavListItemProps {
   href: string
-  icon: FC<{ className?: string }>
+  icon: ComponentType<{ className?: string }>
   text: string
 }
 
-export const NavListItem: FC<NavListItemProps> = ({
-  href,
-  icon: Icon,
-  text,
-}) => {
+export const NavListItem = ({ href, icon: Icon, text }: NavListItemProps) => {
   const { asPath: currentUrl } = useRouter()
 
   return (

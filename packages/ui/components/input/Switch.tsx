@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 import { Path, PathValue, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -11,13 +10,13 @@ export interface SwitchProps {
   readOnly?: boolean
 }
 
-export const Switch: FC<SwitchProps> = ({
+export const Switch = ({
   enabled,
   onClick,
   className,
   sizing = 'lg',
   readOnly,
-}) => (
+}: SwitchProps) => (
   <div
     className={clsx(
       'flex relative flex-none items-center rounded-full',
@@ -58,12 +57,12 @@ export interface SwitchCardProps extends SwitchProps {
   offLabel?: string
 }
 
-export const SwitchCard: FC<SwitchCardProps> = ({
+export const SwitchCard = ({
   containerClassName,
   onLabel: _onLabel,
   offLabel: _offLabel,
   ...props
-}) => {
+}: SwitchCardProps) => {
   const { t } = useTranslation()
 
   const onLabel = _onLabel ?? t('info.enabled')

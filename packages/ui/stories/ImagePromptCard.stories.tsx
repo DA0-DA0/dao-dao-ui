@@ -15,7 +15,7 @@ export const Default = Template.bind({})
 Default.args = {
   title: 'Do a thing',
   description: 'This lets you do a thing.',
-  backgroundUrl: '/pretty-image.jpg',
+  backgroundUrl: '/empty-state-proposal.jpeg',
   href: '#',
 }
 

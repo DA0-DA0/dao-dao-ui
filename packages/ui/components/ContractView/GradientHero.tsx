@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { useThemeContext } from '../../theme'
 
@@ -6,7 +6,7 @@ export interface GradientHeroProps {
   children: ReactNode
 }
 
-export const GradientHero: FC<GradientHeroProps> = ({ children }) => {
+export const GradientHero = ({ children }: GradientHeroProps) => {
   const theme = useThemeContext()
   const endStop = theme.theme === 'dark' ? '#111213' : '#FFFFFF'
   const baseRgb = theme.accentColor

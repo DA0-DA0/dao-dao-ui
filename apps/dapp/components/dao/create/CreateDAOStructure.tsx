@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import clsx from 'clsx'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { RadioButton } from '@dao-dao/ui'
 
@@ -17,14 +17,14 @@ interface CreateDAOStructureProps {
   onChange: (structure: NewDAOStructure) => void
 }
 
-export const CreateDAOStructure: FC<CreateDAOStructureProps> = ({
+export const CreateDAOStructure = ({
   newDAO,
   emoji,
   title,
   description,
   structure,
   onChange,
-}) => {
+}: CreateDAOStructureProps) => {
   const selected = newDAO.structure === structure
 
   return (

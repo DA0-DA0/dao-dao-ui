@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 export interface GovInfoListItemProps {
   icon: ReactNode
@@ -7,12 +7,12 @@ export interface GovInfoListItemProps {
   loading?: boolean
 }
 
-export const GovInfoListItem: FC<GovInfoListItemProps> = ({
+export const GovInfoListItem = ({
   icon,
   text,
   value,
   loading,
-}) => (
+}: GovInfoListItemProps) => (
   <li className="flex flex-row items-center caption-text">
     <span className="flex gap-1 items-center mr-1">
       {icon} {text}:

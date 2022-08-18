@@ -3,7 +3,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   CwProposalSingleSelectors,
-  blockHeightTimestampSelector,
+  blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalModule } from '@dao-dao/utils'
@@ -27,7 +27,7 @@ export const makeUseListAllProposalInfos =
     const timestamps = useRecoilValue(
       waitForAll(
         proposalResponses.map(({ proposal: { start_height } }) =>
-          blockHeightTimestampSelector(start_height)
+          blockHeightTimestampSafeSelector(start_height)
         )
       )
     )
