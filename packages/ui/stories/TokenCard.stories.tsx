@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { TokenCard } from 'components/TokenCard'
 
 export default {
-  title: 'DAO DAO UI / TokenCard',
+  title: 'DAO DAO UI v2 / TokenCard',
   component: TokenCard,
 } as ComponentMeta<typeof TokenCard>
 
@@ -18,4 +18,11 @@ Default.args = {
   tokenBalance: '5',
   tokenBalanceUSDCEquivalent: '55.12',
   tokenUSDCPrice: '5.12',
+}
+
+Default.parameters = {
+  design: {
+    type: 'figma',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A15313',
+  },
 }
