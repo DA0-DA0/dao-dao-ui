@@ -9,12 +9,9 @@ import { Tooltip } from '@dao-dao/ui'
 
 import { getCardFallbackImage } from '@/util'
 
-interface FeaturedCardProps {
-  image: string
-  name: string
-  TVL: string
-  href: string
-  description: string
+import { FeaturedDao } from './splash'
+
+interface FeaturedCardProps extends FeaturedDao {
   className?: string
 }
 
@@ -68,7 +65,7 @@ export const FeaturedCard = ({
           <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
           <Tooltip
             label={
-              Number(TVL).toLocaleString(undefined, {
+              TVL.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
                 // eslint-disable-next-line i18next/no-literal-string
@@ -76,13 +73,15 @@ export const FeaturedCard = ({
             }
           >
             <span>
-              {Number(TVL).toLocaleString(undefined, {
-                // eslint-disable-next-line i18next/no-literal-string
-                notation: 'compact',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                // eslint-disable-next-line i18next/no-literal-string
-              })}{' '}
+              {TVL >= 1000
+                ? TVL.toLocaleString(undefined, {
+                    // eslint-disable-next-line i18next/no-literal-string
+                    notation: 'compact',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : // eslint-disable-next-line i18next/no-literal-string
+                  '<1K'}{' '}
               $USDC
             </span>
           </Tooltip>{' '}

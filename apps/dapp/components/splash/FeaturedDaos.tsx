@@ -17,7 +17,7 @@ export interface FeaturedDao {
   name: string
   description: string
   href: string
-  TVL: string
+  TVL: number
   image: string
 }
 
