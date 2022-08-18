@@ -57,7 +57,7 @@ export const NftCard = ({
 
         {!!href && !!hrefDestinationName && (
           <TooltipDisplay
-            className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 hover:!opacity-90 transition-opacity shadow-dp4"
+            className="absolute bottom-4 left-4 shadow-dp4 opacity-0 group-hover:opacity-100 hover:!opacity-90 transition-opacity"
             icon={<ArrowOutward color="currentColor" />}
             label={t('button.openInDestination', {
               destination: hrefDestinationName,
