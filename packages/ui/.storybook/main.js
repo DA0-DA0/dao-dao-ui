@@ -11,7 +11,7 @@ module.exports = {
     builder: 'webpack5',
   },
   stories: ['../stories/**/*.@(ts|tsx)'],
-  staticDirs: ['./static'],
+  staticDirs: ['../../../apps/dapp/public'],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -26,7 +26,7 @@ module.exports = {
       },
     },
   ],
-  framework: '@storybook/react',
+  framework: '@storybook/react', 
   webpackFinal: async (config) => {
     config.resolve.plugins = [new tsconfigPathsPlugin()]
     return config

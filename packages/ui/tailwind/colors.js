@@ -12,13 +12,16 @@ const colors = {
   juno: 'rgba(251, 156, 134, 1)',
 
   btn: generateColorClass('dark', 0.95),
-  'btn-secondary': generateColorClass('dark', 0.1),
+  'btn-secondary': generateColorClass('dark', 0.08),
   'btn-hover': generateColorClass('black', 1),
   'btn-pressed': generateColorClass('dark', 0.85),
   'btn-disabled': generateColorClass('dark', 0.3),
 
-  'btn-secondary-hover': generateColorClass('dark', 0.15),
+  'btn-secondary-hover': generateColorClass('dark', 0.12),
   'btn-secondary-pressed': generateColorClass('dark', 0.05),
+  'btn-secondary-disabled': generateColorClass('dark', 0.03),
+
+  'btn-ghost-hover': generateColorClass('dark', 0.05),
   'btn-active': generateColorClass('active', 0.1),
 }
 
