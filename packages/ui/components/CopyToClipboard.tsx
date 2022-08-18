@@ -5,9 +5,10 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Copy } from '@dao-dao/icons'
-import { Button } from '@dao-dao/ui'
 
-const concatAddressImpl = (
+import { Button } from './Button'
+
+export const concatAddressStartEnd = (
   address: string,
   takeStart: number,
   takeEnd: number
@@ -17,8 +18,8 @@ const concatAddressImpl = (
   return [first, last].filter(Boolean).join('...')
 }
 
-const concatAddress = (address: string, takeN = 7): string =>
-  address && concatAddressImpl(address, takeN, takeN)
+export const concatAddressBoth = (address: string, takeN = 7): string =>
+  address && concatAddressStartEnd(address, takeN, takeN)
 
 export interface CopyToClipboardProps {
   value: string
@@ -64,12 +65,35 @@ export const CopyToClipboard = ({
 
       <span className="inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition">
         {takeStartEnd
-          ? concatAddressImpl(value, takeStartEnd.start, takeStartEnd.end)
-          : concatAddress(value, takeN)}
+          ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+          : concatAddressBoth(value, takeN)}
       </span>
     </button>
   )
 }
+
+export const CopyToClipboardUnderline = ({
+  value,
+  success = 'Copied to clipboard!',
+  takeN,
+  takeStartEnd,
+  className,
+}: CopyToClipboardProps) => (
+  <p
+    className={clsx(
+      'font-mono text-xs text-body underline truncate hover:opacity-80 transition-opacity cursor-pointer',
+      className
+    )}
+    onClick={() => {
+      navigator.clipboard.writeText(value)
+      toast.success(success)
+    }}
+  >
+    {takeStartEnd
+      ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+      : concatAddressBoth(value, takeN)}
+  </p>
+)
 
 export const CopyToClipboardMobile = ({
   value,
@@ -88,7 +112,7 @@ export const CopyToClipboardMobile = ({
           <Copy height="18px" width="18px" />
         )}
         <span className="inline py-1 hover:bg-btn-secondary-hover transition">
-          {concatAddress(value, takeN)}
+          {concatAddressBoth(value, takeN)}
         </span>
       </div>
       <Button

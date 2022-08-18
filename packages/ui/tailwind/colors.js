@@ -123,7 +123,7 @@ const textColor = {
   primary: generateColorClass('black', 1),
   body: generateColorClass('dark', 0.95),
   secondary: generateColorClass('dark', 0.8),
-  tertiary: generateColorClass('dark', 0.6),
+  tertiary: generateColorClass('dark', 0.5),
   disabled: generateColorClass('dark', 0.4),
   accent: generateColorClass('accent', 1),
 }
@@ -149,14 +149,17 @@ const borderColor = {
   disabled: generateColorClass('dark', 0.03),
   inactive: generateColorClass('dark', 0.05),
   default: generateColorClass('dark', 0.15),
-  focus: generateColorClass('dark', 0.25),
+  focus: generateColorClass('dark', 0.2),
   selected: generateColorClass('dark', 0.25),
   error: generateColorClass('error', 0.6),
 }
+
+const ringColor = borderColor
 
 module.exports = {
   colors,
   textColor,
   backgroundColor,
   borderColor,
+  ringColor,
 }
