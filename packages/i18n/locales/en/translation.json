@@ -194,6 +194,7 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
+    "juno": "{{val, number}} $JUNO",
     "usdc": "{{val, number}} $USDC"
   },
   "info": {
@@ -238,6 +239,7 @@
     "failing": "Failing",
     "featured": "Featured",
     "firstProposalPrompt": "This DAO has no proposals. Why not create one?",
+    "gotoParent": "Go to parent DAO",
     "govTokenAddress": "Gov Token",
     "groupAddress": "CW4 Group",
     "haveNotCastVote": "You have not yet cast a vote.",
