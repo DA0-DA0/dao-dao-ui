@@ -194,12 +194,13 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
-    "usdc": "{{val, number}} $USDC" 
+    "usdc": "{{val, number}} $USDC"
   },
   "info": {
     "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
+    "addTokenTooltip": "Add token to wallet",
     "advancedQuorumDisabledConfigWarning": "This is an advanced feature. If you disable quorum and set your threshold too high, you will need significant participation to pass proposals. A quorum allows a subset of members to pass proposals and can help prevent locking your DAO.",
     "advancedVotingConfigWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass.",
     "amountProposalDeposit": "{{amount}} ${{tokenSymbol}} proposal deposit",
@@ -217,10 +218,10 @@
     "connectWalletToViewVote": "Connect your wallet to view your vote.",
     "considerReturningHome": "Consider returning home.",
     "copyWalletAddressTooltip": "Copy wallet address",
-    "addTokenTooltip": "Add token to wallet",
     "couldHaveMoreVotingPower": "You could have more voting power.",
     "creatingDao": "Creating DAO...",
     "daoAddress": "DAO",
+    "daoBalance": "DAO holding",
     "daoInfoWillRefresh": "DAO information may take up to {{minutes}} minutes to update on all pages once proposal is executed.",
     "daoPaused": "The DAO is paused. Governance will resume in {{duration}}.",
     "daodaoBetaV": "dao dao <1>beta</1> v{{version}}",
@@ -315,7 +316,6 @@
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",
     "youAreMember": "You are a member.",
     "yourBalance": "Your balance",
-    "daoBalance": "DAO holding",
     "yourTokensUnstaked": "Your ${{tokenSymbol}} tokens have unstaked."
   },
   "meta": {
