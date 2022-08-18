@@ -2,15 +2,15 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ArrowOutward } from '@dao-dao/icons'
 
-import { DarkTooltipDisplay } from 'components/DarkTooltipDisplay'
+import { TooltipDisplay } from 'components/TooltipDisplay'
 
 export default {
-  title: 'DAO DAO UI v2 / DarkTooltipDisplay',
-  component: DarkTooltipDisplay,
-} as ComponentMeta<typeof DarkTooltipDisplay>
+  title: 'DAO DAO UI v2 / TooltipDisplay',
+  component: TooltipDisplay,
+} as ComponentMeta<typeof TooltipDisplay>
 
-const Template: ComponentStory<typeof DarkTooltipDisplay> = (args) => (
-  <DarkTooltipDisplay {...args} />
+const Template: ComponentStory<typeof TooltipDisplay> = (args) => (
+  <TooltipDisplay {...args} />
 )
 
 export const Default = Template.bind({})

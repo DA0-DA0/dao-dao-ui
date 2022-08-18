@@ -1,19 +1,19 @@
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 
-export interface DarkTooltipDisplayProps {
+export interface TooltipDisplayProps {
   icon?: ReactNode
   label: string
   caption?: string
   className?: string
 }
 
-export const DarkTooltipDisplay = ({
+export const TooltipDisplay = ({
   icon,
   label,
   caption,
   className,
-}: DarkTooltipDisplayProps) => (
+}: TooltipDisplayProps) => (
   <div
     className={clsx(
       'inline-flex flex-row gap-x-3 items-start py-2 px-3 text-body bg-white rounded-md border border-inactive caption-text',
