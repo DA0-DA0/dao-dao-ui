@@ -125,6 +125,7 @@ const textColor = {
   tertiary: generateColorClass('dark', 0.6),
   disabled: generateColorClass('dark', 0.4),
   accent: generateColorClass('accent', 1),
+  'interactive-error': '#C73E59F2'
 }
 
 // TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE
