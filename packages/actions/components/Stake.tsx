@@ -57,8 +57,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   options: { nativeBalances, nativeDelegatedBalance },
 }) => {
   const { t } = useTranslation()
-  const { register, watch, getValues, setError, clearErrors, setValue } =
-    useFormContext()
+  const { register, watch, setError, clearErrors, setValue } = useFormContext()
 
   const stakeType = watch(fieldNamePrefix + 'stakeType')
   const amount = watch(fieldNamePrefix + 'amount')
