@@ -38,7 +38,7 @@ export const IconButton = ({
         'bg-btn-secondary-disabled': disabled && variant === 'secondary',
 
         // Ghost variant.
-        'text-dark bg-transparent active:bg-btn-secondary transition hover:bg-btn-ghost-hover':
+        'text-dark bg-transparent hover:bg-btn-ghost-hover active:bg-btn-secondary transition':
           variant === 'ghost',
         'bg-transparent': disabled && variant === 'ghost',
       },

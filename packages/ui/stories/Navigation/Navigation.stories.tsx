@@ -15,6 +15,7 @@ export const Default = Template.bind({})
 Default.args = {
   isMac: true,
   inboxCount: 5,
+  setCommandModalVisible: () => alert('command!'),
 }
 
 Default.parameters = {

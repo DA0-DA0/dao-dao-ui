@@ -49,7 +49,7 @@ export const PinnedDao = ({
               icon={
                 <TriangleUp
                   className={clsx(
-                    'w-4 h-4 transition-transform text-icon-primary',
+                    'w-4 h-4 text-icon-primary transition-transform',
                     {
                       'rotate-90': !expanded,
                       'rotate-180': expanded,
@@ -62,7 +62,7 @@ export const PinnedDao = ({
               variant="ghost"
             />
           ) : (
-            <div className="w-1 h-1 rounded-full bg-icon-interactive-disabled"></div>
+            <div className="w-1 h-1 bg-icon-interactive-disabled rounded-full"></div>
           )}
         </div>
 
@@ -72,7 +72,7 @@ export const PinnedDao = ({
           src={imageUrl}
         />
 
-        <p className="link-text text-text-body">{name}</p>
+        <p className="text-text-body link-text">{name}</p>
       </div>
 
       {!!subdaos?.length && expanded && (
