@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 
 export interface IconButtonProps {
   variant: 'primary' | 'secondary' | 'ghost'
-  size?: 'default' | 'large' | 'small' | 'xs'
+  size?: 'default' | 'xl' | 'large' | 'small' | 'xs'
   icon: ReactNode
   disabled?: boolean
   onClick: () => void
@@ -27,11 +27,13 @@ export const IconButton = ({
         'p-1.5 w-6 h-6 rounded-md': size === 'small',
         'p-2 w-8 h-8 rounded-md': size === 'default',
         'p-3 w-10 h-10 rounded-full': size === 'large',
+        'p-[0.625rem] w-10 h-10 rounded-full': size === 'xl',
 
         // Primary variant.
         'text-white bg-btn hover:bg-btn-hover active:bg-btn-pressed transition':
           variant === 'primary',
         'bg-btn-disabled': disabled && variant === 'primary',
+
         // Secondary variant.
         'text-dark bg-btn-secondary hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed transition':
           variant === 'secondary',

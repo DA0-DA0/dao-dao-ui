@@ -181,6 +181,7 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     )
 
     await fs.promises.writeFile(output, data)
+    console.log('Created ' + output)
   }
 
   if (components.length === 1) {

@@ -16,6 +16,21 @@ Default.args = {
   isMac: true,
   inboxCount: 5,
   setCommandModalVisible: () => alert('command!'),
+  version: '2.0',
+  tokenPrices: [
+    {
+      label: 'JUNO',
+      price: 6.332,
+      priceDenom: 'USDC',
+      change: -22.34,
+    },
+    {
+      label: 'DAO',
+      price: 22.9986,
+      priceDenom: 'USDC',
+      change: 22.34,
+    },
+  ],
 }
 
 Default.parameters = {

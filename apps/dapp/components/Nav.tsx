@@ -11,12 +11,11 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton, SuspenseLoader, Trans } from '@dao-dao/common'
-import { Loader, Logo } from '@dao-dao/ui'
+import { Loader, Logo, ThemeToggle } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
 import { commandModalVisibleAtom } from '@/atoms'
 import { PinnedDAONavList } from '@/components'
-import ThemeToggle from 'components/ThemeToggle'
 
 interface NavProps {
   onMenuClick?: () => void

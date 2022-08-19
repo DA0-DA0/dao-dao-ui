@@ -227,6 +227,7 @@
     "daoPaused": "The DAO is paused. Governance will resume in {{duration}}.",
     "daodaoBetaV": "dao dao <1>beta</1> v{{version}}",
     "daodaoLogo": "DAO DAO Logo",
+    "daodaoWithVersion": "DAO DAO v{{version}}",
     "daosLogo": "DAO's Logo",
     "description": "Description",
     "didNotCastVote": "You didn't cast a vote when this proposal was open.",
