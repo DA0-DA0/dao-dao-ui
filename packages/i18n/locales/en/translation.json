@@ -388,6 +388,8 @@
     "governanceToken": "Governance token",
     "history": "History",
     "home": "Home",
+    "inbox": "Inbox",
+    "inboxWithCount": "Inbox ({{count}})",
     "info": "Info",
     "instantiateSmartContract": "Instantiate Smart Contract",
     "manageMembers": "Manage members",
