@@ -39,7 +39,7 @@ export const ExecuteProposal = ({
             </p>
           </div>
           <Button loading={loading} onClick={onExecute}>
-            {t('button.execute')} <Airplane stroke="currentColor" />
+            {t('button.execute')} <Airplane />
           </Button>
         </div>
       )}
@@ -104,7 +104,7 @@ export const ExecuteProposal = ({
               loading={loading}
               onClick={onExecute}
             >
-              {t('button.execute')} <Airplane stroke="currentColor" />
+              {t('button.execute')} <Airplane />
             </Button>
           </div>
         </div>

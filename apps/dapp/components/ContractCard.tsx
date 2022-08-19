@@ -87,7 +87,7 @@ export const ContractCard = ({
             <div className="flex flex-col gap-1 items-left">
               {balance && (
                 <p className="text-sm">
-                  <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+                  <Dao className="inline mr-2 mb-1 w-4" />
                   {convertMicroDenomToDenomWithDecimals(
                     balance,
                     NATIVE_DECIMALS
@@ -97,16 +97,13 @@ export const ContractCard = ({
               )}
               {proposals !== undefined && (
                 <p className="text-sm">
-                  <Pencil
-                    className="inline mr-2 mb-1 w-4"
-                    fill="currentColor"
-                  />
+                  <Pencil className="inline mr-2 mb-1 w-4" />
                   {t('info.numProposals', { count: proposals })}
                 </p>
               )}
               {votingPowerPercent && (
                 <div className="flex flex-row gap-2 text-sm text-valid text-success">
-                  <Votes className="w-4 h-5" fill="currentColor" />
+                  <Votes className="w-4 h-5" />
                   {votingPowerPercent === '0%' ? (
                     t('info.noVotingPower')
                   ) : (

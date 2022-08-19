@@ -59,7 +59,7 @@ export const CopyToClipboard = ({
       {copied ? (
         <CheckCircleIcon className="w-[18px]" />
       ) : (
-        <Copy color="currentColor" height="18px" width="18px" />
+        <Copy height="18px" width="18px" />
       )}
 
       <span className="inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition">
@@ -85,7 +85,7 @@ export const CopyToClipboardMobile = ({
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
-          <Copy color="currentColor" height="18px" width="18px" />
+          <Copy height="18px" width="18px" />
         )}
         <span className="inline py-1 hover:bg-btn-secondary-hover transition">
           {concatAddress(value, takeN)}

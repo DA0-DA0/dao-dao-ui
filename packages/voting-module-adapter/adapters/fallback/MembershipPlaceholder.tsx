@@ -20,7 +20,7 @@ export const MembershipPlaceholder = () => {
             target="_blank"
           >
             DAO DAO Discord
-            <Discord className="inline" fill="currentColor" />
+            <Discord className="inline" />
           </a>{' '}
           and post in #dao-help.
         </Trans>

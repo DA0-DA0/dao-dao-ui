@@ -95,7 +95,7 @@ export const Vote = ({
           }
           variant="secondary"
         >
-          <Abstain fill="currentColor" />
+          <Abstain />
           {t('info.abstain')}
         </Button>
       </div>
@@ -111,7 +111,7 @@ export const Vote = ({
         }}
       >
         <div className="flex gap-2 justify-center items-center w-full">
-          <p>{t('button.castYourVote')}</p> <Airplane stroke="currentColor" />
+          <p>{t('button.castYourVote')}</p> <Airplane />
         </div>
       </Button>
     </div>

@@ -42,13 +42,13 @@ export const DaoInfoVotingConfiguration = ({
   return (
     <>
       <GovInfoListItem
-        icon={<Votes fill="currentColor" width="1rem" />}
+        icon={<Votes width="1rem" />}
         text={t('title.passingThreshold')}
         value={threshold.display}
       />
       {quorum && (
         <GovInfoListItem
-          icon={<Votes fill="currentColor" width="1rem" />}
+          icon={<Votes width="1rem" />}
           text={t('title.quorum')}
           value={quorum.display}
         />
@@ -56,7 +56,7 @@ export const DaoInfoVotingConfiguration = ({
       {config.deposit_info && proposalDepositTokenInfo && (
         <>
           <GovInfoListItem
-            icon={<Votes fill="currentColor" width="1rem" />}
+            icon={<Votes width="1rem" />}
             text={t('title.proposalDeposit')}
             value={`${convertMicroDenomToDenomWithDecimals(
               config.deposit_info.deposit,

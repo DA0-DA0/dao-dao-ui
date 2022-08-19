@@ -14,7 +14,7 @@ import { Claim } from '@dao-dao/state/clients/stake-cw20'
 import { HeroStatProps, LoaderProps, LogoProps, StakingMode } from '@dao-dao/ui'
 
 export interface MembershipPageInfo {
-  renderIcon: (color: string, mobile: boolean) => ReactNode
+  renderIcon: (mobile: boolean) => ReactNode
   label: string
 }
 

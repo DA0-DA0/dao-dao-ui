@@ -2,7 +2,7 @@
   "name": "@dao-dao/icons",
   "version": "0.0.0",
   "scripts": {
-    "build": "svgr --out-dir dist --typescript --icon --replace-attr-values \"#191D20={props.color}\" -- assets/",
+    "build": "svgr --out-dir dist --typescript --icon --replace-attr-values \"currentColor={props.color || 'currentColor'}\" -- assets/",
     "clean": "rm -rf dist/",
     "dev": "npm run build",
     "postinstall": "npm run build"

@@ -40,7 +40,7 @@ export const MobileWalletConnect = ({
       {...buttonProps}
     >
       <div className="flex gap-1 items-center w-full h-full justify-left">
-        <Wallet fill="currentColor" height="18px" width="18px" />
+        <Wallet height="18px" width="18px" />
         <p className="link-text">{walletName}</p>
       </div>
       <LogoutIcon className="w-4" />
@@ -56,7 +56,7 @@ export const MobileWalletConnect = ({
       type="button"
       {...buttonProps}
     >
-      <Wallet fill="currentColor" height="18px" width="18px" />
+      <Wallet height="18px" width="18px" />
       <p className="link-text">{t('button.connectWallet')}</p>
     </button>
   )

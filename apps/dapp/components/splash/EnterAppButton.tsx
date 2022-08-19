@@ -19,7 +19,7 @@ export const EnterAppButton = ({ small }: EnterAppButtonProps) => {
       <a>
         <Button size={small ? 'sm' : 'lg'}>
           {t('splash.cta')}
-          <ArrowUpRight color="currentColor" height="10px" width="10px" />
+          <ArrowUpRight height="10px" width="10px" />
         </Button>
       </a>
     </Link>

@@ -41,7 +41,7 @@ export const WalletConnect = ({
       )}
     >
       <div className="flex gap-4 items-center w-full h-full justify-left">
-        <Wallet fill="currentColor" height="20px" width="20px" />
+        <Wallet height="20px" width="20px" />
         <div className="link-text">
           <span>{walletName}</span>
           <br />
@@ -62,7 +62,7 @@ export const WalletConnect = ({
       type="button"
       {...buttonProps}
     >
-      <Wallet fill="currentColor" height="20px" width="20px" />
+      <Wallet height="20px" width="20px" />
       <p className="text-light link-text">{t('button.connectWallet')}</p>
     </Button>
   )
@@ -89,7 +89,7 @@ const CopyButton = ({ text }: CopyButtonProps) => {
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
-          <Copy color="currentColor" height="18px" width="18px" />
+          <Copy height="18px" width="18px" />
         )}
       </button>
     </Tooltip>

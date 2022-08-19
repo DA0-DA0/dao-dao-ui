@@ -55,7 +55,7 @@ export const DaoThinInfoContent = ({
         </HorizontalInfoSection>
       )}
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>

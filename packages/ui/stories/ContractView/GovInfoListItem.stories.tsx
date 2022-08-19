@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof GovInfoListItem> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  icon: <Votes fill="currentColor" width="1rem" />,
+  icon: <Votes width="1rem" />,
   text: 'Passing threshold',
   value: '75%',
 }

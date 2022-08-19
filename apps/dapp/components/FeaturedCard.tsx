@@ -65,7 +65,7 @@ export const FeaturedCard = ({
 
       <div className="flex flex-col gap-1 mt-5 items-left">
         <p className="text-sm">
-          <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+          <Dao className="inline mr-2 mb-1 w-4" />
           <Tooltip
             label={
               Number(TVL).toLocaleString(undefined, {

@@ -98,7 +98,7 @@ const DaoThinInfoContent: FC = () => {
           </HorizontalInfoSection>
         )}
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -157,7 +157,7 @@ const DaoThinInfoContent = () => {
         {t('info.numMembers', { count: cw4VotingMembers.length })}
       </HorizontalInfoSection>
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -216,7 +216,7 @@ const DaoThinInfoContent = () => {
         </HorizontalInfoSection>
       )}
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>

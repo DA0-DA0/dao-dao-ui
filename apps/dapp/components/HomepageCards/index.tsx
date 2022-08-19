@@ -71,7 +71,7 @@ export const HomepageCards = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <Github fill="currentColor" height="20px" width="20px" />
+            <Github height="20px" width="20px" />
           </a>
           <a
             className="z-10 p-1 hover:text-primary bg-primary rounded transition"
@@ -79,7 +79,7 @@ export const HomepageCards = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <Twitter fill="currentColor" height="20px" width="20px" />
+            <Twitter height="20px" width="20px" />
           </a>
           <a
             className="z-10 p-1 hover:text-primary bg-primary rounded transition"
@@ -87,7 +87,7 @@ export const HomepageCards = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <Discord fill="currentColor" height="20px" width="20px" />
+            <Discord height="20px" width="20px" />
           </a>
         </div>
         <h3 className="mt-8 header-text">{t('splash.joinTheCommunity')}</h3>

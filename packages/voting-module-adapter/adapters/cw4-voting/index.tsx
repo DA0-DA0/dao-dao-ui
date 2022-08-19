@@ -21,12 +21,8 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
     // Fields
     fields: {
       membershipPageInfo: {
-        renderIcon: (color, mobile) => (
-          <Wallet
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
+        renderIcon: (mobile) => (
+          <Wallet height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
         ),
         label: t('title.members'),
       },

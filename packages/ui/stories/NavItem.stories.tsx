@@ -14,8 +14,8 @@ const Template: ComponentStory<typeof NavItem> = (args) => <NavItem {...args} />
 export const Default = Template.bind({})
 Default.args = {
   item: {
-    renderIcon: (color, mobile) => (
-      <Pie color={color} height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
+    renderIcon: (mobile) => (
+      <Pie height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
     ),
     label: 'Stake',
     href: '/',

@@ -52,7 +52,7 @@ const InnerStake = () => {
         </div>
 
         <div className="flex flex-row gap-2 items-center text-lg title-text">
-          <Pie color="rgb(var(--dark))" height={22} width={22} />
+          <Pie height={22} width={22} />
           <p>{t('title.yourTokens')}</p>
         </div>
 

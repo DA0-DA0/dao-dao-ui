@@ -68,8 +68,13 @@ input[type='number']::-webkit-outer-spin-button {
   scrollbar-width: none; /* Firefox */
 }
 
+/* NEW V2 COLOR SYSTEM FIGMAS */
+/* https://www.figma.com/file/6M11csIFIi3IwnmDq9ZAB9/%E2%99%A3%EF%B8%8E--Dark-Tokens */
+/* https://www.figma.com/file/k0Qf3UOkEs6lPuezuDbkwN/%E2%99%A3%EF%B8%8E--Light-Tokens */
+
 @layer base {
   :root {
+    /* TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE */
     --black: 17, 18, 19;
     --dark: 25, 29, 31;
     --light: 243, 246, 248;
@@ -84,6 +89,100 @@ input[type='number']::-webkit-outer-spin-button {
     --accent: 253, 18, 69;
     --very-light: 255, 255, 255;
     --brand-active: 134, 56, 229;
+
+    /* NEW V2 COLOR SYSTEM */
+    /* Constants */
+    --v2-vanta: 0, 0, 0;
+    --v2-black: 21, 22, 23;
+    --v2-dark: 36, 38, 40;
+    --v2-light: 243, 246, 248;
+    --v2-white: 255, 255, 255;
+    --v2-brand: 123, 97, 255;
+    --v2-active: 179, 160, 255;
+    --v2-error: 199, 62, 89;
+    --v2-valid: 57, 166, 153;
+
+    --color-vanta: rgb(var(--v2-vanta));
+    --color-black: rgb(var(--v2-black));
+    --color-dark: rgb(var(--v2-dark));
+    --color-light: rgb(var(--v2-light));
+    --color-white: rgb(var(--v2-white));
+    --color-brand: rgb(var(--v2-brand));
+    --color-active: rgb(var(--v2-active));
+    --color-error: rgb(var(--v2-error));
+    --color-valid: rgb(var(--v2-valid));
+
+    /* LIGHT THEME */
+    /* Text */
+    --text-primary: rgba(var(--v2-black), 1);
+    --text-body: rgba(var(--v2-dark), 0.95);
+    --text-secondary: rgba(var(--v2-dark), 0.7);
+    --text-tertiary: rgba(var(--v2-dark), 0.5);
+    --text-brand: rgba(var(--v2-brand), 0.95);
+    --text-interactive-disabled: rgba(var(--v2-light), 0.2);
+    --text-interactive-active: rgba(var(--v2-active), 0.95);
+    --text-interactive-error: rgba(var(--v2-error), 0.95);
+    --text-interactive-valid: rgba(var(--v2-valid), 0.95);
+    --text-button-primary: rgba(var(--v2-white), 0.95);
+    --text-button-disabled: rgba(var(--v2-light), 0.75);
+
+    /* Icon */
+    --icon-primary: rgba(var(--v2-dark), 0.9);
+    --icon-secondary: rgba(var(--v2-dark), 0.6);
+    --icon-tertiary: rgba(var(--v2-dark), 0.45);
+    --icon-brand: rgba(var(--v2-brand), 0.9);
+    --icon-interactive-disabled: rgba(var(--v2-dark), 0.15);
+    --icon-interactive-active: rgba(var(--v2-active), 0.9);
+    --icon-interactive-error: rgba(var(--v2-error), 0.9);
+    --icon-interactive-valid: rgba(var(--v2-valid), 0.9);
+    --icon-button-primary: rgba(var(--v2-light), 0.95);
+    --icon-button-disabled: rgba(var(--v2-light), 0.7);
+
+    /* Border */
+    --border-base: rgba(var(--v2-light), 1);
+    --border-primary: rgba(var(--v2-dark), 0.1);
+    --border-secondary: rgba(var(--v2-dark), 0.05);
+    --border-interactive-hover: rgba(var(--v2-dark), 0.15);
+    --border-interactive-selected: rgba(var(--v2-dark), 0.2);
+    --border-interactive-focus: rgba(var(--v2-dark), 0.2);
+    --border-interactive-disabled: rgba(var(--v2-dark), 0.05);
+    --border-interactive-active: rgba(var(--v2-brand), 0.65);
+    --border-interactive-error: rgba(var(--v2-error), 0.65);
+
+    /* Background */
+    --background-primary: rgba(var(--v2-dark), 0.08);
+    --background-secondary: rgba(var(--v2-dark), 0.05);
+    --background-tertiary: rgba(var(--v2-dark), 0.03);
+    --background-button: rgba(var(--v2-black), 0.9);
+    --background-base: rgba(var(--v2-white), 1);
+    --background-overlay: rgba(var(--v2-vanta), 0.2);
+    --background-interactive-hover: rgba(var(--v2-dark), 0.1);
+    --background-interactive-selected: rgba(var(--v2-dark), 0.15);
+    --background-interactive-pressed: rgba(var(--v2-dark), 0.15);
+    --background-interactive-disabled: rgba(var(--v2-dark), 0.03);
+    --background-interactive-active: rgba(var(--v2-brand), 0.15);
+    --background-interactive-error: rgba(var(--v2-error), 0.1);
+    --background-button-hover: rgba(var(--v2-black), 0.95);
+    --background-button-pressed: rgba(var(--v2-vanta), 1);
+    --background-button-progress: rgba(var(--v2-dark), 0.75);
+    --background-button-disabled: rgba(var(--v2-dark), 0.4);
+    --background-button-active: rgba(var(--v2-brand), 0.9);
+    /* Extra */
+    --background-button-secondary-default: rgba(var(--v2-dark), 0.08);
+    --background-button-secondary-hover: rgba(var(--v2-dark), 0.12);
+    --background-button-secondary-pressed: rgba(var(--v2-dark), 0.15);
+    --background-button-secondary-disabled: rgba(var(--v2-dark), 0.03);
+
+    /* Component */
+    --component-modal: rgba(var(--v2-white), 1);
+    --component-dropdown: rgba(var(--v2-white), 1);
+    --component-tooltip: rgba(15, 15, 16, 1);
+    --component-toast: rgba(12, 12, 13, 1);
+    --component-widget: rgba(var(--v2-light), 0.2);
+    --component-badge-primary: rgba(var(--v2-dark), 0.25);
+    --component-badge-brand: rgba(var(--v2-brand), 0.4);
+    --component-badge-valid: rgba(var(--v2-valid), 0.45);
+    --component-badge-error: rgba(var(--v2-error), 0.45);
   }
 
   .dark {
@@ -97,79 +196,163 @@ input[type='number']::-webkit-outer-spin-button {
     --active: 77, 76, 185;
     --accent: 253, 67, 107;
     --very-light: 9, 13, 16;
+
+    /* NEW V2 COLOR SYSTEM */
+    /* DARK THEME */
+    /* Text */
+    --text-primary: rgba(var(--v2-white), 1);
+    --text-body: rgba(var(--v2-light), 0.95);
+    --text-secondary: rgba(var(--v2-light), 0.7);
+    --text-tertiary: rgba(var(--v2-light), 0.5);
+    /* --text-brand is the same as the light theme */
+    /* --text-interactive-* are the same as the light theme */
+    --text-button-primary: rgba(var(--v2-black), 0.95);
+    --text-button-disabled: rgba(var(--v2-dark), 0.75);
+
+    /* Icon */
+    --icon-primary: rgba(var(--v2-light), 0.9);
+    --icon-secondary: rgba(var(--v2-light), 0.6);
+    --icon-tertiary: rgba(var(--v2-light), 0.45);
+    /* --icon-brand is the same as the light theme */
+    --icon-interactive-disabled: rgba(var(--v2-light), 0.15);
+    /* --text-interactive-* are the same as the light theme */
+    --icon-button-primary: rgba(var(--v2-dark), 0.95);
+    --icon-button-disabled: rgba(var(--v2-dark), 0.7);
+
+    /* Border */
+    --border-base: rgba(var(--v2-vanta), 1);
+    --border-primary: rgba(var(--v2-light), 0.1);
+    --border-secondary: rgba(var(--v2-light), 0.05);
+    --border-interactive-hover: rgba(var(--v2-light), 0.15);
+    --border-interactive-selected: rgba(var(--v2-light), 0.2);
+    --border-interactive-focus: rgba(var(--v2-light), 0.2);
+    --border-interactive-disabled: rgba(var(--v2-light), 0.05);
+    /* --border-interactive-active and --border-interactive-error are the same as the light theme */
+
+    /* Background */
+    --background-primary: rgba(var(--v2-light), 0.08);
+    --background-secondary: rgba(var(--v2-light), 0.05);
+    --background-tertiary: rgba(var(--v2-light), 0.03);
+    --background-button: rgba(var(--v2-light), 0.9);
+    --background-base: rgba(var(--v2-black), 1);
+    --background-overlay: rgba(var(--v2-vanta), 0.7);
+    --background-interactive-hover: rgba(var(--v2-light), 0.1);
+    --background-interactive-selected: rgba(var(--v2-light), 0.15);
+    --background-interactive-pressed: rgba(var(--v2-light), 0.15);
+    --background-interactive-disabled: rgba(var(--v2-light), 0.03);
+    /* --background-interactive-active and --background-interactive-error are the same as the light theme */
+    --background-button-hover: rgba(var(--v2-white), 0.95);
+    --background-button-pressed: rgba(var(--v2-white), 1);
+    --background-button-progress: rgba(var(--v2-light), 0.75);
+    --background-button-disabled: rgba(var(--v2-light), 0.4);
+    /* --background-button-active is the same as the light theme */
+    /* Extra */
+    --background-button-secondary-default: rgba(var(--v2-light), 0.08);
+    --background-button-secondary-hover: rgba(var(--v2-light), 0.12);
+    --background-button-secondary-pressed: rgba(var(--v2-light), 0.15);
+    --background-button-secondary-disabled: rgba(var(--v2-light), 0.03);
+
+    /* Component */
+    --component-modal: rgba(var(--v2-black), 1);
+    --component-dropdown: rgba(29, 30, 31, 1);
+    /* --component-tooltip and --component-toast are the same as the light theme */
+    --component-widget: rgba(var(--v2-dark), 0.2);
+    --component-badge-primary: rgba(var(--v2-light), 0.25);
+    /* --component-badge-* are the same as the light theme */
   }
 
   .hero-text {
     font-family: 'studiofeixen';
     font-style: normal;
     font-weight: 700;
-    font-size: 54px;
-    line-height: 1;
-    color: rgba(var(--dark, 1));
+    font-size: 3rem;
+    line-height: 3rem;
+    color: var(--text-primary);
   }
 
   .header-text {
     font-style: normal;
     font-weight: 600;
-    font-size: 20px;
-    line-height: 24px;
-    color: rgba(var(--dark), 1);
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    color: var(--text-primary);
   }
 
   .title-text {
     font-style: normal;
     font-weight: 600;
-    font-size: 16px;
-    line-height: 20px;
-    color: rgba(var(--dark), 1);
+    font-size: 1rem;
+    line-height: 1.25rem;
+    color: var(--text-primary);
   }
 
   .primary-text {
     font-style: normal;
     font-weight: 500;
-    font-size: 15px;
-    line-height: 20px;
-    color: rgba(var(--dark), 0.95);
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
+    color: var(--text-primary);
   }
 
   .body-text {
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    color: rgba(var(--dark), 0.95);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--text-body);
   }
 
   .button-text {
     font-style: normal;
     font-weight: 500;
-    font-size: 13px;
-    line-height: 20px;
-    color: rgba(var(--white), 1);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--text-button-primary);
+  }
+
+  .button-text-sm {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    color: var(--text-button-primary);
+  }
+
+  .button-text[disabled],
+  button-text-sm[disabled] {
+    color: var(--text-button-disabled);
   }
 
   .link-text {
     font-style: normal;
     font-weight: 500;
-    font-size: 13px;
-    line-height: 20px;
-    color: rgba(var(--dark), 0.95);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    color: var(--text-body);
   }
 
   .secondary-text {
     font-style: normal;
     font-weight: 400;
-    font-size: 13px;
-    line-height: 16px;
-    color: rgba(var(--dark), 0.75);
+    font-size: 0.8125rem;
+    line-height: 1rem;
+    color: var(--text-secondary);
+  }
+
+  .legend-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--text-secondary);
   }
 
   .caption-text {
     font-style: normal;
     font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    color: rgba(var(--dark), 0.6);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--text-tertiary);
   }
 
   .gradient-text {

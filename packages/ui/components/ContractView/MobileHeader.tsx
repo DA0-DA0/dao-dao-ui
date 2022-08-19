@@ -58,7 +58,7 @@ export const MobileHeader = ({
           <div className="flex gap-5">
             {member && (
               <div className="flex flex-row gap-2 items-center">
-                <MemberCheck fill="currentColor" width="16px" />
+                <MemberCheck width="16px" />
               </div>
             )}
             <PinToggle onPin={onPin} pinned={pinned} />
