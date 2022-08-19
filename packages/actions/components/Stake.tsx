@@ -118,7 +118,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       return 'Unrecognized denom.'
     },
-    [nativeBalances, nativeDelegatedBalance, stakeType, fieldNamePrefix]
+    [nativeBalances, nativeDelegatedBalance, stakeType]
   )
 
   // Update amount+denom combo error each time either field is updated
