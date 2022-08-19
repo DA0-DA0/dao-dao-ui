@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import clsx from 'clsx'
 
 export type YourVoteProps = {
@@ -9,17 +8,20 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
   return (
     <div
       className={clsx(
-        'flex justify-center w-20 py-2 px-4 rounded-full font-medium text-sm', 
-        variant == 'abstain'
-          ? 'bg-primary text-secondary'
-          : variant == 'pending'
+        'flex relative justify-center items-center py-2 px-4 w-20 text-sm font-medium rounded-full',
+        variant === 'abstain'
+          ? 'text-secondary bg-primary'
+          : variant === 'pending'
           ? 'border border-primary'
-          : variant == 'no'
-          ? 'bg-[#C73E5914] text-interactive-error'
-          : 'bg-[#39A69914] text-valid'
+          : variant === 'no'
+          ? 'text-interactive-error bg-[#C73E5914]'
+          : 'text-valid bg-[#39A69914]'
       )}
     >
       {variant[0].toUpperCase() + variant.slice(1)}
+      {variant === 'pending' && (
+        <div className="absolute top-0 right-0 w-3 h-3 bg-[#F53E86] rounded-full"></div>
+      )}
     </div>
   )
 }

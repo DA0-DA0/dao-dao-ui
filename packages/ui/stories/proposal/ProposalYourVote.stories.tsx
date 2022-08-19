@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import { ProposalYourVote } from 'components/proposal/ProposalYourVote'
 
 export default {
@@ -6,33 +7,20 @@ export default {
   component: ProposalYourVote,
 } as ComponentMeta<typeof ProposalYourVote>
 
-const Template: ComponentStory<typeof ProposalYourVote> = (args) => (
-  <ProposalYourVote {...args} />
+const Template: ComponentStory<typeof ProposalYourVote> = () => (
+  <div className="flex flex-row gap-2">
+    <ProposalYourVote variant="abstain" />
+    <ProposalYourVote variant="pending" />
+    <ProposalYourVote variant="no" />
+    <ProposalYourVote variant="yes" />
+  </div>
 )
 
-export const Abstain = Template.bind({})
-Abstain.args = {
-  variant: 'abstain',
-}
+export const Default = Template.bind({})
 
-Abstain.parameters = {
+Default.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=312%3A28036',
   },
-}
-
-export const Pending = Template.bind({})
-Pending.args = {
-  variant: 'pending',
-}
-
-export const No = Template.bind({})
-No.args = {
-  variant: 'no',
-}
-
-export const Yes = Template.bind({})
-Yes.args = {
-  variant: 'yes',
 }
