@@ -1,7 +1,9 @@
+// TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE
 const generateColorClass = (variable, opacity) =>
   `rgba(var(--${variable}), ${opacity})`
 
 const colors = {
+  // TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE
   black: generateColorClass('black', 1),
   dark: generateColorClass('dark', 1),
   light: generateColorClass('light', 1),
@@ -23,8 +25,99 @@ const colors = {
 
   'btn-ghost-hover': generateColorClass('dark', 0.05),
   'btn-active': generateColorClass('active', 0.1),
+
+  // NEW V2 COLOR SYSTEM
+  ...[
+    'color-vanta',
+    'color-black',
+    'color-dark',
+    'color-light',
+    'color-white',
+    'color-brand',
+    'color-active',
+    'color-error',
+    'color-valid',
+
+    /* Text */
+    'text-primary',
+    'text-body',
+    'text-secondary',
+    'text-tertiary',
+    'text-brand',
+    'text-interactive-disabled',
+    'text-interactive-active',
+    'text-interactive-error',
+    'text-interactive-valid',
+    'text-button-primary',
+    'text-button-disabled',
+
+    /* Icon */
+    'icon-primary',
+    'icon-secondary',
+    'icon-tertiary',
+    'icon-brand',
+    'icon-interactive-disabled',
+    'icon-interactive-active',
+    'icon-interactive-error',
+    'icon-interactive-valid',
+    'icon-button-primary',
+    'icon-button-disabled',
+
+    /* Border */
+    'border-base',
+    'border-primary',
+    'border-secondary',
+    'border-interactive-hover',
+    'border-interactive-selected',
+    'border-interactive-focus',
+    'border-interactive-disabled',
+    'border-interactive-active',
+    'border-interactive-error',
+
+    /* Background */
+    'background-primary',
+    'background-secondary',
+    'background-tertiary',
+    'background-button',
+    'background-base',
+    'background-overlay',
+    'background-interactive-hover',
+    'background-interactive-selected',
+    'background-interactive-pressed',
+    'background-interactive-disabled',
+    'background-interactive-active',
+    'background-interactive-error',
+    'background-button-hover',
+    'background-button-pressed',
+    'background-button-progress',
+    'background-button-disabled',
+    'background-button-active',
+    /* Extra */
+    'background-button-secondary-default',
+    'background-button-secondary-hover',
+    'background-button-secondary-pressed',
+    'background-button-secondary-disabled',
+
+    /* Component */
+    'component-modal',
+    'component-dropdown',
+    'component-tooltip',
+    'component-toast',
+    'component-widget',
+    'component-badge-primary',
+    'component-badge-brand',
+    'component-badge-valid',
+    'component-badge-error',
+  ].reduce(
+    (acc, name) => ({
+      ...acc,
+      [name]: `var(--${name})`,
+    }),
+    {}
+  ),
 }
 
+// TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE
 const textColor = {
   primary: generateColorClass('black', 1),
   body: generateColorClass('dark', 0.95),
@@ -34,6 +127,7 @@ const textColor = {
   accent: generateColorClass('accent', 1),
 }
 
+// TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE
 const backgroundColor = {
   base: generateColorClass('white', 1),
   disabled: generateColorClass('dark', 0.03),
@@ -49,6 +143,7 @@ const backgroundColor = {
   'brand-active': generateColorClass('brand-active', 0.15),
 }
 
+// TODO: REMOVE OLD COLOR SYSTEM BEFORE MERGE
 const borderColor = {
   disabled: generateColorClass('dark', 0.03),
   inactive: generateColorClass('dark', 0.05),
@@ -59,7 +154,6 @@ const borderColor = {
 }
 
 module.exports = {
-  generateColorClass,
   colors,
   textColor,
   backgroundColor,
