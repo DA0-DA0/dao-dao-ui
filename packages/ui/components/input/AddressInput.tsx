@@ -55,7 +55,7 @@ export const AddressInput = <
         containerClassName
       )}
     >
-      <Wallet color="currentColor" width="24px" />
+      <Wallet width="24px" />
       <input
         className={clsx(
           'w-full bg-transparent border-none outline-none ring-none body-text',

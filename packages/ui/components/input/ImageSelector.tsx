@@ -91,7 +91,7 @@ export const ImageSelectorModal = <
       </div>
       <div className="w-full text-right">
         <Button onClick={onClose} size="sm" type="button">
-          {t('button.done')} <Airplane color="currentColor" />
+          {t('button.done')} <Airplane />
         </Button>
       </div>
     </Modal>

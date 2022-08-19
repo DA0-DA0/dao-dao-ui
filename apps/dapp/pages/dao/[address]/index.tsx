@@ -178,7 +178,7 @@ const InnerDAOHome = () => {
               <div className="flex flex-row gap-4 items-center">
                 {isMember && (
                   <div className="flex flex-row gap-2 items-center">
-                    <MemberCheck fill="currentColor" width="16px" />
+                    <MemberCheck width="16px" />
                     <p className="text-sm text-primary">
                       {t('info.youAreMember')}
                     </p>

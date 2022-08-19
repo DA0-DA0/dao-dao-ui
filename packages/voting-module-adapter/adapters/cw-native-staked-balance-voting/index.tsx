@@ -24,12 +24,8 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
     // Fields
     fields: {
       membershipPageInfo: {
-        renderIcon: (color, mobile) => (
-          <Pie
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
+        renderIcon: (mobile) => (
+          <Pie height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
         ),
         label: t('title.stake'),
       },

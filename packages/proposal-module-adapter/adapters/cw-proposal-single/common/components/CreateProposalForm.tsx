@@ -484,7 +484,7 @@ export const CreateProposalForm = ({
                 value={ProposeSubmitValue.Submit}
               >
                 {t('button.publishProposal') + ' '}
-                <Airplane color="currentColor" height="14px" width="14px" />
+                <Airplane height="14px" width="14px" />
               </Button>
             </Tooltip>
           ) : (

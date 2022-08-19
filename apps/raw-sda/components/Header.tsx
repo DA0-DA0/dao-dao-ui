@@ -59,12 +59,8 @@ export const Header = () => {
       ...(AIRDROP_URL
         ? [
             {
-              renderIcon: (color, mobile) => (
-                <Airdrop
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
+              renderIcon: (mobile) => (
+                <Airdrop height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
               ),
               label: 'Airdrop',
               href: AIRDROP_URL,
@@ -74,12 +70,8 @@ export const Header = () => {
           ]
         : []),
       {
-        renderIcon: (color, mobile) => (
-          <Pie
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
+        renderIcon: (mobile) => (
+          <Pie height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
         ),
         label: 'Stake',
         href: '/',
@@ -87,12 +79,8 @@ export const Header = () => {
         external: false,
       },
       {
-        renderIcon: (color, mobile) => (
-          <Governance
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
+        renderIcon: (mobile) => (
+          <Governance height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
         ),
         label: 'Vote',
         href: '/vote',
@@ -106,12 +94,8 @@ export const Header = () => {
       router.pathname === '/vote/[proposalId]'
         ? [
             {
-              renderIcon: (color, mobile) => (
-                <Hash
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
+              renderIcon: (mobile) => (
+                <Hash height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
               ),
               label: `Proposal ${router.query.proposalId as string}`,
               href: router.asPath,
@@ -123,12 +107,8 @@ export const Header = () => {
       ...(router.pathname === '/propose'
         ? [
             {
-              renderIcon: (color, mobile) => (
-                <PlusIcon
-                  color={color}
-                  height={mobile ? 19 : 17}
-                  width={mobile ? 19 : 17}
-                />
+              renderIcon: (mobile) => (
+                <PlusIcon height={mobile ? 19 : 17} width={mobile ? 19 : 17} />
               ),
               label: 'Propose',
               href: '/propose',

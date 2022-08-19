@@ -80,7 +80,7 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
                 href="https://docs.daodao.zone"
               >
                 {t('splash.documentation')}
-                <ArrowUpRight color="currentColor" height="10px" width="10px" />
+                <ArrowUpRight height="10px" width="10px" />
               </a>
               <div className="hidden md:block">
                 <EnterAppButton small />
@@ -153,11 +153,7 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
               <a>
                 <Button size="lg">
                   {t('splash.cta')}
-                  <ArrowUpRight
-                    color="currentColor"
-                    height="10px"
-                    width="10px"
-                  />
+                  <ArrowUpRight height="10px" width="10px" />
                 </Button>
               </a>
             </Link>

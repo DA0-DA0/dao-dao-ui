@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 
 export interface NavItemData {
-  renderIcon: (color: string, mobile: boolean) => ReactNode
+  renderIcon: (mobile: boolean) => ReactNode
   label: string
   href: string
   active: boolean
@@ -29,10 +29,7 @@ export const NavItem = ({
   )
   const contents = (
     <>
-      {renderIcon(
-        active ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)',
-        mobile
-      )}
+      {renderIcon(mobile)}
       <p className="sm:hidden lg:block">{label}</p>
     </>
   )

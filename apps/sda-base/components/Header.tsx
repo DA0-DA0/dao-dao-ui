@@ -67,12 +67,8 @@ export const Header = () => {
   const navItems = useMemo<NavItemData[]>(
     () => [
       {
-        renderIcon: (color, mobile) => (
-          <HomeIcon
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
+        renderIcon: (mobile) => (
+          <HomeIcon height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
         ),
         label: 'Home',
         href: '/',
@@ -90,12 +86,8 @@ export const Header = () => {
           ]
         : []),
       {
-        renderIcon: (color, mobile) => (
-          <Governance
-            color={color}
-            height={mobile ? 16 : 14}
-            width={mobile ? 16 : 14}
-          />
+        renderIcon: (mobile) => (
+          <Governance height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
         ),
         label: 'Vote',
         href: '/vote',
@@ -109,12 +101,8 @@ export const Header = () => {
       router.pathname === '/vote/[proposalId]'
         ? [
             {
-              renderIcon: (color, mobile) => (
-                <Hash
-                  color={color}
-                  height={mobile ? 16 : 14}
-                  width={mobile ? 16 : 14}
-                />
+              renderIcon: (mobile) => (
+                <Hash height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
               ),
               label: `Proposal ${router.query.proposalId as string}`,
               href: router.asPath,
@@ -126,12 +114,8 @@ export const Header = () => {
       ...(router.pathname === '/propose'
         ? [
             {
-              renderIcon: (color, mobile) => (
-                <PlusIcon
-                  color={color}
-                  height={mobile ? 19 : 17}
-                  width={mobile ? 19 : 17}
-                />
+              renderIcon: (mobile) => (
+                <PlusIcon height={mobile ? 19 : 17} width={mobile ? 19 : 17} />
               ),
               label: 'Propose',
               href: '/propose',

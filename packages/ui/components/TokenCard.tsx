@@ -47,7 +47,7 @@ export const TokenCard = ({
           </div>
           {!!crown && (
             <EdamameCrown
-              className="absolute -top-4 -left-[24px] text-secondary stroke-current stroke-2"
+              className="absolute -top-4 -left-[24px] text-secondary stroke-2"
               height="32px"
               width="32px"
             />

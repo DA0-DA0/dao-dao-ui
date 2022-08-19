@@ -27,7 +27,7 @@ export const VoteDisplay = ({ vote, className }: VoteDisplayProps) => {
     </p>
   ) : vote === Vote.Abstain ? (
     <p className={clsx(commonClassNames, 'text-secondary')}>
-      <Abstain fill="currentColor" /> {t('info.abstain')}
+      <Abstain /> {t('info.abstain')}
     </p>
   ) : (
     // Should never happen.
