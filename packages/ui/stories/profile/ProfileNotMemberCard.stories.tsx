@@ -8,11 +8,20 @@ export default {
 } as ComponentMeta<typeof ProfileNotMemberCard>
 
 const Template: ComponentStory<typeof ProfileNotMemberCard> = (args) => (
-  <ProfileNotMemberCard {...args} />
+  <div className="max-w-[320px]">
+    <ProfileNotMemberCard {...args} />
+  </div>
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  tokenSymbol: 'DOG',
+  tokenBalance: 0,
+  daoName: 'Dog Dao',
+  walletName: '@Modern-Edamame',
+  profileImgUrl: '/placeholders/3.svg',
+  dateEstablished: new Date(),
+}
 
 Default.parameters = {
   design: {
