@@ -41,7 +41,7 @@ export const PercentButton = ({
   absoluteOffset,
 }: PercentButtonProps) => (
   <Button
-    active={
+    pressed={
       (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
       amount.toFixed(tokenDecimals)
     }
