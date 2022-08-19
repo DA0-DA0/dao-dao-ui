@@ -66,9 +66,8 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
   const validatePossibleSpend = useCallback(
     (denom: string, amount: string): string | boolean => {
-      const delegateType = getValues(fieldNamePrefix + 'stakeType')
       // Logic for undelegating
-      if (delegateType === StakeType.Undelegate) {
+      if (stakeType === StakeType.Undelegate) {
         const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
           nativeDelegatedBalance.amount,
           NATIVE_DECIMALS
@@ -119,7 +118,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       return 'Unrecognized denom.'
     },
-    [nativeBalances, nativeDelegatedBalance, getValues, fieldNamePrefix]
+    [nativeBalances, nativeDelegatedBalance, stakeType, fieldNamePrefix]
   )
 
   // Update amount+denom combo error each time either field is updated
