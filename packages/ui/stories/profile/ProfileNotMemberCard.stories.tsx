@@ -19,7 +19,7 @@ Default.args = {
   tokenBalance: 0,
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
-  profileImgUrl: '/placeholders/3.svg',
+  profileImgUrl: '/dog_nft.png',
   dateEstablished: new Date(),
 }
 
