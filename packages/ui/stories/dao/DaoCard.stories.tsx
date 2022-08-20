@@ -19,7 +19,7 @@ Default.args = {
   established: new Date('May 14, 2022 00:00:00'),
 
   pinned: false,
-  onPin: () => null,
+  onPin: () => {},
 
   subDaoInfo: {
     parentDaoImageUrl: '/placeholders/2.svg',

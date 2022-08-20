@@ -28,7 +28,7 @@ export interface DaoCardProps {
   subDaoInfo?: SubDaoInfo
 
   pinned: boolean
-  onPin: () => null
+  onPin: () => void
 }
 
 export const DaoCard = ({
@@ -58,9 +58,9 @@ export const DaoCard = ({
           )}
         >
           {subDaoInfo && (
-            <Link href={subDaoInfo.parentDaoHref} passHref>
+            <Link href={subDaoInfo.parentDaoHref}>
               <a title={t('info.gotoParent')}>
-                <SubDaoArrow className="fill-icon-interactive-disabled" />
+                <SubDaoArrow className="text-icon-interactive-disabled" />
               </a>
             </Link>
           )}
@@ -71,13 +71,13 @@ export const DaoCard = ({
             >
               <DaoCardPin
                 className={clsx('w-4 h-4', {
-                  'fill-icon-secondary': !pinned,
-                  'fill-icon-interactive-active': pinned,
+                  'text-icon-secondary': !pinned,
+                  'text-icon-interactive-active': pinned,
                 })}
               />
             </button>
             <div title={t('info.youAreMember')}>
-              <DaoCardMemberCheck className="w-4 h-4 fill-icon-secondary" />
+              <DaoCardMemberCheck className="w-4 h-4 text-icon-secondary" />
             </div>
           </div>
         </div>
@@ -91,7 +91,7 @@ export const DaoCard = ({
               }}
             ></div>
             {subDaoInfo && (
-              <Link href={subDaoInfo.parentDaoHref} passHref>
+              <Link href={subDaoInfo.parentDaoHref}>
                 <a
                   className="absolute right-0 bottom-0 w-8 h-8 bg-center bg-cover rounded-full drop-shadow"
                   style={{
@@ -119,7 +119,7 @@ export const DaoCard = ({
             <p>{t('format.juno', { val: junoBalance })}</p>
           </div>
           <div className="flex flex-row gap-3 items-center font-mono caption-text">
-            <DaoCardProposals className="w-3 h-3 fill-current" />
+            <DaoCardProposals className="w-3 h-3" />
             <p>{t('info.numProposals', { count: proposalCount })}</p>
           </div>
         </div>
