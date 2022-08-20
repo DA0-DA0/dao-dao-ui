@@ -205,7 +205,8 @@ input[type='number']::-webkit-outer-spin-button {
     --text-secondary: rgba(var(--v2-light), 0.7);
     --text-tertiary: rgba(var(--v2-light), 0.5);
     /* --text-brand is the same as the light theme */
-    /* --text-interactive-* are the same as the light theme */
+    --text-interactive-disabled: rgba(var(--v2-light), 0.2);
+    /* remaining --text-interactive-* are the same as the light theme */
     --text-button-primary: rgba(var(--v2-black), 0.95);
     --text-button-disabled: rgba(var(--v2-dark), 0.75);
 
