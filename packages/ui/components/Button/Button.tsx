@@ -92,6 +92,7 @@ function ButtonComponent(
           'flex flex-row gap-2 items-center',
           {
             invisible: loading,
+            'text-text-interactive-disabled': isDisabled,
           },
           contentContainerClassName
         )}

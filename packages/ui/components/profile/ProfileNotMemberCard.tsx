@@ -1,7 +1,6 @@
-import { XIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import { MemberCheck } from '@dao-dao/icons'
+import { ArrowUpRight, MemberCheck, X } from '@dao-dao/icons'
 
 import { Button } from '../Button'
 
@@ -16,7 +15,11 @@ const ProfileCardMembershipStatus = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-row gap-2 items-center p-2 mb-6 rounded-full border border-width-2 border-default">
+    <div
+      className={`flex flex-row gap-2 items-center py-1 px-[10px] rounded-full border-2 border-default link-text ${
+        isMember ? '' : 'text-text-interactive-disabled'
+      }`}
+    >
       {isMember && (
         <div className="shrink-0">{t('profile.member.memberOf')}</div>
       )}
@@ -26,7 +29,7 @@ const ProfileCardMembershipStatus = ({
           {t('profile.notMember.notAMember', { daoName })}
         </div>
       )}
-      {!isMember && <XIcon className="w-[16px]" />}
+      {!isMember && <X className="w-[16px]" />}
     </div>
   )
 }
@@ -50,13 +53,13 @@ const ProfileCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col justify-center items-center pt-8 rounded-lg border border-default">
+    <div className="flex flex-col justify-center items-center pt-10 rounded-lg border-2 border-border-primary">
       <div
         className="w-[64px] h-[64px] bg-center rounded-full"
         style={{ backgroundImage: `url(${imgUrl})` }}
       ></div>
-      <div className="pt-4 primary-text">{walletName}</div>
-      <div className="py-2 mb-2 secondary-text">
+      <div className="pt-6 title-text">{walletName}</div>
+      <div className="py-2 mb-4 font-mono caption-text">
         {t('profile.est')}
         {new Intl.DateTimeFormat('default', {
           month: 'long',
@@ -96,21 +99,36 @@ export const ProfileNotMemberCard = ({
       isMember={false}
       walletName={walletName}
     >
-      <div className="p-6 border-t border-t-default">
-        <div className="body-text">{t('profile.notMember.membership')}</div>
-        <p className="py-2 secondary-text">
+      <div className="flex flex-col items-stretch p-6 mt-7 border-t border-t-border-primary">
+        <div className="link-text text-text-body">
+          {t('profile.notMember.membership')}
+        </div>
+        <p className="pt-1 pb-3 secondary-text">
           {t('profile.notMember.stakeYourTokens', { tokenSymbol, daoName })}
         </p>
-        <div className="flex flex-row justify-between pb-4 secondary-text">
+        <div className="flex flex-row justify-between pb-7 secondary-text">
           <div>{t('profile.notMember.yourHoldings')}</div>
           <div className="font-mono">
             {t('format.token', { val: tokenBalance, tokenSymbol })}
           </div>
         </div>
-        <Button className="mb-2 w-full" disabled={true}>
+        <Button
+          className="mb-2"
+          contentContainerClassName="justify-center primary-text"
+          disabled={true}
+          size="lg"
+          variant="secondary"
+        >
           {t('profile.notMember.stakeToken', { tokenSymbol })}
         </Button>
-        <Button className="w-full">{t('profile.notMember.getTokens')}</Button>
+        <Button
+          contentContainerClassName="justify-center primary-text"
+          size="lg"
+          variant="secondary"
+        >
+          {t('profile.notMember.getTokens')}
+          <ArrowUpRight />
+        </Button>
       </div>
     </ProfileCard>
   )

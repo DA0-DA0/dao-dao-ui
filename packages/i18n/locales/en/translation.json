@@ -329,7 +329,7 @@
       "memberOf": "Member of {{daoName}}"
     },
     "notMember": {
-      "getTokens": "Get tokens on junoswap",
+      "getTokens": "Get tokens on Junoswap",
       "membership": "Membership",
       "notAMember": "Not a Member",
       "stakeToken": "Stake ${{tokenSymbol}}",
