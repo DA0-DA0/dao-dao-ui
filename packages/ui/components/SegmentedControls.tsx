@@ -17,7 +17,7 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => (
     {tabs.map(({ name, onClick, selected }, index) => (
       <div key={name} className="flex flex-row items-center">
         {index !== 0 && !tabs[index - 1].selected && !selected && (
-          <div className="h-4 w-[1px] bg-border-primary"></div>
+          <div className="w-[1px] h-4 bg-border-primary"></div>
         )}
 
         <Button

@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { SegmentedControls } from 'components/SegmentedControls'
 
 export default {
-  title: 'DAO DAO UI / SegmentedControls',
+  title: 'DAO DAO UI V2 / SegmentedControls',
   component: SegmentedControls,
 } as ComponentMeta<typeof SegmentedControls>
 

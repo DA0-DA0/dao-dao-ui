@@ -23,7 +23,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ${name} } from '${file}'
 
 export default {
-  title: 'DAO DAO UI / ${titlePrefix + name}',
+  title: 'DAO DAO UI V2 / ${titlePrefix + name}',
   component: ${name},
 } as ComponentMeta<typeof ${name}>
 
