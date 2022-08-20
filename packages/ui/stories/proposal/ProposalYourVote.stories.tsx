@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalYourVote } from 'components/proposal/ProposalYourVote'
 
 export default {
-  title: 'DAO DAO UI v2 / proposal / ProposalYourVote',
+  title: 'DAO DAO UI V2 / proposal / ProposalYourVote',
   component: ProposalYourVote,
 } as ComponentMeta<typeof ProposalYourVote>
 

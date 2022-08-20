@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileCard } from 'components/profile/ProfileCard'
 
 export default {
-  title: 'DAO DAO UI v2 / profile / ProfileCard',
+  title: 'DAO DAO UI V2 / profile / ProfileCard',
   component: ProfileCard,
 } as ComponentMeta<typeof ProfileCard>
 

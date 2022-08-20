@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { TokenCard } from 'components/TokenCard'
 
 export default {
-  title: 'DAO DAO UI v2 / TokenCard',
+  title: 'DAO DAO UI V2 / TokenCard',
   component: TokenCard,
 } as ComponentMeta<typeof TokenCard>
 
