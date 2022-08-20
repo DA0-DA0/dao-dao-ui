@@ -16,7 +16,7 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => (
   <div className="grid grid-flow-col auto-cols-fr bg-background-tertiary">
     {tabs.map(({ name, onClick, selected }, index) => (
       <div key={name} className="flex flex-row items-center">
-        {index !== 0 && !tabs[index - 1]?.selected && !selected && (
+        {index !== 0 && !tabs[index - 1].selected && !selected && (
           <div className="h-4 w-[1px] bg-border-primary"></div>
         )}
 
