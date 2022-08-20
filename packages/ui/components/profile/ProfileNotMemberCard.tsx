@@ -11,7 +11,7 @@ export interface ProfileNotMemberCardProps {
   daoName: string
   walletName: string
   profileImgUrl: string
-  dateEstablished: Date
+  established: Date
 }
 export const ProfileNotMemberCard = ({
   tokenSymbol,
@@ -19,14 +19,14 @@ export const ProfileNotMemberCard = ({
   daoName,
   walletName,
   profileImgUrl,
-  dateEstablished,
+  established,
 }: ProfileNotMemberCardProps) => {
   const { t } = useTranslation()
 
   return (
     <ProfileCardTemplate
       daoName={daoName}
-      dateEstablished={dateEstablished}
+      established={established}
       imgUrl={profileImgUrl}
       isMember={false}
       walletName={walletName}

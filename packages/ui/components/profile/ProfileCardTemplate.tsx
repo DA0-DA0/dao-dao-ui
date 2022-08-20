@@ -7,7 +7,7 @@ export interface ProfileCardTemplateProps {
   children: any
   imgUrl: string
   walletName: string
-  dateEstablished: Date
+  established: Date
   isMember: boolean
   daoName: string
 }
@@ -15,7 +15,7 @@ export const ProfileCardTemplate = ({
   children,
   imgUrl,
   walletName,
-  dateEstablished,
+  established,
   isMember,
   daoName,
 }: ProfileCardTemplateProps) => {
@@ -31,7 +31,7 @@ export const ProfileCardTemplate = ({
           month: 'long',
           day: undefined,
           year: 'numeric',
-        }).format(dateEstablished)}
+        }).format(established)}
       </div>
       <MembershipPill daoName={daoName} isMember={isMember} />
       {children}
