@@ -19,7 +19,7 @@ export interface DaoCardProps {
   name: string
   description: string
   imageUrl: string
-  established: string
+  established: Date
   href: string
 
   junoBalance: number
@@ -72,7 +72,7 @@ export const DaoCard = ({
               <DaoCardPin
                 className={clsx('w-4 h-4', {
                   'fill-icon-secondary': !pinned,
-                  'fill-brand': pinned,
+                  'fill-icon-interactive-active': pinned,
                 })}
               />
             </button>
@@ -102,7 +102,13 @@ export const DaoCard = ({
             )}
           </div>
           <p className="mt-2 primary-text">{name}</p>
-          <p className="mt-1 caption-text">{established}</p>
+          <p className="mt-1 caption-text">
+            {new Intl.DateTimeFormat('default', {
+              month: 'long',
+              day: undefined,
+              year: 'numeric',
+            }).format(established)}
+          </p>
         </div>
         <div className="w-full">
           <p className="mb-5 w-full break-words line-clamp-3 secondary-text">
