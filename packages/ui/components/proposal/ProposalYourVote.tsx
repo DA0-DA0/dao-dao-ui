@@ -8,7 +8,7 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
   return (
     <div
       className={clsx(
-        'flex relative justify-center items-center py-2 px-4 w-20 text-sm font-medium rounded-full',
+        'flex relative justify-center items-center py-1 px-4 w-20 text-sm font-medium rounded-full',
         variant === 'abstain'
           ? 'text-secondary bg-primary'
           : variant === 'pending'
