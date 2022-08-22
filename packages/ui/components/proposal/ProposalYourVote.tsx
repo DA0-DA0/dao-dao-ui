@@ -12,7 +12,7 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
         variant === 'abstain'
           ? 'text-secondary bg-primary'
           : variant === 'pending'
-          ? 'border border-primary'
+          ? 'border-2 border-inactive'
           : variant === 'no'
           ? 'text-interactive-error bg-[#C73E5914]'
           : 'text-valid bg-[#39A69914]'
@@ -20,7 +20,7 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
     >
       {variant[0].toUpperCase() + variant.slice(1)}
       {variant === 'pending' && (
-        <div className="absolute top-0 right-0 w-3 h-3 bg-[#F53E86] rounded-full"></div>
+        <div className="absolute top-0 right-0 w-2 h-2 bg-[#F53E86] rounded-full"></div>
       )}
     </div>
   )
