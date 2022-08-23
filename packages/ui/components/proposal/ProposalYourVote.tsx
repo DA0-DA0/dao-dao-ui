@@ -12,7 +12,7 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
         variant === 'abstain'
           ? 'text-text-secondary bg-background-secondary'
           : variant === 'pending'
-          ? 'border-2 border-inactive'
+          ? 'border-2 border-border-primary'
           : variant === 'no'
           ? 'text-text-interactive-error bg-[#C73E5914]'
           : 'text-text-valid bg-color-valid/[0.08]'
