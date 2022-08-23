@@ -2,7 +2,8 @@ import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
 import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { LoaderProps, LogoProps, SuspenseLoader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/common'
+import { LoaderProps, LogoProps } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
 
 import { ActionAndData, ActionCardLoader } from '..'

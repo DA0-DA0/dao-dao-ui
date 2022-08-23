@@ -2,14 +2,13 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Theme, useThemeContext } from '@dao-dao/ui'
 
 export const defaultTheme = 'dark'
 
-const ThemeToggle: FC = () => {
+const ThemeToggle = () => {
   const { t } = useTranslation()
   const themeContext = useThemeContext()
 

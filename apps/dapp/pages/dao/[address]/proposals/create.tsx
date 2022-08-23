@@ -13,6 +13,7 @@ import {
   ConnectWalletButton,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  SuspenseLoader,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
@@ -25,7 +26,6 @@ import {
   Loader,
   Logo,
   PageLoader,
-  SuspenseLoader,
   Tooltip,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'

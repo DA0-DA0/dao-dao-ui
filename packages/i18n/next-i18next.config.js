@@ -4,10 +4,10 @@ const path = require('path')
 const config = {
   i18n: {
     // Add your language ISO 639-1 code here.
-    locales: ['en', 'it', 'pl', 'uk', 'zh'],
+    locales: ['en', 'it', 'pl', 'uk', 'zh', 'ko'],
     defaultLocale: 'en',
   },
-  localePath: path.resolve('../../packages/i18n/locales'),
+  localePath: path.resolve(__dirname, '../../packages/i18n/locales'),
   defaultNS: 'translation',
   ns: ['translation'],
   reloadOnPrerender: process.env.NODE_ENV === 'development',

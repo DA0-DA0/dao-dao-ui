@@ -7,6 +7,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   DaoNotFound,
   Loader as DefaultLoader,
@@ -15,7 +16,6 @@ import {
   ErrorPage500,
   LoaderProps,
   LogoProps,
-  SuspenseLoader,
 } from '@dao-dao/ui'
 import { ProposalModule } from '@dao-dao/utils'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'

@@ -1,6 +1,6 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -20,7 +20,7 @@ const concatAddressImpl = (
 const concatAddress = (address: string, takeN = 7): string =>
   address && concatAddressImpl(address, takeN, takeN)
 
-interface CopyToClipboardProps {
+export interface CopyToClipboardProps {
   value: string
   success?: string
   takeN?: number
@@ -32,13 +32,13 @@ interface CopyToClipboardProps {
   className?: string
 }
 
-export const CopyToClipboard: FC<CopyToClipboardProps> = ({
+export const CopyToClipboard = ({
   value,
   success = 'Copied to clipboard!',
   takeN,
   takeStartEnd,
   className = 'font-mono text-xs',
-}) => {
+}: CopyToClipboardProps) => {
   const [copied, setCopied] = useState(false)
 
   return (
@@ -47,13 +47,13 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
         'flex overflow-hidden flex-row gap-1 items-center',
         className
       )}
-      title={value}
       onClick={() => {
         navigator.clipboard.writeText(value)
         setTimeout(() => setCopied(false), 2000)
         setCopied(true)
         toast.success(success)
       }}
+      title={value}
       type="button"
     >
       {copied ? (
@@ -71,11 +71,11 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({
   )
 }
 
-export const CopyToClipboardMobile: FC<CopyToClipboardProps> = ({
+export const CopyToClipboardMobile = ({
   value,
   success = 'Copied to clipboard',
   takeN = 7,
-}) => {
+}: CopyToClipboardProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 

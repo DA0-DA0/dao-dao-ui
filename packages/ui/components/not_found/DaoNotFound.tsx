@@ -1,10 +1,11 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Trans } from '@dao-dao/common'
+
 import { ErrorPage } from '../ErrorPage'
 import { LinkText } from '../LinkText'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
-import { Trans } from '../Trans'
 
 export interface DaoNotFoundProps {
   Loader?: ComponentType<LoaderProps>

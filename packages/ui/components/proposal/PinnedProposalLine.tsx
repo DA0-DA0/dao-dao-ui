@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
@@ -13,7 +14,6 @@ import { ProposalModule } from '@dao-dao/utils'
 import { Button } from '../Button'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Logo as DefaultLogo, LogoProps } from '../Logo'
-import { SuspenseLoader } from '../SuspenseLoader'
 import { Tooltip } from '../Tooltip'
 import { ProposalLineLoader } from './ProposalLine'
 

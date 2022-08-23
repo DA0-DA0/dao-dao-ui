@@ -1,6 +1,6 @@
 import { XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { FC, ReactNode, cloneElement } from 'react'
+import { ReactNode, cloneElement } from 'react'
 import { Toast, ToastBar, toast as hotToast } from 'react-hot-toast'
 
 export interface ToastCardProps {
@@ -9,11 +9,11 @@ export interface ToastCardProps {
   preMessage?: ReactNode
 }
 
-export const ToastCard: FC<ToastCardProps> = ({
+export const ToastCard = ({
   toast,
   containerClassName,
   preMessage,
-}) => (
+}: ToastCardProps) => (
   <ToastBar toast={toast}>
     {({ message }) => (
       <div

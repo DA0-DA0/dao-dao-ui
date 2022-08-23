@@ -1,16 +1,15 @@
 import clsx from 'clsx'
-import { FC } from 'react'
 import { FieldError } from 'react-hook-form'
 
-interface InputErrorMessageProps {
-  error: FieldError | undefined
+export interface InputErrorMessageProps {
+  error?: FieldError
   className?: string
 }
 
-export const InputErrorMessage: FC<InputErrorMessageProps> = ({
+export const InputErrorMessage = ({
   error,
   className,
-}) =>
+}: InputErrorMessageProps) =>
   error?.message ? (
     <span
       className={clsx(

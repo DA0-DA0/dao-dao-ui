@@ -2,7 +2,6 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import Emoji from 'a11y-react-emoji'
-import { FC } from 'react'
 import {
   FormState,
   UseFormRegister,
@@ -45,17 +44,18 @@ export interface CreateDAOConfigCardSharedProps {
   readOnly?: boolean
 }
 
-export const CreateDAOThresholdCard: FC<CreateDAOConfigCardSharedProps> = ({
+export const CreateDAOThresholdCard = ({
   newDAO: {
     advancedVotingConfig: {
       thresholdQuorum: { threshold },
     },
   },
+
   register,
   setValue,
   errors,
   readOnly,
-}) => {
+}: CreateDAOConfigCardSharedProps) => {
   const { t } = useTranslation()
 
   return (
@@ -129,19 +129,20 @@ interface CreateDAOQuorumCardProps extends CreateDAOConfigCardSharedProps {
   showWarningModal?: () => void
 }
 
-export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
+export const CreateDAOQuorumCard = ({
   newDAO: {
     structure,
     advancedVotingConfig: {
       thresholdQuorum: { quorumEnabled, quorum },
     },
   },
+
   register,
   setValue,
   errors,
   readOnly,
   showWarningModal,
-}) => {
+}: CreateDAOQuorumCardProps) => {
   const { t } = useTranslation()
 
   return (
@@ -238,9 +239,13 @@ export const CreateDAOQuorumCard: FC<CreateDAOQuorumCardProps> = ({
   )
 }
 
-export const CreateDAOVotingDurationCard: FC<
-  CreateDAOConfigCardSharedProps
-> = ({ newDAO: { votingDuration }, register, setValue, errors, readOnly }) => {
+export const CreateDAOVotingDurationCard = ({
+  newDAO: { votingDuration },
+  register,
+  setValue,
+  errors,
+  readOnly,
+}: CreateDAOConfigCardSharedProps) => {
   const { t } = useTranslation()
 
   return (
@@ -312,22 +317,20 @@ export const CreateDAOVotingDurationCard: FC<
   )
 }
 
-export const CreateDAOProposalDepositCard: FC<
-  CreateDAOConfigCardSharedProps
-> = ({
+export const CreateDAOProposalDepositCard = ({
   newDAO: {
     governanceTokenOptions: {
       type,
       newInfo: { symbol: newSymbol },
       proposalDeposit: { value },
-      existingGovernanceTokenInfo: { symbol: existingSymbol } = {},
+      existingGovernanceTokenInfo,
     },
   },
   register,
   setValue,
   errors,
   readOnly,
-}) => {
+}: CreateDAOConfigCardSharedProps) => {
   const { t } = useTranslation()
 
   return (
@@ -341,8 +344,9 @@ export const CreateDAOProposalDepositCard: FC<
       {readOnly ? (
         <InputThemedText>
           {value} $
-          {(type === GovernanceTokenType.New ? newSymbol : existingSymbol) ||
-            t('info.tokens')}
+          {(type === GovernanceTokenType.New
+            ? newSymbol
+            : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
         </InputThemedText>
       ) : (
         <div className="flex flex-row gap-2 items-center">
@@ -370,8 +374,9 @@ export const CreateDAOProposalDepositCard: FC<
 
           <p className="text-tertiary">
             $
-            {(type === GovernanceTokenType.New ? newSymbol : existingSymbol) ||
-              t('info.tokens')}
+            {(type === GovernanceTokenType.New
+              ? newSymbol
+              : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
           </p>
         </div>
       )}
@@ -379,19 +384,18 @@ export const CreateDAOProposalDepositCard: FC<
   )
 }
 
-export const CreateDAORefundFailedProposalDepositCard: FC<
-  CreateDAOConfigCardSharedProps
-> = ({
+export const CreateDAORefundFailedProposalDepositCard = ({
   newDAO: {
     governanceTokenOptions: {
       proposalDeposit: { refundFailed },
     },
   },
+
   errors,
   setValue,
   watch,
   readOnly,
-}) => {
+}: CreateDAOConfigCardSharedProps) => {
   const { t } = useTranslation()
 
   return (
@@ -421,17 +425,16 @@ export const CreateDAORefundFailedProposalDepositCard: FC<
   )
 }
 
-export const CreateDAOUnstakingDurationCard: FC<
-  CreateDAOConfigCardSharedProps
-> = ({
+export const CreateDAOUnstakingDurationCard = ({
   newDAO: {
     governanceTokenOptions: { unregisterDuration },
   },
+
   errors,
   setValue,
   register,
   readOnly,
-}) => {
+}: CreateDAOConfigCardSharedProps) => {
   const { t } = useTranslation()
 
   return (
@@ -497,15 +500,16 @@ export const CreateDAOUnstakingDurationCard: FC<
   )
 }
 
-export const CreateDAOAllowRevotingCard: FC<CreateDAOConfigCardSharedProps> = ({
+export const CreateDAOAllowRevotingCard = ({
   newDAO: {
     advancedVotingConfig: { allowRevoting },
   },
+
   errors,
   setValue,
   watch,
   readOnly,
-}) => {
+}: CreateDAOConfigCardSharedProps) => {
   const { t } = useTranslation()
 
   return (

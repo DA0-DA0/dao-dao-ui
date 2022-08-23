@@ -19,7 +19,10 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
   require('codemirror/mode/javascript/javascript.js')
 }
 
-interface CodeMirrorInputProps<T extends FieldValues, U extends Path<T>> {
+export interface CodeMirrorInputProps<
+  T extends FieldValues,
+  U extends Path<T>
+> {
   fieldName: U
   control?: Control<T>
   validation?: Validate<FieldPathValue<T, U>>[]

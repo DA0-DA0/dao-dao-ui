@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import { ClaimsListItem, SuspenseLoader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/common'
+import { ClaimsListItem } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'

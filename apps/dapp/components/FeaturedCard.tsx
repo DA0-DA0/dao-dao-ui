@@ -2,17 +2,16 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import clsx from 'clsx'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react'
 
-import { Dao, Votes } from '@dao-dao/icons'
+import { Dao } from '@dao-dao/icons'
+import { Tooltip } from '@dao-dao/ui'
 
-interface FeaturedCardProps {
-  image: string
-  name: string
-  members: string
-  TVL: string
-  href: string
-  description: string
+import { getCardFallbackImage } from '@/util'
+
+import { FeaturedDao } from './splash'
+
+interface FeaturedCardProps extends FeaturedDao {
   className?: string
 }
 
@@ -20,17 +19,27 @@ export const FeaturedCard = ({
   className,
   image,
   name,
-  members,
   TVL,
   href,
   description,
 }: FeaturedCardProps) => {
-  const { t } = useTranslation()
+  const [cardImage, setCardImage] = useState(image)
+
+  // The wonders of javascript..
+  useEffect(() => {
+    const canary = document.createElement('img')
+    canary.onerror = () => {
+      // Don't loop if the fallback also fails to load.
+      canary.onerror = null
+      setCardImage(getCardFallbackImage(name))
+    }
+    canary.src = cardImage
+  }, [cardImage, setCardImage, name])
 
   return (
     <a
       className={clsx(
-        'flex relative flex-col justify-between items-center p-6 w-full h-[320px] bg-card rounded-lg hover:outline-1 hover:outline-brand hover:outline',
+        'flex relative flex-col justify-between items-center p-6 w-full h-[300px] bg-card rounded-lg hover:outline-1 hover:outline-brand hover:outline',
         className
       )}
       href={href}
@@ -42,7 +51,7 @@ export const FeaturedCard = ({
         <div
           className="relative w-[80px] h-[80px] bg-center bg-cover rounded-full"
           style={{
-            backgroundImage: `url(${image})`,
+            backgroundImage: `url(${cardImage})`,
           }}
         ></div>
         <h3 className="mt-5 title-text">{name}</h3>
@@ -53,11 +62,30 @@ export const FeaturedCard = ({
 
       <div className="flex flex-col gap-1 mt-5 items-left">
         <p className="text-sm">
-          <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />${TVL} TVL
-        </p>
-        <p className="text-sm text-valid text-success">
-          <Votes className="inline mr-2 mb-1 h-5" fill="currentColor" />
-          {members} {t('info.members')}
+          <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+          <Tooltip
+            label={
+              TVL.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                // eslint-disable-next-line i18next/no-literal-string
+              }) + ' $USDC'
+            }
+          >
+            <span>
+              {TVL >= 1000
+                ? TVL.toLocaleString(undefined, {
+                    // eslint-disable-next-line i18next/no-literal-string
+                    notation: 'compact',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : // eslint-disable-next-line i18next/no-literal-string
+                  '<1K'}{' '}
+              $USDC
+            </span>
+          </Tooltip>{' '}
+          <span className="caption-text">TVL</span>
         </p>
       </div>
     </a>

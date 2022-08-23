@@ -13,6 +13,7 @@ import {
   ConnectWalletButton,
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
+  SuspenseLoader,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
@@ -28,7 +29,6 @@ import {
   Logo,
   PageLoader,
   ProposalNotFound,
-  SuspenseLoader,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'

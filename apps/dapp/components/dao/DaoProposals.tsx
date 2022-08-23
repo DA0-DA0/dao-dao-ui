@@ -7,9 +7,13 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalList, useDaoInfoContext } from '@dao-dao/common'
+import {
+  ProposalList,
+  SuspenseLoader,
+  useDaoInfoContext,
+} from '@dao-dao/common'
 import { useVotingModule } from '@dao-dao/state'
-import { Button, Loader, SuspenseLoader, Tooltip } from '@dao-dao/ui'
+import { Button, Loader, Tooltip } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
 export const DaoProposals = () => {
