@@ -117,6 +117,30 @@ export const nativeDenomBalanceSelector = selectorFamily<
     },
 })
 
+// Get the SUM of native tokens delegated across all validators
+export const nativeDelegatedBalanceSelector = selectorFamily({
+  key: 'nativeDelegatedBalance',
+  get:
+    (address: string) =>
+    async ({ get }) => {
+      const client = get(stargateClientSelector)
+
+      get(refreshWalletBalancesIdAtom(address))
+
+      const balance = await client.getBalanceStaked(address)
+
+      // Only allow native denom
+      if (!balance || balance.denom !== NATIVE_DENOM) {
+        return {
+          amount: '0',
+          denom: NATIVE_DENOM,
+        }
+      }
+
+      return balance
+    },
+})
+
 export const nativeSupplySelector = selectorFamily({
   key: 'nativeSupply',
   get:
