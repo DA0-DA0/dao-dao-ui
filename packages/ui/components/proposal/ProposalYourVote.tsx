@@ -14,7 +14,7 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
           : variant === 'pending'
           ? 'border-2 border-border-primary'
           : variant === 'no'
-          ? 'text-text-interactive-error bg-[#C73E5914]'
+          ? 'text-text-interactive-error bg-background-interactive-error'
           : 'text-text-valid bg-color-valid/[0.08]'
       )}
     >
