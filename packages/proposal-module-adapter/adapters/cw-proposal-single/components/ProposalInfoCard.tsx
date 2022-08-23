@@ -1,5 +1,4 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
@@ -167,7 +166,7 @@ interface YouTooltipProps {
   label: string
 }
 
-const YouTooltip: FC<YouTooltipProps> = ({ label }) => (
+const YouTooltip = ({ label }: YouTooltipProps) => (
   <Tooltip label={label}>
     <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
       ?

@@ -4,9 +4,9 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { CopyToClipboard, Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { CopyToClipboard, Loader, Logo } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { DaoTreasury } from './DaoTreasury'

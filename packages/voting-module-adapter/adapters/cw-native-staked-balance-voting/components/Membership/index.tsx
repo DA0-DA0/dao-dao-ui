@@ -1,18 +1,13 @@
 import { HandIcon, MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import { useWalletManager } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { ComponentType, FC, useMemo, useState } from 'react'
+import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
+import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import { stakingLoadingAtom } from '@dao-dao/state'
-import {
-  BalanceCard,
-  BalanceIcon,
-  StakingMode,
-  SuspenseLoader,
-} from '@dao-dao/ui'
+import { BalanceCard, BalanceIcon, StakingMode } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -57,11 +52,11 @@ export const Membership = ({ primaryText, ...props }: MembershipProps) => {
   )
 }
 
-const InnerMembership: FC<Omit<MembershipProps, 'primaryText'>> = ({
+const InnerMembership = ({
   sdaMode,
   ClaimsPendingList = DefaultClaimsPendingList,
   proposalModuleDepositInfos,
-}) => {
+}: Omit<MembershipProps, 'primaryText'>) => {
   const { t } = useTranslation()
   const {
     governanceTokenAddress,

@@ -1,8 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { FC } from 'react'
-
 export interface CornerGradientProps {
   color: string
 }
@@ -13,7 +11,7 @@ export interface CornerGradientProps {
  *
  * This component expects that its parent has position relative.
  */
-export const CornerGradient: FC<CornerGradientProps> = ({ color }) => (
+export const CornerGradient = ({ color }: CornerGradientProps) => (
   <div
     className="absolute top-0 left-0 -z-10 w-full h-full rounded-lg"
     style={{

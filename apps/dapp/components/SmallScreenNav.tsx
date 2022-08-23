@@ -4,12 +4,12 @@
 import { MenuAlt1Icon, MenuIcon, SearchIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton } from '@dao-dao/common'
-import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
+import { Loader, Logo } from '@dao-dao/ui'
 
 import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 
@@ -19,7 +19,7 @@ interface SmallScreenNavProps {
   className?: string
 }
 
-export const SmallScreenNav: FC<SmallScreenNavProps> = ({ className }) => {
+export const SmallScreenNav = ({ className }: SmallScreenNavProps) => {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)

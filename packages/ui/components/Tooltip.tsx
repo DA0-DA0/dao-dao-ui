@@ -1,12 +1,12 @@
 import ReachTooltip from '@reach/tooltip'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 export interface TooltipProps {
   label: ReactNode | undefined
-  children: ReactNode
+  children: ReactNode | ReactNode[]
 }
 
-export const Tooltip: FC<TooltipProps> = ({ label, children }) =>
+export const Tooltip = ({ label, children }: TooltipProps) =>
   !!label ? (
     <ReachTooltip label={label}>{children}</ReachTooltip>
   ) : (

@@ -3,14 +3,13 @@
 
 import { useMemo } from 'react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   HorizontalInfo,
   HorizontalInfoSection,
   Loader,
   Logo,
-  SuspenseLoader,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

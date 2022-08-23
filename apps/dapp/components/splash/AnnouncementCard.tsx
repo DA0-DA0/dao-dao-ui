@@ -2,10 +2,9 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { ArrowRightIcon } from '@heroicons/react/outline'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export const AnouncementCard: FC = () => {
+export const AnouncementCard = () => {
   const { t } = useTranslation()
 
   return (

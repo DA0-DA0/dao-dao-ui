@@ -10,11 +10,22 @@ import {
 } from 'react'
 
 import { useIsVisible } from '@/hooks'
-import { featuredDaos } from '@/util'
 
 import { FeaturedCard } from '../FeaturedCard'
 
-export const FeaturedDaos = () => {
+export interface FeaturedDao {
+  name: string
+  description: string
+  href: string
+  TVL: number
+  image: string
+}
+
+export interface FeaturedDaosProps {
+  featuredDaos: FeaturedDao[]
+}
+
+export const FeaturedDaos = ({ featuredDaos }: FeaturedDaosProps) => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 

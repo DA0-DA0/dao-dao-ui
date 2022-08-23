@@ -376,7 +376,8 @@ Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the voting module adapter interface.
 
 ```tsx
-import { SuspenseLoader, Loader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/common'
+import { Loader } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 const DaoThinInfoDisplay = () => {

@@ -1,8 +1,7 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
-import { FunctionComponent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Trans } from '@dao-dao/ui'
+import { Trans } from '@dao-dao/common'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -17,9 +16,7 @@ interface CardProps {
   setShowStakingMode: () => void
 }
 
-export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
-  setShowStakingMode,
-}) => {
+export const UnstakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
   const { t } = useTranslation()
   const {
     hooks: { useGovernanceTokenInfo },
@@ -79,9 +76,7 @@ export const UnstakedBalanceCard: FunctionComponent<CardProps> = ({
   )
 }
 
-export const StakedBalanceCard: FunctionComponent<CardProps> = ({
-  setShowStakingMode,
-}) => {
+export const StakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
   const { t } = useTranslation()
   const {
     hooks: { useGovernanceTokenInfo, useStakingInfo },

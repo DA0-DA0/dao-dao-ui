@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { ActionAndData, ActionKey, ActionsRenderer } from '@dao-dao/actions'
+import { Trans } from '@dao-dao/common'
 import {
   CwCoreV0_1_0Selectors,
   CwProposalSingleHooks,
@@ -19,7 +20,6 @@ import {
   CosmosMessageDisplay,
   ExecuteProposal,
   MarkdownPreview,
-  Trans,
 } from '@dao-dao/ui'
 import {
   decodeMessages,

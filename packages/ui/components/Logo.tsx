@@ -67,7 +67,7 @@ export const LogoNoBorder = ({ size = 28, className }: LogoProps) => {
   )
 }
 
-interface LogoFromImageProps extends LogoProps {
+export interface LogoFromImageProps extends LogoProps {
   src: string
   rounded?: boolean
 }

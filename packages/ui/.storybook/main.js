@@ -1,12 +1,22 @@
-const path = require('path')
+const tsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+
+// Many of the stories at the moment do not work because they depend on packages
+// that are causing webpack issues (it even has trouble when we import from
+// @dao-dao/utils right now). New components we write will work as long as we
+// make them totally stateless. Storybook is useful for making new components,
+// so let's use it for now and set a goal to fix the broken ones.
 
 module.exports = {
-  // @todo replace with ['../src/**/*.stories.@(js|jsx|ts|tsx)'] once we switch to a mono-repo
-  stories: ['../**/*.stories.@(js|jsx|ts|tsx)'],
+  core: {
+    builder: 'webpack5',
+  },
+  stories: ['../stories/**/*.@(ts|tsx)'],
+  staticDirs: ['./static'],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     'storybook-addon-designs',
+    'storybook-dark-mode',
     {
       name: '@storybook/addon-postcss',
       options: {
@@ -17,16 +27,8 @@ module.exports = {
     },
   ],
   framework: '@storybook/react',
-  // webpackFinal: async (config) => {
-  //   // @todo resolve path for '@components' should be '../src' once we switch to a mono-repo
-  //   config.resolve.alias = {
-  //     ...config.resolve.alias,
-  //     'util/constants': path.resolve(__dirname, '../util/constants'),
-  //     'contexts/theme': path.resolve(__dirname, '../contexts/theme'),
-  //     styles: path.resolve(__dirname, '../styles'),
-  //     '@components': path.resolve(__dirname, '../components'),
-  //   }
-
-  //   return config
-  // },
+  webpackFinal: async (config) => {
+    config.resolve.plugins = [new tsconfigPathsPlugin()]
+    return config
+  },
 }

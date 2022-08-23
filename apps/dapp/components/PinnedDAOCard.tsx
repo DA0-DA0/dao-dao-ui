@@ -1,10 +1,11 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { SuspenseLoader } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   CwCoreV0_1_0Selectors,
@@ -12,7 +13,7 @@ import {
   nativeBalanceSelector,
   useVotingModule,
 } from '@dao-dao/state'
-import { Loader, Logo, SuspenseLoader } from '@dao-dao/ui'
+import { Loader, Logo } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { usePinnedDAOs } from '@/hooks'
@@ -23,7 +24,7 @@ interface PinnedDAOCardProps {
   address: string
 }
 
-const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
+const InnerPinnedDAOCard = ({ address }: PinnedDAOCardProps) => {
   const { t } = useTranslation()
   const config = useRecoilValue(
     CwCoreV0_1_0Selectors.configSelector({ contractAddress: address })
@@ -89,7 +90,7 @@ const InnerPinnedDAOCard: FC<PinnedDAOCardProps> = ({ address }) => {
   )
 }
 
-export const PinnedDAOCard: FC<PinnedDAOCardProps> = (props) => (
+export const PinnedDAOCard = (props: PinnedDAOCardProps) => (
   <SuspenseLoader fallback={<LoadingContractCard />}>
     <InnerPinnedDAOCard {...props} />
   </SuspenseLoader>

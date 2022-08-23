@@ -4,16 +4,19 @@ import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
+  FieldValues,
   Path,
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
 
-interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
+export interface NumberInputProps<
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+> extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
   fieldName: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  register: UseFormRegister<FV>
+  validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   onMinus?: () => void
   onPlus?: () => void
@@ -32,7 +35,10 @@ interface NumberInputProps<FieldValues, FieldName extends Path<FieldValues>>
  *                     of this field, return true if the value is valid and an
  *                     error message otherwise.
  */
-export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
+export const NumberInput = <
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+>({
   fieldName,
   register,
   error,
@@ -46,7 +52,7 @@ export const NumberInput = <FieldValues, FieldName extends Path<FieldValues>>({
   required,
   setValueAs,
   ...props
-}: NumberInputProps<FieldValues, FieldName>) => {
+}: NumberInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}

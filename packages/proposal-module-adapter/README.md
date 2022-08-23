@@ -82,7 +82,8 @@ Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the proposal module adapter interface.
 
 ```tsx
-import { SuspenseLoader, Loader } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/common'
+import { Loader } from '@dao-dao/ui'
 import { useProposalModuleAdapter } from '@dao-dao/proposal-module-adapter'
 
 const ProposalVoteInfo = () => {

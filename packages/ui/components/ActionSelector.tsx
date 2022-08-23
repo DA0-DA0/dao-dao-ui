@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Action } from '@dao-dao/actions'
@@ -14,11 +14,11 @@ export interface ActionSelectorProps {
   onSelectAction: (action: Action) => void
 }
 
-export const ActionSelector: FC<ActionSelectorProps> = ({
+export const ActionSelector = ({
   actions,
   onClose,
   onSelectAction,
-}) => {
+}: ActionSelectorProps) => {
   const { t } = useTranslation()
   const actionsFuse = useMemo(
     () => new Fuse(actions, { keys: ['label', 'description'] }),
@@ -128,11 +128,11 @@ interface ActionDisplayItemProps {
   selected: boolean
 }
 
-const ActionDisplayItem: FC<ActionDisplayItemProps> = ({
+const ActionDisplayItem = ({
   action: { Icon, label, description },
   onClick,
   selected,
-}) => (
+}: ActionDisplayItemProps) => (
   <button
     className={clsx(
       'flex flex-row gap-3 items-center p-2 w-full text-left hover:bg-primary rounded transition',

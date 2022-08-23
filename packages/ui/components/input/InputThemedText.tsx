@@ -1,13 +1,13 @@
 import clsx from 'clsx'
-import { ComponentProps, FC } from 'react'
+import { ComponentProps } from 'react'
 
 export type InputThemedTextProps = ComponentProps<'p'>
 
-export const InputThemedText: FC<InputThemedTextProps> = ({
+export const InputThemedText = ({
   className,
   children,
   ...props
-}) => (
+}: InputThemedTextProps) => (
   <p
     className={clsx('py-2 px-3 rounded-lg border border-default', className)}
     {...props}

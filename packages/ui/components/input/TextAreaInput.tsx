@@ -3,23 +3,26 @@ import { ComponentProps } from 'react'
 import {
   FieldError,
   FieldPathValue,
+  FieldValues,
   Path,
   UseFormRegister,
   Validate,
 } from 'react-hook-form'
 
-interface TextAreaInputProps<FieldValues, FieldName extends Path<FieldValues>>
-  extends Omit<ComponentProps<'textarea'>, 'required'> {
+export interface TextAreaInputProps<
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+> extends Omit<ComponentProps<'textarea'>, 'required'> {
   fieldName: FieldName
-  register: UseFormRegister<FieldValues>
-  validation?: Validate<FieldPathValue<FieldValues, FieldName>>[]
+  register: UseFormRegister<FV>
+  validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
 }
 
 export const TextAreaInput = <
-  FieldValues,
-  FieldName extends Path<FieldValues>
+  FV extends FieldValues,
+  FieldName extends Path<FV>
 >({
   fieldName,
   register,
@@ -28,7 +31,7 @@ export const TextAreaInput = <
   className,
   required,
   ...rest
-}: TextAreaInputProps<FieldValues, FieldName>) => {
+}: TextAreaInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}

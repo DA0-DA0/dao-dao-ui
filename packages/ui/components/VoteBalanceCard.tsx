@@ -1,21 +1,21 @@
-import { FC } from 'react'
-
-import { BalanceIcon, CopyToClipboard } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-interface VoteBalanceCardProps {
+import { BalanceIcon } from './ContractView'
+import { CopyToClipboard } from './CopyToClipboard'
+
+export interface VoteBalanceCardProps {
   weight: number
   title: string
   weightTotal: number
   addrTitle?: boolean
 }
 
-export const VoteBalanceCard: FC<VoteBalanceCardProps> = ({
+export const VoteBalanceCard = ({
   weight,
   title,
   weightTotal,
   addrTitle,
-}) => (
+}: VoteBalanceCardProps) => (
   <div className="py-4 px-6 w-full rounded-lg border border-default">
     {addrTitle ? (
       <CopyToClipboard value={title} />

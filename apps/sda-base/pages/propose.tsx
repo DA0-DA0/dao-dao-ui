@@ -6,16 +6,15 @@ import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton, useDaoInfoContext } from '@dao-dao/common'
+import {
+  ConnectWalletButton,
+  SuspenseLoader,
+  useDaoInfoContext,
+} from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { refreshProposalsIdAtom, useVotingModule } from '@dao-dao/state'
-import {
-  CopyToClipboard,
-  InputThemedText,
-  SuspenseLoader,
-  Tooltip,
-} from '@dao-dao/ui'
+import { CopyToClipboard, InputThemedText, Tooltip } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader, Logo, PageWrapper, PageWrapperProps } from '@/components'
