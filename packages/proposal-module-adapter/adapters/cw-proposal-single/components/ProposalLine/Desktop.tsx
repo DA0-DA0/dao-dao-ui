@@ -34,6 +34,7 @@ export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
       className={clsx(
         'grid grid-cols-6 items-center p-4 text-sm rounded-lg transition bg-primary hover:bg-secondary',
         {
+          'bg-purple-300/30': new Date(proposal.last_updated).getTime() >= new Date().getTime() - 24 * 60 * 60 * 1000,
           'bg-card': proposal.status === Status.Open,
           'bg-disabled': proposal.status !== Status.Open,
         },
@@ -51,6 +52,7 @@ export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
       </div>
       <p className="col-span-3 truncate link-text">{proposal.title}</p>
       <p className="text-right truncate body-text">{expirationString}</p>
+      <p className="text-right truncate body-text">{proposal.last_updated}</p>
     </div>
   )
 }

@@ -250,6 +250,8 @@ export interface Proposal {
   title: string
   total_power: Uint128
   votes: Votes
+  created: Timestamp
+  last_updated: Timestamp
   [k: string]: unknown
 }
 export interface Coin {
