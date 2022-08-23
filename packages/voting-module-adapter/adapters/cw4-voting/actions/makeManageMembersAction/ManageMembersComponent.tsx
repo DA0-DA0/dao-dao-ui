@@ -14,8 +14,8 @@ import {
 } from '@dao-dao/ui'
 import {
   validateAddress,
-  validateRequired,
   validateNonNegative,
+  validateRequired,
 } from '@dao-dao/utils'
 
 export interface ManageMembersData {
