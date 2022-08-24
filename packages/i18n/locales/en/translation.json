@@ -194,6 +194,7 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
+    "token": "{{val, number}} ${{tokenSymbol}}",
     "usdc": "{{val, number}} $USDC"
   },
   "info": {
@@ -321,6 +322,20 @@
   "meta": {
     "description": "DAOs for everyone.",
     "title": "DAO DAO"
+  },
+  "profile": {
+    "est": "Est. ",
+    "member": {
+      "memberOf": "Member of {{daoName}}"
+    },
+    "notMember": {
+      "getTokens": "Get tokens on Junoswap",
+      "membership": "Membership",
+      "notAMember": "Not a Member",
+      "stakeToken": "Stake ${{tokenSymbol}}",
+      "stakeYourTokens": "Stake your ${{tokenSymbol}} tokens to become a member of {{daoName}}",
+      "yourHoldings": "Your Holdings"
+    }
   },
   "proposalModuleLabel": {
     "cw-govmod-single": "Single Choice"
