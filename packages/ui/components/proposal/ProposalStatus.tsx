@@ -3,14 +3,14 @@ import { ComponentType, SVGProps } from 'react'
 
 import { Approved, Open, Rejected } from '@dao-dao/icons'
 
-export enum EProposalStatus {
+export enum ProposalStatusEnum {
   Open = 'open',
   Rejected = 'rejected',
   Approved = 'approved',
 }
 
 export interface ProposalStatusProps {
-  status: `${EProposalStatus}`
+  status: `${ProposalStatusEnum}`
 }
 
 export const ProposalStatus = ({ status }: ProposalStatusProps) => {
@@ -27,24 +27,24 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
 }
 
 const ProposalStatusMap: Record<
-  `${EProposalStatus}`,
+  `${ProposalStatusEnum}`,
   {
     Icon: ComponentType<SVGProps<SVGSVGElement>>
     iconClassName: string
     textClassName: string
   }
 > = {
-  [EProposalStatus.Open]: {
+  [ProposalStatusEnum.Open]: {
     Icon: Open,
     iconClassName: 'text-icon-primary',
     textClassName: 'body-text',
   },
-  [EProposalStatus.Rejected]: {
+  [ProposalStatusEnum.Rejected]: {
     Icon: Rejected,
     iconClassName: 'text-icon-interactive-error',
     textClassName: 'text-text-interactive-error',
   },
-  [EProposalStatus.Approved]: {
+  [ProposalStatusEnum.Approved]: {
     Icon: Approved,
     iconClassName: 'text-icon-interactive-valid',
     textClassName: 'text-text-interactive-valid',

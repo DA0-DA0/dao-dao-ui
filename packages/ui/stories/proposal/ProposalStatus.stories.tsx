@@ -1,6 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalStatus } from 'components/proposal/ProposalStatus'
+import {
+  ProposalStatus,
+  ProposalStatusEnum,
+} from 'components/proposal/ProposalStatus'
 
 export default {
   title: 'DAO DAO UI V2 / proposal / ProposalStatus',
@@ -9,9 +12,9 @@ export default {
 
 const Template: ComponentStory<typeof ProposalStatus> = () => (
   <div className="flex flex-row gap-12 items-center">
-    <ProposalStatus status="open" />
-    <ProposalStatus status="rejected" />
-    <ProposalStatus status="approved" />
+    <ProposalStatus status={ProposalStatusEnum.Open} />
+    <ProposalStatus status={ProposalStatusEnum.Rejected} />
+    <ProposalStatus status={ProposalStatusEnum.Approved} />
   </div>
 )
 
