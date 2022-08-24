@@ -46,6 +46,7 @@ export const stakeActions: { type: StakeType; name: string }[] = [
 
 interface StakeOptions {
   nativeBalances: readonly Coin[]
+  nativeDelegatedBalance: Coin
 }
 
 export const StakeComponent: ActionComponent<StakeOptions> = ({
@@ -53,7 +54,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances },
+  options: { nativeBalances, nativeDelegatedBalance },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
@@ -64,6 +65,27 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
   const validatePossibleSpend = useCallback(
     (denom: string, amount: string): string | boolean => {
+      // Logic for undelegating
+      if (stakeType === StakeType.Undelegate) {
+        const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
+          nativeDelegatedBalance.amount,
+          NATIVE_DECIMALS
+        ).toLocaleString()
+        const microAmount = convertDenomToMicroDenomWithDecimals(
+          amount,
+          NATIVE_DECIMALS
+        )
+        return (
+          Number(microAmount) <= Number(nativeDelegatedBalance.amount) ||
+          `${
+            Number(nativeDelegatedBalance.amount) === 0
+              ? 'No native token delegations for'
+              : `Max amount that can be undelegated is ${humanReadableAmount}`
+          } ${nativeTokenLabel(denom)}.`
+        )
+      }
+
+      // All other staking amounts can use this logic
       const native = nativeBalances.find((coin) => coin.denom === denom)
       if (native) {
         const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
@@ -95,7 +117,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       return 'Unrecognized denom.'
     },
-    [nativeBalances]
+    [nativeBalances, nativeDelegatedBalance, stakeType]
   )
 
   // Update amount+denom combo error each time either field is updated

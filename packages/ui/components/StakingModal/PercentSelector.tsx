@@ -41,10 +41,6 @@ export const PercentButton = ({
   absoluteOffset,
 }: PercentButtonProps) => (
   <Button
-    pressed={
-      (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
-      amount.toFixed(tokenDecimals)
-    }
     className={clsx('flex flex-row justify-center w-full', className)}
     onClick={() =>
       setAmount(
@@ -58,6 +54,10 @@ export const PercentButton = ({
           max
         )
       )
+    }
+    pressed={
+      (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
+      amount.toFixed(tokenDecimals)
     }
     variant="secondary"
   >

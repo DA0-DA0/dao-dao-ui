@@ -2,7 +2,10 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { nativeBalancesSelector } from '@dao-dao/state'
+import {
+  nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
+} from '@dao-dao/state'
 import {
   NATIVE_DENOM,
   StakeType,
@@ -127,12 +130,16 @@ const InnerStakeComponent: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
     nativeBalancesSelector(props.coreAddress)
   )
+  const nativeDelegatedBalance = useRecoilValue(
+    nativeDelegatedBalanceSelector(props.coreAddress)
+  )
 
   return (
     <StatelessStakeComponent
       {...props}
       options={{
         nativeBalances,
+        nativeDelegatedBalance,
       }}
     />
   )

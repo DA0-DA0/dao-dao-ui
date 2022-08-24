@@ -7,12 +7,16 @@ export default {
   component: ProposalYourVote,
 } as ComponentMeta<typeof ProposalYourVote>
 
-const Template: ComponentStory<typeof ProposalYourVote> = (args) => (
-  <ProposalYourVote {...args} />
+const Template: ComponentStory<typeof ProposalYourVote> = () => (
+  <div className="flex flex-row gap-2">
+    <ProposalYourVote variant="abstain" />
+    <ProposalYourVote variant="pending" />
+    <ProposalYourVote variant="no" />
+    <ProposalYourVote variant="yes" />
+  </div>
 )
 
 export const Default = Template.bind({})
-Default.args = {}
 
 Default.parameters = {
   design: {

@@ -116,7 +116,9 @@ export const DaoCard = ({
           </p>
           <div className="flex flex-row gap-3 items-center mb-2 font-mono caption-text">
             <Governance className="w-3 h-3" />
-            <p>{t('format.juno', { val: junoBalance })}</p>
+            <p>
+              {t('format.token', { val: junoBalance, tokenSymbol: 'JUNO' })}
+            </p>
           </div>
           <div className="flex flex-row gap-3 items-center font-mono caption-text">
             <DaoCardProposals className="w-3 h-3" />
