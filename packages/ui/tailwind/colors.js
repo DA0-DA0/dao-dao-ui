@@ -87,6 +87,7 @@ const colors = {
     'background-interactive-disabled',
     'background-interactive-active',
     'background-interactive-error',
+    'background-interactive-valid',
     'background-button-hover',
     'background-button-pressed',
     'background-button-progress',

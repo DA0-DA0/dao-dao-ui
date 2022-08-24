@@ -15,7 +15,7 @@ export const ProposalYourVote = ({ variant }: YourVoteProps) => {
           ? 'border-2 border-border-primary'
           : variant === 'no'
           ? 'text-text-interactive-error bg-background-interactive-error'
-          : 'text-text-valid bg-color-valid/[0.08]'
+          : 'text-text-interactive-valid bg-background-interactive-valid'
       )}
     >
       {variant[0].toUpperCase() + variant.slice(1)}
