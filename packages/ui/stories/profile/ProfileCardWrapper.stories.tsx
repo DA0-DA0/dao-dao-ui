@@ -37,7 +37,7 @@ Compact.args = {
   established: new Date(),
   isMember: true,
   daoName: 'DAO',
-  variant: 'compact',
+  compact: true,
   children: <p>Content!</p>,
 }
 Compact.parameters = {

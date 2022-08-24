@@ -6,11 +6,6 @@ import { CornerGradient } from '../CornerGradient'
 import { MembershipPill } from './MembershipPill'
 import { ProfileImage } from './ProfileImage'
 
-export enum ProfileCardWrapperVariant {
-  Default = 'default',
-  Compact = 'compact',
-}
-
 export interface ProfileCardWrapperProps {
   children: ReactNode | ReactNode[]
   imgUrl: string
@@ -18,7 +13,7 @@ export interface ProfileCardWrapperProps {
   established: Date
   isMember: boolean
   daoName: string
-  variant?: `${ProfileCardWrapperVariant}`
+  compact?: boolean
   childContainerClassName?: string
 }
 
@@ -36,7 +31,7 @@ export const ProfileCardWrapper = ({
   established,
   isMember,
   daoName,
-  variant = ProfileCardWrapperVariant.Default,
+  compact,
   childContainerClassName,
 }: ProfileCardWrapperProps) => {
   const { t } = useTranslation()
@@ -65,17 +60,7 @@ export const ProfileCardWrapper = ({
   return (
     <div className="relative rounded-lg border border-border-primary">
       <div className="p-6">
-        {variant === ProfileCardWrapperVariant.Default ? (
-          <div className="flex flex-col justify-center items-center pt-4">
-            <ProfileImage imgUrl={imgUrl} size="lg" />
-            <div className="mt-6 text-text-body title-text">{walletName}</div>
-            <div className="mt-2 mb-5 font-mono caption-text">
-              {t('profile.est')}
-              {dateFormatter.format(established)}
-            </div>
-            <MembershipPill daoName={daoName} isMember={isMember} />
-          </div>
-        ) : (
+        {compact ? (
           <div className="flex flex-row gap-3 items-stretch">
             <ProfileImage imgUrl={imgUrl} size="sm" />
 
@@ -86,6 +71,16 @@ export const ProfileCardWrapper = ({
 
             {/* Absolutely positioned, against relative outer-most div (without padding). */}
             {!!averageImgColor && <CornerGradient color={averageImgColor} />}
+          </div>
+        ) : (
+          <div className="flex flex-col justify-center items-center pt-4">
+            <ProfileImage imgUrl={imgUrl} size="lg" />
+            <div className="mt-6 text-text-body title-text">{walletName}</div>
+            <div className="mt-2 mb-5 font-mono caption-text">
+              {t('profile.est')}
+              {dateFormatter.format(established)}
+            </div>
+            <MembershipPill daoName={daoName} isMember={isMember} />
           </div>
         )}
       </div>
