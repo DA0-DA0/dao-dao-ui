@@ -1,7 +1,13 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 const { animation } = require('./animation')
-const { backgroundColor, borderColor, colors, textColor } = require('./colors')
+const {
+  backgroundColor,
+  borderColor,
+  ringColor,
+  colors,
+  textColor,
+} = require('./colors')
 const { keyframes } = require('./keyframes')
 
 /** @type {import("tailwindcss/tailwind-config").TailwindConfig} */
@@ -28,7 +34,7 @@ const tailwindConfig = {
         'gradient-test': `linear-gradient(270deg, #06090B 0%, rgba(6, 9, 11, 0) 49.62%, rgba(6, 9, 11, 0) 51.87%, #06090B 100%)`,
       },
       boxShadow: {
-        slider: '0 0 0 5px rgba(0, 0, 0, 0.3)',
+        dp4: '0px 2px 4px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.12), 0px 1px 12px rgba(6, 9, 11, 0.08)',
       },
       fontFamily: {
         mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
@@ -38,6 +44,7 @@ const tailwindConfig = {
       animation,
       backgroundColor,
       borderColor,
+      ringColor,
       colors,
       keyframes,
       textColor,
