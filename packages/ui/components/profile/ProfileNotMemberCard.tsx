@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { ArrowUpRight } from '@dao-dao/icons'
+import { ArrowOutward } from '@dao-dao/icons'
 
 import { Button } from '../Button'
 import { ProfileCardTemplate } from './ProfileCardTemplate'
@@ -57,7 +57,7 @@ export const ProfileNotMemberCard = ({
           variant="secondary"
         >
           {t('profile.notMember.getTokens')}
-          <ArrowUpRight height="0.625rem" width="0.625rem" />
+          <ArrowOutward height="0.625rem" width="0.625rem" />
         </Button>
       </div>
     </ProfileCardTemplate>
