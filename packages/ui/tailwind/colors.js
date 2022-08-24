@@ -136,7 +136,7 @@ const backgroundColor = {
   secondary: generateColorClass('dark', 0.2),
   tertiary: generateColorClass('dark', 0.3),
   toast: generateColorClass('dark', 0.85),
-  card: generateColorClass('dark', 0.08),
+  card: generateColorClass('dark', 0.05),
   'accent-transparent': generateColorClass('accent', 0.08),
   'very-light': generateColorClass('very-light', 1),
   tab: generateColorClass('light', 0.7),

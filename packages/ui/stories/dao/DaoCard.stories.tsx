@@ -10,7 +10,25 @@ export default {
 const Template: ComponentStory<typeof DaoCard> = (args) => <DaoCard {...args} />
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  name: 'Modern DAO',
+  description:
+    'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
+  imageUrl: '/placeholders/1.svg',
+  href: '/',
+  established: new Date('May 14, 2022 00:00:00'),
+
+  pinned: false,
+  onPin: () => {},
+
+  subDaoInfo: {
+    parentDaoImageUrl: '/placeholders/2.svg',
+    parentDaoHref: '/home',
+  },
+
+  junoBalance: 120,
+  proposalCount: 25,
+}
 
 Default.parameters = {
   design: {
