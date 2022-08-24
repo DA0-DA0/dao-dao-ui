@@ -42,7 +42,7 @@ function ButtonComponent(
   return (
     <button
       className={clsx(
-        'relative rounded-md focus:outline-2 transition stroke-current text-text-button-primary focus:outline-background-button-disabled',
+        'relative text-text-button-primary rounded-md focus:outline-2 focus:outline-background-button-disabled transition stroke-current',
         {
           // Primary variant.
           'bg-background-button': variant === 'primary',
@@ -61,7 +61,7 @@ function ButtonComponent(
             variant === 'secondary' && pressed,
 
           // Ghost variant.
-          'bg-transparent text-icon-primary': variant === 'ghost',
+          'text-icon-primary bg-transparent': variant === 'ghost',
           'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
             !disabled && variant === 'ghost',
           'bg-transparent': disabled && variant === 'ghost',
