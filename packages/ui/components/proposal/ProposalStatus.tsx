@@ -20,6 +20,7 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
     <div className="flex flex-row gap-2 items-center link-text">
       <Icon className={clsx('w-[19px] h-[19px]', iconClassName)} />
       <p className={textClassName}>
+        {/* TODO: Use util function for titlecase. */}
         {status[0].toUpperCase() + status.slice(1)}
       </p>
     </div>
