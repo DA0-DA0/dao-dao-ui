@@ -11,7 +11,7 @@ export const MembershipPill = ({ isMember, daoName }: MembershipPillProps) => {
 
   return (
     <div
-      className={`flex flex-row gap-2 items-center py-1 px-[10px] rounded-full border-2 border-default link-text ${
+      className={`flex flex-row gap-2 items-center py-1 px-[10px] rounded-full border-2 border-border-primary link-text ${
         isMember ? '' : 'text-text-interactive-disabled'
       }`}
     >

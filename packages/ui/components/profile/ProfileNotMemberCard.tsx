@@ -32,15 +32,13 @@ export const ProfileNotMemberCard = ({
       walletName={walletName}
     >
       <div className="flex flex-col items-stretch p-6 mt-7 border-t border-t-border-primary">
-        <div className="link-text text-text-body">
-          {t('profile.notMember.membership')}
-        </div>
+        <div className="link-text">{t('profile.notMember.membership')}</div>
         <p className="pt-1 pb-3 secondary-text">
           {t('profile.notMember.stakeYourTokens', { tokenSymbol, daoName })}
         </p>
         <div className="flex flex-row justify-between pb-7 secondary-text">
           <div>{t('profile.notMember.yourHoldings')}</div>
-          <div className="font-mono">
+          <div className="font-mono text-text-interactive-disabled">
             {t('format.token', { val: tokenBalance, tokenSymbol })}
           </div>
         </div>
@@ -59,7 +57,7 @@ export const ProfileNotMemberCard = ({
           variant="secondary"
         >
           {t('profile.notMember.getTokens')}
-          <ArrowUpRight />
+          <ArrowUpRight height="0.625rem" width="0.625rem" />
         </Button>
       </div>
     </ProfileCardTemplate>

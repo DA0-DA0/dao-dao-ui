@@ -5,7 +5,7 @@ export interface ProfileImageProps {
 export const ProfileImage = ({ imgUrl }: ProfileImageProps) => {
   return (
     <div
-      className="w-[64px] h-[64px] bg-center bg-cover rounded-2xl"
+      className="w-16 h-16 bg-center bg-cover rounded-2xl"
       style={{ backgroundImage: `url(${imgUrl})` }}
     ></div>
   )
