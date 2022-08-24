@@ -19,7 +19,7 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
 
   return (
     <div
-      className="group grid grid-flow-col auto-cols-fr bg-background-tertiary"
+      className="group grid grid-flow-col auto-cols-fr bg-background-tertiary rounded-md"
       onMouseLeave={() => setHovering(undefined)}
     >
       {tabs.map(({ name, onClick, selected, loading }, index) => (
