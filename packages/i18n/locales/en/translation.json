@@ -37,6 +37,8 @@
     "manage": "Manage",
     "manageStake": "Manage your ${{tokenSymbol}} stake",
     "newProposal": "New proposal",
+    "no": "No",
+    "noWithVeto": "No with veto",
     "numProposalsInInbox_one": "{{count}} Proposal in Inbox",
     "numProposalsInInbox_other": "{{count}} Proposals in Inbox",
     "numProposalsInInbox_zero": "Proposal Inbox",
