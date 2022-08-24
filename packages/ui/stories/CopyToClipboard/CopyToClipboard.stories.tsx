@@ -15,5 +15,3 @@ export const Default = Template.bind({})
 Default.args = {
   value: 'Click me to copy me.',
 }
-
-// TODO: Fix story.

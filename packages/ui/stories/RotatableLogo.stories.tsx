@@ -15,5 +15,3 @@ export const Default = Template.bind({})
 Default.args = {
   initialRotation: 45,
 }
-
-// TODO: Fix story.

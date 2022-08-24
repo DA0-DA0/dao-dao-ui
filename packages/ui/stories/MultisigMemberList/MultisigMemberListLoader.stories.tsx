@@ -13,5 +13,3 @@ const Template: ComponentStory<typeof MultisigMemberListLoader> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {}
-
-// TODO: Fix story.

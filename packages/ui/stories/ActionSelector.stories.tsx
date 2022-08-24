@@ -17,5 +17,3 @@ const Template: ComponentStory<typeof ActionSelector> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {}
-
-// TODO: Fix story.

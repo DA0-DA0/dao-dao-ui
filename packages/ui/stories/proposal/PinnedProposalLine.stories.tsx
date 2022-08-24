@@ -16,12 +16,12 @@ Default.args = {
   coreAddress: 'junoabcdefxyz',
   proposalModules: [
     {
-      contractName: 'crates.io:cw-proposal-single',
+      contractName: 'crates.io:cw-govmod-single',
       address: 'junoghijkluvw',
       prefix: 'A',
     },
     {
-      contractName: 'crates.io:cw-proposal-multiple',
+      contractName: 'crates.io:cw-govmod-single',
       address: 'junomnopqrstu',
       prefix: 'B',
     },
@@ -29,5 +29,3 @@ Default.args = {
   proposalId: 'B3',
   proposalViewUrl: '#',
 }
-
-// TODO: Fix story.

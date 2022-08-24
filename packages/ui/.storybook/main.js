@@ -1,10 +1,5 @@
 const tsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-
-// Many of the stories at the moment do not work because they depend on packages
-// that are causing webpack issues (it even has trouble when we import from
-// @dao-dao/utils right now). New components we write will work as long as we
-// make them totally stateless. Storybook is useful for making new components,
-// so let's use it for now and set a goal to fix the broken ones.
+const path = require('path')
 
 module.exports = {
   core: {
@@ -18,17 +13,18 @@ module.exports = {
     'storybook-addon-designs',
     'storybook-dark-mode',
     {
-      name: '@storybook/addon-postcss',
+      name: 'storybook-addon-next',
       options: {
-        postcssLoaderOptions: {
-          implementation: require('postcss'),
-        },
-      },
+        nextConfigPath: path.resolve(__dirname, 'next.config.js')
+      }
     },
   ],
   framework: '@storybook/react',
   webpackFinal: async (config) => {
     config.resolve.plugins = [new tsconfigPathsPlugin()]
+    // This fails to import Buffer, and adding webpack.ProvidePlugin doesn't fix
+    // the issue, so let's just ignore this package!
+    config.resolve.alias['tiny-secp256k1'] = false
     return config
   },
 }

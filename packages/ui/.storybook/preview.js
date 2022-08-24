@@ -1,7 +1,7 @@
 import '../styles/index.css'
 
 import i18n from './i18next'
-import { ThemeDecorator } from '../decorators'
+import { RecoilDecorator, ThemeDecorator } from '../decorators'
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -20,4 +20,4 @@ export const parameters = {
   // in `ThemeDecorator`.
 }
 
-export const decorators = [ThemeDecorator]
+export const decorators = [ThemeDecorator, RecoilDecorator]

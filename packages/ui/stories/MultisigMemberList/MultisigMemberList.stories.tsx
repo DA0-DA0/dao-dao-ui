@@ -29,5 +29,3 @@ Default.args = {
   ],
   totalWeight: 9,
 }
-
-// TODO: Fix story.

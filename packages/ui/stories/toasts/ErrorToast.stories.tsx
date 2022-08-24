@@ -26,5 +26,3 @@ Default.args = {
     visible: true,
   },
 }
-
-// TODO: Fix story.

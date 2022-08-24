@@ -16,5 +16,3 @@ export const Default = Template.bind({})
 Default.args = {
   Logo,
 }
-
-// TODO: Fix story.

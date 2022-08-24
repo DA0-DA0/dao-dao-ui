@@ -21,5 +21,3 @@ const Template: ComponentStory<typeof Notifications> = (_args) => {
 
 export const Default = Template.bind({})
 Default.args = {}
-
-// TODO: Fix story.

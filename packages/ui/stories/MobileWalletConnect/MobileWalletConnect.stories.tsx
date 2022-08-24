@@ -16,5 +16,3 @@ Default.args = {
   connected: false,
   walletBalanceDenom: 'DENOM',
 }
-
-// TODO: Fix story.

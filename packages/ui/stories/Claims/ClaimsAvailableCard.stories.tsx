@@ -22,5 +22,3 @@ Default.args = {
   },
   loading: false,
 }
-
-// TODO: Fix story.

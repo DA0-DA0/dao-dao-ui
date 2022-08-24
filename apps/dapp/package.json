@@ -32,8 +32,6 @@
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
-    "@keplr-wallet/stores": "^0.10.3",
-    "@keplr-wallet/types": "^0.9.10",
     "@meilisearch/instant-meilisearch": "0.7.0",
     "@noahsaso/cosmodal": "0.6.1",
     "@reach/tooltip": "^0.16.2",

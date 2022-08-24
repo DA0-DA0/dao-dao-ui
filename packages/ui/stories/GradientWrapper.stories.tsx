@@ -15,5 +15,3 @@ export const Default = Template.bind({})
 Default.args = {
   children: 'Some content',
 }
-
-// TODO: Fix story.

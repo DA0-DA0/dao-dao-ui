@@ -26,5 +26,3 @@ Default.args = {
   unstakableTokens: 65432,
   unstakingDuration: null,
 }
-
-// TODO: Fix story.

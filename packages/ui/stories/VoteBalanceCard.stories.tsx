@@ -17,5 +17,3 @@ Default.args = {
   title: 'junoabcdef...xyz',
   weightTotal: 4321,
 }
-
-// TODO: Fix story.

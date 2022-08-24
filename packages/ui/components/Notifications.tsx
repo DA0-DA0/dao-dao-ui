@@ -1,6 +1,6 @@
 import { Toaster } from 'react-hot-toast'
 
-import { ErrorToast, LoadingToast, SuccessToast } from '@dao-dao/ui'
+import { ErrorToast, LoadingToast, SuccessToast } from './toasts'
 
 export const Notifications = () => (
   <Toaster
