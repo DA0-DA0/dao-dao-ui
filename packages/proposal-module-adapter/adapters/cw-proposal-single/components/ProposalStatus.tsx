@@ -4,7 +4,7 @@ import { SVGProps } from 'react'
 
 import { Executed, Open, Passed, Rejected } from '@dao-dao/icons'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { titlecase } from '@dao-dao/utils'
+import { convertToTitlecase } from '@dao-dao/utils'
 
 export interface ProposalStatusProps {
   status: Status
@@ -16,7 +16,7 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
   return (
     <div className="flex flex-row gap-1 items-center">
       {Icon && <Icon style={{ display: 'inline' }} />}
-      <span className="capitalize align-middle">{titlecase(status)}</span>
+      <span className="capitalize align-middle">{convertToTitlecase(status)}</span>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { convertToTitlecase } from '@dao-dao/utils'
 import clsx from 'clsx'
 
 export interface ProposalYourVoteProps {
@@ -17,8 +18,7 @@ export const ProposalYourVote = ({ variant }: ProposalYourVoteProps) => (
         : 'text-text-interactive-valid bg-background-interactive-valid'
     )}
   >
-    {/* TODO: Use util function for titlecase. */}
-    {variant[0].toUpperCase() + variant.slice(1)}
+    {convertToTitlecase(variant)}
     {variant === 'pending' && (
       <div className="absolute top-0 right-0 w-2 h-2 bg-[#F53E86] rounded-full"></div>
     )}

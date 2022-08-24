@@ -1,13 +1,13 @@
 import clsx from 'clsx'
 
 import { ArrowUpward } from '@dao-dao/icons'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 export interface PricePercentChangeProps {
   value: number
   className?: string
 }
 
-// TODO: Use formatPercentOf100 util.
 export const PricePercentChange = ({
   value,
   className,
@@ -30,7 +30,7 @@ export const PricePercentChange = ({
           'rotate-180': negative,
         })}
       />
-      <p>{Math.abs(value)}%</p>
+      <p>{formatPercentOf100(Math.abs(value))}</p>
     </div>
   )
 }

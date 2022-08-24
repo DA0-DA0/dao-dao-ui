@@ -8,3 +8,13 @@
 // 23.4952 --> 23.5%
 export const formatPercentOf100 = (percentOf100: number) =>
   percentOf100.toLocaleString(undefined, { maximumSignificantDigits: 4 }) + '%'
+
+export const dateFormatter = new Intl.DateTimeFormat('default', {
+  month: 'long',
+  day: undefined,
+  year: 'numeric',
+})
+
+export const formatDate = (date: Date) => dateFormatter.format(date)
+
+

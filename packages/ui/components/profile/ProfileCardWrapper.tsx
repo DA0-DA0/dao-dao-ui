@@ -1,3 +1,4 @@
+import { formatDate } from '@dao-dao/utils'
 import clsx from 'clsx'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,13 +24,6 @@ export type ProfileCardWrapperProps = {
       compact: true
     }
 )
-
-// TODO: Move to util function.
-const dateFormatter = new Intl.DateTimeFormat('default', {
-  month: 'long',
-  day: undefined,
-  year: 'numeric',
-})
 
 export const ProfileCardWrapper = ({
   children,
@@ -91,7 +85,7 @@ export const ProfileCardWrapper = ({
             <div className="mt-6 text-text-body title-text">{walletName}</div>
             <div className="mt-2 mb-5 font-mono caption-text">
               {t('profile.est')}
-              {dateFormatter.format(established)}
+              {formatDate(established)}
             </div>
             <MembershipPill daoName={daoName} isMember={isMember} />
           </div>

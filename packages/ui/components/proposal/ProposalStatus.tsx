@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { ComponentType, SVGProps } from 'react'
 
 import { Approved, Open, Rejected } from '@dao-dao/icons'
+import { convertToTitlecase } from '@dao-dao/utils'
 
 export enum ProposalStatusEnum {
   Open = 'open',
@@ -20,8 +21,7 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
     <div className="flex flex-row gap-2 items-center link-text">
       <Icon className={clsx('w-[19px] h-[19px]', iconClassName)} />
       <p className={textClassName}>
-        {/* TODO: Use util function for titlecase. */}
-        {status[0].toUpperCase() + status.slice(1)}
+        {convertToTitlecase(status)}
       </p>
     </div>
   )
