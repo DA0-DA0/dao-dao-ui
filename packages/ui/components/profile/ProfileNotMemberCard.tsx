@@ -13,6 +13,7 @@ export interface ProfileNotMemberCardProps {
   profileImgUrl: string
   established: Date
 }
+
 export const ProfileNotMemberCard = ({
   tokenSymbol,
   tokenBalance,
