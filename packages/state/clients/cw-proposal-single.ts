@@ -424,7 +424,7 @@ export class CwProposalSingleQueryClient
     voter: string
   }): Promise<VoteResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      vote: {
+      get_vote: {
         proposal_id: proposalId,
         voter,
       },

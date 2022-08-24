@@ -28,12 +28,14 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
   )
 
   const expirationString = useProposalExpirationString()
+  const msSinceUpdated = new Date().getTime() - (new Date(Number(proposal.last_updated) / 1000000).getTime());
 
   return (
     <div
       className={clsx(
         'flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-lg bg-primary hover:bg-secondary',
         {
+          'bg-purple-300/30': msSinceUpdated < 24 * 60 * 60 * 1000,
           'bg-card': proposal.status === Status.Open,
           'bg-disabled': proposal.status !== Status.Open,
         },
