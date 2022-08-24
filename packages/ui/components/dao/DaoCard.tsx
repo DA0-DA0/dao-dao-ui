@@ -46,8 +46,8 @@ export const DaoCard = ({
   const { t } = useTranslation()
 
   return (
-    <Link href={href} passHref>
-      <a className="flex relative flex-col justify-between items-center py-7 px-6 w-[260px] h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all">
+    <Link href={href}>
+      <a className="flex relative flex-col justify-between items-center py-7 px-6 w-full max-w-[260px] h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all">
         <div
           className={clsx(
             'flex absolute top-0 left-0 flex-row items-center p-3 w-full',
