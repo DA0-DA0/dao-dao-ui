@@ -1,18 +1,24 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalStatus } from 'components/proposal/ProposalStatus'
+import {
+  ProposalStatus,
+  ProposalStatusEnum,
+} from 'components/proposal/ProposalStatus'
 
 export default {
   title: 'DAO DAO UI V2 / proposal / ProposalStatus',
   component: ProposalStatus,
 } as ComponentMeta<typeof ProposalStatus>
 
-const Template: ComponentStory<typeof ProposalStatus> = (args) => (
-  <ProposalStatus {...args} />
+const Template: ComponentStory<typeof ProposalStatus> = () => (
+  <div className="flex flex-row gap-12 items-center">
+    <ProposalStatus status={ProposalStatusEnum.Open} />
+    <ProposalStatus status={ProposalStatusEnum.Rejected} />
+    <ProposalStatus status={ProposalStatusEnum.Approved} />
+  </div>
 )
 
 export const Default = Template.bind({})
-Default.args = {}
 
 Default.parameters = {
   design: {
