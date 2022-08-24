@@ -103,9 +103,7 @@ export const DaoCard = ({
             )}
           </div>
           <p className="mt-2 primary-text">{name}</p>
-          <p className="mt-1 caption-text">
-            {formatDate(established)}
-          </p>
+          <p className="mt-1 caption-text">{formatDate(established)}</p>
         </div>
         <div className="w-full">
           <p className="mb-5 w-full break-words line-clamp-3 secondary-text">

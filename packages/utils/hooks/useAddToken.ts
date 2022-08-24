@@ -13,7 +13,9 @@ export const useAddToken = () => {
       // Can only add tokens on mainnet.
       CHAIN_ID === 'juno-1'
         ? async (address: string) => {
-            const keplr = await (await import('@keplr-wallet/stores')).getKeplrFromWindow()
+            const keplr = await (
+              await import('@keplr-wallet/stores')
+            ).getKeplrFromWindow()
             if (keplr && (await suggestToken(keplr, address))) {
               toast.success(t('success.addedToken'))
             } else {

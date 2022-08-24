@@ -1,7 +1,8 @@
-import { formatDate } from '@dao-dao/utils'
 import clsx from 'clsx'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { formatDate } from '@dao-dao/utils'
 
 import { CornerGradient } from '../CornerGradient'
 import { MembershipPill } from './MembershipPill'

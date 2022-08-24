@@ -16,7 +16,9 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
   return (
     <div className="flex flex-row gap-1 items-center">
       {Icon && <Icon style={{ display: 'inline' }} />}
-      <span className="capitalize align-middle">{convertToTitlecase(status)}</span>
+      <span className="capitalize align-middle">
+        {convertToTitlecase(status)}
+      </span>
     </div>
   )
 }

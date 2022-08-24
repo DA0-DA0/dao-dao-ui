@@ -16,5 +16,3 @@ export const dateFormatter = new Intl.DateTimeFormat('default', {
 })
 
 export const formatDate = (date: Date) => dateFormatter.format(date)
-
-

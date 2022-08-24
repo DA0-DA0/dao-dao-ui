@@ -1,5 +1,6 @@
-import { convertToTitlecase } from '@dao-dao/utils'
 import clsx from 'clsx'
+
+import { convertToTitlecase } from '@dao-dao/utils'
 
 export interface ProposalYourVoteProps {
   variant: 'abstain' | 'pending' | 'no' | 'yes'

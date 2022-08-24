@@ -1,12 +1,9 @@
 // Inspired by https://storybook.js.org/addons/storybook-dark-mode README
 
-import {
-  DaoInfo,
-  DaoPageWrapper,
-} from '@dao-dao/common'
 import { DecoratorFn } from '@storybook/react'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
+import { DaoInfo, DaoPageWrapper } from '@dao-dao/common'
 import {
   CwProposalSingleAdapter,
   registerAdapters as registerProposalModuleAdapters,
@@ -26,9 +23,7 @@ registerVotingModuleAdapters([
 ])
 
 // Register proposal module adapters.
-registerProposalModuleAdapters([
-  CwProposalSingleAdapter,
-])
+registerProposalModuleAdapters([CwProposalSingleAdapter])
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
   const info: DaoInfo = useMemo(
@@ -51,7 +46,7 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
   )
 
   return (
-    <DaoPageWrapper title="DAO Name" description="DAO Description" info={info}>
+    <DaoPageWrapper description="DAO Description" info={info} title="DAO Name">
       <Story />
     </DaoPageWrapper>
   )
