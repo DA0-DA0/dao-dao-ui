@@ -23,10 +23,10 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
       onMouseLeave={() => setHovering(undefined)}
     >
       {tabs.map(({ name, onClick, selected, loading }, index) => (
-        <div key={name} className="flex flex-row items-center">
+        <div key={name} className="flex flex-row items-stretch">
           <div
             className={clsx(
-              'w-[1px] h-4 bg-border-primary opacity-100 transition-opacity',
+              'self-center w-[1px] h-4 bg-border-primary opacity-100 transition-opacity',
               {
                 // Do not show left border if...
                 '!opacity-0':
@@ -52,9 +52,9 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
                   'body-text'
                 : // Dim text when not selected and not hovering over this tab.
                   'text-text-secondary',
-              // Highlight background when selected and not hovering over any
-              // tab. Button contains its own hover background class.
-              selected && hovering === undefined && 'bg-background-primary'
+              // Highlight background when selected. Button contains its own
+              // hover background class.
+              selected && 'bg-background-primary'
             )}
             loading={loading}
             onClick={onClick}
