@@ -64,6 +64,7 @@ export const ButtonifiedChildren = ({
   loading = false,
   contentContainerClassName,
   Logo = DefaultLogo,
+  disabled,
   children,
 }: ButtonifierProps) => (
   <>
@@ -96,6 +97,7 @@ export const ButtonifiedChildren = ({
         'flex flex-row gap-2 items-center',
         {
           invisible: loading,
+          'text-text-interactive-disabled': disabled,
         },
         contentContainerClassName
       )}
