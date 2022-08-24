@@ -32,9 +32,9 @@ Default.parameters = {
 
 export const Compact = Template.bind({})
 Compact.args = {
-  imgUrl: '/dog_nft.png',
+  imgUrl:
+    'https://cloudflare-ipfs.com/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
   walletName: '@wallet_name',
-  established: new Date(),
   isMember: true,
   daoName: 'DAO',
   compact: true,

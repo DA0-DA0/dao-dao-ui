@@ -6,16 +6,23 @@ import { CornerGradient } from '../CornerGradient'
 import { MembershipPill } from './MembershipPill'
 import { ProfileImage } from './ProfileImage'
 
-export interface ProfileCardWrapperProps {
+export type ProfileCardWrapperProps = {
   children: ReactNode | ReactNode[]
   imgUrl: string
   walletName: string
-  established: Date
   isMember: boolean
   daoName: string
-  compact?: boolean
   childContainerClassName?: string
-}
+} & (
+  | {
+      established: Date
+      compact?: false
+    }
+  | {
+      established?: never
+      compact: true
+    }
+)
 
 // TODO: Move to util function.
 const dateFormatter = new Intl.DateTimeFormat('default', {
@@ -51,14 +58,23 @@ export const ProfileCardWrapper = ({
 
         setAverageImgColor(
           color +
-            // If in #RRGGBB format, add 10% opacity.
-            (color.length === 7 ? '0a' : '')
+            // If in #RRGGBB format, add ~20% opacity.
+            (color.length === 7 ? '33' : '')
         )
       })
   }, [imgUrl])
 
   return (
     <div className="relative rounded-lg border border-border-primary">
+      {/* Absolutely positioned, against relative outer-most div (without padding). */}
+      {compact && !!averageImgColor && (
+        <CornerGradient
+          className="-scale-y-100"
+          color={averageImgColor}
+          gradientShape="86.22% 102.08% at 0% 114.93%"
+        />
+      )}
+
       <div className="p-6">
         {compact ? (
           <div className="flex flex-row gap-3 items-stretch">
@@ -68,9 +84,6 @@ export const ProfileCardWrapper = ({
               <div className="text-text-body title-text">{walletName}</div>
               <MembershipPill daoName={daoName} ghost isMember={isMember} />
             </div>
-
-            {/* Absolutely positioned, against relative outer-most div (without padding). */}
-            {!!averageImgColor && <CornerGradient color={averageImgColor} />}
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center pt-4">

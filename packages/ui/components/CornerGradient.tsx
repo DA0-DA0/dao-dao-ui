@@ -1,8 +1,12 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import clsx from 'clsx'
+
 export interface CornerGradientProps {
   color: string
+  gradientShape?: string
+  className?: string
 }
 
 /*
@@ -11,11 +15,18 @@ export interface CornerGradientProps {
  *
  * This component expects that its parent has position relative.
  */
-export const CornerGradient = ({ color }: CornerGradientProps) => (
+export const CornerGradient = ({
+  color,
+  gradientShape = '22.07% 77.03% at 3.52% 7.35%',
+  className,
+}: CornerGradientProps) => (
   <div
-    className="absolute top-0 left-0 -z-10 w-full h-full rounded-lg"
+    className={clsx(
+      'absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none',
+      className
+    )}
     style={{
-      backgroundImage: `radial-gradient(22.07% 77.03% at 3.52% 7.35%, ${color} 0%, transparent 100%)`,
+      backgroundImage: `radial-gradient(${gradientShape}, ${color} 0%, #00000000 100%)`,
     }}
   ></div>
 )
