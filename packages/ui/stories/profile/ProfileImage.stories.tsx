@@ -12,7 +12,9 @@ const Template: ComponentStory<typeof ProfileImage> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  size: 'lg',
+}
 
 Default.parameters = {
   design: {

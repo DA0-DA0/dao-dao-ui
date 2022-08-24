@@ -5,9 +5,7 @@ import clsx from 'clsx'
 import { ComponentProps, ReactNode } from 'react'
 import { FieldError } from 'react-hook-form'
 
-import { InputErrorMessage } from '@dao-dao/ui'
-
-import { CornerGradient } from './CornerGradient'
+import { CornerGradient, InputErrorMessage } from '@dao-dao/ui'
 
 interface CreateDAOConfigCardProps extends ComponentProps<'div'> {
   image: ReactNode

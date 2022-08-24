@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   Button,
+  CornerGradient,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -30,7 +31,6 @@ import {
 
 import { NEW_DAO_CW20_DECIMALS, NewDAO, NewDAOStructure } from '@/atoms'
 
-import { CornerGradient } from './CornerGradient'
 import { distributionColors } from './Distributions'
 
 interface CreateDAOTierProps {
