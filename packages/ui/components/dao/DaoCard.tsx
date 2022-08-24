@@ -9,6 +9,7 @@ import {
   Governance,
   SubDaoArrow,
 } from '@dao-dao/icons'
+import { formatDate } from '@dao-dao/utils'
 
 export interface SubDaoInfo {
   parentDaoHref: string
@@ -103,11 +104,7 @@ export const DaoCard = ({
           </div>
           <p className="mt-2 primary-text">{name}</p>
           <p className="mt-1 caption-text">
-            {new Intl.DateTimeFormat('default', {
-              month: 'long',
-              day: undefined,
-              year: 'numeric',
-            }).format(established)}
+            {formatDate(established)}
           </p>
         </div>
         <div className="w-full">
