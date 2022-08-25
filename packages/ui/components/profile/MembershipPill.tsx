@@ -1,6 +1,7 @@
+import { CheckIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon } from '@heroicons/react/outline'
+
 import { X } from '@dao-dao/icons'
 
 export interface MembershipPillProps {
