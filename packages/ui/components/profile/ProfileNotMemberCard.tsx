@@ -1,26 +1,26 @@
 import { useTranslation } from 'react-i18next'
 
-import { ArrowOutward } from '@dao-dao/icons'
-
-import { Button } from '../Button'
+import { Cw20StakedBalanceVotingProfileMembership } from './Cw20StakedBalanceVotingProfileMembership'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileNotMemberCardProps {
   tokenSymbol: string
-  tokenBalance: number
+  unstakedTokenBalance: number
   daoName: string
   walletName: string
   profileImgUrl: string
   established: Date
+  onStake: () => void
 }
 
 export const ProfileNotMemberCard = ({
   tokenSymbol,
-  tokenBalance,
+  unstakedTokenBalance,
   daoName,
   walletName,
   profileImgUrl,
   established,
+  onStake,
 }: ProfileNotMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -32,33 +32,15 @@ export const ProfileNotMemberCard = ({
       isMember={false}
       walletName={walletName}
     >
-      <div className="link-text">{t('profile.notMember.membership')}</div>
-      <p className="pt-1 pb-3 secondary-text">
+      <Cw20StakedBalanceVotingProfileMembership
+        junoswapHref="https://junoswap.com"
+        onStake={onStake}
+        stakedTokenBalance={0}
+        tokenSymbol={tokenSymbol}
+        unstakedTokenBalance={unstakedTokenBalance}
+      >
         {t('profile.notMember.stakeYourTokens', { tokenSymbol, daoName })}
-      </p>
-      <div className="flex flex-row justify-between pb-7 secondary-text">
-        <div>{t('profile.notMember.yourHoldings')}</div>
-        <div className="font-mono text-text-interactive-disabled">
-          {t('format.token', { val: tokenBalance, tokenSymbol })}
-        </div>
-      </div>
-      <Button
-        className="mb-2"
-        contentContainerClassName="justify-center primary-text"
-        disabled={true}
-        size="lg"
-        variant="secondary"
-      >
-        {t('profile.notMember.stakeToken', { tokenSymbol })}
-      </Button>
-      <Button
-        contentContainerClassName="justify-center primary-text"
-        size="lg"
-        variant="secondary"
-      >
-        {t('profile.notMember.getTokens')}
-        <ArrowOutward height="0.625rem" width="0.625rem" />
-      </Button>
+      </Cw20StakedBalanceVotingProfileMembership>
     </ProfileCardWrapper>
   )
 }
