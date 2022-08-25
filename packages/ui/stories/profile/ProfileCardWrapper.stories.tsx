@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { MembershipPill } from 'components/profile/MembershipPill'
 import { ProfileCardWrapper } from 'components/profile/ProfileCardWrapper'
 
 export default {
@@ -19,8 +20,7 @@ Default.args = {
   imgUrl: '/dog_nft.png',
   walletName: '@wallet_name',
   established: new Date(),
-  isMember: true,
-  daoName: 'DAO',
+  underHeaderComponent: <MembershipPill daoName="DAO" isMember={false} />,
   children: <p>Content!</p>,
 }
 Default.parameters = {
@@ -35,8 +35,6 @@ Compact.args = {
   imgUrl:
     'https://cloudflare-ipfs.com/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
   walletName: '@wallet_name',
-  isMember: true,
-  daoName: 'DAO',
   compact: true,
   children: <p>Content!</p>,
 }

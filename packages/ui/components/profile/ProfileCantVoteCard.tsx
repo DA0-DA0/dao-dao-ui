@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { TooltipIcon } from '../TooltipIcon'
 import { Cw20StakedBalanceVotingProfileMembership } from './Cw20StakedBalanceVotingProfileMembership'
+import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileCantVoteCardProps {
@@ -29,9 +30,14 @@ export const ProfileCantVoteCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
       compact
-      daoName={daoName}
       imgUrl={profileImgUrl}
-      isMember={stakedTokenBalance > 0}
+      underHeaderComponent={
+        <MembershipPill
+          daoName={daoName}
+          ghost
+          isMember={stakedTokenBalance > 0}
+        />
+      }
       walletName={walletName}
     >
       <div className="p-6 border-t border-t-border-primary">

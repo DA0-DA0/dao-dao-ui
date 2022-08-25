@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { Cw20StakedBalanceVotingProfileMembership } from './Cw20StakedBalanceVotingProfileMembership'
+import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileNotMemberCardProps {
@@ -26,10 +27,11 @@ export const ProfileNotMemberCard = ({
 
   return (
     <ProfileCardWrapper
-      daoName={daoName}
       established={established}
       imgUrl={profileImgUrl}
-      isMember={false}
+      underHeaderComponent={
+        <MembershipPill daoName={daoName} isMember={false} />
+      }
       walletName={walletName}
     >
       <Cw20StakedBalanceVotingProfileMembership

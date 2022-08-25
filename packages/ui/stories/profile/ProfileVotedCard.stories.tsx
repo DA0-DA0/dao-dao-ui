@@ -8,7 +8,7 @@ export default {
 } as ComponentMeta<typeof ProfileVotedCard>
 
 const Template: ComponentStory<typeof ProfileVotedCard> = (args) => (
-  <div className="max-w-[320px]">
+  <div className="max-w-xs">
     <ProfileVotedCard {...args} />
   </div>
 )
