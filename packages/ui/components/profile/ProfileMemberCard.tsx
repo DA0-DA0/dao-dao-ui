@@ -81,7 +81,7 @@ export const ProfileMemberCard = ({
             })}
           >
             {t('info.unstakingTranches', {
-              numTranches: unstakingTokensTranches.length,
+              count: unstakingTokensTranches.length,
             })}
           </p>
         </div>
