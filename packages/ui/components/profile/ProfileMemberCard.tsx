@@ -1,9 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '../Button'
-import {
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
 
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
@@ -41,7 +38,7 @@ export const ProfileMemberCard = ({
   openProposals
 }: ProfileMemberCardProps) => {
   const { t } = useTranslation()
- // TODO translate titles
+
   return (
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
@@ -53,11 +50,11 @@ export const ProfileMemberCard = ({
 
       <div className = "py-3 px-6 border-t border-t-border-primary">
         <div className="flex flex-row justify-between items-center pb-3 text-xs text-bold">
-          <p>Contribution</p>
+          <p>{t('title.yourEquity')}</p>
         </div>
 
         <div className="flex flex-row justify-between items-center secondary-text pb-3">
-          <p>Staked tokens</p>
+          <p>{t('title.stakedTokens')}</p>
           <p className="font-mono text-text-primary">
           {stakedTokens.toLocaleString(undefined, {
             maximumFractionDigits: tokenDecimals,
@@ -70,8 +67,10 @@ export const ProfileMemberCard = ({
         </div>
 
         <div className="flex flex-row justify-between items-center secondary-text pb-3">
-          <p>Unstaking tokens</p>
-          <p className="font-mono text-text-primary underline underline-offset-4">1 tranch</p>
+          <p>{t('title.unstakingTokens')}</p>
+          <p className="font-mono text-text-primary underline underline-offset-4">
+          {t('info.unstakingTranches', { numTranches: unstakingTokensTranches.length })}
+          </p>
         </div>
 
         <div className="flex flex-row justify-between items-center pb-6">
@@ -88,9 +87,10 @@ export const ProfileMemberCard = ({
           size="lg"
           variant="primary"
         >
-          {`Claim your ${unstakedTokens.toLocaleString(undefined, {
-            maximumFractionDigits: tokenDecimals,
-          })} $${tokenSymbol}` }
+          {t('button.claimNumTokens', {
+            amount: unstakedTokens.toLocaleString(undefined, {maximumFractionDigits: tokenDecimals}),
+            tokenSymbol,
+          })}
         </Button>
 
         <Button
@@ -99,7 +99,7 @@ export const ProfileMemberCard = ({
           size="lg"
           variant="secondary"
         >
-         {`Manage $${tokenSymbol} stake`}
+        {t('button.manageStake', { tokenSymbol })}
         </Button>
       </div>
 
@@ -110,7 +110,7 @@ export const ProfileMemberCard = ({
           size="lg"
           variant="secondary"
         >
-         Open proposals
+         {t('title.openProposals')}
           <div
             className="absolute top-1 right-1 w-2 h-2 bg-[#B3A0FF] border border-3 border-black rounded-full"></div>
         </Button>

@@ -11,6 +11,7 @@
     "castYourVote": "Cast your vote",
     "claim": "Claim",
     "claimTokens": "Claim tokens",
+    "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
     "close": "Close",
     "connectWallet": "Connect wallet",
     "continue": "Continue",
@@ -34,6 +35,7 @@
     "lightTheme": "Light theme",
     "loadMore": "Load more",
     "manage": "Manage",
+    "manageStake": "Manage your ${{tokenSymbol}} stake",
     "newProposal": "New proposal",
     "numProposalsInInbox_one": "{{count}} Proposal in Inbox",
     "numProposalsInInbox_other": "{{count}} Proposals in Inbox",
@@ -203,6 +205,7 @@
     "usdc": "{{val, number}} $USDC"
   },
   "info": {
+    "unstakingTranches": "{{numTranches}} tranches",
     "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
@@ -383,6 +386,10 @@
     "voteCast": "Vote successfully cast."
   },
   "title": {
+    "yourEquity": "Your equity",
+    "unstakedTokens": "Available tokens",
+    "unstakingTokens": "Unstaking tokens",
+    "stakedTokens": "Staked tokens",
     "404": "404: Not Found",
     "500": "500: Internal Server Error",
     "actions_one": "Action",
@@ -474,7 +481,7 @@
     "vote": "Vote",
     "voteStatus": "Vote status",
     "votingConfiguration": "Voting configuration",
-    "votingPower": "Voting Power",
+    "votingPower": "Voting power",
     "votingPowerStaked": "Voting power (staked {{name}})",
     "votingPowerStakedAndRewards": "Voting power (staked {{name}} + rewards)",
     "watchOut": "Watch out!",
