@@ -97,7 +97,9 @@ export const ProfileHomeCard = ({
         >
           {t('button.numProposalsInInbox', { count: inboxProposalCount })}
 
-          <div className="box-content absolute top-[3px] right-[3px] w-[6px] h-[6px] bg-icon-interactive-active rounded-full border-[3px] border-background-base"></div>
+          {inboxProposalCount > 0 && (
+            <div className="box-content absolute top-[3px] right-[3px] w-[6px] h-[6px] bg-icon-interactive-active rounded-full border-[3px] border-background-base"></div>
+          )}
         </ButtonLink>
       </div>
     </ProfileCardWrapper>
