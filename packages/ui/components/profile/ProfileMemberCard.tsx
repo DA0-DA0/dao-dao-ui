@@ -25,6 +25,7 @@ export interface ProfileMemberCardProps {
   tokenDecimals: number
   unstakingTokensTranches: UnstakingTokensTranch[]
   unstakedTokens: number
+  openProposals?: boolean
 }
 
 export const ProfileMemberCard = ({
@@ -37,6 +38,7 @@ export const ProfileMemberCard = ({
   tokenDecimals,
   unstakingTokensTranches,
   unstakedTokens,
+  openProposals
 }: ProfileMemberCardProps) => {
   const { t } = useTranslation()
  // TODO translate titles
@@ -69,7 +71,7 @@ export const ProfileMemberCard = ({
 
         <div className="flex flex-row justify-between items-center secondary-text pb-3">
           <p>Unstaking tokens</p>
-          <p className="font-mono text-text-primary">1 tranch</p>
+          <p className="font-mono text-text-primary underline underline-offset-4">1 tranch</p>
         </div>
 
         <div className="flex flex-row justify-between items-center pb-6">
@@ -109,6 +111,8 @@ export const ProfileMemberCard = ({
           variant="secondary"
         >
          Open proposals
+          <div
+            className="absolute top-1 right-1 w-2 h-2 bg-[#B3A0FF] border border-3 border-black rounded-full"></div>
         </Button>
       </div>
 
