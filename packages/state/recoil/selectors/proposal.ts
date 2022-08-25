@@ -3,7 +3,7 @@ import { selectorFamily } from 'recoil'
 import { ProposalModule, fetchProposalModules } from '@dao-dao/utils'
 
 import { cosmWasmClientSelector } from './chain'
-import { cwCoreVersionSelector } from './contract'
+import { contractVersionSelector } from './contract'
 
 export const proposalExecutionTXHashSelector = selectorFamily<
   string | undefined,
@@ -40,7 +40,7 @@ export const cwCoreProposalModulesSelector = selectorFamily<
     (coreAddress) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      const coreVersion = get(cwCoreVersionSelector(coreAddress))
+      const coreVersion = get(contractVersionSelector(coreAddress))
 
       return await fetchProposalModules(client, coreAddress, coreVersion)
     },

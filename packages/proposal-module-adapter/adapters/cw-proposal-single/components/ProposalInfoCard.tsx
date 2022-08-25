@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, waitForAny } from 'recoil'
+import { contractVersionSelector } from '@dao-dao/state/recoil/selectors/contract'
 import {
   blockHeightTimestampSafeSelector,
   CwCoreV0_1_0Selectors,
@@ -8,7 +9,7 @@ import {
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { CopyToClipboard, ProposalIdDisplay, Tooltip } from '@dao-dao/ui'
-import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
+import { CHAIN_TXN_URL_PREFIX, ContractVersion } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalInfoCardProps } from '../../../types'
@@ -37,6 +38,8 @@ export const ProposalInfoCard = ({
       ],
     })
   )
+
+  const proposalModuleVersion = useRecoilValue(contractVersionSelector(proposalModuleAddress))
 
   const executionTxHash = useProposalExecutionTxHash()
 
@@ -160,7 +163,7 @@ export const ProposalInfoCard = ({
           </div>
         ) : null}
       </div>
-      <div className="flex flex-row justify-evenly border-t border-light items-stretch py-4 md:py-5">
+      {proposalModuleVersion === ContractVersion.V0_2_0 && <div className="flex flex-row justify-evenly border-t border-light items-stretch py-4 md:py-5">
         <div className="flex flex-col gap-2 items-center">
           <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
             {t('title.created')}
@@ -181,7 +184,7 @@ export const ProposalInfoCard = ({
       {new Date(Number(proposal.last_updated) / 1000000).toLocaleString()}
     </p>
         </div>
-      </div>
+      </div> }
     </div>
   )
 }
