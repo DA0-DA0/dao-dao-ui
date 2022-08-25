@@ -12,6 +12,7 @@ export interface Cw20StakedBalanceVotingProfileMembershipProps {
   unstakedTokenBalance: number
   stakedTokenBalance: number
   onStake: () => void
+  // TODO: Fetch this from junoswap pools list somehow instead, if possible.
   junoswapHref?: string
   children: ReactNode
 }
