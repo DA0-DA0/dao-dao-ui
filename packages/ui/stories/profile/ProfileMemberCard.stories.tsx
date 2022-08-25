@@ -15,6 +15,8 @@ const Template: ComponentStory<typeof ProfileMemberCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  loadingClaiming: false,
+  loadingManaging: false,
   votingPower: 34.2,
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
@@ -38,4 +40,34 @@ Default.parameters = {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A14709',
   },
+}
+
+export const NothingToClaim = Template.bind({})
+NothingToClaim.args = {
+  ...Default.args,
+  unstakedTokens: 0,
+}
+
+export const NoOpenProposals = Template.bind({})
+NoOpenProposals.args = {
+  ...Default.args,
+  openProposals: false,
+}
+
+export const NothingUnstaking = Template.bind({})
+NothingUnstaking.args = {
+  ...Default.args,
+  unstakingTokensTranches: [],
+}
+
+export const ClaimingTokens = Template.bind({})
+ClaimingTokens.args = {
+  ...Default.args,
+  loadingClaiming: true,
+}
+
+export const ManagingStake = Template.bind({})
+ManagingStake.args = {
+  ...Default.args,
+  loadingManaging: true,
 }

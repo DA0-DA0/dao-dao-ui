@@ -10,8 +10,8 @@
     "back": "Back",
     "castYourVote": "Cast your vote",
     "claim": "Claim",
-    "claimTokens": "Claim tokens",
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
+    "claimTokens": "Claim tokens",
     "close": "Close",
     "connectWallet": "Connect wallet",
     "continue": "Continue",
@@ -202,7 +202,6 @@
     "usdc": "{{val, number}} $USDC"
   },
   "info": {
-    "unstakingTranches": "{{numTranches}} tranches",
     "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
@@ -315,6 +314,7 @@
     "unstaked": "unstaked",
     "unstakedTokens": "unstaked ${{tokenSymbol}}",
     "unstakingMechanics": "If you unstake now, it will take {{humanReadableTime}} until they are available to you. During that time, you will not receive staking rewards. You will not be able to cancel the unbonding.",
+    "unstakingTranches": "{{numTranches}} tranches",
     "verifyingGovernanceToken": "Verifying CW20 token...",
     "voteAgain": "Vote again?",
     "votedOnProposal": "You voted <0/> on this proposal.",
@@ -377,10 +377,6 @@
     "voteCast": "Vote successfully cast."
   },
   "title": {
-    "yourEquity": "Your equity",
-    "unstakedTokens": "Available tokens",
-    "unstakingTokens": "Unstaking tokens",
-    "stakedTokens": "Staked tokens",
     "404": "404: Not Found",
     "500": "500: Internal Server Error",
     "actions_one": "Action",
@@ -450,6 +446,7 @@
     "stake": "Stake",
     "stakeTokens": "Stake Tokens",
     "staked": "Staked",
+    "stakedTokens": "Staked tokens",
     "staking": "Staking",
     "status": "Status",
     "steps": "Steps",
@@ -462,8 +459,10 @@
     "turnout": "Turnout",
     "unclaimed": "Unclaimed",
     "unstakeTokens": "Unstake Tokens",
+    "unstakedTokens": "Available tokens",
     "unstakingNamedTokens": "Unstaking {{name}}",
     "unstakingPeriod": "Unstaking period",
+    "unstakingTokens": "Unstaking tokens",
     "updateContractAdmin": "Update Contract Admin",
     "updateInfo": "Update Info",
     "vote": "Vote",
@@ -475,6 +474,7 @@
     "watchOut": "Watch out!",
     "you": "You",
     "yourDAOs": "Your DAOs",
+    "yourEquity": "Your equity",
     "yourTokens": "Your Tokens",
     "yourVotingPower": "Your voting power"
   },
