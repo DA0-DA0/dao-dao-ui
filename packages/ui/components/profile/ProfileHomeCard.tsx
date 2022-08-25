@@ -12,8 +12,8 @@ export interface ProfileHomeCardProps {
   profileImgUrl: string
   established: Date
   tokenSymbol: string
-  unstakedBalance: string
-  stakedBalance: string
+  unstakedBalance: number
+  stakedBalance: number
   numDaos: number
   numVotes: number
   inboxProposalCount: number
@@ -39,22 +39,32 @@ export const ProfileHomeCard = ({
       established={established}
       imgUrl={profileImgUrl}
       underHeaderComponent={
-        <div className="grid grid-cols-[1fr_1px_1fr] items-center self-stretch mt-3">
-          <div className="flex flex-col justify-self-start items-stretch text-center">
+        <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
+          <div className="flex flex-col items-stretch text-center">
             <Payments className="self-center mb-4 w-5 h-4 text-center text-icon-secondary" />
             <p className="mb-1 secondary-text">{t('title.holdings')}</p>
-            <p className="font-mono title-text">
-              {unstakedBalance} ${tokenSymbol}
+            <p className="font-mono break-words title-text">
+              {unstakedBalance.toLocaleString(undefined, {
+                // eslint-disable-next-line i18next/no-literal-string
+                notation: 'compact',
+                maximumFractionDigits: 2,
+              })}{' '}
+              ${tokenSymbol}
             </p>
           </div>
 
           <div className="w-[1px] h-10 bg-border-secondary"></div>
 
-          <div className="flex flex-col justify-self-end items-center text-center">
+          <div className="flex flex-col items-center text-center">
             <Layers className="self-center mb-4 w-5 h-4 text-icon-secondary" />
             <p className="mb-1 secondary-text">{t('title.staked')}</p>
-            <p className="font-mono title-text">
-              {stakedBalance} ${tokenSymbol}
+            <p className="font-mono break-words title-text">
+              {stakedBalance.toLocaleString(undefined, {
+                // eslint-disable-next-line i18next/no-literal-string
+                notation: 'compact',
+                maximumFractionDigits: 2,
+              })}{' '}
+              ${tokenSymbol}
             </p>
           </div>
         </div>
