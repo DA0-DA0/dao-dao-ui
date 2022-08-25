@@ -71,3 +71,20 @@ ManagingStake.args = {
   ...Default.args,
   loadingManaging: true,
 }
+
+export const MultipleTranches = Template.bind({})
+MultipleTranches.args = {
+  ...Default.args,
+  unstakingTokensTranches: [
+    {
+      tokenSymbol: '$DOG',
+      unstakingTokens: 50,
+      available: new Date(),
+    },
+    {
+      tokenSymbol: '$DOG',
+      unstakingTokens: 50,
+      available: new Date(),
+    },
+  ],
+}
