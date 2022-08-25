@@ -30,6 +30,7 @@ Default.args = {
     },
   ],
   unstakedTokens: 45,
+  openProposals: true,
 }
 
 Default.parameters = {
