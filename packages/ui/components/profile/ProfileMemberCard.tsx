@@ -80,7 +80,6 @@ export const ProfileMemberCard = ({
             className={clsx('font-mono', {
               'text-text-primary underline underline-offset-4':
                 unstakingTokensTranches.length > 0,
-              'text-secondary': unstakingTokensTranches.length === 0,
             })}
           >
             {t('info.unstakingTranches', {
