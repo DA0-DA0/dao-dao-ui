@@ -108,7 +108,7 @@ export const ProfileMemberCard = ({
           <Button
             className="mb-2 w-full"
             contentContainerClassName="justify-center"
-            disabled={loadingManaging || loadingClaiming}
+            disabled={loadingManaging}
             loading={loadingClaiming}
             size="lg"
             variant="primary"
