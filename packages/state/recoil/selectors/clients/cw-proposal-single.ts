@@ -220,7 +220,6 @@ export const getVoteV2Selector = selectorFamily<
     },
 })
 
-
 export const listVotesSelector = selectorFamily<
   ListVotesResponse,
   QueryClientParams & { params: Parameters<QueryClient['listVotes']> }

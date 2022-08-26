@@ -129,7 +129,7 @@ export type WasmMsg =
         [k: string]: unknown
       }
     }
-    export type ProposalModuleStatus =
+export type ProposalModuleStatus =
   | {
       Enabled: {
         [k: string]: unknown

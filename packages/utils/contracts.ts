@@ -22,7 +22,9 @@ export interface ProposalModule {
   prefix: string
 }
 
-export const parseContractVersion = (version: string): ContractVersion | undefined =>
+export const parseContractVersion = (
+  version: string
+): ContractVersion | undefined =>
   version === ContractVersion.V0_1_0
     ? ContractVersion.V0_1_0
     : version === ContractVersion.V0_2_0

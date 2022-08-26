@@ -28,7 +28,9 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
   )
 
   const expirationString = useProposalExpirationString()
-  const msSinceUpdated = new Date().getTime() - (new Date(Number(proposal.last_updated) / 1000000).getTime());
+  const msSinceUpdated =
+    new Date().getTime() -
+    new Date(Number(proposal.last_updated) / 1000000).getTime()
 
   return (
     <div
