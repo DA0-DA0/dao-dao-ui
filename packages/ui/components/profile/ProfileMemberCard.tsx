@@ -123,7 +123,7 @@ export const ProfileMemberCard = ({
         )}
 
         <Button
-          className="mb-0 w-full"
+          className="w-full"
           contentContainerClassName="justify-center"
           disabled={loadingClaiming}
           loading={loadingManaging}
