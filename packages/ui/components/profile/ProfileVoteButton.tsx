@@ -1,11 +1,8 @@
-import {
-  ChatAltIcon,
-  CheckIcon,
-  HandIcon,
-  XIcon,
-} from '@heroicons/react/outline'
+import { CheckIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
+
+import { Abstain, NoWithVeto } from '@dao-dao/icons'
 
 import { Button } from '../Button'
 
@@ -37,10 +34,10 @@ export const ProfileVoteButton = ({
       {variant === 'noWithVeto' && t('button.noWithVeto')}
       {variant === 'abstain' && t('button.abstain')}
 
-      {variant === 'yes' && <CheckIcon className="inline w-6" />}
-      {variant === 'no' && <XIcon className="inline w-6" />}
-      {variant === 'noWithVeto' && <HandIcon className="inline w-6" />}
-      {variant === 'abstain' && <ChatAltIcon className="inline w-6" />}
+      {variant === 'yes' && <CheckIcon className="inline w-6 h-6" />}
+      {variant === 'no' && <XIcon className="inline w-5 h-5" />}
+      {variant === 'noWithVeto' && <NoWithVeto className="inline w-6 h-6" />}
+      {variant === 'abstain' && <Abstain className="inline w-5 h-5" />}
     </Button>
   )
 }
