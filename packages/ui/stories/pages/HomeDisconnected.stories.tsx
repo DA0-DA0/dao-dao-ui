@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileHomeDisconnectedCardProps } from 'components/profile/ProfileHomeDisconnectedCard'
 import { makeAppLayoutDecorator } from 'decorators'
 import { HomeDisconnected } from 'pages/HomeDisconnected'
-import { Default as ProfileHomeDisconnectedCard } from 'stories/profile/ProfileHomeDisconnectedCard.stories'
+import { Default as ProfileHomeDisconnectedCard } from 'stories/components/profile/ProfileHomeDisconnectedCard.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / HomeDisconnected',

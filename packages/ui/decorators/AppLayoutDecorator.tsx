@@ -3,8 +3,8 @@ import { ReactNode } from 'react'
 
 import { FooterProps } from 'components/Footer'
 import { NavigationProps } from 'components/Navigation'
-import { Default as Footer } from 'stories/Footer.stories'
-import { Default as Navigation } from 'stories/Navigation/Navigation.stories'
+import { Default as Footer } from 'stories/components/Footer.stories'
+import { Default as Navigation } from 'stories/components/Navigation/Navigation.stories'
 
 export interface makeAppLayoutDecoratorProps {
   rightCard: ReactNode
