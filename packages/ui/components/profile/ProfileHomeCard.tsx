@@ -102,14 +102,11 @@ export const ProfileHomeCard = ({
           className="w-full"
           contentContainerClassName="justify-center"
           href="/inbox"
+          showBadge={inboxProposalCount > 0}
           size="lg"
           variant="secondary"
         >
           {t('button.numProposalsInInbox', { count: inboxProposalCount })}
-
-          {inboxProposalCount > 0 && (
-            <div className="box-content absolute top-[3px] right-[3px] w-[6px] h-[6px] bg-icon-interactive-active rounded-full border-[3px] border-background-base"></div>
-          )}
         </ButtonLink>
       </div>
     </ProfileCardWrapper>
