@@ -5,10 +5,12 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   CwCoreV0_1_0Selectors,
   CwProposalSingleSelectors,
+  blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { contractVersionSelector } from '@dao-dao/state/recoil/selectors/contract'
 import { CopyToClipboard, ProposalIdDisplay, Tooltip } from '@dao-dao/ui'
-import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
+import { CHAIN_TXN_URL_PREFIX, ContractVersion } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalInfoCardProps } from '../../../types'
@@ -38,6 +40,14 @@ export const ProposalInfoCard = ({
     })
   )
 
+  const proposalModuleVersion = useRecoilValue(
+    contractVersionSelector(proposalModuleAddress)
+  )
+  const voteSelector =
+    proposalModuleVersion === ContractVersion.V0_1_0
+      ? CwProposalSingleSelectors.getVoteV1Selector
+      : CwProposalSingleSelectors.getVoteV2Selector
+
   const executionTxHash = useProposalExecutionTxHash()
 
   const walletVotingPowerWhenProposalCreated = useRecoilValue(
@@ -59,12 +69,16 @@ export const ProposalInfoCard = ({
 
   const walletVote = useRecoilValue(
     walletAddress
-      ? CwProposalSingleSelectors.getVoteSelector({
+      ? voteSelector({
           contractAddress: proposalModuleAddress,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })
       : constSelector(undefined)
   )?.vote?.vote
+
+  const createdHeight = useRecoilValue(
+    blockHeightTimestampSafeSelector(proposal.start_height)
+  )?.toLocaleString()
 
   return (
     <div className="rounded-md border border-light">
@@ -158,6 +172,32 @@ export const ProposalInfoCard = ({
           </div>
         ) : null}
       </div>
+      {proposalModuleVersion === ContractVersion.V0_2_0 && (
+        <div className="flex flex-row justify-evenly items-stretch py-4 border-t md:py-5 border-light">
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+              {t('title.created')}
+            </p>
+
+            <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+              {proposal.created === '0' ? createdHeight : proposal.created}
+            </p>
+          </div>
+
+          <div className="w-[1px] bg-light"></div>
+
+          <div className="flex flex-col gap-2 items-center">
+            <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+              {t('title.lastUpdated')}
+            </p>
+            <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+              {new Date(
+                Number(proposal.last_updated) / 1000000
+              ).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

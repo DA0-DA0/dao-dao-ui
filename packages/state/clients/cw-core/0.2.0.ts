@@ -129,6 +129,17 @@ export type WasmMsg =
         [k: string]: unknown
       }
     }
+export type ProposalModuleStatus =
+  | {
+      Enabled: {
+        [k: string]: unknown
+      }
+    }
+  | {
+      Disabled: {
+        [k: string]: unknown
+      }
+    }
 export type Binary = string
 export interface Coin {
   amount: Uint128
@@ -268,6 +279,7 @@ export type ListItemsResponse = string[]
 export type ProposalModulesResponse = {
   address: Addr
   prefix: string
+  status: ProposalModuleStatus
 }[]
 export interface TotalPowerAtHeightResponse {
   height: number

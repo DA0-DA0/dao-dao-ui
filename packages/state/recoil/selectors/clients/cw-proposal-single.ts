@@ -178,9 +178,9 @@ export const proposalCountSelector = selectorFamily<
     },
 })
 
-export const getVoteSelector = selectorFamily<
+export const getVoteV1Selector = selectorFamily<
   VoteResponse,
-  QueryClientParams & { params: Parameters<QueryClient['getVote']> }
+  QueryClientParams & { params: Parameters<QueryClient['getVoteV1']> }
 >({
   key: 'cwProposalSingleGetVote',
   get:
@@ -195,7 +195,28 @@ export const getVoteSelector = selectorFamily<
         })
       )
 
-      return await client.getVote(...params)
+      return await client.getVoteV1(...params)
+    },
+})
+
+export const getVoteV2Selector = selectorFamily<
+  VoteResponse,
+  QueryClientParams & { params: Parameters<QueryClient['getVoteV2']> }
+>({
+  key: 'cwProposalSingleGetVote',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+
+      get(
+        refreshProposalIdAtom({
+          address: queryClientParams.contractAddress,
+          proposalId: params[0].proposalId,
+        })
+      )
+
+      return await client.getVoteV2(...params)
     },
 })
 

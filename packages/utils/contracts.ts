@@ -6,7 +6,7 @@ import {
 } from '@dao-dao/state/clients'
 import { InfoResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 
-export enum CwCoreVersion {
+export enum ContractVersion {
   V0_1_0 = '0.1.0',
   V0_2_0 = '0.2.0',
 }
@@ -22,11 +22,13 @@ export interface ProposalModule {
   prefix: string
 }
 
-export const parseCoreVersion = (version: string): CwCoreVersion | undefined =>
-  version === CwCoreVersion.V0_1_0
-    ? CwCoreVersion.V0_1_0
-    : version === CwCoreVersion.V0_2_0
-    ? CwCoreVersion.V0_2_0
+export const parseContractVersion = (
+  version: string
+): ContractVersion | undefined =>
+  version === ContractVersion.V0_1_0
+    ? ContractVersion.V0_1_0
+    : version === ContractVersion.V0_2_0
+    ? ContractVersion.V0_2_0
     : undefined
 
 export const indexToProposalModulePrefix = (index: number) => {
@@ -45,7 +47,7 @@ export const indexToProposalModulePrefix = (index: number) => {
 export const fetchProposalModules = async (
   cwClient: CosmWasmClient,
   coreAddress: string,
-  coreVersion: CwCoreVersion
+  coreVersion: ContractVersion
 ): Promise<ProposalModule[]> => {
   const proposalModules: ProposalModule[] = []
   let paginationStart: string | undefined
@@ -97,7 +99,7 @@ export const fetchProposalModules = async (
 
   while (true) {
     const _proposalModules = await Promise.all(
-      coreVersion === CwCoreVersion.V0_1_0
+      coreVersion === ContractVersion.V0_1_0
         ? await getV0_1_0ProposalModules()
         : await getV0_2_0ProposalModules()
     )

@@ -3,11 +3,11 @@ import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
-  CwCoreVersion,
+  ContractVersion,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
-  parseCoreVersion,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -205,22 +205,22 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
     },
 })
 
-export const cwCoreVersionSelector = selectorFamily<CwCoreVersion, string>({
-  key: 'cwCoreVersion',
+export const contractVersionSelector = selectorFamily<ContractVersion, string>({
+  key: 'contractVersion',
   get:
-    (coreAddress) =>
+    (contractAddress) =>
     async ({ get }) => {
-      const coreInfo = get(
-        CwCoreV0_1_0Selectors.infoSelector({ contractAddress: coreAddress })
+      const info = get(
+        CwCoreV0_1_0Selectors.infoSelector({ contractAddress: contractAddress })
       ).info
 
-      const coreVersion = parseCoreVersion(coreInfo.version)
-      if (!coreVersion) {
+      const version = parseContractVersion(info.version)
+      if (!version) {
         throw new Error(
-          `Failed parsing cw-core (${coreAddress}) version "${coreInfo.version}".`
+          `Failed parsing contract (${contractAddress}) version "${info.version}".`
         )
       }
 
-      return coreVersion
+      return version
     },
 })

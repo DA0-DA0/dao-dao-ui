@@ -23,7 +23,7 @@ import {
   ProposalModule,
   cosmWasmClientRouter,
   fetchProposalModules,
-  parseCoreVersion,
+  parseContractVersion,
   processError,
   validateContractAddress,
 } from '@dao-dao/utils'
@@ -100,7 +100,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const config = await coreClient.config()
 
       const coreInfo = (await coreClient.info()).info
-      const coreVersion = parseCoreVersion(coreInfo.version)
+      const coreVersion = parseContractVersion(coreInfo.version)
       if (!coreVersion) {
         throw new Error(serverT('error.failedParsingCoreVersion'))
       }

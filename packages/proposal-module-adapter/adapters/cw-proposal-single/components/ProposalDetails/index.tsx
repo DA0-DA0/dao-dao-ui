@@ -11,6 +11,7 @@ import {
   CwCoreV0_1_0Selectors,
   CwProposalSingleHooks,
   CwProposalSingleSelectors,
+  contractVersionSelector,
   useVotingModule,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
@@ -22,6 +23,7 @@ import {
   MarkdownPreview,
 } from '@dao-dao/ui'
 import {
+  ContractVersion,
   decodeMessages,
   decodedMessagesString,
   processError,
@@ -64,9 +66,17 @@ export const ProposalDetails = ({
     })
   )
 
+  const proposalModuleVersion = useRecoilValue(
+    contractVersionSelector(proposalModule.address)
+  )
+  const voteSelector =
+    proposalModuleVersion === ContractVersion.V0_1_0
+      ? CwProposalSingleSelectors.getVoteV1Selector
+      : CwProposalSingleSelectors.getVoteV2Selector
+
   const walletVote = useRecoilValue(
     walletAddress
-      ? CwProposalSingleSelectors.getVoteSelector({
+      ? voteSelector({
           contractAddress: proposalModule.address,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })
