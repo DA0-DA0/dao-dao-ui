@@ -39,7 +39,7 @@ export const ProfileNotMemberCard = ({
       </p>
 
       <div className="flex flex-row justify-between pb-7 secondary-text">
-        <div>{t('profile.notMember.yourHoldings')}</div>
+        <div>{t('title.unstakedTokens')}</div>
         <div className="font-mono text-text-interactive-disabled">
           {t('format.token', { val: tokenBalance, tokenSymbol })}
         </div>
