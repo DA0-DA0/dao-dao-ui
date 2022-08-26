@@ -56,7 +56,7 @@ const project = new Project({
   skipAddingFilesFromTsConfig: true,
 })
 // Only add components.
-project.addSourceFilesAtPaths('components/**/*.{ts,tsx}')
+project.addSourceFilesAtPaths('{pages,components}/**/*.{ts,tsx}')
 
 const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
   const baseName = sourceFile.getBaseNameWithoutExtension()
@@ -67,16 +67,9 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
 
   const extension = sourceFile.getExtension()
 
-  const pathFromComponents = sourceFile
-    .getDirectoryPath()
-    .split('packages/ui/components')[1]
+  const pathFromRoot = sourceFile.getDirectoryPath().split('packages/ui/')[1]
 
-  let titlePrefix = pathFromComponents
-    // Remove leading slash. Root directory path ends with split
-    // string above, so we have to manually remove the slash while allowing
-    // for it not to exist.
-    .substring(1)
-    .replace(/\//g, ' / ')
+  let titlePrefix = pathFromRoot.replace(/\//g, ' / ')
   if (titlePrefix) {
     titlePrefix += ' / '
   }
@@ -176,7 +169,7 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
 
     const data = generateTemplate(
       component,
-      'components' + pathFromComponents + '/' + baseName,
+      pathFromRoot + '/' + baseName,
       titlePrefix
     )
 
