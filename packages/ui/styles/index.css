@@ -320,11 +320,6 @@ input[type='number']::-webkit-outer-spin-button {
     color: var(--text-button-primary);
   }
 
-  .button-text[disabled],
-  button-text-sm[disabled] {
-    color: var(--text-button-disabled);
-  }
-
   .link-text {
     font-style: normal;
     font-weight: 500;

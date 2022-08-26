@@ -124,7 +124,7 @@ export const ProfileMemberCard = ({
 
         <Button
           className="mb-0 w-full"
-          contentContainerClassName="justify-center primary-text"
+          contentContainerClassName="justify-center"
           disabled={loadingManaging || loadingClaiming}
           loading={loadingManaging}
           size="lg"
@@ -138,7 +138,7 @@ export const ProfileMemberCard = ({
         <div className="py-6 px-6 border-t border-t-border-primary">
           <Button
             className="w-full"
-            contentContainerClassName="justify-center primary-text"
+            contentContainerClassName="justify-center"
             disabled={!openProposals || loadingManaging || loadingClaiming}
             showBadge
             size="lg"

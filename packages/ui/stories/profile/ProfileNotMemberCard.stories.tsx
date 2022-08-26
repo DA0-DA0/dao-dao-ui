@@ -33,5 +33,5 @@ Default.parameters = {
 export const HaveTokensToStake = Template.bind({})
 HaveTokensToStake.args = {
   ...Default.args,
-  tokenBalance: 100,
+  unstakedTokenBalance: 100,
 }
