@@ -135,7 +135,7 @@ export const ProfileMemberCard = ({
       </div>
 
       {openProposals && (
-        <div className="py-6 px-6 border-t border-t-border-primary">
+        <div className="py-4 px-6 border-t border-t-border-primary">
           <Button
             className="w-full"
             contentContainerClassName="justify-center"
