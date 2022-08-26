@@ -13,6 +13,7 @@ export interface ButtonifierProps {
   contentContainerClassName?: string
   pressed?: boolean
   disabled?: boolean
+  showBadge?: boolean
   Logo?: ComponentType<LogoProps>
   className?: string
   children?: ReactNode | ReactNode[]
@@ -26,10 +27,10 @@ export const getButtonifiedClassNames = ({
   className,
 }: ButtonifierProps) =>
   clsx(
-    'relative text-text-button-primary rounded-md focus:outline-2 focus:outline-background-button-disabled transition',
+    'relative rounded-md focus:outline-2 focus:outline-background-button-disabled transition',
     {
       // Primary variant.
-      'bg-background-button': variant === 'primary',
+      'text-text-button-primary bg-background-button': variant === 'primary',
       'hover:bg-background-button-hover active:bg-background-button-pressed':
         !disabled && variant === 'primary',
       'bg-background-button-disabled': disabled && variant === 'primary',
@@ -65,6 +66,7 @@ export const ButtonifiedChildren = ({
   contentContainerClassName,
   Logo = DefaultLogo,
   disabled,
+  showBadge,
   children,
 }: ButtonifierProps) => (
   <>
@@ -104,5 +106,9 @@ export const ButtonifiedChildren = ({
     >
       {children}
     </div>
+
+    {showBadge && (
+      <div className="box-content absolute top-[3px] right-[3px] w-[6px] h-[6px] bg-icon-interactive-active rounded-full border-[3px] border-background-base"></div>
+    )}
   </>
 )

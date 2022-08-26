@@ -5,15 +5,13 @@ import { useTranslation } from 'react-i18next'
 import { formatDate } from '@dao-dao/utils'
 
 import { CornerGradient } from '../CornerGradient'
-import { MembershipPill } from './MembershipPill'
 import { ProfileImage } from './ProfileImage'
 
 export type ProfileCardWrapperProps = {
   children: ReactNode | ReactNode[]
   imgUrl: string
   walletName: string
-  isMember: boolean
-  daoName: string
+  underHeaderComponent: ReactNode
   childContainerClassName?: string
 } & (
   | {
@@ -31,9 +29,8 @@ export const ProfileCardWrapper = ({
   imgUrl,
   walletName,
   established,
-  isMember,
-  daoName,
   compact,
+  underHeaderComponent,
   childContainerClassName,
 }: ProfileCardWrapperProps) => {
   const { t } = useTranslation()
@@ -77,7 +74,7 @@ export const ProfileCardWrapper = ({
 
             <div className="flex flex-col gap-1">
               <div className="text-text-body title-text">{walletName}</div>
-              <MembershipPill daoName={daoName} ghost isMember={isMember} />
+              {underHeaderComponent}
             </div>
           </div>
         ) : (
@@ -88,7 +85,7 @@ export const ProfileCardWrapper = ({
               {t('profile.est')}
               {formatDate(established)}
             </div>
-            <MembershipPill daoName={daoName} isMember={isMember} />
+            {underHeaderComponent}
           </div>
         )}
       </div>
