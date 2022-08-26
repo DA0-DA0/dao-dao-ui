@@ -89,12 +89,11 @@ export const ProfileMemberCard = ({
           </p>
         </div>
 
-        <div className="flex flex-row justify-between items-center pb-6">
-          <p className="secondary-text">{t('title.unstakedTokens')}</p>
+        <div className="flex flex-row justify-between items-center pb-6 secondary-text">
+          <p>{t('title.unstakedTokens')}</p>
           <p
             className={clsx('font-mono text-xs', {
               'text-icon-interactive-valid': unstakedTokens > 0,
-              'secondary-text': unstakedTokens === 0,
             })}
           >
             {unstakedTokens.toLocaleString(undefined, {
