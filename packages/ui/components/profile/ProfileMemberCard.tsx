@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '../Button'
+import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 // Represents a tranch of tokens that is currently unstaking and will become
@@ -25,6 +26,7 @@ export interface ProfileMemberCardProps {
   unstakingTokensTranches: UnstakingTokensTranch[]
   unstakedTokens: number
   openProposals?: boolean
+  established: Date
 }
 
 export const ProfileMemberCard = ({
@@ -40,15 +42,16 @@ export const ProfileMemberCard = ({
   unstakingTokensTranches,
   unstakedTokens,
   openProposals,
+  established,
 }: ProfileMemberCardProps) => {
   const { t } = useTranslation()
 
   return (
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
-      daoName={daoName}
+      established={established}
       imgUrl={profileImgUrl}
-      isMember
+      underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       walletName={walletName}
     >
       <div className="py-6 px-6 border-t border-t-border-primary">
@@ -137,11 +140,11 @@ export const ProfileMemberCard = ({
             className="w-full"
             contentContainerClassName="justify-center primary-text"
             disabled={!openProposals || loadingManaging || loadingClaiming}
+            showBadge
             size="lg"
             variant="secondary"
           >
             {t('title.openProposals')}
-            <div className="absolute top-1 right-1 w-2 h-2 bg-[#B3A0FF] rounded-full border border-3"></div>
           </Button>
         </div>
       )}
