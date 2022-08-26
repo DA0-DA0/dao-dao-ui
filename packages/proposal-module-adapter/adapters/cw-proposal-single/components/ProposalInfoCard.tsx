@@ -40,7 +40,8 @@ export const ProposalInfoCard = ({
   )
 
   const proposalModuleVersion = useRecoilValue(contractVersionSelector(proposalModuleAddress))
-
+  const voteSelector = proposalModuleVersion === ContractVersion.V0_1_0 ? CwProposalSingleSelectors.getVoteV1Selector : CwProposalSingleSelectors.getVoteV2Selector;
+  
   const executionTxHash = useProposalExecutionTxHash()
 
   const walletVotingPowerWhenProposalCreated = useRecoilValue(
@@ -62,7 +63,7 @@ export const ProposalInfoCard = ({
 
   const walletVote = useRecoilValue(
     walletAddress
-      ? CwProposalSingleSelectors.getVoteSelector({
+      ? voteSelector({
           contractAddress: proposalModuleAddress,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })

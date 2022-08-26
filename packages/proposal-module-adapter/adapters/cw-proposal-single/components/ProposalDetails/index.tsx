@@ -8,6 +8,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { ActionAndData, ActionKey, ActionsRenderer } from '@dao-dao/actions'
 import { Trans } from '@dao-dao/common'
 import {
+  contractVersionSelector,
   CwCoreV0_1_0Selectors,
   CwProposalSingleHooks,
   CwProposalSingleSelectors,
@@ -25,6 +26,7 @@ import {
   decodeMessages,
   decodedMessagesString,
   processError,
+  ContractVersion,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
@@ -64,9 +66,12 @@ export const ProposalDetails = ({
     })
   )
 
+  const proposalModuleVersion = useRecoilValue(contractVersionSelector(proposalModule.address))
+  const voteSelector = proposalModuleVersion === ContractVersion.V0_1_0 ? CwProposalSingleSelectors.getVoteV1Selector : CwProposalSingleSelectors.getVoteV2Selector;
+
   const walletVote = useRecoilValue(
     walletAddress
-      ? CwProposalSingleSelectors.getVoteSelector({
+      ? voteSelector({
           contractAddress: proposalModule.address,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })

@@ -324,7 +324,7 @@ export interface CwProposalSingleReadOnlyInterface {
   }) => Promise<ReverseProposalsResponse>
   proposalCount: () => Promise<ProposalCountResponse>
   // Modified since `vote` is duplicate enum.
-  getVote: ({
+  getVoteV1: ({
     proposalId,
     voter,
   }: {
@@ -359,7 +359,8 @@ export class CwProposalSingleQueryClient
     this.reverseProposals = this.reverseProposals.bind(this)
     this.proposalCount = this.proposalCount.bind(this)
     // Modified since `vote` is duplicate enum.
-    this.getVote = this.getVote.bind(this)
+    this.getVoteV1 = this.getVoteV1.bind(this)
+    this.getVoteV2 = this.getVoteV2.bind(this)
     this.listVotes = this.listVotes.bind(this)
     this.proposalHooks = this.proposalHooks.bind(this)
     this.voteHooks = this.voteHooks.bind(this)
@@ -416,7 +417,21 @@ export class CwProposalSingleQueryClient
     })
   }
   // Modified since `vote` is duplicate enum.
-  getVote = async ({
+  getVoteV1 = async ({
+    proposalId,
+    voter,
+  }: {
+    proposalId: number
+    voter: string
+  }): Promise<VoteResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      vote: {
+        proposal_id: proposalId,
+        voter,
+      },
+    })
+  }
+  getVoteV2 = async ({
     proposalId,
     voter,
   }: {
