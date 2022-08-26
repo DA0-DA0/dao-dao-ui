@@ -63,10 +63,11 @@ export const Cw20StakedBalanceVotingProfileMembership = ({
         disabled={unstakedTokenBalance === 0}
         onClick={onStake}
         size="lg"
-        variant="secondary"
+        variant={unstakedTokenBalance > 0 ? 'primary' : 'secondary'}
       >
         {t('profile.notMember.stakeToken', { tokenSymbol })}
       </Button>
+
       {junoswapHref && (
         <ButtonLink
           className="w-full"

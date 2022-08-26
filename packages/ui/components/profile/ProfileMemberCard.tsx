@@ -101,21 +101,23 @@ export const ProfileMemberCard = ({
           </p>
         </div>
 
-        <Button
-          className="mb-2 w-full"
-          contentContainerClassName="justify-center"
-          disabled={unstakedTokens === 0 || loadingManaging || loadingClaiming}
-          loading={loadingClaiming}
-          size="lg"
-          variant="primary"
-        >
-          {t('button.claimNumTokens', {
-            amount: unstakedTokens.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
-            }),
-            tokenSymbol,
-          })}
-        </Button>
+        {unstakedTokens > 0 && (
+          <Button
+            className="mb-2 w-full"
+            contentContainerClassName="justify-center"
+            disabled={loadingManaging || loadingClaiming}
+            loading={loadingClaiming}
+            size="lg"
+            variant="primary"
+          >
+            {t('button.claimNumTokens', {
+              amount: unstakedTokens.toLocaleString(undefined, {
+                maximumFractionDigits: tokenDecimals,
+              }),
+              tokenSymbol,
+            })}
+          </Button>
+        )}
 
         <Button
           className="mb-0 w-full"
@@ -129,20 +131,20 @@ export const ProfileMemberCard = ({
         </Button>
       </div>
 
-      <div className="py-6 px-6 border-t border-t-border-primary">
-        <Button
-          className="w-full"
-          contentContainerClassName="justify-center primary-text"
-          disabled={!openProposals || loadingManaging || loadingClaiming}
-          size="lg"
-          variant="secondary"
-        >
-          {t('title.openProposals')}
-          {openProposals && !loadingManaging && !loadingClaiming && (
+      {openProposals && (
+        <div className="py-6 px-6 border-t border-t-border-primary">
+          <Button
+            className="w-full"
+            contentContainerClassName="justify-center primary-text"
+            disabled={!openProposals || loadingManaging || loadingClaiming}
+            size="lg"
+            variant="secondary"
+          >
+            {t('title.openProposals')}
             <div className="absolute top-1 right-1 w-2 h-2 bg-[#B3A0FF] rounded-full border border-3"></div>
-          )}
-        </Button>
-      </div>
+          </Button>
+        </div>
+      )}
     </ProfileCardWrapper>
   )
 }
