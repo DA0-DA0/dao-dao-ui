@@ -373,7 +373,8 @@
     "transparentGovernanceOnChain": "Transparent governance, entirely on-chain",
     "usdcTotalValue": "USDC Total Value in DAOs",
     "whatIsADao": "What is a DAO?",
-    "whatIsADaoExplanation": "A DAO is an organization democratically controlled by its members."
+    "whatIsADaoExplanation": "A DAO is an organization democratically controlled by its members.",
+    "footerBeta": "Website is currrently in beta. Please let the developers know if you encounter any issues."
   },
   "success": {
     "addedToken": "Added token to Keplr.",
