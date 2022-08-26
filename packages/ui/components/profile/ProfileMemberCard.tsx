@@ -56,7 +56,7 @@ export const ProfileMemberCard = ({
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       walletName={walletName}
     >
-      <div className="py-6 px-6 border-t border-t-border-primary">
+      <div className="p-6 pb-4 border-t border-t-border-primary">
         <div className="flex flex-row justify-between items-center pb-3 text-xs text-bold">
           <p>{t('title.yourEquity')}</p>
         </div>
