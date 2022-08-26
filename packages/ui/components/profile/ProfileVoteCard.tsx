@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../Button'
+import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'
 
@@ -29,9 +30,8 @@ export const ProfileVoteCard = ({
   return (
     <ProfileCardWrapper
       compact
-      daoName={daoName}
       imgUrl={profileImgUrl}
-      isMember
+      underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       walletName={walletName}
     >
       <div className="flex flex-row justify-between items-center secondary-text">
@@ -65,11 +65,7 @@ export const ProfileVoteCard = ({
         disabled={variant === 'unselected'}
         loading={loading}
         size="lg"
-        variant={
-          variant === 'unselected' || variant === 'loading'
-            ? 'secondary'
-            : 'primary'
-        }
+        variant={variant === 'unselected' || loading ? 'secondary' : 'primary'}
       >
         {t('button.castYourVote')}
       </Button>
