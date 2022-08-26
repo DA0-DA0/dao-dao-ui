@@ -331,6 +331,13 @@ export interface CwProposalSingleReadOnlyInterface {
     proposalId: number
     voter: string
   }) => Promise<VoteResponse>
+  getVoteV2: ({
+    proposalId,
+    voter,
+  }: {
+    proposalId: number
+    voter: string
+  }) => Promise<VoteResponse>
   listVotes: ({
     limit,
     proposalId,
