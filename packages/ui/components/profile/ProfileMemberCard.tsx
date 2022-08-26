@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { formatPercentOf100 } from '@dao-dao/utils'
+
 import { Button } from '../Button'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
@@ -71,7 +73,9 @@ export const ProfileMemberCard = ({
 
         <div className="flex flex-row justify-between items-center pb-3 secondary-text">
           <p>{t('title.votingPower')}</p>
-          <p className="font-mono text-text-primary">{votingPower}%</p>
+          <p className="font-mono text-text-primary">
+            {formatPercentOf100(votingPower)}
+          </p>
         </div>
 
         <div className="flex flex-row justify-between items-center pb-3 secondary-text">
