@@ -33,24 +33,28 @@ export const ProfileNotMemberCard = ({
       walletName={walletName}
     >
       <div className="link-text">{t('profile.notMember.membership')}</div>
+
       <p className="pt-1 pb-3 secondary-text">
         {t('profile.notMember.stakeYourTokens', { tokenSymbol, daoName })}
       </p>
+
       <div className="flex flex-row justify-between pb-7 secondary-text">
         <div>{t('profile.notMember.yourHoldings')}</div>
         <div className="font-mono text-text-interactive-disabled">
           {t('format.token', { val: tokenBalance, tokenSymbol })}
         </div>
       </div>
+
       <Button
         className="mb-2"
-        contentContainerClassName="justify-center primary-text"
-        disabled={true}
+        contentContainerClassName="justify-center"
+        disabled={tokenBalance == 0}
         size="lg"
-        variant="secondary"
+        variant={tokenBalance > 0 ? 'primary' : 'secondary'}
       >
         {t('profile.notMember.stakeToken', { tokenSymbol })}
       </Button>
+
       <Button
         contentContainerClassName="justify-center primary-text"
         size="lg"
