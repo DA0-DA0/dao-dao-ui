@@ -49,6 +49,12 @@ Default.args = ${
         ).replace(/null(,|)?\n/g, `null, \/\/ TODO: Fill in default value.\n`)
       : '{}'
   }
+Default.parameters = {
+  design: {
+    type: 'figma',
+    url: '',
+  },
+}
 `.trimStart()
 
 const project = new Project({
@@ -156,7 +162,7 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
 
   const storyDirectory = sourceFile
     .getDirectoryPath()
-    .replace('packages/ui/components', 'packages/ui/stories')
+    .replace('packages/ui', 'packages/ui/stories')
 
   const generate = async (
     output: string,
