@@ -12,6 +12,8 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
+  FeaturedDao,
+  FeaturedDaos,
   GradientWrapper,
   Logo,
   PageLoader,
@@ -26,8 +28,6 @@ import {
 import {
   AnouncementCard,
   EnterAppButton,
-  FeaturedDao,
-  FeaturedDaos,
   HomepageCards,
   StatsCard,
 } from '@/components'

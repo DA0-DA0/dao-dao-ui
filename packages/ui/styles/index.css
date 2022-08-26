@@ -112,6 +112,8 @@ input[type='number']::-webkit-outer-spin-button {
     --color-error: rgb(var(--v2-error));
     --color-valid: rgb(var(--v2-valid));
 
+    --color-background-base: var(--v2-white);
+
     /* LIGHT THEME */
     /* Text */
     --text-primary: rgba(var(--v2-black), 1);
@@ -200,6 +202,8 @@ input[type='number']::-webkit-outer-spin-button {
 
     /* NEW V2 COLOR SYSTEM */
     /* DARK THEME */
+    --color-background-base: var(--v2-black);
+
     /* Text */
     --text-primary: rgba(var(--v2-white), 1);
     --text-body: rgba(var(--v2-light), 0.95);

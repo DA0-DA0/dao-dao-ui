@@ -9,9 +9,9 @@ import {
   useState,
 } from 'react'
 
-import { useIsVisible } from '@/hooks'
+import { useIsVisible } from '@dao-dao/utils'
 
-import { FeaturedCard } from '../FeaturedCard'
+import { FeaturedCard } from './FeaturedCard'
 
 export interface FeaturedDao {
   name: string
@@ -98,7 +98,7 @@ export const FeaturedDaos = ({ featuredDaos }: FeaturedDaosProps) => {
         onScroll={handleScroll}
         ref={scrollRef}
       >
-        <div className="flex flex-row gap-[16px] py-1 w-max">
+        <div className="flex flex-row gap-4 py-[1px] w-max">
           {featuredDaos.map((props) => (
             <FeaturedCard {...props} key={props.name} className="!w-[260px]" />
           ))}

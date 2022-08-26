@@ -5,13 +5,12 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 
 import { Dao } from '@dao-dao/icons'
-import { Tooltip } from '@dao-dao/ui'
+import { getCardFallbackImage } from '@dao-dao/utils'
 
-import { getCardFallbackImage } from '@/util'
+import { Tooltip } from '../Tooltip'
+import { FeaturedDao } from './FeaturedDaos'
 
-import { FeaturedDao } from './splash'
-
-interface FeaturedCardProps extends FeaturedDao {
+export interface FeaturedCardProps extends FeaturedDao {
   className?: string
 }
 

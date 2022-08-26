@@ -44,7 +44,7 @@ export const ThemeDecorator: DecoratorFn = (Story) => {
     >
       <div
         className={clsx(
-          'absolute top-0 right-0 bottom-0 left-0 p-4 antialiased bg-white body-text',
+          'absolute top-0 right-0 bottom-0 left-0 p-4 antialiased bg-background-base body-text',
           {
             dark: theme === Theme.Dark,
           }

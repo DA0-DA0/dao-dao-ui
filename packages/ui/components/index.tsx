@@ -6,6 +6,7 @@ export * from './not_found'
 export * from './proposal'
 export * from './StakingModal'
 export * from './toasts'
+export * from './featured'
 
 export * from './ActionSelector'
 export * from './Breadcrumbs'

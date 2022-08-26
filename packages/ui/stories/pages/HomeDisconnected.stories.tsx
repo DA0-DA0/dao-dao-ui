@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileHomeDisconnectedCardProps } from 'components/profile/ProfileHomeDisconnectedCard'
 import { makeAppLayoutDecorator } from 'decorators'
 import { HomeDisconnected } from 'pages/HomeDisconnected'
+import { Default as FeaturedDaos } from 'stories/components/featured/FeaturedDaos.stories'
 import { Default as ProfileHomeDisconnectedCard } from 'stories/components/profile/ProfileHomeDisconnectedCard.stories'
 
 export default {
@@ -19,12 +20,14 @@ export default {
   ],
 } as ComponentMeta<typeof HomeDisconnected>
 
-const Template: ComponentStory<typeof HomeDisconnected> = (_args) => (
-  <HomeDisconnected />
+const Template: ComponentStory<typeof HomeDisconnected> = (args) => (
+  <HomeDisconnected {...args} />
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  featuredDaos: FeaturedDaos.args?.featuredDaos,
+}
 Default.parameters = {
   design: {
     type: 'figma',
