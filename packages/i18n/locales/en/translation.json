@@ -1,5 +1,6 @@
 {
   "button": {
+    "abstain": "Abstain",
     "acceptTerms": "I accept the terms",
     "add": "Add",
     "addAnAction": "Add an action",
@@ -37,6 +38,8 @@
     "manage": "Manage",
     "manageStake": "Manage your ${{tokenSymbol}} stake",
     "newProposal": "New proposal",
+    "no": "No",
+    "noWithVeto": "No with veto",
     "numProposalsInInbox_one": "{{count}} Proposal in Inbox",
     "numProposalsInInbox_other": "{{count}} Proposals in Inbox",
     "numProposalsInInbox_zero": "Proposal Inbox",
@@ -54,7 +57,8 @@
     "stakeTokensSuggestion": "Stake some tokens so you can vote next time?",
     "unstake": "Unstake",
     "unstakeTokens": "Unstake tokens",
-    "useExistingToken": "Use an existing token"
+    "useExistingToken": "Use an existing token",
+    "yes": "Yes"
   },
   "commandBar": {
     "home": "Home",
@@ -289,6 +293,7 @@
     "openProposalsTooltip": "These are open proposals for your pinned DAOs shown below.",
     "passed": "Passed",
     "passing": "Passing",
+    "pending": "Pending",
     "percentOfAllVotingPower": "{{percent}} <2>of all voting power</2>",
     "percentStaked": "{{percent}} ${{tokenSymbol}} staked",
     "percentVotingPower": "{{percent}} voting power",

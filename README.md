@@ -21,9 +21,13 @@ cd dao-ui
 yarn
 ```
 
-### Turborepo
+If you're here to work on UI components in isolation:
 
-Run the `dev` script concurrently for all packages to develop locally.
+```bash
+yarn ui storybook
+```
+
+If you're here to work on app-wide stuff, run the `yarn dev` script (equivalent to running `yarn dev` from the `apps/dapp` folder) to run the main app in development mode.
 
 ```bash
 yarn turbo run dev
