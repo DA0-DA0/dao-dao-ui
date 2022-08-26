@@ -59,18 +59,19 @@ export const Cw20StakedBalanceVotingProfileMembership = ({
 
       <Button
         className="mb-2 w-full"
-        contentContainerClassName="justify-center primary-text"
+        contentContainerClassName="justify-center"
         disabled={unstakedTokenBalance === 0}
         onClick={onStake}
         size="lg"
-        variant="secondary"
+        variant={unstakedTokenBalance > 0 ? 'primary' : 'secondary'}
       >
         {t('profile.notMember.stakeToken', { tokenSymbol })}
       </Button>
+
       {junoswapHref && (
         <ButtonLink
           className="w-full"
-          contentContainerClassName="justify-center primary-text"
+          contentContainerClassName="justify-center"
           href={junoswapHref}
           size="lg"
           variant="secondary"

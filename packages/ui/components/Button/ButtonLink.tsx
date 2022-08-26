@@ -11,7 +11,6 @@ import {
 export type ButtonLinkProps = ComponentPropsWithoutRef<'a'> & ButtonifierProps
 
 export const ButtonLink = ({ children, href, ...props }: ButtonLinkProps) => {
-  props.disabled ||= props.loading
   const className = clsx(getButtonifiedClassNames(props), 'inline-block')
 
   // Remote link if starts with http (non-relative path).

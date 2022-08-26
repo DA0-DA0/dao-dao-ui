@@ -29,3 +29,9 @@ Default.parameters = {
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A14852',
   },
 }
+
+export const HaveTokensToStake = Template.bind({})
+HaveTokensToStake.args = {
+  ...Default.args,
+  unstakedTokenBalance: 100,
+}

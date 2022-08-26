@@ -1,7 +1,8 @@
+import { CheckIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { MemberCheck, X } from '@dao-dao/icons'
+import { X } from '@dao-dao/icons'
 
 export interface MembershipPillProps {
   isMember: boolean
@@ -20,7 +21,7 @@ export const MembershipPill = ({
   const text = isMember
     ? t('profile.member.memberOf', { daoName })
     : t('profile.notMember.notAMember')
-  const Icon = isMember ? MemberCheck : X
+  const Icon = isMember ? CheckIcon : X
 
   return (
     <div
