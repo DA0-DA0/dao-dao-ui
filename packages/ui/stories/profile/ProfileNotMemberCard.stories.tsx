@@ -8,7 +8,7 @@ export default {
 } as ComponentMeta<typeof ProfileNotMemberCard>
 
 const Template: ComponentStory<typeof ProfileNotMemberCard> = (args) => (
-  <div className="max-w-[320px]">
+  <div className="max-w-xs">
     <ProfileNotMemberCard {...args} />
   </div>
 )
@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof ProfileNotMemberCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   tokenSymbol: 'DOG',
-  tokenBalance: 0,
+  unstakedTokenBalance: 0,
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/dog_nft.png',
@@ -33,5 +33,5 @@ Default.parameters = {
 export const HaveTokensToStake = Template.bind({})
 HaveTokensToStake.args = {
   ...Default.args,
-  tokenBalance: 100,
+  unstakedTokenBalance: 100,
 }

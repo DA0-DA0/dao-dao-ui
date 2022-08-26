@@ -1,15 +1,22 @@
-import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip, { TooltipProps } from '@reach/tooltip'
-import { forwardRef } from 'react'
+import clsx from 'clsx'
 
-export type TooltipIconProps = Omit<TooltipProps, 'children'>
+import { Info } from '@dao-dao/icons'
 
-export const TooltipIcon = forwardRef<HTMLDivElement, TooltipIconProps>(
-  function TooltipIcon(props, ref) {
-    return (
-      <Tooltip {...props} ref={ref}>
-        <InformationCircleIcon className="shrink-0 w-4 h-4 text-gray-500 hover:text-gray-400 cursor-help" />
-      </Tooltip>
-    )
-  }
+export type TooltipIconProps = Omit<TooltipProps, 'children'> & {
+  className?: string
+}
+
+export const TooltipIcon = ({ className, ...props }: TooltipIconProps) => (
+  <Tooltip {...props}>
+    <p>
+      {/* Make 20% larger than size of text. */}
+      <Info
+        className={clsx(
+          'shrink-0 text-[1.2em] hover:opacity-80 active:opacity-70 transition-opacity cursor-help',
+          className
+        )}
+      />
+    </p>
+  </Tooltip>
 )

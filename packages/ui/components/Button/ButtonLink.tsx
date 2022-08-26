@@ -8,20 +8,13 @@ import {
   getButtonifiedClassNames,
 } from './Buttonifier'
 
-export type ButtonLinkProps = ComponentPropsWithoutRef<'a'> &
-  ButtonifierProps & {
-    remote?: boolean
-  }
+export type ButtonLinkProps = ComponentPropsWithoutRef<'a'> & ButtonifierProps
 
-export const ButtonLink = ({
-  children,
-  href,
-  remote = false,
-  ...props
-}: ButtonLinkProps) => {
-  props.disabled ||= props.loading
-
+export const ButtonLink = ({ children, href, ...props }: ButtonLinkProps) => {
   const className = clsx(getButtonifiedClassNames(props), 'inline-block')
+
+  // Remote link if starts with http (non-relative path).
+  const remote = href?.startsWith('http')
 
   return remote ? (
     <a

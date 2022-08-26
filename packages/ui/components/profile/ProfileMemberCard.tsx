@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '../Button'
+import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 // Represents a tranch of tokens that is currently unstaking and will become
@@ -25,6 +26,7 @@ export interface ProfileMemberCardProps {
   unstakingTokensTranches: UnstakingTokensTranch[]
   unstakedTokens: number
   openProposals?: boolean
+  established: Date
 }
 
 export const ProfileMemberCard = ({
@@ -40,15 +42,16 @@ export const ProfileMemberCard = ({
   unstakingTokensTranches,
   unstakedTokens,
   openProposals,
+  established,
 }: ProfileMemberCardProps) => {
   const { t } = useTranslation()
 
   return (
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
-      daoName={daoName}
+      established={established}
       imgUrl={profileImgUrl}
-      isMember
+      underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       walletName={walletName}
     >
       <div className="py-6 px-6 border-t border-t-border-primary">
@@ -105,7 +108,7 @@ export const ProfileMemberCard = ({
           <Button
             className="mb-2 w-full"
             contentContainerClassName="justify-center"
-            disabled={loadingManaging || loadingClaiming}
+            disabled={loadingManaging}
             loading={loadingClaiming}
             size="lg"
             variant="primary"
@@ -120,9 +123,9 @@ export const ProfileMemberCard = ({
         )}
 
         <Button
-          className="mb-0 w-full"
-          contentContainerClassName="justify-center primary-text"
-          disabled={loadingManaging || loadingClaiming}
+          className="w-full"
+          contentContainerClassName="justify-center"
+          disabled={loadingClaiming}
           loading={loadingManaging}
           size="lg"
           variant="secondary"
@@ -132,16 +135,16 @@ export const ProfileMemberCard = ({
       </div>
 
       {openProposals && (
-        <div className="py-6 px-6 border-t border-t-border-primary">
+        <div className="py-4 px-6 border-t border-t-border-primary">
           <Button
             className="w-full"
-            contentContainerClassName="justify-center primary-text"
+            contentContainerClassName="justify-center"
             disabled={!openProposals || loadingManaging || loadingClaiming}
+            showBadge
             size="lg"
             variant="secondary"
           >
             {t('title.openProposals')}
-            <div className="absolute top-1 right-1 w-2 h-2 bg-[#B3A0FF] rounded-full border border-3"></div>
           </Button>
         </div>
       )}

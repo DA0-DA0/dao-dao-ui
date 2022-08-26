@@ -4,6 +4,8 @@ import {
   ProposalYourVote,
   ProposalYourVoteProps,
 } from '../proposal/ProposalYourVote'
+import { TooltipIcon } from '../TooltipIcon'
+import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileVotedCardProps {
@@ -26,13 +28,19 @@ export const ProfileVotedCard = ({
   return (
     <ProfileCardWrapper
       compact
-      daoName={daoName}
       imgUrl={profileImgUrl}
-      isMember
+      underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       walletName={walletName}
     >
       <div className="flex flex-row justify-between items-center secondary-text">
-        <p>{t('title.votingPower')}</p>
+        <div className="flex flex-row gap-2 items-center">
+          <p>{t('title.votingPower')}</p>
+          <TooltipIcon
+            className="text-icon-secondary"
+            label={t('info.votingPowerAtCreationTooltip')}
+          />
+        </div>
+
         <p className="font-mono text-text-primary">{votingPower}%</p>
       </div>
 

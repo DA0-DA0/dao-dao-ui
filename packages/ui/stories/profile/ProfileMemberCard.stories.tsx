@@ -33,6 +33,7 @@ Default.args = {
   ],
   unstakedTokens: 45,
   openProposals: true,
+  established: new Date(),
 }
 
 Default.parameters = {

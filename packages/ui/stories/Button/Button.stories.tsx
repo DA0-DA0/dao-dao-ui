@@ -9,15 +9,29 @@ export default {
 
 const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />
 
-export const Default = Template.bind({})
-Default.args = {
+export const Primary = Template.bind({})
+Primary.args = {
   variant: 'primary',
   children: 'Connect wallet',
+  disabled: false,
 }
-
-Default.parameters = {
+Primary.parameters = {
   design: {
     type: 'figma',
-    url: 'https://www.figma.com/file/Suewv4vPJeJSzAa5aI1sOv/Light-Jun%C3%B8?node-id=18%3A260',
+    url: 'https://www.figma.com/file/XNQp9ODFr22gkxg1HR92wS/%E2%99%A3%EF%B8%8E--Components?node-id=499%3A4831',
   },
 }
+
+export const Secondary = Template.bind({})
+Secondary.args = {
+  ...Primary.args,
+  variant: 'secondary',
+}
+Secondary.parameters = Primary.parameters
+
+export const Ghost = Template.bind({})
+Ghost.args = {
+  ...Primary.args,
+  variant: 'ghost',
+}
+Ghost.parameters = Primary.parameters

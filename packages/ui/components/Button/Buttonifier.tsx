@@ -13,6 +13,7 @@ export interface ButtonifierProps {
   contentContainerClassName?: string
   pressed?: boolean
   disabled?: boolean
+  showBadge?: boolean
   Logo?: ComponentType<LogoProps>
   className?: string
   children?: ReactNode | ReactNode[]
@@ -23,40 +24,61 @@ export const getButtonifiedClassNames = ({
   size = defaultSize,
   pressed,
   disabled,
+  loading,
   className,
-}: ButtonifierProps) =>
-  clsx(
-    'relative text-text-button-primary rounded-md focus:outline-2 focus:outline-background-button-disabled transition',
+}: ButtonifierProps) => {
+  const disabledOrLoading = disabled || loading
+
+  return clsx(
+    'relative rounded-md focus:outline-2 focus:outline-background-button-disabled transition',
+    // Let variants take color precedence over the text classes used here since
+    // the variants are more specific, so just use the font text styling here.
     {
-      // Primary variant.
-      'bg-background-button': variant === 'primary',
-      'hover:bg-background-button-hover active:bg-background-button-pressed':
-        !disabled && variant === 'primary',
-      'bg-background-button-disabled': disabled && variant === 'primary',
-
-      // Secondary variant.
-      'text-icon-primary bg-background-button-secondary-default':
-        variant === 'secondary' && !pressed,
-      'hover:bg-background-button-secondary-hover active:bg-background-button-secondary-pressed':
-        !disabled && variant === 'secondary',
-      'bg-background-button-secondary-disabled':
-        disabled && variant === 'secondary',
-      'text-text-interactive-active bg-background-interactive-active':
-        variant === 'secondary' && pressed,
-
-      // Ghost variant.
-      'text-icon-primary bg-transparent': variant === 'ghost',
-      'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
-        !disabled && variant === 'ghost',
-      'bg-transparent': disabled && variant === 'ghost',
-
       // Sizes.
       'py-[10px] px-[14px] button-text': size === 'lg',
       'py-1 px-2 button-text-sm': size === 'sm',
       'py-[6px] px-[10px] link-text': size === 'default',
     },
+
+    // Primary variant
+    variant === 'primary' && {
+      // Default
+      'text-text-button-primary bg-background-button hover:bg-background-button-hover active:bg-background-button-pressed':
+        !disabledOrLoading,
+      // Disabled
+      'text-text-button-disabled bg-background-button-disabled':
+        disabledOrLoading,
+    },
+    // Secondary variant
+    variant === 'secondary' && {
+      // Default
+      'hover:bg-background-button-secondary-hover active:bg-background-button-secondary-pressed':
+        !disabledOrLoading,
+      // Default, not pressed
+      'text-icon-primary bg-background-button-secondary-default':
+        !disabledOrLoading && !pressed,
+      // Default, pressed
+      'text-text-interactive-active bg-background-interactive-active':
+        !disabledOrLoading && pressed,
+      // Disabled
+      'text-text-interactive-disabled bg-background-button-secondary-disabled':
+        disabledOrLoading,
+    },
+    // Ghost variant
+    variant === 'ghost' && {
+      // Default
+      'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
+        !disabledOrLoading,
+      // Default, not pressed
+      'text-text-secondary bg-transparent': !disabledOrLoading && !pressed,
+      // Default, pressed
+      'text-text-brand bg-transparent': !disabledOrLoading && pressed,
+      // Disabled
+      'text-text-interactive-disabled bg-transparent': disabledOrLoading,
+    },
     className
   )
+}
 
 export const ButtonifiedChildren = ({
   variant = defaultVariant,
@@ -64,7 +86,7 @@ export const ButtonifiedChildren = ({
   loading = false,
   contentContainerClassName,
   Logo = DefaultLogo,
-  disabled,
+  showBadge,
   children,
 }: ButtonifierProps) => (
   <>
@@ -97,12 +119,15 @@ export const ButtonifiedChildren = ({
         'flex flex-row gap-2 items-center',
         {
           invisible: loading,
-          'text-text-interactive-disabled': disabled,
         },
         contentContainerClassName
       )}
     >
       {children}
     </div>
+
+    {showBadge && (
+      <div className="box-content absolute top-[3px] right-[3px] w-[6px] h-[6px] bg-icon-interactive-active rounded-full border-[3px] border-background-base"></div>
+    )}
   </>
 )
