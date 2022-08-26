@@ -12,7 +12,7 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
 import {
   Button,
-  FeaturedDao,
+  DaoCardInfo,
   FeaturedDaos,
   GradientWrapper,
   Logo,
@@ -31,13 +31,15 @@ import {
   HomepageCards,
   StatsCard,
 } from '@/components'
+import { usePinnedDAOs } from '@/hooks'
 
 interface HomePageProps {
-  featuredDaos: FeaturedDao[]
+  featuredDaos: DaoCardInfo[]
 }
 
 const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
   const { t } = useTranslation()
+  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
 
   const [tvl, setTVL] = useState<number>()
   const [daos, setDaos] = useState<number>()
@@ -101,7 +103,15 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
           <AnouncementCard />
         </div>
 
-        <FeaturedDaos featuredDaos={featuredDaos} />
+        <FeaturedDaos
+          featuredDaos={featuredDaos}
+          isDaoPinned={isPinned}
+          onPin={(coreAddress) =>
+            isPinned(coreAddress)
+              ? setUnpinned(coreAddress)
+              : setPinned(coreAddress)
+          }
+        />
 
         <div className="flex flex-col grid-cols-3 gap-6 justify-around py-6 divide-focus md:grid md:gap-3 md:py-8 md:divide-x">
           <StatsCard>
@@ -188,7 +198,7 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
 export default Home
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const featuredDaos: FeaturedDao[] = []
+  const featuredDaos: DaoCardInfo[] = []
   if (!CI) {
     const resp = await fetch(FEATURED_DAOS_URL)
     // These are returned as a timeseries in the form [{time, value}, ...].

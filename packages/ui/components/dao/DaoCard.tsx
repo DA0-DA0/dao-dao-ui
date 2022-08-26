@@ -11,25 +11,35 @@ import {
 } from '@dao-dao/icons'
 import { formatDate } from '@dao-dao/utils'
 
+import { IconButton } from '../IconButton'
+
 export interface SubDaoInfo {
   parentDaoHref: string
   parentDaoImageUrl: string
 }
 
-export interface DaoCardProps {
+export interface DaoCardInfo {
+  coreAddress: string
   name: string
   description: string
   imageUrl: string
   established: Date
   href: string
 
-  junoBalance: number
+  tokenBalance: number
+  tokenSymbol: string
   proposalCount: number
 
   subDaoInfo?: SubDaoInfo
+}
 
+export interface DaoCardProps extends DaoCardInfo {
   pinned: boolean
   onPin: () => void
+
+  isMember: boolean
+
+  className?: string
 }
 
 export const DaoCard = ({
@@ -38,17 +48,25 @@ export const DaoCard = ({
   imageUrl,
   href,
   established,
-  junoBalance,
+  tokenBalance,
+  tokenSymbol,
   proposalCount,
   pinned,
   onPin,
   subDaoInfo,
+  isMember,
+  className,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
   return (
     <Link href={href}>
-      <a className="flex relative flex-col justify-between items-center py-7 px-6 w-full max-w-[260px] h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all">
+      <a
+        className={clsx(
+          'flex relative flex-col justify-between items-center py-7 px-6 w-full max-w-[260px] h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
+          className
+        )}
+      >
         <div
           className={clsx(
             'flex absolute top-0 left-0 flex-row items-center p-3 w-full',
@@ -65,21 +83,28 @@ export const DaoCard = ({
               </a>
             </Link>
           )}
-          <div className="flex flex-row gap-3">
-            <button
-              onClick={onPin}
-              title={pinned ? t('info.pinned') : t('info.pin')}
-            >
-              <DaoCardPin
-                className={clsx('w-4 h-4', {
-                  'text-icon-secondary': !pinned,
-                  'text-icon-interactive-active': pinned,
-                })}
-              />
-            </button>
-            <div title={t('info.youAreMember')}>
-              <DaoCardMemberCheck className="w-4 h-4 text-icon-secondary" />
-            </div>
+          <div className="flex flex-row gap-3 items-center">
+            <IconButton
+              icon={
+                <DaoCardPin
+                  className={clsx('w-4 h-4', {
+                    'text-icon-secondary': !pinned,
+                    'text-icon-interactive-active': pinned,
+                  })}
+                />
+              }
+              onClick={(event) => {
+                event.preventDefault()
+                onPin()
+              }}
+              variant="ghost"
+            />
+
+            {isMember && (
+              <div title={t('info.youAreMember')}>
+                <DaoCardMemberCheck className="w-4 h-4 text-icon-secondary" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -111,9 +136,7 @@ export const DaoCard = ({
           </p>
           <div className="flex flex-row gap-3 items-center mb-2 font-mono caption-text">
             <Governance className="w-3 h-3" />
-            <p>
-              {t('format.token', { val: junoBalance, tokenSymbol: 'JUNO' })}
-            </p>
+            <p>{t('format.token', { val: tokenBalance, tokenSymbol })}</p>
           </div>
           <div className="flex flex-row gap-3 items-center font-mono caption-text">
             <DaoCardProposals className="w-3 h-3" />

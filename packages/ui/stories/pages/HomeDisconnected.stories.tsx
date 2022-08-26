@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProfileHomeDisconnectedCardProps } from 'components/profile/ProfileHomeDisconnectedCard'
+import { WalletConnectProps } from 'components/WalletConnect'
 import { makeAppLayoutDecorator } from 'decorators'
 import { HomeDisconnected } from 'pages/HomeDisconnected'
-import { Default as FeaturedDaos } from 'stories/components/featured/FeaturedDaos.stories'
+import { Default as FeaturedDaos } from 'stories/components/dao/FeaturedDaos.stories'
 import { Default as ProfileHomeDisconnectedCard } from 'stories/components/profile/ProfileHomeDisconnectedCard.stories'
+import { Default as WalletConnect } from 'stories/components/WalletConnect.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / HomeDisconnected',
@@ -12,9 +14,16 @@ export default {
   decorators: [
     makeAppLayoutDecorator({
       rightCard: (
-        <ProfileHomeDisconnectedCard
-          {...(ProfileHomeDisconnectedCard.args as ProfileHomeDisconnectedCardProps)}
-        />
+        <>
+          <WalletConnect
+            {...(WalletConnect.args as WalletConnectProps)}
+            className="self-end"
+          />
+
+          <ProfileHomeDisconnectedCard
+            {...(ProfileHomeDisconnectedCard.args as ProfileHomeDisconnectedCardProps)}
+          />
+        </>
       ),
     }),
   ],

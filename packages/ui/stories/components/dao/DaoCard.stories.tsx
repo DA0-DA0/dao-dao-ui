@@ -26,8 +26,11 @@ Default.args = {
     parentDaoHref: '/home',
   },
 
-  junoBalance: 120,
+  tokenBalance: 120,
+  tokenSymbol: 'JUNO',
   proposalCount: 25,
+
+  isMember: true,
 }
 
 Default.parameters = {

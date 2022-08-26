@@ -4,6 +4,7 @@
 import { GetStaticProps, NextPage } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { DaoCardInfo } from '@dao-dao/ui'
 import {
   CI,
   FEATURED_DAOS_CACHE_SECONDS,
@@ -12,14 +13,13 @@ import {
 
 import {
   FeaturedDAOsList,
-  FeaturedDao,
   PinnedDAOsList,
   PinnedProposalsList,
   SmallScreenNav,
 } from '@/components'
 
 interface HomePageProps {
-  featuredDaos: FeaturedDao[]
+  featuredDaos: DaoCardInfo[]
 }
 
 const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => (
@@ -37,7 +37,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => (
 export default HomePage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const featuredDaos: FeaturedDao[] = []
+  const featuredDaos: DaoCardInfo[] = []
   if (!CI) {
     const resp = await fetch(FEATURED_DAOS_URL)
     // These are returned as a timeseries in the form [{time, value}, ...].

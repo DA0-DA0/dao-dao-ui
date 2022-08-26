@@ -59,6 +59,7 @@ export const WalletConnect = ({
     <Button
       className={clsx('py-4 hover:outline-brand hover:outline', className)}
       onClick={onConnect}
+      size="lg"
       type="button"
       {...buttonProps}
     >

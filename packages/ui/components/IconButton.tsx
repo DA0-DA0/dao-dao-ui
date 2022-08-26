@@ -1,12 +1,12 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 
 export interface IconButtonProps {
   variant: 'primary' | 'secondary' | 'ghost'
   size?: 'default' | 'xl' | 'large' | 'small' | 'xs'
   icon: ReactNode
   disabled?: boolean
-  onClick: () => void
+  onClick: ComponentProps<'button'>['onClick']
   className?: string
 }
 

@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 
-import { FeaturedDao, FeaturedDaos } from '../components'
+import { DaoCardInfo, FeaturedDaos } from '../components'
 
 export interface HomeDisconnectedProps {
-  featuredDaos: FeaturedDao[]
+  featuredDaos: DaoCardInfo[]
 }
 
 export const HomeDisconnected = ({ featuredDaos }: HomeDisconnectedProps) => {
@@ -27,7 +27,11 @@ export const HomeDisconnected = ({ featuredDaos }: HomeDisconnectedProps) => {
           }}
         ></div>
 
-        <FeaturedDaos featuredDaos={featuredDaos} />
+        <FeaturedDaos
+          featuredDaos={featuredDaos}
+          isDaoPinned={() => false}
+          onPin={() => {}}
+        />
 
         {/* Right shadow. */}
         <div

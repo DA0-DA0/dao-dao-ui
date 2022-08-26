@@ -11,21 +11,19 @@ import {
 
 import { useIsVisible } from '@dao-dao/utils'
 
-import { FeaturedCard } from './FeaturedCard'
-
-export interface FeaturedDao {
-  name: string
-  description: string
-  href: string
-  TVL: number
-  image: string
-}
+import { DaoCard, DaoCardInfo } from '.'
 
 export interface FeaturedDaosProps {
-  featuredDaos: FeaturedDao[]
+  featuredDaos: DaoCardInfo[]
+  isDaoPinned: (coreAddress: string) => boolean
+  onPin: (coreAddress: string) => void
 }
 
-export const FeaturedDaos = ({ featuredDaos }: FeaturedDaosProps) => {
+export const FeaturedDaos = ({
+  featuredDaos,
+  isDaoPinned,
+  onPin,
+}: FeaturedDaosProps) => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 
@@ -100,13 +98,23 @@ export const FeaturedDaos = ({ featuredDaos }: FeaturedDaosProps) => {
       >
         <div className="flex flex-row gap-4 py-[1px] w-max">
           {featuredDaos.map((props) => (
-            <FeaturedCard {...props} key={props.name} className="!w-[260px]" />
+            <DaoCard
+              key={props.coreAddress}
+              className="!w-[260px]"
+              isMember={false}
+              onPin={() => onPin(props.coreAddress)}
+              pinned={isDaoPinned(props.coreAddress)}
+              {...props}
+            />
           ))}
           {featuredDaos.map((props) => (
-            <FeaturedCard
-              {...props}
-              key={props.name}
+            <DaoCard
+              key={props.coreAddress}
               className="!w-[260px] is-clone"
+              isMember={false}
+              onPin={() => onPin(props.coreAddress)}
+              pinned={isDaoPinned(props.coreAddress)}
+              {...props}
             />
           ))}
         </div>

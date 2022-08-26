@@ -6,21 +6,19 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { Button } from '@dao-dao/ui'
+import { Button, DaoCard, DaoCardInfo } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
 
-import { FeaturedCard } from '../FeaturedCard'
-import { FeaturedDao } from '../splash'
 import { DaoCardContainer } from './DaoCardContainer'
 
 export interface FeaturedDAOsListProps {
-  featuredDaos: FeaturedDao[]
+  featuredDaos: DaoCardInfo[]
 }
 
 export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
   const { t } = useTranslation()
-  const { pinnedAddresses } = usePinnedDAOs()
+  const { pinnedAddresses, isPinned, setPinned, setUnpinned } = usePinnedDAOs()
 
   return (
     // Don't render on server since pinnedAddresses come from localStorage,
@@ -43,7 +41,17 @@ export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
 
       <DaoCardContainer>
         {featuredDaos.map((props) => (
-          <FeaturedCard {...props} key={props.name} />
+          <DaoCard
+            key={props.coreAddress}
+            isMember={false}
+            onPin={() =>
+              isPinned(props.coreAddress)
+                ? setUnpinned(props.coreAddress)
+                : setPinned(props.coreAddress)
+            }
+            pinned={isPinned(props.coreAddress)}
+            {...props}
+          />
         ))}
       </DaoCardContainer>
     </SuspenseLoader>
