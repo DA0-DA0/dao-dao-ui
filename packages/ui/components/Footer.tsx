@@ -5,10 +5,9 @@ import { ArrowUpRight, Bubble, Code } from '@dao-dao/icons'
 
 import { ButtonLink } from './Button'
 
-export interface FooterProps {}
-
-export const Footer = ({}: FooterProps) => {
+export const Footer = () => {
   const { t } = useTranslation()
+
   return (
     <div className="max-w-sm text-text-tertiary">
       <p className="py-4">{t('splash.footerBeta')}</p>

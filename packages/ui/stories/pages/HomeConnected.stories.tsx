@@ -15,7 +15,10 @@ export default {
   component: HomeConnected,
   decorators: [
     makeAppLayoutDecorator({
-      rightCard: (
+      navigationProps: {
+        hideInbox: true,
+      },
+      rightSidebar: (
         <>
           <ConnectedWallet
             onDisconnect={() => {}}
@@ -30,9 +33,6 @@ export default {
           />
         </>
       ),
-      navigationProps: {
-        hideInbox: true,
-      },
     }),
   ],
 } as ComponentMeta<typeof HomeConnected>

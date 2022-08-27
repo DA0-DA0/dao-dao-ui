@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Navigation } from 'components/Navigation/Navigation'
+import { Navigation, NavigationProps } from 'components/layout/Navigation'
 
 export default {
-  title: 'DAO DAO UI V2 / components / Navigation / Navigation',
+  title: 'DAO DAO UI V2 / components / layout / Navigation',
   component: Navigation,
 } as ComponentMeta<typeof Navigation>
 
@@ -11,9 +11,9 @@ const Template: ComponentStory<typeof Navigation> = (args) => (
   <Navigation {...args} />
 )
 
-export const Default = Template.bind({})
-Default.args = {
-  isMac: true,
+// Used in `makeAppLayoutDecorator` to provide a default layout for the page
+// stories. Ensure this has all props.
+const DefaultArgs: NavigationProps = {
   inboxCount: 5,
   setCommandModalVisible: () => alert('command!'),
   version: '2.0',
@@ -32,6 +32,9 @@ Default.args = {
     },
   ],
 }
+
+export const Default = Template.bind({})
+Default.args = DefaultArgs
 
 Default.parameters = {
   design: {

@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { WalletProvider } from '@dao-dao/common'
 import { mountedInBrowserAtom } from '@dao-dao/state'
+import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
 import {
@@ -20,7 +21,6 @@ import {
 import { BetaWarningModal } from './BetaWarning'
 import { CommandModal } from './CommandModal'
 import { InstallKeplr } from './InstallKeplr'
-import { Nav } from './Nav'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 
 const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
@@ -88,15 +88,18 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         <CommandModal onClose={() => setCommandModalVisible(false)} />
       )}
 
-      <div className="w-full h-full lg:grid lg:grid-cols-[264px_repeat(4,minmax(0,1fr))]">
-        <div className="hidden lg:block lg:w-[264px]">
-          <Nav />
-        </div>
-
-        <main className="overflow-hidden min-h-screen lg:col-span-4 lg:col-start-2">
-          {children}
-        </main>
-      </div>
+      <StatelessAppLayout
+        // TODO (v2): Set props correctly.
+        navigationProps={{
+          inboxCount: 0,
+          setCommandModalVisible: () => setCommandModalVisible(true),
+          tokenPrices: [],
+          version: '2.0',
+        }}
+        rightSidebar={undefined}
+      >
+        {children}
+      </StatelessAppLayout>
     </>
   )
 }

@@ -2,11 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Disconnected, Layers, Payments } from '@dao-dao/icons'
 
-export interface ProfileHomeDisconnectedCardProps {}
-
-export const ProfileHomeDisconnectedCard = (
-  _props: ProfileHomeDisconnectedCardProps
-) => {
+export const ProfileHomeDisconnectedCard = () => {
   const { t } = useTranslation()
 
   return (

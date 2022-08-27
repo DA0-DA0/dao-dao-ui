@@ -1,29 +1,26 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ConnectWallet } from 'components/ConnectWallet'
-import { ProfileHomeDisconnectedCardProps } from 'components/profile/ProfileHomeDisconnectedCard'
+import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
 import { makeAppLayoutDecorator } from 'decorators'
 import { HomeDisconnected } from 'pages/HomeDisconnected'
 import { Default as FeaturedDaos } from 'stories/components/dao/FeaturedDaos.stories'
-import { Default as ProfileHomeDisconnectedCard } from 'stories/components/profile/ProfileHomeDisconnectedCard.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / HomeDisconnected',
   component: HomeDisconnected,
   decorators: [
     makeAppLayoutDecorator({
-      rightCard: (
-        <>
-          <ConnectWallet className="self-end" onConnect={() => {}} />
-
-          <ProfileHomeDisconnectedCard
-            {...(ProfileHomeDisconnectedCard.args as ProfileHomeDisconnectedCardProps)}
-          />
-        </>
-      ),
       navigationProps: {
         hideInbox: true,
       },
+      rightSidebar: (
+        <>
+          <ConnectWallet className="self-end" onConnect={() => {}} />
+
+          <ProfileHomeDisconnectedCard />
+        </>
+      ),
     }),
   ],
 } as ComponentMeta<typeof HomeDisconnected>

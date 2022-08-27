@@ -8,6 +8,7 @@ import {
   blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+// eslint-disable-next-line regex/invalid
 import { contractVersionSelector } from '@dao-dao/state/recoil/selectors/contract'
 import { CopyToClipboard, ProposalIdDisplay, Tooltip } from '@dao-dao/ui'
 import { CHAIN_TXN_URL_PREFIX, ContractVersion } from '@dao-dao/utils'

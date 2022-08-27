@@ -3,10 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { Inbox } from '@dao-dao/icons'
 
-import { Row } from 'components/Navigation/Row'
+import { Row } from 'components/layout/Row'
 
 export default {
-  title: 'DAO DAO UI V2 / components / Navigation / Row',
+  title: 'DAO DAO UI V2 / components / layout / Row',
   component: Row,
 } as ComponentMeta<typeof Row>
 

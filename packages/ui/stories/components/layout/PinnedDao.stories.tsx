@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { PinnedDao } from 'components/Navigation/PinnedDao'
+import { PinnedDao } from 'components/layout/PinnedDao'
 
 export default {
-  title: 'DAO DAO UI V2 / components / Navigation / PinnedDao',
+  title: 'DAO DAO UI V2 / components / layout / PinnedDao',
   component: PinnedDao,
 } as ComponentMeta<typeof PinnedDao>
 

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
 import { Home, Inbox, PinOutline } from '@dao-dao/icons'
+import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
 import { Logo } from '../Logo'
@@ -23,7 +24,6 @@ export interface TokenPrice {
 
 export interface NavigationProps {
   setCommandModalVisible: () => void
-  isMac: boolean
   inboxCount: number
   version: string
   tokenPrices: TokenPrice[]
@@ -32,13 +32,13 @@ export interface NavigationProps {
 
 export const Navigation = ({
   setCommandModalVisible,
-  isMac,
   inboxCount,
   version,
   tokenPrices,
   hideInbox,
 }: NavigationProps) => {
   const { t } = useTranslation()
+  const { isMac } = usePlatform()
 
   return (
     <nav className="flex sticky top-0 flex-col justify-between p-6 space-y-20 w-full max-w-xs h-screen text-lg">

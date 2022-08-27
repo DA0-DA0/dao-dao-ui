@@ -13,7 +13,7 @@ import { Loader, Logo } from '@dao-dao/ui'
 
 import { commandModalVisibleAtom, pinnedAddressesAtom } from '@/atoms'
 
-import { MobilePinnedDAONavList } from './PinnedDAONavList'
+import { MobilePinnedDAONavList } from './MobilePinnedDAONavList'
 
 interface SmallScreenNavProps {
   className?: string

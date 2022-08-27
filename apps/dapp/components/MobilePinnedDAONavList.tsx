@@ -1,7 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { LibraryIcon, PlusIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,48 +10,6 @@ import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { Logo } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '@/atoms'
-import { NavListItem } from '@/components'
-
-export const PinnedDAONavList = () => {
-  const { t } = useTranslation()
-
-  const pinnedAddresses = useRecoilValue(pinnedAddressesAtom)
-  const daoConfigs = useRecoilValue(
-    waitForAll(
-      pinnedAddresses.map((a) =>
-        CwCoreV0_1_0Selectors.configSelector({ contractAddress: a })
-      )
-    )
-  )
-
-  const daosWithAddresses = useMemo(
-    () =>
-      daoConfigs.map((config, idx) => ({
-        config,
-        address: pinnedAddresses[idx],
-      })),
-    [pinnedAddresses, daoConfigs]
-  )
-
-  return (
-    <ul className="ml-2 list-none">
-      {daosWithAddresses.length > 0 &&
-        daosWithAddresses.map(({ config, address }) => (
-          <NavListItem
-            key={address}
-            href={`/dao/${address}`}
-            icon={LibraryIcon}
-            text={config.name}
-          />
-        ))}
-      <Link href="/dao/create">
-        <a className="flex gap-2 items-center mt-2 hover:underline link-text">
-          <PlusIcon className="w-5 h-5" /> {t('button.create')}
-        </a>
-      </Link>
-    </ul>
-  )
-}
 
 export const MobilePinnedDAONavList = () => {
   const { t } = useTranslation()

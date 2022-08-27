@@ -4,7 +4,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Cw20StakedBalanceVotingProfileMembership } from 'components/profile/Cw20StakedBalanceVotingProfileMembership'
 
 export default {
-  title: 'DAO DAO UI V2 / components / profile / Cw20StakedBalanceVotingProfileMembership',
+  title:
+    'DAO DAO UI V2 / components / profile / Cw20StakedBalanceVotingProfileMembership',
   component: Cw20StakedBalanceVotingProfileMembership,
 } as ComponentMeta<typeof Cw20StakedBalanceVotingProfileMembership>
 

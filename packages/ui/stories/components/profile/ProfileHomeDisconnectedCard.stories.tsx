@@ -3,18 +3,20 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
 
 export default {
-  title: 'DAO DAO UI V2 / components / components / profile / ProfileHomeDisconnectedCard',
+  title:
+    'DAO DAO UI V2 / components / components / profile / ProfileHomeDisconnectedCard',
   component: ProfileHomeDisconnectedCard,
 } as ComponentMeta<typeof ProfileHomeDisconnectedCard>
 
-const Template: ComponentStory<typeof ProfileHomeDisconnectedCard> = (args) => (
+const Template: ComponentStory<typeof ProfileHomeDisconnectedCard> = (
+  _args
+) => (
   <div className="max-w-xs">
-    <ProfileHomeDisconnectedCard {...args} />
+    <ProfileHomeDisconnectedCard />
   </div>
 )
 
 export const Default = Template.bind({})
-Default.args = {}
 Default.parameters = {
   design: {
     type: 'figma',
