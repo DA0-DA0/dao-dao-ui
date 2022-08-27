@@ -43,7 +43,8 @@ const Template: ComponentStory<typeof HomeConnected> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  featuredDaos: FeaturedDaosStory.args?.featuredDaos,
+  featuredDaos: FeaturedDaosStory.args!.featuredDaos,
+  pinnedDaos: FeaturedDaosStory.args!.featuredDaos,
 }
 Default.parameters = {
   design: {

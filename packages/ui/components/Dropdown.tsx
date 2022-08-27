@@ -130,7 +130,7 @@ export const Dropdown = <T extends unknown>({
       {/* Dropdown */}
       <div
         className={clsx(
-          'overflow-hidden absolute right-0 left-0 bg-component-dropdown rounded-b-md border border-t-0 border-border-primary transition-all',
+          'overflow-hidden absolute right-0 left-0 z-10 bg-component-dropdown rounded-b-md border border-t-0 border-border-primary transition-all',
           {
             'opacity-0 pointer-events-none': !open,
             'opacity-100': open,

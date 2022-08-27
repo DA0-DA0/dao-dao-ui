@@ -12,6 +12,7 @@ export interface ButtonifierProps {
   loading?: boolean
   contentContainerClassName?: string
   pressed?: boolean
+  hovering?: boolean
   disabled?: boolean
   showBadge?: boolean
   Logo?: ComponentType<LogoProps>
@@ -30,7 +31,7 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative rounded-md focus:outline-2 focus:outline-background-button-disabled transition',
+    'relative rounded-md focus:outline-2 focus:outline-background-button-disabled transition-all',
     // Let variants take color precedence over the text classes used here since
     // the variants are more specific, so just use the font text styling here.
     {

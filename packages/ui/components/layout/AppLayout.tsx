@@ -19,7 +19,7 @@ export const AppLayout = ({
       <Navigation {...navigationProps} />
     </div>
 
-    <main className="overflow-hidden grow min-h-screen border-x border-border-base">
+    <main className="overflow-y-auto grow pb-6 border-x border-border-base">
       {children}
     </main>
 

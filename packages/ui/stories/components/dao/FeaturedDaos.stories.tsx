@@ -45,16 +45,27 @@ const featuredDao: DaoCardInfo = {
 }
 
 export const Default = Template.bind({})
+// Clone object to prevent comparison issues in pages with sorting (like
+// `HomeConnected`).
 Default.args = {
   featuredDaos: [
     featuredDao,
-    featuredDao,
-    featuredDao,
-    featuredDao,
-    featuredDao,
-    featuredDao,
-    featuredDao,
-    featuredDao,
-    featuredDao,
+    {
+      ...featuredDao,
+      name: 'DAO DAO',
+      established: new Date('August 11, 2022 16:20:00'),
+    },
+    { ...featuredDao },
+    {
+      ...featuredDao,
+      established: new Date(),
+    },
+    {
+      ...featuredDao,
+      name: 'A different DAO',
+    },
+    { ...featuredDao },
+    { ...featuredDao },
+    { ...featuredDao },
   ],
 }

@@ -209,8 +209,6 @@
     "usdc": "{{val, number}} $USDC"
   },
   "info": {
-    "numSelected_one": "{{count}} selected",
-    "numSelected_other": "{{count}} selected",
     "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
@@ -288,6 +286,8 @@
     "numMessages_other": "{{count}} messages",
     "numProposals_one": "{{count}} proposal",
     "numProposals_other": "{{count}} proposals",
+    "numSelected_one": "{{count}} selected",
+    "numSelected_other": "{{count}} selected",
     "numVotes_one": "{{count}} vote",
     "numVotes_other": "{{count}} votes",
     "off": "Off",
@@ -452,6 +452,7 @@
     "nobody": "Nobody",
     "openProposals": "Open proposals",
     "passingThreshold": "Passing threshold",
+    "pinned": "Pinned",
     "previousProposalModule": "Previous proposal module",
     "proposal": "Proposal",
     "proposalActions": "Proposal actions",
@@ -470,6 +471,7 @@
     "removeCw721FromTreasury": "Remove NFT Collection from Treasury",
     "reviewAndSubmit": "Review and submit",
     "search": "Search",
+    "sortBy": "Sort by",
     "spend": "Spend",
     "stake": "Stake",
     "stakeTokens": "Stake Tokens",

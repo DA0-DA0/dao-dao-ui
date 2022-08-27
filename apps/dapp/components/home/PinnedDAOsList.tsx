@@ -7,12 +7,11 @@ import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { PinOutline } from '@dao-dao/icons'
-import { Button } from '@dao-dao/ui'
+import { Button, DaoCardContainer } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
 
 import { PinnedDAOCard } from '../PinnedDAOCard'
-import { DaoCardContainer } from './DaoCardContainer'
 
 export const PinnedDAOsList = () => {
   const { t } = useTranslation()

@@ -6,11 +6,9 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { Button, DaoCard, DaoCardInfo } from '@dao-dao/ui'
+import { Button, DaoCard, DaoCardContainer, DaoCardInfo } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
-
-import { DaoCardContainer } from './DaoCardContainer'
 
 export interface FeaturedDAOsListProps {
   featuredDaos: DaoCardInfo[]

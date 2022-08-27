@@ -7,7 +7,11 @@ export default {
   component: DaoCard,
 } as ComponentMeta<typeof DaoCard>
 
-const Template: ComponentStory<typeof DaoCard> = (args) => <DaoCard {...args} />
+const Template: ComponentStory<typeof DaoCard> = (args) => (
+  <div className="max-w-xs">
+    <DaoCard {...args} />
+  </div>
+)
 
 export const Default = Template.bind({})
 Default.args = {
