@@ -209,6 +209,8 @@
     "usdc": "{{val, number}} $USDC"
   },
   "info": {
+    "numSelected_one": "{{count}} selected",
+    "numSelected_other": "{{count}} selected",
     "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
