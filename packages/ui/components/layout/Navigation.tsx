@@ -9,10 +9,10 @@ import { Home, Inbox, PinOutline } from '@dao-dao/icons'
 import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
+import { DaoDropdown, DaoDropdownInfo } from '../dao'
 import { Logo } from '../Logo'
 import { PricePercentChange } from '../PricePercentChange'
 import { ThemeToggle } from '../ThemeToggle'
-import { PinnedDao } from './PinnedDao'
 import { Row } from './Row'
 
 export interface TokenPrice {
@@ -27,6 +27,7 @@ export interface NavigationProps {
   inboxCount: number
   version: string
   tokenPrices: TokenPrice[]
+  pinnedDaos: DaoDropdownInfo[]
   hideInbox?: boolean
 }
 
@@ -35,6 +36,7 @@ export const Navigation = ({
   inboxCount,
   version,
   tokenPrices,
+  pinnedDaos,
   hideInbox,
 }: NavigationProps) => {
   const { t } = useTranslation()
@@ -85,43 +87,9 @@ export const Navigation = ({
 
         <Row Icon={PinOutline} defaultExpanded label={t('info.pinned')}>
           <div className="overflow-y-auto max-h-[33vh] styled-scrollbar">
-            <PinnedDao
-              dao={{
-                name: 'Core 1',
-                imageUrl: '/placeholders/1.svg',
-              }}
-              defaultExpanded
-            />
-            <PinnedDao
-              dao={{
-                name: 'Raw',
-                imageUrl: '/placeholders/2.svg',
-                subdaos: [
-                  {
-                    name: 'Payroll',
-                    imageUrl: '/placeholders/3.svg',
-                  },
-                  {
-                    name: 'Pool distribution',
-                    imageUrl: '/placeholders/4.svg',
-                    subdaos: [
-                      {
-                        name: 'Native tokens',
-                        imageUrl: '/placeholders/1.svg',
-                      },
-                    ],
-                  },
-                ],
-              }}
-              defaultExpanded
-            />
-            <PinnedDao
-              dao={{
-                name: 'Animals',
-                imageUrl: '/placeholders/5.svg',
-              }}
-              defaultExpanded
-            />
+            {pinnedDaos.map((dao, index) => (
+              <DaoDropdown key={index} dao={dao} defaultExpanded />
+            ))}
           </div>
         </Row>
 

@@ -1,29 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TriangleUp } from '@dao-dao/icons'
 
 import { IconButton } from '../IconButton'
 
-export interface Dao {
+export interface DaoDropdownInfo {
   imageUrl: string
   name: string
-  subdaos?: Dao[]
+  subdaos?: DaoDropdownInfo[]
+  content?: ReactNode
 }
 
-export interface PinnedDaoProps {
-  dao: Dao
+export interface DaoDropdownProps {
+  dao: DaoDropdownInfo
   expandedLocalStorageKey?: string
   defaultExpanded?: boolean
+  showSubdaos?: boolean
 }
 
-export const PinnedDao = ({
-  dao: { imageUrl, name, subdaos },
+export const DaoDropdown = ({
+  dao: { imageUrl, name, subdaos, content },
   expandedLocalStorageKey,
   defaultExpanded = false,
-}: PinnedDaoProps) => {
+  showSubdaos = true,
+}: DaoDropdownProps) => {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(
     expandedLocalStorageKey && typeof localStorage !== 'undefined'
@@ -40,11 +43,11 @@ export const PinnedDao = ({
     <div className="space-y-2">
       <div
         className={clsx('flex flex-row gap-2 items-center py-2 px-2', {
-          'pb-0': subdaos?.length && expanded,
+          'pb-0': (subdaos?.length || content) && expanded,
         })}
       >
         <div className="flex justify-center items-center w-6 h-6">
-          {subdaos?.length ? (
+          {subdaos?.length || content ? (
             <IconButton
               icon={
                 <TriangleUp
@@ -75,14 +78,20 @@ export const PinnedDao = ({
         <p className="text-text-body link-text">{name}</p>
       </div>
 
-      {!!subdaos?.length && expanded && (
-        // w-3 (0.75rem) is half the size of the triangle `IconButton` above, so
-        // this centers the border beneath the arrow.
-        <div className="ml-[calc(1.25rem-1px)] border-l border-border-secondary">
-          {subdaos.map((dao, index) => (
-            <PinnedDao key={index} dao={dao} />
-          ))}
-        </div>
+      {expanded && (
+        <>
+          {content}
+
+          {showSubdaos && !!subdaos?.length && (
+            // w-3 (0.75rem) is half the size of the triangle `IconButton` above, so
+            // this centers the border beneath the arrow.
+            <div className="ml-[calc(1.25rem-1px)] border-l border-border-secondary">
+              {subdaos.map((dao, index) => (
+                <DaoDropdown key={index} dao={dao} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

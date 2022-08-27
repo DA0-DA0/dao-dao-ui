@@ -14,9 +14,6 @@ export default {
   component: HomeConnected,
   decorators: [
     makeAppLayoutDecorator({
-      navigationProps: {
-        hideInbox: true,
-      },
       rightSidebar: (
         <ProfileHomeCard
           {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}

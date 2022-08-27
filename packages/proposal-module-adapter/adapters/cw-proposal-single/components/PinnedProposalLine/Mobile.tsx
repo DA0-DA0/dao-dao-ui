@@ -45,7 +45,7 @@ export const PinnedProposalLineMobile = ({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-4 p-4 rounded-lg bg-primary',
+        'flex flex-col gap-4 p-4 rounded-md bg-primary',
         className
       )}
     >

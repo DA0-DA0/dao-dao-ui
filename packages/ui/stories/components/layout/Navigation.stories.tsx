@@ -33,6 +33,36 @@ const DefaultArgs: NavigationProps = {
       change: 22.34,
     },
   ],
+  pinnedDaos: [
+    {
+      name: 'Core 1',
+      imageUrl: '/placeholders/1.svg',
+    },
+    {
+      name: 'Raw',
+      imageUrl: '/placeholders/2.svg',
+      subdaos: [
+        {
+          name: 'Payroll',
+          imageUrl: '/placeholders/3.svg',
+        },
+        {
+          name: 'Pool distribution',
+          imageUrl: '/placeholders/4.svg',
+          subdaos: [
+            {
+              name: 'Native tokens',
+              imageUrl: '/placeholders/1.svg',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Animals',
+      imageUrl: '/placeholders/5.svg',
+    },
+  ],
 }
 
 export const Default = Template.bind({})

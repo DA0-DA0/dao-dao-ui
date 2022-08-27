@@ -11,7 +11,7 @@ export enum ProposalStatusEnum {
 }
 
 export interface ProposalStatusProps {
-  status: `${ProposalStatusEnum}`
+  status: ProposalStatusEnum
 }
 
 export const ProposalStatus = ({ status }: ProposalStatusProps) => {
@@ -26,7 +26,7 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
 }
 
 const ProposalStatusMap: Record<
-  `${ProposalStatusEnum}`,
+  ProposalStatusEnum,
   {
     Icon: ComponentType<SVGProps<SVGSVGElement>>
     iconClassName: string

@@ -450,6 +450,8 @@
     "nativeBalanceOverTime": "{{denomLabel}} balance over time",
     "needWalletToContinue": "You'll need a wallet to continue",
     "nobody": "Nobody",
+    "numOpenProposals_one": "{{count}} Open Proposal",
+    "numOpenProposals_other": "{{count}} Open Proposals",
     "openProposals": "Open proposals",
     "passingThreshold": "Passing threshold",
     "pinned": "Pinned",

@@ -16,6 +16,9 @@ export const parameters = {
   locales: {
     en: 'English',
   },
+  nextRouter: {
+    isReady: true,
+  },
   // No need to enable `darkMode.stylePreview` because we handle theme manually
   // in `ThemeDecorator`.
 }

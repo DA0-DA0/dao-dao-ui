@@ -1,14 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { PinnedDao } from 'components/layout/PinnedDao'
+import { DaoDropdown } from 'components/dao/DaoDropdown'
 
 export default {
-  title: 'DAO DAO UI V2 / components / layout / PinnedDao',
-  component: PinnedDao,
-} as ComponentMeta<typeof PinnedDao>
+  title: 'DAO DAO UI V2 / components / dao / DaoDropdown',
+  component: DaoDropdown,
+} as ComponentMeta<typeof DaoDropdown>
 
-const Template: ComponentStory<typeof PinnedDao> = (args) => (
-  <PinnedDao {...args} />
+const Template: ComponentStory<typeof DaoDropdown> = (args) => (
+  <DaoDropdown {...args} />
 )
 
 export const Default = Template.bind({})

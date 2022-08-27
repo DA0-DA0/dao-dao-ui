@@ -41,7 +41,7 @@ export const ProposalLineDesktop = ({ className }: BaseProposalLineProps) => {
   const contents = (
     <div
       className={clsx(
-        'grid grid-cols-6 items-center p-4 text-sm rounded-lg transition bg-primary hover:bg-secondary',
+        'grid grid-cols-6 items-center p-4 text-sm rounded-md transition bg-primary hover:bg-secondary',
         {
           'bg-gray-500/30': msSinceUpdated < 24 * 60 * 60 * 1000,
           'bg-card': proposal.status === Status.Open,

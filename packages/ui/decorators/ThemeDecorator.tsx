@@ -34,8 +34,6 @@ export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
     return () => channel.off(DARK_MODE_EVENT_NAME, updater)
   }, [])
 
-  console.log(ctx)
-
   return (
     <ThemeProvider
       accentColor={accentColor}

@@ -109,11 +109,11 @@ const getSortOptions = (
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleUpperCase()),
   },
   {
-    label: 'Newer',
+    label: 'Newest',
     value: (a, b) => b.established.getTime() - a.established.getTime(),
   },
   {
-    label: 'Older',
+    label: 'Oldest',
     value: (a, b) => a.established.getTime() - b.established.getTime(),
   },
 ]

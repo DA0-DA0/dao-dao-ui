@@ -45,7 +45,7 @@ export const PinnedProposalLineDesktop = ({
   return (
     <div
       className={clsx(
-        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 rounded-lg bg-primary',
+        'grid grid-cols-[10ch_3fr_5fr_2fr] gap-4 items-center p-4 rounded-md bg-primary',
         className
       )}
     >

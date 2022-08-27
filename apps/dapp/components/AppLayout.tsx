@@ -95,6 +95,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           setCommandModalVisible: () => setCommandModalVisible(true),
           tokenPrices: [],
           version: '2.0',
+          pinnedDaos: [],
         }}
         rightSidebar={undefined}
         wallet={<SidebarWallet />}

@@ -1,6 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalYourVote } from 'components/proposal/ProposalYourVote'
+import {
+  ProposalYourVote,
+  ProposalYourVoteEnum,
+} from 'components/proposal/ProposalYourVote'
 
 export default {
   title: 'DAO DAO UI V2 / components / proposal / ProposalYourVote',
@@ -9,10 +12,10 @@ export default {
 
 const Template: ComponentStory<typeof ProposalYourVote> = () => (
   <div className="flex flex-row gap-2">
-    <ProposalYourVote variant="abstain" />
-    <ProposalYourVote variant="pending" />
-    <ProposalYourVote variant="no" />
-    <ProposalYourVote variant="yes" />
+    <ProposalYourVote vote={ProposalYourVoteEnum.Abstain} />
+    <ProposalYourVote vote={ProposalYourVoteEnum.Pending} />
+    <ProposalYourVote vote={ProposalYourVoteEnum.No} />
+    <ProposalYourVote vote={ProposalYourVoteEnum.Yes} />
   </div>
 )
 

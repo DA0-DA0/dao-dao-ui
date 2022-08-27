@@ -2,25 +2,33 @@ import clsx from 'clsx'
 
 import { convertToTitlecase } from '@dao-dao/utils'
 
-export interface ProposalYourVoteProps {
-  variant: 'abstain' | 'pending' | 'no' | 'yes'
+export enum ProposalYourVoteEnum {
+  Abstain = 'abstain',
+  Pending = 'pending',
+  No = 'no',
+  Yes = 'yes',
 }
 
-export const ProposalYourVote = ({ variant }: ProposalYourVoteProps) => (
+export interface ProposalYourVoteProps {
+  vote: ProposalYourVoteEnum
+}
+
+export const ProposalYourVote = ({ vote }: ProposalYourVoteProps) => (
   <div
     className={clsx(
       'flex relative justify-center items-center py-1 px-4 w-20 text-sm font-medium rounded-full',
-      variant === 'abstain'
+      vote === ProposalYourVoteEnum.Abstain
         ? 'text-text-secondary bg-background-secondary'
-        : variant === 'pending'
+        : vote === ProposalYourVoteEnum.Pending
         ? 'border-2 border-border-primary'
-        : variant === 'no'
+        : vote === ProposalYourVoteEnum.No
         ? 'text-text-interactive-error bg-background-interactive-error'
-        : 'text-text-interactive-valid bg-background-interactive-valid'
+        : // vote === ProposalYourVoteEnum.Yes
+          'text-text-interactive-valid bg-background-interactive-valid'
     )}
   >
-    {convertToTitlecase(variant)}
-    {variant === 'pending' && (
+    {convertToTitlecase(vote)}
+    {vote === ProposalYourVoteEnum.Pending && (
       <div className="absolute top-0 right-0 w-2 h-2 bg-[#F53E86] rounded-full"></div>
     )}
   </div>

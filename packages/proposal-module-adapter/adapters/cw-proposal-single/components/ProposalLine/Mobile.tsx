@@ -35,7 +35,7 @@ export const ProposalLineMobile = ({ className }: BaseProposalLineProps) => {
   return (
     <div
       className={clsx(
-        'flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-lg bg-primary hover:bg-secondary',
+        'flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-md bg-primary hover:bg-secondary',
         {
           'bg-purple-300/30': msSinceUpdated < 24 * 60 * 60 * 1000,
           'bg-card': proposal.status === Status.Open,

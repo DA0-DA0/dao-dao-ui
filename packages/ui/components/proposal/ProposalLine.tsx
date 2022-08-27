@@ -75,13 +75,13 @@ export const ProposalLineLoader = (props: ProposalLineLoaderProps) => (
 )
 
 const ProposalLineLoaderDesktop = ({ Logo }: ProposalLineLoaderProps) => (
-  <div className="hidden justify-center items-center h-[3.25rem] bg-primary rounded-lg md:flex">
+  <div className="hidden justify-center items-center h-[3.25rem] bg-primary rounded-md md:flex">
     <Logo className="animate-spin-medium" />
   </div>
 )
 
 const ProposalLineLoaderMobile = ({ Logo }: ProposalLineLoaderProps) => (
-  <div className="flex justify-center items-center h-[9.5rem] bg-primary rounded-lg md:hidden">
+  <div className="flex justify-center items-center h-[9.5rem] bg-primary rounded-md md:hidden">
     <Logo className="animate-spin-medium" />
   </div>
 )
