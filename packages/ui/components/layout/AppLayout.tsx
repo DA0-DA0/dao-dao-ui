@@ -4,14 +4,16 @@ import { Footer } from '../Footer'
 import { Navigation, NavigationProps } from './Navigation'
 
 export interface AppLayoutProps {
-  children: ReactNode
   navigationProps: NavigationProps
+  children: ReactNode
+  wallet: ReactNode
   rightSidebar: ReactNode
 }
 
 export const AppLayout = ({
-  children,
   navigationProps,
+  children,
+  wallet,
   rightSidebar,
 }: AppLayoutProps) => (
   <div className="flex flex-row items-stretch w-full h-full">
@@ -23,10 +25,14 @@ export const AppLayout = ({
       {children}
     </main>
 
-    <div className="flex flex-col shrink-0 items-stretch p-6 space-y-6 w-96">
-      {rightSidebar}
+    <div className="flex flex-col shrink-0 items-stretch p-6 pt-0 w-96">
+      {wallet}
 
-      <Footer />
+      <div className="mt-2">{rightSidebar}</div>
+
+      <div className="mt-7">
+        <Footer />
+      </div>
     </div>
   </div>
 )

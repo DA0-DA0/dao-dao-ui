@@ -29,10 +29,9 @@ export const HomeConnected = ({
 
   return (
     <div className="flex flex-col gap-8 items-stretch">
-      <p className="mx-24 mt-12 header-text">{t('title.home')}</p>
-
-      {/* Divider */}
-      <div className="mx-24 h-[1px] bg-border-secondary"></div>
+      <p className="mx-24 h-20 leading-[5rem] border-b border-border-secondary header-text">
+        {t('title.home')}
+      </p>
 
       <p className="mx-24 title-text">{t('title.featuredDaos')}</p>
 

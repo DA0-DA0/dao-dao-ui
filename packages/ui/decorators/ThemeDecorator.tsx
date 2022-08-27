@@ -10,7 +10,7 @@ import { Theme, ThemeProvider } from '../theme'
 
 const channel = addons.getChannel()
 
-export const ThemeDecorator: DecoratorFn = (Story) => {
+export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
   const [accentColor, setAccentColor] = useState<string>()
 
   const isDarkMode = useDarkMode()
@@ -34,6 +34,8 @@ export const ThemeDecorator: DecoratorFn = (Story) => {
     return () => channel.off(DARK_MODE_EVENT_NAME, updater)
   }, [])
 
+  console.log(ctx)
+
   return (
     <ThemeProvider
       accentColor={accentColor}
@@ -44,9 +46,12 @@ export const ThemeDecorator: DecoratorFn = (Story) => {
     >
       <div
         className={clsx(
-          'absolute top-0 right-0 bottom-0 left-0 p-4 antialiased bg-background-base body-text',
+          'absolute top-0 right-0 bottom-0 left-0 antialiased bg-background-base body-text',
           {
             dark: theme === Theme.Dark,
+            // Don't add padding when displaying entire pages, to make the
+            // storybook window most similar to a browser.
+            'p-4': !ctx.title.includes('/ pages /'),
           }
         )}
       >

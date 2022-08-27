@@ -41,10 +41,10 @@ export const Navigation = ({
   const { isMac } = usePlatform()
 
   return (
-    <nav className="flex sticky top-0 flex-col justify-between p-6 space-y-20 w-full max-w-xs h-screen text-lg">
+    <nav className="flex flex-col justify-between p-6 pt-0 space-y-20 w-full h-full text-lg">
       <div>
         <Link href="/home">
-          <a className="flex flex-row gap-2 items-center py-4 mb-2 border-b border-border-secondary">
+          <a className="flex flex-row gap-2 items-center mb-2 h-20 border-b border-border-secondary">
             <Logo size={32} />
             <p className="header-text">{t('meta.title')}</p>
           </a>

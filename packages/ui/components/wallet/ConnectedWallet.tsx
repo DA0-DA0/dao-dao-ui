@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next'
 
 import { Link, Tag, X } from '@dao-dao/icons'
 
-import { IconButton } from './IconButton'
-import { Tooltip } from './Tooltip'
+import { IconButton } from '../IconButton'
+import { Tooltip } from '../Tooltip'
 
 export interface ConnectedWalletProps {
   walletName: string
   walletAddress: string
-  tokenBalance: number
+  tokenBalance?: number
   tokenSymbol: string
   onDisconnect?: () => void
   className?: string
@@ -46,9 +46,15 @@ export const ConnectedWallet = ({
         <div className="flex flex-col gap-1 justify-center">
           <p className="text-text-body primary-text">{walletName}</p>
           <p className="font-mono legend-text">
-            {tokenBalance.toLocaleString(undefined, {
-              maximumFractionDigits: 6,
-            })}{' '}
+            {tokenBalance !== undefined ? (
+              <>
+                {tokenBalance.toLocaleString(undefined, {
+                  maximumFractionDigits: 6,
+                })}
+              </>
+            ) : (
+              '...'
+            )}{' '}
             ${tokenSymbol}
           </p>
         </div>

@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Sensors } from '@dao-dao/icons'
 
-import { Button } from './Button'
-import { ButtonProps } from './Button/Button'
+import { Button, ButtonProps } from '../Button'
 
 export interface ConnectWalletProps extends Partial<ButtonProps> {
   onConnect: () => void

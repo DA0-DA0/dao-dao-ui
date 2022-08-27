@@ -14,6 +14,8 @@ const Template: ComponentStory<typeof ProfileHomeCard> = (args) => (
 )
 
 export const Default = Template.bind({})
+// Wallet details are used in other story files, like `SidebarWallet` and
+// `makeAppLayoutDecorator`.
 Default.args = {
   walletName: '@Modern-Edamame',
   profileImgUrl: '/dog_nft.png',

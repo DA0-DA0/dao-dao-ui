@@ -8,6 +8,7 @@ export * from './StakingModal'
 export * from './toasts'
 export * from './dao'
 export * from './layout'
+export * from './wallet'
 
 export * from './ActionSelector'
 export * from './Breadcrumbs'

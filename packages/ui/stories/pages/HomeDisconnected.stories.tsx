@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ConnectWallet } from 'components/ConnectWallet'
 import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
 import { makeAppLayoutDecorator } from 'decorators'
 import { HomeDisconnected } from 'pages/HomeDisconnected'
@@ -14,13 +13,11 @@ export default {
       navigationProps: {
         hideInbox: true,
       },
-      rightSidebar: (
-        <>
-          <ConnectWallet className="self-end" onConnect={() => {}} />
-
-          <ProfileHomeDisconnectedCard />
-        </>
-      ),
+      rightSidebar: <ProfileHomeDisconnectedCard />,
+      sidebarWalletProps: {
+        connected: false,
+        onConnect: () => {},
+      },
     }),
   ],
 } as ComponentMeta<typeof HomeDisconnected>

@@ -8,7 +8,9 @@ export default {
 } as ComponentMeta<typeof Navigation>
 
 const Template: ComponentStory<typeof Navigation> = (args) => (
-  <Navigation {...args} />
+  <div className="max-w-xs">
+    <Navigation {...args} />
+  </div>
 )
 
 // Used in `makeAppLayoutDecorator` to provide a default layout for the page

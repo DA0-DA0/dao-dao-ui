@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ConnectedWallet } from 'components/ConnectedWallet'
 import {
   ProfileHomeCard,
   ProfileHomeCardProps,
@@ -19,19 +18,9 @@ export default {
         hideInbox: true,
       },
       rightSidebar: (
-        <>
-          <ConnectedWallet
-            onDisconnect={() => {}}
-            tokenBalance={ProfileHomeCardStory.args!.unstakedBalance!}
-            tokenSymbol={ProfileHomeCardStory.args!.tokenSymbol!}
-            walletAddress="juno123xyz"
-            walletName={ProfileHomeCardStory.args!.walletName!}
-          />
-
-          <ProfileHomeCard
-            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-          />
-        </>
+        <ProfileHomeCard
+          {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
+        />
       ),
     }),
   ],

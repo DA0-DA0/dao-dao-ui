@@ -1,10 +1,11 @@
 /* eslint-disable i18next/no-literal-string */
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { SidebarWallet, SidebarWalletProps } from 'components'
 import { AppLayout } from 'components/layout/AppLayout'
 import { NavigationProps } from 'components/layout/Navigation'
-import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
 import { Default as NavigatonStory } from 'stories/components/layout/Navigation.stories'
+import { Connected as ConnectedSidebarWalletStory } from 'stories/components/layout/SidebarWallet/SidebarWallet.stories'
 
 export default {
   title: 'DAO DAO UI V2 / components / layout / AppLayout',
@@ -22,6 +23,11 @@ Default.args = {
       <p>App content</p>
     </div>
   ),
-  rightSidebar: <ProfileHomeDisconnectedCard />,
+  rightSidebar: <p>Right sidebar content</p>,
   navigationProps: NavigatonStory.args as NavigationProps,
+  wallet: (
+    <SidebarWallet
+      {...(ConnectedSidebarWalletStory.args as SidebarWalletProps)}
+    />
+  ),
 }

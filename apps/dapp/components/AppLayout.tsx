@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { PropsWithChildren, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { WalletProvider } from '@dao-dao/common'
+import { SidebarWallet, WalletProvider } from '@dao-dao/common'
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
@@ -97,6 +97,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           version: '2.0',
         }}
         rightSidebar={undefined}
+        wallet={<SidebarWallet />}
       >
         {children}
       </StatelessAppLayout>
