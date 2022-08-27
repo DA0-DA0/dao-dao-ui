@@ -1,5 +1,11 @@
 // `yarn storybook:generate` to generate all missing storybook files.
-// `yarn storybook:generate <glob>` to generate just the matching files.
+
+// `yarn storybook:generate <glob>` to generate just the missing storybook files
+// for the matching files. The argument will automatically be prefixed with
+// `**/` if it does not start with it, and suffixed with `.{ts,tsx}` if `.ts`
+// does not exist anywhere.
+
+// Author: Noah Saso (@NoahSaso)
 
 import fs from 'fs'
 import path from 'path'
@@ -56,13 +62,6 @@ Default.parameters = {
   },
 }
 `.trimStart()
-
-const project = new Project({
-  tsConfigFilePath: path.resolve(__dirname, '../tsconfig.json'),
-  skipAddingFilesFromTsConfig: true,
-})
-// Only add components.
-project.addSourceFilesAtPaths('{pages,components}/**/*.{ts,tsx}')
 
 const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
   const baseName = sourceFile.getBaseNameWithoutExtension()
@@ -213,15 +212,36 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
   }
 }
 
+const project = new Project({
+  tsConfigFilePath: path.resolve(__dirname, '../tsconfig.json'),
+  skipAddingFilesFromTsConfig: true,
+})
+
 // Add missing stories.
 ;(async () => {
   try {
     // Use arg for source files glob pattern if present.
-    const arg = process.argv[2]
+    let arg = process.argv[2]
+    if (arg) {
+      // Automatically prefix with all levels glob.
+      if (!arg.startsWith('**/')) {
+        arg = '**/' + arg
+      }
+      // Automatically add TypeScript extension if not supplied.
+      if (!arg.includes('.ts')) {
+        arg += '.{ts,tsx}'
+      }
+
+      project.addSourceFilesAtPaths(arg)
+    } else {
+      // Add all pages and components.
+      project.addSourceFilesAtPaths('{pages,components}/**/*.{ts,tsx}')
+    }
+
     await Promise.all(
-      (arg ? project.getSourceFiles(arg) : project.getSourceFiles()).map(
-        (sourceFile) => addMissingStoriesForSourceFile(sourceFile)
-      )
+      project
+        .getSourceFiles()
+        .map((sourceFile) => addMissingStoriesForSourceFile(sourceFile))
     )
   } catch (e) {
     // Catch anything bad that happens
