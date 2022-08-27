@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProfileHomeDisconnectedCardProps } from 'components/profile/ProfileHomeDisconnectedCard'
-import { WalletConnectProps } from 'components/WalletConnect'
 import { makeAppLayoutDecorator } from 'decorators'
 import { HomeDisconnected } from 'pages/HomeDisconnected'
 import { Default as FeaturedDaos } from 'stories/components/dao/FeaturedDaos.stories'
@@ -16,8 +15,10 @@ export default {
       rightCard: (
         <>
           <WalletConnect
-            {...(WalletConnect.args as WalletConnectProps)}
             className="self-end"
+            connected={false}
+            onConnect={() => {}}
+            walletBalanceDenom="JUNO"
           />
 
           <ProfileHomeDisconnectedCard
@@ -25,6 +26,9 @@ export default {
           />
         </>
       ),
+      navigationProps: {
+        hideInbox: true,
+      },
     }),
   ],
 } as ComponentMeta<typeof HomeDisconnected>
@@ -41,5 +45,8 @@ Default.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=272%3A64768',
+  },
+  nextRouter: {
+    asPath: '/home',
   },
 }

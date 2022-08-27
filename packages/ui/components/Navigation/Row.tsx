@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { ComponentType, ReactNode, SVGProps, useEffect, useState } from 'react'
 
 import { UnfoldLess, UnfoldMore } from '@dao-dao/icons'
@@ -31,6 +32,7 @@ export const Row = ({
   localHref,
   iconClassName,
 }: RowProps) => {
+  const { asPath } = useRouter()
   const [expanded, setExpanded] = useState(
     expandedLocalStorageKey && typeof localStorage !== 'undefined'
       ? localStorage.getItem(expandedLocalStorageKey) === '1'
@@ -50,6 +52,8 @@ export const Row = ({
         className={clsx('flex flex-row gap-4 items-center p-2 body-text', {
           'hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer':
             onClick || localHref,
+          'bg-background-interactive-selected rounded-md':
+            localHref && localHref === asPath,
         })}
         onClick={onClick}
       >

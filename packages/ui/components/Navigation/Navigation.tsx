@@ -27,6 +27,7 @@ export interface NavigationProps {
   inboxCount: number
   version: string
   tokenPrices: TokenPrice[]
+  hideInbox?: boolean
 }
 
 export const Navigation = ({
@@ -35,6 +36,7 @@ export const Navigation = ({
   inboxCount,
   version,
   tokenPrices,
+  hideInbox,
 }: NavigationProps) => {
   const { t } = useTranslation()
 
@@ -67,17 +69,19 @@ export const Navigation = ({
 
         <Row Icon={Home} label={t('title.home')} localHref="/home" />
 
-        <Row
-          Icon={Inbox}
-          label={
-            inboxCount
-              ? t('title.inboxWithCount', { count: inboxCount })
-              : t('title.inbox')
-          }
-          showBadge={inboxCount > 0}
-        >
-          <p className="p-5 text-sm">Inbox content</p>
-        </Row>
+        {!hideInbox && (
+          <Row
+            Icon={Inbox}
+            label={
+              inboxCount
+                ? t('title.inboxWithCount', { count: inboxCount })
+                : t('title.inbox')
+            }
+            showBadge={inboxCount > 0}
+          >
+            <p className="p-5 text-sm">Inbox content</p>
+          </Row>
+        )}
 
         <Row Icon={PinOutline} defaultExpanded label={t('info.pinned')}>
           <div className="overflow-y-auto max-h-[33vh] styled-scrollbar">
