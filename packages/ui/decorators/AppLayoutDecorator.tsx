@@ -1,10 +1,10 @@
 import { DecoratorFn } from '@storybook/react'
 import { ReactNode } from 'react'
 
-import { FooterProps } from 'components/Footer'
-import { NavigationProps } from 'components/Navigation'
-import { Default as Footer } from 'stories/components/Footer.stories'
-import { Default as Navigation } from 'stories/components/Navigation/Navigation.stories'
+import { Footer, FooterProps } from 'components/Footer'
+import { Navigation, NavigationProps } from 'components/Navigation'
+import { Default as FooterStory } from 'stories/components/Footer.stories'
+import { Default as NavigationStory } from 'stories/components/Navigation/Navigation.stories'
 
 export interface makeAppLayoutDecoratorProps {
   rightCard: ReactNode
@@ -21,7 +21,7 @@ export const makeAppLayoutDecorator: (
       <div className="flex flex-row items-stretch w-full h-full">
         <div className="shrink-0 w-[264px]">
           <Navigation
-            {...(Navigation.args as NavigationProps)}
+            {...(NavigationStory.args as NavigationProps)}
             {...navigationProps}
           />
         </div>
@@ -30,10 +30,10 @@ export const makeAppLayoutDecorator: (
           <Story />
         </main>
 
-        <div className="flex flex-col shrink-0 items-stretch p-6 space-y-6 w-[336px]">
+        <div className="flex flex-col shrink-0 items-stretch p-6 space-y-6 w-96">
           {rightCard}
 
-          <Footer {...(Footer.args as FooterProps)} />
+          <Footer {...(FooterStory.args as FooterProps)} />
         </div>
       </div>
     )

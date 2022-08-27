@@ -19,7 +19,7 @@ Default.args = {
   profileImgUrl: '/dog_nft.png',
   established: new Date(),
   tokenSymbol: 'JUNO',
-  unstakedBalance: 2401,
+  unstakedBalance: 2400.111111,
   stakedBalance: 1603,
   numDaos: 23,
   numVotes: 234,
