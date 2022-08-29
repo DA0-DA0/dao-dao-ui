@@ -16,8 +16,7 @@ import {
   PinnedProposalLineMobile,
   ProposalDetails,
   ProposalInfoCard,
-  ProposalLineDesktop,
-  ProposalLineMobile,
+  ProposalLine,
   ProposalVoteDecisionStatus,
   ProposalVotes,
 } from './components'
@@ -90,10 +89,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       ProposalVoteDecisionStatus,
       ProposalInfoCard,
       ProposalDetails,
-      ProposalLine: {
-        Desktop: ProposalLineDesktop,
-        Mobile: ProposalLineMobile,
-      },
+      ProposalLine,
       PinnedProposalLine: {
         Desktop: PinnedProposalLineDesktop,
         Mobile: PinnedProposalLineMobile,
