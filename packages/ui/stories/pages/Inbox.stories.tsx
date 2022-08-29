@@ -1,12 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
-
 import {
   ProfileHomeCard,
   ProfileHomeCardProps,
 } from 'components/profile/ProfileHomeCard'
-import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
+import { makeAppLayoutDecorator } from 'decorators'
 import { Inbox } from 'pages/Inbox'
 import { Default as NavigationStory } from 'stories/components/layout/Navigation.stories'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
@@ -23,15 +21,10 @@ export default {
         />
       ),
     }),
-    DaoPageWrapperDecorator,
   ],
 } as ComponentMeta<typeof Inbox>
 
-const Template: ComponentStory<typeof Inbox> = (args) => {
-  const { proposalModules } = useDaoInfoContext()
-
-  return <Inbox {...args} proposalModules={proposalModules} />
-}
+const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />
 
 export const Default = Template.bind({})
 Default.args = {

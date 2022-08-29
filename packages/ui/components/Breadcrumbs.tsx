@@ -9,10 +9,15 @@ export interface BreadcrumbsProps {
     href: string
     label: string
   }[]
+  current: string
   className?: string
 }
 
-export const Breadcrumbs = ({ crumbs, className }: BreadcrumbsProps) => (
+export const Breadcrumbs = ({
+  crumbs,
+  current,
+  className,
+}: BreadcrumbsProps) => (
   <div
     className={clsx(
       'flex flex-row gap-2 items-center text-text-secondary header-text',
@@ -22,21 +27,14 @@ export const Breadcrumbs = ({ crumbs, className }: BreadcrumbsProps) => (
     {crumbs.map(({ href, label }, idx) => (
       <Fragment key={idx}>
         <Link href={href}>
-          <a
-            className={clsx(
-              'mx-2 hover:opacity-80 transition-opacity',
-              // Highlight last crumb.
-              idx === crumbs.length - 1 && 'text-text-primary'
-            )}
-          >
-            {label}
-          </a>
+          <a className="mx-2 hover:opacity-80 transition-opacity">{label}</a>
         </Link>
 
-        {idx < crumbs.length - 1 && (
-          <ArrowForward className="w-5 h-5 text-icon-tertiary" />
-        )}
+        <ArrowForward className="w-5 h-5 text-icon-tertiary" />
       </Fragment>
     ))}
+
+    {/* Highlight last crumb. */}
+    <p className="mx-2 text-text-primary">{current}</p>
   </div>
 )

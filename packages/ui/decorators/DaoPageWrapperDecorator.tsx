@@ -41,12 +41,20 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
       name: 'DAO Name',
       description: 'DAO Description',
       imageUrl: 'https://moonphase.is/image.svg',
+      // Random date in the past 12 months.
+      created: new Date(
+        Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
+      ),
     }),
     []
   )
 
   return (
-    <DaoPageWrapper description="DAO Description" info={info} title="DAO Name">
+    <DaoPageWrapper
+      description={info.description}
+      info={info}
+      title={info.name}
+    >
       <Story />
     </DaoPageWrapper>
   )

@@ -9,10 +9,20 @@
 export const formatPercentOf100 = (percentOf100: number) =>
   percentOf100.toLocaleString(undefined, { maximumSignificantDigits: 4 }) + '%'
 
-export const dateFormatter = new Intl.DateTimeFormat('default', {
+export const dateFormatterNoDay = new Intl.DateTimeFormat('default', {
   month: 'long',
   day: undefined,
   year: 'numeric',
 })
+export const dateFormatterNoYear = new Intl.DateTimeFormat('default', {
+  month: 'long',
+  day: 'numeric',
+  year: undefined,
+})
 
-export const formatDate = (date: Date) => dateFormatter.format(date)
+// If this year, add date in month and ignore year.
+// Otherwise, add year and ignore date in month.
+export const formatDate = (date: Date) =>
+  date.getFullYear() === new Date().getFullYear()
+    ? dateFormatterNoYear.format(date)
+    : dateFormatterNoDay.format(date)

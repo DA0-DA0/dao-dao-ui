@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalModule } from '@dao-dao/utils'
-
 import {
   DaoDropdown,
   DaoDropdownInfo,
@@ -26,7 +24,6 @@ export interface DaoWithProposals {
 
 export interface InboxProps {
   daosWithProposals: DaoWithProposals[]
-  proposalModules: ProposalModule[]
 }
 
 export const Inbox = ({ daosWithProposals }: InboxProps) => {

@@ -30,6 +30,7 @@ export interface DaoInfo {
   name: string
   description: string
   imageUrl: string | null
+  created: Date | undefined
 }
 
 const DaoInfoContext = createContext<DaoInfo | null>(null)

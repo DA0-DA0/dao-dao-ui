@@ -1,9 +1,13 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
+import { getCardFallbackImage } from '@dao-dao/utils'
+
 export interface DaoImageProps {
   size: 'sm' | 'lg'
-  imageUrl: string
+  imageUrl: string | undefined | null
+  // Used to get placeholder image if no `imageUrl` present.
+  coreAddress?: string
   parentDao?: {
     href: string
     imageUrl: string
@@ -14,6 +18,7 @@ export interface DaoImageProps {
 export const DaoImage = ({
   size,
   imageUrl,
+  coreAddress,
   parentDao,
   className,
 }: DaoImageProps) => (
@@ -24,14 +29,16 @@ export const DaoImage = ({
     )}
   >
     <div
-      className={clsx('bg-center bg-cover', {
+      className={clsx('overflow-hidden bg-center bg-cover rounded-full', {
         // DaoCard
         'w-[4.5rem] h-[4.5rem]': size === 'sm',
         // DAO home page
         'w-24 h-24': size === 'lg',
       })}
       style={{
-        backgroundImage: `url(${imageUrl})`,
+        backgroundImage: `url(${
+          imageUrl || getCardFallbackImage(coreAddress || '')
+        })`,
       }}
     ></div>
 

@@ -22,11 +22,8 @@ Default.args = {
       href: '#',
       label: 'Animals DAO',
     },
-    {
-      href: '#',
-      label: 'Dog Dao',
-    },
   ],
+  current: 'Dog Dao',
 }
 Default.parameters = {
   design: {
