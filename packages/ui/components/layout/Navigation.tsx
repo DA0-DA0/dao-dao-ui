@@ -2,7 +2,9 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { SearchIcon } from '@heroicons/react/solid'
+import clsx from 'clsx'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Home, Inbox, PinOutline } from '@dao-dao/icons'
@@ -42,6 +44,36 @@ export const Navigation = ({
   const { t } = useTranslation()
   const { isMac } = usePlatform()
 
+  const [showPinnedTopBorder, setShowPinnedTopBorder] = useState(false)
+  const [showPinnedBottomBorder, setShowPinnedBottomBorder] = useState(false)
+  const scrollablePinnedContainerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const ref = scrollablePinnedContainerRef.current
+    if (!ref) {
+      return
+    }
+
+    const updateBorders = () => {
+      const { scrollTop, scrollHeight, clientHeight } = ref
+
+      // 0.5rem (~8px) padding before the top of the first sub DAO image, and a
+      // couple extra pixels so the first element actually looks covered.
+      const contentHiddenOnTop = scrollTop > 11
+      setShowPinnedTopBorder(contentHiddenOnTop)
+
+      // 1rem (~16px) padding before the bottom of the last sub DAO image, and
+      // a couple extra pixels so the last element actually looks covered.
+      const contentHiddenOnBottom = scrollTop < scrollHeight - clientHeight - 19
+      setShowPinnedBottomBorder(contentHiddenOnBottom)
+    }
+
+    updateBorders()
+
+    // Add listener on mount, remove on cleanup.
+    ref.addEventListener('scroll', updateBorders)
+    return () => ref.removeEventListener('scroll', updateBorders)
+  }, [scrollablePinnedContainerRef])
+
   return (
     <nav className="flex flex-col justify-between p-6 pt-0 space-y-20 w-full h-full text-lg">
       <div>
@@ -79,6 +111,7 @@ export const Navigation = ({
                 ? t('title.inboxWithCount', { count: inboxCount })
                 : t('title.inbox')
             }
+            localHref="/inbox"
             showBadge={inboxCount > 0}
           >
             <p className="p-5 text-sm">Inbox content</p>
@@ -86,10 +119,30 @@ export const Navigation = ({
         )}
 
         <Row Icon={PinOutline} defaultExpanded label={t('info.pinned')}>
-          <div className="overflow-y-auto max-h-[33vh] styled-scrollbar">
+          <div
+            className="overflow-y-auto relative pr-5 -mr-5 max-h-[33vh] styled-scrollbar"
+            ref={scrollablePinnedContainerRef}
+          >
+            {/* Top border */}
+            <div
+              className={clsx(
+                'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
+              )}
+            ></div>
+
+            {/* DAOs */}
             {pinnedDaos.map((dao, index) => (
               <DaoDropdown key={index} dao={dao} defaultExpanded />
             ))}
+
+            {/* Bottom border */}
+            <div
+              className={clsx(
+                'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
+              )}
+            ></div>
           </div>
         </Row>
 

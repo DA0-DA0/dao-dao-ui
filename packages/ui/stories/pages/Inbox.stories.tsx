@@ -51,4 +51,7 @@ Default.parameters = {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=308%3A29063',
   },
+  nextRouter: {
+    asPath: '/inbox',
+  },
 }
