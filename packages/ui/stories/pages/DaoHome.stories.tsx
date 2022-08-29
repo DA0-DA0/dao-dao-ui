@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useState } from 'react'
 
 import {
   ProfileHomeCard,
@@ -23,7 +24,13 @@ export default {
   ],
 } as ComponentMeta<typeof DaoHome>
 
-const Template: ComponentStory<typeof DaoHome> = (args) => <DaoHome {...args} />
+const Template: ComponentStory<typeof DaoHome> = (args) => {
+  const [pinned, setPinned] = useState(false)
+
+  return (
+    <DaoHome {...args} onPin={() => setPinned((p) => !p)} pinned={pinned} />
+  )
+}
 
 export const Default = Template.bind({})
 Default.args = {}

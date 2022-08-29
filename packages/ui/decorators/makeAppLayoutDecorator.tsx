@@ -7,7 +7,7 @@ import {
   SidebarWallet,
   SidebarWalletProps,
 } from 'components/layout'
-import { Default as NavigationStory } from 'stories/components/layout/Navigation.stories'
+import { DefaultArgs as NavigationStoryArgs } from 'stories/components/layout/Navigation.stories'
 import { Connected as ConnectedSidebarWalletStory } from 'stories/components/layout/SidebarWallet/SidebarWallet.stories'
 
 export const makeAppLayoutDecorator: (
@@ -25,7 +25,7 @@ export const makeAppLayoutDecorator: (
       <AppLayout
         navigationProps={{
           // Use default arguments from the Navigation story.
-          ...(NavigationStory.args as NavigationProps),
+          ...NavigationStoryArgs,
           ...navigationProps,
         }}
         wallet={

@@ -6,7 +6,7 @@ import {
 } from 'components/profile/ProfileHomeCard'
 import { makeAppLayoutDecorator } from 'decorators'
 import { Inbox } from 'pages/Inbox'
-import { Default as NavigationStory } from 'stories/components/layout/Navigation.stories'
+import { DefaultArgs as NavigationStoryArgs } from 'stories/components/layout/Navigation.stories'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
 import { makeProps as makeProposalLineProps } from 'stories/components/proposal/ProposalLine/ProposalLine.stories'
 
@@ -28,7 +28,7 @@ const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  daosWithProposals: NavigationStory.args!.pinnedDaos!.map((dao) => ({
+  daosWithProposals: NavigationStoryArgs.pinnedDaos.map((dao) => ({
     dao,
     // Generate between 1 and 3 proposals.
     proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {

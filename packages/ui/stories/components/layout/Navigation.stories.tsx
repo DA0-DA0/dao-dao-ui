@@ -5,6 +5,7 @@ import { Navigation, NavigationProps } from 'components/layout/Navigation'
 export default {
   title: 'DAO DAO UI V2 / components / layout / Navigation',
   component: Navigation,
+  excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof Navigation>
 
 const Template: ComponentStory<typeof Navigation> = (args) => (
@@ -15,7 +16,7 @@ const Template: ComponentStory<typeof Navigation> = (args) => (
 
 // Used in `makeAppLayoutDecorator` to provide a default layout for the page
 // stories. Ensure this has all props.
-const DefaultArgs: NavigationProps = {
+export const DefaultArgs: NavigationProps = {
   inboxCount: 5,
   setCommandModalVisible: () => alert('command!'),
   version: '2.0',
