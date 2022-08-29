@@ -12,11 +12,7 @@ import {
 import { formatDate } from '@dao-dao/utils'
 
 import { IconButton } from '../IconButton'
-
-export interface SubDaoInfo {
-  parentDaoHref: string
-  parentDaoImageUrl: string
-}
+import { DaoImage } from './DaoImage'
 
 export interface DaoCardInfo {
   coreAddress: string
@@ -30,15 +26,16 @@ export interface DaoCardInfo {
   tokenSymbol: string
   proposalCount: number
 
-  subDaoInfo?: SubDaoInfo
+  parentDao?: {
+    href: string
+    imageUrl: string
+  }
 }
 
 export interface DaoCardProps extends DaoCardInfo {
   pinned: boolean
   onPin: () => void
-
   isMember: boolean
-
   className?: string
 }
 
@@ -53,7 +50,7 @@ export const DaoCard = ({
   proposalCount,
   pinned,
   onPin,
-  subDaoInfo,
+  parentDao,
   isMember,
   className,
 }: DaoCardProps) => {
@@ -71,13 +68,13 @@ export const DaoCard = ({
           className={clsx(
             'flex absolute top-0 left-0 flex-row items-center p-3 w-full',
             {
-              'justify-between': !!subDaoInfo,
-              'justify-end': !subDaoInfo, // Keep the pin and member check at the end if no subDao info.
+              'justify-between': !!parentDao,
+              'justify-end': !parentDao, // Keep the pin and member check at the end if no parent DAO.
             }
           )}
         >
-          {subDaoInfo && (
-            <Link href={subDaoInfo.parentDaoHref}>
+          {parentDao && (
+            <Link href={parentDao.href}>
               <a title={t('info.gotoParent')}>
                 <SubDaoArrow className="text-icon-interactive-disabled" />
               </a>
@@ -109,28 +106,12 @@ export const DaoCard = ({
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="relative p-1 rounded-full border-2 border-border-primary">
-            <div
-              className="w-[72px] h-[72px] bg-center bg-cover"
-              style={{
-                backgroundImage: `url(${imageUrl})`,
-              }}
-            ></div>
-            {subDaoInfo && (
-              <Link href={subDaoInfo.parentDaoHref}>
-                <a
-                  className="absolute right-0 bottom-0 w-8 h-8 bg-center bg-cover rounded-full drop-shadow"
-                  style={{
-                    backgroundImage: `url(${subDaoInfo.parentDaoImageUrl})`,
-                  }}
-                ></a>
-              </Link>
-            )}
-          </div>
+          <DaoImage imageUrl={imageUrl} parentDao={parentDao} size="sm" />
           <p className="mt-2 primary-text">{name}</p>
           <p className="mt-1 caption-text">{formatDate(established)}</p>
         </div>
-        <div className="w-full">
+
+        <div className="self-stretch">
           <p className="mb-5 w-full break-words line-clamp-3 secondary-text">
             {description}
           </p>

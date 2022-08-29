@@ -1,4 +1,5 @@
 export * from './DaoCard'
 export * from './DaoCardContainer'
 export * from './DaoDropdown'
+export * from './DaoImage'
 export * from './FeaturedDaos'

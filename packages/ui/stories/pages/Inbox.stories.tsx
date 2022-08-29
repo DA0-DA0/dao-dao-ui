@@ -2,10 +2,14 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 
-import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
+import {
+  ProfileHomeCard,
+  ProfileHomeCardProps,
+} from 'components/profile/ProfileHomeCard'
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { Inbox } from 'pages/Inbox'
 import { Default as NavigationStory } from 'stories/components/layout/Navigation.stories'
+import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
 import { makeProps as makeProposalLineProps } from 'stories/components/proposal/ProposalLine/ProposalLine.stories'
 
 export default {
@@ -13,7 +17,11 @@ export default {
   component: Inbox,
   decorators: [
     makeAppLayoutDecorator({
-      rightSidebar: <ProfileHomeDisconnectedCard />,
+      rightSidebar: (
+        <ProfileHomeCard
+          {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
+        />
+      ),
     }),
     DaoPageWrapperDecorator,
   ],

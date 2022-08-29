@@ -25,9 +25,9 @@ Default.args = {
   pinned: false,
   onPin: () => {},
 
-  subDaoInfo: {
-    parentDaoImageUrl: '/placeholders/2.svg',
-    parentDaoHref: '/home',
+  parentDao: {
+    href: '#',
+    imageUrl: '/placeholders/2.svg',
   },
 
   tokenBalance: 120,
