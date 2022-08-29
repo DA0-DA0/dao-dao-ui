@@ -32,9 +32,32 @@ export interface InboxProps {
 export const Inbox = ({ daosWithProposals }: InboxProps) => {
   const { t } = useTranslation()
 
-  const { sortedData: sortedDaosWithProposals, Dropdown } = useDropdownSorter(
-    daosWithProposals,
-    sortOptions[0].value
+  const {
+    sortedData: _sortedDaosWithProposals,
+    Dropdown,
+    selectedSortFn,
+  } = useDropdownSorter(daosWithProposals, sortOptions[0].value)
+
+  // Sort proposals within DAOs using the same proposal comparator used to
+  // compare the DAOs. Sort options operate on the proposals in each DAO and
+  // order the DAOs and proposals accordingly. If a DAO contains a proposal that
+  // should be before all other proposals in another DAO, it should be displayed
+  // first.
+  const sortedDaosWithProposals = useMemo(
+    () =>
+      selectedSortFn
+        ? _sortedDaosWithProposals.map(
+            ({ proposals, ...daosWithProposals }) => ({
+              ...daosWithProposals,
+              proposals: proposals
+                // Map to interface with proposals property to take advantage of function.
+                .map((proposal) => ({ proposals: [proposal] }))
+                .sort(selectedSortFn as SortFn<{ proposals: ProposalInfo[] }>)
+                .map(({ proposals }) => proposals[0]),
+            })
+          )
+        : _sortedDaosWithProposals,
+    [_sortedDaosWithProposals, selectedSortFn]
   )
 
   const numOpenProposals = useMemo(
@@ -64,7 +87,7 @@ export const Inbox = ({ daosWithProposals }: InboxProps) => {
         </div>
       </div>
 
-      <div className="mx-24 mt-6 space-y-3">
+      <div className="mx-24 mt-6 space-y-4">
         {sortedDaosWithProposals.map(({ dao, proposals }, index) => (
           <DaoDropdown
             key={index}
@@ -87,7 +110,7 @@ export const Inbox = ({ daosWithProposals }: InboxProps) => {
   )
 }
 
-const sortOptions: DropdownOption<SortFn<DaoWithProposals>>[] = [
+const sortOptions: DropdownOption<SortFn<{ proposals: ProposalInfo[] }>>[] = [
   {
     label: 'Expiry',
     value: (a, b) =>

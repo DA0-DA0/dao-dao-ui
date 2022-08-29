@@ -2,12 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 
-import { ProposalLineProps } from 'components'
 import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { Inbox } from 'pages/Inbox'
 import { Default as NavigationStory } from 'stories/components/layout/Navigation.stories'
-import { Default as ProposalLineStory } from 'stories/components/proposal/ProposalLine/ProposalLine.stories'
+import { makeProps as makeProposalLineProps } from 'stories/components/proposal/ProposalLine/ProposalLine.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / Inbox',
@@ -30,17 +29,20 @@ export const Default = Template.bind({})
 Default.args = {
   daosWithProposals: NavigationStory.args!.pinnedDaos!.map((dao) => ({
     dao,
-    proposals: [
-      {
-        // Random seconds remaining.
-        secondsRemaining: Math.floor(Math.random() * 1000000),
-        // Random time in the past.
+    // Generate between 1 and 3 proposals.
+    proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
+      // Random time in the next 3 days.
+      const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
+
+      return {
+        secondsRemaining,
+        // Random time in the past 3 days.
         created: new Date(
-          new Date().getTime() - Math.floor(Math.random() * 1000000) * 1000
+          Date.now() - Math.floor(Math.random() * 3 * 24 * 60 * 60)
         ),
-        props: ProposalLineStory.args as ProposalLineProps,
-      },
-    ],
+        props: makeProposalLineProps(secondsRemaining),
+      }
+    }),
   })),
 }
 Default.parameters = {

@@ -36,7 +36,7 @@ export const ProposalLine = ({
   const sharedContainerClassNames = useMemo(
     () =>
       clsx(
-        'bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition',
+        'bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition cursor-pointer',
         // If updated in the last day, highlight.
         msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
         className

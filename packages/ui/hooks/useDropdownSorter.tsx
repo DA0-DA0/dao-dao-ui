@@ -12,6 +12,7 @@ interface UseDropdownSorterReturn<T> {
     props: Omit<DropdownProps<SortFn<T>>, 'selected' | 'onSelect'>
   ) => JSX.Element
   sortedData: T[]
+  selectedSortFn: SortFn<T> | undefined
 }
 
 // Pass an array of data and get a Dropdown component that automatically sorts
@@ -50,5 +51,6 @@ export const useDropdownSorter = <T extends unknown>(
   return {
     Dropdown,
     sortedData,
+    selectedSortFn,
   }
 }
