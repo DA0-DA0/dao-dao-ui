@@ -1,29 +1,42 @@
-import { ArrowNarrowLeftIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
+import { Fragment } from 'react'
+
+import { ArrowForward } from '@dao-dao/icons'
 
 export interface BreadcrumbsProps {
-  crumbs: Array<[string, string]>
+  crumbs: {
+    href: string
+    label: string
+  }[]
   className?: string
 }
 
-// Navigation breadcrumbs. We hide these on small screens prefering the nav bar.
 export const Breadcrumbs = ({ crumbs, className }: BreadcrumbsProps) => (
-  <ul className={clsx('hidden list-none lg:flex link-text', className)}>
-    <li key="icon">
-      <Link href={crumbs[crumbs.length - 2][0]}>
-        <a>
-          <ArrowNarrowLeftIcon className="inline mb-1 w-5 h-5 hover:opacity-80 transition" />
-        </a>
-      </Link>
-    </li>
-    {crumbs.map(([link, name], idx) => (
-      <li key={name}>
-        <Link href={link}>
-          <a className="mx-2 hover:opacity-80 transition">{name}</a>
+  <div
+    className={clsx(
+      'flex flex-row gap-2 items-center text-text-secondary header-text',
+      className
+    )}
+  >
+    {crumbs.map(({ href, label }, idx) => (
+      <Fragment key={idx}>
+        <Link href={href}>
+          <a
+            className={clsx(
+              'mx-2 hover:opacity-80 transition-opacity',
+              // Highlight last crumb.
+              idx === crumbs.length - 1 && 'text-text-primary'
+            )}
+          >
+            {label}
+          </a>
         </Link>
-        {idx !== crumbs.length - 1 && '/'}
-      </li>
+
+        {idx < crumbs.length - 1 && (
+          <ArrowForward className="w-5 h-5 text-icon-tertiary" />
+        )}
+      </Fragment>
     ))}
-  </ul>
+  </div>
 )
