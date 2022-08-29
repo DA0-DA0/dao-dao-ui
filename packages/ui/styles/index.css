@@ -159,7 +159,7 @@ input[type='number']::-webkit-outer-spin-button {
     --background-base: rgba(var(--v2-white), 1);
     --background-overlay: rgba(var(--v2-vanta), 0.2);
     --background-interactive-hover: rgba(var(--v2-dark), 0.1);
-    --background-interactive-selected: rgba(var(--v2-dark), 0.15);
+    --background-interactive-selected: rgba(var(--v2-dark), 0.08);
     --background-interactive-pressed: rgba(var(--v2-dark), 0.15);
     --background-interactive-disabled: rgba(var(--v2-dark), 0.03);
     --background-interactive-active: rgba(var(--v2-brand), 0.15);
@@ -243,7 +243,7 @@ input[type='number']::-webkit-outer-spin-button {
     --background-base: rgba(var(--v2-black), 1);
     --background-overlay: rgba(var(--v2-vanta), 0.7);
     --background-interactive-hover: rgba(var(--v2-light), 0.1);
-    --background-interactive-selected: rgba(var(--v2-light), 0.15);
+    --background-interactive-selected: rgba(var(--v2-light), 0.08);
     --background-interactive-pressed: rgba(var(--v2-light), 0.15);
     --background-interactive-disabled: rgba(var(--v2-light), 0.03);
     /* --background-interactive-active, --background-interactive-error, and --background-interactive-valid are the same as the light theme */

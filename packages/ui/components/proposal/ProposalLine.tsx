@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode } from 'react'
+import { ComponentType, ReactNode, useMemo } from 'react'
 
 import { ContractVersion } from '@dao-dao/utils'
 
@@ -32,15 +32,25 @@ export const ProposalLine = ({
 }: ProposalLineProps) => {
   const msSinceUpdated = new Date().getTime() - lastUpdated.getTime()
 
+  // Class names shared between desktop and mobile containers.
+  const sharedContainerClassNames = useMemo(
+    () =>
+      clsx(
+        'bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition',
+        // If updated in the last day, highlight.
+        msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
+        className
+      ),
+    [msSinceUpdated, className]
+  )
+
   const contents = (
     <>
       {/* Desktop */}
       <div
         className={clsx(
-          'hidden flex-row gap-6 items-center p-3 bg-background-secondary hover:bg-background-interactive-hover rounded-md transition md:flex',
-          // If updated in the last day, highlight.
-          msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
-          className
+          sharedContainerClassNames,
+          'hidden flex-row gap-6 items-center p-3 md:flex'
         )}
       >
         <p className="font-mono caption-text">
@@ -60,10 +70,8 @@ export const ProposalLine = ({
       {/* Mobile */}
       <div
         className={clsx(
-          'flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm bg-primary hover:bg-secondary rounded-md md:hidden',
-          // If updated in the last day, highlight.
-          msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
-          className
+          sharedContainerClassNames,
+          'flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-md md:hidden'
         )}
       >
         <div className="flex flex-col gap-2">
@@ -108,7 +116,7 @@ export const ProposalLineLoader = (props: ProposalLineLoaderProps) => (
 )
 
 const ProposalLineLoaderDesktop = ({ Logo }: ProposalLineLoaderProps) => (
-  <div className="hidden justify-center items-center h-[3.25rem] bg-primary rounded-md md:flex">
+  <div className="hidden justify-center items-center h-12 bg-primary rounded-md md:flex">
     <Logo className="animate-spin-medium" />
   </div>
 )
