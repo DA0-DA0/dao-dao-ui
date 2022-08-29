@@ -5,7 +5,7 @@
     "build-storybook": "build-storybook",
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "storybook": "start-storybook --ci -p 6006 --no-manager-cache",
+    "storybook": "start-storybook --ci -p 6006",
     "storybook:generate": "ts-node --esm ./scripts/storybook-generate.ts"
   },
   "dependencies": {
