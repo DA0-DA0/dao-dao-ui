@@ -11,11 +11,9 @@ import { IconButton } from './IconButton'
 export const ThemeToggle = () => {
   const { theme, updateTheme } = useThemeContext()
 
-  const Icon = theme === Theme.Light ? MoonIcon : Sun
-
   return (
     <IconButton
-      icon={<Icon className="w-full h-full" />}
+      Icon={theme === Theme.Light ? MoonIcon : Sun}
       onClick={() =>
         updateTheme(theme === Theme.Dark ? Theme.Light : Theme.Dark)
       }

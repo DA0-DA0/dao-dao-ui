@@ -81,9 +81,10 @@ export const ProfileHomeCard = ({
             </p>
 
             <IconButton
-              icon={<ArrowOutward height="0.625rem" width="0.625rem" />}
+              Icon={ArrowOutward}
+              iconClassName="w-[0.625rem] h-[0.625rem]"
               onClick={() => router.push('/daos')}
-              size="small"
+              size="sm"
               variant="ghost"
             />
           </div>

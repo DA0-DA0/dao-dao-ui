@@ -67,9 +67,10 @@ export const Row = ({
         {/* If children exist, display expand button. */}
         {children ? (
           <IconButton
-            icon={<ExpandButton className="w-3 h-3 text-icon-secondary" />}
+            Icon={ExpandButton}
+            className="text-icon-secondary"
             onClick={() => setExpanded((e) => !e)}
-            size="small"
+            size="sm"
             variant="ghost"
           />
         ) : (

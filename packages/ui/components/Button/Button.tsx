@@ -8,12 +8,12 @@ import {
 
 export type ButtonProps = ComponentPropsWithoutRef<'button'> & ButtonifierProps
 
-export const Button = ({ children, ...props }: ButtonProps) => {
-  props.type ||= 'button'
-
-  return (
-    <button {...props} className={getButtonifiedClassNames(props)}>
-      <ButtonifiedChildren {...props}>{children}</ButtonifiedChildren>
-    </button>
-  )
-}
+export const Button = ({
+  children,
+  type = 'button',
+  ...props
+}: ButtonProps) => (
+  <button {...props} className={getButtonifiedClassNames(props)} type={type}>
+    <ButtonifiedChildren {...props}>{children}</ButtonifiedChildren>
+  </button>
+)

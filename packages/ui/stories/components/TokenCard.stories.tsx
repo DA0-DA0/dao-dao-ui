@@ -8,7 +8,9 @@ export default {
 } as ComponentMeta<typeof TokenCard>
 
 const Template: ComponentStory<typeof TokenCard> = (args) => (
-  <TokenCard {...args} />
+  <div className="max-w-xs">
+    <TokenCard {...args} />
+  </div>
 )
 
 export const Default = Template.bind({})

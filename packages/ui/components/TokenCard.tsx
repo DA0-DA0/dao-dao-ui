@@ -55,11 +55,7 @@ export const TokenCard = ({
         </div>
         {!!onAddToken && (
           <Tooltip label={t('info.addTokenTooltip')}>
-            <IconButton
-              icon={<PlusIcon className="w-full h-full" />}
-              onClick={onAddToken}
-              variant="ghost"
-            />
+            <IconButton Icon={PlusIcon} onClick={onAddToken} variant="ghost" />
           </Tooltip>
         )}
       </div>

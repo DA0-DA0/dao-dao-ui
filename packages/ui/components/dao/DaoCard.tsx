@@ -7,11 +7,11 @@ import {
   DaoCardPin,
   DaoCardProposals,
   Governance,
-  SubDaoArrow,
+  ParentDaoArrow,
 } from '@dao-dao/icons'
 import { formatDate } from '@dao-dao/utils'
 
-import { IconButton } from '../IconButton'
+import { IconButton, IconButtonLink } from '../IconButton'
 import { DaoImage } from './DaoImage'
 
 export interface DaoCardInfo {
@@ -74,23 +74,25 @@ export const DaoCard = ({
           )}
         >
           {parentDao && (
-            <Link href={parentDao.href}>
-              <a title={t('info.gotoParent')}>
-                <SubDaoArrow className="text-icon-interactive-disabled" />
-              </a>
-            </Link>
+            <IconButtonLink
+              Icon={ParentDaoArrow}
+              className="text-icon-interactive-disabled"
+              href={parentDao.href}
+              // Don't click on DAO card.
+              onClick={(event) => event.preventDefault()}
+              title={t('info.gotoParent')}
+              variant="ghost"
+            />
           )}
           <div className="flex flex-row gap-3 items-center">
             <IconButton
-              icon={
-                <DaoCardPin
-                  className={clsx('w-4 h-4', {
-                    'text-icon-secondary': !pinned,
-                    'text-icon-interactive-active': pinned,
-                  })}
-                />
-              }
+              Icon={DaoCardPin}
+              className={clsx({
+                'text-icon-secondary': !pinned,
+                'text-icon-interactive-active': pinned,
+              })}
               onClick={(event) => {
+                // Don't click on DAO card.
                 event.preventDefault()
                 onPin()
               }}

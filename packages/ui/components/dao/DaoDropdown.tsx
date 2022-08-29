@@ -49,17 +49,12 @@ export const DaoDropdown = ({
         <div className="flex justify-center items-center w-6 h-6">
           {subdaos?.length || content ? (
             <IconButton
-              icon={
-                <TriangleUp
-                  className={clsx(
-                    'w-4 h-4 text-icon-primary transition-transform',
-                    {
-                      'rotate-90': !expanded,
-                      'rotate-180': expanded,
-                    }
-                  )}
-                />
-              }
+              Icon={TriangleUp}
+              className="text-icon-primary"
+              iconClassName={clsx(
+                'transition-transform',
+                expanded ? 'rotate-180' : 'rotate-90'
+              )}
               onClick={() => setExpanded((e) => !e)}
               size="xs"
               variant="ghost"
@@ -78,21 +73,24 @@ export const DaoDropdown = ({
         <p className="text-text-body link-text">{name}</p>
       </div>
 
-      {expanded && (
-        <>
-          {content}
+      <div
+        className={clsx(
+          'overflow-hidden transition-all',
+          expanded ? 'h-auto' : 'h-0'
+        )}
+      >
+        {content}
 
-          {showSubdaos && !!subdaos?.length && (
-            // w-3 (0.75rem) is half the size of the triangle `IconButton` above, so
-            // this centers the border beneath the arrow.
-            <div className="ml-[calc(1.25rem-1px)] border-l border-border-secondary">
-              {subdaos.map((dao, index) => (
-                <DaoDropdown key={index} dao={dao} />
-              ))}
-            </div>
-          )}
-        </>
-      )}
+        {showSubdaos && !!subdaos?.length && (
+          // w-3 (0.75rem) is half the size of the triangle `IconButton` above, so
+          // this centers the border beneath the arrow.
+          <div className="ml-[calc(1.25rem-1px)] border-l border-border-secondary">
+            {subdaos.map((dao, index) => (
+              <DaoDropdown key={index} dao={dao} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

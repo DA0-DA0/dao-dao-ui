@@ -63,28 +63,26 @@ export const ConnectedWallet = ({
       <div className="flex flex-row gap-2 items-center">
         <Tooltip label={t('info.copyWalletAddressTooltip')}>
           <IconButton
+            Icon={copied ? CheckCircleIcon : Link}
             className="text-icon-secondary"
-            icon={
-              copied ? (
-                <CheckCircleIcon className="w-5 h-5" />
-              ) : (
-                <Link className="w-5 h-5" />
-              )
-            }
+            iconClassName="w-5 h-5"
             onClick={() => {
               navigator.clipboard.writeText(walletAddress)
               setTimeout(() => setCopied(false), 2000)
               setCopied(true)
             }}
+            size="sm"
             variant="ghost"
           />
         </Tooltip>
 
         <Tooltip label={t('info.disconnectWalletTooltip')}>
           <IconButton
+            Icon={X}
             className="text-icon-secondary"
-            icon={<X className="w-3 h-3" />}
+            iconClassName="w-5 h-5"
             onClick={onDisconnect}
+            size="sm"
             variant="ghost"
           />
         </Tooltip>
