@@ -15,7 +15,7 @@ export const concatAddressStartEnd = (
 ) => {
   const first = address.substring(0, takeStart)
   const last = address.substring(address.length - takeEnd, address.length)
-  return [first, last].filter(Boolean).join('...')
+  return [first, last].filter(Boolean).join('..')
 }
 
 export const concatAddressBoth = (address: string, takeN = 7): string =>

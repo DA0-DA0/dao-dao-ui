@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useState } from 'react'
 
 import { SegmentedControls } from 'components/SegmentedControls'
 
@@ -7,31 +8,36 @@ export default {
   component: SegmentedControls,
 } as ComponentMeta<typeof SegmentedControls>
 
-const Template: ComponentStory<typeof SegmentedControls> = (args) => (
-  <SegmentedControls {...args} />
-)
+const Template: ComponentStory<typeof SegmentedControls<number>> = (args) => {
+  const [selectedIndex, setSelectedIndex] = useState(1)
 
-const doNothing = () => null
+  return (
+    <SegmentedControls
+      {...args}
+      onSelect={setSelectedIndex}
+      selected={selectedIndex}
+    />
+  )
+}
 
 export const Default = Template.bind({})
 Default.args = {
   tabs: [
     {
-      name: 'Proposals',
-      onClick: doNothing,
+      label: 'Proposals',
+      value: 0,
     },
     {
-      name: 'Treasury & NFTs',
-      onClick: doNothing,
-      selected: true,
+      label: 'Treasury & NFTs',
+      value: 1,
     },
     {
-      name: 'SubDAOs',
-      onClick: doNothing,
+      label: 'SubDAOs',
+      value: 2,
     },
     {
-      name: 'Members',
-      onClick: doNothing,
+      label: 'Members',
+      value: 3,
     },
   ],
 }

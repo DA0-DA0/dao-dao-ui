@@ -3,7 +3,7 @@ import { ComponentType, ReactNode, useMemo } from 'react'
 
 import { ContractVersion } from '@dao-dao/utils'
 
-import { LogoProps } from '../Logo'
+import { LoaderProps } from '../Loader'
 import { Tooltip } from '../Tooltip'
 import { ProposalIdDisplay } from './ProposalIdDisplay'
 
@@ -105,7 +105,7 @@ export const ProposalLine = ({
 }
 
 export interface ProposalLineLoaderProps {
-  Logo: ComponentType<LogoProps>
+  Loader: ComponentType<LoaderProps>
 }
 
 export const ProposalLineLoader = (props: ProposalLineLoaderProps) => (
@@ -115,14 +115,10 @@ export const ProposalLineLoader = (props: ProposalLineLoaderProps) => (
   </>
 )
 
-const ProposalLineLoaderDesktop = ({ Logo }: ProposalLineLoaderProps) => (
-  <div className="hidden justify-center items-center h-12 bg-primary rounded-md md:flex">
-    <Logo className="animate-spin-medium" />
-  </div>
+const ProposalLineLoaderDesktop = ({ Loader }: ProposalLineLoaderProps) => (
+  <Loader className="hidden h-12 bg-primary rounded-md" />
 )
 
-const ProposalLineLoaderMobile = ({ Logo }: ProposalLineLoaderProps) => (
-  <div className="flex justify-center items-center h-[9.5rem] bg-primary rounded-md md:hidden">
-    <Logo className="animate-spin-medium" />
-  </div>
+const ProposalLineLoaderMobile = ({ Loader }: ProposalLineLoaderProps) => (
+  <Loader className="hidden h-[9.5rem] bg-primary rounded-md" />
 )

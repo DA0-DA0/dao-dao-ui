@@ -1,12 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { DaoInfoBar, DaoInfoBarProps } from 'components'
 import {
   ProfileHomeCard,
   ProfileHomeCardProps,
 } from 'components/profile/ProfileHomeCard'
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { DaoHome } from 'pages/DaoHome'
+import { Default as DaoInfoBarStory } from 'stories/components/dao/DaoInfoBar.stories'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
 
 export default {
@@ -33,7 +35,15 @@ const Template: ComponentStory<typeof DaoHome> = (args) => {
 }
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  daoInfoBar: <DaoInfoBar {...(DaoInfoBarStory.args as DaoInfoBarProps)} />,
+  proposalDeposit: {
+    amount: 70,
+    tokenDecimals: 6,
+    tokenSymbol: 'DOG',
+    refundOnFailure: true,
+  },
+}
 Default.parameters = {
   design: {
     type: 'figma',

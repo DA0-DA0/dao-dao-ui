@@ -41,7 +41,10 @@ export const TokenCard = ({
             <div className="flex flex-col gap-1">
               <p className="title-text">${tokenSymbol}</p>
               <p className="caption-text">
-                {t('format.usdc', { val: tokenUSDCPrice })}
+                {t('format.token', {
+                  val: tokenUSDCPrice,
+                  tokenSymbol: 'USDC',
+                })}
               </p>
             </div>
           </div>
@@ -64,7 +67,10 @@ export const TokenCard = ({
         <p className="font-mono text-black caption-text">
           {tokenBalance} ${tokenSymbol}{' '}
           <span className="caption-text">
-            {t('format.usdc', { val: tokenBalanceUSDCEquivalent })}
+            {t('format.token', {
+              val: tokenBalanceUSDCEquivalent,
+              tokenSymbol: 'USDC',
+            })}
           </span>
         </p>
       </div>

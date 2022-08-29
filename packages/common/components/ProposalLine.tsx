@@ -34,7 +34,7 @@ export const ProposalLine = ({
   ...props
 }: ProposalLineProps) => (
   <ProposalModuleAdapterProvider
-    ProviderLoader={() => <ProposalLineLoader Logo={Logo} />}
+    ProviderLoader={() => <ProposalLineLoader Loader={Loader} />}
     initialOptions={{
       coreAddress,
       Logo,
@@ -53,10 +53,10 @@ const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
   const {
     components: { ProposalLine },
   } = useProposalModuleAdapter()
-  const { Logo } = useProposalModuleAdapterOptions()
+  const { Loader } = useProposalModuleAdapterOptions()
 
   return (
-    <SuspenseLoader fallback={<ProposalLineLoader Logo={Logo} />}>
+    <SuspenseLoader fallback={<ProposalLineLoader Loader={Loader} />}>
       <Link href={proposalViewUrl}>
         <ProposalLine />
       </Link>

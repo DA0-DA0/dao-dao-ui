@@ -207,8 +207,7 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
-    "token": "{{val, number}} ${{tokenSymbol}}",
-    "usdc": "{{val, number}} $USDC"
+    "token": "{{val, number}} ${{tokenSymbol}}"
   },
   "info": {
     "aboutToUnstake": "You are about to unstake governance tokens.",
@@ -234,6 +233,8 @@
     "considerReturningHome": "Consider returning home.",
     "copyWalletAddressTooltip": "Copy wallet address",
     "couldHaveMoreVotingPower": "You could have more voting power.",
+    "createProposalDescriptionWithDeposit_noRefund": "Submit a proposal for {{amount}} ${{tokenSymbol}}—non-refundable.",
+    "createProposalDescriptionWithDeposit_refundOnFailure": "Submit a proposal for {{amount}} ${{tokenSymbol}}—refunded on proposal failure.",
     "createdBy": "Created by",
     "creatingDao": "Creating DAO...",
     "daoAddress": "DAO",
@@ -427,6 +428,7 @@
     "dao": "DAO",
     "daoTreasury": "DAO Treasury",
     "daos": "DAOs",
+    "daosAddress": "DAO's address",
     "describeTheDAO": "Describe the DAO",
     "details": "Details",
     "discord": "Discord",

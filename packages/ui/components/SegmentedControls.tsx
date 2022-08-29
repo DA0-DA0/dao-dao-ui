@@ -3,18 +3,24 @@ import { useState } from 'react'
 
 import { Button } from './Button'
 
-export interface SegmentedControlsTab {
-  name: string
-  selected?: boolean
-  loading?: boolean
-  onClick: () => void
+export interface SegmentedControlTab<T extends unknown> {
+  label: string
+  value: T
 }
 
-export interface SegmentedControlsProps {
-  tabs: SegmentedControlsTab[]
+export interface SegmentedControlsProps<T extends unknown> {
+  tabs: SegmentedControlTab<T>[]
+  selected: T
+  onSelect: (value: T) => void
+  loading?: T
 }
 
-export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
+export const SegmentedControls = <T extends unknown>({
+  tabs,
+  selected,
+  onSelect,
+  loading,
+}: SegmentedControlsProps<T>) => {
   const [hovering, setHovering] = useState<number>()
 
   return (
@@ -22,8 +28,8 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
       className="group grid grid-flow-col auto-cols-fr bg-background-tertiary rounded-md"
       onMouseLeave={() => setHovering(undefined)}
     >
-      {tabs.map(({ name, onClick, selected, loading }, index) => (
-        <div key={name} className="flex flex-row items-stretch">
+      {tabs.map(({ label, value }, index) => (
+        <div key={index} className="flex flex-row items-stretch">
           <div
             className={clsx(
               'self-center w-[1px] h-4 bg-border-primary opacity-100 transition-opacity',
@@ -33,9 +39,9 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
                   // first element.
                   index === 0 ||
                   // left tab selected.
-                  tabs[index - 1].selected ||
+                  selected === tabs[index - 1].value ||
                   // current tab selected.
-                  selected ||
+                  selected === value ||
                   // left tab hovering.
                   hovering === index - 1 ||
                   // current tab hovering.
@@ -46,22 +52,22 @@ export const SegmentedControls = ({ tabs }: SegmentedControlsProps) => {
 
           <Button
             className={clsx(
-              'flex justify-center items-center w-full',
-              selected || hovering === index
+              'flex justify-center items-center px-8 w-full',
+              selected === value || hovering === index
                 ? // Brighten text when selected or hovering over this tab.
                   'body-text'
                 : // Dim text when not selected and not hovering over this tab.
                   'text-text-secondary',
               // Highlight background when selected. Button contains its own
               // hover background class.
-              selected && 'bg-background-primary'
+              selected === value && 'bg-background-primary'
             )}
-            loading={loading}
-            onClick={onClick}
+            loading={loading === value}
+            onClick={() => onSelect(value)}
             onMouseOver={() => setHovering(index)}
             variant="ghost"
           >
-            {name}
+            {label}
           </Button>
         </div>
       ))}

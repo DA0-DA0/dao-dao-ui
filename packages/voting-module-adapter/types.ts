@@ -11,7 +11,13 @@ import {
   TokenInfoResponse,
 } from '@dao-dao/state/clients/cw20-base'
 import { Claim } from '@dao-dao/state/clients/stake-cw20'
-import { HeroStatProps, LoaderProps, LogoProps, StakingMode } from '@dao-dao/ui'
+import {
+  DaoInfoBarItem,
+  HeroStatProps,
+  LoaderProps,
+  LogoProps,
+  StakingMode,
+} from '@dao-dao/ui'
 
 export interface MembershipPageInfo {
   renderIcon: (mobile: boolean) => ReactNode
@@ -110,6 +116,7 @@ export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
     useActions: () => Action[]
+    useDaoInfoBarItems: () => DaoInfoBarItem[]
     useGovernanceTokenInfo?: (
       options?: UseGovernanceTokenInfoOptions
     ) => UseGovernanceTokenInfoResponse

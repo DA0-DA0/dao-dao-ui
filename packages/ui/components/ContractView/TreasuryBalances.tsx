@@ -37,7 +37,10 @@ export const TreasuryBalances = ({
       {usdcValue > 0 && (
         <BalanceListItem>
           <span className="pb-4 header-text">
-            {t('format.usdc', { val: usdcValue })}
+            {t('format.token', {
+              val: usdcValue,
+              tokenSymbol: 'USDC',
+            })}
           </span>
         </BalanceListItem>
       )}
