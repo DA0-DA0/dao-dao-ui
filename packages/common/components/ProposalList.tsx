@@ -3,6 +3,7 @@ import { ComponentType, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil'
 
+import { ProposalLine } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   proposalListCountAtom,
@@ -16,7 +17,6 @@ import {
   ImagePromptCard,
   LoaderProps,
   LogoProps,
-  ProposalLine,
 } from '@dao-dao/ui'
 
 import { useDaoInfoContext } from './DaoPageWrapper'

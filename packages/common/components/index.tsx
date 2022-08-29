@@ -1,6 +1,7 @@
 export * from './ConnectWalletButton'
 export * from './DaoPageWrapper'
 export * from './MobileNav'
+export * from './ProposalLine'
 export * from './ProposalList'
 export * from './SidebarWallet'
 export * from './SuspenseLoader'

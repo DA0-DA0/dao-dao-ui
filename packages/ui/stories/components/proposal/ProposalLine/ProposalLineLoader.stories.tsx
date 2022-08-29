@@ -4,7 +4,7 @@ import { Logo } from 'components/Logo'
 import { ProposalLineLoader } from 'components/proposal/ProposalLine'
 
 export default {
-  title: 'DAO DAO UI / components / proposal / ProposalLineLoader',
+  title: 'DAO DAO UI V2 / components / proposal / ProposalLineLoader',
   component: ProposalLineLoader,
 } as ComponentMeta<typeof ProposalLineLoader>
 

@@ -229,7 +229,7 @@ const project = new Project({
       }
       // Automatically add TypeScript extension if not supplied.
       if (!arg.includes('.ts')) {
-        arg += '.{ts,tsx}'
+        arg += '*.{ts,tsx}'
       }
 
       project.addSourceFilesAtPaths(arg)

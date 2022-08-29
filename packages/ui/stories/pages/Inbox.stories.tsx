@@ -2,11 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 
+import { ProposalLineProps } from 'components'
 import { ProfileHomeDisconnectedCard } from 'components/profile/ProfileHomeDisconnectedCard'
-import { ProposalStatusEnum } from 'components/proposal/ProposalStatus'
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { Inbox } from 'pages/Inbox'
 import { Default as NavigationStory } from 'stories/components/layout/Navigation.stories'
+import { Default as ProposalLineStory } from 'stories/components/proposal/ProposalLine/ProposalLine.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / Inbox',
@@ -31,16 +32,13 @@ Default.args = {
     dao,
     proposals: [
       {
-        // Random ID.
-        id: 'A' + (Math.floor(Math.random() * 100) + 1),
-        status: ProposalStatusEnum.Open,
-        title: 'A title',
         // Random seconds remaining.
         secondsRemaining: Math.floor(Math.random() * 1000000),
         // Random time in the past.
         created: new Date(
           new Date().getTime() - Math.floor(Math.random() * 1000000) * 1000
         ),
+        props: ProposalLineStory.args as ProposalLineProps,
       },
     ],
   })),

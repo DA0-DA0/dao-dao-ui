@@ -9,16 +9,14 @@ import {
   DropdownOption,
   ProposalContainer,
   ProposalLine,
-  ProposalStatusEnum,
+  ProposalLineProps,
 } from '../components'
 import { SortFn, useDropdownSorter } from '../hooks'
 
 export interface ProposalInfo {
-  id: string
-  status: ProposalStatusEnum
-  title: string
   secondsRemaining: number
   created: Date
+  props: ProposalLineProps
 }
 
 export interface DaoWithProposals {
@@ -31,7 +29,7 @@ export interface InboxProps {
   proposalModules: ProposalModule[]
 }
 
-export const Inbox = ({ daosWithProposals, proposalModules }: InboxProps) => {
+export const Inbox = ({ daosWithProposals }: InboxProps) => {
   const { t } = useTranslation()
 
   const { sortedData: sortedDaosWithProposals, Dropdown } = useDropdownSorter(
@@ -74,15 +72,8 @@ export const Inbox = ({ daosWithProposals, proposalModules }: InboxProps) => {
               ...dao,
               content: (
                 <ProposalContainer className="mt-4">
-                  {proposals.map((proposal) => (
-                    // TODO: Replace with stateless version.
-                    <ProposalLine
-                      key={proposal.id}
-                      coreAddress="junoabc123"
-                      proposalId={proposal.id}
-                      proposalModules={proposalModules}
-                      proposalViewUrl="#"
-                    />
+                  {proposals.map(({ props }, index) => (
+                    <ProposalLine key={index} {...props} />
                   ))}
                 </ProposalContainer>
               ),

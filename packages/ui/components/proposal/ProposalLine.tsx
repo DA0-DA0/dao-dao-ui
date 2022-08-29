@@ -1,65 +1,98 @@
-import Link from 'next/link'
-import { ComponentType } from 'react'
+import clsx from 'clsx'
+import { ComponentType, ReactNode } from 'react'
 
-import { SuspenseLoader } from '@dao-dao/common'
-import {
-  ProposalModuleAdapterProvider,
-  useProposalModuleAdapter,
-  useProposalModuleAdapterOptions,
-} from '@dao-dao/proposal-module-adapter'
-import { ProposalModule } from '@dao-dao/utils'
+import { ContractVersion } from '@dao-dao/utils'
 
-import { Loader as DefaultLoader, LoaderProps } from '../Loader'
-import { Logo as DefaultLogo, LogoProps } from '../Logo'
+import { LogoProps } from '../Logo'
+import { Tooltip } from '../Tooltip'
+import { ProposalIdDisplay } from './ProposalIdDisplay'
 
 export interface ProposalLineProps {
-  coreAddress: string
-  proposalModules: ProposalModule[]
-  proposalId: string
-  proposalViewUrl: string
-  Logo?: ComponentType<LogoProps>
-  Loader?: ComponentType<LoaderProps>
+  proposalPrefix: string
+  proposalNumber: number
+  proposalModuleVersion: ContractVersion
+  title: string
+  expiration: string
+  status: ReactNode
+  vote: ReactNode
+  lastUpdated: Date
+  className?: string
 }
 
 export const ProposalLine = ({
-  coreAddress,
-  proposalModules,
-  proposalId,
-  Logo = DefaultLogo,
-  Loader = DefaultLoader,
-  ...props
-}: ProposalLineProps) => (
-  <ProposalModuleAdapterProvider
-    ProviderLoader={() => <ProposalLineLoader Logo={Logo} />}
-    initialOptions={{
-      coreAddress,
-      Logo,
-      Loader,
-    }}
-    proposalId={proposalId}
-    proposalModules={proposalModules}
-  >
-    <InnerProposalLine {...props} />
-  </ProposalModuleAdapterProvider>
-)
+  proposalPrefix,
+  proposalNumber,
+  proposalModuleVersion,
+  title,
+  expiration,
+  status,
+  vote,
+  lastUpdated,
+  className,
+}: ProposalLineProps) => {
+  const msSinceUpdated = new Date().getTime() - lastUpdated.getTime()
 
-type InnerProposalLineProps = Pick<ProposalLineProps, 'proposalViewUrl'>
+  const contents = (
+    <>
+      {/* Desktop */}
+      <div
+        className={clsx(
+          'hidden flex-row gap-6 items-center p-3 bg-background-secondary hover:bg-background-interactive-hover rounded-md transition md:flex',
+          // If updated in the last day, highlight.
+          msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
+          className
+        )}
+      >
+        <p className="font-mono caption-text">
+          <ProposalIdDisplay
+            proposalNumber={proposalNumber}
+            proposalPrefix={proposalPrefix}
+          />
+        </p>
+        {status}
+        <p className="grow truncate body-text">{title}</p>
+        <p className="font-mono text-right break-words caption-text">
+          {expiration}
+        </p>
+        {vote}
+      </div>
 
-const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
-  const {
-    components: { ProposalLine },
-  } = useProposalModuleAdapter()
-  const { Logo } = useProposalModuleAdapterOptions()
+      {/* Mobile */}
+      <div
+        className={clsx(
+          'flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm bg-primary hover:bg-secondary rounded-md md:hidden',
+          // If updated in the last day, highlight.
+          msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
+          className
+        )}
+      >
+        <div className="flex flex-col gap-2">
+          {status}
+          <p className="col-span-3 break-words body-text">{title}</p>
+        </div>
 
-  return (
-    <SuspenseLoader fallback={<ProposalLineLoader Logo={Logo} />}>
-      <Link href={proposalViewUrl}>
-        <a>
-          <ProposalLine.Desktop className="hidden md:grid" />
-          <ProposalLine.Mobile className="block md:hidden" />
-        </a>
-      </Link>
-    </SuspenseLoader>
+        <div className="flex flex-row gap-6 justify-between items-center">
+          <p className="font-mono caption-text">
+            <ProposalIdDisplay
+              proposalNumber={proposalNumber}
+              proposalPrefix={proposalPrefix}
+            />
+          </p>
+          <p className="font-mono text-center break-words caption-text">
+            {expiration}
+          </p>
+          {vote}
+        </div>
+      </div>
+    </>
+  )
+
+  return proposalModuleVersion === ContractVersion.V0_2_0 ? (
+    <Tooltip label={`Last updated: ${lastUpdated.toLocaleDateString()}`}>
+      {contents}
+    </Tooltip>
+  ) : (
+    contents
   )
 }
 

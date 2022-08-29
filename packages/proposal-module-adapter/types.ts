@@ -55,10 +55,7 @@ export interface IProposalModuleAdapter {
     ProposalVoteDecisionStatus: ComponentType<BaseProposalVoteDecisionStatusProps>
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
     ProposalDetails: ComponentType<BaseProposalDetailsProps>
-    ProposalLine: {
-      Desktop: ComponentType<BaseProposalLineProps>
-      Mobile: ComponentType<BaseProposalLineProps>
-    }
+    ProposalLine: ComponentType<BaseProposalLineProps>
     PinnedProposalLine: {
       Desktop: ComponentType<BasePinnedProposalLineProps>
       Mobile: ComponentType<BasePinnedProposalLineProps>
@@ -143,7 +140,7 @@ export interface BaseProposalDetailsProps {
 }
 
 export interface BaseProposalLineProps {
-  className?: string
+  walletAddress?: string
 }
 
 export interface BaseProposalModuleInfo {

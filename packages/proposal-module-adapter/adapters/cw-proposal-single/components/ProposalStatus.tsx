@@ -1,9 +1,10 @@
 import { StopIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { SVGProps } from 'react'
+import { ComponentType, SVGProps } from 'react'
 
-import { Executed, Open, Passed, Rejected } from '@dao-dao/icons'
+import { Approved, Executed, Open, Rejected } from '@dao-dao/icons'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { ProposalStatus as StatelessProposalStatus } from '@dao-dao/ui'
 import { convertToTitlecase } from '@dao-dao/utils'
 
 export interface ProposalStatusProps {
@@ -11,33 +12,58 @@ export interface ProposalStatusProps {
 }
 
 export const ProposalStatus = ({ status }: ProposalStatusProps) => {
-  const Icon = ProposalStatusIcons[status]
+  const { Icon, iconClassName, textClassName } = ProposalStatusMap[status]
 
   return (
-    <div className="flex flex-row gap-1 items-center">
-      {Icon && <Icon style={{ display: 'inline' }} />}
-      <span className="capitalize align-middle">
-        {convertToTitlecase(status)}
-      </span>
-    </div>
+    <StatelessProposalStatus
+      icon={<Icon className={clsx(iconClassName, 'w-[19px] h-[19px]')} />}
+      label={
+        // Width of longest status label.
+        <p className={clsx('w-[8ch]', textClassName)}>
+          {convertToTitlecase(status)}
+        </p>
+      }
+    />
   )
 }
 
-export const ProposalStatusIcons: Record<
+export const ProposalStatusMap: Record<
   Status,
-  ((props: SVGProps<SVGSVGElement>) => JSX.Element) | null
+  {
+    Icon: ComponentType<SVGProps<SVGSVGElement>>
+    iconClassName: string
+    textClassName: string
+  }
 > = {
-  [Status.Open]: Open,
-  [Status.Executed]: Executed,
-  [Status.Passed]: Passed,
-  [Status.Rejected]: Rejected,
-  [Status.Closed]: (props) => (
-    <StopIcon
-      {...props}
-      // Weirdly is a bit brighter than the other icons, so dim it.
-      className={clsx(props.className, 'opacity-80')}
-      height="1em"
-      width="1em"
-    />
-  ),
+  [Status.Open]: {
+    Icon: Open,
+    iconClassName: 'text-icon-primary',
+    textClassName: 'body-text',
+  },
+  [Status.Rejected]: {
+    Icon: Rejected,
+    iconClassName: 'text-icon-interactive-error',
+    textClassName: 'text-text-interactive-error',
+  },
+  [Status.Passed]: {
+    Icon: Approved,
+    iconClassName: 'text-icon-interactive-valid',
+    textClassName: 'text-text-interactive-valid',
+  },
+  [Status.Executed]: {
+    Icon: Executed,
+    iconClassName: 'text-icon-primary',
+    textClassName: 'body-text',
+  },
+  [Status.Closed]: {
+    Icon: (props) => (
+      <StopIcon
+        {...props}
+        // Weirdly is a bit brighter than the other icons, so dim it.
+        className={clsx(props.className, 'opacity-80')}
+      />
+    ),
+    iconClassName: 'text-icon-interactive-valid',
+    textClassName: 'text-text-interactive-valid',
+  },
 }
