@@ -1,11 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { useDaoInfoContext } from '@dao-dao/common'
+
 import {
   DaoInfoBar,
   DaoInfoBarProps,
-  ProposalList,
-  ProposalListProps,
+  ProposalsTabProps,
+  TreasuryAndNftsTabProps,
 } from 'components'
 import {
   ProfileHomeCard,
@@ -14,8 +16,9 @@ import {
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { DaoHome } from 'pages/DaoHome'
 import { Default as DaoInfoBarStory } from 'stories/components/dao/DaoInfoBar.stories'
+import { Default as ProposalsTabStory } from 'stories/components/dao/tabs/ProposalsTab.stories'
+import { Default as TreasuryAndNftsTabStory } from 'stories/components/dao/tabs/TreasuryAndNftsTab.stories'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
-import { Default as ProposalListStory } from 'stories/components/proposal/ProposalList.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / DaoHome',
@@ -36,21 +39,25 @@ const Template: ComponentStory<typeof DaoHome> = (args) => {
   const [pinned, setPinned] = useState(false)
 
   return (
-    <DaoHome {...args} onPin={() => setPinned((p) => !p)} pinned={pinned} />
+    <DaoHome
+      {...args}
+      daoInfo={useDaoInfoContext()}
+      onPin={() => setPinned((p) => !p)}
+      pinned={pinned}
+    />
   )
 }
 
 export const Default = Template.bind({})
 Default.args = {
   daoInfoBar: <DaoInfoBar {...(DaoInfoBarStory.args as DaoInfoBarProps)} />,
-  proposalDeposit: {
-    amount: 70,
-    tokenDecimals: 6,
-    tokenSymbol: 'DOG',
-    refundOnFailure: true,
-  },
-  proposalList: (
-    <ProposalList {...(ProposalListStory.args as ProposalListProps)} />
+  proposalsTab: (
+    <ProposalsTabStory {...(ProposalsTabStory.args as ProposalsTabProps)} />
+  ),
+  treasuryAndNftsTab: (
+    <TreasuryAndNftsTabStory
+      {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps)}
+    />
   ),
 }
 Default.parameters = {

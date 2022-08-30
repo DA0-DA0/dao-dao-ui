@@ -1,5 +1,6 @@
+export * from './tabs'
+
 export * from './DaoCard'
-export * from './DaoCardContainer'
 export * from './DaoDropdown'
 export * from './DaoImage'
 export * from './DaoInfoBar'

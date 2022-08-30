@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { Button, DaoCard, DaoCardContainer, DaoCardInfo } from '@dao-dao/ui'
+import { Button, DaoCard, DaoCardInfo, GridCardContainer } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
 
@@ -37,7 +37,7 @@ export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
         )}
       </div>
 
-      <DaoCardContainer>
+      <GridCardContainer>
         {featuredDaos.map((props) => (
           <DaoCard
             key={props.coreAddress}
@@ -51,7 +51,7 @@ export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
             {...props}
           />
         ))}
-      </DaoCardContainer>
+      </GridCardContainer>
     </SuspenseLoader>
   )
 }

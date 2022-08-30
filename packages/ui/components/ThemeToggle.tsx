@@ -14,6 +14,7 @@ export const ThemeToggle = () => {
   return (
     <IconButton
       Icon={theme === Theme.Light ? MoonIcon : Sun}
+      circular
       onClick={() =>
         updateTheme(theme === Theme.Dark ? Theme.Light : Theme.Dark)
       }

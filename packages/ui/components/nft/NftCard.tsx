@@ -13,7 +13,10 @@ export interface NftCardProps {
   hrefDestinationName?: string
   imageUrl?: string
   createdBy: string
-  floorPrice?: string
+  floorPrice?: {
+    amount: number
+    denom: string
+  }
   name: string
   className?: string
 }
@@ -32,7 +35,7 @@ export const NftCard = ({
   return (
     <div
       className={clsx(
-        'group flex overflow-hidden flex-col items-stretch max-w-xs bg-primary rounded-lg ring-2 ring-inset ring-[transparent] transition',
+        'group flex overflow-hidden flex-col items-stretch bg-primary rounded-lg ring-2 ring-inset ring-[transparent] transition',
         {
           'hover:bg-card hover:ring-focus': href,
         },
@@ -92,9 +95,14 @@ export const NftCard = ({
             {/* Floor price */}
             <div className="flex flex-col gap-1 items-end">
               <p className="text-right secondary-text">
-                {t('info.floorPrice')}
+                {t('title.floorPrice')}
               </p>
-              <p className="font-mono body-text">{floorPrice}</p>
+              <p className="font-mono text-right body-text">
+                {floorPrice.amount.toLocaleString(undefined, {
+                  maximumSignificantDigits: 3,
+                })}{' '}
+                ${floorPrice.denom}
+              </p>
             </div>
           </>
         )}

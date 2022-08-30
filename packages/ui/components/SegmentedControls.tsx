@@ -52,7 +52,7 @@ export const SegmentedControls = <T extends unknown>({
 
           <Button
             className={clsx(
-              'flex justify-center items-center px-8 w-full',
+              'flex justify-center items-center px-12 w-full',
               selected === value || hovering === index
                 ? // Brighten text when selected or hovering over this tab.
                   'body-text'

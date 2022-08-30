@@ -4,6 +4,7 @@ import { ComponentType } from 'react'
 export interface IconButtonifierProps {
   variant: 'primary' | 'secondary' | 'ghost'
   size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs'
+  circular?: boolean
   Icon: ComponentType<{ className: string }>
   disabled?: boolean
   className?: string
@@ -13,18 +14,23 @@ export interface IconButtonifierProps {
 export const getIconButtonifiedClassNames = ({
   variant = 'primary',
   size = 'default',
+  circular,
   disabled,
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
     'flex justify-center items-center focus:outline-2 transition-all focus:outline-focus',
+
+    // Rounding.
+    circular ? 'rounded-full' : 'rounded-md',
+
     // Sizes.
     {
-      'p-1 w-5 h-5 rounded-md': size === 'xs',
-      'p-1.5 w-6 h-6 rounded-md': size === 'sm',
-      'p-2 w-8 h-8 rounded-md': size === 'default',
-      'p-3 w-10 h-10 rounded-full': size === 'lg',
-      'p-[0.625rem] w-10 h-10 rounded-full': size === 'xl',
+      'p-1 w-5 h-5': size === 'xs',
+      'p-1.5 w-6 h-6': size === 'sm',
+      'p-2 w-8 h-8': size === 'default',
+      'p-3 w-10 h-10': size === 'lg',
+      'p-[0.625rem] w-10 h-10': size === 'xl',
     },
 
     // Primary variant

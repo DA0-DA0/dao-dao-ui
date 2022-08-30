@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { PinOutline } from '@dao-dao/icons'
-import { Button, DaoCardContainer } from '@dao-dao/ui'
+import { Button, GridCardContainer } from '@dao-dao/ui'
 
 import { usePinnedDAOs } from '@/hooks'
 
@@ -33,11 +33,11 @@ export const PinnedDAOsList = () => {
         </Link>
       </div>
 
-      <DaoCardContainer>
+      <GridCardContainer>
         {pinnedAddresses.map((address) => (
           <PinnedDAOCard key={address} address={address} />
         ))}
-      </DaoCardContainer>
+      </GridCardContainer>
     </SuspenseLoader>
   ) : null
 }

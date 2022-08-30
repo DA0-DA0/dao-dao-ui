@@ -1,15 +1,15 @@
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 
-interface DaoCardContainerProps {
+interface GridCardContainerProps {
   children: ReactNode | ReactNode[]
   className?: string
 }
 
-export const DaoCardContainer = ({
+export const GridCardContainer = ({
   children,
   className,
-}: DaoCardContainerProps) => (
+}: GridCardContainerProps) => (
   <div
     className={clsx(
       'grid grid-cols-1 gap-4 sm:grid-cols-3 grid-rows-auto',

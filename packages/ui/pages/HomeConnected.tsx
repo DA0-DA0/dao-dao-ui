@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DaoCard,
-  DaoCardContainer,
   DaoCardInfo,
   DropdownOption,
   FeaturedDaos,
+  GridCardContainer,
 } from '../components'
 import { SortFn, useDropdownSorter } from '../hooks'
 
@@ -75,7 +75,7 @@ export const HomeConnected = ({
         </div>
       </div>
 
-      <DaoCardContainer className="mx-24 mt-1">
+      <GridCardContainer className="mx-24 mt-1">
         {sortedPinnedDaos.map((props) => (
           <DaoCard
             key={props.coreAddress}
@@ -85,7 +85,7 @@ export const HomeConnected = ({
             {...props}
           />
         ))}
-      </DaoCardContainer>
+      </GridCardContainer>
     </div>
   )
 }

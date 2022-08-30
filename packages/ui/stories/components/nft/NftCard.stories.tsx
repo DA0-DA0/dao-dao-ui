@@ -1,23 +1,31 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { NftCard } from 'components/nft/NftCard'
+import { NftCard, NftCardProps } from 'components/nft/NftCard'
 
 export default {
   title: 'DAO DAO UI V2 / components / nft / NftCard',
   component: NftCard,
+  excludeStories: ['makeProps'],
 } as ComponentMeta<typeof NftCard>
 
 const Template: ComponentStory<typeof NftCard> = (args) => <NftCard {...args} />
 
-export const Default = Template.bind({})
-Default.args = {
+let id = 0
+export const makeProps = (): NftCardProps => ({
   createdBy: 'stars2afd31svj2f0z',
   imageUrl: '/dog_nft.png',
-  name: 'French Bulldog 1',
-  floorPrice: '2,900 STARS',
+  name: `French Bulldog ${++id}`,
+  floorPrice: {
+    // Random price between 0 and 10000 with up to 6 decimals.
+    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    denom: 'STARS',
+  },
   href: '/dog_nft.png',
   hrefDestinationName: 'Stargaze',
-}
+})
+
+export const Default = Template.bind({})
+Default.args = makeProps()
 
 Default.parameters = {
   design: {
