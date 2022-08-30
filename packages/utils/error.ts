@@ -11,8 +11,8 @@ export const processError = (
     overrideCapture,
     forceCapture,
   }: {
-    tags?: Record<string, string | number>
-    extra?: Record<string, string | number>
+    tags?: Record<string, string | number | boolean | null | undefined>
+    extra?: Record<string, unknown>
     transform?: Partial<Record<CommonError, string>>
     overrideCapture?: Partial<Record<CommonError, boolean>>
     // If set to true, will capture error. If set to false, will not capture
