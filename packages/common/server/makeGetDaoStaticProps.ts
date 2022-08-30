@@ -251,7 +251,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           error: processError(error, {
             forceCapture: true,
             tags: { coreAddress, coreVersion: coreVersion ?? '<undefined>' },
-            extra: { context }
+            extra: { context },
           }),
         },
         // Regenerate the page at most once per second. Serves cached copy and
