@@ -50,7 +50,7 @@ export const Row = ({
     <RowWrapper localHref={localHref}>
       <div
         className={clsx('flex flex-row gap-4 items-center p-2 body-text', {
-          'hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer':
+          'hover:opacity-70 active:opacity-60 transition-opacity cursor-pointer':
             onClick || localHref,
           'bg-background-interactive-selected rounded-md':
             localHref && localHref === asPath,

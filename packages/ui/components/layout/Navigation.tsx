@@ -113,9 +113,7 @@ export const Navigation = ({
             }
             localHref="/inbox"
             showBadge={inboxCount > 0}
-          >
-            <p className="p-5 text-sm">Inbox content</p>
-          </Row>
+          />
         )}
 
         <Row Icon={PinOutline} defaultExpanded label={t('info.pinned')}>
