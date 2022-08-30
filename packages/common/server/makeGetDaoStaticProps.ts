@@ -17,6 +17,7 @@ import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
   CI,
+  CwCoreVersion,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
@@ -26,7 +27,6 @@ import {
   parseCoreVersion,
   processError,
   validateContractAddress,
-  CwCoreVersion,
 } from '@dao-dao/utils'
 
 import { DaoPageWrapperProps } from '../components'
@@ -251,6 +251,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           error: processError(error, {
             forceCapture: true,
             tags: { coreAddress, coreVersion: coreVersion ?? '<undefined>' },
+            extra: { context }
           }),
         },
         // Regenerate the page at most once per second. Serves cached copy and
