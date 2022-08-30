@@ -1,7 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { DaoInfoBar, DaoInfoBarProps } from 'components'
+import {
+  DaoInfoBar,
+  DaoInfoBarProps,
+  ProposalList,
+  ProposalListProps,
+} from 'components'
 import {
   ProfileHomeCard,
   ProfileHomeCardProps,
@@ -10,6 +15,7 @@ import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { DaoHome } from 'pages/DaoHome'
 import { Default as DaoInfoBarStory } from 'stories/components/dao/DaoInfoBar.stories'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
+import { Default as ProposalListStory } from 'stories/components/proposal/ProposalList.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / DaoHome',
@@ -43,6 +49,9 @@ Default.args = {
     tokenSymbol: 'DOG',
     refundOnFailure: true,
   },
+  proposalList: (
+    <ProposalList {...(ProposalListStory.args as ProposalListProps)} />
+  ),
 }
 Default.parameters = {
   design: {

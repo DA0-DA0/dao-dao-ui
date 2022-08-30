@@ -14,8 +14,8 @@ import {
   ProposalYourVote,
   ProposalYourVoteProps,
 } from 'components/proposal/ProposalYourVote'
-import { Open as OpenProposalStatusStory } from 'stories/components/proposal/ProposalStatus.stories'
-import { Pending as PendingProposalYourVoteStory } from 'stories/components/proposal/ProposalYourVote.stories'
+import * as ProposalStatusStories from 'stories/components/proposal/ProposalStatus.stories'
+import * as ProposalYourVoteStories from 'stories/components/proposal/ProposalYourVote.stories'
 
 export default {
   title: 'DAO DAO UI V2 / components / proposal / ProposalLine',
@@ -30,7 +30,9 @@ const Template: ComponentStory<typeof ProposalLine> = (args) => (
 
 export const makeProps = (
   // 3 days.
-  secondsRemaining = 3 * 24 * 60 * 60
+  secondsRemaining = 3 * 24 * 60 * 60,
+  status: Omit<keyof typeof ProposalStatusStories, 'default'> = 'Open',
+  vote: Omit<keyof typeof ProposalYourVoteStories, 'default'> = 'Pending'
 ): ProposalLineProps => ({
   proposalPrefix: 'A',
   proposalNumber: Math.floor(Math.random() * 100),
@@ -39,12 +41,14 @@ export const makeProps = (
   expiration: secondsToWdhms(secondsRemaining, 1) + ' left',
   status: (
     <ProposalStatus
-      {...(OpenProposalStatusStory.args as ProposalStatusProps)}
+      {...(ProposalStatusStories[status as keyof typeof ProposalStatusStories]
+        .args as ProposalStatusProps)}
     />
   ),
   vote: (
     <ProposalYourVote
-      {...(PendingProposalYourVoteStory.args as ProposalYourVoteProps)}
+      {...(ProposalYourVoteStories[vote as keyof typeof ProposalYourVoteStories]
+        .args as ProposalYourVoteProps)}
     />
   ),
   lastUpdated: new Date(

@@ -456,6 +456,8 @@
     "nobody": "Nobody",
     "numOpenProposals_one": "{{count}} Open Proposal",
     "numOpenProposals_other": "{{count}} Open Proposals",
+    "numProposals_one": "{{count}} Proposal",
+    "numProposals_other": "{{count}} Proposals",
     "openProposals": "Open proposals",
     "passingThreshold": "Passing threshold",
     "pinned": "Pinned",

@@ -39,7 +39,11 @@ Passed.args = {
       className={`w-5 h-5 ${ProposalStatusMap.passed.iconClassName}`}
     />
   ),
-  label: <p className={ProposalStatusMap.passed.textClassName}>Passed</p>,
+  label: (
+    <p className={`w-[8ch] ${ProposalStatusMap.passed.textClassName}`}>
+      Passed
+    </p>
+  ),
 }
 Passed.parameters = Open.parameters
 
@@ -50,6 +54,10 @@ Rejected.args = {
       className={`w-5 h-5 ${ProposalStatusMap.rejected.iconClassName}`}
     />
   ),
-  label: <p className={ProposalStatusMap.rejected.textClassName}>Rejected</p>,
+  label: (
+    <p className={`w-[8ch] ${ProposalStatusMap.rejected.textClassName}`}>
+      Rejected
+    </p>
+  ),
 }
 Rejected.parameters = Open.parameters

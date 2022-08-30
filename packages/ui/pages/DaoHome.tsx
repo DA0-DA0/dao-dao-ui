@@ -28,6 +28,7 @@ export interface DaoHomeProps {
     tokenSymbol: string
     refundOnFailure: boolean
   }
+  proposalList: ReactNode
 }
 
 export const DaoHome = ({
@@ -36,6 +37,7 @@ export const DaoHome = ({
   daoInfoBar,
   isMember,
   proposalDeposit,
+  proposalList,
 }: DaoHomeProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
@@ -141,6 +143,8 @@ export const DaoHome = ({
             </ButtonLink>
           </Tooltip>
         </div>
+
+        <div className="py-6">{proposalList}</div>
       </div>
     </div>
   )
