@@ -26,6 +26,7 @@ import {
   parseCoreVersion,
   processError,
   validateContractAddress,
+  CwCoreVersion,
 } from '@dao-dao/utils'
 
 import { DaoPageWrapperProps } from '../components'
@@ -93,6 +94,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
     }
 
+    // Add to Sentry error tags if error occurs.
+    let coreVersion: CwCoreVersion | undefined
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
       const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
@@ -100,7 +103,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const config = await coreClient.config()
 
       const coreInfo = (await coreClient.info()).info
-      const coreVersion = parseCoreVersion(coreInfo.version)
+      coreVersion = parseCoreVersion(coreInfo.version)
       if (!coreVersion) {
         throw new Error(serverT('error.failedParsingCoreVersion'))
       }
@@ -245,7 +248,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           title: serverT('title.500'),
           description: '',
           // Report to Sentry.
-          error: processError(error, { forceCapture: true }),
+          error: processError(error, {
+            forceCapture: true,
+            tags: { coreAddress, coreVersion: coreVersion ?? '<undefined>' },
+          }),
         },
         // Regenerate the page at most once per second. Serves cached copy and
         // refreshes in background.
