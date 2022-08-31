@@ -14,6 +14,7 @@ const Template: ComponentStory<typeof ProfileImage> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   size: 'lg',
+  imageUrl: '/edamame.png',
 }
 
 Default.parameters = {

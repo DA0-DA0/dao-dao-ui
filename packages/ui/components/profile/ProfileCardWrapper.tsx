@@ -70,7 +70,7 @@ export const ProfileCardWrapper = ({
       <div className="p-6">
         {compact ? (
           <div className="flex flex-row gap-3 items-stretch">
-            <ProfileImage imgUrl={imgUrl} size="sm" />
+            <ProfileImage imageUrl={imgUrl} size="sm" />
 
             <div className="flex flex-col gap-1">
               <div className="text-text-body title-text">{walletName}</div>
@@ -79,7 +79,7 @@ export const ProfileCardWrapper = ({
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center pt-4">
-            <ProfileImage imgUrl={imgUrl} size="lg" />
+            <ProfileImage imageUrl={imgUrl} size="lg" />
             <div className="mt-6 text-text-body title-text">{walletName}</div>
             <div className="mt-2 mb-5 font-mono caption-text">
               {t('profile.est')}

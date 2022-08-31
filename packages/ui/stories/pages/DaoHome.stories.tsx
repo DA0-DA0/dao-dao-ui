@@ -6,6 +6,7 @@ import { useDaoInfoContext } from '@dao-dao/common'
 import {
   DaoInfoBar,
   DaoInfoBarProps,
+  MembersTabProps,
   ProposalsTabProps,
   SubDaosTabProps,
   TreasuryAndNftsTabProps,
@@ -17,6 +18,7 @@ import {
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { DaoHome } from 'pages/DaoHome'
 import { Default as DaoInfoBarStory } from 'stories/components/dao/DaoInfoBar.stories'
+import { Default as MembersTabStory } from 'stories/components/dao/tabs/MembersTab.stories'
 import { Default as ProposalsTabStory } from 'stories/components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from 'stories/components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from 'stories/components/dao/tabs/TreasuryAndNftsTab.stories'
@@ -64,6 +66,9 @@ Default.args = {
   ),
   subDaosTab: (
     <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
+  ),
+  membersTab: (
+    <MembersTabStory {...(MembersTabStory.args as MembersTabProps)} />
   ),
 }
 Default.parameters = {

@@ -18,7 +18,7 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  isMember: false,
+  isMember: true,
   subdaos: [
     makeDaoCardProps(),
     makeDaoCardProps(),
