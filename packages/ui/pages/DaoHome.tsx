@@ -41,7 +41,9 @@ export const DaoHome = ({
   const [selectedTab, setSelectedTab] = useState(Tab.Proposals)
 
   return (
-    <div className="flex flex-col items-stretch mx-auto max-w-[1152px]">
+    // No container padding because we want the gradient to expand. Apply px-6
+    // to children instead.
+    <div className="flex flex-col items-stretch mx-auto max-w-6xl">
       <GradientHero childContainerClassName="px-6">
         <div className="flex flex-row gap-6 justify-between items-center h-20">
           <Breadcrumbs

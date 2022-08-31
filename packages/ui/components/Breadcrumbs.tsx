@@ -1,15 +1,15 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import { Fragment } from 'react'
+import { Fragment, ReactNode } from 'react'
 
 import { ArrowForward } from '@dao-dao/icons'
 
 export interface BreadcrumbsProps {
   crumbs: {
     href: string
-    label: string
+    label: ReactNode
   }[]
-  current: string
+  current: ReactNode
   className?: string
 }
 

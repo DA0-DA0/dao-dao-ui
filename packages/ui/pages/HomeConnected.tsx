@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -15,6 +16,10 @@ export interface HomeConnectedProps {
   pinnedDaos: DaoCardInfo[]
 }
 
+const maxWidth = 'mx-auto w-full max-w-5xl'
+// Max width of 5xl = 64rem, container padding of 6 = 1.5rem
+const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
+
 export const HomeConnected = ({
   featuredDaos,
   pinnedDaos,
@@ -28,18 +33,27 @@ export const HomeConnected = ({
   )
 
   return (
-    <div className="flex flex-col gap-8 items-stretch">
-      <p className="mx-24 h-20 leading-[5rem] border-b border-border-secondary header-text">
+    <div className="flex flex-col gap-8 items-center px-6">
+      <p
+        className={clsx(
+          'h-20 leading-[5rem] border-b border-border-secondary header-text',
+          maxWidth
+        )}
+      >
         {t('title.home')}
       </p>
 
-      <p className="mx-24 title-text">{t('title.featuredDaos')}</p>
+      <p className={clsx('title-text', maxWidth)}>{t('title.featuredDaos')}</p>
 
       {/* Featured DAOs container */}
-      <div className="relative px-[1px]">
+      {/* Margin offsets container padding. */}
+      <div className="relative self-stretch px-[1px] -mx-6">
         {/* Left shadow */}
         <div
-          className="absolute top-0 bottom-0 left-0 z-10 w-24"
+          className={clsx(
+            'absolute top-0 bottom-0 left-0 z-10',
+            widthOfSidePadding
+          )}
           style={{
             background:
               'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
@@ -54,7 +68,10 @@ export const HomeConnected = ({
 
         {/* Right shadow */}
         <div
-          className="absolute top-0 right-0 bottom-0 z-10 w-24"
+          className={clsx(
+            'absolute top-0 right-0 bottom-0 z-10',
+            widthOfSidePadding
+          )}
           style={{
             background:
               'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
@@ -63,9 +80,9 @@ export const HomeConnected = ({
       </div>
 
       {/* Divider */}
-      <div className="mx-24 h-[1px] bg-border-secondary"></div>
+      <div className={clsx('h-[1px] bg-border-secondary', maxWidth)}></div>
 
-      <div className="flex flex-row justify-between mx-24 mt-2">
+      <div className={clsx('flex flex-row justify-between mt-2', maxWidth)}>
         <p className="title-text">{t('title.pinned')}</p>
 
         <div className="flex flex-row gap-6 justify-between items-center">
@@ -75,7 +92,7 @@ export const HomeConnected = ({
         </div>
       </div>
 
-      <GridCardContainer className="mx-24 mt-1">
+      <GridCardContainer className={clsx('mt-1', maxWidth)}>
         {sortedPinnedDaos.map((props) => (
           <DaoCard
             key={props.coreAddress}

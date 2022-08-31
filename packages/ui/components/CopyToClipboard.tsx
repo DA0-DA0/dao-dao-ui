@@ -81,7 +81,7 @@ export const CopyToClipboardUnderline = ({
 }: CopyToClipboardProps) => (
   <p
     className={clsx(
-      'font-mono text-xs text-body underline truncate hover:opacity-80 transition-opacity cursor-pointer',
+      'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
       className
     )}
     onClick={() => {

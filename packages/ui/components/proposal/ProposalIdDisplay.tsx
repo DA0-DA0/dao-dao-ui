@@ -8,7 +8,7 @@ export const ProposalIdDisplay = ({
   proposalNumber,
 }: ProposalIdDisplayProps) => (
   <>
-    {proposalPrefix ? `${proposalPrefix} # ` : '# '}
-    {proposalNumber.toString().padStart(8 - proposalPrefix.length, '0')}
+    {proposalPrefix ? `${proposalPrefix} #` : '#'}
+    {proposalNumber.toString().padStart(7 - proposalPrefix.length, '0')}
   </>
 )

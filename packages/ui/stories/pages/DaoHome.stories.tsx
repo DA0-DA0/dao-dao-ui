@@ -24,6 +24,8 @@ export default {
   title: 'DAO DAO UI V2 / pages / DaoHome',
   component: DaoHome,
   decorators: [
+    // Direct ancestor of rendered story.
+    DaoPageWrapperDecorator,
     makeAppLayoutDecorator({
       rightSidebar: (
         <ProfileHomeCard
@@ -31,7 +33,6 @@ export default {
         />
       ),
     }),
-    DaoPageWrapperDecorator,
   ],
 } as ComponentMeta<typeof DaoHome>
 

@@ -4,7 +4,7 @@ import 'codemirror/theme/material.css'
 
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
-import { useThemeContext } from '../theme'
+import { Theme, useThemeContext } from '../theme'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -17,7 +17,8 @@ export interface CosmosMessageDisplayProps {
 
 export const CosmosMessageDisplay = ({ value }: CosmosMessageDisplayProps) => {
   const themeCtx = useThemeContext()
-  const editorTheme = themeCtx.theme !== 'dark' ? 'default' : 'material-ocean'
+  const editorTheme =
+    themeCtx.theme !== Theme.Dark ? 'default' : 'material-ocean'
   return (
     <div className="flex flex-col">
       <CodeMirror

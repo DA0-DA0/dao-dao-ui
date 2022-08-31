@@ -1,8 +1,7 @@
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import { BorderClear, Check, Close, PanToolOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { Abstain, NoWithVeto } from '@dao-dao/icons'
 
 import { Button } from '../Button'
 
@@ -17,6 +16,8 @@ export const ProfileVoteButton = ({
 }: ProfileVoteButtonProps) => {
   const { t } = useTranslation()
 
+  const Icon = ProfileVoteButtonIconMap[variant]
+
   return (
     <Button
       className={clsx('pl-4 mb-2 w-full border-2 border-transparent', {
@@ -29,15 +30,27 @@ export const ProfileVoteButton = ({
       size="lg"
       variant="secondary"
     >
-      {variant === 'yes' && t('button.yes')}
-      {variant === 'no' && t('button.no')}
-      {variant === 'noWithVeto' && t('button.noWithVeto')}
-      {variant === 'abstain' && t('button.abstain')}
+      {variant === 'yes'
+        ? t('button.yes')
+        : variant === 'no'
+        ? t('button.no')
+        : variant === 'noWithVeto'
+        ? t('button.noWithVeto')
+        : variant === 'abstain'
+        ? t('button.abstain')
+        : t('info.unknown')}
 
-      {variant === 'yes' && <CheckIcon className="inline w-6 h-6" />}
-      {variant === 'no' && <XIcon className="inline w-5 h-5" />}
-      {variant === 'noWithVeto' && <NoWithVeto className="inline w-6 h-6" />}
-      {variant === 'abstain' && <Abstain className="inline w-5 h-5" />}
+      <Icon className="w-6 h-6" />
     </Button>
   )
+}
+
+export const ProfileVoteButtonIconMap: Record<
+  ProfileVoteButtonProps['variant'],
+  ComponentType<{ className: string }>
+> = {
+  yes: Check,
+  no: Close,
+  noWithVeto: PanToolOutlined,
+  abstain: BorderClear,
 }

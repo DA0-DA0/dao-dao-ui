@@ -7,7 +7,7 @@ const defaultVariant = 'primary'
 const defaultSize = 'default'
 
 export interface ButtonifierProps {
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'underline'
   size?: 'sm' | 'lg' | 'default'
   loading?: boolean
   contentContainerClassName?: string
@@ -76,6 +76,16 @@ export const getButtonifiedClassNames = ({
       'text-text-brand bg-transparent': !disabledOrLoading && pressed,
       // Disabled
       'text-text-interactive-disabled bg-transparent': disabledOrLoading,
+    },
+    // Underline variant
+    variant === 'underline' && {
+      // Always (no padding if underline)
+      '!p-0 underline': true,
+      // Default
+      'hover:opacity-80 active:opacity-70 transition-opacity':
+        !disabledOrLoading,
+      // Disabled
+      'text-text-button-disabled': disabledOrLoading,
     },
     className
   )

@@ -1,5 +1,6 @@
 export * from './DaoPageWrapperDecorator'
 export * from './makeAppLayoutDecorator'
+export * from './makeProposalModuleAdapterDecorator'
 export * from './ReactHookFormDecorator'
 export * from './RecoilDecorator'
 export * from './ThemeDecorator'

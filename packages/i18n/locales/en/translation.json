@@ -210,6 +210,7 @@
     "token": "{{val, number}} ${{tokenSymbol}}"
   },
   "info": {
+    "unknown": "Unknown",
     "aboutToUnstake": "You are about to unstake governance tokens.",
     "abstain": "Abstain",
     "actionInBeta": "This action is new and in beta. Double check the generated JSON before executing.",
@@ -430,6 +431,7 @@
     "createADAO": "Create a DAO",
     "createAProposal": "Create a proposal",
     "created": "Created",
+    "creator": "Creator",
     "currentlyUnstaking": "Currently unstaking",
     "custom": "Custom",
     "dao": "DAO",
