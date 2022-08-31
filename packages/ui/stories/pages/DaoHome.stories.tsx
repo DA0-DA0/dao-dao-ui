@@ -7,6 +7,7 @@ import {
   DaoInfoBar,
   DaoInfoBarProps,
   ProposalsTabProps,
+  SubDaosTabProps,
   TreasuryAndNftsTabProps,
 } from 'components'
 import {
@@ -17,6 +18,7 @@ import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { DaoHome } from 'pages/DaoHome'
 import { Default as DaoInfoBarStory } from 'stories/components/dao/DaoInfoBar.stories'
 import { Default as ProposalsTabStory } from 'stories/components/dao/tabs/ProposalsTab.stories'
+import { Default as SubDaosTabStory } from 'stories/components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from 'stories/components/dao/tabs/TreasuryAndNftsTab.stories'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
 
@@ -59,6 +61,9 @@ Default.args = {
     <TreasuryAndNftsTabStory
       {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps)}
     />
+  ),
+  subDaosTab: (
+    <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
   ),
 }
 Default.parameters = {

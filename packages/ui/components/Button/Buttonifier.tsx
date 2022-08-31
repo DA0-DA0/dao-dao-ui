@@ -127,7 +127,7 @@ export const ButtonifiedChildren = ({
     </div>
     <div
       className={clsx(
-        'flex flex-row gap-2 items-center',
+        'flex flex-row gap-2 items-center h-full',
         {
           invisible: loading,
         },

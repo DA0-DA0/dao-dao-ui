@@ -13,6 +13,7 @@ export interface SegmentedControlsProps<T extends unknown> {
   selected: T
   onSelect: (value: T) => void
   loading?: T
+  className?: string
 }
 
 export const SegmentedControls = <T extends unknown>({
@@ -20,39 +21,44 @@ export const SegmentedControls = <T extends unknown>({
   selected,
   onSelect,
   loading,
+  className,
 }: SegmentedControlsProps<T>) => {
   const [hovering, setHovering] = useState<number>()
 
   return (
     <div
-      className="group grid grid-flow-col auto-cols-fr bg-background-tertiary rounded-md"
+      className={clsx(
+        'group grid grid-flow-col auto-cols-fr bg-background-tertiary rounded-md',
+        className
+      )}
       onMouseLeave={() => setHovering(undefined)}
     >
       {tabs.map(({ label, value }, index) => (
         <div key={index} className="flex flex-row items-stretch">
-          <div
-            className={clsx(
-              'self-center w-[1px] h-4 bg-border-primary opacity-100 transition-opacity',
-              {
-                // Do not show left border if...
-                '!opacity-0':
-                  // first element.
-                  index === 0 ||
-                  // left tab selected.
-                  selected === tabs[index - 1].value ||
-                  // current tab selected.
-                  selected === value ||
-                  // left tab hovering.
-                  hovering === index - 1 ||
-                  // current tab hovering.
-                  hovering === index,
-              }
-            )}
-          ></div>
+          {/* Don't render left border for the first element. */}
+          {index > 0 && (
+            <div
+              className={clsx(
+                'self-center w-[1px] h-4 bg-border-primary opacity-100 transition-opacity',
+                {
+                  // Do not show left border if...
+                  '!opacity-0':
+                    // left tab selected.
+                    selected === tabs[index - 1].value ||
+                    // current tab selected.
+                    selected === value ||
+                    // left tab hovering.
+                    hovering === index - 1 ||
+                    // current tab hovering.
+                    hovering === index,
+                }
+              )}
+            ></div>
+          )}
 
           <Button
             className={clsx(
-              'flex justify-center items-center px-12 w-full',
+              'flex justify-center items-center !px-4 w-full',
               selected === value || hovering === index
                 ? // Brighten text when selected or hovering over this tab.
                   'body-text'

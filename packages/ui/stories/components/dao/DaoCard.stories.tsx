@@ -1,10 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoCard } from 'components/dao/DaoCard'
+import { DaoCard, DaoCardProps } from 'components/dao/DaoCard'
 
 export default {
   title: 'DAO DAO UI V2 / components / dao / DaoCard',
   component: DaoCard,
+  excludeStories: ['makeProps'],
 } as ComponentMeta<typeof DaoCard>
 
 const Template: ComponentStory<typeof DaoCard> = (args) => (
@@ -13,8 +14,8 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
   </div>
 )
 
-export const Default = Template.bind({})
-Default.args = {
+export const makeProps = (): DaoCardProps => ({
+  coreAddress: 'daoCoreAddress',
   name: 'Modern DAO',
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
@@ -35,7 +36,10 @@ Default.args = {
   proposalCount: 25,
 
   isMember: true,
-}
+})
+
+export const Default = Template.bind({})
+Default.args = makeProps()
 
 Default.parameters = {
   design: {

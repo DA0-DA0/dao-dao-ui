@@ -50,7 +50,7 @@ export const ProposalsTab = ({
   return (
     <>
       <div className="flex flex-row gap-8 justify-between items-center pb-6 mb-6 border-b border-b-border-secondary">
-        <div className="flex flex-row gap-4 items-center">
+        <div className="flex flex-row flex-wrap gap-x-4 gap-y-1 items-center">
           <p className="text-text-body title-text">
             {t('title.createAProposal')}
           </p>
@@ -79,6 +79,7 @@ export const ProposalsTab = ({
           }
         >
           <ButtonLink
+            className="shrink-0"
             disabled={!isMember}
             href={`/dao/${daoInfo.coreAddress}/proposals/create`}
           >
