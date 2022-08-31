@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 

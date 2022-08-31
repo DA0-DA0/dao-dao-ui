@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { Cw20StakedBalanceVotingProfileMembership } from 'components/profile/Cw20StakedBalanceVotingProfileMembership'

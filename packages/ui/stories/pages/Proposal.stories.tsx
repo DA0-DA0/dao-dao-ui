@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { useProposalModuleAdapterOptions } from '@dao-dao/proposal-module-adapter'

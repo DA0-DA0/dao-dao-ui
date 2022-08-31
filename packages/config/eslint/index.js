@@ -23,7 +23,6 @@ const eslintConfig = {
   overrides: [
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
-      extends: ['plugin:react-i18n/recommended', 'plugin:i18next/recommended'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
@@ -31,33 +30,6 @@ const eslintConfig = {
       plugins: ['@typescript-eslint', 'import', 'unused-imports', 'regex'],
       rules: {
         '@typescript-eslint/no-unused-vars': ['off'],
-        'i18next/no-literal-string': [
-          'warn',
-          {
-            mode: 'jsx-only',
-            'jsx-attributes': {
-              include: [
-                'label',
-                'placeholder',
-                'alt',
-                'title',
-                'aria-label',
-                'aria-placeholder',
-                'name',
-                'description',
-                'subtitle',
-                'emoji',
-              ],
-            },
-            words: {
-              exclude: [
-                // Defaults wrapped in whitespace.
-                '\\s*[0-9!-/:-@[-`{-~]+\\s*',
-                '\\s*[A-Z_-]+\\s*',
-              ],
-            },
-          },
-        ],
         'import/order': [
           'error',
           {
@@ -166,6 +138,46 @@ const eslintConfig = {
                 "Using React's FunctionComponent is discouraged. Type the props explicitly: `export const Component = (props: ComponentProps) => { ... }`",
             },
           ],
+        ],
+      },
+    },
+    // i18n linting
+    {
+      files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
+      // Don't care about i18n in storybook files.
+      excludedFiles: ['**/*.stories.tsx'],
+      extends: ['plugin:react-i18n/recommended', 'plugin:i18next/recommended'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: tsConfig,
+      },
+      rules: {
+        'i18next/no-literal-string': [
+          'warn',
+          {
+            mode: 'jsx-only',
+            'jsx-attributes': {
+              include: [
+                'label',
+                'placeholder',
+                'alt',
+                'title',
+                'aria-label',
+                'aria-placeholder',
+                'name',
+                'description',
+                'subtitle',
+                'emoji',
+              ],
+            },
+            words: {
+              exclude: [
+                // Defaults wrapped in whitespace.
+                '\\s*[0-9!-/:-@[-`{-~]+\\s*',
+                '\\s*[A-Z_-]+\\s*',
+              ],
+            },
+          },
         ],
       },
     },

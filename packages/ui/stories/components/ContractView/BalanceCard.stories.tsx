@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import { PlusSmIcon } from '@heroicons/react/outline'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 

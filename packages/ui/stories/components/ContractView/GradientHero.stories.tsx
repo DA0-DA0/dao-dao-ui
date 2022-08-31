@@ -13,6 +13,5 @@ const Template: ComponentStory<typeof GradientHero> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  // eslint-disable-next-line i18next/no-literal-string
   children: <p className="p-60 text-center">A lot of content.</p>,
 }

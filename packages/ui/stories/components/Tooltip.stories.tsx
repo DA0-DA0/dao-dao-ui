@@ -12,6 +12,5 @@ const Template: ComponentStory<typeof Tooltip> = (args) => <Tooltip {...args} />
 export const Default = Template.bind({})
 Default.args = {
   label: 'This is a tooltip.',
-  // eslint-disable-next-line i18next/no-literal-string
   children: <p>Hover over me.</p>,
 }
