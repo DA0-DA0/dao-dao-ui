@@ -125,3 +125,6 @@ export const FEATURED_DAOS_CACHE_SECONDS = parseInt(
     (60 * 60 * 12).toString(),
   10
 )
+
+export const DAO_DAO_CORE_ADDRESS = process.env
+  .NEXT_PUBLIC_DAO_DAO_CORE_ADDRESS as string
