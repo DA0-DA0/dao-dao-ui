@@ -1,4 +1,4 @@
-import { BorderClear, Check, Close, PanToolOutlined } from '@mui/icons-material'
+import { Check, Close, PanToolOutlined, Texture } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -52,5 +52,5 @@ export const ProfileVoteButtonIconMap: Record<
   yes: Check,
   no: Close,
   noWithVeto: PanToolOutlined,
-  abstain: BorderClear,
+  abstain: Texture,
 }
