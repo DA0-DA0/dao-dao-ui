@@ -63,7 +63,7 @@ export const Vote = ({
               'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
             })}
           />
-          {t('info.yes')}
+          {t('info.yesVote')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -82,7 +82,7 @@ export const Vote = ({
               'group-hover:text-base text-error': selected !== VoteChoice.No,
             })}
           />
-          {t('info.no')}
+          {t('info.noVote')}
         </Button>
         <Button
           className={clsx('group transition', {
@@ -96,7 +96,7 @@ export const Vote = ({
           variant="secondary"
         >
           <Abstain />
-          {t('info.abstain')}
+          {t('info.abstainVote')}
         </Button>
       </div>
       <Button

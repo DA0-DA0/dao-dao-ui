@@ -19,15 +19,15 @@ export const VoteDisplay = ({ vote, className }: VoteDisplayProps) => {
 
   return vote === Vote.Yes ? (
     <p className={clsx(commonClassNames, 'text-valid')}>
-      <CheckIcon className="inline w-4" /> {t('info.yes')}
+      <CheckIcon className="inline w-4" /> {t('info.yesVote')}
     </p>
   ) : vote === Vote.No ? (
     <p className={clsx(commonClassNames, 'text-error')}>
-      <XIcon className="inline w-4" /> {t('info.no')}
+      <XIcon className="inline w-4" /> {t('info.noVote')}
     </p>
   ) : vote === Vote.Abstain ? (
     <p className={clsx(commonClassNames, 'text-secondary')}>
-      <Abstain /> {t('info.abstain')}
+      <Abstain /> {t('info.abstainVote')}
     </p>
   ) : (
     // Should never happen.

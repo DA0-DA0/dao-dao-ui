@@ -14,7 +14,7 @@ import {
 } from '@dao-dao/ui'
 import {
   validateAddress,
-  validatePositive,
+  validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -89,7 +89,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                     placeholder={t('form.votingWeightPlaceholder')}
                     register={register}
                     sizing="md"
-                    validation={[validateRequired, validatePositive]}
+                    validation={[validateRequired, validateNonNegative]}
                   />
                   <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
                 </div>

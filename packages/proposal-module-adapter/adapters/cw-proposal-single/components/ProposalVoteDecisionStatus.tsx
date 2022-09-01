@@ -156,10 +156,10 @@ export const ProposalVoteDecisionStatus = ({
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {t('info.yes')} {formatPercentOf100(turnoutYesPercent)}
+                  {t('info.yesVote')} {formatPercentOf100(turnoutYesPercent)}
                 </p>,
                 <p key="no" className="text-error">
-                  {t('info.no')} {formatPercentOf100(turnoutNoPercent)}
+                  {t('info.noVote')} {formatPercentOf100(turnoutNoPercent)}
                 </p>,
               ]
                 .sort(() => yesVotes - noVotes)
@@ -178,7 +178,8 @@ export const ProposalVoteDecisionStatus = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {t('info.abstain')} {formatPercentOf100(turnoutAbstainPercent)}
+                {t('info.abstainVote')}{' '}
+                {formatPercentOf100(turnoutAbstainPercent)}
               </p>
             </div>
 
@@ -348,10 +349,10 @@ export const ProposalVoteDecisionStatus = ({
             <div className="flex flex-row gap-4 items-center font-mono text-xs">
               {[
                 <p key="yes" className="text-valid">
-                  {t('info.yes')} {formatPercentOf100(totalYesPercent)}
+                  {t('info.yesVote')} {formatPercentOf100(totalYesPercent)}
                 </p>,
                 <p key="no" className="text-error">
-                  {t('info.no')} {formatPercentOf100(totalNoPercent)}
+                  {t('info.noVote')} {formatPercentOf100(totalNoPercent)}
                 </p>,
               ]
                 .sort(() => yesVotes - noVotes)
@@ -370,7 +371,8 @@ export const ProposalVoteDecisionStatus = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {t('info.abstain')} {formatPercentOf100(totalAbstainPercent)}
+                {t('info.abstainVote')}{' '}
+                {formatPercentOf100(totalAbstainPercent)}
               </p>
             </div>
 
