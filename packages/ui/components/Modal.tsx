@@ -14,6 +14,7 @@ export interface ModalProps {
     title: string
     subtitle?: string
   }
+  headerContent?: ReactNode
 }
 
 export const Modal = ({
@@ -23,6 +24,7 @@ export const Modal = ({
   containerClassName,
   hideCloseButton,
   header,
+  headerContent,
 }: ModalProps) => {
   const handleKeyPress = useCallback(
     (event) => {
@@ -68,12 +70,18 @@ export const Modal = ({
           />
         )}
 
-        {header && (
+        {(header || headerContent) && (
           <div className="p-6 pt-0 -mx-6 mb-6 space-y-1 border-b border-border-base">
-            <p className="header-text">{header.title}</p>
-            {!!header.subtitle && (
-              <p className="body-text">{header.subtitle}</p>
+            {header && (
+              <>
+                <p className="header-text">{header.title}</p>
+                {!!header.subtitle && (
+                  <p className="body-text">{header.subtitle}</p>
+                )}
+              </>
             )}
+
+            {headerContent}
           </div>
         )}
 
