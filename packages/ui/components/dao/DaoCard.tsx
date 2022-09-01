@@ -1,9 +1,9 @@
+import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoCardMemberCheck,
   DaoCardPin,
   DaoCardProposals,
   Governance,
@@ -101,9 +101,8 @@ export const DaoCard = ({
             />
 
             {isMember && (
-              // TODO: Fix tooltip position.
               <Tooltip label={t('info.youAreMember')}>
-                <DaoCardMemberCheck className="w-4 h-4 text-icon-secondary" />
+                <Check className="w-4 h-4 text-icon-secondary" />
               </Tooltip>
             )}
           </div>

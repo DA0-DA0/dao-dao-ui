@@ -17,18 +17,6 @@
   font-style: normal;
 }
 
-:root {
-  --reach-tooltip: 1;
-}
-
-/* node_modules/@reach/tooltip/styles.css */
-[data-reach-tooltip] {
-  pointer-events: none;
-  position: absolute;
-  white-space: nowrap;
-  @apply animate-slide-up-fade bg-white border border-neutral-700 px-2 py-1 rounded shadow shadow-neutral-900 text-xs z-50;
-}
-
 html {
   --logo-fill: #06090b;
   color-scheme: light;

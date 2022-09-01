@@ -29,6 +29,7 @@ export interface TokenCardProps {
   unstakingDuration: string
   stakes?: TokenStake[]
   onAddToken?: () => void
+  onClickRewards: () => void
   onClaim: () => void
 }
 
@@ -45,6 +46,7 @@ export const TokenCard = ({
   unstakingDuration,
   stakes,
   onAddToken,
+  onClickRewards,
   onClaim,
 }: TokenCardProps) => {
   const { t } = useTranslation()
@@ -104,7 +106,6 @@ export const TokenCard = ({
 
           {onAddToken && (
             <div className="absolute top-3 right-3">
-              {/* TODO: Fix tooltip location. */}
               <Tooltip label={t('info.addTokenTooltip')}>
                 <IconButton
                   Icon={PlusIcon}
@@ -203,10 +204,10 @@ export const TokenCard = ({
             <div className="flex flex-row gap-8 justify-between items-center">
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
-              {/* TODO: Fix tooltip position. */}
               <Tooltip label={t('info.createClaimProposal')}>
                 <Button
                   className="font-mono text-right text-text-body underline-offset-2 caption-text"
+                  onClick={onClickRewards}
                   variant="underline"
                 >
                   {pendingRewards.toLocaleString(undefined, {

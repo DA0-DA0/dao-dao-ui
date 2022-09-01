@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentPropsWithoutRef, forwardRef } from 'react'
 
 import {
   ButtonifiedChildren,
@@ -8,12 +8,18 @@ import {
 
 export type ButtonProps = ComponentPropsWithoutRef<'button'> & ButtonifierProps
 
-export const Button = ({
-  children,
-  type = 'button',
-  ...props
-}: ButtonProps) => (
-  <button {...props} className={getButtonifiedClassNames(props)} type={type}>
-    <ButtonifiedChildren {...props}>{children}</ButtonifiedChildren>
-  </button>
+// Forward ref so we can use Tooltip with this element.
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  function Button({ children, type = 'button', ...props }, ref) {
+    return (
+      <button
+        {...props}
+        className={getButtonifiedClassNames(props)}
+        ref={ref}
+        type={type}
+      >
+        <ButtonifiedChildren {...props}>{children}</ButtonifiedChildren>
+      </button>
+    )
+  }
 )

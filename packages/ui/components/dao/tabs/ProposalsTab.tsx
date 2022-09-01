@@ -69,7 +69,6 @@ export const ProposalsTab = ({
           )}
         </div>
 
-        {/* TODO: Fix tooltip position. */}
         <Tooltip
           label={
             isMember

@@ -58,6 +58,7 @@ export const makeProps = (crown = false): TokenCardProps => {
     usdcUnitPrice: 5.38,
     unstakingDuration: '28 days',
     stakes,
+    onClickRewards: () => alert('rewards'),
     onClaim: () => alert('claim'),
   }
 }

@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentPropsWithoutRef, forwardRef } from 'react'
 
 import {
   IconButtonifiedChildren,
@@ -9,12 +9,17 @@ import {
 export type IconButtonProps = ComponentPropsWithoutRef<'button'> &
   IconButtonifierProps
 
-export const IconButton = ({ type = 'button', ...props }: IconButtonProps) => (
-  <button
-    {...props}
-    className={getIconButtonifiedClassNames(props)}
-    type={type}
-  >
-    <IconButtonifiedChildren {...props} />
-  </button>
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  function IconButton({ type = 'button', ...props }, ref) {
+    return (
+      <button
+        {...props}
+        className={getIconButtonifiedClassNames(props)}
+        ref={ref}
+        type={type}
+      >
+        <IconButtonifiedChildren {...props} />
+      </button>
+    )
+  }
 )
