@@ -26,7 +26,6 @@ export const Tooltip = ({
           classes?.tooltip ??
           '!font-sans !text-xs !font-normal !text-text-body !bg-component-tooltip !rounded-md !border !border-border-primary',
       }}
-      open
       {...props}
       title={label}
     >
