@@ -20,6 +20,10 @@ export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
 
   const [themeChangeCount, setThemeChangeCount] = useState(0)
   useEffect(() => {
+    // Ensure correct theme class is set on document.
+    Object.values(Theme).forEach((value) =>
+      document.documentElement.classList.toggle(value, value === theme)
+    )
     // Update theme change count.
     setThemeChangeCount((c) => c + 1)
   }, [theme])
@@ -46,7 +50,6 @@ export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
         className={clsx(
           'absolute top-0 right-0 bottom-0 left-0 antialiased bg-background-base body-text',
           {
-            dark: theme === Theme.Dark,
             // Don't add padding when displaying entire pages, to make the
             // storybook window most similar to a browser.
             'p-4': !ctx.title.includes('/ pages /'),
