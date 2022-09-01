@@ -96,15 +96,23 @@ const SDA = (props: AppProps) => {
             content: '#ffffff',
           },
         ]}
-        description={t('meta.description')}
+        description={t('meta.description').replace(
+          // eslint-disable-next-line i18next/no-literal-string
+          'meta.description',
+          'Loading...'
+        )}
         openGraph={{
           url: SITE_URL,
           type: 'website',
-          title: t('meta.title'),
-          description: t('meta.description'),
+          title: t('meta.title').replace('meta.title', 'Loading...'),
+          description: t('meta.description').replace(
+            'meta.description',
+            'Loading...'
+          ),
           images: SITE_IMAGE ? [{ url: SITE_IMAGE }] : [],
         }}
-        title={t('meta.title')}
+        // eslint-disable-next-line i18next/no-literal-string
+        title={t('meta.title').replace('meta.title', 'Loading...')}
         twitter={{
           cardType: 'summary_large_image',
         }}
