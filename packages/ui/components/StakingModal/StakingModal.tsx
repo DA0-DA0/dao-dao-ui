@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -14,29 +13,9 @@ import { AmountSelector } from './AmountSelector'
 import { PercentButton, PercentSelector } from './PercentSelector'
 
 export enum StakingMode {
-  Stake,
-  Unstake,
-  Claim,
-}
-
-export const useStakingModeTitle = () => {
-  const { t } = useTranslation()
-
-  return useCallback(
-    (mode: StakingMode) => {
-      switch (mode) {
-        case StakingMode.Stake:
-          return t('title.stakeTokens')
-        case StakingMode.Unstake:
-          return t('title.unstakeTokens')
-        case StakingMode.Claim:
-          return t('title.claimTokens')
-        default:
-          return 'internal error'
-      }
-    },
-    [t]
-  )
+  Stake = 'stake',
+  Unstake = 'unstake',
+  Claim = 'claim',
 }
 
 export interface StakingModalProps {
@@ -91,7 +70,7 @@ export const StakingModal = ({
   onAction,
 }: StakingModalProps) => {
   const { t } = useTranslation()
-  const stakingModeTitle = useStakingModeTitle()
+
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
 
   const invalidAmount = (): string | undefined => {
@@ -107,11 +86,7 @@ export const StakingModal = ({
   }
 
   return (
-    <Modal onClose={onClose}>
-      <div className="flex justify-between items-center">
-        <h1 className="header-text">{stakingModeTitle(mode)}</h1>
-      </div>
-
+    <Modal header={{ title: t(`title.stakingMode.${mode}`) }} onClose={onClose}>
       {mode === StakingMode.Stake && (
         <StakeUnstakeModesBody
           amount={amount}

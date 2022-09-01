@@ -430,6 +430,12 @@
     "addCw721ToTreasury": "Display NFT Collection in Treasury",
     "addresses": "Addresses",
     "allVotes": "All votes",
+    "manageStaking": "Manage staking",
+    "stakingMode": {
+      "stake": "Stake tokens",
+      "unstake": "Unstake tokens",
+      "claim": "Claim tokens"
+    },
     "apr": "APR",
     "aprReward": "APR reward",
     "balanceUnstaked": "Balance (unstaked {{name}})",

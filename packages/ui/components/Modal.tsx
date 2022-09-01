@@ -56,7 +56,7 @@ export const Modal = ({
     >
       <div
         className={clsx(
-          'relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto',
+          'relative p-6 max-w-md h-min bg-background-base rounded-lg border border-border-secondary cursor-auto',
           containerClassName
         )}
       >
