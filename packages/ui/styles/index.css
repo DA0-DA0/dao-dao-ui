@@ -17,6 +17,12 @@
   font-style: normal;
 }
 
+/* Outline the tooltip arrow. */
+.MuiTooltip-arrow::before {
+  border-width: 1px;
+  border-color: var(--border-primary);
+}
+
 html {
   --logo-fill: #06090b;
   color-scheme: light;
