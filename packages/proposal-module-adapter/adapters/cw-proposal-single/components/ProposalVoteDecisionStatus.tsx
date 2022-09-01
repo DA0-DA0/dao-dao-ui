@@ -178,7 +178,8 @@ export const ProposalVoteDecisionStatus = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {t('info.abstainVote')} {formatPercentOf100(turnoutAbstainPercent)}
+                {t('info.abstainVote')}{' '}
+                {formatPercentOf100(turnoutAbstainPercent)}
               </p>
             </div>
 
@@ -370,7 +371,8 @@ export const ProposalVoteDecisionStatus = ({
                   yesVotes === noVotes ? 'flex-1 text-right' : ''
                 }`}
               >
-                {t('info.abstainVote')} {formatPercentOf100(totalAbstainPercent)}
+                {t('info.abstainVote')}{' '}
+                {formatPercentOf100(totalAbstainPercent)}
               </p>
             </div>
 
