@@ -12,7 +12,7 @@ import { UnstakingTaskStatus } from './UnstakingStatus'
 export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
   unstakingDuration: string
   tasks: UnstakingTask[]
-  onClaim: () => void
+  onClaim: (tokenSymbol: string) => void
 }
 
 export const UnstakingModal = ({
@@ -31,11 +31,27 @@ export const UnstakingModal = ({
       t('info.unstakingDurationExplanation', { duration: unstakingDuration }),
   }
 
+  // Combine into tasks grouped by token.
   const readyToClaim = useMemo(
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.ReadyToClaim)
-        .sort((a, b) => a.date.getTime() - b.date.getTime()),
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .reduce((combinedTasks, task) => {
+          const existingTask = combinedTasks.find(
+            ({ tokenSymbol }) => tokenSymbol === task.tokenSymbol
+          )
+          // If found, just modify existing by increasing amount. No need to
+          // worry about the date since it will be replaced by a claim button.
+          if (existingTask) {
+            existingTask.amount += task.amount
+          } else {
+            // If not found, add this task as the new one.
+            combinedTasks.push(task)
+          }
+
+          return combinedTasks
+        }, [] as UnstakingTask[]),
     [tasks]
   )
   const unstaking = useMemo(
@@ -61,19 +77,17 @@ export const UnstakingModal = ({
       {/* Only show if something is ready to claim. */}
       {readyToClaim.length > 0 && (
         <>
-          <div className="flex flex-row justify-between items-center mb-3">
-            <div className="flex flex-row gap-3 items-center ml-2 text-text-secondary link-text">
-              <ArrowDropdown className="w-2 h-2" />
-
-              <p>{t('title.numTasks', { count: readyToClaim.length })}</p>
-            </div>
-
-            <Button onClick={onClaim}>{t('button.claimTokens')}</Button>
-          </div>
-
           <div className="mb-5 space-y-1">
             {readyToClaim.map((task, index) => (
-              <UnstakingLine key={index} task={task} />
+              <UnstakingLine
+                key={index}
+                dateReplacement={
+                  <Button onClick={() => onClaim(task.tokenSymbol)}>
+                    {t('button.claim')}
+                  </Button>
+                }
+                task={task}
+              />
             ))}
           </div>
         </>

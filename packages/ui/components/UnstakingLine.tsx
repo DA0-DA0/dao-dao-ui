@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
@@ -16,10 +17,14 @@ export interface UnstakingTask {
 
 export interface UnstakingLineProps {
   task: UnstakingTask
+  // If present, replace date with this node. This may be used to add a claim
+  // button to the claim task status.
+  dateReplacement?: ReactNode
 }
 
 export const UnstakingLine = ({
   task: { status, amount, tokenSymbol, tokenDecimals, date },
+  dateReplacement,
 }: UnstakingLineProps) => {
   const { t } = useTranslation()
 
@@ -33,15 +38,19 @@ export const UnstakingLine = ({
   return (
     <div className="grid grid-cols-[auto_1fr_auto] gap-8 items-center py-4 px-3 bg-background-secondary rounded-md">
       <UnstakingStatus status={status} />
+
       <p className="truncate body-text">
         {amount.toLocaleString(undefined, {
           maximumFractionDigits: tokenDecimals,
         })}{' '}
         ${tokenSymbol}
       </p>
-      <p className="font-mono text-right break-words caption-text">
-        {dateString}
-      </p>
+
+      {dateReplacement || (
+        <p className="font-mono text-right break-words caption-text">
+          {dateString}
+        </p>
+      )}
     </div>
   )
 }

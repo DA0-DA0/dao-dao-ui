@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { UnstakingTaskStatus } from 'components'
+import { Button, UnstakingTaskStatus } from 'components'
 import { UnstakingLine, UnstakingLineProps } from 'components/UnstakingLine'
 
 export default {
@@ -57,5 +57,8 @@ ReadyToClaim.args = makeProps(UnstakingTaskStatus.ReadyToClaim)
 ReadyToClaim.parameters = Unstaking.parameters
 
 export const Claimed = Template.bind({})
-Claimed.args = makeProps(UnstakingTaskStatus.Claimed)
+Claimed.args = {
+  ...makeProps(UnstakingTaskStatus.Claimed),
+  dateReplacement: <Button onClick={() => alert('claim')}>Claim</Button>,
+}
 Claimed.parameters = Unstaking.parameters
