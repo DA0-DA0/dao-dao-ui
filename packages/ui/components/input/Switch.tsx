@@ -75,12 +75,7 @@ export const SwitchCard = ({
         containerClassName
       )}
     >
-      <p
-        className="secondary-text"
-        style={{
-          width: Math.max(onLabel?.length ?? 0, offLabel?.length ?? 0) + 'ch',
-        }}
-      >
+      <p className="min-w-[5rem] secondary-text">
         {props.enabled ? onLabel : offLabel}
       </p>
 
