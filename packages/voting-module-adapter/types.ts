@@ -137,6 +137,7 @@ export interface IVotingModuleAdapter {
     ProposalCreationAdditionalAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
+    ProfileMemberCardMembershipInfo: ComponentType
 
     ProposalDetailsVotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
     StakingModal?: ComponentType<BaseStakingModalProps>

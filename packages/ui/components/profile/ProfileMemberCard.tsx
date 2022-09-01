@@ -1,7 +1,5 @@
-import clsx from 'clsx'
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../Button'
 import { MembershipPill } from './MembershipPill'
@@ -18,33 +16,23 @@ export interface UnstakingTokensTranch {
 export interface ProfileMemberCardProps {
   loadingClaiming?: boolean
   loadingManaging?: boolean
-  votingPower: number
   daoName: string
   walletName: string
   profileImgUrl: string
-  tokenSymbol: string
-  stakedTokens: number
-  tokenDecimals: number
-  unstakingTokensTranches: UnstakingTokensTranch[]
-  unstakedTokens: number
   openProposals?: boolean
   established: Date
+  membershipInfo: ReactNode
 }
 
 export const ProfileMemberCard = ({
   loadingClaiming,
   loadingManaging,
-  votingPower,
   daoName,
   walletName,
   profileImgUrl,
-  tokenSymbol,
-  stakedTokens,
-  tokenDecimals,
-  unstakingTokensTranches,
-  unstakedTokens,
   openProposals,
   established,
+  membershipInfo,
 }: ProfileMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -58,83 +46,10 @@ export const ProfileMemberCard = ({
     >
       <div className="p-6 pb-4 border-t border-t-border-primary">
         <div className="flex flex-row justify-between items-center pb-3 text-text-body link-text">
-          <p>{t('title.yourEquity')}</p>
+          <p>{t('title.yourMembership')}</p>
         </div>
 
-        <div className="flex flex-row justify-between items-center pb-3 secondary-text">
-          <p>{t('title.stakedTokens')}</p>
-          <p className="font-mono text-text-primary">
-            {stakedTokens.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
-            })}{' '}
-            ${tokenSymbol}
-          </p>
-        </div>
-
-        <div className="flex flex-row justify-between items-center pb-3 secondary-text">
-          <p>{t('title.votingPower')}</p>
-          <p className="font-mono text-text-primary">
-            {formatPercentOf100(votingPower)}
-          </p>
-        </div>
-
-        <div className="flex flex-row justify-between items-center pb-3 secondary-text">
-          <p>{t('title.unstakingTokens')}</p>
-          <p
-            className={clsx('font-mono', {
-              'text-text-primary underline underline-offset-2':
-                unstakingTokensTranches.length > 0,
-            })}
-          >
-            {t('info.unstakingTranches', {
-              count: unstakingTokensTranches.length,
-            })}
-          </p>
-        </div>
-
-        <div className="flex flex-row justify-between items-center pb-6 secondary-text">
-          <p>{t('title.unstakedTokens')}</p>
-          <p
-            className={clsx('font-mono', {
-              'text-text-tertiary': unstakedTokens === 0,
-              'text-icon-interactive-valid': unstakedTokens > 0,
-            })}
-          >
-            {unstakedTokens.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
-            })}{' '}
-            ${tokenSymbol}
-          </p>
-        </div>
-
-        {unstakedTokens > 0 && (
-          <Button
-            className="mb-2 w-full"
-            contentContainerClassName="justify-center"
-            disabled={loadingManaging}
-            loading={loadingClaiming}
-            size="lg"
-            variant="primary"
-          >
-            {t('button.claimNumTokens', {
-              amount: unstakedTokens.toLocaleString(undefined, {
-                maximumFractionDigits: tokenDecimals,
-              }),
-              tokenSymbol,
-            })}
-          </Button>
-        )}
-
-        <Button
-          className="w-full"
-          contentContainerClassName="justify-center"
-          disabled={loadingClaiming}
-          loading={loadingManaging}
-          size="lg"
-          variant="secondary"
-        >
-          {t('button.manageStake', { tokenSymbol })}
-        </Button>
+        {membershipInfo}
       </div>
 
       {openProposals && (

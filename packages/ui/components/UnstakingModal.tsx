@@ -118,7 +118,9 @@ export const UnstakingModal = ({
           })}
         />
 
-        <p>{t('title.history')}</p>
+        <p>
+          {claimed.length === 0 ? t('title.noHistory') : t('title.history')}
+        </p>
       </div>
 
       {claimed.length > 0 && (

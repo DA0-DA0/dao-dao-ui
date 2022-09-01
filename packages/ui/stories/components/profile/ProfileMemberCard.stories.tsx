@@ -1,6 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileMemberCard } from 'components/profile/ProfileMemberCard'
+import { ProfileMemberCardMembershipInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
+
+import { UnstakingTask, UnstakingTaskStatus } from 'components'
+import {
+  ProfileMemberCard,
+  ProfileMemberCardProps,
+} from 'components/profile/ProfileMemberCard'
+import { makeProps as makeUnstakingLineProps } from 'stories/components/UnstakingLine/UnstakingLine.stories'
 
 export default {
   title: 'DAO DAO UI V2 / components / profile / ProfileMemberCard',
@@ -13,28 +20,39 @@ const Template: ComponentStory<typeof ProfileMemberCard> = (args) => (
   </div>
 )
 
-export const Default = Template.bind({})
-Default.args = {
-  loadingClaiming: false,
-  loadingManaging: false,
-  votingPower: 34.2,
+const makeProps = (
+  unstakingTasks?: UnstakingTask[]
+): ProfileMemberCardProps => ({
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/dog_nft.png',
-  tokenSymbol: 'DOG',
-  stakedTokens: 50,
-  tokenDecimals: 1,
-  unstakingTokensTranches: [
-    {
-      tokenSymbol: '$DOG',
-      unstakingTokens: 50,
-      available: new Date(),
-    },
-  ],
-  unstakedTokens: 45,
   openProposals: true,
   established: new Date(),
-}
+  membershipInfo: (
+    <ProfileMemberCardMembershipInfo
+      loadingClaiming={false}
+      loadingManaging={false}
+      onClaim={() => alert('claim')}
+      stakedTokens={50}
+      tokenDecimals={6}
+      tokenSymbol="DOG"
+      unstakedTokens={45.413}
+      unstakingDuration="28 days"
+      unstakingTasks={
+        unstakingTasks ?? [
+          makeUnstakingLineProps(UnstakingTaskStatus.ReadyToClaim, 'DOG').task,
+          makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+          makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+          makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+        ]
+      }
+      votingPower={34.2}
+    />
+  ),
+})
+
+export const Default = Template.bind({})
+Default.args = makeProps()
 
 Default.parameters = {
   design: {
@@ -44,48 +62,17 @@ Default.parameters = {
 }
 
 export const NothingToClaim = Template.bind({})
-NothingToClaim.args = {
-  ...Default.args,
-  unstakedTokens: 0,
-}
+NothingToClaim.args = makeProps([
+  makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+  makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+  makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+])
 
 export const NoOpenProposals = Template.bind({})
 NoOpenProposals.args = {
-  ...Default.args,
+  ...makeProps(),
   openProposals: false,
 }
 
 export const NothingUnstaking = Template.bind({})
-NothingUnstaking.args = {
-  ...Default.args,
-  unstakingTokensTranches: [],
-}
-
-export const ClaimingTokens = Template.bind({})
-ClaimingTokens.args = {
-  ...Default.args,
-  loadingClaiming: true,
-}
-
-export const ManagingStake = Template.bind({})
-ManagingStake.args = {
-  ...Default.args,
-  loadingManaging: true,
-}
-
-export const MultipleTranches = Template.bind({})
-MultipleTranches.args = {
-  ...Default.args,
-  unstakingTokensTranches: [
-    {
-      tokenSymbol: '$DOG',
-      unstakingTokens: 50,
-      available: new Date(),
-    },
-    {
-      tokenSymbol: '$DOG',
-      unstakingTokens: 50,
-      available: new Date(),
-    },
-  ],
-}
+NothingUnstaking.args = makeProps([])

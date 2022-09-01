@@ -1,4 +1,5 @@
 import { PlusIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -222,7 +223,10 @@ export const TokenCard = ({
               <p className="secondary-text">{t('title.unstakingTokens')}</p>
 
               <Button
-                className="font-mono text-right text-text-body underline-offset-2 caption-text"
+                className={clsx(
+                  'font-mono text-right underline-offset-2 caption-text',
+                  unstakingBalance > 0 && 'text-text-body'
+                )}
                 onClick={() => setShowUnstakingTokens(true)}
                 variant="underline"
               >
@@ -234,16 +238,16 @@ export const TokenCard = ({
             </div>
           </div>
         )}
-
-        {showUnstakingTokens && (
-          <UnstakingModal
-            onClaim={onClaim}
-            onClose={() => setShowUnstakingTokens(false)}
-            tasks={unstakingTasks}
-            unstakingDuration={unstakingDuration}
-          />
-        )}
       </div>
+
+      {showUnstakingTokens && (
+        <UnstakingModal
+          onClaim={onClaim}
+          onClose={() => setShowUnstakingTokens(false)}
+          tasks={unstakingTasks}
+          unstakingDuration={unstakingDuration}
+        />
+      )}
     </>
   )
 }

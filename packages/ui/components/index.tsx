@@ -11,6 +11,7 @@ export * from './layout'
 export * from './wallet'
 export * from './IconButton'
 export * from './nft'
+export * from './profile'
 
 export * from './ActionSelector'
 export * from './Breadcrumbs'
