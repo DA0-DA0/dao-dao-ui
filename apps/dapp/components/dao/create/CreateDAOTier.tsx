@@ -271,7 +271,7 @@ const CreateDAOTierMember = ({
 
       {govTokens !== undefined && (
         <TooltipIcon
-          label={t('info.tierMemberGovTokenAllocationTooltip', {
+          title={t('info.tierMemberGovTokenAllocationTooltip', {
             tokens: govTokens.toLocaleString(undefined, {
               maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
             }),

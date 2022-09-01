@@ -61,7 +61,7 @@ export const ConnectedWallet = ({
       </div>
 
       <div className="flex flex-row gap-2 items-center">
-        <Tooltip label={t('info.copyWalletAddressTooltip')}>
+        <Tooltip title={t('info.copyWalletAddressTooltip')}>
           <IconButton
             Icon={copied ? CheckCircleIcon : Link}
             className="text-icon-secondary"
@@ -76,7 +76,7 @@ export const ConnectedWallet = ({
           />
         </Tooltip>
 
-        <Tooltip label={t('info.disconnectWalletTooltip')}>
+        <Tooltip title={t('info.disconnectWalletTooltip')}>
           <IconButton
             Icon={X}
             className="text-icon-secondary"

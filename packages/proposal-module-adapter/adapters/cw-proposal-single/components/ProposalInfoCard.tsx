@@ -208,7 +208,7 @@ interface YouTooltipProps {
 }
 
 const YouTooltip = ({ label }: YouTooltipProps) => (
-  <Tooltip label={label}>
+  <Tooltip title={label}>
     <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
       ?
     </p>

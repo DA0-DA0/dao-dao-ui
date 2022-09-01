@@ -231,7 +231,7 @@ export const ProposalVoteDecisionStatus = ({
                 width="36px"
               />
 
-              <Tooltip label={t('info.proposalThresholdTooltip')}>
+              <Tooltip title={t('info.proposalThresholdTooltip')}>
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     {t('title.passingThreshold')}:{' '}
@@ -309,7 +309,7 @@ export const ProposalVoteDecisionStatus = ({
                 width="36px"
               />
 
-              <Tooltip label={t('info.proposalQuorumTooltip')}>
+              <Tooltip title={t('info.proposalQuorumTooltip')}>
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     {t('title.quorum')}:{' '}
@@ -424,7 +424,7 @@ export const ProposalVoteDecisionStatus = ({
                 width="36px"
               />
 
-              <Tooltip label={t('info.proposalThresholdTooltip')}>
+              <Tooltip title={t('info.proposalThresholdTooltip')}>
                 <div className="flex flex-row gap-2 justify-between items-center py-3 px-4 w-full rounded-md bg-light">
                   <p className="text-sm text-tertiary">
                     {t('title.passingThreshold')}:{' '}

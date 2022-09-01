@@ -74,7 +74,7 @@ const InnerPinnedProposalLine = ({
           </a>
         </Link>
 
-        <Tooltip label={t('info.hideFromPageTooltip')}>
+        <Tooltip title={t('info.hideFromPageTooltip')}>
           <Button className="!px-2" onClick={markDone} variant="secondary">
             <EyeOffIcon className="w-4 h-4" />
           </Button>

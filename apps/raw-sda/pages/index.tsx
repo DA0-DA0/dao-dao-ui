@@ -83,7 +83,7 @@ const InnerStake = () => {
                     })}
                   </span>
                   <TooltipIcon
-                    label={t('info.autoCompoundStakingRewardsTooltip')}
+                    title={t('info.autoCompoundStakingRewardsTooltip')}
                   />
                 </p>
 

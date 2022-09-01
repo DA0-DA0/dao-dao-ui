@@ -78,7 +78,7 @@ const CopyButton = ({ text }: CopyButtonProps) => {
   const [copied, setCopied] = useState(false)
 
   return (
-    <Tooltip label={t('info.copyWalletAddressTooltip')}>
+    <Tooltip title={t('info.copyWalletAddressTooltip')}>
       <button
         onClick={() => {
           navigator.clipboard.writeText(text)
@@ -105,7 +105,7 @@ const DisconnectButton = ({ onClick }: DisconnectButtonProps) => {
   const { t } = useTranslation()
 
   return (
-    <Tooltip label={t('info.disconnectWalletTooltip')}>
+    <Tooltip title={t('info.disconnectWalletTooltip')}>
       <button onClick={onClick} type="button">
         <LogoutIcon className="w-[18px]" />
       </button>

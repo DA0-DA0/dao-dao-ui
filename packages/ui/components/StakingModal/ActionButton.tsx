@@ -20,7 +20,7 @@ export const ActionButton = ({
 }: ActionButtonProps) => {
   const stakingModeButtonLabel = useStakingModeButtonLabel()
   return (
-    <Tooltip label={error}>
+    <Tooltip title={error}>
       <Button disabled={!!error} loading={loading} onClick={onClick}>
         {stakingModeButtonLabel(mode)}
       </Button>

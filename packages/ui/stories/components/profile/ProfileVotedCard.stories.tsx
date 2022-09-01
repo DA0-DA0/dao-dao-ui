@@ -1,5 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalYourVote } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalYourVote'
+import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+
 import { ProfileVotedCard } from 'components/profile/ProfileVotedCard'
 
 export default {
@@ -19,7 +22,7 @@ Default.args = {
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/dog_nft.png',
-  vote: 'yes',
+  vote: <ProposalYourVote vote={Vote.Yes} />,
 }
 
 Default.parameters = {

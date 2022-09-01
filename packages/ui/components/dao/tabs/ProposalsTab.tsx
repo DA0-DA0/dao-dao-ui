@@ -70,7 +70,7 @@ export const ProposalsTab = ({
         </div>
 
         <Tooltip
-          label={
+          title={
             isMember
               ? // eslint-disable-next-line i18next/no-literal-string
                 (isMac ? '⌘' : '⌃') + '⇧P'

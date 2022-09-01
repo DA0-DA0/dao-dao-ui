@@ -96,7 +96,7 @@ export const ProposalLine = ({
   )
 
   return proposalModuleVersion === ContractVersion.V0_2_0 ? (
-    <Tooltip label={`Last updated: ${lastUpdated.toLocaleDateString()}`}>
+    <Tooltip title={`Last updated: ${lastUpdated.toLocaleDateString()}`}>
       {contents}
     </Tooltip>
   ) : (

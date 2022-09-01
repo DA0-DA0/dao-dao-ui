@@ -46,7 +46,7 @@ export const ProfileCantVoteCard = ({
             <p>{t('title.votingPower')}</p>
             <TooltipIcon
               className="text-icon-secondary"
-              label={t('info.votingPowerAtCreationTooltip')}
+              title={t('info.votingPowerAtCreationTooltip')}
             />
           </div>
 

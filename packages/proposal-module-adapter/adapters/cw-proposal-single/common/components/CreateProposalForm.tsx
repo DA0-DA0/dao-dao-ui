@@ -467,7 +467,7 @@ export const CreateProposalForm = ({
         <div className="flex gap-2 justify-end mt-4">
           {connected ? (
             <Tooltip
-              label={
+              title={
                 !isMember
                   ? t('error.mustBeMemberToCreateProposal')
                   : !canPayDeposit

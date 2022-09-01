@@ -8,7 +8,11 @@ export default {
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof NftCard>
 
-const Template: ComponentStory<typeof NftCard> = (args) => <NftCard {...args} />
+const Template: ComponentStory<typeof NftCard> = (args) => (
+  <div className="max-w-xs">
+    <NftCard {...args} />
+  </div>
+)
 
 let id = 0
 export const makeProps = (): NftCardProps => ({

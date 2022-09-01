@@ -1,7 +1,8 @@
-import Tooltip, { TooltipProps } from '@reach/tooltip'
 import clsx from 'clsx'
 
 import { Info } from '@dao-dao/icons'
+
+import { Tooltip, TooltipProps } from './Tooltip'
 
 export type TooltipIconProps = Omit<TooltipProps, 'children'> & {
   className?: string

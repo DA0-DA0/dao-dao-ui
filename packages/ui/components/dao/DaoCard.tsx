@@ -101,7 +101,7 @@ export const DaoCard = ({
             />
 
             {isMember && (
-              <Tooltip label={t('info.youAreMember')}>
+              <Tooltip title={t('info.youAreMember')}>
                 <Check className="w-4 h-4 text-icon-secondary" />
               </Tooltip>
             )}

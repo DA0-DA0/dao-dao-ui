@@ -2,21 +2,21 @@ import {
   Tooltip as MaterialTooltip,
   TooltipProps as MaterialTooltipProps,
 } from '@mui/material'
-import { ReactElement, ReactNode } from 'react'
 
-export interface TooltipProps extends MaterialTooltipProps {
-  label: ReactNode | undefined
-  children: ReactElement
+export interface TooltipProps extends Omit<MaterialTooltipProps, 'title'> {
+  title: MaterialTooltipProps['title'] | undefined
 }
 
 export const Tooltip = ({
-  label,
+  title,
+  arrow,
   children,
   classes,
-  arrow,
   ...props
 }: TooltipProps) =>
-  label ? (
+  title === undefined ? (
+    <>{children}</>
+  ) : (
     <MaterialTooltip
       arrow={arrow ?? true}
       classes={{
@@ -26,11 +26,9 @@ export const Tooltip = ({
           classes?.tooltip ??
           '!font-sans !text-xs !font-normal !text-text-body !bg-component-tooltip !rounded-md !border !border-border-primary',
       }}
+      title={title}
       {...props}
-      title={label}
     >
       {children}
     </MaterialTooltip>
-  ) : (
-    <>{children}</>
   )

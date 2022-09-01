@@ -87,7 +87,7 @@ export const UpdateInfoComponent: ActionComponent<
           <div className="flex flex-row flex-wrap gap-2">
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-1">
-                <Tooltip label={t('form.automaticallyAddTokensTooltip')}>
+                <Tooltip title={t('form.automaticallyAddTokensTooltip')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 
@@ -105,7 +105,7 @@ export const UpdateInfoComponent: ActionComponent<
             </div>
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
               <div className="flex flex-row gap-1">
-                <Tooltip label={t('form.automaticallyAddNFTsTooltip')}>
+                <Tooltip title={t('form.automaticallyAddNFTsTooltip')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 

@@ -25,7 +25,7 @@ export const PinnedProposalsList = () => {
           <div className="flex gap-1 items-center">
             <DocumentTextIcon className="inline w-4" />
             <p>{t('title.openProposals')}</p>
-            <TooltipIcon label={t('info.openProposalsTooltip')} />
+            <TooltipIcon title={t('info.openProposalsTooltip')} />
           </div>
           <Loader />
         </div>
@@ -193,7 +193,7 @@ const InnerPinnedProposalsList = () => {
         <div className="flex gap-1 items-center">
           <DocumentTextIcon className="inline w-4" />
           <p>{t('title.openProposals')}</p>
-          <TooltipIcon label={t('info.openProposalsTooltip')} />
+          <TooltipIcon title={t('info.openProposalsTooltip')} />
         </div>
       </div>
       <div className="flex flex-col gap-2 md:gap-1">

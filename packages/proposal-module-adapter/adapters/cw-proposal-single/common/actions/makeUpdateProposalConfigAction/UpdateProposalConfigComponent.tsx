@@ -75,7 +75,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         {governanceTokenSymbol !== undefined && (
           <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md md:w-min bg-card">
             <div className="flex flex-row gap-2">
-              <Tooltip label={t('form.requireProposalDepositTooltip')}>
+              <Tooltip title={t('form.requireProposalDepositTooltip')}>
                 <InformationCircleIcon className="w-4 h-4 secondary-text" />
               </Tooltip>
 
@@ -94,7 +94,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         )}
         <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md md:w-min bg-card">
           <div className="flex flex-row gap-2">
-            <Tooltip label={t('form.onlyMembersExecuteTooltip')}>
+            <Tooltip title={t('form.onlyMembersExecuteTooltip')}>
               <InformationCircleIcon className="w-4 h-4 secondary-text" />
             </Tooltip>
 
@@ -142,7 +142,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             </div>
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md bg-card">
               <div className="flex flex-row gap-2">
-                <Tooltip label={t('form.refundFailedProposalsTooltip')}>
+                <Tooltip title={t('form.refundFailedProposalsTooltip')}>
                   <InformationCircleIcon className="w-4 h-4 secondary-text" />
                 </Tooltip>
 

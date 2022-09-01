@@ -106,7 +106,7 @@ export const TokenCard = ({
 
           {onAddToken && (
             <div className="absolute top-3 right-3">
-              <Tooltip label={t('info.addTokenTooltip')}>
+              <Tooltip title={t('info.addTokenTooltip')}>
                 <IconButton
                   Icon={PlusIcon}
                   circular
@@ -184,7 +184,7 @@ export const TokenCard = ({
                   <>
                     ,{' '}
                     <Tooltip
-                      label={
+                      title={
                         <>
                           {stakes.slice(1).map(({ validator }, index) => (
                             <p key={index}>{validator}</p>
@@ -204,7 +204,7 @@ export const TokenCard = ({
             <div className="flex flex-row gap-8 justify-between items-center">
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
-              <Tooltip label={t('info.createClaimProposal')}>
+              <Tooltip title={t('info.createClaimProposal')}>
                 <Button
                   className="font-mono text-right text-text-body underline-offset-2 caption-text"
                   onClick={onClickRewards}

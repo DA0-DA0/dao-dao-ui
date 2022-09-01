@@ -30,6 +30,6 @@ export const InputLabel = ({
       {name}
     </span>
 
-    {tooltip && <TooltipIcon label={tooltip} />}
+    {tooltip && <TooltipIcon title={tooltip} />}
   </label>
 )
