@@ -4,7 +4,7 @@ import { ComponentType, SVGProps } from 'react'
 
 import { Approved, Executed, Open, Rejected } from '@dao-dao/icons'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { ProposalStatus as StatelessProposalStatus } from '@dao-dao/ui'
+import { StatusDisplay } from '@dao-dao/ui'
 import { convertToTitlecase } from '@dao-dao/utils'
 
 export interface ProposalStatusProps {
@@ -15,7 +15,7 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
   const { Icon, iconClassName, textClassName } = ProposalStatusMap[status]
 
   return (
-    <StatelessProposalStatus
+    <StatusDisplay
       icon={<Icon className={clsx(iconClassName, 'w-[19px] h-[19px]')} />}
       label={
         // Width of longest status label.

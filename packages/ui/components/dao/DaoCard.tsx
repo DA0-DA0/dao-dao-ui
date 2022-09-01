@@ -12,6 +12,7 @@ import {
 import { formatDate } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../IconButton'
+import { Tooltip } from '../Tooltip'
 import { DaoImage } from './DaoImage'
 
 export interface DaoCardInfo {
@@ -100,9 +101,10 @@ export const DaoCard = ({
             />
 
             {isMember && (
-              <div title={t('info.youAreMember')}>
+              // TODO: Fix tooltip position.
+              <Tooltip label={t('info.youAreMember')}>
                 <DaoCardMemberCheck className="w-4 h-4 text-icon-secondary" />
-              </div>
+              </Tooltip>
             )}
           </div>
         </div>

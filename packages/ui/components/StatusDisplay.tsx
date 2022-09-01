@@ -1,17 +1,17 @@
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 
-export interface ProposalStatusProps {
+export interface StatusDisplayProps {
   icon: ReactNode
   label: ReactNode
   className?: string
 }
 
-export const ProposalStatus = ({
+export const StatusDisplay = ({
   icon,
   label,
   className,
-}: ProposalStatusProps) => (
+}: StatusDisplayProps) => (
   <div
     className={clsx('flex flex-row gap-2 items-center link-text', className)}
   >

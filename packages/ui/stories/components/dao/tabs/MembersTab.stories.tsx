@@ -27,4 +27,5 @@ Default.args = {
     makeDaoMemberCardProps(),
   ],
   isMember: true,
+  showAddMember: true,
 }

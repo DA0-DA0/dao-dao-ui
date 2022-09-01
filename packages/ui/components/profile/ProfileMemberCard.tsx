@@ -57,7 +57,7 @@ export const ProfileMemberCard = ({
       walletName={walletName}
     >
       <div className="p-6 pb-4 border-t border-t-border-primary">
-        <div className="flex flex-row justify-between items-center pb-3 text-xs text-bold">
+        <div className="flex flex-row justify-between items-center pb-3 text-text-body link-text">
           <p>{t('title.yourEquity')}</p>
         </div>
 
@@ -82,7 +82,7 @@ export const ProfileMemberCard = ({
           <p>{t('title.unstakingTokens')}</p>
           <p
             className={clsx('font-mono', {
-              'text-text-primary underline underline-offset-4':
+              'text-text-primary underline underline-offset-2':
                 unstakingTokensTranches.length > 0,
             })}
           >
@@ -95,7 +95,8 @@ export const ProfileMemberCard = ({
         <div className="flex flex-row justify-between items-center pb-6 secondary-text">
           <p>{t('title.unstakedTokens')}</p>
           <p
-            className={clsx('font-mono text-xs', {
+            className={clsx('font-mono', {
+              'text-text-tertiary': unstakedTokens === 0,
               'text-icon-interactive-valid': unstakedTokens > 0,
             })}
           >

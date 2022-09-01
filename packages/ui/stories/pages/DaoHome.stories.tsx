@@ -11,10 +11,7 @@ import {
   SubDaosTabProps,
   TreasuryAndNftsTabProps,
 } from 'components'
-import {
-  ProfileHomeCard,
-  ProfileHomeCardProps,
-} from 'components/profile/ProfileHomeCard'
+import { ProfileMemberCard, ProfileMemberCardProps } from 'components/profile'
 import { DaoPageWrapperDecorator, makeAppLayoutDecorator } from 'decorators'
 import { DaoHome } from 'pages/DaoHome'
 import { Default as DaoInfoBarStory } from 'stories/components/dao/DaoInfoBar.stories'
@@ -22,7 +19,7 @@ import { Default as MembersTabStory } from 'stories/components/dao/tabs/MembersT
 import { Default as ProposalsTabStory } from 'stories/components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from 'stories/components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from 'stories/components/dao/tabs/TreasuryAndNftsTab.stories'
-import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
+import { Default as ProfileMemberCardStory } from 'stories/components/profile/ProfileMemberCard.stories'
 
 export default {
   title: 'DAO DAO UI V2 / pages / DaoHome',
@@ -32,8 +29,8 @@ export default {
     DaoPageWrapperDecorator,
     makeAppLayoutDecorator({
       rightSidebar: (
-        <ProfileHomeCard
-          {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
+        <ProfileMemberCard
+          {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
         />
       ),
     }),

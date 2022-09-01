@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { TokenCard, TokenCardProps } from 'components/TokenCard'
+import { makeProps as makeUnstakingModalProps } from 'stories/components/UnstakingModal.stories'
 
 export default {
   title: 'DAO DAO UI V2 / components / TokenCard',
@@ -16,7 +17,7 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
 
 export const makeProps = (crown = false): TokenCardProps => {
   // Random price between 0 and 10000 with up to 6 decimals.
-  const unstaked = Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
+  const unstakedBalance = Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
   const stakes: TokenCardProps['stakes'] = [
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -50,10 +51,14 @@ export const makeProps = (crown = false): TokenCardProps => {
     tokenSymbol: 'JUNO',
     subtitle: 'Juno Network',
     totalBalance:
-      unstaked + stakes.reduce((acc, stake) => acc + stake.amount, 0),
+      unstakedBalance + stakes.reduce((acc, stake) => acc + stake.amount, 0),
+    unstakedBalance,
+    unstakingTasks: makeUnstakingModalProps('JUNO').tasks,
     tokenDecimals: 6,
     usdcUnitPrice: 5.38,
+    unstakingDuration: '28 days',
     stakes,
+    onClaim: () => alert('claim'),
   }
 }
 

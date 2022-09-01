@@ -7,15 +7,12 @@ import {
   ProposalLineProps,
 } from 'components/proposal/ProposalLine'
 import {
-  ProposalStatus,
-  ProposalStatusProps,
-} from 'components/proposal/ProposalStatus'
-import {
   ProposalYourVote,
   ProposalYourVoteProps,
 } from 'components/proposal/ProposalYourVote'
-import * as ProposalStatusStories from 'stories/components/proposal/ProposalStatus.stories'
+import { StatusDisplay, StatusDisplayProps } from 'components/StatusDisplay'
 import * as ProposalYourVoteStories from 'stories/components/proposal/ProposalYourVote.stories'
+import * as ProposalStatusStories from 'stories/components/StatusDisplay.stories'
 
 export default {
   title: 'DAO DAO UI V2 / components / proposal / ProposalLine',
@@ -40,9 +37,9 @@ export const makeProps = (
   title: 'Give everyone 1 million dollars.',
   expiration: secondsToWdhms(secondsRemaining, 1) + ' left',
   status: (
-    <ProposalStatus
+    <StatusDisplay
       {...(ProposalStatusStories[status as keyof typeof ProposalStatusStories]
-        .args as ProposalStatusProps)}
+        .args as StatusDisplayProps)}
     />
   ),
   vote: (

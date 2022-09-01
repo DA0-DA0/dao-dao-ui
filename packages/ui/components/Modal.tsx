@@ -2,12 +2,18 @@ import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { ReactNode, useCallback, useEffect } from 'react'
 
+import { IconButton } from './IconButton'
+
 export interface ModalProps {
   children: ReactNode
   onClose: () => void
   backdropClassName?: string
   containerClassName?: string
   hideCloseButton?: boolean
+  header?: {
+    title: string
+    subtitle?: string
+  }
 }
 
 export const Modal = ({
@@ -16,6 +22,7 @@ export const Modal = ({
   backdropClassName,
   containerClassName,
   hideCloseButton,
+  header,
 }: ModalProps) => {
   const handleKeyPress = useCallback(
     (event) => {
@@ -52,12 +59,22 @@ export const Modal = ({
         )}
       >
         {!hideCloseButton && (
-          <button
-            className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
+          <IconButton
+            Icon={XIcon}
+            circular
+            className="absolute top-2 right-2"
             onClick={onClose}
-          >
-            <XIcon className="w-4 h-4" />
-          </button>
+            variant="ghost"
+          />
+        )}
+
+        {header && (
+          <div className="p-6 pt-0 -mx-6 mb-6 space-y-1 border-b border-border-base">
+            <p className="header-text">{header.title}</p>
+            {!!header.subtitle && (
+              <p className="body-text">{header.subtitle}</p>
+            )}
+          </div>
         )}
 
         {children}

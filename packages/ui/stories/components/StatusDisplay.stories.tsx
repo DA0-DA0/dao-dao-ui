@@ -2,15 +2,15 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalStatusMap } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalStatus'
 
-import { ProposalStatus } from 'components/proposal/ProposalStatus'
+import { StatusDisplay } from 'components/StatusDisplay'
 
 export default {
-  title: 'DAO DAO UI V2 / components / proposal / ProposalStatus',
-  component: ProposalStatus,
-} as ComponentMeta<typeof ProposalStatus>
+  title: 'DAO DAO UI V2 / components / StatusDisplay',
+  component: StatusDisplay,
+} as ComponentMeta<typeof StatusDisplay>
 
-const Template: ComponentStory<typeof ProposalStatus> = (args) => (
-  <ProposalStatus {...args} />
+const Template: ComponentStory<typeof StatusDisplay> = (args) => (
+  <StatusDisplay {...args} />
 )
 
 export const Open = Template.bind({})
