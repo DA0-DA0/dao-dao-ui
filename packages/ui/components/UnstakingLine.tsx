@@ -36,7 +36,7 @@ export const UnstakingLine = ({
       : formatDate(date)
 
   return (
-    <div className="grid grid-cols-[auto_1fr_auto] gap-8 items-center py-4 px-3 bg-background-secondary rounded-md">
+    <div className="box-content grid grid-cols-[auto_1fr_auto] gap-8 items-center py-3 px-4 h-8 bg-background-secondary rounded-md">
       <UnstakingStatus status={status} />
 
       <p className="truncate body-text">
@@ -47,7 +47,7 @@ export const UnstakingLine = ({
       </p>
 
       {dateReplacement || (
-        <p className="font-mono text-right break-words caption-text">
+        <p className="pr-2 font-mono text-right break-words caption-text">
           {dateString}
         </p>
       )}
