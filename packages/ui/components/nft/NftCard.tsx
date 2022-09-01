@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
 
-import { TooltipDisplay } from 'components/TooltipDisplay'
+import { TooltipLikeDisplay } from 'components/TooltipLikeDisplay'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 
@@ -59,7 +59,7 @@ export const NftCard = ({
         )}
 
         {!!href && !!hrefDestinationName && (
-          <TooltipDisplay
+          <TooltipLikeDisplay
             className="absolute bottom-4 left-4 shadow-dp4 opacity-0 group-hover:opacity-100 hover:!opacity-90 transition-opacity"
             icon={<ArrowOutward color="currentColor" />}
             label={t('button.openInDestination', {
