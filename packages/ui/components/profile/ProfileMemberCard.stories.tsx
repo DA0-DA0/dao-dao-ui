@@ -1,0 +1,61 @@
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
+import { ProfileMemberCardMembershipInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
+import { makeProps as makeProfileMemberCardMembershipInfoProps } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui/ProfileMemberCardMembershipInfo.stories'
+
+import { UnstakingTaskStatus } from 'components'
+import { makeProps as makeUnstakingLineProps } from 'components/UnstakingLine.stories'
+
+import { ProfileMemberCard, ProfileMemberCardProps } from './ProfileMemberCard'
+
+export default {
+  title:
+    'DAO DAO / packages / ui / components / profile / ProfileMemberCard',
+  component: ProfileMemberCard,
+} as ComponentMeta<typeof ProfileMemberCard>
+
+const Template: ComponentStory<typeof ProfileMemberCard> = (args) => (
+  <div className="max-w-xs">
+    <ProfileMemberCard {...args} />
+  </div>
+)
+
+const makeProps = (
+  ...args: Parameters<typeof makeProfileMemberCardMembershipInfoProps>
+): ProfileMemberCardProps => ({
+  daoName: 'Dog Dao',
+  walletName: '@Modern-Edamame',
+  profileImgUrl: '/dog_nft.png',
+  openProposals: true,
+  established: new Date(),
+  membershipInfo: (
+    <ProfileMemberCardMembershipInfo
+      {...makeProfileMemberCardMembershipInfoProps(...args)}
+    />
+  ),
+})
+
+export const Default = Template.bind({})
+Default.args = makeProps()
+Default.parameters = {
+  design: {
+    type: 'figma',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A14709',
+  },
+}
+
+export const NothingToClaim = Template.bind({})
+NothingToClaim.args = makeProps([
+  makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+  makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+  makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
+])
+
+export const NoOpenProposals = Template.bind({})
+NoOpenProposals.args = {
+  ...makeProps(),
+  openProposals: false,
+}
+
+export const NothingUnstaking = Template.bind({})
+NothingUnstaking.args = makeProps([])

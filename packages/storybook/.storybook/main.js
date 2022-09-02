@@ -5,7 +5,7 @@ module.exports = {
   core: {
     builder: 'webpack5',
   },
-  stories: ['../stories/**/*.@(ts|tsx)'],
+  stories: ['../../../**/*.stories.tsx'],
   staticDirs: ['./static', '../../../apps/dapp/public'],
   addons: [
     '@storybook/addon-links',

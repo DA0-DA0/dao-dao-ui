@@ -6,11 +6,7 @@
     "storybook": "start-storybook --ci -p 6006",
     "storybook:generate": "ts-node --esm ./scripts/storybook-generate.ts"
   },
-  "dependencies": {
-    "@dao-dao/ui": "*",
-    "@dao-dao/voting-module-adapter": "*",
-    "@dao-dao/proposal-module-adapter": "*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@dao-dao/config": "*",
     "@dao-dao/tsconfig": "*",
