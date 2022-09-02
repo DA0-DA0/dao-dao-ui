@@ -209,8 +209,8 @@ const project = new Project({
     // Use arg for source files glob pattern if present.
     let arg = process.argv[2]
     if (arg) {
-      // Automatically prefix with all levels with a `ui` folder glob if not
-      // starting with a path symbol.
+      // Automatically prefix with a `ui` folder at any level glob if not
+      // starting with a path/glob related symbol.
       if (
         !arg.startsWith('.') &&
         !arg.startsWith('/') &&

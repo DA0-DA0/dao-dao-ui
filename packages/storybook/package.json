@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "build-storybook": "build-storybook",
-    "storybook": "start-storybook --ci -p 6006",
-    "storybook:generate": "ts-node --esm ./scripts/storybook-generate.ts"
+    "start": "start-storybook --ci -p 6006",
+    "generate": "ts-node --esm ./scripts/generate.ts"
   },
   "dependencies": {},
   "devDependencies": {
