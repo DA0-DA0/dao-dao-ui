@@ -105,6 +105,7 @@ const colors = {
     'component-tooltip',
     'component-toast',
     'component-widget',
+    'component-pill',
     'component-badge-primary',
     'component-badge-brand',
     'component-badge-valid',

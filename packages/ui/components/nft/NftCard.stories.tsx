@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useState } from 'react'
 
 import { NftCard, NftCardProps } from './NftCard'
 
@@ -8,11 +9,27 @@ export default {
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof NftCard>
 
-const Template: ComponentStory<typeof NftCard> = (args) => (
-  <div className="max-w-xs">
-    <NftCard {...args} />
-  </div>
-)
+const Template: ComponentStory<typeof NftCard> = (args) => {
+  const [checked, setChecked] = useState(false)
+
+  return (
+    <div className="max-w-xs">
+      <NftCard
+        {...args}
+        checkbox={
+          // If provided, override onClick handler to update controlled state.
+          args.checkbox && {
+            checked,
+            onClick: () => {
+              setChecked((c) => !c)
+              args.checkbox?.onClick()
+            },
+          }
+        }
+      />
+    </div>
+  )
+}
 
 let id = 0
 export const makeProps = (): NftCardProps => ({
@@ -30,8 +47,22 @@ export const makeProps = (): NftCardProps => ({
 
 export const Default = Template.bind({})
 Default.args = makeProps()
-
 Default.parameters = {
+  design: {
+    type: 'figma',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=126%3A15467',
+  },
+}
+
+export const Checkable = Template.bind({})
+Checkable.args = {
+  ...makeProps(),
+  checkbox: {
+    checked: false,
+    onClick: () => alert('checkbox'),
+  },
+}
+Checkable.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=126%3A15467',

@@ -5,11 +5,16 @@ import { useTranslation } from 'react-i18next'
 import { ArrowOutward } from '@dao-dao/icons'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { Checkbox } from '../input'
 import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
 
 export interface NftCardProps {
   href?: string
   hrefDestinationName?: string
+  checkbox?: {
+    checked: boolean
+    onClick: () => void
+  }
   imageUrl?: string
   createdBy: string
   floorPrice?: {
@@ -23,6 +28,7 @@ export interface NftCardProps {
 export const NftCard = ({
   href,
   hrefDestinationName,
+  checkbox,
   imageUrl,
   createdBy,
   floorPrice,
@@ -34,7 +40,7 @@ export const NftCard = ({
   return (
     <div
       className={clsx(
-        'group flex overflow-hidden flex-col items-stretch bg-primary rounded-lg ring-2 ring-inset ring-[transparent] transition',
+        'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg ring-2 ring-inset ring-[transparent] transition',
         {
           'hover:bg-card hover:ring-focus': href,
         },
@@ -67,6 +73,10 @@ export const NftCard = ({
           />
         )}
       </a>
+
+      {checkbox && (
+        <Checkbox {...checkbox} className="absolute top-3 left-3 " />
+      )}
 
       <div
         className={clsx(

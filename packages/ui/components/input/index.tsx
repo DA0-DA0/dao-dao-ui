@@ -1,4 +1,5 @@
 export * from './AddressInput'
+export * from './Checkbox'
 export * from './CodeMirrorInput'
 export * from './ImageSelector'
 export * from './InputErrorMessage'

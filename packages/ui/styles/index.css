@@ -176,6 +176,7 @@ input[type='number']::-webkit-outer-spin-button {
     --component-tooltip: rgba(15, 15, 16, 1);
     --component-toast: rgba(12, 12, 13, 1);
     --component-widget: rgba(var(--v2-light), 0.2);
+    --component-pill: rgba(var(--v2-brand), 0.8);
     --component-badge-primary: rgba(var(--v2-dark), 0.25);
     --component-badge-brand: rgba(var(--v2-brand), 0.4);
     --component-badge-valid: rgba(var(--v2-valid), 0.45);
@@ -255,7 +256,7 @@ input[type='number']::-webkit-outer-spin-button {
     /* Component */
     --component-modal: rgba(var(--v2-black), 1);
     --component-dropdown: rgba(29, 30, 31, 1);
-    /* --component-tooltip and --component-toast are the same as the light theme */
+    /* --component-tooltip, --component-toast, and --component-pill are the same as the light theme */
     --component-widget: rgba(var(--v2-dark), 0.2);
     --component-badge-primary: rgba(var(--v2-light), 0.25);
     /* --component-badge-* are the same as the light theme */
